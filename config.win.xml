@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <Installer>
+    <Name>Fugio</Name>
+    <Version>1.1.0</Version>
+    <Title>Fugio Installer</Title>
+    <Publisher>www.bigfug.com</Publisher>
+    <StartMenuDir>Fugio</StartMenuDir>
+    <TargetDir>@ApplicationsDir@/Fugio</TargetDir>
+    <RemoteRepositories>
+        <Repository>
+           <Url>http://www.bigfug.com/packages/fugio-win</Url>
+        </Repository>
+    </RemoteRepositories>
+</Installer>

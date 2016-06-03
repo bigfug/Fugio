@@ -1,0 +1,9 @@
+#ifndef FUGIO_PORTAUDIO_H
+#define FUGIO_PORTAUDIO_H
+
+#include <QUuid>
+
+#define	NID_PORT_AUDIO_INPUT		(QUuid("{68F15F27-26D4-4CCA-907A-ABC195531BF3}"))
+#define	NID_PORT_AUDIO_OUTPUT		(QUuid("{a02c257b-f917-416f-acde-959dc05a172f}"))
+
+#endif // FUGIO_PORTAUDIO_H
