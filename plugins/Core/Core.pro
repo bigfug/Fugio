@@ -59,7 +59,8 @@ SOURCES += \
     stringlistpin.cpp \
     listsizenode.cpp \
     listindexnode.cpp \
-    framedelaynode.cpp
+    framedelaynode.cpp \
+    typesizenode.cpp
 
 HEADERS += \
     stringpin.h \
@@ -108,7 +109,8 @@ HEADERS += \
     stringlistpin.h \
     listsizenode.h \
     listindexnode.h \
-    framedelaynode.h
+    framedelaynode.h \
+    typesizenode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

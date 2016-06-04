@@ -31,6 +31,7 @@
 #include "listsizenode.h"
 #include "listindexnode.h"
 #include "framedelaynode.h"
+#include "typesizenode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -73,6 +74,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Signal", "Number", NID_SIGNAL_NUMBER, &SignalNumberNode::staticMetaObject ),
 	ClassEntry( "Toggle", NID_TOGGLE, &ToggleNode::staticMetaObject ),
 	ClassEntry( "Trigger Range Number", NID_TRIGGER_RANGE_NUMBER, &TriggerRangeNumberNode::staticMetaObject ),
+	ClassEntry( "Type Size", NID_TYPE_SIZE, &TypeSizeNode::staticMetaObject ),
 	ClassEntry( "Split List", NID_SPLIT_LIST, &SplitListNode::staticMetaObject ),
 	ClassEntry( "Split Point", NID_SPLIT_POINT, &SplitPointNode::staticMetaObject ),
 	ClassEntry( "Split Size", NID_SPLIT_SIZE, &SplitSizeNode::staticMetaObject ),
