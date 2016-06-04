@@ -1,4 +1,4 @@
-#include "CorePlugin.h"
+#include "coreplugin.h"
 
 #include <QtPlugin>
 

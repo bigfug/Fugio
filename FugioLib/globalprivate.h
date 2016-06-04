@@ -30,7 +30,7 @@ class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public 
 public:
 	virtual ~GlobalPrivate( void );
 
-	void loadPlugins( QDir &pDir );
+    void loadPlugins( QDir pDir );
 
 	void unloadPlugins( void );
 

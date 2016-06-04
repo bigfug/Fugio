@@ -111,7 +111,7 @@ void GlobalPrivate::initialisePlugins()
 	qDebug() << tr( "Nodes registered: %1" ).arg( mNodeMap.size() );
 }
 
-void GlobalPrivate::loadPlugins( QDir &pDir )
+void GlobalPrivate::loadPlugins( QDir pDir )
 {
 #if defined( Q_OS_MACX )
 	for( QString dirName : pDir.entryList( QDir::Dirs | QDir::NoDotAndDotDot ) )

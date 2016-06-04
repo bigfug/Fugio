@@ -8,6 +8,7 @@
 #include <fugio/pin_signals.h>
 
 #include <qmath.h>
+#include <cmath>
 
 VCFNode::VCFNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mCutoff( 1 ), mResonance( 0 )
@@ -328,7 +329,7 @@ void VCFNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOf
 			float			x = qBound( -1.0f, AudDst[ i ], 1.0f ) - r * ACD.y4;
 
 #if defined( QT_DEBUG )
-			if( isinf( x ) || isnan( x ) )
+            if( std::isinf( x ) || std::isnan( x ) )
 			{
 				x = qBound( -1.0f, AudDst[ i ], 1.0f );
 			}
@@ -345,7 +346,7 @@ void VCFNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOf
 
 			ACD.y4 -= ( ACD.y4 * ACD.y4 * ACD.y4 ) / 6.0f;
 
-			if( isnan( ACD.y4 ) )
+            if( std::isnan( ACD.y4 ) )
 			{
 				memset( &ACD, 0, sizeof( ACD ) );
 
