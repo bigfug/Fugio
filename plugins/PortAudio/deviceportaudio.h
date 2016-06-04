@@ -4,8 +4,11 @@
 #include <QObject>
 #include <QSettings>
 #include <QList>
+#include <QMutex>
 
+#if defined( PORTAUDIO_SUPPORTED )
 #include <portaudio.h>
+#endif
 
 #include <fugio/playhead_interface.h>
 #include <fugio/node_interface.h>
@@ -25,6 +28,7 @@ public:
 	static void deviceCfgSave( QSettings &pDataStream );
 	static void deviceCfgLoad( QSettings &pDataStream );
 
+#if defined( PORTAUDIO_SUPPORTED )
 	static QSharedPointer<DevicePortAudio> newDevice( PaDeviceIndex pDevIdx );
 
 	static QStringList deviceOutputNameList( void );
@@ -39,8 +43,10 @@ public:
 //	{
 //		return( mDeviceList );
 //	}
+#endif
 
 protected:
+#if defined( PORTAUDIO_SUPPORTED )
 	explicit DevicePortAudio( PaDeviceIndex pDeviceIndex );
 
 	void deviceOutputOpen( const PaDeviceInfo *DevInf );
@@ -48,6 +54,7 @@ protected:
 
 	void deviceOutputClose( void );
 	void deviceInputClose( void );
+#endif
 
 public:
 	virtual ~DevicePortAudio( void );
@@ -90,7 +97,11 @@ public:
 
 	virtual qreal latency( void ) const
 	{
+#if defined( PORTAUDIO_SUPPORTED )
 		return( mOutputTimeLatency );
+#else
+		return( 0 );
+#endif
 	}
 
 	virtual void setTimeOffset( qreal pTimeOffset );
@@ -98,6 +109,7 @@ public:
 	//-------------------------------------------------------------------------
 
 private:
+#if defined( PORTAUDIO_SUPPORTED )
 
 	static int streamCallbackStatic( const void *input, void *output,
 									 unsigned long frameCount,
@@ -112,7 +124,7 @@ private:
 	int streamCallbackInput( const void *input,
 						unsigned long frameCount,
 						const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags );
-
+#endif
 signals:
 	void audio( const float **pData, quint64 pSampleCount, int pChannelCount, qint64 pSamplePosition );
 
@@ -130,6 +142,7 @@ private:
 	QMutex									 mProducerMutex;
 	QList<AudioInstanceData>				 mProducers;
 
+#if defined( PORTAUDIO_SUPPORTED )
 	PaDeviceIndex							 mDeviceIndex;
 	PaStream								*mStreamOutput;
 	PaStream								*mStreamInput;
@@ -142,6 +155,7 @@ private:
 
 	qint64									 mOutputAudioOffset;
 	PaTime									 mInputAudioOffset;
+#endif
 
 	qreal									 mSampleRate;
 	int										 mOutputChannelCount;

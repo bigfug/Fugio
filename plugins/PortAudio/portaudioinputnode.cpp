@@ -8,12 +8,14 @@
 #include <fugio/audio/uuid.h>
 
 PortAudioInputNode::PortAudioInputNode( QSharedPointer<fugio::NodeInterface> pNode ) :
-	NodeControlBase( pNode )
+	NodeControlBase( pNode ), mPortAudio( nullptr )
 {
+#if defined( PORTAUDIO_SUPPORTED )
 	if( ( mPortAudio = DevicePortAudio::newDevice( Pa_GetDefaultInputDevice() ) ) )
 	{
 		connect( mPortAudio.data(), SIGNAL(audio(const float**,quint64,int,qint64)), this, SLOT(audioInput(const float**,quint64,int,qint64)) );
 	}
+#endif
 
 	mValAudio = pinOutput<fugio::AudioProducerInterface *>( "Audio", mPinAudio, PID_AUDIO );
 }

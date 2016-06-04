@@ -105,26 +105,34 @@ windows {
 #------------------------------------------------------------------------------
 # portaudio
 
-win32 {
+win32:exists( $$(LIBS)/portaudio/include/portaudio.h ) {
 	LIBS += -L$$(LIBS)/portaudio.32.2013/bin/Win32/Release
 	INCLUDEPATH += $$(LIBS)/portaudio/include
 	LIBS += -lportaudio_x86
+    DEFINES += PORTAUDIO_SUPPORTED
 }
 
-win64 {
+win64:exists( $$(LIBS)/portaudio/include/portaudio.h ) {
 	LIBS += -L$$(LIBS)/portaudio.64.2013/bin/Win32/Release
 	INCLUDEPATH += $$(LIBS)/portaudio/include
 	LIBS += -lportaudio_x64
+    DEFINES += PORTAUDIO_SUPPORTED
 }
 
-macx {
+macx:exists( /usr/local/include/portaudio.h ) {
     INCLUDEPATH += /usr/local/include
     LIBS += /usr/local/lib/libportaudio.a
     LIBS += -framework Carbon -framework AudioUnit -framework AudioToolbox -framework CoreAudio
+    DEFINES += PORTAUDIO_SUPPORTED
 }
 
-unix:!macx {
-	LIBS += -lportaudio
+unix:!macx:exists( /usr/local/include/portaudio.h ) {
+    LIBS += -lportaudio
+    DEFINES += PORTAUDIO_SUPPORTED
+}
+
+!contains( DEFINES, PORTAUDIO_SUPPORTED ) {
+    message( "PortAudio not supported" )
 }
 
 #------------------------------------------------------------------------------

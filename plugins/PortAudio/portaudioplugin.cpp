@@ -2,7 +2,9 @@
 
 #include <QtPlugin>
 
+#if defined( PORTAUDIO_SUPPORTED )
 #include <portaudio.h>
+#endif
 
 #include "portaudiooutputnode.h"
 #include "portaudioinputnode.h"
@@ -40,12 +42,14 @@ PluginInterface::InitResult PortAudioPlugin::initialise( fugio::GlobalInterface 
 {
 	mApp = pApp;
 
+#if defined( PORTAUDIO_SUPPORTED )
 	if( Pa_Initialize() != paNoError )
 	{
 		return( INIT_FAILED );
 	}
 
 	qInfo() << Pa_GetVersionText();
+#endif
 
 	DevicePortAudio::deviceInitialise();
 
@@ -64,7 +68,9 @@ void PortAudioPlugin::deinitialise()
 
 	DevicePortAudio::deviceDeinitialise();
 
+#if defined( PORTAUDIO_SUPPORTED )
 	Pa_Terminate();
+#endif
 }
 
 void PortAudioPlugin::deviceConfigGui( QWidget *pParent )

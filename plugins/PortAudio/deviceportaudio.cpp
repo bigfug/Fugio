@@ -18,6 +18,7 @@ void DevicePortAudio::deviceInitialise()
 //	PaHostApiIndex	HostApiCount   = Pa_GetHostApiCount();
 //	PaHostApiIndex	DefaultHostApi = Pa_GetDefaultHostApi();
 
+#if defined( PORTAUDIO_SUPPORTED )
 	qDebug() << "DefInp:" << Pa_GetDefaultInputDevice() << "DefOut:" << Pa_GetDefaultOutputDevice();
 
 	PaDeviceIndex	DevCnt = Pa_GetDeviceCount();
@@ -30,6 +31,7 @@ void DevicePortAudio::deviceInitialise()
 
 		qDebug() << HstInf->name << DevInf->name << DevInf->maxInputChannels << DevInf->maxOutputChannels;
 	}
+#endif
 }
 
 void DevicePortAudio::deviceDeinitialise()
@@ -56,6 +58,7 @@ void DevicePortAudio::deviceCfgLoad( QSettings &pDataStream )
 	Q_UNUSED( pDataStream )
 }
 
+#if defined( PORTAUDIO_SUPPORTED )
 QSharedPointer<DevicePortAudio> DevicePortAudio::newDevice( PaDeviceIndex pDevIdx )
 {
 	for( QSharedPointer<DevicePortAudio> DevAud : mDeviceList )
@@ -151,8 +154,11 @@ PaDeviceIndex DevicePortAudio::deviceOutputNameIndex(const QString &pDeviceName)
 //	}
 //}
 
+#endif
+
 //-----------------------------------------------------------------------------
 
+#if defined( PORTAUDIO_SUPPORTED )
 DevicePortAudio::DevicePortAudio( PaDeviceIndex pDeviceIndex )
 	: mDeviceIndex( pDeviceIndex ), mStreamOutput( 0 ), mStreamInput( 0 ), mOutputTimeLatency ( 0 ), mSampleRate( 0 )
 {
@@ -189,7 +195,7 @@ DevicePortAudio::~DevicePortAudio( void )
 		deviceOutputClose();
 	}
 }
-
+#endif
 void DevicePortAudio::setTimeOffset( qreal pTimeOffset )
 {
 	Q_UNUSED( pTimeOffset )
@@ -199,6 +205,7 @@ void DevicePortAudio::setTimeOffset( qreal pTimeOffset )
 //	mStreamOutputOffset     = 0;
 }
 
+#if defined( PORTAUDIO_SUPPORTED )
 int DevicePortAudio::streamCallbackStatic( const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags, void *userData)
 {
 	Q_UNUSED( statusFlags )
@@ -374,6 +381,7 @@ void DevicePortAudio::deviceInputClose()
 	mInputTimeLatency  = 0;
 	mInputChannelCount = 0;
 }
+#endif
 
 qreal DevicePortAudio::sampleRate() const
 {
