@@ -157,10 +157,17 @@ void GlobalPrivate::loadPlugins( QDir pDir )
 			continue;
 		}
 
+#if defined( Q_OS_LINUX )
+		if( File.suffix().toLower() != "so" )
+		{
+			continue;
+		}
+#elif defined( Q_OS_WIN )
 		if( File.suffix().toLower() != "dll" )
 		{
 			continue;
 		}
+#endif
 
 		loadPlugin( pDir.absoluteFilePath( fileName ) );
 	}
