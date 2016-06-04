@@ -8,7 +8,7 @@ ArrayPin::ArrayPin( QSharedPointer<fugio::PinInterface> pPin )
 
 QString ArrayPin::toString() const
 {
-	return( QString( "<p>Count: %1</p><p>Size: %2</p><p>Total Size: %2</p>" ).arg( count() ).arg( size() ).arg( count() * stride() ) );
+	return( QString( "<p>Count: %1</p><p>Size: %2</p><p>Total Size: %3</p>" ).arg( count() ).arg( size() ).arg( count() * stride() ) );
 }
 
 void ArrayPin::loadSettings( QSettings &pSettings )
