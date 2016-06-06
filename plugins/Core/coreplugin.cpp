@@ -47,6 +47,7 @@
 #include "choicepin.h"
 #include "variantpin.h"
 #include "stringlistpin.h"
+#include "bytearraylistpin.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -86,6 +87,7 @@ ClassEntry		CorePlugin::mPinClasses[] =
 	ClassEntry( "Array", PID_ARRAY, &ArrayPin::staticMetaObject ),
 	ClassEntry( "Bool", PID_BOOL, &BoolPin::staticMetaObject ),
 	ClassEntry( "Byte Array", PID_BYTEARRAY, &ByteArrayPin::staticMetaObject ),
+	ClassEntry( "Byte Array List", PID_BYTEARRAY_LIST, &ByteArrayListPin::staticMetaObject ),
 	ClassEntry( "Choice", PID_CHOICE, &ChoicePin::staticMetaObject ),
 	ClassEntry( "Float", PID_FLOAT, &FloatPin::staticMetaObject ),
 	ClassEntry( "Integer", PID_INTEGER, &IntegerPin::staticMetaObject ),
