@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QDebug>
 #include <QSharedPointer>
+#include <QList>
 
 #include <fugio/context_interface.h>
 #include <fugio/node_control_interface.h>
@@ -56,49 +57,98 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::NodeInterface
 
-	virtual QObject *qobject( void )
+	virtual QObject *qobject( void ) Q_DECL_OVERRIDE
 	{
 		return( this );
 	}
 
-	virtual QWidget *gui( void )
+	virtual QWidget *gui( void ) Q_DECL_OVERRIDE
 	{
 		return( 0 );
 	}
 
-	virtual QSharedPointer<fugio::NodeInterface> node( void )
+	virtual QSharedPointer<fugio::NodeInterface> node( void ) Q_DECL_OVERRIDE
 	{
 		return( mNode );
 	}
 
-	virtual void inputsUpdated( qint64 )
+	virtual void inputsUpdated( qint64 ) Q_DECL_OVERRIDE
 	{
 	}
 
-	virtual bool initialise( void )
+	virtual bool initialise( void ) Q_DECL_OVERRIDE
 	{
 		return( true );
 	}
 
-	virtual bool deinitialise( void )
+	virtual bool deinitialise( void ) Q_DECL_OVERRIDE
 	{
 		return( true );
 	}
 
-	virtual void loadSettings( QSettings & )
+	virtual void loadSettings( QSettings & ) Q_DECL_OVERRIDE
 	{
 	}
 
-	virtual void saveSettings( QSettings & )
+	virtual void saveSettings( QSettings & ) Q_DECL_OVERRIDE
 	{
 	}
+
+	virtual QStringList availableInputPins( void ) const Q_DECL_OVERRIDE
+	{
+		return( QStringList() );
+	}
+
+	virtual QList<AvailablePinEntry> availableOutputPins( void ) const Q_DECL_OVERRIDE
+	{
+		return( QList<NodeControlInterface::AvailablePinEntry>() );
+	}
+
+	virtual QString helpUrl( void ) const Q_DECL_OVERRIDE
+	{
+		return( QString() );
+	}
+
+	virtual QList<QUuid> pinAddTypesInput( void ) const Q_DECL_OVERRIDE
+	{
+		return( QList<QUuid>() );
+	}
+
+	virtual QList<QUuid> pinAddTypesOutput( void ) const Q_DECL_OVERRIDE
+	{
+		return( QList<QUuid>() );
+	}
+
+	virtual bool canAcceptPin( fugio::PinInterface *pPin ) const Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pPin )
+
+		return( false );
+	}
+
+	virtual bool mustChooseNamedInputPin( void ) const Q_DECL_OVERRIDE
+	{
+		return( false );
+	}
+
+	virtual bool mustChooseNamedOutputPin( void ) const Q_DECL_OVERRIDE
+	{
+		return( false );
+	}
+
+	//-------------------------------------------------------------------------
 
 	void pinUpdated( QSharedPointer<fugio::PinInterface> &pPin )
 	{
 		mNode->context()->pinUpdated( pPin );
 	}
 
-	QSharedPointer<fugio::PinInterface> pinInput( const QString &pName )
+	//-------------------------------------------------------------------------
+	// support methods for creating input pins
+
+	// dont use this version in new code
+
+	QSharedPointer<fugio::PinInterface> pinInput( const QString &pName ) // soon... Q_DECL_DEPRECATED
 	{
 		return( mNode->createPin( pName, PIN_INPUT, next_uuid() ) );
 	}
@@ -108,7 +158,7 @@ public:
 		return( mNode->createPin( pName, PIN_INPUT, pUuid ) );
 	}
 
-	template <class T> T pinInput( const QString &pName, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID )
+	template <class T> T pinInput( const QString &pName, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID ) // soon... Q_DECL_DEPRECATED
 	{
 		Q_ASSERT( mPinInterface.isNull() );
 
@@ -122,7 +172,10 @@ public:
 		return( qobject_cast<T>( mNode->createPin( pName, PIN_INPUT, pUuid, mPinInterface, pControlUUID ) ) );
 	}
 
-	template <class T> T pinOutput( const QString &pName, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID )
+	//-------------------------------------------------------------------------
+	// support methods for creating output pins
+
+	template <class T> T pinOutput( const QString &pName, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID ) // soon... Q_DECL_DEPRECATED
 	{
 		Q_ASSERT( mPinInterface.isNull() );
 
@@ -135,6 +188,9 @@ public:
 
 		return( qobject_cast<T>( mNode->createPin( pName, PIN_OUTPUT, pUuid, mPinInterface, pControlUUID ) ) );
 	}
+
+	//-------------------------------------------------------------------------
+	// template based access of connected pin controls
 
 	template <class T> T input( QSharedPointer<fugio::PinInterface> &pPin )
 	{
@@ -176,6 +232,9 @@ public:
 		return( qobject_cast<T>( pPin->connectedPin()->control()->qobject() ) );
 	}
 
+	//-------------------------------------------------------------------------
+	// Helper methods for accessing fugio::VariantInterface based connected pins
+
 	static QVariant variantStatic( QSharedPointer<fugio::PinInterface> &pPin )
 	{
 		if( !pPin->isConnected() || !pPin->connectedPin()->hasControl() )
@@ -202,57 +261,41 @@ public:
 		return( V ? V->variant() : pPin->value() );
 	}
 
-	QUuid next_uuid( void )
+	//-------------------------------------------------------------------------
+	// Helper methods for getting lists of inputs based on type
+
+	template <class T> QList<T> enumInputs( void ) const
+	{
+		QList<T>		IntLst;
+
+		for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
+		{
+			T	PinInt = input<T>( P );
+
+			if( PinInt )
+			{
+				IntLst << PinInt;
+			}
+		}
+
+		return( IntLst );
+	}
+
+	//-------------------------------------------------------------------------
+	// don't use this in new code!
+
+	QUuid next_uuid( void ) // soon... Q_DECL_DEPRECATED
 	{
 		Q_ASSERT( mPidIdx < PID_UUID.size() );
 
 		return( PID_UUID[ mPidIdx++ ] );
 	}
 
-	virtual QStringList availableInputPins( void ) const
-	{
-		return( QStringList() );
-	}
-
-	virtual QList<AvailablePinEntry> availableOutputPins( void ) const
-	{
-		return( QList<NodeControlInterface::AvailablePinEntry>() );
-	}
-
-	virtual QString helpUrl( void ) const
-	{
-		return( QString() );
-	}
-
-	virtual QList<QUuid> pinAddTypesInput( void ) const
-	{
-		return( QList<QUuid>() );
-	}
-
-	virtual QList<QUuid> pinAddTypesOutput( void ) const
-	{
-		return( QList<QUuid>() );
-	}
-
-	virtual bool canAcceptPin( fugio::PinInterface *pPin ) const
-	{
-		Q_UNUSED( pPin )
-
-		return( false );
-	}
-
-	virtual bool mustChooseNamedInputPin( void ) const
-	{
-		return( false );
-	}
-
-	virtual bool mustChooseNamedOutputPin( void ) const
-	{
-		return( false );
-	}
-
 protected:
 	QSharedPointer<fugio::NodeInterface>	 mNode;
+
+	// don't use this in new code
+
 	int										 mPidIdx;
 	static QList<QUuid>						 PID_UUID;
 
