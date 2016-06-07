@@ -101,6 +101,7 @@ HEADERS += \
     ../../include/fugio/core/variant_interface.h \
     ../../include/fugio/core/array_interface.h \
     ../../include/fugio/core/list_interface.h \
+    ../../include/fugio/core/struct_entry_interface.h \
     choicepin.h \
     splitpointnode.h \
     variantpin.h \
