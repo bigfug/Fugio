@@ -17,6 +17,9 @@ class NodeSignals : public QObject
 	Q_OBJECT
 
 signals:
+	void pinAdded( QSharedPointer<fugio::PinInterface> pPin );
+	void pinRemoved( QSharedPointer<fugio::PinInterface> pPin );
+
 	void pinAdded( QSharedPointer<fugio::NodeInterface> pNode, QSharedPointer<fugio::PinInterface> pPin );
 	void pinRemoved( QSharedPointer<fugio::NodeInterface> pNode, QSharedPointer<fugio::PinInterface> pPin );
 	void controlChanged( QSharedPointer<fugio::NodeInterface> pNode );

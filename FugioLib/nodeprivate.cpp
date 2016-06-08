@@ -124,6 +124,8 @@ void NodePrivate::addPin( QSharedPointer<fugio::PinInterface> pPin )
 
 	connect( pPin->qobject(), &fugio::PinSignals::renamed, this, &NodePrivate::pinRenamed );
 
+	emit pinAdded( pPin );
+
 	emit pinAdded( mContext->findNode( mUUID ), pPin );
 }
 
@@ -141,6 +143,8 @@ void NodePrivate::removePin(QSharedPointer<fugio::PinInterface> pPin)
 	{
 		mPinOutputs.removeAll( pPin );
 	}
+
+	emit pinRemoved( pPin );
 
 	emit pinRemoved( mContext->findNode( mUUID ), pPin );
 }
