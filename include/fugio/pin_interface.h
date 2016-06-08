@@ -114,7 +114,7 @@ public:
 	virtual QString description( void ) const = 0;
 
 	//-------------------------------------------------------------------------
-	// Paired pins
+	// Paired pins - id's are PinInterface::localId()
 
 	virtual QUuid pairedUuid( void ) const = 0;
 };

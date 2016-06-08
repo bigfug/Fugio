@@ -10,6 +10,7 @@
 #include <fugio/node_control_interface.h>
 #include <fugio/node_interface.h>
 #include <fugio/pin_interface.h>
+#include <fugio/paired_pins_helper_interface.h>
 
 #include <fugio/fugio.h>
 #include <fugio/core/variant_interface.h>
@@ -27,6 +28,8 @@ public:
 	explicit NodeControlBase( QSharedPointer<fugio::NodeInterface> pNode )
 		: mNode( pNode ), mPidIdx( 0 )
 	{
+		// this will be going soon
+
 		if( PID_UUID.isEmpty() )
 		{
 			PID_UUID.append( QUuid( "{9e154e12-bcd8-4ead-95b1-5a59833bcf4e}" ) );
@@ -281,6 +284,78 @@ public:
 		return( IntLst );
 	}
 
+	template <class T> QList<T> enumOutputs( void ) const
+	{
+		QList<T>		IntLst;
+
+		for( QSharedPointer<fugio::PinInterface> P : mNode->enumOutputPins() )
+		{
+			T	PinInt = qobject_cast<T>( P->hasControl() ? P->control()->qobject() : nullptr );
+
+			if( PinInt )
+			{
+				IntLst << PinInt;
+			}
+		}
+
+		return( IntLst );
+	}
+
+	//-------------------------------------------------------------------------
+	// Helper methods for working with pin pairs
+
+protected slots:
+	void pairedPinAddedHelper( QSharedPointer<fugio::PinInterface> pPin )
+	{
+		if( pPin->direction() == PIN_INPUT )
+		{
+			fugio::PairedPinsHelperInterface		*PPHI = qobject_cast<fugio::PairedPinsHelperInterface *>( this );
+
+			if( !PPHI )
+			{
+				qWarning() << "Paired pin helper doesn't have fugio::PairedPinsHelperInterface as interface";
+
+				return;
+			}
+
+			QSharedPointer<fugio::PinInterface> DstPin;
+
+			if( !pPin->pairedUuid().isNull() )
+			{
+				DstPin = mNode->findPinByLocalId( pPin->pairedUuid() );
+
+				if( DstPin )
+				{
+					return;
+				}
+			}
+
+			if( !DstPin )
+			{
+				pinOutput<fugio::VariantInterface *>( pPin->name(), DstPin, PPHI->pairedPinControlUuid( pPin ), QUuid::createUuid() );
+
+				if( DstPin )
+				{
+					mNode->pairPins( pPin, DstPin );
+				}
+			}
+		}
+	}
+
+	void pairedPinRemovedHelper( QSharedPointer<fugio::PinInterface> pPin )
+	{
+		if( !pPin->pairedUuid().isNull() )
+		{
+			QSharedPointer<fugio::PinInterface>		PP = mNode->findPinByLocalId( pPin->pairedUuid() );
+
+			if( PP )
+			{
+				mNode->removePin( PP );
+			}
+		}
+	}
+
+protected:
 	//-------------------------------------------------------------------------
 	// don't use this in new code!
 

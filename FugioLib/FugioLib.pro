@@ -57,7 +57,8 @@ HEADERS += fugio.h\
     ../include/fugio/context_interface.h \
     ../include/fugio/global_signals.h \
     ../include/fugio/utils.h \
-    ../include/fugio/context_signals.h
+    ../include/fugio/context_signals.h \
+    ../include/fugio/paired_pins_helper_interface.h
 
 TRANSLATIONS = fugio_fr.ts
 
