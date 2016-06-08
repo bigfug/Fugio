@@ -6,6 +6,11 @@ ChoicePin::ChoicePin( QSharedPointer<fugio::PinInterface> pPin )
 
 }
 
+QString ChoicePin::toString() const
+{
+	return( mPin->value().toString() );
+}
+
 QStringList ChoicePin::choices() const
 {
 	return( mChoices );
