@@ -10,6 +10,8 @@
 
 #include <QFile>
 
+//#define WRITE_SIGNAL_FILENAME	"/Users/bigfug/Desktop/TEST_FILE.raw"
+
 QMap<QString,SignalNode::SignalType>		 SignalNode::mSignalTypes;
 
 SignalNode::SignalNode( QSharedPointer<fugio::NodeInterface> pNode )
@@ -43,19 +45,19 @@ SignalNode::SignalNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputVolume = pinInput( tr( "Volume" ) );
 
-	mPinInputVolume->setValue( 1.0 );
+	mPinInputVolume->setValue( mVolume );
 
 	mPinInputPhaseCenter = pinInput( tr( "Phase Center" ), PID_PHASE_CENTER );
 
-	mPinInputPhaseCenter->setValue( 0.5 );
+	mPinInputPhaseCenter->setValue( mPhaseCenter );
 
 	mPinInputPhaseOffset = pinInput( tr( "Phase Offset" ), PID_PHASE_OFFSET );
 
-	mPinInputPhaseOffset->setValue( 0.0 );
+	mPinInputPhaseOffset->setValue( mPhaseOffset );
 
 	mPinInputBias = pinInput( tr( "Bias" ), PID_BIAS );
 
-	mPinInputBias->setValue( 0.0 );
+	mPinInputBias->setValue( mBias );
 
 	mValOutput = pinOutput<fugio::AudioProducerInterface *>( "Audio", mPinOutput, PID_AUDIO );
 
@@ -67,15 +69,12 @@ SignalNode::SignalNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinOutput->setDescription( tr( "The generated frequency as an audio output" ) );
 
-#if 0
+#if defined( WRITE_SIGNAL_FILENAME )
 	if( true )
 	{
-		QFile		TEST_FILE( "E:/TEST_FILE.raw" );
+		QFile		TEST_FILE( WRITE_SIGNAL_FILENAME );
 
-		if( TEST_FILE.open( QIODevice::WriteOnly ) )
-		{
-			TEST_FILE.close();
-		}
+		TEST_FILE.remove();
 	}
 #endif
 }
@@ -112,10 +111,8 @@ void SignalNode::generateSignal( qint64 pSamplePosition, qint64 pSampleCount, co
 		case SINE:
 			for( int i = 0 ; i < pSampleCount ; i++ )
 			{
-				//AID.phase_index += AID.phase_delta;
-
 				const float		SmpPhs = fmodf( ( SmpPos + float( i ) ) / pWaveLength, 1.0f );
-				const float		SmpOff = SmpPhs > mPhaseCenter ? 0.5f + ( ( SmpPhs - mPhaseCenter ) / ( 1.0f - mPhaseCenter ) ) : ( mPhaseCenter - SmpPhs ) / mPhaseCenter;
+				const float		SmpOff = offset( SmpPhs );
 				const float		SmpVal = qSin( SmpOff * 2.0 * M_PI );
 
 				*DstPtr++ = mBias + ( SmpVal * pVolume );
@@ -136,7 +133,7 @@ void SignalNode::generateSignal( qint64 pSamplePosition, qint64 pSampleCount, co
 			for( int i = 0 ; i < pSampleCount ; i++ )
 			{
 				const float		SmpPhs = fmodf( ( SmpPos + float( i ) ) / pWaveLength, 1.0f );
-				const float		SmpOff = SmpPhs > mPhaseCenter ? 0.5f + ( ( SmpPhs - mPhaseCenter ) / ( 1.0f - mPhaseCenter ) ) : ( mPhaseCenter - SmpPhs ) / mPhaseCenter;
+				const float		SmpOff = offset( SmpPhs );
 				const float		SmpVal = 2.0f * ( SmpOff - qFloor( SmpOff + 0.5f ) );
 
 				*DstPtr++ = mBias + ( SmpVal * pVolume );
@@ -147,7 +144,7 @@ void SignalNode::generateSignal( qint64 pSamplePosition, qint64 pSampleCount, co
 			for( int i = 0 ; i < pSampleCount ; i++ )
 			{
 				const float		SmpPhs = fmodf( ( SmpPos + float( i ) ) / pWaveLength, 1.0f );
-				const float		SmpOff = SmpPhs > mPhaseCenter ? 0.5f + ( ( SmpPhs - mPhaseCenter ) / ( 1.0f - mPhaseCenter ) ) : ( mPhaseCenter - SmpPhs ) / mPhaseCenter;
+				const float		SmpOff = offset( SmpPhs );
 				const float		SmpVal = 1.0f - qAbs( SmpOff - 0.5f ) * 4.0f;
 
 				*DstPtr++ = mBias + ( SmpVal * pVolume );
@@ -225,7 +222,7 @@ void SignalNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChanne
 		return;
 	}
 
-	const double		 SamplesPerPhase = ( InsDat->mSampleRate / mFrequency ) * 2.0;
+	const double		 SamplesPerPhase = ( InsDat->mSampleRate / mFrequency );
 
 	if( InsDat->mSamplePosition <= 0 )
 	{
@@ -237,10 +234,10 @@ void SignalNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChanne
 
 	generateSignal( InsDat->mPhase * SamplesPerPhase, pSampleCount, SamplesPerPhase, InsDat->mSmpBuf.data(), mVolume, *InsDat );
 
-#if 0
+#if defined( WRITE_SIGNAL_FILENAME )
 	if( true )
 	{
-		QFile		TEST_FILE( "E:/TEST_FILE.raw" );
+		QFile		TEST_FILE( WRITE_SIGNAL_FILENAME );
 
 		if( TEST_FILE.open( QIODevice::Append ) || TEST_FILE.open( QIODevice::WriteOnly ) )
 		{

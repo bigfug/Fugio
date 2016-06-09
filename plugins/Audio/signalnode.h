@@ -165,6 +165,11 @@ protected:
 		return( qSin( pPhase * 2.0 * M_PI ) );
 	}
 
+	inline float offset( const float pPhase ) const
+	{
+		return( pPhase > mPhaseCenter ? 0.5f + ( 0.5f * ( ( pPhase - mPhaseCenter ) / ( 1.0f - mPhaseCenter ) ) ) : 0.5f * ( pPhase / mPhaseCenter ) );
+	}
+
 protected:
 	typedef enum SignalType
 	{
