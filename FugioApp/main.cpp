@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 	qInstallMessageHandler( logger_static );
 
 	QApplication::setApplicationName( "Fugio" );
-	QApplication::setApplicationVersion( QString( "1.1.1" ) );
+	QApplication::setApplicationVersion( QString( “1.1.2” ) );
 	QApplication::setOrganizationDomain( "Fugio" );
 
 	const QString	CfgDir = QStandardPaths::writableLocation( QStandardPaths::DataLocation );
