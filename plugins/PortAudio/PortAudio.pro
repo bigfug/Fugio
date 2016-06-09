@@ -67,7 +67,9 @@ macx {
         QMAKE_POST_LINK += $$qtLibChange( QtGui )
         QMAKE_POST_LINK += $$qtLibChange( QtCore )
 
-        QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR
+        QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
+
+        QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite
 
         QMAKE_POST_LINK += $$libChange( libportaudio.2.dylib )
 
