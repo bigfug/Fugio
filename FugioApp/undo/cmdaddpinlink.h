@@ -6,6 +6,8 @@
 #include <fugio/global_interface.h>
 #include <fugio/global.h>
 
+#include <fugio/node_control_interface.h>
+
 #include "app.h"
 
 class CmdAddPinLink : public QUndoCommand
@@ -33,7 +35,19 @@ public:
 	{
 		if( !mDstPin )
 		{
-			mDstPin = mNode->createPin( mSrcPin->name(), mSrcPin->direction() == PIN_INPUT ? PIN_OUTPUT : PIN_INPUT, QUuid::createUuid() );
+			QUuid		PinControlUuid;
+
+			if( mNode->hasControl() )
+			{
+				PinControlUuid = mNode->control()->pinAddControlUuid( mSrcPin.data() );
+			}
+
+			mNode->createPin( mSrcPin->name(), mSrcPin->direction() == PIN_INPUT ? PIN_OUTPUT : PIN_INPUT, QUuid::createUuid(), mDstPin, PinControlUuid );
+
+			if( !mDstPin )
+			{
+				return;
+			}
 
 			mDstPin->setRemovable( true );
 		}

@@ -139,6 +139,13 @@ public:
 		return( false );
 	}
 
+	virtual QUuid pinAddControlUuid( fugio::PinInterface *pPin ) const Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pPin );
+
+		return( QUuid() );
+	}
+
 	//-------------------------------------------------------------------------
 
 	void pinUpdated( QSharedPointer<fugio::PinInterface> &pPin )
@@ -168,7 +175,7 @@ public:
 		return( qobject_cast<T>( mNode->createPin( pName, PIN_INPUT, next_uuid(), mPinInterface, pControlUUID ) ) );
 	}
 
-	template <class T> T pinInput( const QString &pName, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID, const QUuid &pUuid )
+	template <class T = fugio::PinInterface *> T pinInput( const QString &pName, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID, const QUuid &pUuid )
 	{
 		Q_ASSERT( mPinInterface.isNull() );
 
