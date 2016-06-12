@@ -25,6 +25,9 @@ signals:
 	void frameProcess( void );
 	void frameProcess( qint64 pTimeStamp );
 
+	void frameFinalise( void );
+	void frameFinalise( qint64 pTimeStamp );
+
 	void frameEnd( void );
 	void frameEnd( qint64 pTimeStamp );
 

@@ -1811,6 +1811,8 @@ void ContextPrivate::doFrameProcess( qint64 pTimeStamp )
 	emit frameProcess();
 	emit frameProcess( pTimeStamp );
 
+	bool	DoneFinalise = false;
+
 	while( !mUpdatedNodeList.empty() )
 	{
 		processUpdatedNodes( pTimeStamp );
@@ -1820,6 +1822,14 @@ void ContextPrivate::doFrameProcess( qint64 pTimeStamp )
 		if( mUpdatedNodeList.isEmpty() )
 		{
 			mFutureSync.waitForFinished();
+
+			if( mUpdatedNodeList.isEmpty() && !DoneFinalise )
+			{
+				emit frameFinalise();
+				emit frameFinalise( pTimeStamp );
+
+				DoneFinalise = true;
+			}
 		}
 	}
 }
