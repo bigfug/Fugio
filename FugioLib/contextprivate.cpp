@@ -1484,6 +1484,7 @@ void ContextPrivate::performance( QSharedPointer<fugio::NodeInterface> pNode, co
 {
 	PerfEntry		PE;
 
+	PE.mUuid      = pNode ? pNode->uuid() : QUuid();
 	PE.mNode      = pNode ? pNode->name() : QString();
 	PE.mName      = pName;
 	PE.mTimeStart = pTimeStart;
@@ -1494,13 +1495,11 @@ void ContextPrivate::performance( QSharedPointer<fugio::NodeInterface> pNode, co
 
 QList<fugio::PerfData> ContextPrivate::perfdata()
 {
-	QMap<QString,fugio::PerfData>		PDL;
+	QMap<QUuid,fugio::PerfData>		PDL;
 
 	for( const PerfEntry &PE : mPerfList )
 	{
-		QString		S = QString( "%1/%2" ).arg( PE.mNode ).arg( PE.mName );
-
-		if( !PDL.contains( S ) )
+		if( !PDL.contains( PE.mUuid ) )
 		{
 			fugio::PerfData	PD;
 
@@ -1510,10 +1509,10 @@ QList<fugio::PerfData> ContextPrivate::perfdata()
 			PD.mCount = 0;
 			PD.mTime  = 0;
 
-			PDL.insert( S, PD );
+			PDL.insert( PE.mUuid, PD );
 		}
 
-		fugio::PerfData	&PD = PDL[ S ];
+		fugio::PerfData	&PD = PDL[ PE.mUuid ];
 
 		PD.mTime  += PE.mTimeEnd - PE.mTimeStart;
 		PD.mCount += 1;
