@@ -679,6 +679,8 @@ void ContextPrivate::clear( void )
 
 	emit clearContext();
 
+	QMutexLocker	MutLck( &mUpdatePinMapMutex );
+
 	mUpdatedNodeList.clear();
 	mFinishedNodeList.clear();
 	mInitDeferNodeList.clear();
@@ -1466,6 +1468,8 @@ void ContextPrivate::pinUpdated( QSharedPointer<fugio::PinInterface> pPin, bool 
 //		return;
 //	}
 
+	QMutexLocker	MutLck( &mUpdatePinMapMutex );
+
 	UpdatePinMap::iterator		it = mUpdatePinMap.find( pPin );
 
 	if( it != mUpdatePinMap.end() && ( it.value() || !pUpdatedConnectedNode ) )
@@ -1722,9 +1726,13 @@ void ContextPrivate::processUpdatedNodes( qint64 pTimeStamp )
 
 void ContextPrivate::processUpdatedPins( qint64 pTimeStamp )
 {
+	mUpdatePinMapMutex.lock();
+
 	UpdatePinMap		PinMap = mUpdatePinMap;
 
 	mUpdatePinMap.clear();
+
+	mUpdatePinMapMutex.unlock();
 
 	for( UpdatePinMap::iterator it = PinMap.begin() ; it != PinMap.end() ; it++ )
 	{
