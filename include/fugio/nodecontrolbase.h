@@ -249,7 +249,7 @@ public:
 	{
 		if( !pPin->isConnected() || !pPin->connectedPin()->hasControl() )
 		{
-			return( 0 );
+			return( pPin->value() );
 		}
 
 		VariantInterface	*V = qobject_cast<VariantInterface *>( pPin->connectedPin()->control()->qobject() );
