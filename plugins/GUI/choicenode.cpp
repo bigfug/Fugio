@@ -106,7 +106,7 @@ void ChoiceNode::pinLinked( QSharedPointer<fugio::PinInterface> P )
 		QStringList		Choices = CI->choices();
 		QString			Choice  = mValChoice->variant().toString().isEmpty() ? P->value().toString() : mValChoice->variant().toString();
 
-		if( Choice.isEmpty() || !Choices.contains( Choice ) )
+		if( !Choices.isEmpty() && ( Choice.isEmpty() || !Choices.contains( Choice ) ) )
 		{
 			Choice = Choices.first();
 		}
@@ -174,7 +174,7 @@ void ChoiceNode::clicked()
 		QStringList		Choices = CI->choices();
 		QString			Choice  = mValChoice->variant().toString().isEmpty() ? P->value().toString() : mValChoice->variant().toString();
 
-		if( Choice.isEmpty() || !Choices.contains( Choice ) )
+		if( !Choices.isEmpty() && ( Choice.isEmpty() || !Choices.contains( Choice ) ) )
 		{
 			Choice = Choices.first();
 		}
