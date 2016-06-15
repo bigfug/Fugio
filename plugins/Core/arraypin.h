@@ -59,10 +59,7 @@ public:
 		setVariant( pValue );
 	}
 
-	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE
-	{
-		return( variant() );
-	}
+	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// InterfaceArray

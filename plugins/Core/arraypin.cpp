@@ -23,6 +23,34 @@ void ArrayPin::saveSettings( QSettings &pSettings ) const
 	pSettings.setValue( "array", mArray );
 }
 
+QVariant ArrayPin::baseVariant() const
+{
+	QVariantList		VarLst;
+
+	const void		*A = ( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
+
+	if( A )
+	{
+		switch( mType )
+		{
+			case QMetaType::Float:
+				{
+					const float	*V = static_cast<const float *>( A );
+
+					for( int i = 0 ; i < mCount ; i++ )
+					{
+						VarLst << QVariant( V[ i ] );
+					}
+				}
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	return( VarLst );
+}
 
 int ArrayPin::listSize() const
 {
