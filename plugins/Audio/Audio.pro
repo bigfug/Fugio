@@ -38,14 +38,16 @@ HEADERS += audioplugin.h\
     ../../include/fugio/pincontrolbase.h \
     fftpin.h \
         ../../include/fugio/audio/audio_producer_interface.h \
-    signalnode.h \
+		../../include/fugio/audio/audio_generator_interface.h \
+	signalnode.h \
     centroidnode.h \
         ../../include/fugio/audio/fft_interface.h \
     magnitudenode.h \
     frequencybandsnode.h \
     audiofilternode.h \
     audiofilterdisplay.h \
-    vcfnode.h
+    vcfnode.h \
+    ../../include/fugio/audio/audio_sample_format.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

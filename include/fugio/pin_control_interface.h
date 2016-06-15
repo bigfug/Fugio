@@ -15,7 +15,10 @@ FUGIO_NAMESPACE_BEGIN
 class PinControlInterface
 {
 public:
-	virtual ~PinControlInterface( void ) { qDebug() << "~fugio::PinControlInterface"; }
+	virtual ~PinControlInterface( void )
+	{
+		//qDebug() << "~fugio::PinControlInterface";
+	}
 
 	virtual QObject *qobject( void ) = 0;
 

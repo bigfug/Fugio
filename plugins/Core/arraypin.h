@@ -11,15 +11,16 @@
 
 #include <fugio/core/variant_interface.h>
 #include <fugio/core/array_interface.h>
+#include <fugio/core/list_interface.h>
 
 #include <fugio/pincontrolbase.h>
 
 #include <fugio/serialise_interface.h>
 
-class ArrayPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::ArrayInterface, public fugio::SerialiseInterface
+class ArrayPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::ArrayInterface, public fugio::SerialiseInterface, public fugio::ListInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::VariantInterface fugio::ArrayInterface fugio::SerialiseInterface )
+	Q_INTERFACES( fugio::VariantInterface fugio::ArrayInterface fugio::SerialiseInterface fugio::ListInterface )
 
 public:
 	Q_INVOKABLE explicit ArrayPin( QSharedPointer<fugio::PinInterface> pPin );
@@ -163,6 +164,13 @@ public:
 
 		pDataStream.readRawData( mArray.data(), mSize );
 	}
+
+	//-------------------------------------------------------------------------
+	// ListInterface interface
+
+	virtual int listSize() const Q_DECL_OVERRIDE;
+	virtual QUuid listPinControl() const Q_DECL_OVERRIDE;
+	virtual QVariant listIndex(int pIndex) const Q_DECL_OVERRIDE;
 
 private:
 	void				*mData;
