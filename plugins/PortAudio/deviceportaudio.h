@@ -122,6 +122,8 @@ public:
 
 	virtual void setTimeOffset( qreal pTimeOffset );
 
+	void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers ) const;
+
 	//-------------------------------------------------------------------------
 
 private:
@@ -141,12 +143,22 @@ private:
 						unsigned long frameCount,
 						const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags );
 #endif
-signals:
-	void audio( const float **pData, quint64 pSampleCount, int pChannelCount, qint64 pSamplePosition );
+
+	typedef struct
+	{
+		float		**mData;
+		quint64		  mSamples;
+		int			  mChannels;
+		qint64		  mPosition;
+	} AudioBuffer;
+
+	void audioInput( AudioBuffer &AB, const float **pData, quint64 pSampleCount, int pChannelCount, qint64 pSamplePosition );
 
 public slots:
 
 private:
+	QList<AudioBuffer>						 mAudioBuffers;
+
 	static QList<QWeakPointer<DevicePortAudio>>			 mDeviceList;
 
 	typedef struct AudioInstanceData

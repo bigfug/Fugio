@@ -63,21 +63,9 @@ signals:
 protected slots:
 	void audioDeviceSelected( const QString &pDeviceName );
 
-	void audioInput( const float **pData, quint64 pFrames, int pChannelCount, qint64 pTimeStamp );
-
 	void clicked( void );
 
 protected:
-	typedef struct
-	{
-		float		**mData;
-		quint64		  mSamples;
-		int			  mChannels;
-		qint64		  mPosition;
-	} AudioBuffer;
-
-	void audioInput( AudioBuffer &AB, const float **pData, quint64 pSampleCount, int pChannelCount, qint64 pTimeStamp );
-
 	typedef struct
 	{
 		qreal						mSampleRate;
@@ -90,8 +78,6 @@ private:
 	fugio::AudioProducerInterface			*mValAudio;
 
 	QSharedPointer<DevicePortAudio>			 mPortAudio;
-
-	QList<AudioBuffer>						 mAudioBuffers;
 
 	QString									 mDeviceName;
 };
