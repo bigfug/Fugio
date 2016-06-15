@@ -37,6 +37,12 @@ public:
 
 	static PaDeviceIndex deviceOutputNameIndex( const QString &pDeviceName );
 
+	static QStringList deviceInputNameList( void );
+
+	static QString deviceInputDefaultName( void );
+
+	static PaDeviceIndex deviceInputNameIndex( const QString &pDeviceName );
+
 	///static void delDevice( DevicePortAudio *pDelDev );
 
 //	static QList<DevicePortAudio *> devices( void )
@@ -59,7 +65,7 @@ protected:
 public:
 	virtual ~DevicePortAudio( void );
 
-	qreal sampleRate( void ) const;
+	qreal outputSampleRate( void ) const;
 
 	inline int inputChannelCount( void ) const
 	{
@@ -69,6 +75,16 @@ public:
 	inline int outputChannelCount( void ) const
 	{
 		return( mOutputChannelCount );
+	}
+
+	inline qreal inputSampleRate( void ) const
+	{
+		return( mInputSampleRate );
+	}
+
+	inline fugio::AudioSampleFormat inputSampleFormat( void ) const
+	{
+		return( mInputSampleFormat );
 	}
 
 //	inline qreal timeoffset( void ) const
@@ -157,9 +173,11 @@ private:
 	PaTime									 mInputAudioOffset;
 #endif
 
-	qreal									 mSampleRate;
+	qreal									 mOutputSampleRate;
 	int										 mOutputChannelCount;
 	int										 mInputChannelCount;
+	qreal									 mInputSampleRate;
+	fugio::AudioSampleFormat				 mInputSampleFormat;
 };
 
 #endif // DEVICEPORTAUDIO_H
