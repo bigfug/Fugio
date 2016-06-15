@@ -61,7 +61,8 @@ SOURCES += \
     listindexnode.cpp \
     framedelaynode.cpp \
     typesizenode.cpp \
-    bytearraylistpin.cpp
+    bytearraylistpin.cpp \
+    switchnode.cpp
 
 HEADERS += \
     stringpin.h \
@@ -113,7 +114,8 @@ HEADERS += \
     listindexnode.h \
     framedelaynode.h \
     typesizenode.h \
-    bytearraylistpin.h
+    bytearraylistpin.h \
+    switchnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
