@@ -98,3 +98,62 @@ QVariant ArrayPin::listIndex( int pIndex ) const
 
 	return( V );
 }
+
+void ArrayPin::listSetIndex( int pIndex, const QVariant &pValue )
+{
+	void		*A = ( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
+
+	if( !A )
+	{
+		return;
+	}
+
+	if( pIndex < 0 || pIndex >= mCount )
+	{
+		return;
+	}
+
+	switch( mType )
+	{
+		case QMetaType::Float:
+			{
+				static_cast<float *>( A )[ pIndex ] = pValue.toFloat();
+			}
+			break;
+
+		default:
+			break;
+	}
+}
+
+void ArrayPin::listSetSize( int pSize )
+{
+	if( mData )
+	{
+		return;
+	}
+
+	if( pSize == mCount )
+	{
+		return;
+	}
+
+	int		NewSze = mArray.size();
+
+	switch( mType )
+	{
+		case QMetaType::Float:
+			{
+				NewSze = pSize * mStride;
+			}
+			break;
+
+		default:
+			break;
+	}
+
+	if( mArray.size() != NewSze )
+	{
+		mArray.resize( NewSze );
+	}
+}

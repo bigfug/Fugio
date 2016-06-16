@@ -168,6 +168,8 @@ public:
 	virtual int listSize() const Q_DECL_OVERRIDE;
 	virtual QUuid listPinControl() const Q_DECL_OVERRIDE;
 	virtual QVariant listIndex(int pIndex) const Q_DECL_OVERRIDE;
+	virtual void listSetIndex( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE;
+	virtual void listSetSize( int pSize ) Q_DECL_OVERRIDE;
 
 private:
 	void				*mData;
