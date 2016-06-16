@@ -334,8 +334,6 @@ bool GlobalPrivate::registerNodeClass( const fugio::ClassEntry &E )
 			}
 		}
 
-		Q_ASSERT( !mNodeMap.contains( E.mUuid ) );
-
 		return( false );
 	}
 
@@ -356,7 +354,12 @@ void GlobalPrivate::unregisterNodeClass( const QUuid &pUUID )
 
 bool GlobalPrivate::registerPinClass( const QString &pName, const QUuid &pUUID, const QMetaObject *pMetaObject )
 {
-	Q_ASSERT( !mPinClassMap.contains( pUUID ) );
+	if( mPinClassMap.contains( pUUID ) )
+	{
+		qWarning() << "Pin Class" << pName << pUUID << pMetaObject->className() << "is already registered";
+
+		return( false );
+	}
 
 	mPinClassMap.insert( pUUID, pMetaObject );
 	mPinNameMap.insert( pUUID, pName );
