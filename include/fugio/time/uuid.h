@@ -10,5 +10,6 @@
 #define NID_INERTIA				(QUuid("{36bd9275-8d2c-410d-b44c-0c704c522b3a}"))
 #define NID_PLAYHEAD			(QUuid("{55af1458-7ff0-48a7-9c74-0a7f9f18ddf8}"))
 #define NID_TIME_DELAY			(QUuid("{3ab6a5d3-99f1-403c-a938-2b3acd569404}"))
+#define NID_PLAYHEAD_CONTROL	(QUuid("{91a0a99f-7110-4b87-bcec-834df16617da}"))
 
 #endif // FUGIO_TIME_H
