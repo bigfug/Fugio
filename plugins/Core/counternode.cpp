@@ -7,8 +7,8 @@
 CounterNode::CounterNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
-	static const QUuid		ID_RESET = QUuid( "{7AC449C1-0CC8-4DEA-A404-BB439BDD976E}" );
-	static const QUuid		ID_COUNT = QUuid( "{7A49997F-F720-4EBA-81D3-347F00C55CB9}" );
+	FUGID( ID_RESET,	"7AC449C1-0CC8-4DEA-A404-BB439BDD976E" );
+	FUGID( ID_COUNT,	"7A49997F-F720-4EBA-81D3-347F00C55CB9" );
 
 	mPinInputTrigger = pinInput( "Trigger", PID_FUGIO_NODE_TRIGGER );
 
