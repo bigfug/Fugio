@@ -19,6 +19,8 @@ FadeNode::FadeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mValOutput = pinOutput<fugio::VariantInterface *>( "Number", mPinOutput, PID_FLOAT );
 
+	mPinOutput->setAutoRename( true );
+
 	mNode->pairPins( mPinInput, mPinOutput );
 
 	mPinInput->setDescription( tr( "The input Number that we will aim towards" ) );
@@ -39,9 +41,20 @@ bool FadeNode::initialise()
 
 	connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(onContextFrame(qint64)) );
 
-	connect( mNode->qobject(), SIGNAL(pinAdded(QSharedPointer<fugio::NodeInterface>,QSharedPointer<fugio::PinInterface>)), this, SLOT(pinAdded(QSharedPointer<fugio::NodeInterface>,QSharedPointer<fugio::PinInterface>)) );
+	connect( mNode->qobject(), SIGNAL(pinAdded(QSharedPointer<fugio::PinInterface>)), this, SLOT(pairedPinAddedHelper(QSharedPointer<fugio::PinInterface>)) );
+	connect( mNode->qobject(), SIGNAL(pinRemoved(QSharedPointer<fugio::PinInterface>)), this, SLOT(pairedPinRemovedHelper(QSharedPointer<fugio::PinInterface>)) );
 
 	return( true );
+}
+
+bool FadeNode::deinitialise()
+{
+	disconnect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(onContextFrame(qint64)) );
+
+	disconnect( mNode->qobject(), SIGNAL(pinAdded(QSharedPointer<fugio::PinInterface>)), this, SLOT(pairedPinAddedHelper(QSharedPointer<fugio::PinInterface>)) );
+	disconnect( mNode->qobject(), SIGNAL(pinRemoved(QSharedPointer<fugio::PinInterface>)), this, SLOT(pairedPinRemovedHelper(QSharedPointer<fugio::PinInterface>)) );
+
+	return( NodeControlBase::deinitialise() );
 }
 
 void FadeNode::inputsUpdated( qint64 pTimeStamp )
@@ -118,46 +131,31 @@ void FadeNode::onContextFrame( qint64 pTimeStamp )
 	mLastTime = pTimeStamp;
 }
 
-void FadeNode::pinAdded( QSharedPointer<fugio::NodeInterface> pNode, QSharedPointer<fugio::PinInterface> pPin )
-{
-	Q_UNUSED( pNode )
-
-	if( pPin->direction() == PIN_INPUT )
-	{
-		QSharedPointer<fugio::PinInterface> DstPin;
-
-		if( !pPin->pairedUuid().isNull() )
-		{
-			DstPin = mNode->findPinByLocalId( pPin->pairedUuid() );
-
-			if( DstPin )
-			{
-				return;
-			}
-		}
-
-		if( !DstPin )
-		{
-			pinOutput<fugio::VariantInterface *>( pPin->name(), DstPin, PID_FLOAT );
-
-			if( DstPin )
-			{
-				mNode->pairPins( pPin, DstPin );
-			}
-		}
-	}
-}
-
 QList<QUuid> FadeNode::pinAddTypesInput() const
 {
-	QList<QUuid>	TypeList;
+	static QList<QUuid>	PinLst =
+	{
+		PID_FLOAT
+	};
 
-	TypeList << PID_FLOAT;
-
-	return( TypeList );
+	return( PinLst );
 }
 
 bool FadeNode::canAcceptPin(fugio::PinInterface *pPin) const
 {
 	return( pPin->direction() == PIN_OUTPUT );
+}
+
+bool FadeNode::pinShouldAutoRename( fugio::PinInterface *pPin ) const
+{
+	Q_UNUSED( pPin )
+
+	return( true );
+}
+
+QUuid FadeNode::pairedPinControlUuid( QSharedPointer<fugio::PinInterface> pPin ) const
+{
+	Q_UNUSED( pPin )
+
+	return( PID_FLOAT );
 }
