@@ -30,6 +30,16 @@ public:
 
 	virtual void undo( void )
 	{
+		if( !mLastName.isEmpty() )
+		{
+			mPinDst->setName( mLastName );
+
+			if( mPinPaired )
+			{
+				mPinPaired->setName( mLastName );
+			}
+		}
+
 		mContext->disconnectPins( mPinSrc->globalId(), mPinDst->globalId() );
 
 		if( mPinDst->updatable() )
@@ -44,12 +54,37 @@ public:
 
 		mContext->connectPins( mPinSrc->globalId(), mPinDst->globalId() );
 
+		if( mPinDst->autoRename() && mPinDst->name() != mPinSrc->name() )
+		{
+			mLastName = mPinDst->name();
+
+			mPinDst->setName( mPinSrc->name() );
+
+			QSharedPointer<fugio::NodeInterface>	NI = mPinDst->node();
+
+			if( NI )
+			{
+				for( fugio::NodeInterface::UuidPair UP : NI->pairedPins() )
+				{
+					if( mPinDst->localId() == UP.first )
+					{
+						mPinPaired = NI->findPinByLocalId( UP.second );
+					}
+				}
+			}
+
+			if( mPinPaired )
+			{
+				mPinPaired->setName( mPinSrc->name() );
+			}
+		}
+
 		if( mPinDst->updatable() )
 		{
 			mContext->pinUpdated( mPinDst );
 		}
 
-		mContextWidget->saveRecovery();;
+		mContextWidget->saveRecovery();
 	}
 
 private:
@@ -57,6 +92,8 @@ private:
 	QSharedPointer<fugio::ContextInterface>	 mContext;
 	QSharedPointer<fugio::PinInterface>		 mPinSrc;
 	QSharedPointer<fugio::PinInterface>		 mPinDst;
+	QSharedPointer<fugio::PinInterface>		 mPinPaired;
+	QString									 mLastName;
 };
 
 #endif // CMDLINKADD_H

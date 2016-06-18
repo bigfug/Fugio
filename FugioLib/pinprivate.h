@@ -66,6 +66,10 @@ public:
 
 	virtual void setUpdatable( bool pUpdatable ) Q_DECL_OVERRIDE;
 
+	virtual bool autoRename( void ) const Q_DECL_OVERRIDE;
+
+	virtual void setAutoRename( bool pAutoRename ) Q_DECL_OVERRIDE;
+
 	virtual QSharedPointer<fugio::NodeInterface> node( void ) Q_DECL_OVERRIDE;
 
 	virtual qint64 updated( void ) const Q_DECL_OVERRIDE;
@@ -181,7 +185,8 @@ public:
 	enum Option {
 		Removable	= 1 << 0,
 		Hidden		= 1 << 1,
-		Updatable	= 1 << 2
+		Updatable	= 1 << 2,
+		AutoRename	= 1 << 3
 	};
 
 	Q_DECLARE_FLAGS( Options, Option )
