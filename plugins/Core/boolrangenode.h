@@ -21,19 +21,21 @@ public:
 
 	// NodeControlInterface interface
 
-	virtual bool initialise( void );
+	virtual bool initialise( void ) Q_DECL_OVERRIDE;
 
-	virtual void inputsUpdated( qint64 pTimeStamp );
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
-	virtual QList<QUuid> pinAddTypesOutput( void ) const;
+	virtual QList<QUuid> pinAddTypesOutput( void ) const Q_DECL_OVERRIDE;
 
-	virtual bool canAcceptPin( fugio::PinInterface *pPin ) const;
+	virtual bool canAcceptPin( fugio::PinInterface *pPin ) const Q_DECL_OVERRIDE;
+
+	virtual QUuid pinAddControlUuid(fugio::PinInterface *pPin) const Q_DECL_OVERRIDE;
 
 protected:
-	QSharedPointer<fugio::PinInterface>			 mPinInput;
-	QSharedPointer<fugio::PinInterface>			 mPinTrigger;
+	QSharedPointer<fugio::PinInterface>			 mPinInputIndex;
+	QSharedPointer<fugio::PinInterface>			 mPinInputTrigger;
 
-	int										 mSelectedBool;
+	int											 mSelectedBool;
 };
 
 #endif // BOOLRANGENODE_H

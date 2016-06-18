@@ -8,16 +8,22 @@
 BoolRangeNode::BoolRangeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mSelectedBool( -1 )
 {
-	mPinInput   = pinInput( "Number" );
-	mPinTrigger = pinInput( "Trigger" );
+	FUGID( PIN_INPUT_NUMBER,	"9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_INPUT_TRIGGER,	"1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+	FUGID( PIN_OUTPUT_BOOL,		"261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
+
+	mPinInputIndex   = pinInput( "Index", PIN_INPUT_NUMBER );
+	mPinInputTrigger = pinInput( "Trigger", PIN_INPUT_TRIGGER );
+
+	mPinInputIndex->registerPinInputType( PID_INTEGER );
 
 	QSharedPointer<fugio::PinInterface>			 PO;
 
-	pinOutput<fugio::PinControlInterface *>( "Bool 1", PO, PID_BOOL );
+	pinOutput<fugio::PinControlInterface *>( "Bool 0", PO, PID_BOOL, PIN_OUTPUT_BOOL );
 
-	mPinInput->setDescription( tr( "Sets the output pin that has the index == Number to true" ) );
+	mPinInputIndex->setDescription( tr( "Sets the output pin that has the index == Number to true" ) );
 
-	mPinTrigger->setDescription( tr( "Triggering this input moves the current index to the next output pin" ) );
+	mPinInputTrigger->setDescription( tr( "Triggering this input moves the current index to the next output pin" ) );
 
 	PO->setDescription( tr( "The first boolean pin, its index is 0" ) );
 }
@@ -36,8 +42,6 @@ bool BoolRangeNode::initialise()
 		if( V && V->variant().toBool() )
 		{
 			V->setVariant( false );
-
-			mNode->context()->pinUpdated( P );
 		}
 	}
 
@@ -48,9 +52,9 @@ void BoolRangeNode::inputsUpdated( qint64 pTimeStamp )
 {
 	fugio::VariantInterface	*VI = 0;
 
-	if( mPinInput->isConnectedToActiveNode() && mPinInput->isUpdated( pTimeStamp ) )
+	if( mPinInputIndex->isConnectedToActiveNode() && mPinInputIndex->isUpdated( pTimeStamp ) )
 	{
-		VI = input<fugio::VariantInterface *>( mPinInput );
+		VI = input<fugio::VariantInterface *>( mPinInputIndex );
 	}
 
 	QList< QSharedPointer<fugio::PinInterface> >	OutLst = mNode->enumOutputPins();
@@ -59,9 +63,25 @@ void BoolRangeNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( VI )
 	{
-		I = qBound( 0, int( VI->variant().toDouble() * double( OutLst.size() ) ), OutLst.size() );
+		if( QMetaType::Type( VI->variant().type() ) == QMetaType::Double || QMetaType::Type( VI->variant().type() )  == QMetaType::Float )
+		{
+			double		FltIdx = VI->variant().toDouble();
+
+			if( FltIdx < 1.0 )
+			{
+				I = qBound( 0, int( FltIdx * double( OutLst.size() ) ), OutLst.size() );
+			}
+			else
+			{
+				I = qBound( 0, VI->variant().toInt(), OutLst.size() );
+			}
+		}
+		else
+		{
+			I = qBound( 0, VI->variant().toInt(), OutLst.size() );
+		}
 	}
-	else if( mPinTrigger->isUpdated( pTimeStamp ) )
+	else if( mPinInputTrigger->isUpdated( pTimeStamp ) )
 	{
 		I = ( I + 1 ) % OutLst.size();
 	}
@@ -75,63 +95,56 @@ void BoolRangeNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	if( VI )
-	{
-		qDebug() << "Setting" << I << mSelectedBool;
-	}
-
 	if( mSelectedBool >= 0 && mSelectedBool < OutLst.size() )
 	{
-		fugio::VariantInterface	*VO = qobject_cast<fugio::VariantInterface *>( OutLst.at( mSelectedBool )->control()->qobject() );
+		QSharedPointer<fugio::PinInterface>		PinOut = OutLst[ mSelectedBool ];
+
+		fugio::VariantInterface	*VO = qobject_cast<fugio::VariantInterface *>( PinOut->control()->qobject() );
 
 		if( VO )
 		{
-			if( VI )
-			{
-				qDebug() << "Clearing" << mSelectedBool;
-			}
-
 			VO->setVariant( false );
 
-			mNode->context()->pinUpdated( OutLst.at( mSelectedBool ) );
+			pinUpdated( PinOut );
 		}
 	}
 
 	mSelectedBool = I;
 
-	fugio::VariantInterface	*VO = qobject_cast<fugio::VariantInterface *>( OutLst.at( mSelectedBool )->control()->qobject() );
-
-	if( VO )
+	if( mSelectedBool >= 0 && mSelectedBool < OutLst.size() )
 	{
-		VO->setVariant( true );
+		QSharedPointer<fugio::PinInterface>		PinOut = OutLst[ mSelectedBool ];
 
-		mNode->context()->pinUpdated( OutLst.at( mSelectedBool ) );
+		if( PinOut && PinOut->hasControl() )
+		{
+			fugio::VariantInterface	*VO = qobject_cast<fugio::VariantInterface *>( PinOut->control()->qobject() );
+
+			if( VO )
+			{
+				VO->setVariant( true );
+
+				pinUpdated( PinOut );
+			}
+		}
 	}
 }
 
 QList<QUuid> BoolRangeNode::pinAddTypesOutput( void ) const
 {
-	static QList<QUuid>		PinLst;
-
-	if( PinLst.isEmpty() )
+	static QList<QUuid>		PinLst =
 	{
-		PinLst << PID_BOOL;
-	}
+		PID_BOOL
+	};
 
 	return( PinLst );
 }
 
 bool BoolRangeNode::canAcceptPin( fugio::PinInterface *pPin ) const
 {
-	if( pPin->direction() == PIN_OUTPUT )
-	{
-		return( false );
-	}
+	return( pPin->direction() == PIN_INPUT );
+}
 
-	if( pPin->controlUuid() != PID_BOOL )
-	{
-		return( false );
-	}
-
-	return( true );
+QUuid BoolRangeNode::pinAddControlUuid( fugio::PinInterface *pPin ) const
+{
+	return( pPin->direction() == PIN_INPUT ? PID_BOOL : QUuid() );
 }
