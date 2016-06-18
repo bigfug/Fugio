@@ -52,12 +52,12 @@ void IntegerNode::valueChanged( int pValue )
 
 	mValue->setVariant( pValue );
 
-	mNode->context()->pinUpdated( mPinValue );
+	pinUpdated( mPinValue );
 
 	emit valueUpdated( pValue );
 }
 
-void IntegerNode::inputsUpdated(qint64 pTimeStamp)
+void IntegerNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 

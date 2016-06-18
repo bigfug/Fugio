@@ -15,6 +15,10 @@ FrameDelayNode::FrameDelayNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInput  = pinInput( "Input", PID_INPUT );
 
 	mPinOutput = mNode->createPin( "Output", PIN_OUTPUT, PID_OUTPUT );
+
+	mPinInput->setAutoRename( true );
+
+	mNode->pairPins( mPinInput, mPinOutput );
 }
 
 void FrameDelayNode::inputsUpdated( qint64 pTimeStamp )
