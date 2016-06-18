@@ -213,7 +213,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	if( !FoundExamples )
 	{
-		FoundExamples = addExamplesPath( QDir::current().absoluteFilePath( "../Fugio/patches/examples" ) );
+		FoundExamples = addExamplesPath( QDir::current().absoluteFilePath( "../Fugio/examples" ) );
 	}
 
 	if( !FoundExamples )
@@ -223,7 +223,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	if( !FoundExamples )
 	{
-		FoundExamples = addExamplesPath( QDir( QApplication::applicationDirPath() ).absoluteFilePath( "../Fugio/patches/examples" ) );
+		FoundExamples = addExamplesPath( QDir( QApplication::applicationDirPath() ).absoluteFilePath( "../Fugio/examples" ) );
 	}
 
 	if( !FoundExamples )
