@@ -13,7 +13,7 @@
 
 PinPrivate::PinPrivate( void )
 	: mContext( 0 ), mGlobalId( QUuid::createUuid() ), mLocalId( QUuid::createUuid() ), mDirection( PIN_UNKNOWN ),
-	  mUpdated( 0 ), mOrder( -1 ), mFlags( Updatable | AutoRename )
+	  mUpdated( 0 ), mOrder( -1 ), mFlags( Updatable )
 {
 }
 

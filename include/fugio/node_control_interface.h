@@ -76,6 +76,8 @@ public:
 
 	virtual bool mustChooseNamedInputPin( void ) const = 0;
 	virtual bool mustChooseNamedOutputPin( void ) const = 0;
+
+	virtual bool pinShouldAutoRename( fugio::PinInterface *pPin ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

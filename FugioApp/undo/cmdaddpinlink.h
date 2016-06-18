@@ -49,6 +49,11 @@ public:
 				return;
 			}
 
+			if( mDstPin->direction() == PIN_INPUT && mNode->control() && mNode->control()->pinShouldAutoRename( mDstPin.data() ) )
+			{
+				mDstPin->setAutoRename( true );
+			}
+
 			mDstPin->setRemovable( true );
 		}
 		else

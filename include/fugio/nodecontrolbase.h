@@ -139,11 +139,14 @@ public:
 		return( false );
 	}
 
-	virtual QUuid pinAddControlUuid( fugio::PinInterface *pPin ) const Q_DECL_OVERRIDE
+	virtual QUuid pinAddControlUuid( fugio::PinInterface * ) const Q_DECL_OVERRIDE
 	{
-		Q_UNUSED( pPin );
-
 		return( QUuid() );
+	}
+
+	virtual bool pinShouldAutoRename( fugio::PinInterface * ) const Q_DECL_OVERRIDE
+	{
+		return( false );
 	}
 
 	//-------------------------------------------------------------------------
