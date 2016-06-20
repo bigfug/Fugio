@@ -49,27 +49,36 @@ public:
 
 	virtual void playStart( qreal pTimeStamp ) Q_DECL_OVERRIDE
 	{
-		mPortAudio->playStart( pTimeStamp );
+		if( mPortAudio )
+		{
+			mPortAudio->playStart( pTimeStamp );
+		}
 	}
 
 	virtual void playheadMove( qreal pTimeStamp ) Q_DECL_OVERRIDE
 	{
-		mPortAudio->playheadMove( pTimeStamp );
+		if( mPortAudio )
+		{
+			mPortAudio->playheadMove( pTimeStamp );
+		}
 	}
 
 	virtual bool playheadPlay( qreal pTimePrev, qreal pTimeCurr ) Q_DECL_OVERRIDE
 	{
-		return( mPortAudio->playheadPlay( pTimePrev, pTimeCurr ) );
+		return( mPortAudio ? mPortAudio->playheadPlay( pTimePrev, pTimeCurr ) : true );
 	}
 
 	virtual void setTimeOffset( qreal pTimeOffset ) Q_DECL_OVERRIDE
 	{
-		mPortAudio->setTimeOffset( pTimeOffset );
+		if( mPortAudio )
+		{
+			mPortAudio->setTimeOffset( pTimeOffset );
+		}
 	}
 
 	virtual qreal latency( void ) const Q_DECL_OVERRIDE
 	{
-		return( mPortAudio->latency() );
+		return( mPortAudio ? mPortAudio->latency() : 0 );
 	}
 
 	// InterfaceAudioProducer interface
