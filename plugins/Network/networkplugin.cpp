@@ -69,6 +69,10 @@ void NetworkPlugin::menuNetworkInformation()
 	QStringList		IP4List;
 	QStringList		IP6List;
 
+	InfoBox.setIcon( QMessageBox::Information );
+
+	InfoBox.setText( tr( "Network Address Information" ) );
+
 	for( const QHostAddress &HostAddr : QNetworkInterface::allAddresses() )
 	{
 		QStringList			AddLst;
@@ -152,7 +156,11 @@ void NetworkPlugin::menuNetworkInformation()
 		}
 	}
 
-	InfoBox.setText( InfTxt );
+	InfTxt.append( QString( "<p><strong>%1:</strong> %2</p>" ).arg( tr( "Local Domain Name" ) ).arg( QHostInfo::localDomainName() ) );
+
+	InfTxt.append( QString( "<p><strong>%1:</strong> %2</p>" ).arg( tr( "Local Host Name" ) ).arg( QHostInfo::localHostName() ) );
+
+	InfoBox.setInformativeText( InfTxt );
 
 	InfoBox.setStandardButtons( QMessageBox::Ok );
 
