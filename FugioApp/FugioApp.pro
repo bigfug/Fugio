@@ -160,38 +160,38 @@ macx {
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/snippets
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/examples
 
-		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../examples/* $$INSTALLDIR/data/examples
-	}
+        QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../examples/* $$INSTALLDIR/data/examples
+    }
 }
 
 windows {
-	INSTALLBASE  = $$OUT_PWD/../../deploy-installer
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+    INSTALLBASE  = $$OUT_PWD/../../deploy-installer
+    INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLBASE/config )
+    CONFIG(release,debug|release) {
+        QMAKE_POST_LINK += echo
+        QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLBASE/config )
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$_PRO_FILE_PWD_/../config.win.xml ) $$shell_path( $$INSTALLBASE/config/config.xml )
+        QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$_PRO_FILE_PWD_/../config.win.xml ) $$shell_path( $$INSTALLBASE/config/config.xml )
 
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/meta )
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data )
+        QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/meta )
+        QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data )
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$_PRO_FILE_PWD_/package.xml ) $$shell_path( $$INSTALLDIR/meta/ )
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".exe" ) $$shell_path( $$INSTALLDIR/data/ )
+        QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$_PRO_FILE_PWD_/package.xml ) $$shell_path( $$INSTALLDIR/meta/ )
+        QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".exe" ) $$shell_path( $$INSTALLDIR/data/ )
 
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/include )
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/snippets )
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/examples )
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/platforms )
+        QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/include )
+        QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
+        QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/snippets )
+        QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/examples )
+        QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/platforms )
 
-		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../examples/* ) $$shell_path( $$INSTALLDIR/data/examples ) /f /s /y
+        QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../examples/* ) $$shell_path( $$INSTALLDIR/data/examples ) /f /s /y
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $(QTDIR)/plugins/platforms/qwindows.dll ) $$shell_path( $$INSTALLDIR/data/platforms )
+        QMAKE_POST_LINK += & copy /V /Y $$shell_path( $(QTDIR)/plugins/platforms/qwindows.dll ) $$shell_path( $$INSTALLDIR/data/platforms )
 
-		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/icu*.dll ) $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) $$shell_path( $(QTDIR)/bin/Qt5Core.dll ) $$shell_path( $(QTDIR)/bin/Qt5Gui.dll ) $$shell_path( $(QTDIR)/bin/Qt5Widgets.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
-	}
+        QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/icu*.dll ) $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) $$shell_path( $(QTDIR)/bin/Qt5Core.dll ) $$shell_path( $(QTDIR)/bin/Qt5Gui.dll ) $$shell_path( $(QTDIR)/bin/Qt5Widgets.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -253,34 +253,34 @@ win32 {
 # portaudio
 
 win32 {
-		LIBS += -L$$(LIBS)/portaudio.32.2013/bin/Win32/Release
+    LIBS += -L$$(LIBS)/portaudio.32.2013/bin/Win32/Release
 }
 
 #------------------------------------------------------------------------------
 # OpenCV
 
 win32 {
-	CONFIG(debug,debug|release) {
-		LIBS += -L$$(LIBS)/opencv-3.1.0/build/bin/Debug
-	} else {
-		LIBS += -L$$(LIBS)/opencv-3.1.0/build/bin/Release
-	}
+    CONFIG(debug,debug|release) {
+            LIBS += -L$$(LIBS)/opencv-3.1.0/build/bin/Debug
+    } else {
+            LIBS += -L$$(LIBS)/opencv-3.1.0/build/bin/Release
+    }
 }
 
 #------------------------------------------------------------------------------
 # ffmpeg
 
 unix:!macx {
-	LIBS += -L/usr/local/lib
+    LIBS += -L/usr/local/lib
 }
 
 win32 {
-	LIBS += -L$$(LIBS)/ffmpeg-2.8.5-32/lib
-	LIBS += -L$$(LIBS)/ffmpeg-2.8.5-32/bin
+    LIBS += -L$$(LIBS)/ffmpeg-2.8.5-32/lib
+    LIBS += -L$$(LIBS)/ffmpeg-2.8.5-32/bin
 }
 
 macx {
-	LIBS += -L/opt/local/lib
+    LIBS += -L/opt/local/lib
 }
 
 #------------------------------------------------------------------------------
@@ -333,35 +333,35 @@ win32:exists( $$(LIBS)/Lua-5.3.2 ) {
 # TUIO
 
 win32:exists( $$(LIBS)/TUIO11_CPP ) {
-	CONFIG(debug,debug|release) {
-		LIBS += -L$$(LIBS)/TUIO11_CPP/Debug
-	} else {
-		LIBS += -L$$(LIBS)/TUIO11_CPP/Release
-	}
+    CONFIG(debug,debug|release) {
+       LIBS += -L$$(LIBS)/TUIO11_CPP/Debug
+    } else {
+        LIBS += -L$$(LIBS)/TUIO11_CPP/Release
+    }
 }
 
 #------------------------------------------------------------------------------
 # Canon EOS
 
 win32:exists( $$(LIBS)/EDSDKv0304W/Windows/EDSDK ) {
-	LIBS += -L$$(LIBS)/EDSDKv0304W/Windows/EDSDK/Dll
+    LIBS += -L$$(LIBS)/EDSDKv0304W/Windows/EDSDK/Dll
 }
 
 win64:exists( $$(LIBS)/EDSDKv0304W/Windows/EDSDK_64 ) {
-	LIBS += -L$$(LIBS)/EDSDKv0304W/Windows/EDSDK_64/Dll
+    LIBS += -L$$(LIBS)/EDSDKv0304W/Windows/EDSDK_64/Dll
 }
 
 #-------------------
 # OpenVR
 
 windows {
-	OPENVR_DIR = $$(LIBS)/openvr-1.0.0
+    OPENVR_DIR = $$(LIBS)/openvr-1.0.0
 }
 
 win64 {
-	LIBS += -L$$OPENVR_DIR/bin/win64
+    LIBS += -L$$OPENVR_DIR/bin/win64
 }
 
 win32 {
-	LIBS += -L$$OPENVR_DIR/bin/win32
+    LIBS += -L$$OPENVR_DIR/bin/win32
 }

@@ -7,4 +7,6 @@ SUBDIRS += \
     GUI \
     Math \
     PortAudio \
+    OSC \
+    Network \
     Time
