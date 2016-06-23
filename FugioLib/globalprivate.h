@@ -43,12 +43,12 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::IGlobal
 
-	virtual fugio::GlobalSignals *qobject( void )
+	virtual fugio::GlobalSignals *qobject( void ) Q_DECL_OVERRIDE
 	{
 		return( this );
 	}
 
-	virtual qint64 timestamp( void ) const
+	virtual qint64 timestamp( void ) const Q_DECL_OVERRIDE
 	{
 		return( mGlobalTimer.elapsed() );
 	}
@@ -56,104 +56,109 @@ public:
 	//-------------------------------------------------------------------------
 	// Pause global execution
 
-	virtual bool isPaused( void ) const
+	virtual bool isPaused( void ) const Q_DECL_OVERRIDE
 	{
 		return( mPause );
 	}
 
-	virtual void pause( void )
+	virtual void pause( void ) Q_DECL_OVERRIDE
 	{
 		mPause = true;
 	}
 
-	virtual void unpause( void )
+	virtual void unpause( void ) Q_DECL_OVERRIDE
 	{
 		mPause = false;
 	}
 
 	//-------------------------------------------------------------------------
 
-	virtual QCommandLineParser &commandLineParser( void )
+	virtual QCommandLineParser &commandLineParser( void ) Q_DECL_OVERRIDE
 	{
 		return( mCommandLineParser );
 	}
 
-	virtual void registerInterface( const QUuid &pUuid, QObject *pInterface );
-	virtual void unregisterInterface( const QUuid &pUuid );
+	virtual void registerInterface( const QUuid &pUuid, QObject *pInterface ) Q_DECL_OVERRIDE;
+	virtual void unregisterInterface( const QUuid &pUuid ) Q_DECL_OVERRIDE;
 
-	virtual QObject *findInterface( const QUuid &pUuid );
+	virtual QObject *findInterface( const QUuid &pUuid ) Q_DECL_OVERRIDE;
 
-	virtual void registerNodeClasses( const fugio::ClassEntryList &pNodes );
-	virtual void unregisterNodeClasses( const fugio::ClassEntryList &pNodes );
+	virtual void registerNodeClasses( const fugio::ClassEntryList &pNodes ) Q_DECL_OVERRIDE;
+	virtual void unregisterNodeClasses( const fugio::ClassEntryList &pNodes ) Q_DECL_OVERRIDE;
 
-	virtual void registerNodeClasses( const fugio::ClassEntry pNodes[] );
-	virtual void unregisterNodeClasses( const fugio::ClassEntry pNodes[] );
+	virtual void registerNodeClasses( const fugio::ClassEntry pNodes[] ) Q_DECL_OVERRIDE;
+	virtual void unregisterNodeClasses( const fugio::ClassEntry pNodes[] ) Q_DECL_OVERRIDE;
 
-	virtual void registerPinClasses( const fugio::ClassEntryList &pNodes );
-	virtual void unregisterPinClasses( const fugio::ClassEntryList &pNodes );
+	virtual void registerPinClasses( const fugio::ClassEntryList &pNodes ) Q_DECL_OVERRIDE;
+	virtual void unregisterPinClasses( const fugio::ClassEntryList &pNodes ) Q_DECL_OVERRIDE;
 
-	virtual void registerPinClasses( const fugio::ClassEntry pNodes[] );
-	virtual void unregisterPinClasses( const fugio::ClassEntry pNodes[] );
+	virtual void registerPinClasses( const fugio::ClassEntry pNodes[] ) Q_DECL_OVERRIDE;
+	virtual void unregisterPinClasses( const fugio::ClassEntry pNodes[] ) Q_DECL_OVERRIDE;
 
-	virtual QSharedPointer<fugio::NodeInterface> createNode( fugio::ContextInterface *pContext, const QString &pName, const QUuid &pUuid, const QUuid &pOrigId, const QVariantHash &pSettings );
+	virtual QSharedPointer<fugio::NodeInterface> createNode( fugio::ContextInterface *pContext, const QString &pName, const QUuid &pUuid, const QUuid &pOrigId, const QVariantHash &pSettings ) Q_DECL_OVERRIDE;
 
-	virtual QSharedPointer<fugio::PinInterface> createPin(const QString &pName, const QUuid &pLocalId, QSharedPointer<fugio::NodeInterface> pNode, PinDirection pDirection, const QUuid &pControlUUID , const QVariantHash &pSettings );
+	virtual QSharedPointer<fugio::PinInterface> createPin(const QString &pName, const QUuid &pLocalId, QSharedPointer<fugio::NodeInterface> pNode, PinDirection pDirection, const QUuid &pControlUUID , const QVariantHash &pSettings ) Q_DECL_OVERRIDE;
 
-	virtual QSharedPointer<fugio::PinControlInterface> createPinControl( const QUuid &pUUID , QSharedPointer<fugio::PinInterface> pPin );
+	virtual QSharedPointer<fugio::PinControlInterface> createPinControl( const QUuid &pUUID , QSharedPointer<fugio::PinInterface> pPin ) Q_DECL_OVERRIDE;
 
-	virtual const QMetaObject *findNodeMetaObject( const QString &pClassName ) const;
+	virtual const QMetaObject *findNodeMetaObject( const QString &pClassName ) const Q_DECL_OVERRIDE;
 
-	virtual fugio::ClassEntry findNodeClassEntry( const QUuid &pNodeUuid ) const;
+	virtual fugio::ClassEntry findNodeClassEntry( const QUuid &pNodeUuid ) const Q_DECL_OVERRIDE;
 
-	virtual const QMetaObject *findNodeMetaObject( const QUuid &pNodeUuid ) const;
-	virtual const QMetaObject *findPinMetaObject( const QUuid &pPinUuid ) const;
+	virtual const QMetaObject *findNodeMetaObject( const QUuid &pNodeUuid ) const Q_DECL_OVERRIDE;
+	virtual const QMetaObject *findPinMetaObject( const QUuid &pPinUuid ) const Q_DECL_OVERRIDE;
 
-	virtual QString nodeName( const QUuid &pUuid ) const;
-	virtual QString pinName( const QUuid &pUuid ) const;
+	virtual QString nodeName( const QUuid &pUuid ) const Q_DECL_OVERRIDE;
+	virtual QString pinName( const QUuid &pUuid ) const Q_DECL_OVERRIDE;
 
-	virtual QUuid findNodeByClass( const QString &pClassName ) const;
-	virtual QUuid findPinByClass( const QString &pClassName ) const;
+	virtual QUuid findNodeByClass( const QString &pClassName ) const Q_DECL_OVERRIDE;
+	virtual QUuid findPinByClass( const QString &pClassName ) const Q_DECL_OVERRIDE;
 
-	virtual QStringList pinNames( void ) const;
+	virtual QStringList pinNames( void ) const Q_DECL_OVERRIDE;
 
-	virtual QMap<QUuid, QString> pinIds( void ) const
+	virtual QMap<QUuid, QString> pinIds( void ) const Q_DECL_OVERRIDE
 	{
 		return( mPinNameMap );
 	}
 
-	virtual bool updatePinControl( QSharedPointer<fugio::PinInterface> pPin, const QUuid &pPinControlUuid );
+	virtual bool updatePinControl( QSharedPointer<fugio::PinInterface> pPin, const QUuid &pPinControlUuid ) Q_DECL_OVERRIDE;
 
-	virtual void clear( void );
+	virtual void clear( void ) Q_DECL_OVERRIDE;
 
-	virtual QSharedPointer<fugio::ContextInterface> newContext( void );
+	virtual QSharedPointer<fugio::ContextInterface> newContext( void ) Q_DECL_OVERRIDE;
 
-	virtual void delContext( QSharedPointer<fugio::ContextInterface> pContext );
+	virtual void delContext( QSharedPointer<fugio::ContextInterface> pContext ) Q_DECL_OVERRIDE;
 
-	virtual QList< QSharedPointer<fugio::ContextInterface> > contexts( void );
+	virtual QList< QSharedPointer<fugio::ContextInterface> > contexts( void ) Q_DECL_OVERRIDE;
 
-	virtual void setMainWindow( QMainWindow *pMainWindow );
+	virtual void setMainWindow( QMainWindow *pMainWindow ) Q_DECL_OVERRIDE;
 
-	virtual QMainWindow *mainWindow( void );
+	virtual QMainWindow *mainWindow( void ) Q_DECL_OVERRIDE;
 
-	virtual void setEditTarget( fugio::EditInterface *pEditTarget );
+	virtual void setEditTarget( fugio::EditInterface *pEditTarget ) Q_DECL_OVERRIDE;
 
-	virtual void registerDeviceFactory( fugio::DeviceFactoryInterface *pFactory );
-	virtual void unregisterDeviceFactory( fugio::DeviceFactoryInterface *pFactory );
+	virtual void registerDeviceFactory( fugio::DeviceFactoryInterface *pFactory ) Q_DECL_OVERRIDE;
+	virtual void unregisterDeviceFactory( fugio::DeviceFactoryInterface *pFactory ) Q_DECL_OVERRIDE;
 
-	virtual QStringList deviceFactoryMenuTextList( void ) const;
-	virtual void deviceFactoryGui( QWidget *pParent, const QString &pMenuText );
+	virtual QStringList deviceFactoryMenuTextList( void ) const Q_DECL_OVERRIDE;
+	virtual void deviceFactoryGui( QWidget *pParent, const QString &pMenuText ) Q_DECL_OVERRIDE;
 
-	virtual void loadConfig( QSettings &pSettings );
-	virtual void saveConfig( QSettings &pSettings ) const;
+	virtual void loadConfig( QSettings &pSettings ) Q_DECL_OVERRIDE;
+	virtual void saveConfig( QSettings &pSettings ) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// Joining and Splitting
 
-	virtual void registerPinSplitter( const QUuid &pPinId, const QUuid &pNodeId );
-	virtual void registerPinJoiner( const QUuid &pPinId, const QUuid &pNodeId );
+	virtual void registerPinSplitter( const QUuid &pPinId, const QUuid &pNodeId ) Q_DECL_OVERRIDE;
+	virtual void registerPinJoiner( const QUuid &pPinId, const QUuid &pNodeId ) Q_DECL_OVERRIDE;
 
-	virtual QList<QUuid> pinSplitters( const QUuid &pPinId ) const;
-	virtual QList<QUuid> pinJoiners( const QUuid &pPinId ) const;
+	virtual QList<QUuid> pinSplitters( const QUuid &pPinId ) const Q_DECL_OVERRIDE;
+	virtual QList<QUuid> pinJoiners( const QUuid &pPinId ) const Q_DECL_OVERRIDE;
+
+	//-------------------------------------------------------------------------
+	// Menus
+
+	virtual void menuAddEntry( fugio::MenuId, QString pName, QObject *pObject, const char *pSlot ) Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 

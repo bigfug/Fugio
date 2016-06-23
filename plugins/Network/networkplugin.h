@@ -34,6 +34,9 @@ public:
 
 	virtual void deinitialise( void );
 
+private slots:
+	void menuNetworkInformation( void );
+
 private:
 	static NetworkPlugin		*mInstance;
 

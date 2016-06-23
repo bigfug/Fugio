@@ -1,5 +1,8 @@
 #include "networkplugin.h"
 
+#include <QNetworkInterface>
+#include <QMessageBox>
+
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
@@ -46,6 +49,8 @@ PluginInterface::InitResult NetworkPlugin::initialise( fugio::GlobalInterface *p
 
 	mApp->registerPinClasses( PinClasses );
 
+	mApp->menuAddEntry( fugio::MenuId::HELP, tr( "Network Information..." ), this, SLOT(menuNetworkInformation()) );
+
 	return( INIT_OK );
 }
 
@@ -56,4 +61,100 @@ void NetworkPlugin::deinitialise( void )
 	mApp->unregisterNodeClasses( NodeClasses );
 
 	mApp = 0;
+}
+
+void NetworkPlugin::menuNetworkInformation()
+{
+	QMessageBox		InfoBox;
+	QStringList		IP4List;
+	QStringList		IP6List;
+
+	for( const QHostAddress &HostAddr : QNetworkInterface::allAddresses() )
+	{
+		QStringList			AddLst;
+
+		if( HostAddr.isLoopback() )
+		{
+			AddLst << "Loopback";
+		}
+
+		if( HostAddr.isMulticast() )
+		{
+			AddLst << "Multicast";
+		}
+
+		if( !HostAddr.scopeId().isEmpty() )
+		{
+			AddLst << QString( "Scope: %1" ).arg( HostAddr.scopeId() );
+		}
+
+		QString				AddStr;
+
+		if( !AddLst.isEmpty() )
+		{
+			AddStr = QString( " (%1)" ).arg( AddLst.join( ", " ) );
+		}
+
+		switch( HostAddr.protocol() )
+		{
+			case QAbstractSocket::IPv4Protocol:
+				IP4List << QString( "%1%2" ).arg( HostAddr.toString() ).arg( AddStr );
+				break;
+
+			case QAbstractSocket::IPv6Protocol:
+				IP6List << QString( "%1%2" ).arg( HostAddr.toString() ).arg( AddStr );
+				break;
+
+			default:
+				qDebug() << HostAddr.protocol() << HostAddr.toString();
+				break;
+		}
+	}
+
+	InfoBox.setTextFormat( Qt::RichText );
+
+	QString		InfTxt;
+
+	if( IP4List.isEmpty() && IP6List.isEmpty() )
+	{
+		InfTxt = tr( "No network interfaces found" );
+	}
+	else
+	{
+		if( !IP4List.isEmpty() )
+		{
+			InfTxt.append( "<p><strong>IP4:</strong></p>" );
+			InfTxt.append( "<ul>" );
+
+			for( QString S : IP4List )
+			{
+				InfTxt.append( "<li>" );
+				InfTxt.append( S );
+				InfTxt.append( "</li>" );
+			}
+
+			InfTxt.append( "</ul>" );
+		}
+
+		if( !IP6List.isEmpty() )
+		{
+			InfTxt.append( "<p><strong>IP6:</strong></p>" );
+			InfTxt.append( "<ul>" );
+
+			for( QString S : IP6List )
+			{
+				InfTxt.append( "<li>" );
+				InfTxt.append( S );
+				InfTxt.append( "</li>" );
+			}
+
+			InfTxt.append( "</ul>" );
+		}
+	}
+
+	InfoBox.setText( InfTxt );
+
+	InfoBox.setStandardButtons( QMessageBox::Ok );
+
+	InfoBox.exec();
 }

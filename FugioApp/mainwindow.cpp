@@ -1330,3 +1330,14 @@ void MainWindow::on_actionCheck_for_updates_triggered()
 #error No Update Process Defined
 #endif
 }
+
+
+void MainWindow::menuAddEntry( fugio::MenuId pMenuId, QString pEntry, QObject *pObject, const char *pSlot )
+{
+	switch( pMenuId )
+	{
+		case fugio::MenuId::HELP:
+			ui->menuHelp->addAction( pEntry, pObject, pSlot );
+			break;
+	}
+}
