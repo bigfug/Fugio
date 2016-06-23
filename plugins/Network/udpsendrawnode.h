@@ -26,9 +26,6 @@ public:
 
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
-	virtual bool initialise() Q_DECL_OVERRIDE;
-	virtual bool deinitialise() Q_DECL_OVERRIDE;
-
 protected slots:
 	void sendData( qint64 pTimeStamp );
 

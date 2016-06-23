@@ -25,30 +25,15 @@ UDPSendRawNode::UDPSendRawNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinPort->setValue( 7878 );
 }
 
-bool UDPSendRawNode::initialise()
-{
-	if( !NodeControlBase::initialise() )
-	{
-		return( false );
-	}
-
-	return( true );
-}
-
-bool UDPSendRawNode::deinitialise()
-{
-	return( NodeControlBase::deinitialise() );
-}
-
 void UDPSendRawNode::inputsUpdated( qint64 pTimeStamp )
 {
 	fugio::Performance	Perf( mNode, "inputsUpdated", pTimeStamp );
 
-	if( !pTimeStamp || mPinHost->isUpdated( pTimeStamp ) )
+	if( !pTimeStamp || mAddress == QHostAddress::Null || mPinHost->isUpdated( pTimeStamp ) )
 	{
 		mAddress = QHostAddress::Null;
 
-		QHostInfo::lookupHost(  variant( mPinHost ).toString(), this, SLOT(hostLookup(QHostInfo)) );
+		QHostInfo::lookupHost( variant( mPinHost ).toString(), this, SLOT(hostLookup(QHostInfo)) );
 	}
 
 	if( mAddress == QHostAddress::Null )
@@ -66,9 +51,45 @@ void UDPSendRawNode::sendData( qint64 pTimeStamp )
 		return;
 	}
 
-	QByteArray				 A = variant( mPinData ).toByteArray();
+	QByteArray				 A;
 
-	if( A.isEmpty() )
+	QSharedPointer<fugio::PinInterface>		P = mPinData->connectedPin();
+
+	if( P )
+	{
+		fugio::PinControlInterface		*I = input<fugio::PinControlInterface *>( mPinData );
+
+		if( !I )
+		{
+			return;
+		}
+
+		if( P->controlUuid() == PID_BYTEARRAY_LIST )
+		{
+			fugio::VariantInterface		*V = qobject_cast<fugio::VariantInterface *>( I->qobject() );
+
+			if( V )
+			{
+				const QVariantList	VarLst = V->variant().toList();
+
+				for( const QVariant VI : VarLst )
+				{
+					QByteArray	ByteArray = VI.toByteArray();
+
+					if( !ByteArray.isEmpty() )
+					{
+						mSocket.writeDatagram( ByteArray, mAddress, variant( mPinPort ).toInt() );
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		A = mPinData->value().toByteArray();
+	}
+
+	if( !A.isEmpty() )
 	{
 		mSocket.writeDatagram( A, mAddress, variant( mPinPort ).toInt() );
 	}
