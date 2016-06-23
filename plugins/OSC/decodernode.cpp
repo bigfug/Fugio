@@ -53,7 +53,7 @@ void DecoderNode::inputsUpdated( qint64 pTimeStamp )
 
 		while( !CurPin && !CurLst.isEmpty() )
 		{
-			QString		CurNam = CurLst.join( '/' );
+			QString		CurNam = CurLst.join( '/' ).prepend( '/' );
 
 			CurPin = mNode->findOutputPinByName( CurNam );
 
@@ -62,6 +62,8 @@ void DecoderNode::inputsUpdated( qint64 pTimeStamp )
 				NewLst.push_front( CurLst.takeLast() );
 			}
 		}
+
+		const QVariantList	VarLst = mDataInput.value( OscNam );
 
 		if( !CurPin )
 		{
@@ -74,7 +76,7 @@ void DecoderNode::inputsUpdated( qint64 pTimeStamp )
 
 			if( II )
 			{
-				II->oscSplit( NewLst, mDataInput.value( OscNam ) );
+				II->oscSplit( NewLst, VarLst );
 
 				continue;
 			}
@@ -86,7 +88,14 @@ void DecoderNode::inputsUpdated( qint64 pTimeStamp )
 
 			if( VI )
 			{
-				VI->setVariant( mDataInput.value( OscNam ) );
+				if( VarLst.size() == 1 )
+				{
+					VI->setVariant( VarLst.first() );
+				}
+				else
+				{
+					VI->setVariant( VarLst );
+				}
 
 				pinUpdated( CurPin );
 
@@ -124,8 +133,6 @@ void DecoderNode::processDatagram( const QByteArray &pDatagram )
 	{
 		return;
 	}
-
-	//OscAdr.remove( 0, 1 );
 
 	QByteArray		OscArg;
 

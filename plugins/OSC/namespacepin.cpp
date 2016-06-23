@@ -77,7 +77,7 @@ QList<fugio::NodeControlInterface::AvailablePinEntry> NamespacePin::oscPins( con
 
 		while( true )
 		{
-			QString		CurNam = NewLst.join( '/' );
+			QString		CurNam = NewLst.join( '/' ).prepend( '/' );
 
 			CurPin = mPin->node()->findOutputPinByName( CurNam );
 
@@ -149,7 +149,7 @@ QList<fugio::NodeControlInterface::AvailablePinEntry> NamespacePin::oscPins( con
 		}
 	}
 
-	qSort( PinLst );
+	std::sort( PinLst.begin(), PinLst.end() );
 
 	return( PinLst );
 }
