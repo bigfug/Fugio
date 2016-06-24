@@ -11,3 +11,8 @@ QUuid StringListPin::listPinControl() const
 {
 	return( PID_STRING );
 }
+
+void StringListPin::listSetIndex( int pIndex, const QVariant &pValue )
+{
+
+}

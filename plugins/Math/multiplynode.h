@@ -29,7 +29,16 @@ public:
 
 	virtual bool canAcceptPin(fugio::PinInterface *pPin) const;
 
+private:
+	static QVariant multiplyNumber( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+	static QVariant multiplyVector3D( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+	static QVariant multiplyVector4D( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+	static QVariant multiplyPoint( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+	static QVariant multiplyMatrix4x4( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+
 protected:
+	QSharedPointer<fugio::PinInterface>			 mPinInput;
+
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
 	fugio::VariantInterface						*mValOutput;
 };

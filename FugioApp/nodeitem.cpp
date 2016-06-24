@@ -1066,13 +1066,11 @@ void NodeItem::menuAddInputPin()
 	{
 		QSharedPointer<fugio::PinInterface>	PIN = mContextView->context()->global()->createPin( PIN_NAME, QUuid::createUuid(), NODE, PIN_INPUT );
 
-		if( PIN != 0 )
+		if( PIN )
 		{
-			PIN->setRemovable( true );
-
 			CmdNodePinAdd	*Cmd = new CmdNodePinAdd( NODE, PIN );
 
-			if( Cmd != 0 )
+			if( Cmd )
 			{
 				mContextView->widget()->undoStack()->push( Cmd );
 			}
@@ -1151,13 +1149,11 @@ void NodeItem::menuAddOutputPin()
 	{
 		QSharedPointer<fugio::PinInterface>	PIN = mContextView->context()->global()->createPin( PIN_NAME, QUuid::createUuid(), NODE, PIN_OUTPUT, PIN_UUID );
 
-		if( PIN != 0 )
+		if( PIN )
 		{
-			PIN->setRemovable( true );
-
 			CmdNodePinAdd	*Cmd = new CmdNodePinAdd( NODE, PIN );
 
-			if( Cmd != 0 )
+			if( Cmd )
 			{
 				mContextView->widget()->undoStack()->push( Cmd );
 			}

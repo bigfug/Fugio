@@ -74,16 +74,14 @@ void SubtractNode::inputsUpdated( qint64 pTimeStamp )
 
 QList<QUuid> SubtractNode::pinAddTypesInput() const
 {
-	static QList<QUuid>		PinLst;
-
-	if( PinLst.isEmpty() )
+	static QList<QUuid>		PinLst =
 	{
-		PinLst << PID_FLOAT;
-		PinLst << PID_INTEGER;
-		PinLst << PID_STRING;
-		PinLst << PID_POINT;
-		PinLst << PID_VECTOR3;
-	}
+		PID_FLOAT,
+		PID_INTEGER,
+		PID_STRING,
+		PID_POINT,
+		PID_VECTOR3
+	};
 
 	return( PinLst );
 }

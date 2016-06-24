@@ -213,7 +213,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	if( !FoundExamples )
 	{
-		FoundExamples = addExamplesPath( QDir::current().absoluteFilePath( "../Fugio/patches/examples" ) );
+		FoundExamples = addExamplesPath( QDir::current().absoluteFilePath( "../Fugio/examples" ) );
 	}
 
 	if( !FoundExamples )
@@ -223,7 +223,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	if( !FoundExamples )
 	{
-		FoundExamples = addExamplesPath( QDir( QApplication::applicationDirPath() ).absoluteFilePath( "../Fugio/patches/examples" ) );
+		FoundExamples = addExamplesPath( QDir( QApplication::applicationDirPath() ).absoluteFilePath( "../Fugio/examples" ) );
 	}
 
 	if( !FoundExamples )
@@ -1329,4 +1329,15 @@ void MainWindow::on_actionCheck_for_updates_triggered()
 #else
 #error No Update Process Defined
 #endif
+}
+
+
+void MainWindow::menuAddEntry( fugio::MenuId pMenuId, QString pEntry, QObject *pObject, const char *pSlot )
+{
+	switch( pMenuId )
+	{
+		case fugio::MenuId::HELP:
+			ui->menuHelp->addAction( pEntry, pObject, pSlot );
+			break;
+	}
 }

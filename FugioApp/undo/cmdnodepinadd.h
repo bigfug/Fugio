@@ -15,6 +15,13 @@ public:
 		: mNode( pNode ), mPin( pPin )
 	{
 		setText( QObject::tr( "Add pin" ) );
+
+		if( mPin->direction() == PIN_INPUT && mNode->control() && mNode->control()->pinShouldAutoRename( mPin.data() ) )
+		{
+			mPin->setAutoRename( true );
+		}
+
+		mPin->setRemovable( true );
 	}
 
 	virtual ~CmdNodePinAdd( void )
@@ -34,7 +41,7 @@ public:
 
 private:
 	QSharedPointer<fugio::NodeInterface>	mNode;
-	QSharedPointer<fugio::PinInterface>	mPin;
+	QSharedPointer<fugio::PinInterface>		mPin;
 };
 
 #endif // CMDNODEPINADD_H

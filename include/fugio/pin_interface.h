@@ -53,6 +53,10 @@ public:
 
 	virtual void setUpdatable( bool pUpdatable ) = 0;
 
+	virtual bool autoRename( void ) const = 0;
+
+	virtual void setAutoRename( bool pAutoRename ) = 0;
+
 	virtual QSharedPointer<fugio::NodeInterface> node( void ) = 0;
 
 	virtual qint64 updated( void ) const = 0;

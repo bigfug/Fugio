@@ -12,6 +12,7 @@
 #include <fugio/edit_interface.h>
 
 #include <fugio/node_interface.h>
+#include <fugio/menu_control_interface.h>
 
 #include "wizards/firsttimewizard.h"
 
@@ -22,9 +23,10 @@ namespace Ui {
 class ContextSubWindow;
 struct ClassEntry;
 
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow, public fugio::MenuControlInterface
 {
 	Q_OBJECT
+	Q_INTERFACES( fugio::MenuControlInterface )
 	
 public:
 	explicit MainWindow( QWidget *pParent = 0 );
@@ -34,6 +36,10 @@ public:
 	void createDeviceMenu( void );
 
 	ContextSubWindow *findContextWindow( QSharedPointer<fugio::ContextInterface> pContext );
+
+	// MenuControlInterface interface
+public:
+	virtual void menuAddEntry( fugio::MenuId pMenuId, QString pEntry, QObject *pObject, const char *pSlot ) Q_DECL_OVERRIDE;
 
 signals:
 	void log( const QString &pLogDat );
@@ -60,7 +66,7 @@ public slots:
 	QString patchOpenDialog( void );
 
 private:
-	virtual void closeEvent( QCloseEvent *pEvent );
+	virtual void closeEvent( QCloseEvent *pEvent ) Q_DECL_OVERRIDE;
 
 	static void logger_static( QtMsgType type, const QMessageLogContext &context, const QString &msg );
 

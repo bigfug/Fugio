@@ -679,6 +679,8 @@ void ContextPrivate::clear( void )
 
 	emit clearContext();
 
+	QMutexLocker	MutLck( &mUpdatePinMapMutex );
+
 	mUpdatedNodeList.clear();
 	mFinishedNodeList.clear();
 	mInitDeferNodeList.clear();
@@ -1466,6 +1468,8 @@ void ContextPrivate::pinUpdated( QSharedPointer<fugio::PinInterface> pPin, bool 
 //		return;
 //	}
 
+	QMutexLocker	MutLck( &mUpdatePinMapMutex );
+
 	UpdatePinMap::iterator		it = mUpdatePinMap.find( pPin );
 
 	if( it != mUpdatePinMap.end() && ( it.value() || !pUpdatedConnectedNode ) )
@@ -1484,6 +1488,7 @@ void ContextPrivate::performance( QSharedPointer<fugio::NodeInterface> pNode, co
 {
 	PerfEntry		PE;
 
+	PE.mUuid      = pNode ? pNode->uuid() : QUuid();
 	PE.mNode      = pNode ? pNode->name() : QString();
 	PE.mName      = pName;
 	PE.mTimeStart = pTimeStart;
@@ -1494,13 +1499,11 @@ void ContextPrivate::performance( QSharedPointer<fugio::NodeInterface> pNode, co
 
 QList<fugio::PerfData> ContextPrivate::perfdata()
 {
-	QMap<QString,fugio::PerfData>		PDL;
+	QMap<QUuid,fugio::PerfData>		PDL;
 
 	for( const PerfEntry &PE : mPerfList )
 	{
-		QString		S = QString( "%1/%2" ).arg( PE.mNode ).arg( PE.mName );
-
-		if( !PDL.contains( S ) )
+		if( !PDL.contains( PE.mUuid ) )
 		{
 			fugio::PerfData	PD;
 
@@ -1510,10 +1513,10 @@ QList<fugio::PerfData> ContextPrivate::perfdata()
 			PD.mCount = 0;
 			PD.mTime  = 0;
 
-			PDL.insert( S, PD );
+			PDL.insert( PE.mUuid, PD );
 		}
 
-		fugio::PerfData	&PD = PDL[ S ];
+		fugio::PerfData	&PD = PDL[ PE.mUuid ];
 
 		PD.mTime  += PE.mTimeEnd - PE.mTimeStart;
 		PD.mCount += 1;
@@ -1723,9 +1726,13 @@ void ContextPrivate::processUpdatedNodes( qint64 pTimeStamp )
 
 void ContextPrivate::processUpdatedPins( qint64 pTimeStamp )
 {
+	mUpdatePinMapMutex.lock();
+
 	UpdatePinMap		PinMap = mUpdatePinMap;
 
 	mUpdatePinMap.clear();
+
+	mUpdatePinMapMutex.unlock();
 
 	for( UpdatePinMap::iterator it = PinMap.begin() ; it != PinMap.end() ; it++ )
 	{
@@ -1811,6 +1818,8 @@ void ContextPrivate::doFrameProcess( qint64 pTimeStamp )
 	emit frameProcess();
 	emit frameProcess( pTimeStamp );
 
+	bool	DoneFinalise = false;
+
 	while( !mUpdatedNodeList.empty() )
 	{
 		processUpdatedNodes( pTimeStamp );
@@ -1820,6 +1829,14 @@ void ContextPrivate::doFrameProcess( qint64 pTimeStamp )
 		if( mUpdatedNodeList.isEmpty() )
 		{
 			mFutureSync.waitForFinished();
+
+			if( mUpdatedNodeList.isEmpty() && !DoneFinalise )
+			{
+				emit frameFinalise();
+				emit frameFinalise( pTimeStamp );
+
+				DoneFinalise = true;
+			}
 		}
 	}
 }

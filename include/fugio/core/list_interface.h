@@ -18,6 +18,10 @@ public:
 	virtual QUuid listPinControl( void ) const = 0;
 
 	virtual QVariant listIndex( int pIndex ) const = 0;
+
+	virtual void listSetIndex( int pIndex, const QVariant &pValue ) = 0;
+
+	virtual void listSetSize( int pSize ) = 0;
 };
 
 FUGIO_NAMESPACE_END

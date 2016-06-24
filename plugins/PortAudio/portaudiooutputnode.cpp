@@ -233,7 +233,7 @@ void PortAudioOutputNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( IAP && !mProducer )
 	{
-		qreal						SmpRte = mPortAudio ? mPortAudio->sampleRate() : 0;
+		qreal						SmpRte = mPortAudio ? mPortAudio->outputSampleRate() : 0;
 		fugio::AudioSampleFormat	SmpFmt = fugio::FMT_FLT_S;
 		int							ChnCnt = mPortAudio ? mPortAudio->outputChannelCount() : 0;
 

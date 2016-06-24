@@ -65,25 +65,26 @@ void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 		mSamplePosition = pTimeStamp * ( 48000 / 1000 );
 	}
 
-#if 0
 	qint64	CurPos = pTimeStamp * ( 48000 / 1000 );
 
 	if( CurPos - mSamplePosition >= MAG_SMP )
 	{
-		InterfaceAudioProducer	*AP = input<InterfaceAudioProducer *>( mPinAudio );
+		fugio::AudioProducerInterface	*AP = input<fugio::AudioProducerInterface *>( mPinAudio );
 
 		if( AP )
 		{
+			int			ChannelCount = 1;
+
 			if( !mProducerInstance )
 			{
-				mProducerInstance = AP->allocAudioInstance();
+				mProducerInstance = AP->allocAudioInstance( 48000, fugio::AudioSampleFormat::FMT_FLT_S, ChannelCount );
 			}
 
-			if( AP->channels() != mAudioData.mSampleData.size() )
+			if( ChannelCount != mAudDat.size() )
 			{
-				mAudioData.mSampleData.resize( AP->channels() );
+				mAudDat.resize( ChannelCount );
 
-				for( auto &V : mAudioData.mSampleData )
+				for( auto &V : mAudDat )
 				{
 					V.resize( 48000 );
 				}
@@ -91,11 +92,11 @@ void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 
 			QVector<float *>	AudPtr;
 
-			AudPtr.resize( AP->channels() );
+			AudPtr.resize( ChannelCount );
 
-			for( int i = 0 ; i < AP->channels() ; i++ )
+			for( int i = 0 ; i < ChannelCount ; i++ )
 			{
-				AudPtr[ i ] = mAudioData.mSampleData[ i ].data();
+				AudPtr[ i ] = mAudDat[ i ].data();
 
 				memset( AudPtr[ i ], 0, sizeof( float ) * MAG_SMP );
 			}
@@ -104,7 +105,7 @@ void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 
 			float		Mag = 0;
 
-			for( int c = 0 ; c < AP->channels() ; c++ )
+			for( int c = 0 ; c < ChannelCount ; c++ )
 			{
 				float	*S = AudPtr[ c ];
 
@@ -131,5 +132,4 @@ void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 
 		pinUpdated( mPinOutput );
 	}
-#endif
 }

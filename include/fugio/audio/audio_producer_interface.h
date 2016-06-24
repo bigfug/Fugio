@@ -3,14 +3,9 @@
 
 #include <fugio/global.h>
 
-FUGIO_NAMESPACE_BEGIN
+#include "audio_sample_format.h"
 
-typedef enum AudioSampleFormat
-{
-	FMT_UNKNOWN,
-	FMT_16BIT,
-	FMT_FLT_S
-} AudioSampleFormat;
+FUGIO_NAMESPACE_BEGIN
 
 class AudioProducerInterface
 {

@@ -72,8 +72,12 @@ public:
 
 	virtual bool canAcceptPin( fugio::PinInterface *pPin ) const = 0;
 
+	virtual QUuid pinAddControlUuid( fugio::PinInterface *pPin ) const = 0;
+
 	virtual bool mustChooseNamedInputPin( void ) const = 0;
 	virtual bool mustChooseNamedOutputPin( void ) const = 0;
+
+	virtual bool pinShouldAutoRename( fugio::PinInterface *pPin ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

@@ -142,6 +142,67 @@ PaDeviceIndex DevicePortAudio::deviceOutputNameIndex(const QString &pDeviceName)
 	return( paNoDevice );
 }
 
+QStringList DevicePortAudio::deviceInputNameList()
+{
+	QStringList		DevLst;
+
+	PaDeviceIndex	DevCnt = Pa_GetDeviceCount();
+
+	for( PaDeviceIndex DevIdx = 0 ; DevIdx < DevCnt ; DevIdx++ )
+	{
+		const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( DevIdx );
+
+		const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
+
+		if( DevInf->maxInputChannels > 0 )
+		{
+			DevLst << QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name );
+		}
+	}
+
+	return( DevLst );
+}
+
+QString DevicePortAudio::deviceInputDefaultName()
+{
+	PaDeviceIndex		 DevIdx = Pa_GetDefaultInputDevice();
+
+	if( DevIdx == paNoDevice )
+	{
+		return( QString() );
+	}
+
+	const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( DevIdx );
+
+	const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
+
+	return( QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name ) );
+}
+
+PaDeviceIndex DevicePortAudio::deviceInputNameIndex( const QString &pDeviceName )
+{
+	PaDeviceIndex	DevCnt = Pa_GetDeviceCount();
+
+	for( PaDeviceIndex DevIdx = 0 ; DevIdx < DevCnt ; DevIdx++ )
+	{
+		const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( DevIdx );
+
+		if( DevInf->maxInputChannels <= 0 )
+		{
+			continue;
+		}
+
+		const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
+
+		if( pDeviceName ==  QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name ) )
+		{
+			return( DevIdx );
+		}
+	}
+
+	return( paNoDevice );
+}
+
 //void DevicePortAudio::delDevice( DevicePortAudio *pDelDev )
 //{
 //	if( pDelDev )
@@ -160,7 +221,7 @@ PaDeviceIndex DevicePortAudio::deviceOutputNameIndex(const QString &pDeviceName)
 
 #if defined( PORTAUDIO_SUPPORTED )
 DevicePortAudio::DevicePortAudio( PaDeviceIndex pDeviceIndex )
-	: mDeviceIndex( pDeviceIndex ), mStreamOutput( 0 ), mStreamInput( 0 ), mOutputTimeLatency ( 0 ), mSampleRate( 0 )
+	: mDeviceIndex( pDeviceIndex ), mStreamOutput( 0 ), mStreamInput( 0 ), mOutputTimeLatency ( 0 ), mOutputSampleRate( 0 )
 {
 	const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( mDeviceIndex );
 
@@ -202,7 +263,51 @@ void DevicePortAudio::setTimeOffset( qreal pTimeOffset )
 
 //	mTimeOffset				= pTimeOffset;
 //	mStreamOutputTimeOffset = mTimeOffset;
-//	mStreamOutputOffset     = 0;
+	//	mStreamOutputOffset     = 0;
+}
+
+void DevicePortAudio::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers ) const
+{
+	qint64		DatRem = pSampleCount;
+
+	for( const AudioBuffer &AB : mAudioBuffers )
+	{
+		qint64		PosBeg = AB.mPosition;
+		qint64		PosEnd = AB.mPosition + AB.mSamples;
+
+		if( pSamplePosition >= PosEnd || pSamplePosition + pSampleCount < PosBeg )
+		{
+			continue;
+		}
+
+		qint64		SrcPos = pSamplePosition - PosBeg;
+		qint64		SrcLen = std::min<qint64>( SrcPos + pSampleCount, AB.mSamples - std::max<qint64>( 0, SrcPos ) );
+
+		SrcPos = std::max<qint64>( 0, SrcPos );
+
+		qint64		DstPos = std::max<qint64>( 0, PosBeg - pSamplePosition );
+
+		for( int i = 0 ; i < mInputChannelCount ; i++ )
+		{
+			if( i >= pChannelOffset && i < pChannelOffset + pChannelCount )
+			{
+				const float		*SrcPtr = &AB.mData[ i ][ SrcPos ];
+				float			*DstPtr = &pBuffers[ i ][ DstPos ];
+
+				for( int j = 0 ; j < SrcLen ; j++ )
+				{
+					DstPtr[ j ] += SrcPtr[ j ];
+				}
+			}
+		}
+
+		DatRem -= SrcLen;
+
+		if( DatRem <= 0 )
+		{
+			break;
+		}
+	}
 }
 
 #if defined( PORTAUDIO_SUPPORTED )
@@ -255,7 +360,7 @@ int DevicePortAudio::streamCallbackOutput( void *output, unsigned long frameCoun
 
 	for( const AudioInstanceData &AID : mProducers )
 	{
-		AID.mProducer->audio( mOutputAudioOffset, frameCount, 0, mOutputChannelCount, AudioBuffers, mOutputTimeLatency * mSampleRate, AID.mInstance );
+		AID.mProducer->audio( mOutputAudioOffset, frameCount, 0, mOutputChannelCount, AudioBuffers, mOutputTimeLatency * mOutputSampleRate, AID.mInstance );
 	}
 
 	mProducerMutex.unlock();
@@ -271,16 +376,95 @@ int DevicePortAudio::streamCallbackInput( const void *input, unsigned long frame
 
 	if( !mInputAudioOffset )
 	{
-		mInputAudioOffset = PortAudioPlugin::instance()->fugio()->timestamp() * qint64( mSampleRate / 1000.0 );
+		mInputAudioOffset = PortAudioPlugin::instance()->fugio()->timestamp() * qint64( mInputSampleRate / 1000.0 );
 	}
 
 	mInputTimeInfo = *timeInfo;
 
-	emit audio( (const float **)input, frameCount, mInputChannelCount, mInputAudioOffset );
+	for( AudioBuffer &AB : mAudioBuffers )
+	{
+		quint64		TimeEnd = AB.mPosition + AB.mSamples;
+
+		if( mInputAudioOffset - TimeEnd > 5 * mInputSampleRate )
+		{
+			audioInput( AB, (const float **)input, frameCount, mInputChannelCount, mInputAudioOffset );
+
+			mInputAudioOffset += frameCount;
+
+			return( paContinue );
+		}
+	}
+
+	AudioBuffer		AB;
+
+	memset( &AB, 0, sizeof( AB ) );
+
+	audioInput( AB,(const float **)input, frameCount, mInputChannelCount, mInputAudioOffset );
+
+	mAudioBuffers.append( AB );
 
 	mInputAudioOffset += frameCount;
 
 	return( paContinue );
+}
+
+void DevicePortAudio::audioInput( DevicePortAudio::AudioBuffer &AB, const float **pData, quint64 pSampleCount, int pChannelCount, qint64 pSamplePosition )
+{
+	if( AB.mChannels != pChannelCount || AB.mSamples != pSampleCount )
+	{
+		if( AB.mData )
+		{
+			for( int i = 0 ; i < AB.mChannels ; i++ )
+			{
+				if( AB.mData[ i ] )
+				{
+					delete [] AB.mData[ i ];
+
+					AB.mData[ i ] = nullptr;
+				}
+			}
+
+			if( AB.mChannels != pChannelCount )
+			{
+				delete [] AB.mData;
+
+				AB.mData = nullptr;
+			}
+
+			AB.mChannels = 0;
+			AB.mSamples  = 0;
+		}
+	}
+
+	if( !AB.mData )
+	{
+		if( ( AB.mData = new float *[ pChannelCount ] ) == nullptr )
+		{
+			return;
+		}
+
+		for( int i = 0 ; i < pChannelCount ; i++ )
+		{
+			AB.mData[ i ] = nullptr;
+		}
+	}
+
+	for( int i = 0 ; i < pChannelCount ; i++ )
+	{
+		if( !AB.mData[ i ] )
+		{
+			AB.mData[ i ] = new float[ pSampleCount ];
+		}
+
+		if( AB.mData[ i ] )
+		{
+			memcpy( AB.mData[ i ], pData[ i ], sizeof( float ) * pSampleCount );
+		}
+	}
+
+	AB.mChannels = pChannelCount;
+	AB.mSamples  = pSampleCount;
+	AB.mPosition = pSamplePosition;
 }
 
 void DevicePortAudio::deviceInputOpen( const PaDeviceInfo *DevInf )
@@ -296,7 +480,7 @@ void DevicePortAudio::deviceInputOpen( const PaDeviceInfo *DevInf )
 	StrPrm.sampleFormat     = paNonInterleaved | paFloat32;
 	StrPrm.suggestedLatency = DevInf->defaultLowInputLatency;
 
-	if( Pa_OpenStream( &mStreamInput, &StrPrm, nullptr, sampleRate(), paFramesPerBufferUnspecified, paNoFlag, &DevicePortAudio::streamCallbackStatic, this ) != paNoError )
+	if( Pa_OpenStream( &mStreamInput, &StrPrm, nullptr, outputSampleRate(), paFramesPerBufferUnspecified, paNoFlag, &DevicePortAudio::streamCallbackStatic, this ) != paNoError )
 	{
 		return;
 	}
@@ -307,9 +491,10 @@ void DevicePortAudio::deviceInputOpen( const PaDeviceInfo *DevInf )
 
 	qDebug() << DevInf->name << StreamInfo->sampleRate << StreamInfo->inputLatency << mInputChannelCount;
 
-	mSampleRate        = StreamInfo->sampleRate;
+	mInputSampleRate   = StreamInfo->sampleRate;
 	mInputTimeLatency  = StreamInfo->inputLatency;
 	mInputAudioOffset  = 0; //QDateTime::currentMSecsSinceEpoch() * qint64( mSampleRate / 1000.0 );
+	mInputSampleFormat = fugio::AudioSampleFormat::FMT_FLT_S;
 
 	if( Pa_StartStream( mStreamInput ) != paNoError )
 	{
@@ -330,7 +515,7 @@ void DevicePortAudio::deviceOutputOpen( const PaDeviceInfo *DevInf )
 	StrPrm.sampleFormat     = paNonInterleaved | paFloat32;
 	StrPrm.suggestedLatency = DevInf->defaultLowOutputLatency;
 
-	if( Pa_OpenStream( &mStreamOutput, 0, &StrPrm, sampleRate(), paFramesPerBufferUnspecified, paNoFlag, &DevicePortAudio::streamCallbackStatic, this ) != paNoError )
+	if( Pa_OpenStream( &mStreamOutput, 0, &StrPrm, outputSampleRate(), paFramesPerBufferUnspecified, paNoFlag, &DevicePortAudio::streamCallbackStatic, this ) != paNoError )
 	{
 		return;
 	}
@@ -341,9 +526,9 @@ void DevicePortAudio::deviceOutputOpen( const PaDeviceInfo *DevInf )
 
 	qDebug() << DevInf->name << StreamInfo->sampleRate << StreamInfo->outputLatency << mOutputChannelCount;
 
-	mSampleRate   = StreamInfo->sampleRate;
+	mOutputSampleRate   = StreamInfo->sampleRate;
 	mOutputTimeLatency  = StreamInfo->outputLatency;
-	mOutputAudioOffset  = PortAudioPlugin::instance()->fugio()->timestamp() * qint64( mSampleRate / 1000.0 );
+	mOutputAudioOffset  = PortAudioPlugin::instance()->fugio()->timestamp() * qint64( mOutputSampleRate / 1000.0 );
 
 	if( Pa_StartStream( mStreamOutput ) != paNoError )
 	{
@@ -364,7 +549,7 @@ void DevicePortAudio::deviceOutputClose()
 
 //	mStreamOutputOffset = 0;
 
-	mSampleRate   = 0;
+	mOutputSampleRate   = 0;
 	mOutputTimeLatency  = 0;
 	mOutputChannelCount = 0;
 }
@@ -378,14 +563,24 @@ void DevicePortAudio::deviceInputClose()
 		mStreamInput = nullptr;
 	}
 
+	for( AudioBuffer &AB : mAudioBuffers )
+	{
+		for( int i = 0 ; i < AB.mChannels ; i++ )
+		{
+			delete [] AB.mData[ i ];
+		}
+
+		delete [] AB.mData;
+	}
+
 	mInputTimeLatency  = 0;
 	mInputChannelCount = 0;
 }
 #endif
 
-qreal DevicePortAudio::sampleRate() const
+qreal DevicePortAudio::outputSampleRate() const
 {
-	return( mSampleRate > 0 ? mSampleRate : QSettings().value( "audio/sample-rate", double( AUDIO_DEFAULT_SAMPLE_RATE ) ).toDouble() );
+	return( mOutputSampleRate > 0 ? mOutputSampleRate : QSettings().value( "audio/output-sample-rate", double( AUDIO_DEFAULT_SAMPLE_RATE ) ).toDouble() );
 }
 
 void DevicePortAudio::addProducer( AudioProducerInterface *pAudioProducer )
@@ -393,7 +588,7 @@ void DevicePortAudio::addProducer( AudioProducerInterface *pAudioProducer )
 	AudioInstanceData		AID;
 
 	AID.mProducer = pAudioProducer;
-	AID.mInstance = pAudioProducer->allocAudioInstance( mSampleRate, FMT_FLT_S, mOutputChannelCount );
+	AID.mInstance = pAudioProducer->allocAudioInstance( mOutputSampleRate, FMT_FLT_S, mOutputChannelCount );
 
 	mProducerMutex.lock();
 
@@ -424,54 +619,3 @@ void DevicePortAudio::remProducer( AudioProducerInterface *pAudioProducer )
 
 	mProducerMutex.unlock();
 }
-
-//void DevicePortAudio::setCurrentNode( QSharedPointer<fugio::NodeInterface> pNode )
-//{
-//	QSharedPointer<fugio::NodeInterface>	N = mNode.toStrongRef();
-
-//	if( N && N->hasControl() )
-//	{
-//		if( N->hasControl() )
-//		{
-//			QSharedPointer<PinControlInterface>		  C;
-//			PortAudioOutputNode						 *PortAudioNode;
-
-//			if( ( PortAudioNode = qobject_cast<PortAudioOutputNode *>( N->control()->qobject() ) ) != 0 && ( C = PortAudioNode->audioControl() ) != 0 )
-//			{
-//				InterfaceAudioProducer	*A = qobject_cast<InterfaceAudioProducer *>( C->qobject() );
-
-//				if( A && A == mProducer && mProducerInstance )
-//				{
-//					mProducer->freeAudioInstance( mProducerInstance );
-//				}
-//			}
-//		}
-
-//		N.clear();
-
-//		mProducer = nullptr;
-//		mProducerInstance = nullptr;
-//	}
-
-//	mNode = pNode;
-
-//	if( pNode && pNode->hasControl() )
-//	{
-//		QSharedPointer<PinControlInterface>		  C;
-//		PortAudioOutputNode						 *PortAudioNode;
-
-//		if( ( PortAudioNode = qobject_cast<PortAudioOutputNode *>( pNode->control()->qobject() ) ) != 0 && ( C = PortAudioNode->audioControl() ) != 0 )
-//		{
-//			InterfaceAudioProducer	*A = qobject_cast<InterfaceAudioProducer *>( C->qobject() );
-
-//			if( A )
-//			{
-//				mProducer = A;
-//				mProducerInstance = mProducer->allocAudioInstance();
-//			}
-//		}
-
-//		pNode->context()->updateNode( pNode );
-//	}
-//}
-

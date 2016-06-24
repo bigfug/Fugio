@@ -5,6 +5,7 @@
 
 #include <fugio/nodecontrolbase.h>
 #include <fugio/core/variant_interface.h>
+#include <fugio/core/array_interface.h>
 
 class FrequencyBandsNode : public fugio::NodeControlBase
 {
@@ -21,16 +22,16 @@ public:
 
 	virtual ~FrequencyBandsNode( void ) {}
 
-
 	// NodeControlInterface interface
 public:
 	virtual void inputsUpdated( qint64 pTimeStamp );
 
 protected:
-	QSharedPointer<fugio::PinInterface>			 mPinFFT;
+	QSharedPointer<fugio::PinInterface>				 mPinInputFFT;
+	QSharedPointer<fugio::PinInterface>				 mPinInputCount;
 
-	QVector<QSharedPointer<fugio::PinInterface>>	 mPinOutput;
-	QVector<fugio::VariantInterface *>				 mValOutput;
+	QSharedPointer<fugio::PinInterface>				 mPinOutputBands;
+	fugio::ArrayInterface							*mValOutputBands;
 };
 
 

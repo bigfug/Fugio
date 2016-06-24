@@ -44,6 +44,8 @@ protected:
 	qint64										 mSamplePosition;
 
 	void										*mProducerInstance;
+
+	QVector<QVector<float>>						 mAudDat;
 };
 
 #endif // MAGNITUDENODE_H

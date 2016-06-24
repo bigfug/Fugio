@@ -6,6 +6,7 @@
 #include <QNetworkAccessManager>
 #include <QApplication>
 #include <QStandardPaths>
+#include <QMainWindow>
 
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
@@ -19,6 +20,7 @@
 #include <fugio/plugin_interface.h>
 #include <fugio/device_factory_interface.h>
 #include <fugio/global_signals.h>
+#include <fugio/menu_control_interface.h>
 
 GlobalPrivate *GlobalPrivate::mInstance = 0;
 
@@ -334,8 +336,6 @@ bool GlobalPrivate::registerNodeClass( const fugio::ClassEntry &E )
 			}
 		}
 
-		Q_ASSERT( !mNodeMap.contains( E.mUuid ) );
-
 		return( false );
 	}
 
@@ -356,7 +356,12 @@ void GlobalPrivate::unregisterNodeClass( const QUuid &pUUID )
 
 bool GlobalPrivate::registerPinClass( const QString &pName, const QUuid &pUUID, const QMetaObject *pMetaObject )
 {
-	Q_ASSERT( !mPinClassMap.contains( pUUID ) );
+	if( mPinClassMap.contains( pUUID ) )
+	{
+		qWarning() << "Pin Class" << pName << pUUID << pMetaObject->className() << "is already registered";
+
+		return( false );
+	}
 
 	mPinClassMap.insert( pUUID, pMetaObject );
 	mPinNameMap.insert( pUUID, pName );
@@ -794,4 +799,15 @@ QList<QUuid> GlobalPrivate::pinSplitters(const QUuid &pPinId) const
 QList<QUuid> GlobalPrivate::pinJoiners(const QUuid &pPinId) const
 {
 	return( mPinJoiners.values( pPinId ) );
+}
+
+
+void GlobalPrivate::menuAddEntry( fugio::MenuId pMenuId, QString pName, QObject *pObject, const char *pSlot )
+{
+	fugio::MenuControlInterface	*MCI = qobject_cast<fugio::MenuControlInterface *>( mainWindow() );
+
+	if( MCI )
+	{
+		MCI->menuAddEntry( pMenuId, pName, pObject, pSlot );
+	}
 }

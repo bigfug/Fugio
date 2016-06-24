@@ -31,7 +31,8 @@ HEADERS += \
     ../../include/fugio/nodecontrolbase.h \
     deviceportaudio.h \
     portaudioinputnode.h \
-    portaudioplugin.h
+    portaudioplugin.h \
+    ../../include/fugio/audio/audio_generator_interface.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

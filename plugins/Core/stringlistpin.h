@@ -110,6 +110,26 @@ public:
 		return( mValue.at( pIndex ) );
 	}
 
+	virtual void listSetIndex( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE;
+
+	virtual void listSetSize( int pSize ) Q_DECL_OVERRIDE
+	{
+		if( !pSize )
+		{
+			mValue.clear();
+		}
+
+		while( mValue.size() > pSize )
+		{
+			mValue.removeLast();
+		}
+
+		while( mValue.size() < pSize )
+		{
+			mValue.append( QString() );
+		}
+	}
+
 signals:
 	void valueChanged( const QStringList &pValue );
 

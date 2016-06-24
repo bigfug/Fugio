@@ -100,6 +100,23 @@ void PinPrivate::setUpdatable( bool pUpdatable )
 	}
 }
 
+bool PinPrivate::autoRename() const
+{
+	return( mFlags.testFlag( AutoRename ) );
+}
+
+void PinPrivate::setAutoRename( bool pAutoRename )
+{
+	if( pAutoRename )
+	{
+		mFlags |= AutoRename;
+	}
+	else
+	{
+		mFlags &= ~AutoRename;
+	}
+}
+
 QList< QSharedPointer<fugio::PinInterface> > PinPrivate::connectedPins( void ) const
 {
 	return( mContext->connections( mGlobalId ) );
@@ -275,6 +292,8 @@ void PinPrivate::loadSettings1( QSettings &pSettings, bool pPartial )
 	if( direction() == PIN_INPUT )
 	{
 		setUpdatable( pSettings.value( "updatable", updatable() ).toBool() );
+
+		setAutoRename( pSettings.value( "auto-rename", autoRename() ).toBool() );
 	}
 
 	//-------------------------------------------------------------------------
@@ -331,6 +350,8 @@ void PinPrivate::loadSettings2( QSettings &pSettings, bool pPartial )
 	if( direction() == PIN_INPUT )
 	{
 		setUpdatable( pSettings.value( "updatable", updatable() ).toBool() );
+
+		setAutoRename( pSettings.value( "auto-rename", autoRename() ).toBool() );
 	}
 
 	//-------------------------------------------------------------------------
@@ -371,6 +392,8 @@ void PinPrivate::saveSettings1( QSettings &pSettings )
 	if( direction() == PIN_INPUT )
 	{
 		pSettings.setValue( "updatable", updatable() );
+
+		pSettings.setValue( "auto-rename", autoRename() );
 	}
 
 	//-------------------------------------------------------------------------
@@ -429,9 +452,17 @@ void PinPrivate::saveSettings2( QSettings &pSettings )
 		pSettings.setValue( "hidden", hidden() );
 	}
 
-	if( direction() == PIN_INPUT && !updatable() )
+	if( direction() == PIN_INPUT )
 	{
-		pSettings.setValue( "updatable", updatable() );
+		if( !autoRename() )
+		{
+			pSettings.setValue( "auto-rename", autoRename() );
+		}
+
+		if( !updatable() )
+		{
+			pSettings.setValue( "updatable", updatable() );
+		}
 	}
 
 	//-------------------------------------------------------------------------

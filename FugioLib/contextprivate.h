@@ -260,6 +260,7 @@ private:
 
 	typedef QMap< QSharedPointer<fugio::PinInterface>, bool >		UpdatePinMap;
 
+	QMutex												 mUpdatePinMapMutex;
 	UpdatePinMap										 mUpdatePinMap;
 
 	static QMap<fugio::ContextInterface::MetaInfo,QString>	 mMetaNameMap;

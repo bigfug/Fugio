@@ -32,6 +32,7 @@
 #include "listindexnode.h"
 #include "framedelaynode.h"
 #include "typesizenode.h"
+#include "switchnode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -79,6 +80,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Split List", NID_SPLIT_LIST, &SplitListNode::staticMetaObject ),
 	ClassEntry( "Split Point", NID_SPLIT_POINT, &SplitPointNode::staticMetaObject ),
 	ClassEntry( "Split Size", NID_SPLIT_SIZE, &SplitSizeNode::staticMetaObject ),
+	ClassEntry( "Switch", NID_SWITCH, &SwitchNode::staticMetaObject ),
 	ClassEntry()
 };
 

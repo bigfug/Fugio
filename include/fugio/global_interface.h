@@ -84,6 +84,11 @@ Q_DECLARE_OPERATORS_FOR_FLAGS( ClassEntry::Flags )
 
 typedef QList<ClassEntry>	ClassEntryList;
 
+typedef enum MenuId
+{
+	HELP
+} MenuId;
+
 class GlobalInterface
 {
 public:
@@ -198,6 +203,11 @@ public:
 
 	virtual QList<QUuid> pinSplitters( const QUuid &pPinId ) const = 0;
 	virtual QList<QUuid> pinJoiners( const QUuid &pPinId ) const = 0;
+
+	//-------------------------------------------------------------------------
+	// Adding menu entries to the editor application
+
+	virtual void menuAddEntry( fugio::MenuId, QString pName, QObject *pObject, const char *pSlot ) = 0;
 };
 
 FUGIO_NAMESPACE_END
