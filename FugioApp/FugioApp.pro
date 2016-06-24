@@ -190,7 +190,7 @@ windows {
 
         QMAKE_POST_LINK += & copy /V /Y $$shell_path( $(QTDIR)/plugins/platforms/qwindows.dll ) $$shell_path( $$INSTALLDIR/data/platforms )
 
-        QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/icu*.dll ) $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) $$shell_path( $(QTDIR)/bin/Qt5Core.dll ) $$shell_path( $(QTDIR)/bin/Qt5Gui.dll ) $$shell_path( $(QTDIR)/bin/Qt5Widgets.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
+		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/icu*.dll ) $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) $$shell_path( $(QTDIR)/bin/Qt5Core.dll ) $$shell_path( $(QTDIR)/bin/Qt5Gui.dll ) $$shell_path( $(QTDIR)/bin/Qt5Widgets.dll ) $$shell_path( $(QTDIR)/bin/Qt5Network.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
     }
 }
 
