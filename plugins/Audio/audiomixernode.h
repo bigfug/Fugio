@@ -21,7 +21,7 @@ class AudioMixerNode : public fugio::NodeControlBase, public fugio::AudioProduce
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Mixes multiple audio inputs into single output" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Audio_Mixer" )
+	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Mixer_(Audio)" )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
