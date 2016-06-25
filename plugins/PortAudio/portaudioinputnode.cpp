@@ -72,7 +72,10 @@ bool PortAudioInputNode::deinitialise()
 
 void PortAudioInputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const
 {
-	AudioInstanceData		*AID = static_cast<AudioInstanceData *>( pInstanceData );
+	Q_UNUSED( pInstanceData )
+	Q_UNUSED( pLatency )
+
+	//AudioInstanceData		*AID = static_cast<AudioInstanceData *>( pInstanceData );
 
 	mPortAudio->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers );
 }

@@ -14,5 +14,8 @@ QUuid StringListPin::listPinControl() const
 
 void StringListPin::listSetIndex( int pIndex, const QVariant &pValue )
 {
-
+	if( pIndex >= 0 && pIndex < mValue.size() )
+	{
+		mValue[ pIndex ] = pValue.toString();
+	}
 }

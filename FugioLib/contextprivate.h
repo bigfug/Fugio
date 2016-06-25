@@ -200,10 +200,7 @@ private:
 
 	static void processNode( QSharedPointer<fugio::NodeInterface> pNode, qint64 pTimeStamp );
 
-	//static void processContext( QSharedPointer<fugio::ContextInterface> pContext );
-
-	bool loadSettings1( QSettings &pSettings, QList< QSharedPointer<fugio::NodeInterface> > &pNewNodeList, bool pPartial );
-	bool loadSettings2( QSettings &pSettings, QList< QSharedPointer<fugio::NodeInterface> > &pNewNodeList, bool pPartial );
+	bool loadSettings( QSettings &pSettings, QList< QSharedPointer<fugio::NodeInterface> > &pNewNodeList, bool pPartial );
 
 	void loadNodeSettings( QSettings &pSettings, QVariantHash &pVarHsh, QStringList &pVarBse ) const;
 
