@@ -77,7 +77,10 @@ void PortAudioInputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int
 
 	//AudioInstanceData		*AID = static_cast<AudioInstanceData *>( pInstanceData );
 
-	mPortAudio->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers );
+	if( mPortAudio )
+	{
+		mPortAudio->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers );
+	}
 }
 
 void PortAudioInputNode::clicked()
