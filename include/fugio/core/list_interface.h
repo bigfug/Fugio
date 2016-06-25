@@ -1,8 +1,9 @@
 #ifndef LIST_INTERFACE_H
 #define LIST_INTERFACE_H
 
-#include <QByteArray>
-#include <QMetaType>
+#include <QtGlobal>
+#include <QVariant>
+#include <QUuid>
 
 #include <fugio/global.h>
 
