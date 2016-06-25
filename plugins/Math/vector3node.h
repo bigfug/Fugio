@@ -25,12 +25,12 @@ public:
 
 	// NodeControlInterface interface
 
-	virtual void inputsUpdated(qint64 pTimeStamp);
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
-	virtual QWidget *gui();
+	virtual QWidget *gui() Q_DECL_OVERRIDE;
 
-	virtual void loadSettings(QSettings &pSettings);
-	virtual void saveSettings(QSettings &pSettings);
+	virtual void loadSettings( QSettings &pSettings ) Q_DECL_OVERRIDE;
+	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
 
 signals:
 	void updatedX( double pValue );

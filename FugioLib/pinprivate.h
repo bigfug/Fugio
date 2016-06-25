@@ -92,11 +92,9 @@ public:
 
 	virtual QVariant value( void ) const Q_DECL_OVERRIDE;
 
-	virtual void loadSettings1( QSettings &pSettings, bool pPartial ) Q_DECL_OVERRIDE;
-	virtual void loadSettings2( QSettings &pSettings, bool pPartial ) Q_DECL_OVERRIDE;
+	virtual void loadSettings( QSettings &pSettings, bool pPartial ) Q_DECL_OVERRIDE;
 
-	virtual void saveSettings1( QSettings &pSettings ) Q_DECL_OVERRIDE;
-	virtual void saveSettings2( QSettings &pSettings ) Q_DECL_OVERRIDE;
+	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
 
 	virtual QSharedPointer<fugio::NodeInterface> connectedNode( void ) Q_DECL_OVERRIDE;
 

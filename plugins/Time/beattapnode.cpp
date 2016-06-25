@@ -110,7 +110,7 @@ void BeatTapNode::loadSettings( QSettings &pSettings )
 	mBeatDuration = pSettings.value( "duration", mBeatDuration ).toDouble();
 }
 
-void BeatTapNode::saveSettings(QSettings &pSettings)
+void BeatTapNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "duration", mBeatDuration );
 }

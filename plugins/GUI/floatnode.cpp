@@ -46,7 +46,7 @@ void FloatNode::loadSettings( QSettings &pSettings )
 	pinUpdated( mPinValue );
 }
 
-void FloatNode::saveSettings( QSettings &pSettings )
+void FloatNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "Value", mFloat->variant().toDouble() );
 }

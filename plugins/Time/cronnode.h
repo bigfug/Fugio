@@ -28,12 +28,12 @@ public:
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
 
-	virtual bool initialise( void );
+	virtual bool initialise( void ) Q_DECL_OVERRIDE;
 
-	virtual QWidget *gui( void );
+	virtual QWidget *gui( void ) Q_DECL_OVERRIDE;
 
-	virtual void loadSettings( QSettings &pSettings );
-	virtual void saveSettings( QSettings &pSettings );
+	virtual void loadSettings( QSettings &pSettings ) Q_DECL_OVERRIDE;
+	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
 
 private:
 	bool checkYear( int pYear ) const;

@@ -161,7 +161,7 @@ void LedNode::loadSettings( QSettings &pSettings )
 	emit colourChanged( mLedColour );
 }
 
-void LedNode::saveSettings( QSettings &pSettings )
+void LedNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "colour", mLedColour );
 }

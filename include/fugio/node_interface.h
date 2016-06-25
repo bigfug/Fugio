@@ -35,7 +35,7 @@ public:
 	//-------------------------------------------------------------------------
 	// Node Control
 
-	virtual QSharedPointer<fugio::NodeControlInterface> control( void ) = 0;
+	virtual QSharedPointer<fugio::NodeControlInterface> control( void ) const = 0;
 
 	virtual bool hasControl( void ) const = 0;
 
@@ -53,7 +53,7 @@ public:
 	//-------------------------------------------------------------------------
 	// Human readable name
 
-	virtual const QString &name( void ) = 0;
+	virtual QString name( void ) const = 0;
 
 	virtual void setName( const QString &pName ) = 0;
 
@@ -76,9 +76,9 @@ public:
 	//-------------------------------------------------------------------------
 	// Pin lookup/enums
 
-	virtual QSharedPointer<fugio::PinInterface> findPinByGlobalId( const QUuid &pUuid ) = 0;
+	virtual QSharedPointer<fugio::PinInterface> findPinByGlobalId( const QUuid &pUuid ) const = 0;
 
-	virtual QSharedPointer<fugio::PinInterface> findPinByLocalId( const QUuid &pUuid ) = 0;
+	virtual QSharedPointer<fugio::PinInterface> findPinByLocalId( const QUuid &pUuid ) const = 0;
 
 	virtual QSharedPointer<fugio::PinInterface> findPinByName( const QString &pName ) const = 0;
 
@@ -86,11 +86,11 @@ public:
 
 	virtual QSharedPointer<fugio::PinInterface> findOutputPinByName( const QString &pName ) const = 0;
 
-	virtual QList< QSharedPointer<fugio::PinInterface> > enumPins( void ) = 0;
+	virtual QList< QSharedPointer<fugio::PinInterface> > enumPins( void ) const = 0;
 
-	virtual QList< QSharedPointer<fugio::PinInterface> > enumInputPins( void ) = 0;
+	virtual QList< QSharedPointer<fugio::PinInterface> > enumInputPins( void ) const = 0;
 
-	virtual QList< QSharedPointer<fugio::PinInterface> > enumOutputPins( void ) = 0;
+	virtual QList< QSharedPointer<fugio::PinInterface> > enumOutputPins( void ) const = 0;
 
 	virtual bool hasPin( QSharedPointer<fugio::PinInterface> pPin ) const = 0;
 
@@ -108,18 +108,16 @@ public:
 	//-------------------------------------------------------------------------
 	// Load and Save
 
-	virtual void loadSettings1( QSettings &pSettings, bool pPartial ) = 0;
-	virtual void loadSettings2( QSettings &pSettings, QMap<QUuid,QUuid> &pPinMap, bool pPartial ) = 0;
+	virtual void loadSettings( QSettings &pSettings, QMap<QUuid,QUuid> &pPinMap, bool pPartial ) = 0;
 
-	virtual void saveSettings1( QSettings &pSettings, bool pPartial ) = 0;
-	virtual void saveSettings2( QSettings &pSettings, bool pPartial ) = 0;
+	virtual void saveSettings( QSettings &pSettings, bool pPartial ) const = 0;
 
 	//-------------------------------------------------------------------------
 	// Settings
 
 	virtual void setSetting( const QString &pKey, const QVariant &pValue ) = 0;
 
-	virtual QVariant setting( const QString &pKey, const QVariant &pDefault ) = 0;
+	virtual QVariant setting( const QString &pKey, const QVariant &pDefault ) const = 0;
 
 	virtual QVariantHash settings( void ) const = 0;
 

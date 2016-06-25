@@ -116,7 +116,7 @@ public:
 	{
 	}
 
-	virtual void saveSettings( QSettings & ) Q_DECL_OVERRIDE
+	virtual void saveSettings( QSettings & ) const Q_DECL_OVERRIDE
 	{
 	}
 

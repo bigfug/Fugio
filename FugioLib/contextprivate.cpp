@@ -288,7 +288,7 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, QList< QSharedPointer<f
 		{
 			pSettings.beginGroup( fugio::utils::uuid2string( it.value() ) );
 
-			N->loadSettings2( pSettings, PinsMap, pPartial );
+			N->loadSettings( pSettings, PinsMap, pPartial );
 
 			pSettings.endGroup();
 		}
@@ -449,7 +449,7 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 		{
 			CFG.beginGroup( fugio::utils::uuid2string( N->uuid() ) );
 
-			N->saveSettings2( CFG, false );
+			N->saveSettings( CFG, false );
 
 			CFG.endGroup();
 
@@ -457,7 +457,7 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 			{
 				CFG.beginGroup( fugio::utils::uuid2string( P->globalId() ) );
 
-				P->saveSettings2( CFG );
+				P->saveSettings( CFG );
 
 				CFG.endGroup();
 			}

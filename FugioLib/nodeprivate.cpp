@@ -157,119 +157,6 @@ void NodePrivate::inputsUpdated( qint64 pTimeStamp )
 	}
 }
 
-void NodePrivate::loadSettings1( QSettings &pSettings, bool pPartial )
-{
-	pSettings.beginGroup( name() );
-
-	//-------------------------------------------------------------------------
-
-	int		SettingsVersion = pSettings.value( "version", 0 ).toInt();
-
-	setName( pSettings.value( "name", mName ).toString() );
-
-	if( !pPartial )
-	{
-		setUuid( QUuid( pSettings.value( "uuid", mUUID.toString() ).toString() ) );
-	}
-
-	setActive( pSettings.value( "active", mActive ).toBool() );
-
-	//-------------------------------------------------------------------------
-
-	if( SettingsVersion >= 1 )
-	{
-		pSettings.beginGroup( "control" );
-	}
-
-	if( control() )
-	{
-		control()->loadSettings( pSettings );
-	}
-
-	if( SettingsVersion >= 1 )
-	{
-		pSettings.endGroup();
-	}
-
-	//-------------------------------------------------------------------------
-
-	if( SettingsVersion >= 1 )
-	{
-		pSettings.beginGroup( "pins" );
-
-		foreach( const QString &PIN_NAME, pSettings.childGroups() )
-		{
-			if( hasPin( PIN_NAME ) )
-			{
-				continue;
-			}
-
-			pSettings.beginGroup( PIN_NAME );
-
-			QSharedPointer<fugio::PinInterface>	PIN = context()->global()->createPin( PIN_NAME, QUuid::createUuid(), context()->findNode( uuid() ), PinDirection( pSettings.value( "direction", int( PIN_UNKNOWN ) ).toInt() ) );
-
-			if( PIN != 0 )
-			{
-				addPin( PIN );
-			}
-
-			pSettings.endGroup();
-		}
-
-		qSort( mPinInputs.begin(), mPinInputs.end(), pinOrderFunction );
-		qSort( mPinOutputs.begin(), mPinOutputs.end(), pinOrderFunction );
-	}
-
-	// mPinMap might change during loading here
-
-	for( int i = 0 ; i < mPinInputs.size() ; i++ )
-	{
-		QSharedPointer<fugio::PinInterface> P = mPinInputs.at( i );
-
-		P->loadSettings1( pSettings, pPartial );
-
-		//if( P->order() == -1 )
-		{
-			P->setOrder( i );
-		}
-	}
-
-	for( int i = 0 ; i < mPinOutputs.size() ; i++ )
-	{
-		QSharedPointer<fugio::PinInterface> P = mPinOutputs.at( i );
-
-		P->loadSettings1( pSettings, pPartial );
-
-		//if( P->order() == -1 )
-		{
-			P->setOrder( i );
-		}
-	}
-
-	qSort( mPinInputs.begin(), mPinInputs.end(), pinOrderFunction );
-	qSort( mPinOutputs.begin(), mPinOutputs.end(), pinOrderFunction );
-
-	if( SettingsVersion >= 1 )
-	{
-		pSettings.endGroup();
-	}
-
-	//-------------------------------------------------------------------------
-
-	pSettings.beginGroup( "settings" );
-
-	foreach( const QString &K, pSettings.childKeys() )
-	{
-		mSettings.insert( K, pSettings.value( K ) );
-	}
-
-	pSettings.endGroup();
-
-	//-------------------------------------------------------------------------
-
-	pSettings.endGroup();
-}
-
 void NodePrivate::loadPinSettings( QSettings &pSettings, QVariantHash &pVarHsh, QStringList &pVarBse ) const
 {
 	foreach( const QString &K, pSettings.childGroups() )
@@ -295,7 +182,7 @@ void NodePrivate::loadPinSettings( QSettings &pSettings, QVariantHash &pVarHsh, 
 	}
 }
 
-void NodePrivate::loadPins2( QSettings &pSettings, const QString &pArrayName, PinDirection pDirection, QMap<QUuid, QUuid> &pPinMap, bool pPartial )
+void NodePrivate::loadPins( QSettings &pSettings, const QString &pArrayName, PinDirection pDirection, QMap<QUuid, QUuid> &pPinMap, bool pPartial )
 {
 	QSettings		CFG( pSettings.fileName(), pSettings.format() );
 
@@ -350,7 +237,7 @@ void NodePrivate::loadPins2( QSettings &pSettings, const QString &pArrayName, Pi
 
 			PP->setSettings( PinData );
 
-			PIN->loadSettings2( CFG, pPartial );
+			PIN->loadSettings( CFG, pPartial );
 
 			PIN->setOrder( i );
 		}
@@ -378,7 +265,7 @@ void NodePrivate::loadPins2( QSettings &pSettings, const QString &pArrayName, Pi
 					PP->setSettings( PinData );
 				}
 
-				PIN->loadSettings2( CFG, pPartial );
+				PIN->loadSettings( CFG, pPartial );
 
 				PIN->setOrder( i );
 
@@ -392,7 +279,7 @@ void NodePrivate::loadPins2( QSettings &pSettings, const QString &pArrayName, Pi
 	pSettings.endArray();
 }
 
-void NodePrivate::loadSettings2( QSettings &pSettings, QMap<QUuid, QUuid> &pPinMap, bool pPartial )
+void NodePrivate::loadSettings( QSettings &pSettings, QMap<QUuid, QUuid> &pPinMap, bool pPartial )
 {
 	Q_UNUSED( pPartial )
 
@@ -413,11 +300,11 @@ void NodePrivate::loadSettings2( QSettings &pSettings, QMap<QUuid, QUuid> &pPinM
 
 	//-------------------------------------------------------------------------
 
-	loadPins2( pSettings, "inputs", PIN_INPUT, pPinMap, pPartial );
+	loadPins( pSettings, "inputs", PIN_INPUT, pPinMap, pPartial );
 
 	//-------------------------------------------------------------------------
 
-	loadPins2( pSettings, "outputs", PIN_OUTPUT, pPinMap, pPartial );
+	loadPins( pSettings, "outputs", PIN_OUTPUT, pPinMap, pPartial );
 
 	//-------------------------------------------------------------------------
 
@@ -438,65 +325,7 @@ void NodePrivate::loadSettings2( QSettings &pSettings, QMap<QUuid, QUuid> &pPinM
 //	pSettings.endGroup();
 }
 
-void NodePrivate::saveSettings1( QSettings &pSettings, bool pPartial )
-{
-	Q_UNUSED( pPartial )
-
-	pSettings.beginGroup( name() );
-
-	//-------------------------------------------------------------------------
-
-	pSettings.setValue( "version", 1 );
-
-	pSettings.setValue( "name", mName );
-	pSettings.setValue( "uuid", mUUID.toString() );
-
-	if( !mActive )
-	{
-		pSettings.setValue( "active", mActive );
-	}
-
-	//-------------------------------------------------------------------------
-
-	pSettings.beginGroup( "control" );
-
-	control()->saveSettings( pSettings );
-
-	pSettings.endGroup();
-
-	//-------------------------------------------------------------------------
-
-	pSettings.beginGroup( "pins" );
-
-	for( QList< QSharedPointer<fugio::PinInterface> >::iterator it = mPinInputs.begin() ; it != mPinInputs.end() ; it++ )
-	{
-		(*it)->saveSettings1( pSettings );
-	}
-
-	for( QList< QSharedPointer<fugio::PinInterface> >::iterator it = mPinOutputs.begin() ; it != mPinOutputs.end() ; it++ )
-	{
-		(*it)->saveSettings1( pSettings );
-	}
-
-	pSettings.endGroup();
-
-	//-------------------------------------------------------------------------
-
-	pSettings.beginGroup( "settings" );
-
-	for( QVariantHash::const_iterator it = mSettings.constBegin() ; it != mSettings.constEnd() ; it++ )
-	{
-		pSettings.setValue( it.key(), it.value() );
-	}
-
-	pSettings.endGroup();
-
-	//-------------------------------------------------------------------------
-
-	pSettings.endGroup();
-}
-
-void NodePrivate::saveSettings2( QSettings &pSettings, bool pPartial )
+void NodePrivate::saveSettings( QSettings &pSettings, bool pPartial ) const
 {
 	Q_UNUSED( pPartial )
 
@@ -596,7 +425,7 @@ void NodePrivate::setSetting( const QString &pKey, const QVariant &pValue )
 	mSettings.insert( pKey, pValue );
 }
 
-QVariant NodePrivate::setting( const QString &pKey, const QVariant &pDefault )
+QVariant NodePrivate::setting( const QString &pKey, const QVariant &pDefault ) const
 {
 	return( mSettings.value( pKey, pDefault ) );
 }

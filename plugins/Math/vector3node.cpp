@@ -117,7 +117,7 @@ void Vector3Node::loadSettings(QSettings &pSettings)
 	pinUpdated( mPinVec3 );
 }
 
-void Vector3Node::saveSettings(QSettings &pSettings)
+void Vector3Node::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "v", mVec3->variant() );
 }

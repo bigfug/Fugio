@@ -66,7 +66,7 @@ void ChoiceNode::loadSettings( QSettings &pSettings )
 	valueChanged( pSettings.value( "value" ).toString() );
 }
 
-void ChoiceNode::saveSettings( QSettings &pSettings )
+void ChoiceNode::saveSettings( QSettings &pSettings ) const
 {
 	NodeControlBase::saveSettings( pSettings );
 

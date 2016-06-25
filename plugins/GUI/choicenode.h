@@ -33,7 +33,7 @@ public:
 
 	virtual void loadSettings( QSettings &pSettings ) Q_DECL_OVERRIDE;
 
-	virtual void saveSettings( QSettings &pSettings ) Q_DECL_OVERRIDE;
+	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
 
 signals:
 	void valueUpdated( const QString &pValue );
