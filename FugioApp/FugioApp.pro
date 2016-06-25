@@ -14,13 +14,13 @@ TEMPLATE = app
 CONFIG += c++11
 
 CONFIG(debug,debug|release) {
-    DESTDIR = $$OUT_PWD/../../deploy-debug
+	DESTDIR = $$OUT_PWD/../../deploy-debug-$$QMAKE_HOST.arch
 } else {
-    DESTDIR = $$OUT_PWD/../../deploy-release
+	DESTDIR = $$OUT_PWD/../../deploy-release-$$QMAKE_HOST.arch
 }
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
+	mainwindow.cpp \
     app.cpp \
 	linkitem.cpp \
     contextview.cpp \
@@ -129,7 +129,7 @@ macx {
     APP_DIR      = $$DESTDIR/$$TARGET".app"
     PLUGIN_DIR   = $$APP_DIR/Contents/PlugIns
     RESOURCE_DIR = $$APP_DIR/Contents/Resources
-    INSTALLBASE  = $$OUT_PWD/../../deploy-installer
+	INSTALLBASE  = $$OUT_PWD/../../deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
     CONFIG(release,debug|release) {
@@ -165,7 +165,7 @@ macx {
 }
 
 windows {
-    INSTALLBASE  = $$OUT_PWD/../../deploy-installer
+	INSTALLBASE  = $$OUT_PWD/../../deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
     CONFIG(release,debug|release) {

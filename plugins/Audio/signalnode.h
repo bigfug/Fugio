@@ -82,7 +82,7 @@ protected:
 	  }
 
 
-	#ifdef WIN32
+	#if defined( WIN32 ) && !defined( WIN64 )
 	  int inline CTZ(int num)
 	  {
 		_asm
