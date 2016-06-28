@@ -129,7 +129,7 @@ macx {
     APP_DIR      = $$DESTDIR/$$TARGET".app"
     PLUGIN_DIR   = $$APP_DIR/Contents/PlugIns
     RESOURCE_DIR = $$APP_DIR/Contents/Resources
-	INSTALLBASE  = $$OUT_PWD/../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLBASE  = $$OUT_PWD/../../deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
     CONFIG(release,debug|release) {
@@ -165,7 +165,7 @@ macx {
 }
 
 windows {
-	INSTALLBASE  = $$OUT_PWD/../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLBASE  = $$OUT_PWD/../../deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
     CONFIG(release,debug|release) {
@@ -326,7 +326,7 @@ win32 {
 # Lua
 
 win32:exists( $$(LIBS)/Lua-5.3.2 ) {
-	LIBS += -L$$(LIBS)/Lua-5.3.2
+    LIBS += -L$$(LIBS)/Lua-5.3.2
 }
 
 #------------------------------------------------------------------------------
