@@ -66,6 +66,7 @@ PluginInterface::InitResult LuaPlugin::initialise( fugio::GlobalInterface *pApp 
 	luaAddFunction( 0, 0 );
 
 	luaAddFunction( "log", LuaPlugin::luaLog );
+	luaAddFunction( "timestamp", LuaPlugin::luaTimestamp );
 
 	LuaNode::registerFunctions();
 
@@ -159,6 +160,16 @@ int LuaPlugin::luaLog( lua_State *L )
 	}
 
 	return( 0 );
+}
+
+int LuaPlugin::luaTimestamp( lua_State *L )
+{
+	LuaInterface					*LUA = qobject_cast<LuaInterface *>( LuaPlugin::instance()->app()->findInterface( IID_LUA ) );
+	NodeInterface					*N = LUA->node( L );
+
+	lua_pushunsigned( L, N->context()->global()->timestamp() );
+
+	return( 1 );
 }
 
 int LuaPlugin::pushVariant( lua_State *L, const QVariant &V )

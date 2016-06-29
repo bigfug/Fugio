@@ -87,6 +87,8 @@ public:
 private:
 	static int luaLog( lua_State *L );
 
+	static int luaTimestamp( lua_State *L );
+
 private:
 	static LuaPlugin						*mInstance;
 
