@@ -79,6 +79,7 @@ uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
 version=2
 
 [85beed00-ef2d-46a5-b74e-e58cbb3cef73]
+control\toggle=true
 inputs\size=0
 name=Button
 outputs\1\0a04b9ca-3a7d-42dc-b2ec-aeb2fc2c94aa=9f47ca6a-f8b8-4029-8dee-98caa049374e
