@@ -25,6 +25,8 @@ public:
 private:
 	static int luaGet( lua_State *L );
 	static int luaToString( lua_State *L );
+	static int luaUpdated( lua_State *L );
+	static int luaIsUpdated( lua_State *L );
 
 private:
 	static const luaL_Reg					mLuaPinFunctions[];

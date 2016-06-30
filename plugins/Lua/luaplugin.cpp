@@ -128,7 +128,7 @@ NodeInterface *LuaPlugin::node(lua_State *L)
 	return( static_cast<NodeInterface *>( lua_touserdata( L, -1 ) ) );
 }
 
-QUuid LuaPlugin::checkpin(lua_State *L, int i)
+QUuid LuaPlugin::checkpin( lua_State *L, int i)
 {
 	void *ud = luaL_checkudata( L, i, "fugio.pin" );
 
@@ -148,6 +148,20 @@ void LuaPlugin::pushpin( lua_State *L, const QUuid &pUuid )
 
 		memcpy( UD, pUuid.toRfc4122().data(), 16 );
 	}
+}
+
+NodeInterface *LuaPlugin::getnode( lua_State *L )
+{
+	return( instance()->node( L ) );
+}
+
+QSharedPointer<PinInterface> LuaPlugin::getpin( lua_State *L, int i )
+{
+	LuaInterface						*LUA = instance();
+	NodeInterface						*N = LUA->node( L );
+	QUuid								 U = LUA->checkpin( L, i );
+
+	return( N->findPinByGlobalId( U ) );
 }
 
 //-----------------------------------------------------------------------------

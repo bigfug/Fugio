@@ -10,6 +10,7 @@
 
 #include <fugio/plugin_interface.h>
 #include <fugio/lua/lua_interface.h>
+#include <fugio/pin_interface.h>
 
 class LuaPlugin : public QObject, public fugio::PluginInterface, public fugio::LuaInterface
 {
@@ -58,11 +59,15 @@ public:
 
 	virtual fugio::NodeInterface *node( lua_State *L ) Q_DECL_OVERRIDE;
 
-	virtual QUuid checkpin( lua_State *L, int i ) Q_DECL_OVERRIDE;
+	virtual QUuid checkpin( lua_State *L, int i = 1 ) Q_DECL_OVERRIDE;
 
 	virtual void pushpin( lua_State *L, const QUuid &pUuid ) Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
+
+	static fugio::NodeInterface *getnode( lua_State *L );
+
+	static QSharedPointer<fugio::PinInterface> getpin( lua_State *L, int i = 1 );
 
 	const QVector<luaL_Reg> &functions( void )
 	{

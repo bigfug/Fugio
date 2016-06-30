@@ -33,8 +33,10 @@ const luaL_Reg LuaExPin::mLuaInstance[] =
 const luaL_Reg LuaExPin::mLuaPinMethods[] =
 {
 	{ "name",		LuaExPin::luaPinGetName },
+	{ "isUpdated",	LuaExPin::luaIsUpdated },
 	{ "set",		LuaExPin::luaPinSetValue },
 	{ "get",		LuaExPin::luaPinGetValue },
+	{ "updated",	LuaExPin::luaUpdated },
 	{ 0, 0 }
 };
 
@@ -61,10 +63,7 @@ int LuaExPin::lua_openpin( lua_State *L )
 
 int LuaExPin::luaGet( lua_State *L )
 {
-	LuaInterface						*LUA = qobject_cast<LuaInterface *>( LuaPlugin::instance()->app()->findInterface( IID_LUA ) );
-	NodeInterface						*N = LUA->node( L );
-	QUuid								 U = LUA->checkpin( L, 1 );
-	QSharedPointer<fugio::PinInterface>	 P = N->findPinByGlobalId( U );
+	QSharedPointer<fugio::PinInterface>	 P = LuaPlugin::getpin( L );
 
 	const char	*s = luaL_checkstring( L, 2 );
 
@@ -78,7 +77,7 @@ int LuaExPin::luaGet( lua_State *L )
 		}
 	}
 
-	for( const luaL_Reg &F : dynamic_cast<LuaPlugin *>( LUA )->pinFunctions( P->controlUuid() ) )
+	for( const luaL_Reg &F : LuaPlugin::instance()->pinFunctions( P->controlUuid() ) )
 	{
 		if( !strcmp( s, F.name ) )
 		{
@@ -96,12 +95,39 @@ int LuaExPin::luaToString( lua_State *L )
 	return( luaPinGetName( L ) );
 }
 
+int LuaExPin::luaUpdated(lua_State *L)
+{
+	QSharedPointer<fugio::PinInterface>	 P = LuaPlugin::getpin( L );
+
+	if( !P )
+	{
+		return( 0 );
+	}
+
+	lua_pushunsigned( L, P->updated() );
+
+	return( 1 );
+}
+
+int LuaExPin::luaIsUpdated( lua_State *L )
+{
+	QSharedPointer<fugio::PinInterface>	 P = LuaPlugin::getpin( L );
+
+	if( !P )
+	{
+		return( 0 );
+	}
+
+	qint64			TimeStamp = luaL_checkunsigned( L, 2 );
+
+	lua_pushboolean( L, P->isUpdated( TimeStamp ) );
+
+	return( 1 );
+}
+
 int LuaExPin::luaPinGetName( lua_State *L )
 {
-	LuaInterface					*LUA = qobject_cast<LuaInterface *>( LuaPlugin::instance()->app()->findInterface( IID_LUA ) );
-	NodeInterface					*N = LUA->node( L );
-	QUuid							 U = LUA->checkpin( L, 1 );
-	QSharedPointer<fugio::PinInterface>	 P = N->findPinByGlobalId( U );
+	QSharedPointer<fugio::PinInterface>	 P = LuaPlugin::getpin( L );
 
 	if( !P )
 	{
@@ -115,10 +141,7 @@ int LuaExPin::luaPinGetName( lua_State *L )
 
 int LuaExPin::luaPinSetValue( lua_State *L )
 {
-	LuaInterface						*LUA = qobject_cast<LuaInterface *>( LuaPlugin::instance()->app()->findInterface( IID_LUA ) );
-	NodeInterface						*N = LUA->node( L );
-	QUuid								 U = LUA->checkpin( L, 1 );
-	QSharedPointer<fugio::PinInterface>	 P = N->findPinByGlobalId( U );
+	QSharedPointer<fugio::PinInterface>	 P = LuaPlugin::getpin( L );
 
 	if( P->direction() != PIN_OUTPUT || !P->hasControl() )
 	{
@@ -144,7 +167,7 @@ int LuaExPin::luaPinSetValue( lua_State *L )
 	{
 		IV->setFromBaseVariant( V );
 
-		N->context()->pinUpdated( P );
+		P->node()->context()->pinUpdated( P );
 	}
 	else
 	{
@@ -156,10 +179,7 @@ int LuaExPin::luaPinSetValue( lua_State *L )
 
 int LuaExPin::luaPinGetValue( lua_State *L )
 {
-	LuaInterface						*LUA = qobject_cast<LuaInterface *>( LuaPlugin::instance()->app()->findInterface( IID_LUA ) );
-	NodeInterface						*N = LUA->node( L );
-	QUuid								 U = LUA->checkpin( L, 1 );
-	QSharedPointer<fugio::PinInterface>	 P = N->findPinByGlobalId( U );
+	QSharedPointer<fugio::PinInterface>	 P = LuaPlugin::getpin( L );
 
 	if( !P )
 	{

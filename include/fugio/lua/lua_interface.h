@@ -48,7 +48,7 @@ public:
 
 	virtual fugio::NodeInterface *node( lua_State *L ) = 0;
 
-	virtual QUuid checkpin( lua_State *L, int i ) = 0;
+	virtual QUuid checkpin( lua_State *L, int i = 1 ) = 0;
 
 	virtual void pushpin( lua_State *L, const QUuid &pUuid ) = 0;
 };
