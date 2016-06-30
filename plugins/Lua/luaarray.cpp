@@ -35,6 +35,22 @@ int LuaArray::lua_openarray( lua_State *L )
 int LuaArray::luaGet( lua_State *L )
 {
 	LuaArrayUserData			*LstDat = checkarray( L );
+
+	if( lua_isstring( L, 2 ) )
+	{
+		const char	*s = luaL_checkstring( L, 2 );
+
+		for( const luaL_Reg *F = mLuaInstance ; F->func ; F++ )
+		{
+			if( !strcmp( s, F->name ) )
+			{
+				lua_pushcfunction( L, F->func );
+
+				return( 1 );
+			}
+		}
+	}
+
 	int							 LstIdx = luaL_checkinteger( L, 2 );
 
 	fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( LstDat->mObject );
@@ -77,7 +93,7 @@ int LuaArray::luaSet( lua_State *L )
 		{
 			float		*A = (float *)ArrInt->array();
 
-			if( A )
+			if( A && ArrInt->stride() == sizeof( float ) )
 			{
 				if( ArrInt->size() == 1 )
 				{
@@ -110,7 +126,7 @@ int LuaArray::luaSet( lua_State *L )
 		{
 			int		*A = (int *)ArrInt->array();
 
-			if( A )
+			if( A && ArrInt->stride() == sizeof( int ) )
 			{
 				if( ArrInt->size() == 1 )
 				{
@@ -337,10 +353,14 @@ int LuaArray::luaSetType( lua_State *L )
 	if( strcmp( LstTyp, "float" ) == 0 )
 	{
 		LstInt->setType( QMetaType::Float );
+		LstInt->setStride( sizeof( float ) );
+		LstInt->setSize( 1 );
 	}
 	else if( strcmp( LstTyp, "int" ) == 0 )
 	{
 		LstInt->setType( QMetaType::Int );
+		LstInt->setStride( sizeof( int ) );
+		LstInt->setSize( 1 );
 	}
 	else
 	{

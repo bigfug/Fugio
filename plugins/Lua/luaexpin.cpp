@@ -207,7 +207,7 @@ int LuaExPin::luaPinGetValue( lua_State *L )
 
 		if( ArrInt )
 		{
-			LuaArray::pusharray( L, PinCtl->qobject(), P->direction() == PIN_OUTPUT );
+			LuaArray::pusharray( L, PinCtl->qobject(), P->direction() == PIN_INPUT );
 
 			return( 1 );
 		}
@@ -216,7 +216,7 @@ int LuaExPin::luaPinGetValue( lua_State *L )
 
 		if( LstInt )
 		{
-			LuaArray::pusharray( L, PinCtl->qobject(), P->direction() == PIN_OUTPUT );
+			LuaArray::pusharray( L, PinCtl->qobject(), P->direction() == PIN_INPUT );
 
 			return( 1 );
 		}
