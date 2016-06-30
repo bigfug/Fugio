@@ -36,7 +36,8 @@ SOURCES += \
     mainwindownode.cpp \
     choicenode.cpp \
     numbermonitorform.cpp \
-    numbermonitornode.cpp
+    numbermonitornode.cpp \
+    stringnode.cpp
 
 HEADERS += \
     floatnode.h \
@@ -58,7 +59,8 @@ HEADERS += \
     ../../include/fugio/gui/keyboard_interface.h \
     keyboardpin.h \
     slidernode.h \
-    mainwindownode.h
+    mainwindownode.h \
+    stringnode.h
 
 FORMS += \
     numbermonitorform.ui \
@@ -73,7 +75,7 @@ macx {
     CONFIG += lib_bundle
 
     BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
     INSTALLDEST  = $$INSTALLDIR/data/plugins
     INCLUDEDEST  = $$INSTALLDIR/data/include/fugio

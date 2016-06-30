@@ -6,7 +6,6 @@
 #include "regexpnode.h"
 #include "numbertostringnode.h"
 #include "stringjoinnode.h"
-#include "stringnode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -14,11 +13,10 @@ using namespace fugio;
 
 ClassEntry		mNodeClasses[] =
 {
-	ClassEntry( "Number To String",	"String", ClassEntry::None, NID_NUMBER_TO_STRING, &NumberToStringNode::staticMetaObject ),
-	ClassEntry( "RegExp",			"String", ClassEntry::None, NID_REGEXP, &RegExpNode::staticMetaObject ),
-	ClassEntry( "Join",				"String", ClassEntry::None, NID_STRING_JOIN, &StringJoinNode::staticMetaObject ),
-	ClassEntry( "String",			"GUI", ClassEntry::None, NID_STRING, &StringNode::staticMetaObject ),
-	ClassEntry( "Text Editor",		"GUI", ClassEntry::None, NID_TEXT_EDIT, &TextEditorNode::staticMetaObject ),
+	ClassEntry( "Number To String",	"String", NID_NUMBER_TO_STRING, &NumberToStringNode::staticMetaObject ),
+	ClassEntry( "RegExp",			"String", NID_REGEXP, &RegExpNode::staticMetaObject ),
+	ClassEntry( "Join",				"String", NID_STRING_JOIN, &StringJoinNode::staticMetaObject ),
+	ClassEntry( "Text Editor",		"GUI", NID_TEXT_EDIT, &TextEditorNode::staticMetaObject ),
 	ClassEntry()
 };
 
