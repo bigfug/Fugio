@@ -7,10 +7,10 @@
 DivideNode::DivideNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
-	mPinNumerator   = pinInput( "Number" );
-	mPinDenominator = pinInput( "Number" );
+	mPinNumerator   = pinInput( "Input" );
+	mPinDenominator = pinInput( "Input" );
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "Number", mPinOutput, PID_FLOAT );
+	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_FLOAT );
 }
 
 void DivideNode::inputsUpdated( qint64 pTimeStamp )

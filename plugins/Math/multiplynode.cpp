@@ -24,7 +24,7 @@ MultiplyNode::MultiplyNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	pinInput( "Input", PII_NUMBER2 );
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "Result", mPinOutput, PID_VARIANT, PII_RESULT );
+	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_VARIANT, PII_RESULT );
 }
 
 void MultiplyNode::inputsUpdated( qint64 pTimeStamp )
