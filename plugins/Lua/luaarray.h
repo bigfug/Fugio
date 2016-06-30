@@ -68,7 +68,7 @@ private:
 
 private:
 	static const luaL_Reg					mLuaInstance[];
-	static const luaL_Reg					mLuaMethods[];
+	static const luaL_Reg					mLuaFunctions[];
 };
 
 #endif // LUAARRAY_H

@@ -5,16 +5,16 @@
 
 #include "luaplugin.h"
 
+const luaL_Reg LuaArray::mLuaFunctions[] =
+{
+	{ 0, 0 }
+};
+
 const luaL_Reg LuaArray::mLuaInstance[] =
 {
 	{ "__index",	LuaArray::luaGet },
 	{ "__newindex", LuaArray::luaSet },
 	{ "__len",		LuaArray::luaLen },
-	{ 0, 0 }
-};
-
-const luaL_Reg LuaArray::mLuaMethods[] =
-{
 	{ "array",		LuaArray::luaToArray },
 	{ "resize",		LuaArray::luaResize },
 	{ "setType",	LuaArray::luaSetType },
@@ -25,12 +25,9 @@ int LuaArray::lua_openarray( lua_State *L )
 {
 	luaL_newmetatable( L, "fugio.array" );
 
-	lua_pushvalue( L, -1 );
-	lua_setfield( L, -2, "__index" );
+	luaL_setfuncs( L, mLuaInstance, 0 );
 
-	luaL_setfuncs( L, mLuaMethods, 0 );
-
-	luaL_newlib( L, mLuaInstance );
+	luaL_newlib( L, mLuaFunctions );
 
 	return( 1 );
 }

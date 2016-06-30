@@ -9,9 +9,12 @@
 RegExpNode::RegExpNode( QSharedPointer<fugio::NodeInterface> pNode ) :
 	NodeControlBase( pNode )
 {
-	mPinInput = pinInput( "Input" );
+	FUGID( PIN_INPUT_TEXT,	"AF7205D3-204D-4070-AAD0-3EF106935733" );
+	FUGID( PIN_OUTPUT_TEXT,	"ABDF2527-5590-4FDC-AEC7-E7F93E7E7E89" );
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_STRING );
+	mPinInput = pinInput( "Input", PIN_INPUT_TEXT);
+
+	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_STRING_LIST, PIN_OUTPUT_TEXT );
 
 	mRegExp = QRegExp( "(\\d+)" );
 }
