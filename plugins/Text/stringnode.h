@@ -38,14 +38,26 @@ public:
 
 	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
 
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
+
 signals:
 	void valueUpdated( const QString &pValue );
 
 protected slots:
 	void valueChanged( const QString &pValue );
 
+	void editingFinished( void );
+
+	void contextFrameStart( void );
+
 private:
+	QSharedPointer<fugio::PinInterface>			 mPinInput;
+
 	QSharedPointer<fugio::PinInterface>			 mPinValue;
 	fugio::VariantInterface						*mString;
+
+	qint64										 mLastUpdate;
+	qint64										 mLastText;
+	QString										 mText;
 };
 #endif // STRINGNODE_H
