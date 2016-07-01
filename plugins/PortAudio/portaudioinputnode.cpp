@@ -72,9 +72,15 @@ bool PortAudioInputNode::deinitialise()
 
 void PortAudioInputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const
 {
-	AudioInstanceData		*AID = static_cast<AudioInstanceData *>( pInstanceData );
+	Q_UNUSED( pInstanceData )
+	Q_UNUSED( pLatency )
 
-	mPortAudio->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers );
+	//AudioInstanceData		*AID = static_cast<AudioInstanceData *>( pInstanceData );
+
+	if( mPortAudio )
+	{
+		mPortAudio->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers );
+	}
 }
 
 void PortAudioInputNode::clicked()
@@ -159,11 +165,10 @@ void PortAudioInputNode::loadSettings( QSettings &pSettings )
 	emit audioDeviceChanged( mDeviceName );
 }
 
-void PortAudioInputNode::saveSettings( QSettings &pSettings )
+void PortAudioInputNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "device", mDeviceName );
 }
-
 
 int PortAudioInputNode::audioChannels() const
 {

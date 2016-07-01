@@ -50,20 +50,11 @@ QWidget *ButtonNode::gui()
 	return( GUI );
 }
 
-bool ButtonNode::initialise()
-{
-	//mNode->context()->pinUpdated( mPinTrigger );
-
-	//connect( mNode->context()->context(), SIGNAL(frameStart()), this, SLOT(onContextFrameStart()) );
-
-	return( true );
-}
-
 void ButtonNode::onClick()
 {
 	mClicked = true;
 
-	onContextFrameStart();
+	connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(onContextFrameStart()) );
 }
 
 void ButtonNode::onPressed()
@@ -71,7 +62,7 @@ void ButtonNode::onPressed()
 	mPressed = true;
 	mReleased = false;
 
-	onContextFrameStart();
+	connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(onContextFrameStart()) );
 }
 
 void ButtonNode::onReleased()
@@ -79,7 +70,7 @@ void ButtonNode::onReleased()
 	mReleased = true;
 	mPressed = false;
 
-	onContextFrameStart();
+	connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(onContextFrameStart()) );
 }
 
 void ButtonNode::onContextFrameStart()
@@ -114,4 +105,19 @@ void ButtonNode::onContextFrameStart()
 
 		mReleased = false;
 	}
+
+	disconnect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(onContextFrameStart()) );
+}
+
+
+void ButtonNode::loadSettings( QSettings &pSettings )
+{
+	mToggle = pSettings.value( "toggle", mToggle ).toBool();
+
+	mValToggle->setVariant( mToggle );
+}
+
+void ButtonNode::saveSettings( QSettings &pSettings ) const
+{
+	pSettings.setValue( "toggle", mToggle );
 }

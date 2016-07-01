@@ -59,7 +59,7 @@ void SliderNode::loadSettings( QSettings &pSettings)
 	emit valueChanged( int( NewVal * 1000.0f ) );
 }
 
-void SliderNode::saveSettings( QSettings &pSettings )
+void SliderNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "value", mValue->variant().toFloat() );
 }

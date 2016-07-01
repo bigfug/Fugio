@@ -38,7 +38,7 @@ void IntegerNode::loadSettings( QSettings &pSettings )
 	valueChanged( pSettings.value( "Value" ).toInt() );
 }
 
-void IntegerNode::saveSettings( QSettings &pSettings )
+void IntegerNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "Value", mValue->variant().toInt() );
 }

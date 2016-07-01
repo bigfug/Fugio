@@ -14,5 +14,8 @@ QUuid ByteArrayListPin::listPinControl() const
 
 void ByteArrayListPin::listSetIndex(int pIndex, const QVariant &pValue)
 {
-
+	if( pIndex >= 0 && pIndex < mValue.size() )
+	{
+		mValue[ pIndex ] = pValue.toByteArray();
+	}
 }

@@ -5,8 +5,10 @@ SUBDIRS += \
     Audio \
     Core \
     GUI \
+    Lua \
     Math \
     PortAudio \
     OSC \
     Network \
+    Text \
     Time

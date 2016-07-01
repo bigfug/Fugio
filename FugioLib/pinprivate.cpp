@@ -266,70 +266,7 @@ QVariant PinPrivate::value() const
 	return( mDefaultValue );
 }
 
-void PinPrivate::loadSettings1( QSettings &pSettings, bool pPartial )
-{
-	pSettings.beginGroup( name() );
-
-	//-------------------------------------------------------------------------
-
-	int		SettingsVersion = pSettings.value( "version", 0 ).toInt();
-
-	setName( pSettings.value( "name", mName ).toString() );
-
-	if( !pPartial )
-	{
-		setGlobalId( QUuid( pSettings.value( "uuid", mGlobalId.toString() ).toString() ) );
-	}
-
-	setDirection( PinDirection( pSettings.value( "direction", int( direction() ) ).toInt() ) );
-
-	setOrder( pSettings.value( "order", -1 ).toInt() );
-
-	setRemovable( pSettings.value( "removable", removable() ).toBool() );
-
-	setHidden( pSettings.value( "hidden", hidden() ).toBool() );
-
-	if( direction() == PIN_INPUT )
-	{
-		setUpdatable( pSettings.value( "updatable", updatable() ).toBool() );
-
-		setAutoRename( pSettings.value( "auto-rename", autoRename() ).toBool() );
-	}
-
-	//-------------------------------------------------------------------------
-
-	if( mControl != 0 )
-	{
-		if( SettingsVersion >= 1 )
-		{
-			pSettings.beginGroup( "control" );
-		}
-
-		mControl->loadSettings( pSettings );
-
-		if( SettingsVersion >= 1 )
-		{
-			pSettings.endGroup();
-		}
-	}
-
-	//-------------------------------------------------------------------------
-
-	pSettings.beginGroup( "settings" );
-
-	foreach( const QString &K, pSettings.childKeys() )
-	{
-		mSettings.insert( K, pSettings.value( K ) );
-	}
-
-	pSettings.endGroup();
-
-	//-------------------------------------------------------------------------
-
-	pSettings.endGroup();
-}
-
-void PinPrivate::loadSettings2( QSettings &pSettings, bool pPartial )
+void PinPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 {
 	Q_UNUSED( pPartial )
 
@@ -366,64 +303,7 @@ void PinPrivate::loadSettings2( QSettings &pSettings, bool pPartial )
 	}
 }
 
-void PinPrivate::saveSettings1( QSettings &pSettings )
-{
-	pSettings.beginGroup( name() );
-
-	//-------------------------------------------------------------------------
-
-	pSettings.setValue( "version", 1 );
-
-	pSettings.setValue( "name", mName );
-	pSettings.setValue( "uuid", mGlobalId.toString() );
-	pSettings.setValue( "direction", int( direction() ) );
-	pSettings.setValue( "order", order() );
-
-	if( removable() )
-	{
-		pSettings.setValue( "removable", removable() );
-	}
-
-	if( hidden() )
-	{
-		pSettings.setValue( "hidden", hidden() );
-	}
-
-	if( direction() == PIN_INPUT )
-	{
-		pSettings.setValue( "updatable", updatable() );
-
-		pSettings.setValue( "auto-rename", autoRename() );
-	}
-
-	//-------------------------------------------------------------------------
-
-	if( mControl != 0 )
-	{
-		pSettings.beginGroup( "control" );
-
-		mControl->saveSettings( pSettings );
-
-		pSettings.endGroup();
-	}
-
-	//-------------------------------------------------------------------------
-
-	pSettings.beginGroup( "settings" );
-
-	for( QVariantHash::const_iterator it = mSettings.constBegin() ; it != mSettings.constEnd() ; it++ )
-	{
-		pSettings.setValue( it.key(), it.value() );
-	}
-
-	pSettings.endGroup();
-
-	//-------------------------------------------------------------------------
-
-	pSettings.endGroup();
-}
-
-void PinPrivate::saveSettings2( QSettings &pSettings )
+void PinPrivate::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "version", 2 );
 

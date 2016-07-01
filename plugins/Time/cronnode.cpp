@@ -460,7 +460,7 @@ void CronNode::loadSettings( QSettings &pSettings )
 	}
 }
 
-void CronNode::saveSettings( QSettings &pSettings )
+void CronNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "year", mYearText );
 	pSettings.setValue( "month", mMonthText );

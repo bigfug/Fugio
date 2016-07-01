@@ -34,7 +34,7 @@ public:
 
 	virtual void loadSettings( QSettings &pSettings ) = 0;
 
-	virtual void saveSettings( QSettings &pSettings ) = 0;
+	virtual void saveSettings( QSettings &pSettings ) const = 0;
 
 	typedef struct AvailablePinEntry
 	{

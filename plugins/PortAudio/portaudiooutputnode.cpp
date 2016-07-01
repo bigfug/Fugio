@@ -262,7 +262,7 @@ void PortAudioOutputNode::loadSettings( QSettings &pSettings )
 	emit audioDeviceChanged( mDeviceName );
 }
 
-void PortAudioOutputNode::saveSettings( QSettings &pSettings )
+void PortAudioOutputNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "device", mDeviceName );
 }

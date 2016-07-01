@@ -11,10 +11,12 @@ TEMPLATE = lib
 CONFIG += plugin c++11
 
 CONFIG(debug,debug|release) {
-    DESTDIR = $$OUT_PWD/../../../deploy-debug/plugins
+	DESTDIR = $$OUT_PWD/../../../deploy-debug-$$QMAKE_HOST.arch/plugins
 } else {
-    DESTDIR = $$OUT_PWD/../../../deploy-release/plugins
+	DESTDIR = $$OUT_PWD/../../../deploy-release-$$QMAKE_HOST.arch/plugins
 }
+
+include( ../../../Fugio/FugioGlobal.pri )
 
 DEFINES += PORTAUDIO_LIBRARY
 
@@ -37,21 +39,13 @@ HEADERS += \
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
-defineReplace( libChange ) {
-    return( && install_name_tool -change @executable_path/../Frameworks/$$1 @loader_path/../Frameworks/$$1 $$LIBCHANGEDEST )
-}
-
-defineReplace( qtLibChange ) {
-    return( && install_name_tool -change @rpath/$$1".framework"/Versions/5/$$1 @executable_path/../Frameworks/$$1".framework"/Versions/5/$$1 $$LIBCHANGEDEST )
-}
-
 macx {
     DEFINES += TARGET_OS_MAC
     CONFIG -= x86
     CONFIG += lib_bundle
 
     BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer
+	INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
     INSTALLDEST  = $$INSTALLDIR/data/plugins
     INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
@@ -85,7 +79,7 @@ macx {
 }
 
 windows {
-	INSTALLBASE  = $$OUT_PWD/../../../deploy-installer
+	INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
@@ -108,18 +102,22 @@ windows {
 #------------------------------------------------------------------------------
 # portaudio
 
-win32:exists( $$(LIBS)/portaudio/include/portaudio.h ) {
-	LIBS += -L$$(LIBS)/portaudio.32.2013/bin/Win32/Release
-	INCLUDEPATH += $$(LIBS)/portaudio/include
-	LIBS += -lportaudio_x86
-    DEFINES += PORTAUDIO_SUPPORTED
-}
-
-win64:exists( $$(LIBS)/portaudio/include/portaudio.h ) {
-	LIBS += -L$$(LIBS)/portaudio.64.2013/bin/Win32/Release
-	INCLUDEPATH += $$(LIBS)/portaudio/include
-	LIBS += -lportaudio_x64
-    DEFINES += PORTAUDIO_SUPPORTED
+windows {
+	contains( QMAKE_HOST.arch, x86_64 ) {
+		exists( $$(LIBS)/portaudio/include/portaudio.h ) {
+			LIBS += -L$$(LIBS)/portaudio.64.2013/bin/x64/Release
+			INCLUDEPATH += $$(LIBS)/portaudio/include
+			LIBS += -lportaudio_x64
+			DEFINES += PORTAUDIO_SUPPORTED
+		}
+	} else {
+		exists( $$(LIBS)/portaudio/include/portaudio.h ) {
+			LIBS += -L$$(LIBS)/portaudio.32.2013/bin/Win32/Release
+			INCLUDEPATH += $$(LIBS)/portaudio/include
+			LIBS += -lportaudio_x86
+			DEFINES += PORTAUDIO_SUPPORTED
+		}
+	}
 }
 
 macx:exists( /usr/local/include/portaudio.h ) {

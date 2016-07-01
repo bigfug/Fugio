@@ -61,32 +61,32 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::NodeInterface
 
-	virtual fugio::NodeSignals *qobject( void )
+	virtual fugio::NodeSignals *qobject( void ) Q_DECL_OVERRIDE
 	{
 		return( this );
 	}
 
-	virtual QUuid uuid( void )
+	virtual QUuid uuid( void ) Q_DECL_OVERRIDE
 	{
 		return( mUUID );
 	}
 
-	virtual fugio::ContextInterface *context( void )
+	virtual fugio::ContextInterface *context( void ) Q_DECL_OVERRIDE
 	{
 		return( mContext );
 	}
 
-	virtual QSharedPointer<fugio::NodeControlInterface> control( void )
+	virtual QSharedPointer<fugio::NodeControlInterface> control( void ) const Q_DECL_OVERRIDE
 	{
 		return( mControl );
 	}
 
-	virtual const QString &name( void )
+	virtual QString name( void ) const Q_DECL_OVERRIDE
 	{
 		return( mName );
 	}
 
-	virtual void setName( const QString &pName )
+	virtual void setName( const QString &pName ) Q_DECL_OVERRIDE
 	{
 		if( pName == mName )
 		{
@@ -100,14 +100,14 @@ public:
 		emit nameChanged( mName );
 	}
 
-	virtual QSharedPointer<fugio::PinInterface> findPinByGlobalId( const QUuid &pUuid )
+	virtual QSharedPointer<fugio::PinInterface> findPinByGlobalId( const QUuid &pUuid ) const Q_DECL_OVERRIDE
 	{
 		auto	it = mPinMap.find( pUuid );
 
 		return( it == mPinMap.end() ? QSharedPointer<fugio::PinInterface>() : it.value() );
 	}
 
-	virtual QSharedPointer<fugio::PinInterface> findPinByLocalId( const QUuid &pUuid )
+	virtual QSharedPointer<fugio::PinInterface> findPinByLocalId( const QUuid &pUuid ) const Q_DECL_OVERRIDE
 	{
 		for( auto it = mPinMap.begin() ; it != mPinMap.end() ; it++ )
 		{
@@ -120,7 +120,7 @@ public:
 		return( QSharedPointer<fugio::PinInterface>() );
 	}
 
-	virtual QSharedPointer<fugio::PinInterface> findPinByName( const QString &pName ) const
+	virtual QSharedPointer<fugio::PinInterface> findPinByName( const QString &pName ) const Q_DECL_OVERRIDE
 	{
 		for( auto it = mPinMap.begin() ; it != mPinMap.end() ; it++ )
 		{
@@ -133,7 +133,7 @@ public:
 		return( QSharedPointer<fugio::PinInterface>() );
 	}
 
-	virtual QSharedPointer<fugio::PinInterface> findInputPinByName( const QString &pName ) const
+	virtual QSharedPointer<fugio::PinInterface> findInputPinByName( const QString &pName ) const Q_DECL_OVERRIDE
 	{
 		for( auto it = mPinMap.begin() ; it != mPinMap.end() ; it++ )
 		{
@@ -146,7 +146,7 @@ public:
 		return( QSharedPointer<fugio::PinInterface>() );
 	}
 
-	virtual QSharedPointer<fugio::PinInterface> findOutputPinByName( const QString &pName ) const
+	virtual QSharedPointer<fugio::PinInterface> findOutputPinByName( const QString &pName ) const Q_DECL_OVERRIDE
 	{
 		for( auto it = mPinMap.begin() ; it != mPinMap.end() ; it++ )
 		{
@@ -159,7 +159,7 @@ public:
 		return( QSharedPointer<fugio::PinInterface>() );
 	}
 
-	bool hasPin( const QString &pName ) const
+	virtual bool hasPin( const QString &pName ) const
 	{
 		for( auto it = mPinMap.begin() ; it != mPinMap.end() ; it++ )
 		{
@@ -172,96 +172,94 @@ public:
 		return( false );
 	}
 
-	virtual QList< QSharedPointer<fugio::PinInterface> > enumPins( void )
+	virtual QList< QSharedPointer<fugio::PinInterface> > enumPins( void ) const Q_DECL_OVERRIDE
 	{
 		return( mPinMap.values() );
 	}
 
-	virtual QList< QSharedPointer<fugio::PinInterface> > enumInputPins( void )
+	virtual QList< QSharedPointer<fugio::PinInterface> > enumInputPins( void ) const Q_DECL_OVERRIDE
 	{
 		return( mPinInputs );
 	}
 
-	virtual QList< QSharedPointer<fugio::PinInterface> > enumOutputPins( void )
+	virtual QList< QSharedPointer<fugio::PinInterface> > enumOutputPins( void ) const Q_DECL_OVERRIDE
 	{
 		return( mPinOutputs );
 	}
 
-	virtual bool hasPin( QSharedPointer<fugio::PinInterface> pPin ) const
+	virtual bool hasPin( QSharedPointer<fugio::PinInterface> pPin ) const Q_DECL_OVERRIDE
 	{
 		return( mPinMap.key( pPin ).isNull() ? false : true );
 	}
 
-	virtual QSharedPointer<fugio::PinInterface> createPin( const QString &pName, PinDirection pDirection, const QUuid &pUuid );
+	virtual QSharedPointer<fugio::PinInterface> createPin( const QString &pName, PinDirection pDirection, const QUuid &pUuid ) Q_DECL_OVERRIDE;
 
-	virtual QObject *createPin( const QString &pName, PinDirection pDirection, const QUuid &pUuid, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID );
+	virtual QObject *createPin( const QString &pName, PinDirection pDirection, const QUuid &pUuid, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID ) Q_DECL_OVERRIDE;
 
-	virtual void addPin( QSharedPointer<fugio::PinInterface> pPin );
+	virtual void addPin( QSharedPointer<fugio::PinInterface> pPin ) Q_DECL_OVERRIDE;
 
-	virtual void removePin( QSharedPointer<fugio::PinInterface> pPin );
+	virtual void removePin( QSharedPointer<fugio::PinInterface> pPin ) Q_DECL_OVERRIDE;
 
 	virtual void inputsUpdated( qint64 pTimeStamp );
 
-	virtual void loadSettings1( QSettings &pSettings, bool pPartial );
-	virtual void loadSettings2( QSettings &pSettings, QMap<QUuid,QUuid> &pPinMap, bool pPartial );
+	virtual void loadSettings( QSettings &pSettings, QMap<QUuid,QUuid> &pPinMap, bool pPartial ) Q_DECL_OVERRIDE;
 
-	virtual void saveSettings1( QSettings &pSettings, bool pPartial );
-	virtual void saveSettings2( QSettings &pSettings, bool pPartial );
+	virtual void saveSettings( QSettings &pSettings, bool pPartial ) const Q_DECL_OVERRIDE;
 
 	virtual void updateOutputs( void );
 
-	virtual void setSetting( const QString &pKey, const QVariant &pValue );
+	virtual void setSetting( const QString &pKey, const QVariant &pValue ) Q_DECL_OVERRIDE;
 
-	virtual QVariant setting( const QString &pKey, const QVariant &pDefault = QVariant() );
+	virtual QVariant setting( const QString &pKey, const QVariant &pDefault = QVariant() ) const Q_DECL_OVERRIDE;
 
 	virtual void update( void );
 
-	virtual bool hasControl( void ) const
+	virtual bool hasControl( void ) const Q_DECL_OVERRIDE
 	{
 		return( mControl );
 	}
 
-	virtual bool isInitialised( void ) const
+	virtual bool isInitialised( void ) const Q_DECL_OVERRIDE
 	{
 		return( mStatus == Initialised );
 	}
 
-	virtual bool isActive( void ) const
+	virtual bool isActive( void ) const Q_DECL_OVERRIDE
 	{
 		return( mActive );
 	}
 
-	virtual void setActive( bool pActive );
+	virtual void setActive( bool pActive ) Q_DECL_OVERRIDE;
 
-	virtual QVariantHash settings( void ) const
+	virtual QVariantHash settings( void ) const Q_DECL_OVERRIDE
 	{
 		return( mSettings );
 	}
 
-	virtual QUuid controlUuid( void ) const
+	virtual QUuid controlUuid( void ) const Q_DECL_OVERRIDE
 	{
 		return( mControlUUID );
 	}
 
-	virtual QList<UuidPair> pairedPins( void );
+	virtual QList<UuidPair> pairedPins( void ) Q_DECL_OVERRIDE;
 
-	virtual void pairPins( QSharedPointer<fugio::PinInterface> pPin1, QSharedPointer<fugio::PinInterface> pPin2 );
+	virtual void pairPins( QSharedPointer<fugio::PinInterface> pPin1, QSharedPointer<fugio::PinInterface> pPin2 ) Q_DECL_OVERRIDE;
 
-	virtual void pairPins( const QUuid &pLocalId1, const QUuid &pLocalId2 );
+	virtual void pairPins( const QUuid &pLocalId1, const QUuid &pLocalId2 ) Q_DECL_OVERRIDE;
 
-	virtual void unpairPins( QSharedPointer<fugio::PinInterface> pPin1, QSharedPointer<fugio::PinInterface> pPin2 );
+	virtual void unpairPins( QSharedPointer<fugio::PinInterface> pPin1, QSharedPointer<fugio::PinInterface> pPin2 ) Q_DECL_OVERRIDE;
 
-	virtual void unpairPins( const QUuid &pLocalId1, const QUuid &pLocalId2 );
+	virtual void unpairPins( const QUuid &pLocalId1, const QUuid &pLocalId2 ) Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// Status
 
-	virtual Status status( void ) const
+	virtual Status status( void ) const Q_DECL_OVERRIDE
 	{
 		return( mStatus );
 	}
 
-	virtual void setStatus( Status pStatus )
+	virtual void setStatus( Status pStatus ) Q_DECL_OVERRIDE
 	{
 		if( mStatus != pStatus )
 		{
@@ -271,12 +269,12 @@ public:
 		}
 	}
 
-	virtual QString statusMessage( void ) const
+	virtual QString statusMessage( void ) const Q_DECL_OVERRIDE
 	{
 		return( mStatusMessage );
 	}
 
-	virtual void setStatusMessage( const QString &pMessage )
+	virtual void setStatusMessage( const QString &pMessage ) Q_DECL_OVERRIDE
 	{
 		if( mStatusMessage != pMessage )
 		{
@@ -291,7 +289,7 @@ public:
 	void clear();
 
 private:
-	void loadPins2( QSettings &pSettings, const QString &pArrayName, PinDirection pDirection, QMap<QUuid, QUuid> &pPinMap, bool pPartial );
+	void loadPins( QSettings &pSettings, const QString &pArrayName, PinDirection pDirection, QMap<QUuid, QUuid> &pPinMap, bool pPartial );
 
 	void loadPinSettings(QSettings &pSettings, QVariantHash &pVarHsh, QStringList &pVarBse) const;
 

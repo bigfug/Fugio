@@ -13,7 +13,7 @@ class MagnitudeNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Calculates the magnitude of an audio signal" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Magnitude_Audio" )
+	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Magnitude_(Audio)" )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

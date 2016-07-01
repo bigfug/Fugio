@@ -119,13 +119,9 @@ bool ContextPrivate::load( const QString &pFileName, bool pPartial )
 
 	QList< QSharedPointer<fugio::NodeInterface> >		NewNodeList;
 
-	if( VER == 1 )
+	if( VER == 2 )
 	{
-		RET = loadSettings1( CFG, NewNodeList, pPartial );
-	}
-	else if( VER == 2 )
-	{
-		RET = loadSettings2( CFG, NewNodeList, pPartial );
+		RET = loadSettings( CFG, NewNodeList, pPartial );
 	}
 
 	//-------------------------------------------------------------------------
@@ -194,164 +190,6 @@ bool ContextPrivate::unload( const QString &pFileName )
 	return( true );
 }
 
-bool ContextPrivate::loadSettings1( QSettings &CFG, QList<QSharedPointer<fugio::NodeInterface> > &pNewNodeList, bool pPartial )
-{
-#if 0
-	Q_UNUSED( pPartial )
-
-	QMap< QString, QSharedPointer<fugio::NodeInterface> >	 MAP;
-
-	CFG.beginGroup( "defaults" );
-
-	for( const QString &NodeSrc : CFG.childGroups() )
-	{
-		CFG.beginGroup( NodeSrc );
-
-		foreach( const QString &PinSrc, CFG.childKeys() )
-		{
-			mDefaultMap.insert( ConnectionPair( NodeSrc, PinSrc ), CFG.value( PinSrc ).toString() );
-		}
-
-		CFG.endGroup();
-	}
-
-	CFG.endGroup();
-
-	//-------------------------------------------------------------------------
-
-	CFG.beginGroup( "nodes" );
-
-	foreach( const QString &K, CFG.childKeys() )
-	{
-		QSharedPointer<fugio::NodeInterface>	N = mApp->createNode( this, K, CFG.value( K ).toString(), CFG.value( K ).toString() );
-
-		if( N == 0 )
-		{
-			qWarning() << "Can't create node" << K;
-
-			continue;
-		}
-
-		MAP.insert( K, N );
-
-		pNewNodeList.append( N );
-	}
-
-	CFG.endGroup();
-
-	//-------------------------------------------------------------------------
-
-	CFG.beginGroup( "settings" );
-
-	foreach( QSharedPointer<fugio::NodeInterface> N, mNodeHash.values() )
-	{
-		N->loadSettings1( CFG, false );
-	}
-
-	CFG.endGroup();
-
-	//-------------------------------------------------------------------------
-
-	CFG.beginGroup( "connections" );
-
-	foreach( const QString &NodeDst, CFG.childGroups() )
-	{
-		CFG.beginGroup( NodeDst );
-
-		foreach( const QString &PinDst, CFG.childKeys() )
-		{
-			QStringList		 SrcList = CFG.value( PinDst ).toString().split( '\\' );
-
-			if( SrcList.size() != 2 )
-			{
-				continue;
-			}
-
-			mConnectionMap.insert( ConnectionPair( SrcList.at( 0 ), SrcList.at( 1 ) ), ConnectionPair( NodeDst, PinDst ) );
-		}
-
-		CFG.endGroup();
-	}
-
-	CFG.endGroup();
-
-	//-------------------------------------------------------------------------
-
-	CFG.beginGroup( "connections" );
-
-	for( const QString &G : CFG.childGroups() )
-	{
-		QMap< QString, QSharedPointer<fugio::NodeInterface> >::iterator		SrcIt = MAP.find( G );
-
-		if( SrcIt == MAP.end() )
-		{
-			continue;
-		}
-
-		QSharedPointer<fugio::NodeInterface>	SrcN = SrcIt.value();
-
-		if( SrcN == 0 )
-		{
-			continue;
-		}
-
-		CFG.beginGroup( G );
-
-		for( const QString &K : CFG.childKeys() )
-		{
-			QSharedPointer<fugio::PinInterface>	SrcP = SrcN->findPinByName( K );
-
-			if( !SrcP )
-			{
-				continue;
-			}
-
-			//-------------------------------------------------------------------------
-
-			QStringList		 DstList = CFG.value( K ).toString().split( '\\' );
-
-			if( DstList.size() != 2 )
-			{
-				continue;
-			}
-
-			QMap< QString, QSharedPointer<fugio::NodeInterface> >::iterator		DstIt = MAP.find( DstList.at( 0 ) );
-
-			if( DstIt == MAP.end() )
-			{
-				continue;
-			}
-
-			QSharedPointer<fugio::NodeInterface>	DstN = DstIt.value();
-
-			if( !DstN )
-			{
-				continue;
-			}
-
-			QSharedPointer<fugio::PinInterface>	DstP = DstN->findPinByName( DstList.at( 1 ) );
-
-			if( !DstP )
-			{
-				continue;
-			}
-
-#if defined( QT_DEBUG ) && defined( DEBUG_CONNECTIONS )
-			qDebug() << SrcN->name() << "/" << SrcP->name() << " -> " << DstN->name() << "/" << DstP->name();
-#endif
-
-			connectPins( SrcP->globalId(), DstP->globalId() );
-		}
-
-		CFG.endGroup();
-	}
-
-	CFG.endGroup();
-#endif
-
-	return( true );
-}
-
 void ContextPrivate::loadNodeSettings( QSettings &pSettings, QVariantHash &pVarHsh, QStringList &pVarBse ) const
 {
 	for( const QString &K : pSettings.childGroups() )
@@ -377,7 +215,7 @@ void ContextPrivate::loadNodeSettings( QSettings &pSettings, QVariantHash &pVarH
 	}
 }
 
-bool ContextPrivate::loadSettings2( QSettings &pSettings, QList< QSharedPointer<fugio::NodeInterface> > &pNewNodeList, bool pPartial )
+bool ContextPrivate::loadSettings( QSettings &pSettings, QList< QSharedPointer<fugio::NodeInterface> > &pNewNodeList, bool pPartial )
 {
 	QSettings		CFG( pSettings.fileName(), pSettings.format() );
 
@@ -450,7 +288,7 @@ bool ContextPrivate::loadSettings2( QSettings &pSettings, QList< QSharedPointer<
 		{
 			pSettings.beginGroup( fugio::utils::uuid2string( it.value() ) );
 
-			N->loadSettings2( pSettings, PinsMap, pPartial );
+			N->loadSettings( pSettings, PinsMap, pPartial );
 
 			pSettings.endGroup();
 		}
@@ -611,7 +449,7 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 		{
 			CFG.beginGroup( fugio::utils::uuid2string( N->uuid() ) );
 
-			N->saveSettings2( CFG, false );
+			N->saveSettings( CFG, false );
 
 			CFG.endGroup();
 
@@ -619,7 +457,7 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 			{
 				CFG.beginGroup( fugio::utils::uuid2string( P->globalId() ) );
 
-				P->saveSettings2( CFG );
+				P->saveSettings( CFG );
 
 				CFG.endGroup();
 			}

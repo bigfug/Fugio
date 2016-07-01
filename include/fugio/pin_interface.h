@@ -81,11 +81,9 @@ public:
 
 	virtual QVariant value( void ) const = 0;
 
-	virtual void loadSettings1( QSettings &pSettings, bool pPartial ) = 0;
-	virtual void loadSettings2( QSettings &pSettings, bool pPartial ) = 0;
+	virtual void loadSettings( QSettings &pSettings, bool pPartial ) = 0;
 
-	virtual void saveSettings1( QSettings &pSettings ) = 0;
-	virtual void saveSettings2( QSettings &pSettings ) = 0;
+	virtual void saveSettings( QSettings &pSettings ) const = 0;
 
 	virtual QSharedPointer<fugio::NodeInterface> connectedNode( void ) = 0;
 
