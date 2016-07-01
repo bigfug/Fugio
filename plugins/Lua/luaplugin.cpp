@@ -181,7 +181,7 @@ int LuaPlugin::luaTimestamp( lua_State *L )
 	LuaInterface					*LUA = qobject_cast<LuaInterface *>( LuaPlugin::instance()->app()->findInterface( IID_LUA ) );
 	NodeInterface					*N = LUA->node( L );
 
-	lua_pushunsigned( L, N->context()->global()->timestamp() );
+	lua_pushinteger( L, N->context()->global()->timestamp() );
 
 	return( 1 );
 }

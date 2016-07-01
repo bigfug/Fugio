@@ -104,7 +104,7 @@ int LuaExPin::luaUpdated(lua_State *L)
 		return( 0 );
 	}
 
-	lua_pushunsigned( L, P->updated() );
+	lua_pushinteger( L, P->updated() );
 
 	return( 1 );
 }
@@ -118,7 +118,7 @@ int LuaExPin::luaIsUpdated( lua_State *L )
 		return( 0 );
 	}
 
-	qint64			TimeStamp = luaL_checkunsigned( L, 2 );
+	qint64			TimeStamp = luaL_checkinteger( L, 2 );
 
 	lua_pushboolean( L, P->isUpdated( TimeStamp ) );
 
