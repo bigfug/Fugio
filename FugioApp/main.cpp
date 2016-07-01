@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 
 	QApplication::setApplicationName( "Fugio" );
 	QApplication::setOrganizationDomain( "Fugio" );
-	QApplication::setApplicationVersion( QString( "1.2.0 (%1/%2)" ).arg( QSysInfo::buildCpuArchitecture() ).arg( QSysInfo::currentCpuArchitecture() ) );
+	QApplication::setApplicationVersion( QString( "1.3.0 (%1/%2)" ).arg( QSysInfo::buildCpuArchitecture() ).arg( QSysInfo::currentCpuArchitecture() ) );
 
 	const QString	CfgDir = QStandardPaths::writableLocation( QStandardPaths::DataLocation );
 
