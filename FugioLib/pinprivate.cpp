@@ -334,7 +334,7 @@ void PinPrivate::saveSettings( QSettings &pSettings ) const
 
 	if( direction() == PIN_INPUT )
 	{
-		if( !autoRename() )
+		if( autoRename() )
 		{
 			pSettings.setValue( "auto-rename", autoRename() );
 		}
