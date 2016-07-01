@@ -2,7 +2,7 @@
 <Package>
     <DisplayName>Fugio</DisplayName>
     <Description>The Fugio patch editor.</Description>
-        <Version>1.2.0</Version>
-        <ReleaseDate>2016-06-24</ReleaseDate>
+        <Version>1.3.0</Version>
+        <ReleaseDate>2016-07-01</ReleaseDate>
     <Default>True</Default>
 </Package>
