@@ -686,6 +686,8 @@ void MainWindow::on_actionAbout_Fugio_triggered()
 		HTML.close();
 	}
 
+	TxtLst.replace( "[VERSION]", QApplication::applicationVersion() );
+
 	QMessageBox::about( this, "Fugio " + qApp->applicationVersion(), TxtLst );
 }
 
