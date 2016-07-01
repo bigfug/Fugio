@@ -37,6 +37,7 @@ const luaL_Reg LuaExPin::mLuaPinMethods[] =
 	{ "set",		LuaExPin::luaPinSetValue },
 	{ "get",		LuaExPin::luaPinGetValue },
 	{ "updated",	LuaExPin::luaUpdated },
+	{ "update",		LuaExPin::luaUpdate },
 	{ 0, 0 }
 };
 
@@ -123,6 +124,20 @@ int LuaExPin::luaIsUpdated( lua_State *L )
 	lua_pushboolean( L, P->isUpdated( TimeStamp ) );
 
 	return( 1 );
+}
+
+int LuaExPin::luaUpdate( lua_State *L )
+{
+	QSharedPointer<fugio::PinInterface>	 P = LuaPlugin::getpin( L );
+
+	if( !P || P->direction() == PIN_INPUT )
+	{
+		return( 0 );
+	}
+
+	P->node()->context()->pinUpdated( P );
+
+	return( 0 );
 }
 
 int LuaExPin::luaPinGetName( lua_State *L )
