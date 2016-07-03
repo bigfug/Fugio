@@ -9,6 +9,8 @@
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
+fugio::GlobalInterface	*TextPlugin::mApp = 0;
+
 using namespace fugio;
 
 ClassEntry		mNodeClasses[] =
@@ -26,7 +28,6 @@ ClassEntry		mPinClasses[] =
 };
 
 TextPlugin::TextPlugin()
-	: mApp( 0 )
 {
 
 }

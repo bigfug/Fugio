@@ -20,6 +20,11 @@ public:
 
 	virtual ~TextPlugin( void ) {}
 
+	static fugio::GlobalInterface *global( void )
+	{
+		return( mApp );
+	}
+
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
 
@@ -28,7 +33,7 @@ public:
 	virtual void deinitialise( void );
 
 private:
-	fugio::GlobalInterface			*mApp;
+	static fugio::GlobalInterface	*mApp;
 };
 
 #endif // TEXTPLUGIN_H
