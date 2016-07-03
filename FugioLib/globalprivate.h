@@ -9,6 +9,8 @@
 #include <QMultiMap>
 #include <QElapsedTimer>
 #include <QCommandLineParser>
+#include <QThread>
+#include <QApplication>
 
 #include <fugio/global.h>
 
@@ -17,6 +19,8 @@
 #include <fugio/device_factory_interface.h>
 
 #include <fugio/global_signals.h>
+
+//#define GLOBAL_THREADED
 
 //class IPlugin;
 
@@ -51,6 +55,18 @@ public:
 	virtual qint64 timestamp( void ) const Q_DECL_OVERRIDE
 	{
 		return( mGlobalTimer.elapsed() );
+	}
+
+	virtual void start() Q_DECL_OVERRIDE;
+	virtual void stop() Q_DECL_OVERRIDE;
+
+	virtual QThread *thread( void ) Q_DECL_OVERRIDE
+	{
+#if defined( GLOBAL_THREADED )
+		return( &mWorkerThread );
+#else
+		return( QApplication::instance()->thread() );
+#endif
 	}
 
 	//-------------------------------------------------------------------------
@@ -204,6 +220,10 @@ signals:
 private slots:
 	void timeout( void );
 
+#if defined( GLOBAL_THREADED )
+	void run( void );
+#endif
+
 private:
 	static GlobalPrivate			*mInstance;
 
@@ -221,6 +241,8 @@ private:
 	qint64							 mLastTime;
 	QMainWindow						*mMainWindow;
 
+	QMutex							 mContextMutex;
+
 	QList<QObject *>									 mPluginInstances;
 	QList<QSharedPointer<fugio::ContextInterface> >		 mContexts;
 	QList<fugio::DeviceFactoryInterface *>				 mDeviceFactories;
@@ -235,6 +257,10 @@ private:
 	QCommandLineParser				 mCommandLineParser;
 
 	bool							 mPause;
+
+#if defined( GLOBAL_THREADED )
+	QThread							 mWorkerThread;
+#endif
 };
 
 #endif // GLOBAL_PRIVATE_H

@@ -263,9 +263,11 @@ int main(int argc, char *argv[])
 			WND->promptUserForPatch();
 		}
 
-		QTimer::singleShot( 1000, PBG, SLOT(timeout()) );
+		PBG->start();
 
 		RET = APP->exec();
+
+		PBG->stop();
 
 		if( true )
 		{
