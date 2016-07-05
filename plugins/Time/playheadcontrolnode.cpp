@@ -61,7 +61,19 @@ void PlayheadControlNode::contextFrameInitialise( qint64 pTimeStamp )
 
 		if( mPinInputRewind->isUpdated( mLastTime ) )
 		{
+			bool	isPlaying = mNode->context()->isPlaying();
+
+			if( isPlaying )
+			{
+				mNode->context()->stop();
+			}
+
 			mNode->context()->setPlayheadPosition( 0.0 );
+
+			if( isPlaying )
+			{
+				mNode->context()->play();
+			}
 		}
 	}
 
