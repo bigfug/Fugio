@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
 
 	CLP.setApplicationDescription( "Fugio Editor" );
 
-	CLP.addOption( QCommandLineOption( "patch", "The patch (or patches) to load on startup" ) );
+	//CLP.addOption( QCommandLineOption( "patch", "The patch (or patches) to load on startup" ) );
 
 	//-------------------------------------------------------------------------
 	// Register and load plugins
@@ -251,15 +251,17 @@ int main(int argc, char *argv[])
 
 		// Load patches that were specified on the command line
 
-		for( QString PatchName : CLP.values( "patch" ) )
+		for( QString PatchName : CLP.positionalArguments() )
 		{
+			qDebug() << "Loading" << PatchName << "...";
+
 			WND->loadPatch( PatchName );
 		}
 
-		WND->checkRecoveryFiles();
-
 		if( PBG->contexts().isEmpty() )
 		{
+			WND->checkRecoveryFiles();
+
 			WND->promptUserForPatch();
 		}
 
