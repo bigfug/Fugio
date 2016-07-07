@@ -17,6 +17,10 @@ public:
 	virtual qreal audioSampleRate( void ) const = 0;
 
 	virtual AudioSampleFormat audioSampleFormat( void ) const = 0;
+
+	virtual bool audioLock( qint64 pSamplePosition, qint64 pSampleCount, const void **pBuffers, qint64 &pReturnedPosition, qint64 &pReturnedCount ) = 0;
+
+	virtual void audioUnlock( qint64 pSamplePosition, qint64 pSampleCount ) = 0;
 };
 
 FUGIO_NAMESPACE_END
