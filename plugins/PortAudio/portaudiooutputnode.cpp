@@ -234,7 +234,7 @@ void PortAudioOutputNode::inputsUpdated( qint64 pTimeStamp )
 	if( IAP && !mProducer )
 	{
 		qreal						SmpRte = mPortAudio ? mPortAudio->outputSampleRate() : 0;
-		fugio::AudioSampleFormat	SmpFmt = fugio::FMT_FLT_S;
+		fugio::AudioSampleFormat	SmpFmt = fugio::AudioSampleFormat::Format32FS;
 		int							ChnCnt = mPortAudio ? mPortAudio->outputChannelCount() : 0;
 
 		mProducer = IAP;

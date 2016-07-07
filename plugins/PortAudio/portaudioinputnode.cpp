@@ -182,5 +182,22 @@ qreal PortAudioInputNode::audioSampleRate() const
 
 fugio::AudioSampleFormat PortAudioInputNode::audioSampleFormat() const
 {
-	return( mPortAudio ? mPortAudio->inputSampleFormat() : fugio::AudioSampleFormat::FMT_UNKNOWN );
+	return( mPortAudio ? mPortAudio->inputSampleFormat() : fugio::AudioSampleFormat::FormatUnknown );
+}
+
+bool PortAudioInputNode::audioLock( qint64 pSamplePosition, qint64 pSampleCount, const void **pBuffers, qint64 &pReturnedPosition, qint64 &pReturnedCount )
+{
+	Q_UNUSED( pSamplePosition )
+	Q_UNUSED( pSampleCount )
+	Q_UNUSED( pBuffers )
+	Q_UNUSED( pReturnedPosition )
+	Q_UNUSED( pReturnedCount )
+
+	return( false );
+}
+
+void PortAudioInputNode::audioUnlock(qint64 pSamplePosition, qint64 pSampleCount)
+{
+	Q_UNUSED( pSamplePosition )
+	Q_UNUSED( pSampleCount )
 }

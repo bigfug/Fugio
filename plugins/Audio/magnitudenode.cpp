@@ -77,7 +77,7 @@ void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 
 			if( !mProducerInstance )
 			{
-				mProducerInstance = AP->allocAudioInstance( 48000, fugio::AudioSampleFormat::FMT_FLT_S, ChannelCount );
+				mProducerInstance = AP->allocAudioInstance( 48000, fugio::AudioSampleFormat::Format32FS, ChannelCount );
 			}
 
 			if( ChannelCount != mAudDat.size() )

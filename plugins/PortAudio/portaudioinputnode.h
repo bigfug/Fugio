@@ -54,6 +54,8 @@ public:
 	virtual int audioChannels() const Q_DECL_OVERRIDE;
 	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
 	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;
+	virtual bool audioLock(qint64 pSamplePosition, qint64 pSampleCount, const void **pBuffers, qint64 &pReturnedPosition, qint64 &pReturnedCount) Q_DECL_OVERRIDE;
+	virtual void audioUnlock(qint64 pSamplePosition, qint64 pSampleCount) Q_DECL_OVERRIDE;
 
 signals:
 	//void audioUpdated( void );

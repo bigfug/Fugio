@@ -18,11 +18,6 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
-	virtual QUuid uuid( void )
-	{
-		return( PID_AUDIO );
-	}
-
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
 		return( QString( "" ) );

@@ -494,7 +494,7 @@ void DevicePortAudio::deviceInputOpen( const PaDeviceInfo *DevInf )
 	mInputSampleRate   = StreamInfo->sampleRate;
 	mInputTimeLatency  = StreamInfo->inputLatency;
 	mInputAudioOffset  = 0; //QDateTime::currentMSecsSinceEpoch() * qint64( mSampleRate / 1000.0 );
-	mInputSampleFormat = fugio::AudioSampleFormat::FMT_FLT_S;
+	mInputSampleFormat = fugio::AudioSampleFormat::Format32FS;
 
 	if( Pa_StartStream( mStreamInput ) != paNoError )
 	{
@@ -588,7 +588,7 @@ void DevicePortAudio::addProducer( AudioProducerInterface *pAudioProducer )
 	AudioInstanceData		AID;
 
 	AID.mProducer = pAudioProducer;
-	AID.mInstance = pAudioProducer->allocAudioInstance( mOutputSampleRate, FMT_FLT_S, mOutputChannelCount );
+	AID.mInstance = pAudioProducer->allocAudioInstance( mOutputSampleRate, fugio::AudioSampleFormat::Format32FS, mOutputChannelCount );
 
 	mProducerMutex.lock();
 
