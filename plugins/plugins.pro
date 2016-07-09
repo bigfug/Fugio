@@ -7,6 +7,7 @@ SUBDIRS += \
     FFTW \
     File \
     GUI \
+    Image \
     Lua \
     Math \
     PortAudio \
