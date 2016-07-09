@@ -78,7 +78,18 @@ int LuaExPin::luaGet( lua_State *L )
 		}
 	}
 
-	for( const luaL_Reg &F : LuaPlugin::instance()->pinFunctions( P->controlUuid() ) )
+	QUuid		ControlUuid;
+
+	if( P->direction() == PIN_OUTPUT )
+	{
+		ControlUuid = P->controlUuid();
+	}
+	else if( P->isConnected() )
+	{
+		ControlUuid = P->connectedPin()->controlUuid();
+	}
+
+	for( const luaL_Reg &F : LuaPlugin::instance()->pinFunctions( ControlUuid ) )
 	{
 		if( !strcmp( s, F.name ) )
 		{
