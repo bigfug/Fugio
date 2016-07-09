@@ -38,8 +38,6 @@ public:
 
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
-	virtual QWidget *gui( void ) Q_DECL_OVERRIDE;
-
 	// fugio::FftInterface interface
 public:
 	virtual qreal sampleRate() const Q_DECL_OVERRIDE
@@ -133,8 +131,6 @@ protected:
 	fugio::FftInterface						*mValOutputFFT;
 
 	fugio::ChoiceInterface					*mPinInputWindowChoice;
-
-	QLabel									*mGUI;
 
 	WindowType								 mWindowType;
 	int										 mSampleCount;

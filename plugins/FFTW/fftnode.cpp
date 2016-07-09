@@ -18,7 +18,7 @@
 QMap<QString,FFTNode::WindowType>		 FFTNode::mWindowTypes;
 
 FFTNode::FFTNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mGUI( nullptr ), mWindowType( HANNING ), mSampleCount( 2048 ), mSamplePosition( 0 ),
+	: NodeControlBase( pNode ), mWindowType( HANNING ), mSampleCount( 2048 ), mSamplePosition( 0 ),
 	  mProducer( nullptr ), mProducerInstance( nullptr )
 	#if defined( FFTW_PLUGIN_SUPPORTED )
 	, mPlan( 0 ), mBufSrc( 0 ), mBufDst( 0 )
@@ -174,6 +174,9 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 
 			fftwf_execute( mPlan );
 
+/*
+ * It was drawing a rather nice GUI FFT display but it really kills overall app performance...
+
 			const int	s = samples() / 2;
 
 			QImage		I( s, 64, QImage::Format_ARGB32 );
@@ -199,10 +202,10 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 				}
 			}
 
-			//mGUI->setPixmap( QPixmap::fromImage( I.scaled( 128, 64, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) ) );
+			mGUI->setPixmap( QPixmap::fromImage( I.scaled( 128, 64, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) ) );
 
 			//qDebug() << mBufDst[ 0 ][ 0 ] << mBufDst[ 0 ][ 1 ] << mBufDst[ 1 ][ 0 ] << mBufDst[ 1 ][ 1 ];
-
+*/
 			pinUpdated( mPinOutputFFT );
 #endif
 		}
@@ -374,18 +377,4 @@ void FFTNode::calculateWindow()
 			}
 			break;
 	}
-}
-
-QWidget *FFTNode::gui()
-{
-	if( !mGUI )
-	{
-		mGUI = new QLabel();
-
-		QImage		I( 128, 64, QImage::Format_ARGB32 );
-
-		mGUI->setPixmap( QPixmap::fromImage( I ) );
-	}
-
-	return( mGUI );
 }
