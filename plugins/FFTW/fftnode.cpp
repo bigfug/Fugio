@@ -62,10 +62,6 @@ FFTNode::FFTNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinOutputFFT->setDescription( tr( "The output Fast Fourier Transform" ) );
 
 	mPinInputWindow->setDescription( tr( "The window function that will be applied to the audio before FFT processing" ) );
-
-	connect( mPinInputAudio->qobject(), SIGNAL(linked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audioPinLinked(QSharedPointer<fugio::PinInterface>)) );
-
-	connect( mPinInputAudio->qobject(), SIGNAL(unlinked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audioPinUnlinked(QSharedPointer<fugio::PinInterface>)) );
 }
 
 FFTNode::~FFTNode( void )
@@ -101,6 +97,20 @@ bool FFTNode::initialise()
 		return( false );
 	}
 
+	if( mPinInputAudio->isConnected() && !mPinInputAudio->connectedNode()->isInitialised() )
+	{
+		return( false );
+	}
+
+	connect( mPinInputAudio->qobject(), SIGNAL(linked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audioPinLinked(QSharedPointer<fugio::PinInterface>)) );
+
+	connect( mPinInputAudio->qobject(), SIGNAL(unlinked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audioPinUnlinked(QSharedPointer<fugio::PinInterface>)) );
+
+	if( mPinInputAudio->isConnected() )
+	{
+		audioPinLinked( mPinInputAudio->connectedPin() );
+	}
+
 	calculateWindow();
 
 	return( true );
@@ -122,9 +132,9 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 
 	const qint64	CurPos = ( mNode->context()->global()->timestamp() * 48000 ) / 1000;
 
-	if( !mSamplePosition )
+	if( CurPos - mSamplePosition > 48000 )
 	{
-		mSamplePosition = CurPos;
+		mSamplePosition = CurPos - samples();
 	}
 
 	if( CurPos - mSamplePosition >= samples() )
@@ -153,9 +163,11 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 
 			memset( mBufSrc, 0, sizeof( float ) * samples() );
 
+			//qDebug() << "FFT:" << mSamplePosition;
+
 			mProducer->audio( mSamplePosition, samples(), 0, 1, &AudPtr, 0, mProducerInstance );
 
-			if( false )
+			if( true )
 			{
 				QFile		TEST_FILE( "/Users/bigfug/Desktop/TEST_FILE.raw" );
 
