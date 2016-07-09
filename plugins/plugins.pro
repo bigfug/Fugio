@@ -5,6 +5,7 @@ SUBDIRS += \
     Audio \
     Core \
     FFTW \
+    File \
     GUI \
     Lua \
     Math \
