@@ -41,11 +41,15 @@ protected:
 		fugio::AudioSampleFormat				 mSampleFormat;
 		int										 mChannels;
 
+		qint64									 mGeneratorSamplePosition;
+
 		qint64									 mAudPts;
 		qint64									 mAudSmp;
 		QVector<QVector<float>>					 mAudDat;
 		void									*mAudIns;
 	} AudioInstanceData;
+
+	static void convert8UIto32FS( const quint8 *pSrcDat, qint64 pSrcCnt, int pSrcChn, float **pDstDat, qint64 pDstOff, int pChannelOffset, int pChannelCount );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinAudioGenerator;
@@ -55,6 +59,10 @@ protected:
 
 	QMutex										 mInstanceDataMutex;
 	QList<AudioInstanceData *>					 mInstanceData;
+
+	int											 mGeneratorSampleRate;
+	int											 mGeneratorChannelCount;
+	fugio::AudioSampleFormat					 mGeneratorSampleFormat;
 };
 
 

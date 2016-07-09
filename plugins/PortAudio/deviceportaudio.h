@@ -13,11 +13,12 @@
 #include <fugio/playhead_interface.h>
 #include <fugio/node_interface.h>
 #include <fugio/audio/audio_producer_interface.h>
+#include <fugio/audio/audio_generator_interface.h>
 
-class DevicePortAudio : public QObject, public fugio::PlayheadInterface
+class DevicePortAudio : public QObject, public fugio::PlayheadInterface, public fugio::AudioGeneratorInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::PlayheadInterface )
+	Q_INTERFACES( fugio::PlayheadInterface fugio::AudioGeneratorInterface )
 
 public:
 	static void deviceInitialise( void );
@@ -100,18 +101,18 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PlayheadInterface
 
-	virtual void playStart( qreal )
+	virtual void playStart( qreal ) Q_DECL_OVERRIDE
 	{
 	}
 
-	virtual void playheadMove( qreal ) {}
+	virtual void playheadMove( qreal ) Q_DECL_OVERRIDE {}
 
-	virtual bool playheadPlay( qreal, qreal )
+	virtual bool playheadPlay( qreal, qreal ) Q_DECL_OVERRIDE
 	{
 		return( true );
 	}
 
-	virtual qreal latency( void ) const
+	virtual qreal latency( void ) const Q_DECL_OVERRIDE
 	{
 #if defined( PORTAUDIO_SUPPORTED )
 		return( mOutputTimeLatency );
@@ -120,11 +121,19 @@ public:
 #endif
 	}
 
-	virtual void setTimeOffset( qreal pTimeOffset );
+	virtual void setTimeOffset( qreal pTimeOffset ) Q_DECL_OVERRIDE;
 
 	void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers ) const;
 
 	//-------------------------------------------------------------------------
+
+	// AudioGeneratorInterface interface
+public:
+	virtual int audioChannels() const Q_DECL_OVERRIDE;
+	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
+	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;
+	virtual bool audioLock(qint64 pSamplePosition, qint64 pSampleCount, const void **pBuffers, qint64 &pReturnedPosition, qint64 &pReturnedCount) Q_DECL_OVERRIDE;
+	virtual void audioUnlock(qint64 pSamplePosition, qint64 pSampleCount) Q_DECL_OVERRIDE;
 
 private:
 #if defined( PORTAUDIO_SUPPORTED )
@@ -147,12 +156,12 @@ private:
 	typedef struct
 	{
 		float		**mData;
-		quint64		  mSamples;
+		qint64		  mSamples;
 		int			  mChannels;
 		qint64		  mPosition;
 	} AudioBuffer;
 
-	void audioInput( AudioBuffer &AB, const float **pData, quint64 pSampleCount, int pChannelCount, qint64 pSamplePosition );
+	void audioInput( AudioBuffer &AB, const float **pData, qint64 pSampleCount, int pChannelCount, qint64 pSamplePosition );
 
 public slots:
 

@@ -18,14 +18,105 @@ GeneratorToProducerNode::GeneratorToProducerNode( QSharedPointer<fugio::NodeInte
 void GeneratorToProducerNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
+
+	fugio::AudioGeneratorInterface	*AGI = input<fugio::AudioGeneratorInterface *>( mPinAudioGenerator );
+
+	if( !AGI )
+	{
+		return;
+	}
+
+	if( AGI->audioChannels() != mGeneratorChannelCount ||
+		AGI->audioSampleFormat() != mGeneratorSampleFormat ||
+		AGI->audioSampleRate() != mGeneratorSampleRate )
+	{
+		mGeneratorChannelCount = AGI->audioChannels();
+		mGeneratorSampleFormat = AGI->audioSampleFormat();
+		mGeneratorSampleRate   = AGI->audioSampleRate();
+	}
+
+	if( mGeneratorSampleFormat == fugio::AudioSampleFormat::FormatUnknown )
+	{
+		return;
+	}
 }
 
 void GeneratorToProducerNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const
 {
-	Q_UNUSED( pSamplePosition )
-	Q_UNUSED( pSampleCount )
+	Q_UNUSED( pLatency )
+
+	fugio::AudioGeneratorInterface	*AGI = input<fugio::AudioGeneratorInterface *>( mPinAudioGenerator );
+
+	if( !AGI )
+	{
+		return;
+	}
 
 	AudioInstanceData		*AID = static_cast<AudioInstanceData *>( pInstanceData );
+
+	// At present we only convert between types and channels, not sample rate
+
+	if( AID->mSampleRate != mGeneratorSampleRate )
+	{
+		return;
+	}
+
+	QVector<const void *>		GeneratorData( AGI->audioChannels() );
+
+	qint64			DestSamplePosition = pSamplePosition;
+	qint64			DestSampleCount    = pSampleCount;
+
+	qint64			GeneratorSamplePosition;
+	qint64			GeneratorSampleCount;
+
+	while( DestSampleCount > 0 )
+	{
+		if( !AGI->audioLock( DestSamplePosition, DestSampleCount, GeneratorData.data(), GeneratorSamplePosition, GeneratorSampleCount ) )
+		{
+			break;
+		}
+
+		switch( mGeneratorSampleFormat )
+		{
+			case fugio::AudioSampleFormat::Format8UI:
+				{
+					const quint8 *SrcBuf = static_cast<const quint8 *>( GeneratorData[ 0 ] );
+
+					convert8UIto32FS( SrcBuf, GeneratorSampleCount, mGeneratorChannelCount, pBuffers, GeneratorSamplePosition - pSamplePosition, pChannelOffset, pChannelCount );
+				}
+				break;
+
+			case fugio::AudioSampleFormat::Format32FS:
+				{
+					for( int i = 0 ; i < pChannelCount ; i++ )
+					{
+						const int	c = pChannelOffset + i;
+
+						const float	*SrcBuf = static_cast<const float *>( GeneratorData[ c ] );
+						float		*DstBuf = &static_cast<float *>( pBuffers[ c ] )[ GeneratorSamplePosition - pSamplePosition ];
+
+						for( qint64 o = 0 ; o < GeneratorSampleCount ; o++ )
+						{
+							*DstBuf++ += *SrcBuf++;
+						}
+					}
+				}
+				break;
+
+			default:
+				break;
+		}
+
+		AGI->audioUnlock( GeneratorSamplePosition, GeneratorSampleCount );
+
+		DestSamplePosition = GeneratorSamplePosition + GeneratorSampleCount;
+		DestSampleCount    = ( pSamplePosition + pSampleCount ) - DestSamplePosition;
+	}
+
+	if( mGeneratorSampleFormat == fugio::AudioSampleFormat::Format32FS )
+	{
+		return;
+	}
 
 	for( int c = pChannelOffset ; c < pChannelCount ; c++ )
 	{
@@ -42,6 +133,8 @@ void *GeneratorToProducerNode::allocAudioInstance( qreal pSampleRate, fugio::Aud
 		AID->mSampleRate   = pSampleRate;
 		AID->mSampleFormat = pSampleFormat;
 		AID->mChannels     = pChannels;
+
+		AID->mGeneratorSamplePosition = -1;
 
 		mInstanceDataMutex.lock();
 
@@ -66,5 +159,26 @@ void GeneratorToProducerNode::freeAudioInstance( void *pInstanceData )
 		mInstanceDataMutex.unlock();
 
 		delete AID;
+	}
+}
+
+void GeneratorToProducerNode::convert8UIto32FS( const quint8 *pSrcDat, qint64 pSrcCnt, int pSrcChn, float **pDstDat, qint64 pDstOff, int pChannelOffset, int pChannelCount )
+{
+	for( int i = 0 ; i < pChannelCount ; i++ )
+	{
+		const int c = pChannelOffset + i;
+
+		if( pSrcChn <= c )
+		{
+			return;
+		}
+
+		const quint8	*SrcPtr = pSrcDat + ( pSrcChn * c );
+		float			*DstPtr = pDstDat[ c ] + pDstOff;
+
+		for( int s = 0 ; s < pSrcCnt ; s++, SrcPtr += pSrcChn )
+		{
+			*DstPtr++ = float( *SrcPtr - 127 ) / 128.0f;
+		}
 	}
 }

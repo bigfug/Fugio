@@ -120,7 +120,7 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 		return;
 	}
 
-	const qint64	CurPos = pTimeStamp * ( 48000 / 1000 );
+	const qint64	CurPos = ( mNode->context()->global()->timestamp() * 48000 ) / 1000;
 
 	if( !mSamplePosition )
 	{
@@ -155,17 +155,17 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 
 			mProducer->audio( mSamplePosition, samples(), 0, 1, &AudPtr, 0, mProducerInstance );
 
-//			if( true )
-//			{
-//				QFile		TEST_FILE( "E:/TEST_FILE.raw" );
+			if( false )
+			{
+				QFile		TEST_FILE( "/Users/bigfug/Desktop/TEST_FILE.raw" );
 
-//				if( TEST_FILE.open( QIODevice::Append ) || TEST_FILE.open( QIODevice::WriteOnly ) )
-//				{
-//					TEST_FILE.write( (const char *)mBufSrc, sizeof( float ) * samples() );
+				if( TEST_FILE.open( QIODevice::Append ) || TEST_FILE.open( QIODevice::WriteOnly ) )
+				{
+					TEST_FILE.write( (const char *)mBufSrc, sizeof( float ) * samples() );
 
-//					TEST_FILE.close();
-//				}
-//			}
+					TEST_FILE.close();
+				}
+			}
 
 			for( int i = 0 ; i < samples() ; i++ )
 			{

@@ -17,10 +17,10 @@
 
 #include "deviceportaudio.h"
 
-class PortAudioInputNode : public fugio::NodeControlBase, public fugio::AudioProducerInterface, public fugio::AudioGeneratorInterface
+class PortAudioInputNode : public fugio::NodeControlBase, public fugio::AudioGeneratorInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::AudioProducerInterface fugio::AudioGeneratorInterface )
+	Q_INTERFACES( fugio::AudioGeneratorInterface )
 
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
@@ -42,12 +42,6 @@ public:
 	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
 
 	virtual QWidget *gui() Q_DECL_OVERRIDE;
-
-	// InterfaceAudioProducer interface
-public:
-	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const Q_DECL_OVERRIDE;
-	virtual void *allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
-	virtual void freeAudioInstance(void *pInstanceData) Q_DECL_OVERRIDE;
 
 	// AudioGeneratorInterface interface
 public:
@@ -77,7 +71,7 @@ protected:
 
 private:
 	QSharedPointer<fugio::PinInterface>		 mPinAudio;
-	fugio::AudioProducerInterface			*mValAudio;
+	fugio::AudioGeneratorInterface			*mValAudio;
 
 	QSharedPointer<DevicePortAudio>			 mPortAudio;
 

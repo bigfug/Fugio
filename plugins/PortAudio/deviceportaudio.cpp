@@ -381,17 +381,36 @@ int DevicePortAudio::streamCallbackInput( const void *input, unsigned long frame
 
 	mInputTimeInfo = *timeInfo;
 
-	for( AudioBuffer &AB : mAudioBuffers )
+	mProducerMutex.lock();
+
+	while( !mAudioBuffers.isEmpty() )
 	{
-		quint64		TimeEnd = AB.mPosition + AB.mSamples;
+		AudioBuffer	AB = mAudioBuffers.first();
 
-		if( mInputAudioOffset - TimeEnd > 5 * mInputSampleRate )
+		if( mInputAudioOffset - ( AB.mPosition + AB.mSamples ) > 10 * mInputSampleRate )
 		{
-			audioInput( AB, (const float **)input, frameCount, mInputChannelCount, mInputAudioOffset );
+			if( AB.mData )
+			{
+				for( int i = 0 ; i < AB.mChannels ; i++ )
+				{
+					if( AB.mData[ i ] )
+					{
+						delete [] AB.mData[ i ];
 
-			mInputAudioOffset += frameCount;
+						AB.mData[ i ] = nullptr;
+					}
+				}
 
-			return( paContinue );
+				delete [] AB.mData;
+
+				AB.mData = nullptr;
+			}
+
+			mAudioBuffers.removeFirst();
+		}
+		else
+		{
+			break;
 		}
 	}
 
@@ -405,10 +424,12 @@ int DevicePortAudio::streamCallbackInput( const void *input, unsigned long frame
 
 	mInputAudioOffset += frameCount;
 
+	mProducerMutex.unlock();
+
 	return( paContinue );
 }
 
-void DevicePortAudio::audioInput( DevicePortAudio::AudioBuffer &AB, const float **pData, quint64 pSampleCount, int pChannelCount, qint64 pSamplePosition )
+void DevicePortAudio::audioInput( DevicePortAudio::AudioBuffer &AB, const float **pData, qint64 pSampleCount, int pChannelCount, qint64 pSamplePosition )
 {
 	if( AB.mChannels != pChannelCount || AB.mSamples != pSampleCount )
 	{
@@ -528,7 +549,7 @@ void DevicePortAudio::deviceOutputOpen( const PaDeviceInfo *DevInf )
 
 	mOutputSampleRate   = StreamInfo->sampleRate;
 	mOutputTimeLatency  = StreamInfo->outputLatency;
-	mOutputAudioOffset  = PortAudioPlugin::instance()->fugio()->timestamp() * qint64( mOutputSampleRate / 1000.0 );
+	mOutputAudioOffset  = ( PortAudioPlugin::instance()->fugio()->timestamp() * mOutputSampleRate ) / 1000;
 
 	if( Pa_StartStream( mStreamOutput ) != paNoError )
 	{
@@ -616,6 +637,64 @@ void DevicePortAudio::remProducer( AudioProducerInterface *pAudioProducer )
 
 		break;
 	}
+
+	mProducerMutex.unlock();
+}
+
+
+int DevicePortAudio::audioChannels() const
+{
+	return( mInputChannelCount );
+}
+
+qreal DevicePortAudio::audioSampleRate() const
+{
+	return( mInputSampleRate );
+}
+
+AudioSampleFormat DevicePortAudio::audioSampleFormat() const
+{
+	return( mInputSampleFormat );
+}
+
+bool DevicePortAudio::audioLock( qint64 pSamplePosition, qint64 pSampleCount, const void **pBuffers, qint64 &pReturnedPosition, qint64 &pReturnedCount )
+{
+	mProducerMutex.lock();
+
+	for( const AudioBuffer &AB : mAudioBuffers )
+	{
+		if( AB.mPosition >= pSamplePosition + pSampleCount )
+		{
+			break;
+		}
+
+		if( AB.mPosition + AB.mSamples < pSamplePosition )
+		{
+			continue;
+		}
+
+		pReturnedPosition = std::max<qint64>( pSamplePosition, AB.mPosition );
+		pReturnedCount    = AB.mSamples - ( pReturnedPosition - AB.mPosition );
+
+		int		BufferOffset = pReturnedPosition - AB.mPosition;
+
+		for( int c = 0 ; c < mInputChannelCount ; c++ )
+		{
+			pBuffers[ c ] = &AB.mData[ c ][ BufferOffset ];
+		}
+
+		return( true );
+	}
+
+	mProducerMutex.unlock();
+
+	return( false );
+}
+
+void DevicePortAudio::audioUnlock( qint64 pSamplePosition, qint64 pSampleCount )
+{
+	Q_UNUSED( pSamplePosition )
+	Q_UNUSED( pSampleCount )
 
 	mProducerMutex.unlock();
 }
