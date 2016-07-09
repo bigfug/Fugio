@@ -32,7 +32,8 @@ SOURCES += audioplugin.cpp \
     audiofilterdisplay.cpp \
     vcfnode.cpp \
     generatortoproducernode.cpp \
-    audiogeneratorpin.cpp
+    audiogeneratorpin.cpp \
+    mononode.cpp
 
 HEADERS += audioplugin.h\
         ../../include/fugio/audio/uuid.h \
@@ -53,7 +54,8 @@ HEADERS += audioplugin.h\
     vcfnode.h \
     ../../include/fugio/audio/audio_sample_format.h \
     generatortoproducernode.h \
-    audiogeneratorpin.h
+    audiogeneratorpin.h \
+    mononode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
