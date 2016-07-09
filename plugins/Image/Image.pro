@@ -112,10 +112,12 @@ windows {
 
         QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
 
-        QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/imageformats )
+		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/imageformats )
 
-        QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(QTDIR)/plugins/imageformats/"*.dll" ) $$shell_path( $$INSTALLDIR/imageformats )
-    }
+		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(QTDIR)/plugins/imageformats/"*.dll" ) $$shell_path( $$INSTALLDIR/data/imageformats )
+
+		QMAKE_POST_LINK += & del $$shell_path( $$INSTALLDIR/data/imageformats/"*d.dll" )
+	}
 }
 
 #------------------------------------------------------------------------------

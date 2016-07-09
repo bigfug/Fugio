@@ -86,11 +86,11 @@ windows {
         QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
 
         win32 {
-             QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/fftw-3.3.4/fftw3f-3.dll ) $$shell_path( $$INSTALLDEST )
+			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/fftw-3.3.4/libfftw3f-3.dll ) $$shell_path( $$INSTALLDEST )
         }
 
         win64 {
-             QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/fftw-3.3.4/fftw3f-3.dll ) $$shell_path( $$INSTALLDEST )
+			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/fftw-3.3.4/libfftw3f-3.dll ) $$shell_path( $$INSTALLDEST )
         }
     }
 }
