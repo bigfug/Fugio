@@ -60,6 +60,9 @@ protected:
 	QMutex										 mInstanceDataMutex;
 	QList<AudioInstanceData *>					 mInstanceData;
 
+	fugio::AudioProducerInterface				*mInputProducer;
+	void										*mInputInstance;
+
 	int											 mGeneratorSampleRate;
 	int											 mGeneratorChannelCount;
 	fugio::AudioSampleFormat					 mGeneratorSampleFormat;

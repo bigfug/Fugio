@@ -4,7 +4,7 @@
 #include <fugio/node_control_interface.h>
 
 AudioGeneratorPin::AudioGeneratorPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mGenerator( nullptr )
+	: AudioPin( pPin ), mGenerator( nullptr )
 {
 
 }

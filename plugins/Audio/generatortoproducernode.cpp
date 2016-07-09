@@ -3,7 +3,7 @@
 #include <fugio/audio/uuid.h>
 
 GeneratorToProducerNode::GeneratorToProducerNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode )
+	: NodeControlBase( pNode ), mInputProducer( nullptr ), mInputInstance( nullptr )
 {
 	FUGID( PIN_IN_GENERATOR,	"187BE548-2EDD-4C97-86A0-FA5F095B2B49" );
 	FUGID( PIN_OUT_PRODUCER,	"808BBAF5-2A8A-4C78-A549-E919B2DB2D29" );
@@ -26,6 +26,28 @@ void GeneratorToProducerNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+	fugio::AudioProducerInterface	*API = input<fugio::AudioProducerInterface *>( mPinAudioGenerator );
+
+	if( API != mInputProducer )
+	{
+		if( mInputProducer )
+		{
+			mInputProducer->freeAudioInstance( mInputInstance );
+
+			mInputProducer = nullptr;
+			mInputInstance = nullptr;
+		}
+
+		mInputProducer = API;
+
+		if( !API )
+		{
+			return;
+		}
+
+		mInputInstance = mInputProducer->allocAudioInstance( AGI->audioSampleRate(), AGI->audioSampleFormat(), AGI->audioChannels() );
+	}
+
 	if( AGI->audioChannels() != mGeneratorChannelCount ||
 		AGI->audioSampleFormat() != mGeneratorSampleFormat ||
 		AGI->audioSampleRate() != mGeneratorSampleRate )
@@ -33,6 +55,7 @@ void GeneratorToProducerNode::inputsUpdated( qint64 pTimeStamp )
 		mGeneratorChannelCount = AGI->audioChannels();
 		mGeneratorSampleFormat = AGI->audioSampleFormat();
 		mGeneratorSampleRate   = AGI->audioSampleRate();
+
 	}
 
 	if( mGeneratorSampleFormat == fugio::AudioSampleFormat::FormatUnknown )
@@ -45,6 +68,11 @@ void GeneratorToProducerNode::audio( qint64 pSamplePosition, qint64 pSampleCount
 {
 	Q_UNUSED( pLatency )
 
+	if( !mInputProducer || !mInputInstance )
+	{
+		return;
+	}
+
 	fugio::AudioGeneratorInterface	*AGI = input<fugio::AudioGeneratorInterface *>( mPinAudioGenerator );
 
 	if( !AGI )
@@ -52,11 +80,27 @@ void GeneratorToProducerNode::audio( qint64 pSamplePosition, qint64 pSampleCount
 		return;
 	}
 
+	fugio::AudioProducerInterface	*API = input<fugio::AudioProducerInterface *>( mPinAudioGenerator );
+
+	if( !API )
+	{
+		return;
+	}
+
 	AudioInstanceData		*AID = static_cast<AudioInstanceData *>( pInstanceData );
+
+	if( AID->mSampleRate == mGeneratorSampleRate &&
+		AID->mSampleFormat == mGeneratorSampleFormat &&
+		AID->mChannels     == mGeneratorChannelCount )
+	{
+		API->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pLatency, mInputInstance );
+
+		return;
+	}
 
 	// At present we only convert between types and channels, not sample rate
 
-	if( AID->mSampleRate != mGeneratorSampleRate )
+	if(  true ) //AID->mSampleRate != mGeneratorSampleRate )
 	{
 		return;
 	}
@@ -111,6 +155,11 @@ void GeneratorToProducerNode::audio( qint64 pSamplePosition, qint64 pSampleCount
 
 		DestSamplePosition = GeneratorSamplePosition + GeneratorSampleCount;
 		DestSampleCount    = ( pSamplePosition + pSampleCount ) - DestSamplePosition;
+	}
+
+	if( DestSampleCount > 0 )
+	{
+		qDebug() << DestSampleCount << "not found";
 	}
 
 	if( mGeneratorSampleFormat == fugio::AudioSampleFormat::Format32FS )

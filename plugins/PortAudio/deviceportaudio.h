@@ -15,10 +15,10 @@
 #include <fugio/audio/audio_producer_interface.h>
 #include <fugio/audio/audio_generator_interface.h>
 
-class DevicePortAudio : public QObject, public fugio::PlayheadInterface, public fugio::AudioGeneratorInterface
+class DevicePortAudio : public QObject, public fugio::PlayheadInterface, public fugio::AudioProducerInterface, public fugio::AudioGeneratorInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::PlayheadInterface fugio::AudioGeneratorInterface )
+	Q_INTERFACES( fugio::PlayheadInterface fugio::AudioProducerInterface fugio::AudioGeneratorInterface )
 
 public:
 	static void deviceInitialise( void );
@@ -123,10 +123,14 @@ public:
 
 	virtual void setTimeOffset( qreal pTimeOffset ) Q_DECL_OVERRIDE;
 
-	void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers ) const;
+	//-------------------------------------------------------------------------
+	// AudioProducerInterface interface
+public:
+	virtual void *allocAudioInstance(qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels) Q_DECL_OVERRIDE;
+	virtual void freeAudioInstance(void *pInstanceData) Q_DECL_OVERRIDE;
+	virtual void audio(qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
-
 	// AudioGeneratorInterface interface
 public:
 	virtual int audioChannels() const Q_DECL_OVERRIDE;
@@ -137,6 +141,14 @@ public:
 
 private:
 #if defined( PORTAUDIO_SUPPORTED )
+
+	typedef struct InputInstanceData
+	{
+		qreal									 mSampleRate;
+		fugio::AudioSampleFormat				 mSampleFormat;
+		int										 mChannels;
+
+	} InputInstanceData;
 
 	static int streamCallbackStatic( const void *input, void *output,
 									 unsigned long frameCount,
@@ -191,7 +203,7 @@ private:
 	PaStreamCallbackTimeInfo				 mInputTimeInfo;
 
 	qint64									 mOutputAudioOffset;
-	PaTime									 mInputAudioOffset;
+	qint64									 mInputAudioOffset;
 #endif
 
 	qreal									 mOutputSampleRate;

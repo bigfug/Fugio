@@ -202,3 +202,30 @@ void PortAudioInputNode::audioUnlock(qint64 pSamplePosition, qint64 pSampleCount
 		mPortAudio->audioUnlock( pSamplePosition, pSampleCount );
 	}
 }
+
+
+void *PortAudioInputNode::allocAudioInstance(qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels)
+{
+	if( !mPortAudio )
+	{
+		return( nullptr );
+	}
+
+	return( mPortAudio->allocAudioInstance( pSampleRate, pSampleFormat, pChannels ) );
+}
+
+void PortAudioInputNode::freeAudioInstance(void *pInstanceData)
+{
+	if( mPortAudio )
+	{
+		mPortAudio->freeAudioInstance( pInstanceData );
+	}
+}
+
+void PortAudioInputNode::audio(qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData) const
+{
+	if( mPortAudio )
+	{
+		mPortAudio->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pLatency, pInstanceData );
+	}
+}

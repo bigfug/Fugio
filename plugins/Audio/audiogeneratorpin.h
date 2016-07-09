@@ -4,8 +4,9 @@
 #include <fugio/audio/uuid.h>
 #include <fugio/pincontrolbase.h>
 #include <fugio/audio/audio_generator_interface.h>
+#include "audiopin.h"
 
-class AudioGeneratorPin : public fugio::PinControlBase, public fugio::AudioGeneratorInterface
+class AudioGeneratorPin : public AudioPin, public fugio::AudioGeneratorInterface
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::AudioGeneratorInterface )
