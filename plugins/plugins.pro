@@ -3,6 +3,7 @@ TEMPLATE = subdirs
 SUBDIRS += \
     Example \
     Audio \
+    Colour \
     Core \
     FFTW \
     File \
