@@ -31,9 +31,8 @@ EnvelopeNode::EnvelopeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInput->registerPinInputType( PID_BOOL );
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::VariantInterface						*mValOutput;
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "Output 1", mPinOutput, PID_FLOAT );
+	pinOutput<fugio::VariantInterface *>( "Output 1", mPinOutput, PID_FLOAT );
 
 	mNode->pairPins( mPinInput, mPinOutput );
 }

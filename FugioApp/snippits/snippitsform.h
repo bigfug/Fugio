@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QFileSystemModel>
+#include <QDebug>
 
 namespace Ui {
 class SnippitsForm;

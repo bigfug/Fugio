@@ -245,7 +245,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 		qInfo() << "Examples Directory:" << ExamplesDir.absolutePath();
 
-		FoundExamples = addExamplesPath( ExamplesDir.absolutePath() );
+		addExamplesPath( ExamplesDir.absolutePath() );
 	}
 
 	ui->actionRescan->setVisible( false );
