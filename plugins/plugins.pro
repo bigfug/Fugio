@@ -4,6 +4,7 @@ SUBDIRS += \
     Example \
     Audio \
     Core \
+    FFTW \
     GUI \
     Lua \
     Math \
