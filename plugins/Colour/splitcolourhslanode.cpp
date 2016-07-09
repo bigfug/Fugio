@@ -7,6 +7,8 @@ SplitColourHSLANode::SplitColourHSLANode( QSharedPointer<fugio::NodeInterface> p
 {
 	mPinInput = pinInput( "Colour" );
 
+	mPinInput->registerPinInputType( PID_COLOUR );
+
 	mOutH = pinOutput<fugio::VariantInterface *>( "Hue", mPinOutH, PID_FLOAT );
 
 	mOutS = pinOutput<fugio::VariantInterface *>( "Saturation", mPinOutS, PID_FLOAT );

@@ -7,6 +7,8 @@ SplitColourRGBANode::SplitColourRGBANode( QSharedPointer<fugio::NodeInterface> p
 {
 	mPinInput = pinInput( "Colour" );
 
+	mPinInput->registerPinInputType( PID_COLOUR );
+
 	mOutR = pinOutput<fugio::VariantInterface *>( "Red", mPinOutR, PID_FLOAT );
 
 	mOutG = pinOutput<fugio::VariantInterface *>( "Green", mPinOutG, PID_FLOAT );
