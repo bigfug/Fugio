@@ -37,11 +37,10 @@ macx {
     CONFIG += lib_bundle
 
     BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer
+    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
     INSTALLDEST  = $$INSTALLDIR/data/plugins
     INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
-    FRAMEWORKDIR = $$BUNDLEDIR/Contents/Frameworks
 
     DESTDIR = $$BUNDLEDIR/Contents/MacOS
     DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
@@ -57,7 +56,9 @@ macx {
 
         QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-        QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR
+        QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite
+
+        QMAKE_POST_LINK += $$libChange( libfftw3f.3.dylib )
 
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
