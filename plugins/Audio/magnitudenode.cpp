@@ -77,7 +77,7 @@ void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 
 			if( !mProducerInstance )
 			{
-				mProducerInstance = AP->allocAudioInstance( 48000, fugio::AudioSampleFormat::Format32FS, ChannelCount );
+				mProducerInstance = AP->audioAllocInstance( 48000, fugio::AudioSampleFormat::Format32FS, ChannelCount );
 			}
 
 			if( ChannelCount != mAudDat.size() )
@@ -101,7 +101,7 @@ void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 				memset( AudPtr[ i ], 0, sizeof( float ) * MAG_SMP );
 			}
 
-			AP->audio( mSamplePosition, MAG_SMP, 0, 1, AudPtr.data(), 0, mProducerInstance );
+			AP->audio( mSamplePosition, MAG_SMP, 0, 1, (void **)AudPtr.data(), mProducerInstance );
 
 			float		Mag = 0;
 

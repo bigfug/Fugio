@@ -55,7 +55,7 @@ void VCFNode::inputsUpdated( qint64 pTimeStamp )
 	mResonance = variant( mPinResonance ).toFloat();
 }
 
-void *VCFNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
+void *VCFNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
 {
 	AudioInstanceData		*InsDat = new AudioInstanceData();
 
@@ -86,17 +86,17 @@ void *VCFNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat p
 
 		if( fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput ) )
 		{
-			InsDat->mAudIns = IAP->allocAudioInstance( pSampleRate, pSampleFormat, pChannels );
+			InsDat->mAudIns = IAP->audioAllocInstance( pSampleRate, pSampleFormat, pChannels );
 		}
 
 		if( fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinCutoff ) )
 		{
-			InsDat->mCutoffInstance = IAP->allocAudioInstance( pSampleRate, pSampleFormat, 1 );
+			InsDat->mCutoffInstance = IAP->audioAllocInstance( pSampleRate, pSampleFormat, 1 );
 		}
 
 		if( fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinResonance ) )
 		{
-			InsDat->mResonanceInstance = IAP->allocAudioInstance( pSampleRate, pSampleFormat, 1 );
+			InsDat->mResonanceInstance = IAP->audioAllocInstance( pSampleRate, pSampleFormat, 1 );
 		}
 
 		mInstanceDataMutex.lock();
@@ -109,7 +109,7 @@ void *VCFNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat p
 	return( InsDat );
 }
 
-void VCFNode::freeAudioInstance( void *pInstanceData )
+void VCFNode::audioFreeInstance( void *pInstanceData )
 {
 	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
@@ -123,21 +123,21 @@ void VCFNode::freeAudioInstance( void *pInstanceData )
 
 		if( fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput ) )
 		{
-			IAP->freeAudioInstance( InsDat->mAudIns );
+			IAP->audioFreeInstance( InsDat->mAudIns );
 
 			InsDat->mAudIns = nullptr;
 		}
 
 		if( fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinCutoff ) )
 		{
-			IAP->freeAudioInstance( InsDat->mCutoffInstance );
+			IAP->audioFreeInstance( InsDat->mCutoffInstance );
 
 			InsDat->mCutoffInstance = nullptr;
 		}
 
 		if( fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinResonance ) )
 		{
-			IAP->freeAudioInstance( InsDat->mResonanceInstance );
+			IAP->audioFreeInstance( InsDat->mResonanceInstance );
 
 			InsDat->mCutoffInstance = nullptr;
 		}
@@ -166,7 +166,7 @@ void VCFNode::cutoffLinked( QSharedPointer<fugio::PinInterface> pPin )
 
 	for( AudioInstanceData *AID : mInstanceData )
 	{
-		AID->mCutoffInstance = IAP->allocAudioInstance( AID->mSampleRate, AID->mSampleFormat, 1 );
+		AID->mCutoffInstance = IAP->audioAllocInstance( AID->mSampleRate, AID->mSampleFormat, 1 );
 	}
 }
 
@@ -188,7 +188,7 @@ void VCFNode::cutoffUnlinked(QSharedPointer<fugio::PinInterface> pPin)
 
 	for( AudioInstanceData *AID : mInstanceData )
 	{
-		IAP->freeAudioInstance( AID->mCutoffInstance );
+		IAP->audioFreeInstance( AID->mCutoffInstance );
 
 		AID->mCutoffInstance = nullptr;
 	}
@@ -212,7 +212,7 @@ void VCFNode::resonanceLinked( QSharedPointer<fugio::PinInterface> pPin )
 
 	for( AudioInstanceData *AID : mInstanceData )
 	{
-		AID->mResonanceInstance = IAP->allocAudioInstance( AID->mSampleRate, AID->mSampleFormat, 1 );
+		AID->mResonanceInstance = IAP->audioAllocInstance( AID->mSampleRate, AID->mSampleFormat, 1 );
 	}
 }
 
@@ -234,7 +234,7 @@ void VCFNode::resonanceUnlinked(QSharedPointer<fugio::PinInterface> pPin)
 
 	for( AudioInstanceData *AID : mInstanceData )
 	{
-		IAP->freeAudioInstance( AID->mResonanceInstance );
+		IAP->audioFreeInstance( AID->mResonanceInstance );
 
 		AID->mResonanceInstance = nullptr;
 	}
@@ -251,13 +251,13 @@ void VCFNode::updateFilter(const float cutoff, const float res, float &p, float 
 	r  = res * ( t2 + 6.0f * t1 ) / ( t2 - 6.0f * t1 );
 }
 
-void VCFNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const
+void VCFNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const
 {
 	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
 	if( fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput ) )
 	{
-		IAP->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pLatency, InsDat->mAudIns );
+		IAP->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, InsDat->mAudIns );
 	}
 	else
 	{
@@ -272,7 +272,7 @@ void VCFNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOf
 
 		memset( SmpPtr, 0, sizeof( float ) * pSampleCount );
 
-		IAP->audio( pSamplePosition, pSampleCount, 0, 1, &SmpPtr, pLatency, InsDat->mCutoffInstance );
+		IAP->audio( pSamplePosition, pSampleCount, 0, 1, (void **)&SmpPtr, InsDat->mCutoffInstance );
 	}
 	else
 	{
@@ -287,7 +287,7 @@ void VCFNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOf
 
 		memset( SmpPtr, 0, sizeof( float ) * pSampleCount );
 
-		IAP->audio( pSamplePosition, pSampleCount, 0, 1, &SmpPtr, pLatency, InsDat->mResonanceInstance );
+		IAP->audio( pSamplePosition, pSampleCount, 0, 1, (void **)&SmpPtr, InsDat->mResonanceInstance );
 	}
 	else
 	{
@@ -307,7 +307,7 @@ void VCFNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOf
 	{
 		AudioChannelData	&ACD = InsDat->mChnDat[ c ];
 
-		float				*AudDst = pBuffers[ c ];
+		float				*AudDst = reinterpret_cast<float **>( pBuffers )[ c ];
 
 		for( qint64 i = 0 ; i < pSampleCount ; i++ )
 		{
@@ -363,3 +363,24 @@ void VCFNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOf
 	}
 }
 
+int VCFNode::audioChannels() const
+{
+	return( 1 );
+}
+
+qreal VCFNode::audioSampleRate() const
+{
+	return( 48000 );
+}
+
+fugio::AudioSampleFormat VCFNode::audioSampleFormat() const
+{
+	return( fugio::AudioSampleFormat::Format32FS );
+}
+
+qint64 VCFNode::audioLatency() const
+{
+	fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput );
+
+	return( IAP ? IAP->audioLatency() : 0 );
+}

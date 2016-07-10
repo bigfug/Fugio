@@ -180,7 +180,7 @@ void SignalNode::generateSignal( qint64 pSamplePosition, qint64 pSampleCount, co
 	}
 }
 
-void *SignalNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
+void *SignalNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
 {
 	AudioInstanceData		*InsDat = new AudioInstanceData();
 
@@ -201,7 +201,7 @@ void *SignalNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSampleForma
 	return( InsDat );
 }
 
-void SignalNode::freeAudioInstance( void *pInstanceData )
+void SignalNode::audioFreeInstance( void *pInstanceData )
 {
 	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
@@ -211,10 +211,8 @@ void SignalNode::freeAudioInstance( void *pInstanceData )
 	}
 }
 
-void SignalNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const
+void SignalNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const
 {
-	Q_UNUSED( pLatency )
-
 	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
 	if( mFrequency <= 0.0 || !InsDat || mVolume <= 0 )
@@ -250,7 +248,7 @@ void SignalNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChanne
 
 	for( int i = 0 ; i < pChannelCount ; i++ )
 	{
-		float		*DstPtr = pBuffers[ pChannelOffset + i ];
+		float		*DstPtr = (float *)pBuffers[ pChannelOffset + i ];
 		float		*SrcPtr = InsDat->mSmpBuf.data();
 
 		for( int j = 0 ; j < pSampleCount ; j++ )
@@ -297,3 +295,22 @@ QWidget *SignalNode::gui()
 	return( 0 );
 }
 
+int SignalNode::audioChannels() const
+{
+	return( 1 );
+}
+
+qreal SignalNode::audioSampleRate() const
+{
+	return( 48000 );
+}
+
+fugio::AudioSampleFormat SignalNode::audioSampleFormat() const
+{
+	return( fugio::AudioSampleFormat::Format32FS );
+}
+
+qint64 SignalNode::audioLatency() const
+{
+	return( 0 );
+}

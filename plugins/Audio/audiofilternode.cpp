@@ -85,7 +85,7 @@ void AudioFilterNode::inputsUpdated( qint64 pTimeStamp )
 	mLastDisplayChange = pTimeStamp;
 }
 
-void *AudioFilterNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
+void *AudioFilterNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
 {
 	AudioInstanceData		*InsDat = new AudioInstanceData();
 
@@ -103,7 +103,7 @@ void *AudioFilterNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSample
 
 		if( IAP )
 		{
-			InsDat->mAudIns = IAP->allocAudioInstance( pSampleRate, pSampleFormat, pChannels );
+			InsDat->mAudIns = IAP->audioAllocInstance( pSampleRate, pSampleFormat, pChannels );
 		}
 
 		mInstanceDataMutex.lock();
@@ -116,7 +116,7 @@ void *AudioFilterNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSample
 	return( InsDat );
 }
 
-void AudioFilterNode::freeAudioInstance( void *pInstanceData )
+void AudioFilterNode::audioFreeInstance( void *pInstanceData )
 {
 	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
@@ -134,7 +134,7 @@ void AudioFilterNode::freeAudioInstance( void *pInstanceData )
 
 			if( IAP )
 			{
-				IAP->freeAudioInstance( InsDat->mAudIns );
+				IAP->audioFreeInstance( InsDat->mAudIns );
 			}
 		}
 
@@ -232,7 +232,7 @@ void AudioFilterNode::updateTaps( void )
 	}
 }
 
-void AudioFilterNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const
+void AudioFilterNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const
 {
 	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
@@ -258,7 +258,7 @@ void AudioFilterNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pC
 		return;
 	}
 
-	IAP->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pLatency, InsDat->mAudIns );
+	IAP->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, InsDat->mAudIns );
 
 	if( mLowerFrequency <= 0.0f && mUpperFrequency >= mSampleRate / 2.0f )
 	{
@@ -279,7 +279,7 @@ void AudioFilterNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pC
 				AudDat[ j ] = AudDat[ j - 1 ];
 			}
 
-			AudDat[ 0 ] = pBuffers[ c ][ i ];
+			AudDat[ 0 ] = reinterpret_cast<float **>( pBuffers )[ c ][ i ];
 
 			float		AudFlt = 0;
 
@@ -288,7 +288,7 @@ void AudioFilterNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pC
 				AudFlt += AudDat[ k ] * TapDat[ k ];
 			}
 
-			pBuffers[ c ][ i ] = AudFlt;
+			((float *)pBuffers[ c ])[ i ] = AudFlt;
 		}
 	}
 }
@@ -308,4 +308,25 @@ QWidget *AudioFilterNode::gui()
 	}
 
 	return( GUI );
+}
+
+
+int AudioFilterNode::audioChannels() const
+{
+	return( 0 );
+}
+
+qreal AudioFilterNode::audioSampleRate() const
+{
+	return( 48000 );
+}
+
+fugio::AudioSampleFormat AudioFilterNode::audioSampleFormat() const
+{
+	return( fugio::AudioSampleFormat::Format32FS );
+}
+
+qint64 AudioFilterNode::audioLatency() const
+{
+	return( 0 );
 }

@@ -13,11 +13,10 @@
 #include "frequencybandsnode.h"
 #include "audiofilternode.h"
 #include "vcfnode.h"
-#include "generatortoproducernode.h"
 
 #include "audiopin.h"
 #include "fftpin.h"
-#include "audiogeneratorpin.h"
+#include "mononode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -25,9 +24,9 @@ ClassEntry		mNodeClasses[] =
 {
 	ClassEntry( "Centroid", "FFT", NID_CENTROID, &CentroidNode::staticMetaObject ),
 	ClassEntry( "Frequency Bands", "FFT", NID_FREQUENCY_BANDS, &FrequencyBandsNode::staticMetaObject ),
-	ClassEntry( "Generator To Producer", "Audio", NID_GENERATOR_TO_PRODUCER, &GeneratorToProducerNode::staticMetaObject ),
 	ClassEntry( "Magnitude", "Audio",  NID_AUDIO_MAGNITUDE, &MagnitudeNode::staticMetaObject ),
 	ClassEntry( "Mixer", "Audio",  NID_AUDIO_MIXER, &AudioMixerNode::staticMetaObject ),
+	ClassEntry( "Mono", "Audio",  NID_AUDIO_MONO, &MonoNode::staticMetaObject ),
 	ClassEntry( "Signal", "Audio", NID_SIGNAL, &SignalNode::staticMetaObject ),
 	ClassEntry( "Filter", "Audio", NID_AUDIO_FILTER, &AudioFilterNode::staticMetaObject ),
 	ClassEntry( "VCF", "Audio", NID_VCF, &VCFNode::staticMetaObject ),
@@ -37,7 +36,6 @@ ClassEntry		mNodeClasses[] =
 ClassEntry		mPinClasses[] =
 {
 	ClassEntry( "Audio", PID_AUDIO, &AudioPin::staticMetaObject ),
-	ClassEntry( "Audio Generator", PID_AUDIO_GENERATOR, &AudioGeneratorPin::staticMetaObject ),
 	ClassEntry( "FFT", PID_FFT, &FFTPin::staticMetaObject ),
 	ClassEntry()
 };

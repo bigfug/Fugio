@@ -62,10 +62,6 @@ FFTNode::FFTNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinOutputFFT->setDescription( tr( "The output Fast Fourier Transform" ) );
 
 	mPinInputWindow->setDescription( tr( "The window function that will be applied to the audio before FFT processing" ) );
-
-	connect( mPinInputAudio->qobject(), SIGNAL(linked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audioPinLinked(QSharedPointer<fugio::PinInterface>)) );
-
-	connect( mPinInputAudio->qobject(), SIGNAL(unlinked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audioPinUnlinked(QSharedPointer<fugio::PinInterface>)) );
 }
 
 FFTNode::~FFTNode( void )
@@ -101,6 +97,20 @@ bool FFTNode::initialise()
 		return( false );
 	}
 
+	if( mPinInputAudio->isConnected() && !mPinInputAudio->connectedNode()->isInitialised() )
+	{
+		return( false );
+	}
+
+	connect( mPinInputAudio->qobject(), SIGNAL(linked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audioPinLinked(QSharedPointer<fugio::PinInterface>)) );
+
+	connect( mPinInputAudio->qobject(), SIGNAL(unlinked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audioPinUnlinked(QSharedPointer<fugio::PinInterface>)) );
+
+	if( mPinInputAudio->isConnected() )
+	{
+		audioPinLinked( mPinInputAudio->connectedPin() );
+	}
+
 	calculateWindow();
 
 	return( true );
@@ -120,11 +130,11 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 		return;
 	}
 
-	const qint64	CurPos = pTimeStamp * ( 48000 / 1000 );
+	const qint64	CurPos = ( mNode->context()->global()->timestamp() * 48000 ) / 1000;
 
-	if( !mSamplePosition )
+	if( CurPos - mSamplePosition > 48000 )
 	{
-		mSamplePosition = CurPos;
+		mSamplePosition = CurPos - samples() - mProducer->audioLatency();
 	}
 
 	if( CurPos - mSamplePosition >= samples() )
@@ -153,11 +163,11 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 
 			memset( mBufSrc, 0, sizeof( float ) * samples() );
 
-			mProducer->audio( mSamplePosition, samples(), 0, 1, &AudPtr, 0, mProducerInstance );
+			mProducer->audio( mSamplePosition, samples(), 0, 1, (void **)&AudPtr, mProducerInstance );
 
 //			if( true )
 //			{
-//				QFile		TEST_FILE( "E:/TEST_FILE.raw" );
+//				QFile		TEST_FILE( "/Users/bigfug/Desktop/TEST_FILE.raw" );
 
 //				if( TEST_FILE.open( QIODevice::Append ) || TEST_FILE.open( QIODevice::WriteOnly ) )
 //				{
@@ -167,45 +177,16 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 //				}
 //			}
 
-			for( int i = 0 ; i < samples() ; i++ )
+			if( mWindowType != NONE )
 			{
-				mBufSrc[ i ] *= mWindow[ i ];
+				for( int i = 0 ; i < samples() ; i++ )
+				{
+					mBufSrc[ i ] *= mWindow[ i ];
+				}
 			}
 
 			fftwf_execute( mPlan );
 
-/*
- * It was drawing a rather nice GUI FFT display but it really kills overall app performance...
-
-			const int	s = samples() / 2;
-
-			QImage		I( s, 64, QImage::Format_ARGB32 );
-
-			{
-				QPainter	P( &I );
-
-				P.fillRect( I.rect(), Qt::black );
-				P.setPen( Qt::white );
-
-				for( int i = 0 ; i < s ; i++ )
-				{
-					const float	re = ( mBufDst[ i ][ 0 ] * 2.0f ) / float( samples() );
-					const float im = ( mBufDst[ i ][ 1 ] * 2.0f ) / float( samples() );
-
-					float	p = sqrtf( re * re + im * im ) * 10.0f;
-
-					p = log10f( 1.0f + ( 9.0f * p ) );
-
-					p *= 64.0f;
-
-					P.drawLine( i, 64 - 1, i, 64 - 1 - p * 1.0 );
-				}
-			}
-
-			mGUI->setPixmap( QPixmap::fromImage( I.scaled( 128, 64, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) ) );
-
-			//qDebug() << mBufDst[ 0 ][ 0 ] << mBufDst[ 0 ][ 1 ] << mBufDst[ 1 ][ 0 ] << mBufDst[ 1 ][ 1 ];
-*/
 			pinUpdated( mPinOutputFFT );
 #endif
 		}
@@ -226,7 +207,7 @@ void FFTNode::audioPinLinked( QSharedPointer<fugio::PinInterface> P )
 	}
 
 	mProducer = AP;
-	mProducerInstance = AP->allocAudioInstance( 48000, fugio::AudioSampleFormat::Format32FS, 1 );
+	mProducerInstance = AP->audioAllocInstance( 48000, fugio::AudioSampleFormat::Format32FS, 1 );
 
 	connect( mNode->context()->qobject(), SIGNAL(frameProcess(qint64)), this, SLOT(onContextFrame(qint64)) );
 }
@@ -237,7 +218,7 @@ void FFTNode::audioPinUnlinked( QSharedPointer<fugio::PinInterface> P )
 
 	if( AP && AP == mProducer )
 	{
-		mProducer->freeAudioInstance( mProducerInstance );
+		mProducer->audioFreeInstance( mProducerInstance );
 	}
 
 	mProducerInstance = nullptr;
@@ -294,7 +275,10 @@ void FFTNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	mSampleCount = SampleCount;
+	mSampleCount    = SampleCount;
+	mSamplePosition = 0;
+
+	calculateWindow();
 
 #if defined( FFTW_PLUGIN_SUPPORTED )
 	if( mBufSrc )

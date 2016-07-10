@@ -36,9 +36,13 @@ public:
 
 	// InterfaceAudioProducer interface
 public:
-	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const Q_DECL_OVERRIDE;
-	virtual void *allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
-	virtual void freeAudioInstance(void *pInstanceData) Q_DECL_OVERRIDE;
+	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const Q_DECL_OVERRIDE;
+	virtual void *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
+	virtual void audioFreeInstance(void *pInstanceData) Q_DECL_OVERRIDE;
+	virtual int audioChannels() const Q_DECL_OVERRIDE;
+	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
+	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;
+	virtual qint64 audioLatency() const Q_DECL_OVERRIDE;
 
 signals:
 	void updateDisplay( const QVector<float> &pTaps );

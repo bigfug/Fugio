@@ -36,7 +36,7 @@ int LuaArray::luaGet( lua_State *L )
 {
 	LuaArrayUserData			*LstDat = checkarray( L );
 
-	if( lua_isstring( L, 2 ) )
+	if( lua_type( L, 2 ) == LUA_TSTRING )
 	{
 		const char	*s = luaL_checkstring( L, 2 );
 

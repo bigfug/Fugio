@@ -13,14 +13,13 @@
 
 #include <fugio/portaudio/uuid.h>
 #include <fugio/audio/audio_producer_interface.h>
-#include <fugio/audio/audio_generator_interface.h>
 
 #include "deviceportaudio.h"
 
-class PortAudioInputNode : public fugio::NodeControlBase, public fugio::AudioProducerInterface, public fugio::AudioGeneratorInterface
+class PortAudioInputNode : public fugio::NodeControlBase, public fugio::AudioProducerInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::AudioProducerInterface fugio::AudioGeneratorInterface )
+	Q_INTERFACES( fugio::AudioProducerInterface )
 
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
@@ -43,19 +42,15 @@ public:
 
 	virtual QWidget *gui() Q_DECL_OVERRIDE;
 
-	// InterfaceAudioProducer interface
+	// AudioProducerInterface interface
 public:
-	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const Q_DECL_OVERRIDE;
-	virtual void *allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
-	virtual void freeAudioInstance(void *pInstanceData) Q_DECL_OVERRIDE;
-
-	// AudioGeneratorInterface interface
-public:
+	virtual void *audioAllocInstance(qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels) Q_DECL_OVERRIDE;
+	virtual void audioFreeInstance(void *pInstanceData) Q_DECL_OVERRIDE;
+	virtual void audio(qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData) const Q_DECL_OVERRIDE;
+	virtual qint64 audioLatency() const Q_DECL_OVERRIDE;
 	virtual int audioChannels() const Q_DECL_OVERRIDE;
 	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
 	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;
-	virtual bool audioLock(qint64 pSamplePosition, qint64 pSampleCount, const void **pBuffers, qint64 &pReturnedPosition, qint64 &pReturnedCount) Q_DECL_OVERRIDE;
-	virtual void audioUnlock(qint64 pSamplePosition, qint64 pSampleCount) Q_DECL_OVERRIDE;
 
 signals:
 	//void audioUpdated( void );
