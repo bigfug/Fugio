@@ -22,7 +22,7 @@ public:
 
 	virtual void freeAudioInstance( void *pInstanceData ) = 0;
 
-	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const = 0;
+	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, void *pInstanceData ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

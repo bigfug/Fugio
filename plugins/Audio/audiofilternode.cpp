@@ -232,7 +232,7 @@ void AudioFilterNode::updateTaps( void )
 	}
 }
 
-void AudioFilterNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const
+void AudioFilterNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, void *pInstanceData ) const
 {
 	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
@@ -258,7 +258,7 @@ void AudioFilterNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pC
 		return;
 	}
 
-	IAP->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pLatency, InsDat->mAudIns );
+	IAP->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, InsDat->mAudIns );
 
 	if( mLowerFrequency <= 0.0f && mUpperFrequency >= mSampleRate / 2.0f )
 	{

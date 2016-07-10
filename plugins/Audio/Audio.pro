@@ -31,7 +31,6 @@ SOURCES += audioplugin.cpp \
     audiofilternode.cpp \
     audiofilterdisplay.cpp \
     vcfnode.cpp \
-    generatortoproducernode.cpp \
     audiogeneratorpin.cpp \
     mononode.cpp
 
@@ -53,7 +52,6 @@ HEADERS += audioplugin.h\
     audiofilterdisplay.h \
     vcfnode.h \
     ../../include/fugio/audio/audio_sample_format.h \
-    generatortoproducernode.h \
     audiogeneratorpin.h \
     mononode.h
 

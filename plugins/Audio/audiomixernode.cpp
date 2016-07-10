@@ -24,7 +24,7 @@ AudioMixerNode::~AudioMixerNode( void )
 
 }
 
-void AudioMixerNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const
+void AudioMixerNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, void *pInstanceData ) const
 {
 	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
@@ -37,7 +37,7 @@ void AudioMixerNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pCh
 
 	for( auto it = InsDat->mInstanceData.begin() ; it != InsDat->mInstanceData.end() ; it++ )
 	{
-		it.key()->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pLatency, it.value() );
+		it.key()->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, it.value() );
 	}
 
 	InsDat->mMutex.unlock();

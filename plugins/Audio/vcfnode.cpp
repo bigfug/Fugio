@@ -251,13 +251,13 @@ void VCFNode::updateFilter(const float cutoff, const float res, float &p, float 
 	r  = res * ( t2 + 6.0f * t1 ) / ( t2 - 6.0f * t1 );
 }
 
-void VCFNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const
+void VCFNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, void *pInstanceData ) const
 {
 	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
 	if( fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput ) )
 	{
-		IAP->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pLatency, InsDat->mAudIns );
+		IAP->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, InsDat->mAudIns );
 	}
 	else
 	{
@@ -272,7 +272,7 @@ void VCFNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOf
 
 		memset( SmpPtr, 0, sizeof( float ) * pSampleCount );
 
-		IAP->audio( pSamplePosition, pSampleCount, 0, 1, &SmpPtr, pLatency, InsDat->mCutoffInstance );
+		IAP->audio( pSamplePosition, pSampleCount, 0, 1, &SmpPtr, InsDat->mCutoffInstance );
 	}
 	else
 	{
@@ -287,7 +287,7 @@ void VCFNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOf
 
 		memset( SmpPtr, 0, sizeof( float ) * pSampleCount );
 
-		IAP->audio( pSamplePosition, pSampleCount, 0, 1, &SmpPtr, pLatency, InsDat->mResonanceInstance );
+		IAP->audio( pSamplePosition, pSampleCount, 0, 1, &SmpPtr, InsDat->mResonanceInstance );
 	}
 	else
 	{

@@ -11,9 +11,9 @@ TEMPLATE = lib
 CONFIG += plugin c++11
 
 CONFIG(debug,debug|release) {
-	DESTDIR = $$OUT_PWD/../../../deploy-debug-$$QMAKE_HOST.arch/plugins
+    DESTDIR = $$OUT_PWD/../../../deploy-debug-$$QMAKE_HOST.arch/plugins
 } else {
-	DESTDIR = $$OUT_PWD/../../../deploy-release-$$QMAKE_HOST.arch/plugins
+    DESTDIR = $$OUT_PWD/../../../deploy-release-$$QMAKE_HOST.arch/plugins
 }
 
 include( ../../../Fugio/FugioGlobal.pri )

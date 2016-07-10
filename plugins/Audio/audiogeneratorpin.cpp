@@ -38,16 +38,3 @@ fugio::AudioSampleFormat AudioGeneratorPin::audioSampleFormat() const
 {
 	return( generator() ? generator()->audioSampleFormat() : fugio::AudioSampleFormat::FormatUnknown );
 }
-
-bool AudioGeneratorPin::audioLock( qint64 pSamplePosition, qint64 pSampleCount, const void **pBuffers, qint64 &pReturnedPosition, qint64 &pReturnedCount )
-{
-	return( generator() ? generator()->audioLock( pSamplePosition, pSampleCount, pBuffers, pReturnedPosition, pReturnedCount ) : false );
-}
-
-void AudioGeneratorPin::audioUnlock( qint64 pSamplePosition, qint64 pSampleCount )
-{
-	if( generator() )
-	{
-		generator()->audioUnlock( pSamplePosition, pSampleCount );
-	}
-}

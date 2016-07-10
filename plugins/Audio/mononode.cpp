@@ -108,7 +108,7 @@ void MonoNode::freeAudioInstance( void *pInstanceData )
 	}
 }
 
-void MonoNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const
+void MonoNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, void *pInstanceData ) const
 {
 	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
@@ -128,7 +128,7 @@ void MonoNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelO
 			AudPtr[ i ] = AudDat[ i ].data();
 		}
 
-		IAP->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, AudPtr.data(), pLatency, InsDat->mAudIns );
+		IAP->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, AudPtr.data(), InsDat->mAudIns );
 
 		for( int i = 0 ; i < InsDat->mChannels ; i++ )
 		{

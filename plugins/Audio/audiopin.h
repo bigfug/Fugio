@@ -31,11 +31,11 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
-	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const Q_DECL_OVERRIDE
+	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, void *pInstanceData ) const Q_DECL_OVERRIDE
 	{
 		if( producer() )
 		{
-			producer()->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pLatency, pInstanceData );
+			producer()->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pInstanceData );
 		}
 	}
 

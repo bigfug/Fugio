@@ -165,7 +165,7 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 
 			//qDebug() << "FFT:" << mSamplePosition;
 
-			mProducer->audio( mSamplePosition, samples(), 0, 1, &AudPtr, 0, mProducerInstance );
+			mProducer->audio( mSamplePosition, samples(), 0, 1, &AudPtr, mProducerInstance );
 
 			if( true )
 			{

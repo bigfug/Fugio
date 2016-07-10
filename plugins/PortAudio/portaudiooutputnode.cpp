@@ -87,7 +87,7 @@ bool PortAudioOutputNode::deinitialise()
 	return( NodeControlBase::deinitialise() );
 }
 
-void PortAudioOutputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const
+void PortAudioOutputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, void *pInstanceData ) const
 {
 	Q_UNUSED( pInstanceData )
 
@@ -97,7 +97,7 @@ void PortAudioOutputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, in
 
 	if( mProducer )
 	{
-		mProducer->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pLatency, mInstance );
+		mProducer->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, mInstance );
 	}
 
 	mProducerMutex.unlock();

@@ -211,10 +211,8 @@ void SignalNode::freeAudioInstance( void *pInstanceData )
 	}
 }
 
-void SignalNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const
+void SignalNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, void *pInstanceData ) const
 {
-	Q_UNUSED( pLatency )
-
 	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
 	if( mFrequency <= 0.0 || !InsDat || mVolume <= 0 )
