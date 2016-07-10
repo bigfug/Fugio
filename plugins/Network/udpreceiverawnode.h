@@ -35,9 +35,17 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinOutputBuffer;
 	fugio::VariantInterface						*mValOutputBuffer;
 
+	QSharedPointer<fugio::PinInterface>			 mPinOutputCount;
+	fugio::VariantInterface						*mValOutputCount;
+
 	QUdpSocket									 mSocket;
 
 	QDataStream									*mStream;
+
+	qint64										 mCurrTime;
+	qint64										 mBytesReceived;
+
+	QAbstractSocket::SocketState				 mLastState;
 };
 
 #endif // UDPRECEIVERAWNODE_H
