@@ -137,7 +137,9 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 	{
 		fugio::AudioGeneratorInterface		*AGI = input<fugio::AudioGeneratorInterface *>( mPinInputAudio );
 
-		mSamplePosition = CurPos - samples() - ( AGI ? AGI->audioLatency() : 0 );
+		const qint64	InputLatency =  ( AGI ? AGI->audioLatency() : 0 );
+
+		mSamplePosition = CurPos - samples() - InputLatency;
 	}
 
 	if( CurPos - mSamplePosition >= samples() )
@@ -166,8 +168,6 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 
 			memset( mBufSrc, 0, sizeof( float ) * samples() );
 
-			//qDebug() << "FFT:" << mSamplePosition;
-
 			mProducer->audio( mSamplePosition, samples(), 0, 1, &AudPtr, mProducerInstance );
 
 //			if( true )
@@ -182,45 +182,16 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 //				}
 //			}
 
-			for( int i = 0 ; i < samples() ; i++ )
+			if( mWindowType != NONE )
 			{
-				mBufSrc[ i ] *= mWindow[ i ];
+				for( int i = 0 ; i < samples() ; i++ )
+				{
+					mBufSrc[ i ] *= mWindow[ i ];
+				}
 			}
 
 			fftwf_execute( mPlan );
 
-/*
- * It was drawing a rather nice GUI FFT display but it really kills overall app performance...
-
-			const int	s = samples() / 2;
-
-			QImage		I( s, 64, QImage::Format_ARGB32 );
-
-			{
-				QPainter	P( &I );
-
-				P.fillRect( I.rect(), Qt::black );
-				P.setPen( Qt::white );
-
-				for( int i = 0 ; i < s ; i++ )
-				{
-					const float	re = ( mBufDst[ i ][ 0 ] * 2.0f ) / float( samples() );
-					const float im = ( mBufDst[ i ][ 1 ] * 2.0f ) / float( samples() );
-
-					float	p = sqrtf( re * re + im * im ) * 10.0f;
-
-					p = log10f( 1.0f + ( 9.0f * p ) );
-
-					p *= 64.0f;
-
-					P.drawLine( i, 64 - 1, i, 64 - 1 - p * 1.0 );
-				}
-			}
-
-			mGUI->setPixmap( QPixmap::fromImage( I.scaled( 128, 64, Qt::IgnoreAspectRatio, Qt::SmoothTransformation ) ) );
-
-			//qDebug() << mBufDst[ 0 ][ 0 ] << mBufDst[ 0 ][ 1 ] << mBufDst[ 1 ][ 0 ] << mBufDst[ 1 ][ 1 ];
-*/
 			pinUpdated( mPinOutputFFT );
 #endif
 		}
@@ -309,7 +280,10 @@ void FFTNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	mSampleCount = SampleCount;
+	mSampleCount    = SampleCount;
+	mSamplePosition = 0;
+
+	calculateWindow();
 
 #if defined( FFTW_PLUGIN_SUPPORTED )
 	if( mBufSrc )
