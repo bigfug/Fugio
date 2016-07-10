@@ -38,3 +38,8 @@ fugio::AudioSampleFormat AudioGeneratorPin::audioSampleFormat() const
 {
 	return( generator() ? generator()->audioSampleFormat() : fugio::AudioSampleFormat::FormatUnknown );
 }
+
+qint64 AudioGeneratorPin::audioLatency() const
+{
+	return( generator() ? generator()->audioLatency() : 0 );
+}

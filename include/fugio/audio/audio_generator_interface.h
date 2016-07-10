@@ -17,6 +17,8 @@ public:
 	virtual qreal audioSampleRate( void ) const = 0;
 
 	virtual AudioSampleFormat audioSampleFormat( void ) const = 0;
+
+	virtual qint64 audioLatency( void ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

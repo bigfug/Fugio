@@ -54,6 +54,7 @@ public:
 	virtual void *allocAudioInstance(qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels) Q_DECL_OVERRIDE;
 	virtual void freeAudioInstance(void *pInstanceData) Q_DECL_OVERRIDE;
 	virtual void audio(qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, void *pInstanceData) const Q_DECL_OVERRIDE;
+	virtual qint64 audioLatency() const Q_DECL_OVERRIDE;
 
 signals:
 	//void audioUpdated( void );

@@ -210,3 +210,8 @@ void PortAudioInputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int
 		mPortAudio->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pInstanceData );
 	}
 }
+
+qint64 PortAudioInputNode::audioLatency() const
+{
+	return( mPortAudio ? mPortAudio->audioLatency() : 0 );
+}

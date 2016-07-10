@@ -5,6 +5,7 @@
 
 #include <fugio/context_interface.h>
 #include <fugio/core/variant_interface.h>
+#include <fugio/audio/audio_generator_interface.h>
 
 #include <fugio/context_signals.h>
 #include <fugio/performance.h>
@@ -134,7 +135,9 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 
 	if( CurPos - mSamplePosition > 48000 )
 	{
-		mSamplePosition = CurPos - samples();
+		fugio::AudioGeneratorInterface		*AGI = input<fugio::AudioGeneratorInterface *>( mPinInputAudio );
+
+		mSamplePosition = CurPos - samples() - ( AGI ? AGI->audioLatency() : 0 );
 	}
 
 	if( CurPos - mSamplePosition >= samples() )
@@ -167,17 +170,17 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 
 			mProducer->audio( mSamplePosition, samples(), 0, 1, &AudPtr, mProducerInstance );
 
-			if( true )
-			{
-				QFile		TEST_FILE( "/Users/bigfug/Desktop/TEST_FILE.raw" );
+//			if( true )
+//			{
+//				QFile		TEST_FILE( "/Users/bigfug/Desktop/TEST_FILE.raw" );
 
-				if( TEST_FILE.open( QIODevice::Append ) || TEST_FILE.open( QIODevice::WriteOnly ) )
-				{
-					TEST_FILE.write( (const char *)mBufSrc, sizeof( float ) * samples() );
+//				if( TEST_FILE.open( QIODevice::Append ) || TEST_FILE.open( QIODevice::WriteOnly ) )
+//				{
+//					TEST_FILE.write( (const char *)mBufSrc, sizeof( float ) * samples() );
 
-					TEST_FILE.close();
-				}
-			}
+//					TEST_FILE.close();
+//				}
+//			}
 
 			for( int i = 0 ; i < samples() ; i++ )
 			{

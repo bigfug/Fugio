@@ -706,3 +706,7 @@ AudioSampleFormat DevicePortAudio::audioSampleFormat() const
 	return( mInputSampleFormat );
 }
 
+qint64 DevicePortAudio::audioLatency() const
+{
+	return( ( mInputSampleRate * mInputTimeLatency ) / 1000.0 );
+}
