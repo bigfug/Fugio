@@ -2,7 +2,6 @@
 
 #include <fugio/core/uuid.h>
 #include <fugio/audio/uuid.h>
-#include <fugio/audio/audio_generator_interface.h>
 
 #include <fugio/context_interface.h>
 #include <fugio/context_signals.h>
@@ -42,11 +41,16 @@ void MonoNode::inputsUpdated( qint64 pTimeStamp )
 	NodeControlBase::inputsUpdated( pTimeStamp );
 }
 
-void *MonoNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
+void *MonoNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
 {
-	fugio::AudioGeneratorInterface *IAG = input<fugio::AudioGeneratorInterface *>( mPinAudioInput );
+	if( pChannels != 1 )
+	{
+		return( 0 );
+	}
 
-	if( IAG && ( IAG->audioSampleFormat() != pSampleFormat || IAG->audioSampleRate() != pSampleRate ) )
+	fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput );
+
+	if( IAP && ( IAP->audioSampleFormat() != pSampleFormat || IAP->audioSampleRate() != pSampleRate ) )
 	{
 		return( 0 );
 	}
@@ -55,24 +59,14 @@ void *MonoNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat 
 
 	if( InsDat )
 	{
-		if( IAG )
-		{
-			InsDat->mSampleRate   = IAG->audioSampleRate();
-			InsDat->mSampleFormat = IAG->audioSampleFormat();
-			InsDat->mChannels     = IAG->audioChannels();
-		}
-		else
-		{
-			InsDat->mSampleRate   = pSampleRate;
-			InsDat->mSampleFormat = pSampleFormat;
-			InsDat->mChannels     = pChannels;
-		}
-
+		InsDat->mSampleRate   = IAP->audioSampleRate();
+		InsDat->mSampleFormat = IAP->audioSampleFormat();
+		InsDat->mChannels     = IAP->audioChannels();
 		InsDat->mAudIns = 0;
 
-		if( fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput ) )
+		if( IAP )
 		{
-			InsDat->mAudIns = IAP->allocAudioInstance( InsDat->mSampleRate, InsDat->mSampleFormat, InsDat->mChannels );
+			InsDat->mAudIns = IAP->audioAllocInstance( InsDat->mSampleRate, InsDat->mSampleFormat, InsDat->mChannels );
 		}
 
 		mInstanceDataMutex.lock();
@@ -85,7 +79,7 @@ void *MonoNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat 
 	return( InsDat );
 }
 
-void MonoNode::freeAudioInstance( void *pInstanceData )
+void MonoNode::audioFreeInstance( void *pInstanceData )
 {
 	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
@@ -99,7 +93,7 @@ void MonoNode::freeAudioInstance( void *pInstanceData )
 
 		if( fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput ) )
 		{
-			IAP->freeAudioInstance( InsDat->mAudIns );
+			IAP->audioFreeInstance( InsDat->mAudIns );
 
 			InsDat->mAudIns = nullptr;
 		}
@@ -108,7 +102,7 @@ void MonoNode::freeAudioInstance( void *pInstanceData )
 	}
 }
 
-void MonoNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, void *pInstanceData ) const
+void MonoNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const
 {
 	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
@@ -119,28 +113,57 @@ void MonoNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelO
 
 	if( fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput ) )
 	{
-		QVector<QVector<float>>					 AudDat( InsDat->mChannels );
-		QVector<float *>						 AudPtr( InsDat->mChannels );
-
-		for( int i = 0 ; i < InsDat->mChannels ; i++ )
+		if( InsDat->mChannels == 1 )
 		{
-			AudDat[ i ].resize( pSampleCount );
-			AudPtr[ i ] = AudDat[ i ].data();
+			IAP->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, InsDat->mAudIns );
 		}
-
-		IAP->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, AudPtr.data(), InsDat->mAudIns );
-
-		for( int i = 0 ; i < InsDat->mChannels ; i++ )
+		else
 		{
-			const int	c = pChannelOffset + i;
+			QVector<QVector<float>>					 AudDat( InsDat->mChannels );
+			QVector<float *>						 AudPtr( InsDat->mChannels );
 
-			const float	*SrcDat = AudPtr[ c ];
-			float		*DstDat = pBuffers[ 0 ];
-
-			for( qint64 s = 0 ; s < pSampleCount ; s++ )
+			for( int i = 0 ; i < InsDat->mChannels ; i++ )
 			{
-				*DstDat++ += *SrcDat++;
+				AudDat[ i ].resize( pSampleCount );
+				AudPtr[ i ] = AudDat[ i ].data();
+			}
+
+			IAP->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, (void **)AudPtr.data(), InsDat->mAudIns );
+
+			for( int i = 0 ; i < InsDat->mChannels ; i++ )
+			{
+				const int	c = pChannelOffset + i;
+
+				const float	*SrcDat = AudPtr[ c ];
+				float		*DstDat = (float *)pBuffers[ 0 ];
+
+				for( qint64 s = 0 ; s < pSampleCount ; s++ )
+				{
+					*DstDat++ += *SrcDat++;
+				}
 			}
 		}
 	}
+}
+
+int MonoNode::audioChannels() const
+{
+	return( 1 );
+}
+
+qreal MonoNode::audioSampleRate() const
+{
+	return( 48000 );
+}
+
+fugio::AudioSampleFormat MonoNode::audioSampleFormat() const
+{
+	return( fugio::AudioSampleFormat::Format32FS );
+}
+
+qint64 MonoNode::audioLatency() const
+{
+	fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput );
+
+	return( IAP ? IAP->audioLatency() : 0 );
 }

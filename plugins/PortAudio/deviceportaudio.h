@@ -13,12 +13,11 @@
 #include <fugio/playhead_interface.h>
 #include <fugio/node_interface.h>
 #include <fugio/audio/audio_producer_interface.h>
-#include <fugio/audio/audio_generator_interface.h>
 
-class DevicePortAudio : public QObject, public fugio::PlayheadInterface, public fugio::AudioProducerInterface, public fugio::AudioGeneratorInterface
+class DevicePortAudio : public QObject, public fugio::PlayheadInterface, public fugio::AudioProducerInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::PlayheadInterface fugio::AudioProducerInterface fugio::AudioGeneratorInterface )
+	Q_INTERFACES( fugio::PlayheadInterface fugio::AudioProducerInterface )
 
 public:
 	static void deviceInitialise( void );
@@ -126,13 +125,9 @@ public:
 	//-------------------------------------------------------------------------
 	// AudioProducerInterface interface
 public:
-	virtual void *allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
-	virtual void freeAudioInstance( void *pInstanceData ) Q_DECL_OVERRIDE;
-	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers,  void *pInstanceData) const Q_DECL_OVERRIDE;
-
-	//-------------------------------------------------------------------------
-	// AudioGeneratorInterface interface
-public:
+	virtual void *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
+	virtual void audioFreeInstance( void *pInstanceData ) Q_DECL_OVERRIDE;
+	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers,  void *pInstanceData) const Q_DECL_OVERRIDE;
 	virtual int audioChannels() const Q_DECL_OVERRIDE;
 	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
 	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;

@@ -5,7 +5,6 @@
 
 #include <fugio/context_interface.h>
 #include <fugio/core/variant_interface.h>
-#include <fugio/audio/audio_generator_interface.h>
 
 #include <fugio/context_signals.h>
 #include <fugio/performance.h>
@@ -135,11 +134,7 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 
 	if( CurPos - mSamplePosition > 48000 )
 	{
-		fugio::AudioGeneratorInterface		*AGI = input<fugio::AudioGeneratorInterface *>( mPinInputAudio );
-
-		const qint64	InputLatency =  ( AGI ? AGI->audioLatency() : 0 );
-
-		mSamplePosition = CurPos - samples() - InputLatency;
+		mSamplePosition = CurPos - samples() - mProducer->audioLatency();
 	}
 
 	if( CurPos - mSamplePosition >= samples() )
@@ -168,7 +163,7 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 
 			memset( mBufSrc, 0, sizeof( float ) * samples() );
 
-			mProducer->audio( mSamplePosition, samples(), 0, 1, &AudPtr, mProducerInstance );
+			mProducer->audio( mSamplePosition, samples(), 0, 1, (void **)&AudPtr, mProducerInstance );
 
 //			if( true )
 //			{
@@ -212,7 +207,7 @@ void FFTNode::audioPinLinked( QSharedPointer<fugio::PinInterface> P )
 	}
 
 	mProducer = AP;
-	mProducerInstance = AP->allocAudioInstance( 48000, fugio::AudioSampleFormat::Format32FS, 1 );
+	mProducerInstance = AP->audioAllocInstance( 48000, fugio::AudioSampleFormat::Format32FS, 1 );
 
 	connect( mNode->context()->qobject(), SIGNAL(frameProcess(qint64)), this, SLOT(onContextFrame(qint64)) );
 }
@@ -223,7 +218,7 @@ void FFTNode::audioPinUnlinked( QSharedPointer<fugio::PinInterface> P )
 
 	if( AP && AP == mProducer )
 	{
-		mProducer->freeAudioInstance( mProducerInstance );
+		mProducer->audioFreeInstance( mProducerInstance );
 	}
 
 	mProducerInstance = nullptr;

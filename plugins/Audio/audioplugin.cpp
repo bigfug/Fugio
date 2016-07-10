@@ -16,7 +16,6 @@
 
 #include "audiopin.h"
 #include "fftpin.h"
-#include "audiogeneratorpin.h"
 #include "mononode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
@@ -37,7 +36,6 @@ ClassEntry		mNodeClasses[] =
 ClassEntry		mPinClasses[] =
 {
 	ClassEntry( "Audio", PID_AUDIO, &AudioPin::staticMetaObject ),
-	ClassEntry( "Audio Generator", PID_AUDIO_GENERATOR, &AudioGeneratorPin::staticMetaObject ),
 	ClassEntry( "FFT", PID_FFT, &FFTPin::staticMetaObject ),
 	ClassEntry()
 };

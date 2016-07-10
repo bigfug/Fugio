@@ -68,7 +68,7 @@ bool PortAudioOutputNode::deinitialise()
 
 	if( mProducer )
 	{
-		mProducer->freeAudioInstance( mInstance );
+		mProducer->audioFreeInstance( mInstance );
 
 		mProducer = nullptr;
 
@@ -87,7 +87,7 @@ bool PortAudioOutputNode::deinitialise()
 	return( NodeControlBase::deinitialise() );
 }
 
-void PortAudioOutputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, void *pInstanceData ) const
+void PortAudioOutputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const
 {
 	Q_UNUSED( pInstanceData )
 
@@ -111,7 +111,7 @@ void PortAudioOutputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, in
 
 	for( int c = pChannelOffset ; c < pChannelOffset + pChannelCount ; c++ )
 	{
-		float		*AudDat = pBuffers[ c ];
+		float		*AudDat = (float *)pBuffers[ c ];
 
 		// if the volume is 0 then we can just set everything to zero too
 		// we could not call the producer instead, but this would interfere with
@@ -131,7 +131,7 @@ void PortAudioOutputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, in
 	}
 }
 
-void *PortAudioOutputNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
+void *PortAudioOutputNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
 {
 	if( mPinInputAudio->isConnectedToActiveNode() && !mPinInputAudio->connectedNode()->isInitialised() )
 	{
@@ -146,13 +146,13 @@ void *PortAudioOutputNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSa
 
 		mProducer = IAP;
 
-		mInstance = IAP->allocAudioInstance( pSampleRate, pSampleFormat, pChannels );
+		mInstance = IAP->audioAllocInstance( pSampleRate, pSampleFormat, pChannels );
 	}
 
 	return( this );
 }
 
-void PortAudioOutputNode::freeAudioInstance( void *pInstanceData )
+void PortAudioOutputNode::audioFreeInstance( void *pInstanceData )
 {
 	Q_UNUSED( pInstanceData )
 
@@ -160,7 +160,7 @@ void PortAudioOutputNode::freeAudioInstance( void *pInstanceData )
 
 	if( mProducer )
 	{
-		mProducer->freeAudioInstance( mInstance );
+		mProducer->audioFreeInstance( mInstance );
 
 		mProducer = nullptr;
 
@@ -219,7 +219,7 @@ void PortAudioOutputNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( IAP != mProducer && mProducer )
 	{
-		mProducer->freeAudioInstance( mInstance );
+		mProducer->audioFreeInstance( mInstance );
 
 		mProducer = nullptr;
 
@@ -239,7 +239,7 @@ void PortAudioOutputNode::inputsUpdated( qint64 pTimeStamp )
 
 		mProducer = IAP;
 
-		mInstance = IAP->allocAudioInstance( SmpRte, SmpFmt, ChnCnt );
+		mInstance = IAP->audioAllocInstance( SmpRte, SmpFmt, ChnCnt );
 	}
 }
 
@@ -265,4 +265,25 @@ void PortAudioOutputNode::loadSettings( QSettings &pSettings )
 void PortAudioOutputNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "device", mDeviceName );
+}
+
+
+int PortAudioOutputNode::audioChannels() const
+{
+	return( mPortAudio ? mPortAudio->audioChannels() : 0 );
+}
+
+qreal PortAudioOutputNode::audioSampleRate() const
+{
+	return( mPortAudio ? mPortAudio->audioSampleRate() : 0 );
+}
+
+fugio::AudioSampleFormat PortAudioOutputNode::audioSampleFormat() const
+{
+	return( mPortAudio ? mPortAudio->audioSampleFormat() : fugio::AudioSampleFormat::FormatUnknown );
+}
+
+qint64 PortAudioOutputNode::audioLatency() const
+{
+	return( mPortAudio ? mPortAudio->audioLatency() : 0 );
 }

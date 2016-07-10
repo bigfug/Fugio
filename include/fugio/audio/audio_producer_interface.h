@@ -12,17 +12,19 @@ class AudioProducerInterface
 public:
 	virtual ~AudioProducerInterface( void ) {}
 
-//	virtual int channels( void ) const = 0;
+	virtual int audioChannels( void ) const = 0;
 
-//	virtual qreal sampleRate( void ) const = 0;
+	virtual qreal audioSampleRate( void ) const = 0;
 
-//	virtual AudioSampleFormat sampleFormat( void ) const = 0;
+	virtual AudioSampleFormat audioSampleFormat( void ) const = 0;
 
-	virtual void *allocAudioInstance( qreal pSampleRate, AudioSampleFormat pSampleFormat, int pChannels ) = 0;
+	virtual qint64 audioLatency( void ) const = 0;
 
-	virtual void freeAudioInstance( void *pInstanceData ) = 0;
+	virtual void *audioAllocInstance( qreal pSampleRate, AudioSampleFormat pSampleFormat, int pChannels ) = 0;
 
-	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, void *pInstanceData ) const = 0;
+	virtual void audioFreeInstance( void *pInstanceData ) = 0;
+
+	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

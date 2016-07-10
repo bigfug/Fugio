@@ -266,7 +266,7 @@ void DevicePortAudio::setTimeOffset( qreal pTimeOffset )
 	//	mStreamOutputOffset     = 0;
 }
 
-void *DevicePortAudio::allocAudioInstance( qreal pSampleRate, AudioSampleFormat pSampleFormat, int pChannels )
+void *DevicePortAudio::audioAllocInstance( qreal pSampleRate, AudioSampleFormat pSampleFormat, int pChannels )
 {
 	if( pSampleRate != mInputSampleRate || pSampleFormat != mInputSampleFormat || pChannels != mInputChannelCount )
 	{
@@ -285,7 +285,7 @@ void *DevicePortAudio::allocAudioInstance( qreal pSampleRate, AudioSampleFormat 
 	return( AID );
 }
 
-void DevicePortAudio::freeAudioInstance( void *pInstanceData )
+void DevicePortAudio::audioFreeInstance( void *pInstanceData )
 {
 	InputInstanceData		*AID = static_cast<InputInstanceData *>( pInstanceData );
 
@@ -295,7 +295,7 @@ void DevicePortAudio::freeAudioInstance( void *pInstanceData )
 	}
 }
 
-void DevicePortAudio::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, void *pInstanceData ) const
+void DevicePortAudio::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const
 {
 	InputInstanceData		*AID = static_cast<InputInstanceData *>( pInstanceData );
 
@@ -328,7 +328,7 @@ void DevicePortAudio::audio( qint64 pSamplePosition, qint64 pSampleCount, int pC
 			if( i >= pChannelOffset && i < pChannelOffset + pChannelCount )
 			{
 				const float		*SrcPtr = &AB.mData[ i ][ SrcPos ];
-				float			*DstPtr = &pBuffers[ i ][ DstPos ];
+				float			*DstPtr = &reinterpret_cast<float **>( pBuffers )[ i ][ DstPos ];
 
 				for( int j = 0 ; j < SrcLen ; j++ )
 				{
@@ -396,7 +396,7 @@ int DevicePortAudio::streamCallbackOutput( void *output, unsigned long frameCoun
 
 	for( const AudioInstanceData &AID : mProducers )
 	{
-		AID.mProducer->audio( mOutputAudioOffset, frameCount, 0, mOutputChannelCount, AudioBuffers, AID.mInstance );
+		AID.mProducer->audio( mOutputAudioOffset, frameCount, 0, mOutputChannelCount, (void **)AudioBuffers, AID.mInstance );
 	}
 
 	mProducerMutex.unlock();
@@ -658,7 +658,7 @@ void DevicePortAudio::addProducer( AudioProducerInterface *pAudioProducer )
 	AudioInstanceData		AID;
 
 	AID.mProducer = pAudioProducer;
-	AID.mInstance = pAudioProducer->allocAudioInstance( mOutputSampleRate, fugio::AudioSampleFormat::Format32FS, mOutputChannelCount );
+	AID.mInstance = pAudioProducer->audioAllocInstance( mOutputSampleRate, fugio::AudioSampleFormat::Format32FS, mOutputChannelCount );
 
 	mProducerMutex.lock();
 
@@ -680,7 +680,7 @@ void DevicePortAudio::remProducer( AudioProducerInterface *pAudioProducer )
 			continue;
 		}
 
-		AID.mProducer->freeAudioInstance( AID.mInstance );
+		AID.mProducer->audioFreeInstance( AID.mInstance );
 
 		mProducers.removeAt( i );
 

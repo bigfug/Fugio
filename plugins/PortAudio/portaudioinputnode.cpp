@@ -12,7 +12,7 @@
 PortAudioInputNode::PortAudioInputNode( QSharedPointer<fugio::NodeInterface> pNode ) :
 	NodeControlBase( pNode ), mPortAudio( nullptr )
 {
-	mValAudio = pinOutput<fugio::AudioGeneratorInterface *>( "Audio", mPinAudio, PID_AUDIO_GENERATOR );
+	mValAudio = pinOutput<fugio::AudioProducerInterface *>( "Audio", mPinAudio, PID_AUDIO );
 
 #if defined( PORTAUDIO_SUPPORTED )
 	mDeviceName = DevicePortAudio::deviceInputDefaultName();
@@ -70,7 +70,7 @@ bool PortAudioInputNode::deinitialise()
 	return( NodeControlBase::deinitialise() );
 }
 
-//void PortAudioInputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const
+//void PortAudioInputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, qint64 pLatency, void *pInstanceData ) const
 //{
 //	Q_UNUSED( pInstanceData )
 //	Q_UNUSED( pLatency )
@@ -96,7 +96,7 @@ void PortAudioInputNode::clicked()
 #endif
 }
 
-//void *PortAudioInputNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
+//void *PortAudioInputNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
 //{
 //	AudioInstanceData		*AID = new AudioInstanceData();
 
@@ -110,7 +110,7 @@ void PortAudioInputNode::clicked()
 //	return( AID );
 //}
 
-//void PortAudioInputNode::freeAudioInstance( void *pInstanceData )
+//void PortAudioInputNode::audioFreeInstance( void *pInstanceData )
 //{
 //	AudioInstanceData		*AID = static_cast<AudioInstanceData *>( pInstanceData );
 
@@ -185,25 +185,25 @@ fugio::AudioSampleFormat PortAudioInputNode::audioSampleFormat() const
 	return( mPortAudio ? mPortAudio->inputSampleFormat() : fugio::AudioSampleFormat::FormatUnknown );
 }
 
-void *PortAudioInputNode::allocAudioInstance(qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels)
+void *PortAudioInputNode::audioAllocInstance(qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels)
 {
 	if( !mPortAudio )
 	{
 		return( nullptr );
 	}
 
-	return( mPortAudio->allocAudioInstance( pSampleRate, pSampleFormat, pChannels ) );
+	return( mPortAudio->audioAllocInstance( pSampleRate, pSampleFormat, pChannels ) );
 }
 
-void PortAudioInputNode::freeAudioInstance(void *pInstanceData)
+void PortAudioInputNode::audioFreeInstance(void *pInstanceData)
 {
 	if( mPortAudio )
 	{
-		mPortAudio->freeAudioInstance( pInstanceData );
+		mPortAudio->audioFreeInstance( pInstanceData );
 	}
 }
 
-void PortAudioInputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, void *pInstanceData) const
+void PortAudioInputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData) const
 {
 	if( mPortAudio )
 	{
