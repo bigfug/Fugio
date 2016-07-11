@@ -216,19 +216,32 @@ int LuaExPin::luaPinGetValue( lua_State *L )
 
 	QVariant				V = ( P->direction() == PIN_INPUT ? P->value() : QVariant() );
 
+	QSharedPointer<fugio::PinInterface>				PinSrc;
 	QSharedPointer<fugio::PinControlInterface>		PinCtl;
 
 	if( P->direction() == PIN_INPUT )
 	{
-		PinCtl = ( P->isConnected() && P->connectedPin()->hasControl() ? P->connectedPin()->control() : QSharedPointer<fugio::PinControlInterface>() );
+		PinSrc = ( P->isConnected() && P->connectedPin()->hasControl() ? P->connectedPin() : QSharedPointer<fugio::PinInterface>() );
 	}
 	else
 	{
-		PinCtl = P->control();
+		PinSrc = P;
+	}
+
+	if( PinSrc )
+	{
+		PinCtl = PinSrc->control();
 	}
 
 	if( PinCtl )
 	{
+		LuaPlugin::luaPinGetFunc		PinGetFnc = LuaPlugin::instance()->getFunctions().value( PinSrc->controlUuid() );
+
+		if( PinGetFnc )
+		{
+			return( PinGetFnc( P->localId(), L ) );
+		}
+
 		fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( PinCtl->qobject() );
 
 		if( ArrInt )

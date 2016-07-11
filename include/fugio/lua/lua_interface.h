@@ -25,11 +25,11 @@ public:
 	virtual void luaRegisterExtension( lua_State *L ) = 0;
 };
 
-//Q_DECLARE_INTERFACE( LuaExtension, "com.bigfug.fugio.lua.extension/1.0" )
-
 class LuaInterface
 {
 public:
+	typedef int (*luaPinGetFunc)( const QUuid &pPinLocalId, lua_State *L );
+
 	virtual ~LuaInterface( void ) {}
 
 	virtual void luaRegisterExtension( lua_CFunction pFunction ) = 0;
@@ -43,6 +43,8 @@ public:
 	virtual void luaAddPinFunction( const QUuid &pPID, const char *pName, lua_CFunction pFunction ) = 0;
 
 	virtual void luaAddExtensions( lua_State *L ) = 0;
+
+	virtual void luaAddPinGet( const QUuid &pPID, luaPinGetFunc pFunction ) = 0;
 
 	// methods callable from static Lua functions
 

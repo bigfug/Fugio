@@ -57,6 +57,8 @@ public:
 
 	virtual void luaAddPinFunction( const QUuid &pPID, const char *pName, int (*pFunction) (lua_State *L) ) Q_DECL_OVERRIDE;
 
+	virtual void luaAddPinGet( const QUuid &pPID, luaPinGetFunc pFunction ) Q_DECL_OVERRIDE;
+
 	virtual fugio::NodeInterface *node( lua_State *L ) Q_DECL_OVERRIDE;
 
 	virtual QUuid checkpin( lua_State *L, int i = 1 ) Q_DECL_OVERRIDE;
@@ -69,19 +71,24 @@ public:
 
 	static QSharedPointer<fugio::PinInterface> getpin( lua_State *L, int i = 1 );
 
-	const QVector<luaL_Reg> &functions( void )
+	const QVector<luaL_Reg> &functions( void ) const
 	{
 		return( mFunctions );
 	}
 
-	const QList<luaL_Reg> pinFunctions( const QUuid &pPID )
+	const QList<luaL_Reg> pinFunctions( const QUuid &pPID ) const
 	{
 		return( mPinFunctions.values( pPID ) );
 	}
 
-	const QMap<const char *,lua_CFunction> &libFunctions( void )
+	const QMap<const char *,lua_CFunction> &libFunctions( void ) const
 	{
 		return( mLibFunctions );
+	}
+
+	const QMap<QUuid,luaPinGetFunc> &getFunctions( void ) const
+	{
+		return( mGetFunctions );
 	}
 
 public:
@@ -104,6 +111,7 @@ private:
 	QVector<luaL_Reg>						 mFunctions;
 	QMultiMap<QUuid,luaL_Reg>				 mPinFunctions;
 	QMap<const char *,lua_CFunction>		 mLibFunctions;
+	QMap<QUuid,luaPinGetFunc>				 mGetFunctions;
 };
 
 #endif // LUAPLUGIN_H
