@@ -86,8 +86,8 @@ public:
 		switch( pFormat )
 		{
 			case FORMAT_RGB8:	return( QImage::Format_RGB888 );
-			case FORMAT_RGBA8:	return( QImage::Format_ARGB32 );
-			case FORMAT_BGRA8:	return( QImage::Format_ARGB32 );
+			case FORMAT_RGBA8:	return( QImage::Format_ARGB32_Premultiplied );
+			case FORMAT_BGRA8:	return( QImage::Format_ARGB32_Premultiplied );
 			case FORMAT_GRAY8:	return( QImage::Format_Grayscale8 );
 		}
 
@@ -98,9 +98,10 @@ public:
 	{
 		switch( pFormat )
 		{
-			case QImage::Format_RGB888:		return( FORMAT_RGB8 );
-			case QImage::Format_ARGB32:		return( FORMAT_RGBA8 );
-			case QImage::Format_Grayscale8:	return( FORMAT_GRAY8 );
+			case QImage::Format_RGB888:					return( FORMAT_RGB8 );
+			case QImage::Format_ARGB32:					return( FORMAT_RGBA8 );
+			case QImage::Format_ARGB32_Premultiplied:	return( FORMAT_RGBA8 );
+			case QImage::Format_Grayscale8:				return( FORMAT_GRAY8 );
 		}
 
 		return( FORMAT_UNKNOWN );
