@@ -6,8 +6,7 @@
 #include <QSize>
 #include <QUuid>
 #include <QByteArray>
-
-class QImage;
+#include <QImage>
 
 FUGIO_NAMESPACE_BEGIN
 
@@ -79,6 +78,33 @@ public:
 	virtual void setLineSizes( const int pLineSize[ PLANE_COUNT ] ) = 0;
 
 	virtual QImage image( void ) const = 0;
+
+	virtual bool isValid( void ) const = 0;
+
+	static QImage::Format toQImageFormat( Format pFormat )
+	{
+		switch( pFormat )
+		{
+			case FORMAT_RGB8:	return( QImage::Format_RGB888 );
+			case FORMAT_RGBA8:	return( QImage::Format_ARGB32 );
+			case FORMAT_BGRA8:	return( QImage::Format_ARGB32 );
+			case FORMAT_GRAY8:	return( QImage::Format_Grayscale8 );
+		}
+
+		return( QImage::Format_Invalid );
+	}
+
+	static Format fromQImageFormat( QImage::Format pFormat )
+	{
+		switch( pFormat )
+		{
+			case QImage::Format_RGB888:		return( FORMAT_RGB8 );
+			case QImage::Format_ARGB32:		return( FORMAT_RGBA8 );
+			case QImage::Format_Grayscale8:	return( FORMAT_GRAY8 );
+		}
+
+		return( FORMAT_UNKNOWN );
+	}
 };
 
 FUGIO_NAMESPACE_END

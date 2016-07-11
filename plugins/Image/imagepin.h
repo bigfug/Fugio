@@ -113,14 +113,15 @@ public:
 
 	virtual QImage image( void ) const Q_DECL_OVERRIDE;
 
+	virtual bool isValid( void ) const Q_DECL_OVERRIDE;
 private:
-	mutable quint8			*mImageBuffer[ 8 ];
-	mutable int				 mBufferSizes[ 8 ];
-	const quint8			*mImagePointer[ 8 ];
-	QSize					 mImageSize;
-	int						 mLineWidth[ 8 ];
+	mutable quint8					*mImageBuffer[ 8 ];
+	mutable int						 mBufferSizes[ 8 ];
+	const quint8					*mImagePointer[ 8 ];
+	QSize							 mImageSize;
+	int								 mLineWidth[ 8 ];
 	fugio::ImageInterface::Format	 mImageFormat;
-	int						 mImageInternalFormat;
+	int								 mImageInternalFormat;
 };
 
 #endif // IMAGEBUFFER_H

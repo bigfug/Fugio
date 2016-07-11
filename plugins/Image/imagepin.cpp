@@ -305,3 +305,8 @@ QImage ImagePin::image( void ) const
 
 	return( IM );
 }
+
+bool ImagePin::isValid() const
+{
+	return( !mImageSize.isEmpty() && mImageFormat != fugio::ImageInterface::FORMAT_UNKNOWN );
+}
