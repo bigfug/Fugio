@@ -89,6 +89,7 @@ public:
 			case FORMAT_RGBA8:	return( QImage::Format_ARGB32_Premultiplied );
 			case FORMAT_BGRA8:	return( QImage::Format_ARGB32_Premultiplied );
 			case FORMAT_GRAY8:	return( QImage::Format_Grayscale8 );
+			default:			break;
 		}
 
 		return( QImage::Format_Invalid );
@@ -102,6 +103,7 @@ public:
 			case QImage::Format_ARGB32:					return( FORMAT_RGBA8 );
 			case QImage::Format_ARGB32_Premultiplied:	return( FORMAT_RGBA8 );
 			case QImage::Format_Grayscale8:				return( FORMAT_GRAY8 );
+			default:									break;
 		}
 
 		return( FORMAT_UNKNOWN );
