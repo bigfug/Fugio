@@ -50,7 +50,8 @@ HEADERS += audioplugin.h\
     audiofilternode.h \
     audiofilterdisplay.h \
     vcfnode.h \
-    mononode.h
+    mononode.h \
+    ../../include/fugio/audio/audio_instance_base.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

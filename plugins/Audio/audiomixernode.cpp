@@ -24,23 +24,16 @@ AudioMixerNode::~AudioMixerNode( void )
 
 }
 
-void AudioMixerNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const
+void AudioMixerNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, const AudioInstanceData *pInstanceData ) const
 {
-	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
+	pInstanceData->mMutex.lock();
 
-	if( !InsDat )
+	for( auto it = pInstanceData->mInstanceData.begin() ; it != pInstanceData->mInstanceData.end() ; it++ )
 	{
-		return;
+//		it.key()->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, it.value() );
 	}
 
-	InsDat->mMutex.lock();
-
-	for( auto it = InsDat->mInstanceData.begin() ; it != InsDat->mInstanceData.end() ; it++ )
-	{
-		it.key()->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, it.value() );
-	}
-
-	InsDat->mMutex.unlock();
+	pInstanceData->mMutex.unlock();
 }
 
 QList<QUuid> AudioMixerNode::pinAddTypesInput() const
@@ -57,16 +50,12 @@ bool AudioMixerNode::canAcceptPin( fugio::PinInterface *pPin ) const
 	return( pPin->direction() == PIN_OUTPUT );
 }
 
-void *AudioMixerNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
+fugio::AudioInstanceBase *AudioMixerNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
 {
-	AudioInstanceData		*InsDat = new AudioInstanceData();
+	AudioInstanceData		*InsDat = new AudioInstanceData( qSharedPointerDynamicCast<fugio::AudioProducerInterface>( mNode->control() ), pSampleRate, pSampleFormat, pChannels );
 
 	if( InsDat )
 	{
-		InsDat->mSampleRate   = pSampleRate;
-		InsDat->mSampleFormat = pSampleFormat;
-		InsDat->mChannels     = pChannels;
-
 		for( QSharedPointer<fugio::PinInterface> DstPin : mNode->enumInputPins() )
 		{
 			QSharedPointer<fugio::PinInterface>			SrcPin = DstPin->connectedPin();
@@ -103,26 +92,26 @@ void *AudioMixerNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleF
 	return( InsDat );
 }
 
-void AudioMixerNode::audioFreeInstance( void *pInstanceData )
-{
-	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
+//void AudioMixerNode::audioFreeInstance( void *pInstanceData )
+//{
+//	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
-	if( InsDat )
-	{
-		InsDat->mMutex.lock();
+//	if( InsDat )
+//	{
+//		InsDat->mMutex.lock();
 
-		for( auto it = InsDat->mInstanceData.begin() ; it != InsDat->mInstanceData.end() ; it++ )
-		{
-			it.key()->audioFreeInstance( it.value() );
-		}
+//		for( auto it = InsDat->mInstanceData.begin() ; it != InsDat->mInstanceData.end() ; it++ )
+//		{
+//			it.key()->audioFreeInstance( it.value() );
+//		}
 
-		InsDat->mMutex.unlock();
+//		InsDat->mMutex.unlock();
 
-		mInstanceData.removeAll( InsDat );
+//		mInstanceData.removeAll( InsDat );
 
-		delete InsDat;
-	}
-}
+//		delete InsDat;
+//	}
+//}
 
 void AudioMixerNode::pinLinked( QSharedPointer<fugio::PinInterface> pPinSrc, QSharedPointer<fugio::PinInterface> pPinDst )
 {
@@ -141,7 +130,7 @@ void AudioMixerNode::pinLinked( QSharedPointer<fugio::PinInterface> pPinSrc, QSh
 
 			if( !InsDat->mInstanceData.contains( IAP ) )
 			{
-				InsDat->mInstanceData.insert( IAP, IAP->audioAllocInstance( InsDat->mSampleRate, InsDat->mSampleFormat, InsDat->mChannels ) );
+				InsDat->mInstanceData.insert( IAP, IAP->audioAllocInstance( InsDat->sampleRate(), InsDat->sampleFormat(), InsDat->channels() ) );
 			}
 
 			InsDat->mMutex.unlock();
@@ -164,11 +153,11 @@ void AudioMixerNode::pinUnlinked( QSharedPointer<fugio::PinInterface> pPinSrc, Q
 		{
 			InsDat->mMutex.lock();
 
-			QMap<fugio::AudioProducerInterface *,void *>::iterator	it = InsDat->mInstanceData.find( IAP );
+			QMap<fugio::AudioProducerInterface *,fugio::AudioInstanceBase *>::iterator	it = InsDat->mInstanceData.find( IAP );
 
 			if( it != InsDat->mInstanceData.end() )
 			{
-				it.key()->audioFreeInstance( it.value() );
+//				it.key()->audioFreeInstance( it.value() );
 
 				InsDat->mInstanceData.remove( it.key() );
 			}
@@ -184,7 +173,7 @@ int AudioMixerNode::audioChannels() const
 
 	for( AudioInstanceData *InsDat : mInstanceData )
 	{
-		Channels = std::max( Channels, InsDat->mChannels );
+		Channels = std::max( Channels, InsDat->channels() );
 	}
 
 	return( Channels );

@@ -9,6 +9,7 @@
 #include <fugio/nodecontrolbase.h>
 #include <fugio/audio/audio_producer_interface.h>
 #include <fugio/choice_interface.h>
+#include <fugio/audio/audio_instance_base.h>
 
 class SignalNode : public fugio::NodeControlBase, public fugio::AudioProducerInterface
 {
@@ -36,13 +37,19 @@ public:
 
 	// InterfaceAudioProducer interface
 public:
-	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const Q_DECL_OVERRIDE;
-	virtual void *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
-	virtual void audioFreeInstance(void *pInstanceData) Q_DECL_OVERRIDE;
+	virtual fugio::AudioInstanceBase *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
+	//virtual void audioFreeInstance(void *pInstanceData) Q_DECL_OVERRIDE;
 	virtual int audioChannels() const Q_DECL_OVERRIDE;
 	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
 	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;
 	virtual qint64 audioLatency() const Q_DECL_OVERRIDE;
+
+	virtual bool isValid( fugio::AudioInstanceBase *pInstance ) const Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pInstance )
+
+		return( true );
+	}
 
 private slots:
 	void onContextFrame( qint64 pTimeStamp );
@@ -180,12 +187,30 @@ protected:
 		SINE, SQUARE, SAW, TRIANGLE, WHITE, PINK, BROWN
 	} SignalType;
 
-	typedef struct AudioInstanceData
+	class AudioInstanceData : public fugio::AudioInstanceBase
 	{
-		qreal							mSampleRate;
-		fugio::AudioSampleFormat		mSampleFormat;
-		int								mChannels;
+	public:
+		AudioInstanceData( QSharedPointer<fugio::AudioProducerInterface> pProducer, qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
+			: fugio::AudioInstanceBase( pProducer, pSampleRate, pSampleFormat, pChannels )
+		{
 
+		}
+
+		virtual ~AudioInstanceData( void ) {}
+
+		virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers ) Q_DECL_OVERRIDE
+		{
+			QSharedPointer<SignalNode>	API = qSharedPointerCast<SignalNode>( mProducer );
+
+			if( !API )
+			{
+				return;
+			}
+
+			API->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, this );
+		}
+
+	public:
 		QVector<float>					mSmpBuf;
 		qint64							mSamplePosition;
 		double							mPhase;
@@ -193,9 +218,11 @@ protected:
 
 		double							phase_index;
 		double							phase_delta;
-	} AudioInstanceData;
+	};
 
-	void generateSignal(qint64 pSamplePostion, qint64 pSampleCount, const float SmpCnt, float *pBuffer, float pVolume, AudioInstanceData &AID ) const;
+	void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const;
+
+	void generateSignal( qint64 pSamplePostion, qint64 pSampleCount, const float SmpCnt, float *pBuffer, float pVolume, AudioInstanceData &AID ) const;
 
 	static QMap<QString,SignalType>			 mSignalTypes;
 

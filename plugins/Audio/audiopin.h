@@ -31,31 +31,30 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::AudioProducerInterface
 
-	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const Q_DECL_OVERRIDE
-	{
-		if( producer() )
-		{
-			producer()->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pInstanceData );
-		}
-	}
+//	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, fugio::AudioInstanceBase *pInstanceData ) const Q_DECL_OVERRIDE
+//	{
+//		if( producer() )
+//		{
+//			producer()->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pInstanceData );
+//		}
+//	}
 
-	virtual void *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE
+	virtual fugio::AudioInstanceBase *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE
 	{
 		return( producer() ? producer()->audioAllocInstance( pSampleRate, pSampleFormat, pChannels ) : nullptr );
-	}
-
-	virtual void audioFreeInstance( void *pInstanceData ) Q_DECL_OVERRIDE
-	{
-		if( producer() )
-		{
-			producer()->audioFreeInstance( pInstanceData );
-		}
 	}
 
 	virtual int audioChannels() const Q_DECL_OVERRIDE;
 	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
 	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;
 	virtual qint64 audioLatency() const Q_DECL_OVERRIDE;
+
+	virtual bool isValid( fugio::AudioInstanceBase *pInstance ) const Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pInstance )
+
+		return( true );
+	}
 
 private:
 	fugio::AudioProducerInterface *producer( void );

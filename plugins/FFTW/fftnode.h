@@ -8,6 +8,7 @@
 
 #include <fugio/nodecontrolbase.h>
 #include <fugio/audio/audio_producer_interface.h>
+#include <fugio/audio/audio_instance_base.h>
 #include <fugio/audio/fft_interface.h>
 #include <fugio/choice_interface.h>
 
@@ -136,8 +137,7 @@ protected:
 	int										 mSampleCount;
 	qint64									 mSamplePosition;
 
-	fugio::AudioProducerInterface			*mProducer;
-	void									*mProducerInstance;
+	fugio::AudioInstanceBase				*mProducerInstance;
 
 	QVector<float>							 mWindow;
 
@@ -146,6 +146,7 @@ protected:
 	float									*mBufSrc;
 	fftwf_complex							*mBufDst;
 #endif
+	void fftwFree();
 };
 
 #endif // FFTNODE_H

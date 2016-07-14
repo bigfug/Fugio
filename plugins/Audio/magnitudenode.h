@@ -5,6 +5,7 @@
 
 #include <fugio/nodecontrolbase.h>
 #include <fugio/core/variant_interface.h>
+#include <fugio/audio/audio_instance_base.h>
 
 class MagnitudeNode : public fugio::NodeControlBase
 {
@@ -43,7 +44,7 @@ protected:
 
 	qint64										 mSamplePosition;
 
-	void										*mProducerInstance;
+	fugio::AudioInstanceBase					*mProducerInstance;
 
 	QVector<QVector<float>>						 mAudDat;
 };

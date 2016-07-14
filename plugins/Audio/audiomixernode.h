@@ -10,6 +10,7 @@
 #include <fugio/audio/audio_producer_interface.h>
 
 #include <fugio/audio/uuid.h>
+#include <fugio/audio/audio_instance_base.h>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -38,14 +39,19 @@ public:
 	//-------------------------------------------------------------------------
 	// InterfaceAudioProducer
 
-	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const Q_DECL_OVERRIDE;
-
-	virtual void *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
-	virtual void audioFreeInstance(void *pInstanceData) Q_DECL_OVERRIDE;
+	virtual fugio::AudioInstanceBase *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
+	//virtual void audioFreeInstance(void *pInstanceData) Q_DECL_OVERRIDE;
 	virtual int audioChannels() const Q_DECL_OVERRIDE;
 	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
 	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;
 	virtual qint64 audioLatency() const Q_DECL_OVERRIDE;
+
+	virtual bool isValid( fugio::AudioInstanceBase *pInstance ) const Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pInstance )
+
+		return( true );
+	}
 
 protected slots:
 	void pinLinked( QSharedPointer<fugio::PinInterface> pPinSrc, QSharedPointer<fugio::PinInterface> pPinDst );
@@ -61,15 +67,35 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
 	fugio::AudioProducerInterface				*mValOutput;
 
-	typedef struct AudioInstanceData
+	class AudioInstanceData : public fugio::AudioInstanceBase
 	{
-		qreal									mSampleRate;
-		fugio::AudioSampleFormat				mSampleFormat;
-		int										mChannels;
+	public:
+		AudioInstanceData( QSharedPointer<fugio::AudioProducerInterface> pProducer, qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
+			: fugio::AudioInstanceBase( pProducer, pSampleRate, pSampleFormat, pChannels )
+		{
 
-		QMutex											mMutex;
-		QMap<fugio::AudioProducerInterface *,void *>	mInstanceData;
-	} AudioInstanceData;
+		}
+
+		virtual ~AudioInstanceData( void ) {}
+
+		virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers ) Q_DECL_OVERRIDE
+		{
+			QSharedPointer<AudioMixerNode>	API = qSharedPointerCast<AudioMixerNode>( mProducer );
+
+			if( !API )
+			{
+				return;
+			}
+
+			API->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, this );
+		}
+
+	public:
+		mutable QMutex														mMutex;
+		QMap<fugio::AudioProducerInterface *,fugio::AudioInstanceBase *>	mInstanceData;
+	};
+
+	void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, const AudioInstanceData *pInstanceData ) const;
 
 	QList<AudioInstanceData *>					 mInstanceData;
 };

@@ -19,7 +19,7 @@ QMap<QString,FFTNode::WindowType>		 FFTNode::mWindowTypes;
 
 FFTNode::FFTNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mWindowType( HANNING ), mSampleCount( 2048 ), mSamplePosition( 0 ),
-	  mProducer( nullptr ), mProducerInstance( nullptr )
+	  mProducerInstance( nullptr )
 	#if defined( FFTW_PLUGIN_SUPPORTED )
 	, mPlan( 0 ), mBufSrc( 0 ), mBufDst( 0 )
 	#endif
@@ -65,29 +65,8 @@ FFTNode::FFTNode( QSharedPointer<fugio::NodeInterface> pNode )
 }
 
 FFTNode::~FFTNode( void )
-{
-#if defined( FFTW_PLUGIN_SUPPORTED )
-	if( mPlan )
-	{
-		fftwf_destroy_plan( mPlan );
-
-		mPlan = 0;
-	}
-
-	if( mBufDst )
-	{
-		fftwf_free( mBufDst );
-
-		mBufDst = nullptr;
-	}
-
-	if( mPlan )
-	{
-		fftwf_destroy_plan( mPlan );
-
-		mPlan = nullptr;
-	}
-#endif
+{	
+	fftwFree();
 }
 
 bool FFTNode::initialise()
@@ -103,15 +82,12 @@ bool FFTNode::initialise()
 	}
 
 	connect( mPinInputAudio->qobject(), SIGNAL(linked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audioPinLinked(QSharedPointer<fugio::PinInterface>)) );
-
 	connect( mPinInputAudio->qobject(), SIGNAL(unlinked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audioPinUnlinked(QSharedPointer<fugio::PinInterface>)) );
 
 	if( mPinInputAudio->isConnected() )
 	{
 		audioPinLinked( mPinInputAudio->connectedPin() );
 	}
-
-	calculateWindow();
 
 	return( true );
 }
@@ -130,100 +106,119 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 		return;
 	}
 
-	const qint64	CurPos = ( mNode->context()->global()->timestamp() * 48000 ) / 1000;
-
-	if( CurPos - mSamplePosition > 48000 )
+	if( mProducerInstance && !mProducerInstance->isValid() )
 	{
-		mSamplePosition = CurPos - samples() - mProducer->audioLatency();
+		delete mProducerInstance;
+
+		mProducerInstance = nullptr;
+
+		fftwFree();
 	}
 
-	if( CurPos - mSamplePosition >= samples() )
+	fugio::AudioProducerInterface	*API = input<fugio::AudioProducerInterface *>( mPinInputAudio );
+
+	if( !API )
 	{
-		if( mProducer )
+		if( mProducerInstance )
 		{
-			fugio::Performance	P( mNode, "onContextFrame", pTimeStamp );
+			delete mProducerInstance;
 
-#if defined( FFTW_PLUGIN_SUPPORTED )
-			if( !mBufSrc )
-			{
-				mBufSrc = fftwf_alloc_real( samples() );
-			}
+			mProducerInstance = nullptr;
 
-			if( !mBufDst )
-			{
-				mBufDst = fftwf_alloc_complex( count() );
-			}
+			fftwFree();
 
-			if( !mPlan )
-			{
-				mPlan = fftwf_plan_dft_r2c_1d( samples(), mBufSrc, mBufDst, 0 );
-			}
-
-			float		*AudPtr = mBufSrc;
-
-			memset( mBufSrc, 0, sizeof( float ) * samples() );
-
-			mProducer->audio( mSamplePosition, samples(), 0, 1, (void **)&AudPtr, mProducerInstance );
-
-//			if( true )
-//			{
-//				QFile		TEST_FILE( "/Users/bigfug/Desktop/TEST_FILE.raw" );
-
-//				if( TEST_FILE.open( QIODevice::Append ) || TEST_FILE.open( QIODevice::WriteOnly ) )
-//				{
-//					TEST_FILE.write( (const char *)mBufSrc, sizeof( float ) * samples() );
-
-//					TEST_FILE.close();
-//				}
-//			}
-
-			if( mWindowType != NONE )
-			{
-				for( int i = 0 ; i < samples() ; i++ )
-				{
-					mBufSrc[ i ] *= mWindow[ i ];
-				}
-			}
-
-			fftwf_execute( mPlan );
-
-			pinUpdated( mPinOutputFFT );
-#endif
+			mSamplePosition = 0;
 		}
 
-		mSamplePosition += samples();
+		return;
 	}
 
-	//processAudio( CurPos );
-}
+	if( !mProducerInstance )
+	{
+		mProducerInstance = API->audioAllocInstance( 48000, fugio::AudioSampleFormat::Format32FS, 1 );
 
-void FFTNode::audioPinLinked( QSharedPointer<fugio::PinInterface> P )
-{
-	fugio::AudioProducerInterface	*AP = ( !P->hasControl() ? nullptr : qobject_cast<fugio::AudioProducerInterface *>( P->control()->qobject() ) );
+		calculateWindow();
+	}
 
-	if( !AP )
+	if( !mProducerInstance )
 	{
 		return;
 	}
 
-	mProducer = AP;
-	mProducerInstance = AP->audioAllocInstance( 48000, fugio::AudioSampleFormat::Format32FS, 1 );
+	const qint64	CurPos = ( mNode->context()->global()->timestamp() * 48000 ) / 1000;
+
+	if( CurPos - mSamplePosition > 48000 )
+	{
+		mSamplePosition = CurPos - samples() - API->audioLatency();
+	}
+
+	if( CurPos - mSamplePosition < samples() )
+	{
+		return;
+	}
+
+	fugio::Performance	P( mNode, "onContextFrame", pTimeStamp );
+
+#if defined( FFTW_PLUGIN_SUPPORTED )
+	if( !mBufSrc )
+	{
+		mBufSrc = fftwf_alloc_real( samples() );
+	}
+
+	if( !mBufDst )
+	{
+		mBufDst = fftwf_alloc_complex( count() );
+	}
+
+	if( !mPlan )
+	{
+		mPlan = fftwf_plan_dft_r2c_1d( samples(), mBufSrc, mBufDst, 0 );
+	}
+
+	float		*AudPtr = mBufSrc;
+
+	memset( mBufSrc, 0, sizeof( float ) * samples() );
+
+	mProducerInstance->audio( mSamplePosition, samples(), 0, 1, (void **)&AudPtr );
+
+	//			if( true )
+	//			{
+	//				QFile		TEST_FILE( "/Users/bigfug/Desktop/TEST_FILE.raw" );
+
+	//				if( TEST_FILE.open( QIODevice::Append ) || TEST_FILE.open( QIODevice::WriteOnly ) )
+	//				{
+	//					TEST_FILE.write( (const char *)mBufSrc, sizeof( float ) * samples() );
+
+	//					TEST_FILE.close();
+	//				}
+	//			}
+
+	if( mWindowType != NONE )
+	{
+		for( int i = 0 ; i < samples() ; i++ )
+		{
+			mBufSrc[ i ] *= mWindow[ i ];
+		}
+	}
+
+	fftwf_execute( mPlan );
+
+	pinUpdated( mPinOutputFFT );
+#endif
+
+	mSamplePosition += samples();
+}
+
+void FFTNode::audioPinLinked( QSharedPointer<fugio::PinInterface> P )
+{
+	Q_UNUSED( P )
 
 	connect( mNode->context()->qobject(), SIGNAL(frameProcess(qint64)), this, SLOT(onContextFrame(qint64)) );
 }
 
 void FFTNode::audioPinUnlinked( QSharedPointer<fugio::PinInterface> P )
 {
-	fugio::AudioProducerInterface	*AP = ( !P->hasControl() ? nullptr : qobject_cast<fugio::AudioProducerInterface *>( P->control()->qobject() ) );
-
-	if( AP && AP == mProducer )
-	{
-		mProducer->audioFreeInstance( mProducerInstance );
-	}
-
-	mProducerInstance = nullptr;
-
-	mProducer = nullptr;
+	Q_UNUSED( P )
 
 	disconnect( mNode->context()->qobject(), SIGNAL(frameProcess(qint64)), this, SLOT(onContextFrame(qint64)) );
 }
@@ -280,28 +275,7 @@ void FFTNode::inputsUpdated( qint64 pTimeStamp )
 
 	calculateWindow();
 
-#if defined( FFTW_PLUGIN_SUPPORTED )
-	if( mBufSrc )
-	{
-		fftwf_free( mBufSrc );
-
-		mBufSrc = nullptr;
-	}
-
-	if( mBufDst )
-	{
-		fftwf_free( mBufDst );
-
-		mBufDst = nullptr;
-	}
-
-	if( mPlan )
-	{
-		fftwf_destroy_plan( mPlan );
-
-		mPlan = nullptr;
-	}
-#endif
+	fftwFree();
 }
 
 void FFTNode::calculateWindow()
@@ -361,4 +335,30 @@ void FFTNode::calculateWindow()
 			}
 			break;
 	}
+}
+
+void FFTNode::fftwFree()
+{
+#if defined( FFTW_PLUGIN_SUPPORTED )
+	if( mBufSrc )
+	{
+		fftwf_free( mBufSrc );
+
+		mBufSrc = nullptr;
+	}
+
+	if( mBufDst )
+	{
+		fftwf_free( mBufDst );
+
+		mBufDst = nullptr;
+	}
+
+	if( mPlan )
+	{
+		fftwf_destroy_plan( mPlan );
+
+		mPlan = nullptr;
+	}
+#endif
 }

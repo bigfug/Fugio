@@ -85,16 +85,12 @@ void AudioFilterNode::inputsUpdated( qint64 pTimeStamp )
 	mLastDisplayChange = pTimeStamp;
 }
 
-void *AudioFilterNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
+fugio::AudioInstanceBase *AudioFilterNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
 {
-	AudioInstanceData		*InsDat = new AudioInstanceData();
+	AudioInstanceData		*InsDat = new AudioInstanceData( qSharedPointerDynamicCast<fugio::AudioProducerInterface>( mNode->control() ), pSampleRate, pSampleFormat, pChannels );
 
 	if( InsDat )
 	{
-		InsDat->mSampleRate   = pSampleRate;
-		InsDat->mSampleFormat = pSampleFormat;
-		InsDat->mChannels     = pChannels;
-
 		InsDat->mAudIns = 0;
 		InsDat->mAudPts = 0;
 		InsDat->mAudSmp = 0;
@@ -116,33 +112,33 @@ void *AudioFilterNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSample
 	return( InsDat );
 }
 
-void AudioFilterNode::audioFreeInstance( void *pInstanceData )
-{
-	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
+//void AudioFilterNode::audioFreeInstance( void *pInstanceData )
+//{
+//	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
-	if( InsDat )
-	{
-		mInstanceDataMutex.lock();
+//	if( InsDat )
+//	{
+//		mInstanceDataMutex.lock();
 
-		mInstanceData.removeAll( InsDat );
+//		mInstanceData.removeAll( InsDat );
 
-		mInstanceDataMutex.unlock();
+//		mInstanceDataMutex.unlock();
 
-		if( InsDat->mAudIns )
-		{
-			fugio::AudioProducerInterface		*IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput );
+//		if( InsDat->mAudIns )
+//		{
+//			fugio::AudioProducerInterface		*IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput );
 
-			if( IAP )
-			{
-				IAP->audioFreeInstance( InsDat->mAudIns );
-			}
-		}
+//			if( IAP )
+//			{
+//				IAP->audioFreeInstance( InsDat->mAudIns );
+//			}
+//		}
 
-		InsDat->mAudDat.clear();
+//		InsDat->mAudDat.clear();
 
-		delete InsDat;
-	}
-}
+//		delete InsDat;
+//	}
+//}
 
 void AudioFilterNode::onContextFrame( qint64 pTimeStamp )
 {
@@ -232,10 +228,8 @@ void AudioFilterNode::updateTaps( void )
 	}
 }
 
-void AudioFilterNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const
+void AudioFilterNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const
 {
-	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
-
 	fugio::AudioProducerInterface	*IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput );
 
 	if( !IAP )
@@ -243,14 +237,14 @@ void AudioFilterNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pC
 		return;
 	}
 
-	if( InsDat->mAudDat.size() != pChannelOffset + pChannelCount )
+	if( pInstanceData->mAudDat.size() != pChannelOffset + pChannelCount )
 	{
-		InsDat->mAudDat.resize( pChannelOffset + pChannelCount );
+		pInstanceData->mAudDat.resize( pChannelOffset + pChannelCount );
 	}
 
-	for( int i = 0 ; i < InsDat->mAudDat.size() ; i++ )
+	for( int i = 0 ; i < pInstanceData->mAudDat.size() ; i++ )
 	{
-		InsDat->mAudDat[ i ].resize( mTaps.size() );
+		pInstanceData->mAudDat[ i ].resize( mTaps.size() );
 	}
 
 	if( mLowerFrequency >= mUpperFrequency )
@@ -258,7 +252,7 @@ void AudioFilterNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pC
 		return;
 	}
 
-	IAP->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, InsDat->mAudIns );
+	pInstanceData->mAudIns->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers );
 
 	if( mLowerFrequency <= 0.0f && mUpperFrequency >= mSampleRate / 2.0f )
 	{
@@ -270,7 +264,7 @@ void AudioFilterNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pC
 
 	for( int c = pChannelOffset ; c < pChannelCount ; c++ )
 	{
-		float		*AudDat = &InsDat->mAudDat[ c ][ 0 ];
+		float		*AudDat = &pInstanceData->mAudDat[ c ][ 0 ];
 
 		for( qint64 i = 0 ; i < pSampleCount ; i++ )
 		{

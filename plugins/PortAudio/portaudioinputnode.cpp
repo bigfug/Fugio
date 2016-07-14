@@ -10,7 +10,7 @@
 #include <fugio/audio/uuid.h>
 
 PortAudioInputNode::PortAudioInputNode( QSharedPointer<fugio::NodeInterface> pNode ) :
-	NodeControlBase( pNode ), mPortAudio( nullptr )
+	NodeControlBase( pNode ), mPortAudio( nullptr ), mInstance( nullptr )
 {
 	mValAudio = pinOutput<fugio::AudioProducerInterface *>( "Audio", mPinAudio, PID_AUDIO );
 
@@ -185,7 +185,7 @@ fugio::AudioSampleFormat PortAudioInputNode::audioSampleFormat() const
 	return( mPortAudio ? mPortAudio->inputSampleFormat() : fugio::AudioSampleFormat::FormatUnknown );
 }
 
-void *PortAudioInputNode::audioAllocInstance(qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels)
+fugio::AudioInstanceBase *PortAudioInputNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
 {
 	if( !mPortAudio )
 	{
@@ -195,21 +195,21 @@ void *PortAudioInputNode::audioAllocInstance(qreal pSampleRate, fugio::AudioSamp
 	return( mPortAudio->audioAllocInstance( pSampleRate, pSampleFormat, pChannels ) );
 }
 
-void PortAudioInputNode::audioFreeInstance(void *pInstanceData)
-{
-	if( mPortAudio )
-	{
-		mPortAudio->audioFreeInstance( pInstanceData );
-	}
-}
+//void PortAudioInputNode::audioFreeInstance(void *pInstanceData)
+//{
+//	if( mPortAudio )
+//	{
+//		mPortAudio->audioFreeInstance( pInstanceData );
+//	}
+//}
 
-void PortAudioInputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData) const
-{
-	if( mPortAudio )
-	{
-		mPortAudio->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pInstanceData );
-	}
-}
+//void PortAudioInputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const
+//{
+//	if( mPortAudio )
+//	{
+//		mPortAudio->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pInstanceData );
+//	}
+//}
 
 qint64 PortAudioInputNode::audioLatency() const
 {
