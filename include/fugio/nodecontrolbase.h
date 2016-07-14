@@ -9,6 +9,7 @@
 #include <fugio/context_interface.h>
 #include <fugio/node_control_interface.h>
 #include <fugio/node_interface.h>
+#include <fugio/node_signals.h>
 #include <fugio/pin_interface.h>
 #include <fugio/paired_pins_helper_interface.h>
 
@@ -49,7 +50,7 @@ class NodeControlBase : public QObject, public fugio::NodeControlInterface
 
 public:
 	explicit NodeControlBase( QSharedPointer<fugio::NodeInterface> pNode )
-		: mNode( pNode ), mPidIdx( 0 )
+		: mNode( pNode ), mPidIdx( 0 ), mInitialisedCalled( false ), mDeinitialisedCalled( false )
 	{
 		// this will be going soon
 
@@ -104,12 +105,40 @@ public:
 
 	virtual bool initialise( void ) Q_DECL_OVERRIDE
 	{
+		PairedPinsHelperInterface		*PPHI = qobject_cast<PairedPinsHelperInterface *>( this );
+
+		if( PPHI )
+		{
+			pairedPinConnect();
+		}
+
+		mInitialisedCalled = true;
+
 		return( true );
 	}
 
 	virtual bool deinitialise( void ) Q_DECL_OVERRIDE
 	{
+		PairedPinsHelperInterface		*PPHI = qobject_cast<PairedPinsHelperInterface *>( this );
+
+		if( PPHI )
+		{
+			pairedPinDisconnect();
+		}
+
+		mDeinitialisedCalled = true;
+
 		return( true );
+	}
+
+	virtual bool wasInitialiseCalled( void ) const Q_DECL_OVERRIDE
+	{
+		return( mInitialisedCalled );
+	}
+
+	virtual bool wasDeinitialiseCalled( void ) const Q_DECL_OVERRIDE
+	{
+		return( mDeinitialisedCalled );
 	}
 
 	virtual void loadSettings( QSettings & ) Q_DECL_OVERRIDE
@@ -210,6 +239,15 @@ public:
 
 	//-------------------------------------------------------------------------
 	// support methods for creating output pins
+
+	QSharedPointer<fugio::PinInterface> pinOutput( const QString &pName, const QUuid &pControlUUID, const QUuid &pUuid )
+	{
+		QSharedPointer<fugio::PinInterface>		PinInt;
+
+		mNode->createPin( pName, PIN_OUTPUT, pUuid, PinInt, pControlUUID );
+
+		return( PinInt );
+	}
 
 	template <class T> T pinOutput( const QString &pName, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID ) // soon... Q_DECL_DEPRECATED
 	{
@@ -337,7 +375,20 @@ public:
 	//-------------------------------------------------------------------------
 	// Helper methods for working with pin pairs
 
-protected slots:
+private:
+	void pairedPinConnect( void )
+	{
+		connect( mNode->qobject(), SIGNAL(pinAdded(QSharedPointer<fugio::PinInterface>)), this, SLOT(pairedPinAddedHelper(QSharedPointer<fugio::PinInterface>)) );
+		connect( mNode->qobject(), SIGNAL(pinRemoved(QSharedPointer<fugio::PinInterface>)), this, SLOT(pairedPinRemovedHelper(QSharedPointer<fugio::PinInterface>)) );
+	}
+
+	void pairedPinDisconnect( void )
+	{
+		disconnect( mNode->qobject(), SIGNAL(pinAdded(QSharedPointer<fugio::PinInterface>)), this, SLOT(pairedPinAddedHelper(QSharedPointer<fugio::PinInterface>)) );
+		disconnect( mNode->qobject(), SIGNAL(pinRemoved(QSharedPointer<fugio::PinInterface>)), this, SLOT(pairedPinRemovedHelper(QSharedPointer<fugio::PinInterface>)) );
+	}
+
+private slots:
 	void pairedPinAddedHelper( QSharedPointer<fugio::PinInterface> pPin )
 	{
 		if( pPin->direction() == PIN_INPUT )
@@ -406,6 +457,10 @@ protected:
 
 	int										 mPidIdx;
 	static QList<QUuid>						 PID_UUID;
+
+private:
+	bool									 mInitialisedCalled;
+	bool									 mDeinitialisedCalled;
 
 private:
 	Q_DISABLE_COPY( NodeControlBase )

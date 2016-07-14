@@ -32,39 +32,6 @@ FadeNode::FadeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinOutput->setDescription( tr( "The output Number" ) );
 }
 
-bool FadeNode::initialise()
-{
-	if( !fugio::NodeControlBase::initialise() )
-	{
-		return( false );
-	}
-
-	connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(onContextFrame(qint64)) );
-
-	connect( mNode->qobject(), SIGNAL(pinAdded(QSharedPointer<fugio::PinInterface>)), this, SLOT(pairedPinAddedHelper(QSharedPointer<fugio::PinInterface>)) );
-	connect( mNode->qobject(), SIGNAL(pinRemoved(QSharedPointer<fugio::PinInterface>)), this, SLOT(pairedPinRemovedHelper(QSharedPointer<fugio::PinInterface>)) );
-
-	return( true );
-}
-
-bool FadeNode::deinitialise()
-{
-	disconnect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(onContextFrame(qint64)) );
-
-	disconnect( mNode->qobject(), SIGNAL(pinAdded(QSharedPointer<fugio::PinInterface>)), this, SLOT(pairedPinAddedHelper(QSharedPointer<fugio::PinInterface>)) );
-	disconnect( mNode->qobject(), SIGNAL(pinRemoved(QSharedPointer<fugio::PinInterface>)), this, SLOT(pairedPinRemovedHelper(QSharedPointer<fugio::PinInterface>)) );
-
-	return( NodeControlBase::deinitialise() );
-}
-
-void FadeNode::inputsUpdated( qint64 pTimeStamp )
-{
-	if( !pTimeStamp )
-	{
-		return;
-	}
-}
-
 void FadeNode::onContextFrame( qint64 pTimeStamp )
 {
 	if( pTimeStamp < mLastTime )
