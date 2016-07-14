@@ -64,7 +64,8 @@ SOURCES += \
     framedelaynode.cpp \
     typesizenode.cpp \
     bytearraylistpin.cpp \
-    switchnode.cpp
+    switchnode.cpp \
+    floatthresholdnode.cpp
 
 HEADERS += \
     stringpin.h \
@@ -117,7 +118,8 @@ HEADERS += \
     framedelaynode.h \
     typesizenode.h \
     bytearraylistpin.h \
-    switchnode.h
+    switchnode.h \
+    floatthresholdnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
