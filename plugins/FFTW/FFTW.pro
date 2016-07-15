@@ -122,7 +122,7 @@ macx {
     DEFINES += FFTW_PLUGIN_SUPPORTED
 }
 
-unix:!macx:exists( /usr/include ) {
+unix:!macx:exists( /usr/include/fftw3.h ) {
     INCLUDEPATH += /usr/include
 
     LIBS += -lfftw3f
