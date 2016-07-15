@@ -76,7 +76,19 @@ private:
 
 		}
 
-		virtual ~AudioInstanceData( void ) {}
+		virtual ~AudioInstanceData( void )
+		{
+			mMutex.lock();
+
+			for( auto it = mInstanceData.begin() ; it != mInstanceData.end() ; it++ )
+			{
+				delete it.value();
+			}
+
+			mInstanceData.clear();
+
+			mMutex.unlock();
+		}
 
 		virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers ) Q_DECL_OVERRIDE
 		{

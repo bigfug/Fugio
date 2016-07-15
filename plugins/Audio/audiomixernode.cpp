@@ -30,7 +30,7 @@ void AudioMixerNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pCh
 
 	for( auto it = pInstanceData->mInstanceData.begin() ; it != pInstanceData->mInstanceData.end() ; it++ )
 	{
-//		it.key()->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, it.value() );
+		it.value()->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers );
 	}
 
 	pInstanceData->mMutex.unlock();
@@ -92,27 +92,6 @@ fugio::AudioInstanceBase *AudioMixerNode::audioAllocInstance( qreal pSampleRate,
 	return( InsDat );
 }
 
-//void AudioMixerNode::audioFreeInstance( void *pInstanceData )
-//{
-//	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
-
-//	if( InsDat )
-//	{
-//		InsDat->mMutex.lock();
-
-//		for( auto it = InsDat->mInstanceData.begin() ; it != InsDat->mInstanceData.end() ; it++ )
-//		{
-//			it.key()->audioFreeInstance( it.value() );
-//		}
-
-//		InsDat->mMutex.unlock();
-
-//		mInstanceData.removeAll( InsDat );
-
-//		delete InsDat;
-//	}
-//}
-
 void AudioMixerNode::pinLinked( QSharedPointer<fugio::PinInterface> pPinSrc, QSharedPointer<fugio::PinInterface> pPinDst )
 {
 	if( pPinSrc->direction() != PIN_INPUT )
@@ -157,7 +136,7 @@ void AudioMixerNode::pinUnlinked( QSharedPointer<fugio::PinInterface> pPinSrc, Q
 
 			if( it != InsDat->mInstanceData.end() )
 			{
-//				it.key()->audioFreeInstance( it.value() );
+				delete it.value();
 
 				InsDat->mInstanceData.remove( it.key() );
 			}
