@@ -121,6 +121,14 @@ macx:exists( /usr/local/include/lua.hpp ) {
     DEFINES += LUA_PLUGIN_SUPPORTED
 }
 
+unix:!macx:exists( /usr/include/lua5.3/lua.h ) {
+    INCLUDEPATH += /usr/include/lua5.3
+
+    LIBS += -llua5.3
+
+    DEFINES += LUA_PLUGIN_SUPPORTED
+}
+
 !contains( DEFINES, LUA_PLUGIN_SUPPORTED ) {
         warning( "Lua not supported" )
 }
