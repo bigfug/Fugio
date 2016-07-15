@@ -10,6 +10,7 @@ SUBDIRS += \
     GUI \
     Image \
     Lua \
+    LuaQt \
     Math \
     PortAudio \
     OSC \

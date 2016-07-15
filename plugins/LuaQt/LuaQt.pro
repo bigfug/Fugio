@@ -1,10 +1,10 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2016-01-22T09:23:05
+# Project created by QtCreator 2016-02-25T09:19:59
 #
 #-------------------------------------------------
 
-TARGET = $$qtLibraryTarget(fugio-lua)
+TARGET = $$qtLibraryTarget(fugio-luaqt)
 TEMPLATE = lib
 
 CONFIG += plugin c++11
@@ -12,34 +12,43 @@ CONFIG += plugin c++11
 QT += gui widgets
 
 CONFIG(debug,debug|release) {
-        DESTDIR = $$OUT_PWD/../../../deploy-debug-$$QMAKE_HOST.arch/plugins
+    DESTDIR = $$OUT_PWD/../../../deploy-debug-$$QMAKE_HOST.arch/plugins
 } else {
-        DESTDIR = $$OUT_PWD/../../../deploy-release-$$QMAKE_HOST.arch/plugins
+    DESTDIR = $$OUT_PWD/../../../deploy-release-$$QMAKE_HOST.arch/plugins
 }
 
 include( ../../../Fugio/FugioGlobal.pri )
 
-DEFINES += LUA_LIBRARY
+SOURCES += \
+    luapainter.cpp \
+    luapen.cpp \
+    luacolor.cpp \
+    luabrush.cpp \
+    luarectf.cpp \
+    luapointf.cpp \
+    luasizef.cpp \
+    luafont.cpp \
+    luafontmetrics.cpp \
+    luagradient.cpp \
+    luaqtplugin.cpp \
+    luaimage.cpp
 
-SOURCES += luaplugin.cpp \
-    luanode.cpp \
-    syntaxhighlighterlua.cpp \
-    luahighlighter.cpp \
-    luaexnode.cpp \
-    luaexpin.cpp \
-    luaarray.cpp
-
-HEADERS += luaplugin.h \
+HEADERS +=\
+    ../../include/fugio/luaqt/uuid.h \
     ../../include/fugio/nodecontrolbase.h \
     ../../include/fugio/pincontrolbase.h \
-    ../../include/fugio/lua/uuid.h \
-    ../../include/fugio/lua/lua_interface.h \
-    luanode.h \
-    syntaxhighlighterlua.h \
-    luahighlighter.h \
-    luaexnode.h \
-    luaexpin.h \
-    luaarray.h
+    luapainter.h \
+    luapen.h \
+    luacolor.h \
+    luabrush.h \
+    luarectf.h \
+    luapointf.h \
+    luasizef.h \
+    luafont.h \
+    luafontmetrics.h \
+    luagradient.h \
+    luaqtplugin.h \
+    luaimage.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -110,7 +119,7 @@ win32:exists( $$(LIBS)/Lua-5.3.2 ) {
 
     LIBS += -L$$(LIBS)/Lua-5.3.2 -llua53
 
-    DEFINES += LUA_PLUGIN_SUPPORTED
+    DEFINES += LUA_SUPPORTED
 }
 
 macx:exists( /usr/local/include/lua.hpp ) {
@@ -118,11 +127,11 @@ macx:exists( /usr/local/include/lua.hpp ) {
 
     LIBS += -L/usr/local/lib -llua
 
-    DEFINES += LUA_PLUGIN_SUPPORTED
+    DEFINES += LUA_SUPPORTED
 }
 
-!contains( DEFINES, LUA_PLUGIN_SUPPORTED ) {
-        warning( "Lua not supported" )
+!contains( DEFINES, LUA_SUPPORTED ) {
+    warning( "Lua not supported" )
 }
 
 #------------------------------------------------------------------------------
