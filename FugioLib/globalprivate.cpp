@@ -389,6 +389,8 @@ QSharedPointer<fugio::NodeInterface> GlobalPrivate::createNode( fugio::ContextIn
 		return( QSharedPointer<fugio::NodeInterface>() );
 	}
 
+	NODE->moveToThread( thread() );
+
 	NODE->setContext( pContext );
 	NODE->setName( pName );
 	NODE->setControlUuid( pUUID );
@@ -404,6 +406,8 @@ QSharedPointer<fugio::NodeInterface> GlobalPrivate::createNode( fugio::ContextIn
 
 		if( ClassInstance )
 		{
+			ClassInstance->moveToThread( thread() );
+
 			fugio::NodeControlInterface	*NodeControl = qobject_cast<fugio::NodeControlInterface *>( ClassInstance );
 
 			if( NodeControl )
@@ -428,6 +432,8 @@ QSharedPointer<fugio::PinInterface> GlobalPrivate::createPin( const QString &pNa
 	}
 
 	QSharedPointer<fugio::PinInterface>	PinPtr = QSharedPointer<fugio::PinInterface>( P );
+
+	P->moveToThread( thread() );
 
 	P->setContext( pNode->context() );
 	P->setLocalId( pLocalId );
@@ -469,6 +475,8 @@ QSharedPointer<fugio::PinControlInterface> GlobalPrivate::createPinControl( cons
 
 			if( ClassInstance )
 			{
+				ClassInstance->moveToThread( thread() );
+
 				fugio::PinControlInterface		*PinControl = qobject_cast<fugio::PinControlInterface *>( ClassInstance );
 
 				if( PinControl )
@@ -530,6 +538,8 @@ QString GlobalPrivate::pinName(const QUuid &pUuid) const
 
 void GlobalPrivate::timeout( void )
 {
+	QMutexLocker	Lock( &mContextMutex );
+
 	const qint64		TimeStamp = timestamp();
 
 	if( !mPause )
@@ -598,8 +608,22 @@ void GlobalPrivate::timeout( void )
 		mFrameCount = 0;
 	}
 
+#if !defined( GLOBAL_THREADED )
 	QTimer::singleShot( 1, this, SLOT(timeout()) );
+#endif
 }
+
+#if defined( GLOBAL_THREADED )
+
+void GlobalPrivate::run()
+{
+	forever
+	{
+		timeout();
+	}
+}
+
+#endif
 
 QUuid GlobalPrivate::findNodeByClass( const QString &pClassName ) const
 {
@@ -640,6 +664,8 @@ bool GlobalPrivate::updatePinControl( QSharedPointer<fugio::PinInterface> pPin, 
 
 void GlobalPrivate::clear()
 {
+	QMutexLocker	Lock( &mContextMutex );
+
 	for( QList< QSharedPointer<fugio::ContextInterface> >::iterator it = mContexts.begin() ; it != mContexts.end() ; it++ )
 	{
 		QSharedPointer<fugio::ContextInterface>	CP = *it;
@@ -660,6 +686,8 @@ void GlobalPrivate::clear()
 
 QSharedPointer<fugio::ContextInterface> GlobalPrivate::newContext( void )
 {
+	QMutexLocker	Lock( &mContextMutex );
+
 	ContextPrivate		*CP = new ContextPrivate( this );
 
 	if( CP == 0 )
@@ -678,6 +706,8 @@ QSharedPointer<fugio::ContextInterface> GlobalPrivate::newContext( void )
 
 void GlobalPrivate::delContext( QSharedPointer<fugio::ContextInterface> pContext )
 {
+	QMutexLocker	Lock( &mContextMutex );
+
 	mContexts.removeAll( pContext );
 
 	emit contextRemoved( pContext );
@@ -810,4 +840,26 @@ void GlobalPrivate::menuAddEntry( fugio::MenuId pMenuId, QString pName, QObject 
 	{
 		MCI->menuAddEntry( pMenuId, pName, pObject, pSlot );
 	}
+}
+
+void GlobalPrivate::start()
+{
+#if !defined( GLOBAL_THREADED )
+	QTimer::singleShot( 1000, this, SLOT(timeout()) );
+#else
+	moveToThread( &mWorkerThread );
+
+	connect( &mWorkerThread, SIGNAL(started()), this, SLOT(run()) );
+
+	mWorkerThread.start();
+#endif
+}
+
+void GlobalPrivate::stop()
+{
+#if defined( GLOBAL_THREADED )
+	mWorkerThread.quit();
+
+	mWorkerThread.wait();
+#endif
 }

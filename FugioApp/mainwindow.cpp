@@ -245,7 +245,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 		qInfo() << "Examples Directory:" << ExamplesDir.absolutePath();
 
-		FoundExamples = addExamplesPath( ExamplesDir.absolutePath() );
+		addExamplesPath( ExamplesDir.absolutePath() );
 	}
 
 	ui->actionRescan->setVisible( false );
@@ -685,6 +685,8 @@ void MainWindow::on_actionAbout_Fugio_triggered()
 
 		HTML.close();
 	}
+
+	TxtLst.replace( "[VERSION]", QApplication::applicationVersion() );
 
 	QMessageBox::about( this, "Fugio " + qApp->applicationVersion(), TxtLst );
 }

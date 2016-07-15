@@ -60,6 +60,39 @@ void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 		return;
 	}
 
+	if( mProducerInstance && !mProducerInstance->isValid() )
+	{
+		delete mProducerInstance;
+
+		mProducerInstance = nullptr;
+	}
+
+	fugio::AudioProducerInterface	*API = input<fugio::AudioProducerInterface *>( mPinAudio );
+
+	if( !API )
+	{
+		if( mProducerInstance )
+		{
+			delete mProducerInstance;
+
+			mProducerInstance = nullptr;
+
+			mSamplePosition = 0;
+		}
+
+		return;
+	}
+
+	if( !mProducerInstance )
+	{
+		mProducerInstance = API->audioAllocInstance( 48000, fugio::AudioSampleFormat::Format32FS, 1 );
+	}
+
+	if( !mProducerInstance )
+	{
+		return;
+	}
+
 	if( !mSamplePosition )
 	{
 		mSamplePosition = pTimeStamp * ( 48000 / 1000 );
@@ -69,59 +102,49 @@ void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 
 	if( CurPos - mSamplePosition >= MAG_SMP )
 	{
-		fugio::AudioProducerInterface	*AP = input<fugio::AudioProducerInterface *>( mPinAudio );
+		int			ChannelCount = 1;
 
-		if( AP )
+		if( ChannelCount != mAudDat.size() )
 		{
-			int			ChannelCount = 1;
+			mAudDat.resize( ChannelCount );
 
-			if( !mProducerInstance )
+			for( auto &V : mAudDat )
 			{
-				mProducerInstance = AP->allocAudioInstance( 48000, fugio::AudioSampleFormat::FMT_FLT_S, ChannelCount );
+				V.resize( 48000 );
 			}
-
-			if( ChannelCount != mAudDat.size() )
-			{
-				mAudDat.resize( ChannelCount );
-
-				for( auto &V : mAudDat )
-				{
-					V.resize( 48000 );
-				}
-			}
-
-			QVector<float *>	AudPtr;
-
-			AudPtr.resize( ChannelCount );
-
-			for( int i = 0 ; i < ChannelCount ; i++ )
-			{
-				AudPtr[ i ] = mAudDat[ i ].data();
-
-				memset( AudPtr[ i ], 0, sizeof( float ) * MAG_SMP );
-			}
-
-			AP->audio( mSamplePosition, MAG_SMP, 0, 1, AudPtr.data(), 0, mProducerInstance );
-
-			float		Mag = 0;
-
-			for( int c = 0 ; c < ChannelCount ; c++ )
-			{
-				float	*S = AudPtr[ c ];
-
-				for( int i = 0 ; i < MAG_SMP ; i++, S++ )
-				{
-					float	M = fabs( *S );
-
-					if( M > Mag )
-					{
-						Mag = M;
-					}
-				}
-			}
-
-			mMagnitude = Mag;
 		}
+
+		QVector<float *>	AudPtr;
+
+		AudPtr.resize( ChannelCount );
+
+		for( int i = 0 ; i < ChannelCount ; i++ )
+		{
+			AudPtr[ i ] = mAudDat[ i ].data();
+
+			memset( AudPtr[ i ], 0, sizeof( float ) * MAG_SMP );
+		}
+
+		mProducerInstance->audio( mSamplePosition, MAG_SMP, 0, 1, (void **)AudPtr.data() );
+
+		float		Mag = 0;
+
+		for( int c = 0 ; c < ChannelCount ; c++ )
+		{
+			float	*S = AudPtr[ c ];
+
+			for( int i = 0 ; i < MAG_SMP ; i++, S++ )
+			{
+				float	M = fabs( *S );
+
+				if( M > Mag )
+				{
+					Mag = M;
+				}
+			}
+		}
+
+		mMagnitude = Mag;
 
 		mSamplePosition += MAG_SMP;
 	}

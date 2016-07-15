@@ -15,6 +15,7 @@
 
 #include "texteditorform.h"
 #include "cmdtexteditorupdate.h"
+#include "textplugin.h"
 
 TextEditorNode::TextEditorNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mDockWidget( 0 ), mTextEdit( 0 ), mDockArea( Qt::BottomDockWidgetArea ), mHighlighter( 0 )
@@ -80,11 +81,16 @@ void TextEditorNode::checkHighlighter()
 				{
 					mHighlighter = H->highlighter( mTextEdit->textEdit()->document() );
 
-					if( mTextEdit )
+					if( mHighlighter )
 					{
-						mTextEdit->setHighlighter( H );
+						mHighlighter->moveToThread( TextPlugin::global()->thread() );
 
-						connect( mHighlighter, SIGNAL(errorsUpdated()), mTextEdit, SLOT(errorsUpdated()) );
+						if( mTextEdit )
+						{
+							mTextEdit->setHighlighter( H );
+
+							connect( mHighlighter, SIGNAL(errorsUpdated()), mTextEdit, SLOT(errorsUpdated()) );
+						}
 					}
 				}
 			}

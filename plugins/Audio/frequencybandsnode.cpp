@@ -67,7 +67,7 @@ void FrequencyBandsNode::inputsUpdated( qint64 pTimeStamp )
 	if( BandCount != mValOutputBands->count() )
 	{
 		mValOutputBands->setCount( BandCount );
-		mValOutputBands->setSize( sizeof( float ) );
+		mValOutputBands->setSize( 1 );
 		mValOutputBands->setStride( sizeof( float ) );
 		mValOutputBands->setType( QMetaType::Float );
 	}

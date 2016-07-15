@@ -37,6 +37,7 @@ const luaL_Reg LuaExPin::mLuaPinMethods[] =
 	{ "set",		LuaExPin::luaPinSetValue },
 	{ "get",		LuaExPin::luaPinGetValue },
 	{ "updated",	LuaExPin::luaUpdated },
+	{ "update",		LuaExPin::luaUpdate },
 	{ 0, 0 }
 };
 
@@ -77,7 +78,18 @@ int LuaExPin::luaGet( lua_State *L )
 		}
 	}
 
-	for( const luaL_Reg &F : LuaPlugin::instance()->pinFunctions( P->controlUuid() ) )
+	QUuid		ControlUuid;
+
+	if( P->direction() == PIN_OUTPUT )
+	{
+		ControlUuid = P->controlUuid();
+	}
+	else if( P->isConnected() )
+	{
+		ControlUuid = P->connectedPin()->controlUuid();
+	}
+
+	for( const luaL_Reg &F : LuaPlugin::instance()->pinFunctions( ControlUuid ) )
 	{
 		if( !strcmp( s, F.name ) )
 		{
@@ -123,6 +135,20 @@ int LuaExPin::luaIsUpdated( lua_State *L )
 	lua_pushboolean( L, P->isUpdated( TimeStamp ) );
 
 	return( 1 );
+}
+
+int LuaExPin::luaUpdate( lua_State *L )
+{
+	QSharedPointer<fugio::PinInterface>	 P = LuaPlugin::getpin( L );
+
+	if( !P || P->direction() == PIN_INPUT )
+	{
+		return( 0 );
+	}
+
+	P->node()->context()->pinUpdated( P );
+
+	return( 0 );
 }
 
 int LuaExPin::luaPinGetName( lua_State *L )
@@ -190,19 +216,32 @@ int LuaExPin::luaPinGetValue( lua_State *L )
 
 	QVariant				V = ( P->direction() == PIN_INPUT ? P->value() : QVariant() );
 
+	QSharedPointer<fugio::PinInterface>				PinSrc;
 	QSharedPointer<fugio::PinControlInterface>		PinCtl;
 
 	if( P->direction() == PIN_INPUT )
 	{
-		PinCtl = ( P->isConnected() && P->connectedPin()->hasControl() ? P->connectedPin()->control() : QSharedPointer<fugio::PinControlInterface>() );
+		PinSrc = ( P->isConnected() && P->connectedPin()->hasControl() ? P->connectedPin() : QSharedPointer<fugio::PinInterface>() );
 	}
 	else
 	{
-		PinCtl = P->control();
+		PinSrc = P;
+	}
+
+	if( PinSrc )
+	{
+		PinCtl = PinSrc->control();
 	}
 
 	if( PinCtl )
 	{
+		LuaPlugin::luaPinGetFunc		PinGetFnc = LuaPlugin::instance()->getFunctions().value( PinSrc->controlUuid() );
+
+		if( PinGetFnc )
+		{
+			return( PinGetFnc( P->localId(), L ) );
+		}
+
 		fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( PinCtl->qobject() );
 
 		if( ArrInt )

@@ -36,7 +36,7 @@ int LuaArray::luaGet( lua_State *L )
 {
 	LuaArrayUserData			*LstDat = checkarray( L );
 
-	if( lua_isstring( L, 2 ) )
+	if( lua_type( L, 2 ) == LUA_TSTRING )
 	{
 		const char	*s = luaL_checkstring( L, 2 );
 
@@ -49,6 +49,8 @@ int LuaArray::luaGet( lua_State *L )
 				return( 1 );
 			}
 		}
+
+		return( luaL_error( L, "Unknown array method: %s", s ) );
 	}
 
 	int							 LstIdx = luaL_checkinteger( L, 2 );
@@ -146,6 +148,35 @@ int LuaArray::luaSet( lua_State *L )
 						}
 
 						A[ ( LstIdx * ArrInt->size() ) + i - 1 ] = lua_tointeger( L, -1 );
+
+						lua_pop( L, 1 );
+					}
+				}
+			}
+
+			return( 0 );
+		}
+
+		if( ArrInt->type() == QMetaType::QVector3D )
+		{
+			float		*A = (float *)ArrInt->array();
+
+			if( A )
+			{
+				if( lua_type( L, 3 ) == LUA_TTABLE )
+				{
+					for( int i = 1 ; i <= 3 ; i++ )
+					{
+						lua_rawgeti( L, 3, i );
+
+						if( lua_isnil( L, -1 ) )
+						{
+							lua_pop( L, 1 );
+
+							break;
+						}
+
+						A[ ( LstIdx * 3 ) + i - 1 ] = lua_tonumber( L, -1 );
 
 						lua_pop( L, 1 );
 					}
@@ -361,6 +392,24 @@ int LuaArray::luaSetType( lua_State *L )
 		LstInt->setType( QMetaType::Int );
 		LstInt->setStride( sizeof( int ) );
 		LstInt->setSize( 1 );
+	}
+	else if( strcmp( LstTyp, "vec3" ) == 0 )
+	{
+		LstInt->setType( QMetaType::QVector3D );
+		LstInt->setStride( sizeof( float ) * 3 );
+		LstInt->setSize( 3 );
+	}
+	else if( strcmp( LstTyp, "vec4" ) == 0 )
+	{
+		LstInt->setType( QMetaType::QVector4D );
+		LstInt->setStride( sizeof( float ) * 4 );
+		LstInt->setSize( 4 );
+	}
+	else if( strcmp( LstTyp, "mat4" ) == 0 )
+	{
+		LstInt->setType( QMetaType::QMatrix4x4 );
+		LstInt->setStride( sizeof( float ) * 4 * 4 );
+		LstInt->setSize( 4 * 4 );
 	}
 	else
 	{

@@ -149,6 +149,39 @@ void DecoderNode::processDatagram( const QByteArray &pDatagram )
 
 	QVariantList	OscLst;
 
+	/*
+	 * Some OSC apps seem to be sending a strange variation on OSC where there
+	 * are no arguments, instead the value is the last part of the path
+	 *
+	 * QuickOSC on Android is one example
+	 *
+	 * While we don't want to encourage this sort of non-standard behaviour,
+	 * we want to be able to account for it so the end user doesn't get
+	 * frustrated!
+	 *
+	 * Also, don't ask me to implement sending these malformed messages!!
+	 */
+
+	if( OscArg.isEmpty() )
+	{
+		QStringList		AdrLst = QString( OscAdr ).split( '/', QString::SkipEmptyParts );
+
+		if( AdrLst.size() >= 2 )
+		{
+			QString			AdrVal = AdrLst.takeLast();
+
+			OscAdr = QString( "/%1" ).arg( AdrLst.join( '/' ) ).toLatin1();
+
+			bool			FltOk;
+			float			FltVal = AdrVal.toFloat( &FltOk );
+
+			if( FltOk )
+			{
+				OscLst.append( FltVal );
+			}
+		}
+	}
+
 	for( int a = 0 ; a < OscArg.size() ; a++ )
 	{
 		int		OscInc = 0;

@@ -25,8 +25,6 @@ void DivideNode::inputsUpdated( qint64 pTimeStamp )
 	if( Den == 0 )
 	{
 		Res = std::numeric_limits<double>::quiet_NaN();
-
-		return;
 	}
 	else
 	{

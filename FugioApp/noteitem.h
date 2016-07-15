@@ -2,6 +2,9 @@
 #define NOTEITEM_H
 
 #include <QGraphicsTextItem>
+#include <QUuid>
+#include <QColor>
+#include <QPointF>
 
 class QGraphicsTextItem;
 class ContextView;
@@ -36,13 +39,13 @@ public:
 
 	// QGraphicsItem interface
 public:
-	virtual void paint( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget );
+	virtual void paint( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget ) Q_DECL_OVERRIDE;
 
 	// QGraphicsItem interface
 protected:
-	virtual QVariant itemChange( GraphicsItemChange pChange, const QVariant &pValue);
-	virtual void mousePressEvent(QGraphicsSceneMouseEvent *event);
-	virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+	virtual QVariant itemChange( GraphicsItemChange pChange, const QVariant &pValue) Q_DECL_OVERRIDE;
+	virtual void mousePressEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
+	virtual void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
 
 protected:
 	ContextView				*mContextView;

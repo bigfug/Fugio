@@ -67,11 +67,13 @@ macx {
         QMAKE_POST_LINK += $$qtLibChange( QtGui )
         QMAKE_POST_LINK += $$qtLibChange( QtCore )
 
-        QMAKE_POST_LINK += && install_name_tool -change liblua53.dylib /usr/local/lib/liblua53.dylib $$LIBCHANGEDEST
+        QMAKE_POST_LINK += && install_name_tool -change /usr/local/opt/lua/lib/liblua.5.2.dylib liblua.5.2.dylib $$LIBCHANGEDEST
 
         QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
         QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+
+        QMAKE_POST_LINK += && install_name_tool -change liblua.5.2.dylib /usr/local/lib/liblua.5.2.dylib $$LIBCHANGEDEST
 
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
@@ -84,20 +86,20 @@ macx {
 }
 
 windows {
-	INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
+    CONFIG(release,debug|release) {
+        QMAKE_POST_LINK += echo
 
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins/lua )
+        QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins/lua )
+        QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
 
-		win32 {
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/Lua-5.3.2/lua53.dll ) $$shell_path( $$INSTALLDIR/data/plugins/lua )
-		}
-	}
+        win32 {
+             QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/Lua-5.3.2/lua53.dll ) $$shell_path( $$INSTALLDIR/data )
+        }
+    }
 }
 
 #------------------------------------------------------------------------------
@@ -115,6 +117,14 @@ macx:exists( /usr/local/include/lua.hpp ) {
     INCLUDEPATH += /usr/local/include
 
     LIBS += -L/usr/local/lib -llua
+
+    DEFINES += LUA_PLUGIN_SUPPORTED
+}
+
+unix:!macx:exists( /usr/include/lua5.3/lua.h ) {
+    INCLUDEPATH += /usr/include/lua5.3
+
+    LIBS += -llua5.3
 
     DEFINES += LUA_PLUGIN_SUPPORTED
 }

@@ -64,7 +64,8 @@ SOURCES += \
     framedelaynode.cpp \
     typesizenode.cpp \
     bytearraylistpin.cpp \
-    switchnode.cpp
+    switchnode.cpp \
+    floatthresholdnode.cpp
 
 HEADERS += \
     stringpin.h \
@@ -117,7 +118,8 @@ HEADERS += \
     framedelaynode.h \
     typesizenode.h \
     bytearraylistpin.h \
-    switchnode.h
+    switchnode.h \
+    floatthresholdnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -128,7 +130,7 @@ macx {
     CONFIG += lib_bundle
 
     BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
     INSTALLDEST  = $$INSTALLDIR/data/plugins
     INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
@@ -160,16 +162,16 @@ macx {
 }
 
 windows {
-	INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
+    CONFIG(release,debug|release) {
+        QMAKE_POST_LINK += echo
 
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
+        QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
-	}
+        QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
+    }
 }
 
 #------------------------------------------------------------------------------

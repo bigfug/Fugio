@@ -75,6 +75,11 @@ void logger_static( QtMsgType type, const QMessageLogContext &context, const QSt
 	}
 }
 
+// Little trick I picked up from StackExchange to add quotes to a DEFINE
+
+#define Q(x) #x
+#define QUOTE(x) Q(x)
+
 int main(int argc, char *argv[])
 {
 #if defined( QT_DEBUG )
@@ -85,7 +90,7 @@ int main(int argc, char *argv[])
 
 	QApplication::setApplicationName( "Fugio" );
 	QApplication::setOrganizationDomain( "Fugio" );
-	QApplication::setApplicationVersion( QString( "1.3.0 (%1/%2)" ).arg( QSysInfo::buildCpuArchitecture() ).arg( QSysInfo::currentCpuArchitecture() ) );
+	QApplication::setApplicationVersion( QString( "%1 (%2/%3)" ).arg( QUOTE( FUGIO_VERSION ) ).arg( QSysInfo::buildCpuArchitecture() ).arg( QSysInfo::currentCpuArchitecture() ) );
 
 	const QString	CfgDir = QStandardPaths::writableLocation( QStandardPaths::DataLocation );
 
@@ -161,7 +166,7 @@ int main(int argc, char *argv[])
 
 	CLP.setApplicationDescription( "Fugio Editor" );
 
-	CLP.addOption( QCommandLineOption( "patch", "The patch (or patches) to load on startup" ) );
+	//CLP.addOption( QCommandLineOption( "patch", "The patch (or patches) to load on startup" ) );
 
 	//-------------------------------------------------------------------------
 	// Register and load plugins
@@ -246,21 +251,25 @@ int main(int argc, char *argv[])
 
 		// Load patches that were specified on the command line
 
-		for( QString PatchName : CLP.values( "patch" ) )
+		for( QString PatchName : CLP.positionalArguments() )
 		{
+			qDebug() << "Loading" << PatchName << "...";
+
 			WND->loadPatch( PatchName );
 		}
 
-		WND->checkRecoveryFiles();
-
 		if( PBG->contexts().isEmpty() )
 		{
+			WND->checkRecoveryFiles();
+
 			WND->promptUserForPatch();
 		}
 
-		QTimer::singleShot( 1000, PBG, SLOT(timeout()) );
+		PBG->start();
 
 		RET = APP->exec();
+
+		PBG->stop();
 
 		if( true )
 		{

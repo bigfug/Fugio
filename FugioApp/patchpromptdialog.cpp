@@ -1,5 +1,8 @@
 #include "patchpromptdialog.h"
 #include "ui_patchpromptdialog.h"
+
+#include <QSettings>
+
 #include "mainwindow.h"
 #include "app.h"
 #include "undo/cmdnewcontext.h"

@@ -33,6 +33,7 @@
 #include "framedelaynode.h"
 #include "typesizenode.h"
 #include "switchnode.h"
+#include "floatthresholdnode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -60,6 +61,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Counter", NID_COUNTER, &CounterNode::staticMetaObject ),
 	ClassEntry( "Duplicate Pins", "Fugio", NID_DUPLICATE_PINS, &DuplicatePinsNode::staticMetaObject ),
 	ClassEntry( "Envelope", "Number", NID_ENVELOPE, &EnvelopeNode::staticMetaObject ),
+	ClassEntry( "Float Threshold", NID_FLOAT_THRESHOLD, &FloatThresholdNode::staticMetaObject ),
 	ClassEntry( "Frame Delay", "Context", NID_FRAME_DELAY, &FrameDelayNode::staticMetaObject ),
 	ClassEntry( "Smooth", "Number", ClassEntry::None, NID_FADE, &FadeNode::staticMetaObject ),
 	ClassEntry( "Join Size", "Size", NID_JOIN_SIZE, &JoinSizeNode::staticMetaObject ),

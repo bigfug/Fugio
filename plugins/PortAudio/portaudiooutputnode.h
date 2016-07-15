@@ -83,9 +83,20 @@ public:
 
 	// InterfaceAudioProducer interface
 public:
-	virtual void audio(qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const Q_DECL_OVERRIDE;
-	virtual void *allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
-	virtual void freeAudioInstance(void *pInstanceData) Q_DECL_OVERRIDE;
+	void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const;
+
+	virtual fugio::AudioInstanceBase *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
+	virtual int audioChannels() const Q_DECL_OVERRIDE;
+	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
+	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;
+	virtual qint64 audioLatency() const Q_DECL_OVERRIDE;
+
+	virtual bool isValid( fugio::AudioInstanceBase *pInstance ) const Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pInstance )
+
+		return( true );
+	}
 
 signals:
 	void audioUpdated( void );
@@ -104,8 +115,7 @@ private:
 	QSharedPointer<DevicePortAudio>		 mPortAudio;
 
 	mutable QMutex						 mProducerMutex;
-	fugio::AudioProducerInterface		*mProducer;
-	void								*mInstance;
+	fugio::AudioInstanceBase			*mInstance;
 
 	QString								 mDeviceName;
 

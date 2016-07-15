@@ -13,6 +13,17 @@ TARGET = Fugio
 TEMPLATE = app
 CONFIG += c++11
 
+#-------------------------------------------------
+# Read in the Fugio version from version.txt
+
+FUGIO_VERSION = "$$cat(version.txt)"
+
+DEFINES += "FUGIO_VERSION=\"$$FUGIO_VERSION\""
+
+# It would be great to use this with config.xml and package.xml too, at some point...
+
+#-------------------------------------------------
+
 CONFIG(debug,debug|release) {
 	DESTDIR = $$OUT_PWD/../../deploy-debug-$$QMAKE_HOST.arch
 } else {
@@ -116,7 +127,8 @@ DISTFILES += \
     package.xml \
     ../config.osx.xml \
     ../config.win.xml \
-    about.html
+    about.html \
+    version.txt
 
 RESOURCES += \
     fugio.qrc
@@ -136,6 +148,9 @@ macx {
         QMAKE_POST_LINK += install_name_tool -change libfugio.1.dylib @executable_path/../../../libfugio.1.dylib $$APP_DIR/Contents/MacOS/Fugio
 
         QMAKE_POST_LINK += && macdeployqt $$APP_DIR
+
+        QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$APP_DIR ) CFBundleVersion \"$$FUGIO_VERSION\"
+        QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$APP_DIR ) CFBundleGetInfoString \"$$FUGIO_VERSION\"
 
         QMAKE_POST_LINK += && mkdir -pv $$PLUGIN_DIR/platforms
 

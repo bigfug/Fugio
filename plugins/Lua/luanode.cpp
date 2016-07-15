@@ -132,11 +132,18 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 
 		mCompileStatus = luaL_loadstring( mL, LuaSource.toLatin1().data() );
 
+		if( mCompileStatus == LUA_OK )
+		{
+		}
+
 		QString			 LuaErr;
 
 		if( mCompileStatus == LUA_ERRSYNTAX )
 		{
 			LuaErr = lua_tolstring( mL, -1, 0 );
+
+			mNode->setStatus( fugio::NodeInterface::Error );
+			mNode->setStatusMessage( LuaErr );
 		}
 
 		QObject			*O = mPinSource->findInterface( IID_SYNTAX_HIGHLIGHTER );
@@ -155,12 +162,14 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 
 		if( mCompileStatus == LUA_ERRMEM )
 		{
-
+			mNode->setStatus( fugio::NodeInterface::Error );
+			mNode->setStatusMessage( "LUA_ERRMEM" );
 		}
 
 		if( mCompileStatus == LUA_ERRGCMM )
 		{
-
+			mNode->setStatus( fugio::NodeInterface::Error );
+			mNode->setStatusMessage( "LUA_ERRGCMM" );
 		}
 
 		//---------------------------------------------------------------------
@@ -170,11 +179,19 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 		{
 			mCallStatus = lua_pcall( mL, 0, 0, 0 );
 
-			if( mCallStatus != LUA_OK )
+			if( mCallStatus == LUA_OK )
+			{
+				mNode->setStatus( fugio::NodeInterface::Initialised );
+				mNode->setStatusMessage( QString() );
+			}
+			else
 			{
 				if( lua_isstring( mL, -1 ) )
 				{
 					QString	S( luaL_tolstring( mL, -1, 0 ) );
+
+					mNode->setStatus( fugio::NodeInterface::Error );
+					mNode->setStatusMessage( S );
 
 					QObject			*O = mPinSource->findInterface( IID_SYNTAX_HIGHLIGHTER );
 					LuaHighlighter	*H = qobject_cast<LuaHighlighter *>( O );

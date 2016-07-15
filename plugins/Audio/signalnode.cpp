@@ -180,16 +180,12 @@ void SignalNode::generateSignal( qint64 pSamplePosition, qint64 pSampleCount, co
 	}
 }
 
-void *SignalNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
+fugio::AudioInstanceBase *SignalNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
 {
-	AudioInstanceData		*InsDat = new AudioInstanceData();
+	AudioInstanceData		*InsDat = new AudioInstanceData( qSharedPointerDynamicCast<fugio::AudioProducerInterface>( mNode->control() ), pSampleRate, pSampleFormat, pChannels );
 
 	if( InsDat )
 	{
-		InsDat->mSampleRate   = pSampleRate;
-		InsDat->mSampleFormat = pSampleFormat;
-		InsDat->mChannels     = pChannels;
-
 		InsDat->mPhase = 0.0;
 		InsDat->mSamplePosition = 0;
 		InsDat->mVRand.seed();
@@ -201,38 +197,24 @@ void *SignalNode::allocAudioInstance( qreal pSampleRate, fugio::AudioSampleForma
 	return( InsDat );
 }
 
-void SignalNode::freeAudioInstance( void *pInstanceData )
+void SignalNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const
 {
-	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
-
-	if( InsDat )
-	{
-		delete InsDat;
-	}
-}
-
-void SignalNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const
-{
-	Q_UNUSED( pLatency )
-
-	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
-
-	if( mFrequency <= 0.0 || !InsDat || mVolume <= 0 )
+	if( mFrequency <= 0.0 || !pInstanceData || mVolume <= 0 )
 	{
 		return;
 	}
 
-	const double		 SamplesPerPhase = ( InsDat->mSampleRate / mFrequency );
+	const double		 SamplesPerPhase = ( pInstanceData->sampleRate() / mFrequency );
 
-	if( InsDat->mSamplePosition <= 0 )
+	if( pInstanceData->mSamplePosition <= 0 )
 	{
-		InsDat->mSamplePosition = pSamplePosition;
-		InsDat->mPhase          = fmod( double( pSamplePosition ) / SamplesPerPhase, 1.0 );
+		pInstanceData->mSamplePosition = pSamplePosition;
+		pInstanceData->mPhase          = fmod( double( pSamplePosition ) / SamplesPerPhase, 1.0 );
 	}
 
-	InsDat->mSmpBuf.resize( pSampleCount );
+	pInstanceData->mSmpBuf.resize( pSampleCount );
 
-	generateSignal( InsDat->mPhase * SamplesPerPhase, pSampleCount, SamplesPerPhase, InsDat->mSmpBuf.data(), mVolume, *InsDat );
+	generateSignal( pInstanceData->mPhase * SamplesPerPhase, pSampleCount, SamplesPerPhase, pInstanceData->mSmpBuf.data(), mVolume, *pInstanceData );
 
 #if defined( WRITE_SIGNAL_FILENAME )
 	if( true )
@@ -241,7 +223,7 @@ void SignalNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChanne
 
 		if( TEST_FILE.open( QIODevice::Append ) || TEST_FILE.open( QIODevice::WriteOnly ) )
 		{
-			TEST_FILE.write( (const char *)InsDat->mSmpBuf.data(), sizeof( float ) * pSampleCount );
+			TEST_FILE.write( (const char *)pInstanceData->mSmpBuf.data(), sizeof( float ) * pSampleCount );
 
 			TEST_FILE.close();
 		}
@@ -250,8 +232,8 @@ void SignalNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChanne
 
 	for( int i = 0 ; i < pChannelCount ; i++ )
 	{
-		float		*DstPtr = pBuffers[ pChannelOffset + i ];
-		float		*SrcPtr = InsDat->mSmpBuf.data();
+		float		*DstPtr = (float *)pBuffers[ pChannelOffset + i ];
+		float		*SrcPtr = pInstanceData->mSmpBuf.data();
 
 		for( int j = 0 ; j < pSampleCount ; j++ )
 		{
@@ -259,11 +241,11 @@ void SignalNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChanne
 		}
 	}
 
-	InsDat->mPhase += double( pSampleCount ) / SamplesPerPhase;
+	pInstanceData->mPhase += double( pSampleCount ) / SamplesPerPhase;
 
-	InsDat->mPhase = fmod( InsDat->mPhase, 1.0 );
+	pInstanceData->mPhase = fmod( pInstanceData->mPhase, 1.0 );
 
-	InsDat->mSamplePosition += pSampleCount;
+	pInstanceData->mSamplePosition += pSampleCount;
 }
 
 void SignalNode::onContextFrame( qint64 pTimeStamp )
@@ -297,3 +279,22 @@ QWidget *SignalNode::gui()
 	return( 0 );
 }
 
+int SignalNode::audioChannels() const
+{
+	return( 1 );
+}
+
+qreal SignalNode::audioSampleRate() const
+{
+	return( 48000 );
+}
+
+fugio::AudioSampleFormat SignalNode::audioSampleFormat() const
+{
+	return( fugio::AudioSampleFormat::Format32FS );
+}
+
+qint64 SignalNode::audioLatency() const
+{
+	return( 0 );
+}

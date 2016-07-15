@@ -120,6 +120,11 @@ void LuaPlugin::luaAddPinFunction(const QUuid &pPID, const char *pName, int (*pF
 	mPinFunctions.insertMulti( pPID, luaL_Reg{ pName, pFunction } );
 }
 
+void LuaPlugin::luaAddPinGet(const QUuid &pPID, LuaInterface::luaPinGetFunc pFunction)
+{
+	mGetFunctions.insert( pPID, pFunction );
+}
+
 NodeInterface *LuaPlugin::node(lua_State *L)
 {
 	lua_pushlightuserdata( L, (void *)&NodeKey );

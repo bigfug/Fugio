@@ -6,6 +6,7 @@
 
 #include <fugio/nodecontrolbase.h>
 #include <fugio/audio/audio_producer_interface.h>
+#include <fugio/audio/audio_instance_base.h>
 
 #include "audiofilterdisplay.h"
 
@@ -36,9 +37,19 @@ public:
 
 	// InterfaceAudioProducer interface
 public:
-	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const Q_DECL_OVERRIDE;
-	virtual void *allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
-	virtual void freeAudioInstance(void *pInstanceData) Q_DECL_OVERRIDE;
+	virtual fugio::AudioInstanceBase *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
+//	virtual void audioFreeInstance(void *pInstanceData) Q_DECL_OVERRIDE;
+	virtual int audioChannels() const Q_DECL_OVERRIDE;
+	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
+	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;
+	virtual qint64 audioLatency() const Q_DECL_OVERRIDE;
+
+	virtual bool isValid( fugio::AudioInstanceBase *pInstance ) const Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pInstance )
+
+		return( true );
+	}
 
 signals:
 	void updateDisplay( const QVector<float> &pTaps );
@@ -47,17 +58,37 @@ private slots:
 	void onContextFrame( qint64 pTimeStamp );
 
 protected:
-	typedef struct AudioInstanceData
+	class AudioInstanceData : public fugio::AudioInstanceBase
 	{
-		qreal									 mSampleRate;
-		fugio::AudioSampleFormat				 mSampleFormat;
-		int										 mChannels;
+	public:
+		AudioInstanceData( QSharedPointer<fugio::AudioProducerInterface> pProducer, qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
+			: fugio::AudioInstanceBase( pProducer, pSampleRate, pSampleFormat, pChannels )
+		{
 
+		}
+
+		virtual ~AudioInstanceData( void ) {}
+
+		virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers ) Q_DECL_OVERRIDE
+		{
+			QSharedPointer<AudioFilterNode>	API = qSharedPointerCast<AudioFilterNode>( mProducer );
+
+			if( !API )
+			{
+				return;
+			}
+
+			API->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, this );
+		}
+
+	public:
 		qint64									 mAudPts;
 		qint64									 mAudSmp;
 		QVector<QVector<float>>					 mAudDat;
-		void									*mAudIns;
-	} AudioInstanceData;
+		fugio::AudioInstanceBase				*mAudIns;
+	};
+
+	void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const;
 
 	void updateTaps( void );
 

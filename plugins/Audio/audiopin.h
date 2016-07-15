@@ -18,11 +18,6 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
-	virtual QUuid uuid( void )
-	{
-		return( PID_AUDIO );
-	}
-
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
 		return( QString( "" ) );
@@ -34,27 +29,31 @@ public:
 	}
 
 	//-------------------------------------------------------------------------
-	// fugio::PinControlInterface
+	// fugio::AudioProducerInterface
 
-	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers, qint64 pLatency, void *pInstanceData ) const Q_DECL_OVERRIDE
+//	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, fugio::AudioInstanceBase *pInstanceData ) const Q_DECL_OVERRIDE
+//	{
+//		if( producer() )
+//		{
+//			producer()->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pInstanceData );
+//		}
+//	}
+
+	virtual fugio::AudioInstanceBase *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE
 	{
-		if( producer() )
-		{
-			producer()->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pLatency, pInstanceData );
-		}
+		return( producer() ? producer()->audioAllocInstance( pSampleRate, pSampleFormat, pChannels ) : nullptr );
 	}
 
-	virtual void *allocAudioInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE
-	{
-		return( producer() ? producer()->allocAudioInstance( pSampleRate, pSampleFormat, pChannels ) : nullptr );
-	}
+	virtual int audioChannels() const Q_DECL_OVERRIDE;
+	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
+	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;
+	virtual qint64 audioLatency() const Q_DECL_OVERRIDE;
 
-	virtual void freeAudioInstance( void *pInstanceData ) Q_DECL_OVERRIDE
+	virtual bool isValid( fugio::AudioInstanceBase *pInstance ) const Q_DECL_OVERRIDE
 	{
-		if( producer() )
-		{
-			producer()->freeAudioInstance( pInstanceData );
-		}
+		Q_UNUSED( pInstance )
+
+		return( true );
 	}
 
 private:

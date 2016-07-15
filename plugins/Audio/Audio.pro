@@ -11,9 +11,9 @@ TEMPLATE = lib
 CONFIG += plugin c++11
 
 CONFIG(debug,debug|release) {
-	DESTDIR = $$OUT_PWD/../../../deploy-debug-$$QMAKE_HOST.arch/plugins
+    DESTDIR = $$OUT_PWD/../../../deploy-debug-$$QMAKE_HOST.arch/plugins
 } else {
-	DESTDIR = $$OUT_PWD/../../../deploy-release-$$QMAKE_HOST.arch/plugins
+    DESTDIR = $$OUT_PWD/../../../deploy-release-$$QMAKE_HOST.arch/plugins
 }
 
 include( ../../../Fugio/FugioGlobal.pri )
@@ -30,37 +30,31 @@ SOURCES += audioplugin.cpp \
     frequencybandsnode.cpp \
     audiofilternode.cpp \
     audiofilterdisplay.cpp \
-    vcfnode.cpp
+    vcfnode.cpp \
+    mononode.cpp
 
 HEADERS += audioplugin.h\
-        ../../include/fugio/audio/uuid.h \
-	audiomixernode.h \
-    audiopin.h \
     ../../include/fugio/nodecontrolbase.h \
     ../../include/fugio/pincontrolbase.h \
+    ../../include/fugio/audio/uuid.h \
+    ../../include/fugio/audio/audio_producer_interface.h \
+    ../../include/fugio/audio/audio_sample_format.h \
+    ../../include/fugio/audio/fft_interface.h \
+    audiomixernode.h \
+    audiopin.h \
     fftpin.h \
-        ../../include/fugio/audio/audio_producer_interface.h \
-		../../include/fugio/audio/audio_generator_interface.h \
-	signalnode.h \
+    signalnode.h \
     centroidnode.h \
-        ../../include/fugio/audio/fft_interface.h \
     magnitudenode.h \
     frequencybandsnode.h \
     audiofilternode.h \
     audiofilterdisplay.h \
     vcfnode.h \
-    ../../include/fugio/audio/audio_sample_format.h
+    mononode.h \
+    ../../include/fugio/audio/audio_instance_base.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
-
-defineReplace( libChange ) {
-    return( && install_name_tool -change @executable_path/../Frameworks/$$1 @loader_path/../Frameworks/$$1 $$LIBCHANGEDEST )
-}
-
-defineReplace( qtLibChange ) {
-    return( && install_name_tool -change @rpath/$$1".framework"/Versions/5/$$1 @executable_path/../Frameworks/$$1".framework"/Versions/5/$$1 $$LIBCHANGEDEST )
-}
 
 macx {
     DEFINES += TARGET_OS_MAC
@@ -68,15 +62,13 @@ macx {
     CONFIG += lib_bundle
 
     BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
     INSTALLDEST  = $$INSTALLDIR/data/plugins
     INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
 
     DESTDIR = $$BUNDLEDIR/Contents/MacOS
     DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
-
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.7
 
     CONFIG(release,debug|release) {
         QMAKE_POST_LINK += echo
@@ -102,16 +94,16 @@ macx {
 }
 
 windows {
-	INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
+    CONFIG(release,debug|release) {
+        QMAKE_POST_LINK += echo
 
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
+        QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
-	}
+        QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
+    }
 }
 
 #------------------------------------------------------------------------------

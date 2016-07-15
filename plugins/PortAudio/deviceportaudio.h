@@ -13,11 +13,14 @@
 #include <fugio/playhead_interface.h>
 #include <fugio/node_interface.h>
 #include <fugio/audio/audio_producer_interface.h>
+#include <fugio/audio/audio_instance_base.h>
 
-class DevicePortAudio : public QObject, public fugio::PlayheadInterface
+class PortAudioOutputNode;
+
+class DevicePortAudio : public QObject, public fugio::PlayheadInterface, public fugio::AudioProducerInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::PlayheadInterface )
+	Q_INTERFACES( fugio::PlayheadInterface fugio::AudioProducerInterface )
 
 public:
 	static void deviceInitialise( void );
@@ -94,24 +97,24 @@ public:
 
 //	void setCurrentNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	void addProducer( fugio::AudioProducerInterface *pAudioProducer );
-	void remProducer( fugio::AudioProducerInterface *pAudioProducer );
+	void addOutput( PortAudioOutputNode *pOutput );
+	void remOutput( PortAudioOutputNode *pOutput );
 
 	//-------------------------------------------------------------------------
 	// fugio::PlayheadInterface
 
-	virtual void playStart( qreal )
+	virtual void playStart( qreal ) Q_DECL_OVERRIDE
 	{
 	}
 
-	virtual void playheadMove( qreal ) {}
+	virtual void playheadMove( qreal ) Q_DECL_OVERRIDE {}
 
-	virtual bool playheadPlay( qreal, qreal )
+	virtual bool playheadPlay( qreal, qreal ) Q_DECL_OVERRIDE
 	{
 		return( true );
 	}
 
-	virtual qreal latency( void ) const
+	virtual qreal latency( void ) const Q_DECL_OVERRIDE
 	{
 #if defined( PORTAUDIO_SUPPORTED )
 		return( mOutputTimeLatency );
@@ -120,11 +123,23 @@ public:
 #endif
 	}
 
-	virtual void setTimeOffset( qreal pTimeOffset );
-
-	void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, float **pBuffers ) const;
+	virtual void setTimeOffset( qreal pTimeOffset ) Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
+	// AudioProducerInterface interface
+public:
+	virtual fugio::AudioInstanceBase *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
+	virtual int audioChannels() const Q_DECL_OVERRIDE;
+	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
+	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;
+	virtual qint64 audioLatency() const Q_DECL_OVERRIDE;
+
+	virtual bool isValid( fugio::AudioInstanceBase *pInstance ) const Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pInstance )
+
+		return( true );
+	}
 
 private:
 #if defined( PORTAUDIO_SUPPORTED )
@@ -147,12 +162,12 @@ private:
 	typedef struct
 	{
 		float		**mData;
-		quint64		  mSamples;
+		qint64		  mSamples;
 		int			  mChannels;
 		qint64		  mPosition;
 	} AudioBuffer;
 
-	void audioInput( AudioBuffer &AB, const float **pData, quint64 pSampleCount, int pChannelCount, qint64 pSamplePosition );
+	void audioInput( AudioBuffer &AB, const float **pData, qint64 pSampleCount, int pChannelCount, qint64 pSamplePosition );
 
 public slots:
 
@@ -161,14 +176,39 @@ private:
 
 	static QList<QWeakPointer<DevicePortAudio>>			 mDeviceList;
 
-	typedef struct AudioInstanceData
+	class AudioInstanceData : public fugio::AudioInstanceBase
 	{
-		fugio::AudioProducerInterface		*mProducer;
-		void								*mInstance;
-	} AudioInstanceData;
+	public:
+		AudioInstanceData( QSharedPointer<fugio::AudioProducerInterface> pProducer, qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
+			: fugio::AudioInstanceBase( pProducer, pSampleRate, pSampleFormat, pChannels )
+		{
 
-	QMutex									 mProducerMutex;
-	QList<AudioInstanceData>				 mProducers;
+		}
+
+		virtual ~AudioInstanceData( void ) {}
+
+		virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers ) Q_DECL_OVERRIDE
+		{
+			QSharedPointer<DevicePortAudio>	API = qSharedPointerDynamicCast<DevicePortAudio>( mProducer );
+
+			if( !API )
+			{
+				return;
+			}
+
+			API->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, this );
+		}
+
+	public:
+		fugio::AudioInstanceBase			*mInstance;
+	};
+
+public:
+	void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const;
+
+private:
+	mutable QMutex							 mProducerMutex;
+	QList<PortAudioOutputNode *>			 mProducers;
 
 #if defined( PORTAUDIO_SUPPORTED )
 	PaDeviceIndex							 mDeviceIndex;
@@ -182,7 +222,7 @@ private:
 	PaStreamCallbackTimeInfo				 mInputTimeInfo;
 
 	qint64									 mOutputAudioOffset;
-	PaTime									 mInputAudioOffset;
+	qint64									 mInputAudioOffset;
 #endif
 
 	qreal									 mOutputSampleRate;
