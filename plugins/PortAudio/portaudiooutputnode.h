@@ -83,7 +83,7 @@ public:
 
 	// InterfaceAudioProducer interface
 public:
-	void audio(qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const;
+	void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, void *pInstanceData ) const;
 
 	virtual fugio::AudioInstanceBase *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
 //	virtual void audioFreeInstance(void *pInstanceData) Q_DECL_OVERRIDE;

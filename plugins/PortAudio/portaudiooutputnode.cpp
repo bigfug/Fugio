@@ -50,7 +50,7 @@ bool PortAudioOutputNode::initialise()
 
 	if( ( mPortAudio = DevicePortAudio::newDevice( DevIdx ) ) )
 	{
-		mPortAudio->addProducer( this );
+		mPortAudio->addOutput( this );
 	}
 
 	return( true );
@@ -77,7 +77,7 @@ bool PortAudioOutputNode::deinitialise()
 
 	if( mPortAudio )
 	{
-		mPortAudio->remProducer( this );
+		mPortAudio->remOutput( this );
 
 		mPortAudio.clear();
 	}
@@ -168,7 +168,7 @@ void PortAudioOutputNode::audioDeviceSelected( const QString &pDeviceName )
 {
 	if( mPortAudio )
 	{
-		mPortAudio->remProducer( this );
+		mPortAudio->remOutput( this );
 
 		mPortAudio.clear();
 	}
@@ -185,7 +185,7 @@ void PortAudioOutputNode::audioDeviceSelected( const QString &pDeviceName )
 
 	if( ( mPortAudio = DevicePortAudio::newDevice( DevIdx ) ) )
 	{
-		mPortAudio->addProducer( this );
+		mPortAudio->addOutput( this );
 	}
 #endif
 }
@@ -211,32 +211,28 @@ void PortAudioOutputNode::inputsUpdated( qint64 pTimeStamp )
 
 	QMutexLocker		Lock( &mProducerMutex );
 
-//	fugio::AudioProducerInterface	*IAP = input<fugio::AudioProducerInterface *>( mPinInputAudio );
+	fugio::AudioProducerInterface	*IAP = input<fugio::AudioProducerInterface *>( mPinInputAudio );
 
-//	if( IAP != mProducer && mProducer )
-//	{
-////		mProducer->audioFreeInstance( mInstance );
+	if( ( !IAP && mInstance ) || ( IAP && !IAP->isValid( mInstance ) ) )
+	{
+		delete mInstance;
 
-//		mProducer = nullptr;
-
-//		mInstance = nullptr;
-//	}
+		mInstance = nullptr;
+	}
 
 	if( !mPinInputAudio->isConnectedToActiveNode() || !mPinInputAudio->connectedNode()->isInitialised() )
 	{
 		return;
 	}
 
-//	if( IAP && !mProducer )
-//	{
-//		qreal						SmpRte = mPortAudio ? mPortAudio->outputSampleRate() : 0;
-//		fugio::AudioSampleFormat	SmpFmt = fugio::AudioSampleFormat::Format32FS;
-//		int							ChnCnt = mPortAudio ? mPortAudio->outputChannelCount() : 0;
+	if( IAP && !mInstance )
+	{
+		qreal						SmpRte = mPortAudio ? mPortAudio->outputSampleRate() : 0;
+		fugio::AudioSampleFormat	SmpFmt = fugio::AudioSampleFormat::Format32FS;
+		int							ChnCnt = mPortAudio ? mPortAudio->outputChannelCount() : 0;
 
-//		mProducer = IAP;
-
-//		mInstance = IAP->audioAllocInstance( SmpRte, SmpFmt, ChnCnt );
-//	}
+		mInstance = IAP->audioAllocInstance( SmpRte, SmpFmt, ChnCnt );
+	}
 }
 
 QWidget *PortAudioOutputNode::gui()

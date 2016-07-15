@@ -15,6 +15,8 @@
 #include <fugio/audio/audio_producer_interface.h>
 #include <fugio/audio/audio_instance_base.h>
 
+class PortAudioOutputNode;
+
 class DevicePortAudio : public QObject, public fugio::PlayheadInterface, public fugio::AudioProducerInterface
 {
 	Q_OBJECT
@@ -95,8 +97,8 @@ public:
 
 //	void setCurrentNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	void addProducer( fugio::AudioProducerInterface *pAudioProducer );
-	void remProducer( fugio::AudioProducerInterface *pAudioProducer );
+	void addOutput( PortAudioOutputNode *pOutput );
+	void remOutput( PortAudioOutputNode *pOutput );
 
 	//-------------------------------------------------------------------------
 	// fugio::PlayheadInterface
@@ -127,7 +129,6 @@ public:
 	// AudioProducerInterface interface
 public:
 	virtual fugio::AudioInstanceBase *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
-//	virtual void audioFreeInstance( void *pInstanceData ) Q_DECL_OVERRIDE;
 	virtual int audioChannels() const Q_DECL_OVERRIDE;
 	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
 	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;
@@ -207,7 +208,7 @@ public:
 
 private:
 	mutable QMutex							 mProducerMutex;
-	QList<AudioInstanceData>				 mProducers;
+	QList<PortAudioOutputNode *>			 mProducers;
 
 #if defined( PORTAUDIO_SUPPORTED )
 	PaDeviceIndex							 mDeviceIndex;

@@ -504,9 +504,9 @@ int DevicePortAudio::streamCallbackOutput( void *output, unsigned long frameCoun
 
 	mProducerMutex.lock();
 
-	for( const AudioInstanceData &AID : mProducers )
+	for( PortAudioOutputNode *PAO : mProducers )
 	{
-		AID.mInstance->audio( mOutputAudioOffset, frameCount, 0, mOutputChannelCount, (void **)AudioBuffers );
+		PAO->audio( mOutputAudioOffset, frameCount, 0, mOutputChannelCount, (void **)AudioBuffers, nullptr );
 	}
 
 	mProducerMutex.unlock();
@@ -652,39 +652,20 @@ qreal DevicePortAudio::outputSampleRate() const
 	return( mOutputSampleRate > 0 ? mOutputSampleRate : QSettings().value( "audio/output-sample-rate", double( AUDIO_DEFAULT_SAMPLE_RATE ) ).toDouble() );
 }
 
-void DevicePortAudio::addProducer( AudioProducerInterface *pAudioProducer )
-{
-//	AudioInstanceData		AID( mOutputSampleRate, fugio::AudioSampleFormat::Format32FS, mOutputChannelCount );
-
-////	AID.mProducer = pAudioProducer;
-//	AID.mInstance = pAudioProducer->audioAllocInstance( mOutputSampleRate, fugio::AudioSampleFormat::Format32FS, mOutputChannelCount );
-
-//	mProducerMutex.lock();
-
-//	mProducers.append( AID );
-
-//	mProducerMutex.unlock();
-}
-
-void DevicePortAudio::remProducer( AudioProducerInterface *pAudioProducer )
+void DevicePortAudio::addOutput( PortAudioOutputNode *pOutput )
 {
 	mProducerMutex.lock();
 
-	for( int i = 0 ; i < mProducers.size() ; i++ )
-	{
-		AudioInstanceData		AID = mProducers.at( i );
+	mProducers.append( pOutput );
 
-//		if( AID.mProducer != pAudioProducer )
-//		{
-//			continue;
-//		}
+	mProducerMutex.unlock();
+}
 
-//		AID.mProducer->audioFreeInstance( AID.mInstance );
+void DevicePortAudio::remOutput( PortAudioOutputNode *pOutput )
+{
+	mProducerMutex.lock();
 
-		mProducers.removeAt( i );
-
-		break;
-	}
+	mProducers.removeAll( pOutput );
 
 	mProducerMutex.unlock();
 }
