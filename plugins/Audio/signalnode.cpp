@@ -197,16 +197,6 @@ fugio::AudioInstanceBase *SignalNode::audioAllocInstance( qreal pSampleRate, fug
 	return( InsDat );
 }
 
-//void SignalNode::audioFreeInstance( void *pInstanceData )
-//{
-//	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
-
-//	if( InsDat )
-//	{
-//		delete InsDat;
-//	}
-//}
-
 void SignalNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const
 {
 	if( mFrequency <= 0.0 || !pInstanceData || mVolume <= 0 )

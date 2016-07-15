@@ -148,22 +148,6 @@ fugio::AudioInstanceBase *PortAudioOutputNode::audioAllocInstance( qreal pSample
 	return( nullptr );
 }
 
-//void PortAudioOutputNode::audioFreeInstance( void *pInstanceData )
-//{
-//	Q_UNUSED( pInstanceData )
-
-//	QMutexLocker		Lock( &mProducerMutex );
-
-//	if( mProducer )
-//	{
-//		mProducer->audioFreeInstance( mInstance );
-
-//		mProducer = nullptr;
-
-//		mInstance = nullptr;
-//	}
-//}
-
 void PortAudioOutputNode::audioDeviceSelected( const QString &pDeviceName )
 {
 	if( mPortAudio )
