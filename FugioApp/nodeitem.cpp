@@ -1198,7 +1198,7 @@ void NodeItem::menuHelp()
 
 	if( !HelpUrl.isEmpty() )
 	{
-		QDesktopServices::openUrl( QUrl( HelpUrl ) );
+		QDesktopServices::openUrl( QUrl( HelpUrl.append( "?utm_source=fugio&utm_medium=node-help" ) ) );
 	}
 }
 
