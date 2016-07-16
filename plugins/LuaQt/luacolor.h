@@ -6,6 +6,7 @@
 #endif
 
 #include <QColor>
+#include <QUuid>
 
 class LuaColor
 {
@@ -25,6 +26,8 @@ public:
 	static int luaOpen( lua_State *L );
 
 	static int luaNew( lua_State *L );
+
+	static int luaPinGet( const QUuid &pPinLocalId, lua_State *L );
 
 	static int pushcolor( lua_State *L, const QColor &pColor )
 	{
