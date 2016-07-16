@@ -65,8 +65,6 @@ public:
 	virtual QStringList availableInputPins( void ) const = 0;
 	virtual QList<AvailablePinEntry> availableOutputPins( void ) const = 0;
 
-	virtual QString helpUrl( void ) const = 0;
-
 	virtual QList<QUuid> pinAddTypesInput( void ) const = 0;
 	virtual QList<QUuid> pinAddTypesOutput( void ) const = 0;
 

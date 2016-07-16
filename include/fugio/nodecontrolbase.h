@@ -159,11 +159,6 @@ public:
 		return( QList<NodeControlInterface::AvailablePinEntry>() );
 	}
 
-	virtual QString helpUrl( void ) const Q_DECL_OVERRIDE
-	{
-		return( QString() );
-	}
-
 	virtual QList<QUuid> pinAddTypesInput( void ) const Q_DECL_OVERRIDE
 	{
 		return( QList<QUuid>() );

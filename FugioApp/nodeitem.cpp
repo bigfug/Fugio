@@ -306,11 +306,33 @@ QVariant NodeItem::itemChange( QGraphicsItem::GraphicsItemChange pChange, const 
 	return QGraphicsItem::itemChange( pChange, pValue );
 }
 
+QString NodeItem::helpUrl( QSharedPointer<fugio::NodeInterface> NODE )
+{
+	QString		HelpUrl;
+
+	if( NODE && NODE->hasControl() )
+	{
+		const QMetaObject	*DMO = NODE->control()->qobject()->metaObject();
+
+		if( DMO )
+		{
+			int			 HelpClassInfoIndex = DMO->indexOfClassInfo( "URL" );
+
+			if( HelpClassInfoIndex != -1 )
+			{
+				HelpUrl = QString( DMO->classInfo( HelpClassInfoIndex ).value() );
+			}
+		}
+	}
+
+	return( HelpUrl );
+}
+
 void NodeItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 {
 	QSharedPointer<fugio::NodeInterface>		NODE = mContextView->context()->findNode( mNodeId );
 
-	QString		HelpUrl = NODE ? NODE->control()->helpUrl() : QString();
+	QString		HelpUrl = helpUrl( NODE );
 
 	QMenu		 Menu;
 	QAction		*Action;
@@ -1172,7 +1194,12 @@ void NodeItem::menuDelete()
 
 void NodeItem::menuHelp()
 {
-	QDesktopServices::openUrl( QUrl( mContextView->context()->findNode( mNodeId )->control()->helpUrl() ) );
+	QString		HelpUrl = helpUrl( mContextView->context()->findNode( mNodeId ) );
+
+	if( !HelpUrl.isEmpty() )
+	{
+		QDesktopServices::openUrl( QUrl( HelpUrl ) );
+	}
 }
 
 void NodeItem::menuUngroup()

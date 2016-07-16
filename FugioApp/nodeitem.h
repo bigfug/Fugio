@@ -150,6 +150,8 @@ protected:
 
 	static bool comparePinPair( const PinPair &P1, const PinPair &P2 );
 
+	static QString helpUrl( QSharedPointer<fugio::NodeInterface> NODE );
+
 protected slots:
 	void pinRemoved( QSharedPointer<fugio::NodeInterface> pNode, QSharedPointer<fugio::PinInterface> pPin );
 
