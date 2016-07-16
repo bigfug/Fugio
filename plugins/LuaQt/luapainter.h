@@ -56,6 +56,7 @@ private:
 	static int luaDrawEllipse( lua_State *L );
 	static int luaDrawImage( lua_State *L );
 	static int luaDrawLine( lua_State *L );
+	static int luaDrawPoint( lua_State *L );
 	static int luaDrawRect( lua_State *L );
 	static int luaDrawText( lua_State *L );
 

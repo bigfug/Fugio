@@ -40,6 +40,7 @@ const luaL_Reg LuaPainter::mLuaMethods[] =
 	{ "drawEllipse",		LuaPainter::luaDrawEllipse },
 	{ "drawImage",			LuaPainter::luaDrawImage },
 	{ "drawLine",			LuaPainter::luaDrawLine },
+	{ "drawPoint",			LuaPainter::luaDrawPoint },
 	{ "drawRect",			LuaPainter::luaDrawRect },
 	{ "drawText",			LuaPainter::luaDrawText },
 	{ "eraseRect",			LuaPainter::luaEraseRect },
@@ -503,6 +504,28 @@ int LuaPainter::luaDrawLine( lua_State *L )
 	int			y2 = luaL_checknumber( L, 5 );
 
 	PainterData->mPainter->drawLine( x1, y1, x2, y2 );
+
+	return( 0 );
+}
+
+int LuaPainter::luaDrawPoint(lua_State *L)
+{
+	LuaPainterData		*PainterData = checkactivepainter( L );
+	QPointF				 P;
+
+	if( LuaPointF::isPointF( L, 2 ) )
+	{
+		P = LuaPointF::checkpointf( L, 2 );
+	}
+	else
+	{
+		float		x = luaL_checknumber( L, 2 );
+		float		y = luaL_checknumber( L, 3 );
+
+		P = QPointF( x, y );
+	}
+
+	PainterData->mPainter->drawPoint( P );
 
 	return( 0 );
 }

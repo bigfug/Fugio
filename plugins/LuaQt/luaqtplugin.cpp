@@ -8,6 +8,7 @@
 #include <fugio/lua/uuid.h>
 #include <fugio/image/uuid.h>
 #include <fugio/luaqt/uuid.h>
+#include <fugio/colour/uuid.h>
 
 #include <fugio/image/image_interface.h>
 
@@ -97,6 +98,7 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaRegisterExtension( LuaSizeF::luaOpen );
 	LUA->luaRegisterExtension( LuaRectF::luaOpen );
 
+	LUA->luaAddPinGet( PID_COLOUR, LuaColor::luaPinGet );
 	LUA->luaAddPinGet( PID_IMAGE, LuaImage::luaPinGet );
 
 	return( INIT_OK );
