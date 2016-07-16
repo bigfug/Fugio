@@ -19,7 +19,7 @@ FadeNode::FadeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mValOutput = pinOutput<fugio::VariantInterface *>( "Number", mPinOutput, PID_FLOAT );
 
-	mPinOutput->setAutoRename( true );
+	mPinInput->setAutoRename( true );
 
 	mNode->pairPins( mPinInput, mPinOutput );
 

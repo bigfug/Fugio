@@ -102,3 +102,8 @@ bool FrameDelayNode::deinitialise()
 
 	return( NodeControlBase::deinitialise() );
 }
+
+bool FrameDelayNode::pinShouldAutoRename( fugio::PinInterface *pPin ) const
+{
+	return( pPin->direction() == PIN_INPUT );
+}
