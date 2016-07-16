@@ -15,6 +15,8 @@ public:
 	explicit CmdNewContext( void )
 	{
 		setText( QObject::tr( "New Context" ) );
+
+		App::incrementStatistic( "context-new" );
 	}
 
 	virtual ~CmdNewContext( void )

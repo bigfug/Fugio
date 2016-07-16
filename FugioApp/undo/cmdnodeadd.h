@@ -11,6 +11,7 @@
 #include "app.h"
 #include "contextprivate.h"
 #include "contextwidgetprivate.h"
+#include <fugio/utils.h>
 
 class CmdNodeAdd : public QUndoCommand
 {
@@ -22,7 +23,9 @@ public:
 
 		mContext = mContextWidget->context();
 
-		gApp->incrementStatistic( "node-added" );
+		App::incrementStatistic( "node-added" );
+
+		App::recordData( "node-add",fugio::utils::uuid2string( mUuid ) );
 	}
 
 	virtual ~CmdNodeAdd( void )
