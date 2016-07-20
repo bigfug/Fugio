@@ -63,7 +63,7 @@ public slots:
 
 	void addFileToRecent( const QString &pFileName );
 
-	QString patchOpenDialog( void );
+	QStringList patchOpenDialog( void );
 
 private:
 	virtual void closeEvent( QCloseEvent *pEvent ) Q_DECL_OVERRIDE;

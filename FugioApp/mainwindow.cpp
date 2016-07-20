@@ -409,7 +409,7 @@ ContextSubWindow *MainWindow::findContextWindow( QSharedPointer<fugio::ContextIn
 }
 
 
-QString MainWindow::patchOpenDialog()
+QStringList MainWindow::patchOpenDialog()
 {
 	const QString		DatDir = QStandardPaths::writableLocation( QStandardPaths::DocumentsLocation );
 
@@ -417,25 +417,28 @@ QString MainWindow::patchOpenDialog()
 
 	QString				PatchDirectory = Settings.value( "patch-directory", QDir( DatDir ).absoluteFilePath( "Fugio" ) ).toString();
 
-	QString				FileName = QFileDialog::getOpenFileName( this, tr( "Open Patch" ), PatchDirectory, tr( "Fugio Patches (*.fug)" ) );
+	QStringList			FileList = QFileDialog::getOpenFileNames( this, tr( "Open Patch" ), PatchDirectory, tr( "Fugio Patches (*.fug)" ) );
 
-	if( !QFile( FileName ).exists() )
+	if( !FileList.isEmpty() )
 	{
-		return( QString() );
+		QString		FirstFileName = FileList.first();
+
+		if( QFile( FirstFileName ).exists() )
+		{
+			PatchDirectory = QFileInfo( FirstFileName ).absoluteDir().path();
+
+			Settings.setValue( "patch-directory", PatchDirectory );
+		}
 	}
 
-	PatchDirectory = QFileInfo( FileName ).absoluteDir().path();
-
-	Settings.setValue( "patch-directory", PatchDirectory );
-
-	return( FileName );
+	return( FileList );
 }
 
 void MainWindow::on_actionOpen_triggered()
 {
-	QString		FileName = patchOpenDialog();
+	QStringList		FileList = patchOpenDialog();
 
-	if( !FileName.isEmpty() )
+	for( const QString &FileName : FileList )
 	{
 		loadPatch( FileName );
 
