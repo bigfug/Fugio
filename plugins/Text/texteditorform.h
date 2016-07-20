@@ -6,7 +6,7 @@
 #include <fugio/text/syntax_highlighter_interface.h>
 
 namespace Ui {
-	class TextEditorForm;
+class TextEditorForm;
 }
 
 class TextEditorForm : public QWidget
@@ -17,7 +17,7 @@ public:
 	explicit TextEditorForm( QWidget *parent = 0 );
 
 	virtual ~TextEditorForm( void );
-	
+
 	QPlainTextEdit *textEdit( void );
 
 	void setHighlighter( fugio::SyntaxHighlighterInterface *pHighlighter );
@@ -31,19 +31,20 @@ public slots:
 	void updateNodeName( const QString &pName );
 
 private slots:
-	void on_mButtonUpdate_clicked();
+	void updateClicked();
 
-	void on_mButtonLoad_clicked();
+	void textOpen();
 
-	void on_mButtonSave_clicked();
+	void textSave();
 
-	void on_mButtonSaveAs_clicked();
+	void textSaveAs();
 
 	void cursorPositionChanged( void );
 
 private:
-	Ui::TextEditorForm				*ui;
+	Ui::TextEditorForm						*ui;
 	fugio::SyntaxHighlighterInterface		*mHighlighter;
+	QString									 mFileName;
 };
 
 #endif // TEXTEDITORFORM_H
