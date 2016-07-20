@@ -158,6 +158,8 @@ private slots:
 
 	void on_actionCheck_for_updates_triggered();
 
+	void on_actionFacebook_Users_Group_triggered();
+
 private:
 	Ui::MainWindow								*ui;
 

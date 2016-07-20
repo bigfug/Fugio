@@ -158,6 +158,7 @@
     <addaction name="actionData_Directory"/>
     <addaction name="separator"/>
     <addaction name="actionFacebook_Page"/>
+    <addaction name="actionFacebook_Users_Group"/>
     <addaction name="separator"/>
     <addaction name="actionAbout_Fugio"/>
     <addaction name="actionAbout_Qt"/>
@@ -658,6 +659,11 @@
   <action name="actionCheck_for_updates">
    <property name="text">
     <string>Check for updates...</string>
+   </property>
+  </action>
+  <action name="actionFacebook_Users_Group">
+   <property name="text">
+    <string>Facebook Users Group...</string>
    </property>
   </action>
  </widget>
