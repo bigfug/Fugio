@@ -270,16 +270,23 @@ void TextEditorNode::onTextPinUpdated()
 
 void TextEditorNode::contextFrameStart()
 {
-	fugio::ContextWidgetInterface	*ICW = qobject_cast<fugio::ContextWidgetInterface *>( mNode->context()->findInterface( IID_CONTEXT_WIDGET ) );
-
-	if( ICW )
+	if( mTextEdit->textEdit()->document()->isModified() )
 	{
-		CmdTextEditorUpdate		*CMD = new CmdTextEditorUpdate( mPinString, mTextEdit->textEdit()->document()->toPlainText() );
+		fugio::ContextWidgetInterface	*ICW = qobject_cast<fugio::ContextWidgetInterface *>( mNode->context()->findInterface( IID_CONTEXT_WIDGET ) );
 
-		ICW->undoStack()->push( CMD );
+		if( ICW )
+		{
+			CmdTextEditorUpdate		*CMD = new CmdTextEditorUpdate( mPinString, mTextEdit->textEdit()->document()->toPlainText() );
+
+			ICW->undoStack()->push( CMD );
+		}
+
+		emit modified( false );
 	}
-
-	emit modified( false );
+	else
+	{
+		pinUpdated( mPinString );
+	}
 
 	// disconnect the frame start again
 
