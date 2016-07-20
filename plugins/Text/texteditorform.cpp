@@ -44,7 +44,7 @@ TextEditorForm::TextEditorForm(QWidget *parent) :
 
 	QToolButton		*ButtonUpdate = new QToolButton( ToolBar );
 
-	ButtonUpdate->setText( tr( "Update" ) );
+	ButtonUpdate->setText( tr( "&Update" ) );
 
 	ToolBar->addWidget( ButtonUpdate );
 
