@@ -23,6 +23,7 @@
 #include "luafontmetrics.h"
 #include "luagradient.h"
 #include "luaimage.h"
+#include "luatransform.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
@@ -52,6 +53,7 @@ const luaL_Reg LuaQtPlugin::mLuaFunctions[] =
 	{ "point", LuaPointF::luaNew },
 	{ "rect", LuaRectF::luaNew },
 	{ "size", LuaSizeF::luaNew },
+	{ "transform", LuaTransform::luaNew },
 	{ 0, 0 }
 };
 
@@ -96,6 +98,7 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaRegisterExtension( LuaPen::luaOpen );
 	LUA->luaRegisterExtension( LuaPointF::luaOpen );
 	LUA->luaRegisterExtension( LuaSizeF::luaOpen );
+	LUA->luaRegisterExtension( LuaTransform::luaOpen );
 	LUA->luaRegisterExtension( LuaRectF::luaOpen );
 
 	LUA->luaAddPinGet( PID_COLOUR, LuaColor::luaPinGet );

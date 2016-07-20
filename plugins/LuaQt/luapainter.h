@@ -62,6 +62,14 @@ private:
 
 	static int luaEraseRect( lua_State *L );
 
+	static int luaResetTransform( lua_State *L );
+	static int luaRotate( lua_State *L );
+	static int luaScale( lua_State *L );
+	static int luaSetTransform( lua_State *L );
+	static int luaShear( lua_State *L );
+	static int luaTransform( lua_State *L );
+	static int luaTranslate( lua_State *L );
+
 private:
 	static LuaPainterData *checkactivepainter( lua_State *L, int i = 1 );
 
