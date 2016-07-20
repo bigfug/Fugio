@@ -346,7 +346,13 @@ void NodeItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 
 	if( ( Action = Menu.addAction( tr( "Rename..." ), this, SLOT(menuRename()) ) ) && mNodeGui )
 	{
+		// Under 5.6.x renaming nodes with GUI's caused very odd position
+		// jumping when the user renamed a node, then attempted to drag it
+		// This seems to be fixed in 5.7.0
+
+#if ( QT_VERSION < QT_VERSION_CHECK( 5, 7, 0 ) )
 		Action->setEnabled( false );
+#endif
 	}
 
 	Menu.addAction( tr( "Set Colour..." ), this, SLOT(menuSetColour()) );
