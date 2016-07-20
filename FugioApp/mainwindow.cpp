@@ -1076,7 +1076,7 @@ void MainWindow::on_actionFacebook_Page_triggered()
 
 void MainWindow::on_actionFacebook_Users_Group_triggered()
 {
-	QDesktopServices::openUrl( QUrl( "https://www.facebook.com/groups/1759162657687723/1759163291020993" ) );
+	QDesktopServices::openUrl( QUrl( "https://www.facebook.com/groups/fugio/" ) );
 }
 
 void MainWindow::fugioUrl(const QUrl &pUrl)
