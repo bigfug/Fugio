@@ -61,29 +61,46 @@ void LedNode::inputsUpdated( qint64 pTimeStamp )
 
 		if( V )
 		{
-			if( V->variant().type() == QVariant::Bool )
+			switch( QMetaType::Type( V->variant().type() ) )
 			{
-				mLedVal = V->variant().toBool() ? 1.0 : 0.0;
+				case QMetaType::Bool:
+					{
+						mLedVal = V->variant().toBool() ? 1.0 : 0.0;
 
-				mLastTime = pTimeStamp;
+						mLastTime = pTimeStamp;
 
-				mLedMode = BOOLEAN;
-			}
-			else
-			{
-				bool	ValChk;
-				double	NewVal = V->variant().toDouble( &ValChk );
+						mLedMode = BOOLEAN;
+					}
+					break;
 
-				if( ValChk )
-				{
-					NewVal = qBound( 0.0, NewVal, 1.0 );
+				case QMetaType::Float:
+				case QMetaType::Double:
+					{
+						bool	ValChk;
+						double	NewVal = V->variant().toDouble( &ValChk );
 
-					mLedTgt = NewVal;
+						if( ValChk )
+						{
+							NewVal = qBound( 0.0, NewVal, 1.0 );
 
-					mLastTime = pTimeStamp;
+							mLedTgt = NewVal;
 
-					mLedMode = INTERPOLATE;
-				}
+							mLastTime = pTimeStamp;
+
+							mLedMode = INTERPOLATE;
+						}
+					}
+					break;
+
+				default:
+					{
+						mLedVal = 1.0;
+
+						mLastTime = pTimeStamp;
+
+						mLedMode = FADE;
+					}
+					break;
 			}
 		}
 		else
