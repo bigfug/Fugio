@@ -97,6 +97,8 @@ public slots:
 
 	void saveRecovery( void );
 
+	void setWindowTitleFromFileName( const QString &pFileName );
+
 private slots:
     void on_mButtonPlay_clicked();
 

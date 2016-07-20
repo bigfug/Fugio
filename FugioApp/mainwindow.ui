@@ -45,7 +45,7 @@
        </brush>
       </property>
       <property name="viewMode">
-       <enum>QMdiArea::SubWindowView</enum>
+       <enum>QMdiArea::TabbedView</enum>
       </property>
       <property name="documentMode">
        <bool>true</bool>
@@ -66,7 +66,7 @@
      <x>0</x>
      <y>0</y>
      <width>920</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

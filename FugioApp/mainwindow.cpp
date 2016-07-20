@@ -481,8 +481,6 @@ void MainWindow::contextAdded( QSharedPointer<fugio::ContextInterface> pContext 
 
 	connect( CV, SIGNAL(contextFilenameChanged(QString)), this, SLOT(addFileToRecent(QString)) );
 
-	connect( CV, SIGNAL(contextFilenameChanged(QString)), subWindow1, SLOT(setWindowTitle(QString)) );
-
 	QTimer::singleShot( 500, ui->mStyleSheet, SLOT(stylesApply()) );
 }
 
