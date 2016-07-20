@@ -283,10 +283,17 @@ int main(int argc, char *argv[])
 			WND->loadPatch( PatchName );
 		}
 
+		// check for recovery files
+
 		if( PBG->contexts().isEmpty() )
 		{
 			WND->checkRecoveryFiles();
+		}
 
+		// prompt user for patch
+
+		if( PBG->contexts().isEmpty() )
+		{
 			WND->promptUserForPatch();
 		}
 
