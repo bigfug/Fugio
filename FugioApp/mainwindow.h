@@ -160,6 +160,8 @@ private slots:
 
 	void on_actionFacebook_Users_Group_triggered();
 
+	void on_actionSave_all_triggered();
+
 private:
 	Ui::MainWindow								*ui;
 

@@ -1349,3 +1349,24 @@ void MainWindow::menuAddEntry( fugio::MenuId pMenuId, QString pEntry, QObject *p
 			break;
 	}
 }
+
+void MainWindow::on_actionSave_all_triggered()
+{
+	for( QSharedPointer<fugio::ContextInterface> Context : gApp->global().contexts() )
+	{
+		ContextSubWindow	*SW = findContextWindow( Context );
+
+		if( SW )
+		{
+			ContextWidgetPrivate	*CW = SW->contextWidget();
+
+			if( !CW->undoStack()->isClean() )
+			{
+				ui->mWorkArea->setActiveSubWindow( SW );
+
+				CW->userSave();
+			}
+		}
+	}
+
+}
