@@ -67,7 +67,7 @@ macx {
         QMAKE_POST_LINK += $$qtLibChange( QtGui )
         QMAKE_POST_LINK += $$qtLibChange( QtCore )
 
-        QMAKE_POST_LINK += && install_name_tool -change /usr/local/opt/lua/lib/liblua.5.2.dylib liblua.5.2.dylib $$LIBCHANGEDEST
+        QMAKE_POST_LINK += && install_name_tool -change /usr/local/lib/liblua.5.2.dylib liblua.5.2.dylib $$LIBCHANGEDEST
 
         QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
@@ -116,7 +116,7 @@ win32:exists( $$(LIBS)/Lua-5.3.2 ) {
 macx:exists( /usr/local/include/lua.hpp ) {
     INCLUDEPATH += /usr/local/include
 
-    LIBS += -L/usr/local/lib -llua
+    LIBS += -L/usr/local/lib -llua.5.2
 
     DEFINES += LUA_PLUGIN_SUPPORTED
 }
@@ -130,7 +130,7 @@ unix:!macx:exists( /usr/include/lua5.3/lua.h ) {
 }
 
 !contains( DEFINES, LUA_PLUGIN_SUPPORTED ) {
-        warning( "Lua not supported" )
+    warning( "Lua not supported" )
 }
 
 #------------------------------------------------------------------------------
