@@ -115,9 +115,9 @@ win32 {
 }
 
 macx {
-    INCLUDEPATH += /opt/local/include
+    INCLUDEPATH += /usr/local/include
 
-    LIBS += -L/opt/local/lib -lfftw3f
+    LIBS += -L/usr/local/lib -lfftw3f
 
     DEFINES += FFTW_PLUGIN_SUPPORTED
 }
