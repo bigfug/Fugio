@@ -1335,7 +1335,7 @@ void MainWindow::on_actionCheck_for_updates_triggered()
 	QProcess::startDetached( "maintenancetool.exe", PrcArg, AppDir.absolutePath() );
 #elif defined( Q_OS_LINUX )
 #else
-#error No Update Process Defined
+#warning No Update Process Defined
 #endif
 }
 
