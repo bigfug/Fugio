@@ -79,8 +79,6 @@ public:
 
 	void layoutPins( void );
 
-	void updateGui( void );
-
 	PinItem *findPinInput( QSharedPointer<fugio::PinInterface> pPin );
 
 	PinItem *findPinOutput( QSharedPointer<fugio::PinInterface> pPin );
@@ -122,6 +120,8 @@ public slots:
 	void setName( const QString &pName );
 
 	void moveStarted( void );
+
+	void updateGui( void );
 
 protected:
 	typedef QPair<QGraphicsSimpleTextItem *, PinItem *>		PinPair;

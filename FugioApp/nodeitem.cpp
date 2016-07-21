@@ -788,6 +788,13 @@ void NodeItem::updateGui()
 
 	if( NODE )
 	{
+		if( NODE->status() == fugio::NodeInterface::Initialising )
+		{
+			QTimer::singleShot( 100, this, SLOT(updateGui()) );
+
+			return;
+		}
+
 		if( NODE->control() )
 		{
 			QWidget		*NodeGui = NODE->control()->gui();
