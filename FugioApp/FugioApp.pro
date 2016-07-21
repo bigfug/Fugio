@@ -290,8 +290,8 @@ unix:!macx {
 }
 
 win32 {
-    LIBS += -L$$(LIBS)/ffmpeg-2.8.5-32/lib
-    LIBS += -L$$(LIBS)/ffmpeg-2.8.5-32/bin
+    LIBS += -L$$(LIBS)/ffmpeg-3.0.1-32/lib
+    LIBS += -L$$(LIBS)/ffmpeg-3.0.1-32/bin
 }
 
 macx {
