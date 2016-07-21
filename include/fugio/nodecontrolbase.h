@@ -301,6 +301,54 @@ public:
 		return( qobject_cast<T>( pPin->connectedPin()->control()->qobject() ) );
 	}
 
+	template <class T> QList<T> outputs( QSharedPointer<fugio::PinInterface> &pPin )
+	{
+		QList<T>		CtlLst;
+
+		for( QSharedPointer<fugio::PinInterface> P : pPin->connectedPins() )
+		{
+			if( !P->hasControl() )
+			{
+				continue;
+			}
+
+			T PinCtl = qobject_cast<T>( P->control()->qobject() );
+
+			if( !PinCtl )
+			{
+				continue;
+			}
+
+			CtlLst << PinCtl;
+		}
+
+		return( CtlLst );
+	}
+
+	template <class T> T outputs( const QSharedPointer<fugio::PinInterface> &pPin ) const
+	{
+		QList<T>		CtlLst;
+
+		for( QSharedPointer<fugio::PinInterface> P : pPin->connectedPins() )
+		{
+			if( !P->hasControl() )
+			{
+				continue;
+			}
+
+			T PinCtl = qobject_cast<T>( P->control()->qobject() );
+
+			if( !PinCtl )
+			{
+				continue;
+			}
+
+			CtlLst << PinCtl;
+		}
+
+		return( CtlLst );
+	}
+
 	//-------------------------------------------------------------------------
 	// Helper methods for accessing fugio::VariantInterface based connected pins
 
