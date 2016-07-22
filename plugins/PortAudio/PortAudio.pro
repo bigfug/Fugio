@@ -33,7 +33,7 @@ HEADERS += \
     ../../include/fugio/nodecontrolbase.h \
     deviceportaudio.h \
     portaudioinputnode.h \
-	portaudioplugin.h
+    portaudioplugin.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -44,7 +44,7 @@ macx {
     CONFIG += lib_bundle
 
     BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
     INSTALLDEST  = $$INSTALLDIR/data/plugins
     INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
@@ -121,8 +121,8 @@ windows {
 
 macx:exists( /usr/local/include/portaudio.h ) {
     INCLUDEPATH += /usr/local/include
-    LIBS += /usr/local/lib/libportaudio.a
-    LIBS += -framework Carbon -framework AudioUnit -framework AudioToolbox -framework CoreAudio
+    LIBS += -L/usr/local/lib -lportaudio
+#    LIBS += -framework Carbon -framework AudioUnit -framework AudioToolbox -framework CoreAudio
     DEFINES += PORTAUDIO_SUPPORTED
 }
 
