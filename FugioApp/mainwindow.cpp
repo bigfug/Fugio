@@ -885,15 +885,6 @@ void MainWindow::updateRecentFileList( void )
 		RecentFiles << RecentFile;
 	}
 
-	if( RecentFiles.isEmpty() )
-	{
-		ui->menuRecent->setEnabled( false );
-
-		return;
-	}
-
-	ui->menuRecent->setEnabled( true );
-
 	for( int i = 0 ; i < RecentActions.size() ; i++ )
 	{
 		if( i >= RecentFiles.size() )
