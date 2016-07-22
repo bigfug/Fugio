@@ -31,9 +31,9 @@ CONFIG(debug,debug|release) {
 }
 
 SOURCES += main.cpp\
-	mainwindow.cpp \
+    mainwindow.cpp \
     app.cpp \
-	linkitem.cpp \
+    linkitem.cpp \
     contextview.cpp \
     nodeitem.cpp \
     pinitem.cpp \
@@ -52,7 +52,7 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h \
     app.h \
-	linkitem.h \
+    linkitem.h \
     contextview.h \
     nodeitem.h \
     pinitem.h \
@@ -147,7 +147,7 @@ macx {
     CONFIG(release,debug|release) {
         QMAKE_POST_LINK += install_name_tool -change libfugio.1.dylib @executable_path/../../../libfugio.1.dylib $$APP_DIR/Contents/MacOS/Fugio
 
-        QMAKE_POST_LINK += && macdeployqt $$APP_DIR
+        QMAKE_POST_LINK += && macdeployqt $$APP_DIR -always-overwrite
 
         QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$APP_DIR ) CFBundleVersion \"$$FUGIO_VERSION\"
         QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$APP_DIR ) CFBundleGetInfoString \"$$FUGIO_VERSION\"
@@ -205,7 +205,7 @@ windows {
 
         QMAKE_POST_LINK += & copy /V /Y $$shell_path( $(QTDIR)/plugins/platforms/qwindows.dll ) $$shell_path( $$INSTALLDIR/data/platforms )
 
-		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/icu*.dll ) $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) $$shell_path( $(QTDIR)/bin/Qt5Core.dll ) $$shell_path( $(QTDIR)/bin/Qt5Gui.dll ) $$shell_path( $(QTDIR)/bin/Qt5Widgets.dll ) $$shell_path( $(QTDIR)/bin/Qt5Network.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
+        QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/icu*.dll ) $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) $$shell_path( $(QTDIR)/bin/Qt5Core.dll ) $$shell_path( $(QTDIR)/bin/Qt5Gui.dll ) $$shell_path( $(QTDIR)/bin/Qt5Widgets.dll ) $$shell_path( $(QTDIR)/bin/Qt5Network.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
     }
 }
 
@@ -241,6 +241,13 @@ else:unix: LIBS += -L$$DESTDIR -lfugio
 
 INCLUDEPATH += $$PWD/../FugioLib
 DEPENDPATH += $$PWD/../FugioLib
+
+#------------------------------------------------------------------------------
+# General Unix/Linux/OS X (Brew) libs path
+
+unix: {
+    LIBS += -L/usr/local/lib
+}
 
 #------------------------------------------------------------------------------
 # Python3
@@ -285,17 +292,9 @@ win32 {
 #------------------------------------------------------------------------------
 # ffmpeg
 
-unix:!macx {
-    LIBS += -L/usr/local/lib
-}
-
 win32 {
-    LIBS += -L$$(LIBS)/ffmpeg-2.8.5-32/lib
-    LIBS += -L$$(LIBS)/ffmpeg-2.8.5-32/bin
-}
-
-macx {
-    LIBS += -L/opt/local/lib
+    LIBS += -L$$(LIBS)/ffmpeg-3.0.1-32/lib
+    LIBS += -L$$(LIBS)/ffmpeg-3.0.1-32/bin
 }
 
 #------------------------------------------------------------------------------

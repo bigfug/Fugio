@@ -4,7 +4,7 @@
 #include <QMultiMap>
 #include <QVector>
 
-#if defined( LUA_PLUGIN_SUPPORTED )
+#if defined( LUA_SUPPORTED )
 #include <lua.hpp>
 #endif
 
@@ -28,7 +28,9 @@ public:
 		return( mInstance );
 	}
 
+#if defined( LUA_SUPPORTED )
 	void registerNodeToState( fugio::NodeInterface *N, lua_State *L ) const;
+#endif
 
 	fugio::GlobalInterface *app( void )
 	{
@@ -92,14 +94,18 @@ public:
 	}
 
 public:
+#if defined( LUA_SUPPORTED )
 	static int pushVariant( lua_State *L, const QVariant &V );
 
 	static QVariant popVariant( lua_State *L, int idx );
+#endif
 
 private:
+#if defined( LUA_SUPPORTED )
 	static int luaLog( lua_State *L );
 
 	static int luaTimestamp( lua_State *L );
+#endif
 
 private:
 	static LuaPlugin						*mInstance;

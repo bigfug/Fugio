@@ -39,7 +39,7 @@ bool AnyTriggerNode::canAcceptPin( fugio::PinInterface *pPin ) const
 	return( pPin->direction() == PIN_OUTPUT );
 }
 
-bool AnyTriggerNode::pinShouldAutoRename( fugio::PinInterface * ) const
+bool AnyTriggerNode::pinShouldAutoRename( fugio::PinInterface *pPin ) const
 {
-	return( true );
+	return( pPin->direction() == PIN_INPUT );
 }

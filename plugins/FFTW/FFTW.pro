@@ -56,7 +56,7 @@ macx {
 
         QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-        QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite
+        QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
         QMAKE_POST_LINK += $$libChange( libfftw3f.3.dylib )
 
@@ -114,10 +114,10 @@ win32 {
     }
 }
 
-macx {
-    INCLUDEPATH += /opt/local/include
+macx:exists( /usr/local/include/fftw3.h ) {
+    INCLUDEPATH += /usr/local/include
 
-    LIBS += -L/opt/local/lib -lfftw3f
+    LIBS += -L/usr/local/lib -lfftw3f
 
     DEFINES += FFTW_PLUGIN_SUPPORTED
 }

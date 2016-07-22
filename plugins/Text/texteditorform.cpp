@@ -2,6 +2,9 @@
 #include "ui_texteditorform.h"
 #include <QFileDialog>
 #include <QDockWidget>
+#include <QToolBar>
+#include <QToolButton>
+#include <QMenu>
 
 TextEditorForm::TextEditorForm(QWidget *parent) :
 	QWidget(parent),
@@ -12,6 +15,40 @@ TextEditorForm::TextEditorForm(QWidget *parent) :
 	ui->mErrorText->hide();
 
 	connect( ui->mTextEdit, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChanged()));
+
+	QToolBar		*ToolBar = new QToolBar( this );
+
+	ui->verticalLayout->insertWidget( 0, ToolBar );
+
+	QMenu			*FileMenu = new QMenu();
+
+	QAction			*FileOpen   = new QAction( tr( "&Open..." ), this );
+	QAction			*FileSave   = new QAction( tr( "&Save..." ), this );
+	QAction			*FileSaveAs = new QAction( tr( "&Save as..." ), this );
+
+	FileMenu->addAction( FileOpen );
+	FileMenu->addAction( FileSave );
+	FileMenu->addAction( FileSaveAs );
+
+	QToolButton		*ButtonMenu = new QToolButton( ToolBar );
+
+	ButtonMenu->setMenu( FileMenu );
+	ButtonMenu->setPopupMode( QToolButton::InstantPopup );
+	ButtonMenu->setText( "&File" );
+
+	ToolBar->addWidget( ButtonMenu );
+
+	connect( FileOpen,   SIGNAL(triggered(bool)), this, SLOT(textOpen()) );
+	connect( FileSave,   SIGNAL(triggered(bool)), this, SLOT(textSave()) );
+	connect( FileSaveAs, SIGNAL(triggered(bool)), this, SLOT(textSaveAs()) );
+
+	QToolButton		*ButtonUpdate = new QToolButton( ToolBar );
+
+	ButtonUpdate->setText( tr( "&Update" ) );
+
+	ToolBar->addWidget( ButtonUpdate );
+
+	connect( ButtonUpdate, SIGNAL(released()), this, SLOT(updateClicked()) );
 }
 
 TextEditorForm::~TextEditorForm()
@@ -50,12 +87,12 @@ void TextEditorForm::updateNodeName( const QString &pName )
 	}
 }
 
-void TextEditorForm::on_mButtonUpdate_clicked()
+void TextEditorForm::updateClicked()
 {
 	emit updateText();
 }
 
-void TextEditorForm::on_mButtonLoad_clicked()
+void TextEditorForm::textOpen()
 {
 	QString		FileName = QFileDialog::getOpenFileName( this );
 
@@ -72,13 +109,30 @@ void TextEditorForm::on_mButtonLoad_clicked()
 	}
 
 	ui->mTextEdit->document()->setPlainText( FileHandle.readAll() );
+
+	mFileName = FileName;
 }
 
-void TextEditorForm::on_mButtonSave_clicked()
+void TextEditorForm::textSave()
 {
+	if( mFileName.isEmpty() )
+	{
+		textSaveAs();
+	}
+	else
+	{
+		QFile		FileHandle( mFileName );
+
+		if( !FileHandle.open( QIODevice::WriteOnly | QIODevice::Text ) )
+		{
+			return;
+		}
+
+		FileHandle.write( qPrintable( ui->mTextEdit->document()->toPlainText() ) );
+	}
 }
 
-void TextEditorForm::on_mButtonSaveAs_clicked()
+void TextEditorForm::textSaveAs()
 {
 	QString		FileName = QFileDialog::getSaveFileName( this );
 
@@ -95,6 +149,8 @@ void TextEditorForm::on_mButtonSaveAs_clicked()
 	}
 
 	FileHandle.write( qPrintable( ui->mTextEdit->document()->toPlainText() ) );
+
+	mFileName = FileName;
 }
 
 void TextEditorForm::cursorPositionChanged()

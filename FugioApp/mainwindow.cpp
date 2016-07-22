@@ -409,7 +409,7 @@ ContextSubWindow *MainWindow::findContextWindow( QSharedPointer<fugio::ContextIn
 }
 
 
-QString MainWindow::patchOpenDialog()
+QStringList MainWindow::patchOpenDialog()
 {
 	const QString		DatDir = QStandardPaths::writableLocation( QStandardPaths::DocumentsLocation );
 
@@ -417,25 +417,28 @@ QString MainWindow::patchOpenDialog()
 
 	QString				PatchDirectory = Settings.value( "patch-directory", QDir( DatDir ).absoluteFilePath( "Fugio" ) ).toString();
 
-	QString				FileName = QFileDialog::getOpenFileName( this, tr( "Open Patch" ), PatchDirectory, tr( "Fugio Patches (*.fug)" ) );
+	QStringList			FileList = QFileDialog::getOpenFileNames( this, tr( "Open Patch" ), PatchDirectory, tr( "Fugio Patches (*.fug)" ) );
 
-	if( !QFile( FileName ).exists() )
+	if( !FileList.isEmpty() )
 	{
-		return( QString() );
+		QString		FirstFileName = FileList.first();
+
+		if( QFile( FirstFileName ).exists() )
+		{
+			PatchDirectory = QFileInfo( FirstFileName ).absoluteDir().path();
+
+			Settings.setValue( "patch-directory", PatchDirectory );
+		}
 	}
 
-	PatchDirectory = QFileInfo( FileName ).absoluteDir().path();
-
-	Settings.setValue( "patch-directory", PatchDirectory );
-
-	return( FileName );
+	return( FileList );
 }
 
 void MainWindow::on_actionOpen_triggered()
 {
-	QString		FileName = patchOpenDialog();
+	QStringList		FileList = patchOpenDialog();
 
-	if( !FileName.isEmpty() )
+	for( const QString &FileName : FileList )
 	{
 		loadPatch( FileName );
 
@@ -480,8 +483,6 @@ void MainWindow::contextAdded( QSharedPointer<fugio::ContextInterface> pContext 
 	CV->showMaximized();
 
 	connect( CV, SIGNAL(contextFilenameChanged(QString)), this, SLOT(addFileToRecent(QString)) );
-
-	connect( CV, SIGNAL(contextFilenameChanged(QString)), subWindow1, SLOT(setWindowTitle(QString)) );
 
 	QTimer::singleShot( 500, ui->mStyleSheet, SLOT(stylesApply()) );
 }
@@ -1074,6 +1075,11 @@ void MainWindow::on_actionFacebook_Page_triggered()
 	QDesktopServices::openUrl( QUrl( "https://www.facebook.com/fugioapp" ) );
 }
 
+void MainWindow::on_actionFacebook_Users_Group_triggered()
+{
+	QDesktopServices::openUrl( QUrl( "https://www.facebook.com/groups/fugio/" ) );
+}
+
 void MainWindow::fugioUrl(const QUrl &pUrl)
 {
 	qDebug() << pUrl.toDisplayString();
@@ -1329,7 +1335,7 @@ void MainWindow::on_actionCheck_for_updates_triggered()
 	QProcess::startDetached( "maintenancetool.exe", PrcArg, AppDir.absolutePath() );
 #elif defined( Q_OS_LINUX )
 #else
-#error No Update Process Defined
+#warning No Update Process Defined
 #endif
 }
 
@@ -1342,4 +1348,25 @@ void MainWindow::menuAddEntry( fugio::MenuId pMenuId, QString pEntry, QObject *p
 			ui->menuHelp->addAction( pEntry, pObject, pSlot );
 			break;
 	}
+}
+
+void MainWindow::on_actionSave_all_triggered()
+{
+	for( QSharedPointer<fugio::ContextInterface> Context : gApp->global().contexts() )
+	{
+		ContextSubWindow	*SW = findContextWindow( Context );
+
+		if( SW )
+		{
+			ContextWidgetPrivate	*CW = SW->contextWidget();
+
+			if( !CW->undoStack()->isClean() )
+			{
+				ui->mWorkArea->setActiveSubWindow( SW );
+
+				CW->userSave();
+			}
+		}
+	}
+
 }

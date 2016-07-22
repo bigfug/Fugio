@@ -81,7 +81,7 @@ macx {
 
         QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-        QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite
+        QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST

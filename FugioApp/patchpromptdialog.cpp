@@ -78,14 +78,17 @@ void PatchPromptDialog::on_mButtonNewPatch_clicked()
 
 void PatchPromptDialog::on_mButtonOpenPatch_clicked()
 {
-	QString		FileName = gApp->mainWindow()->patchOpenDialog();
+	QStringList		FileList = gApp->mainWindow()->patchOpenDialog();
 
-	if( !FileName.isEmpty() )
+	for( const QString &FileName : FileList )
 	{
 		gApp->mainWindow()->loadPatch( FileName );
 
 		gApp->mainWindow()->addFileToRecent( FileName );
+	}
 
+	if( !FileList.isEmpty() )
+	{
 		accept();
 	}
 }

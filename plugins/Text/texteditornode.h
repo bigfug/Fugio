@@ -57,8 +57,8 @@ signals:
 	void modified( bool pModified );
 
 protected:
-        void checkHighlighter();
-        
+	void checkHighlighter();
+
 private slots:
 	void onEditClicked( void );
 
@@ -67,6 +67,8 @@ private slots:
 	void onTextUpdate( void );
 
 	void onTextPinUpdated( void );
+
+	void contextFrameStart( void );
 
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinString;

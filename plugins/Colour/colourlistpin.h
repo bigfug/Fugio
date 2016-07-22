@@ -136,6 +136,21 @@ public:
 		mValue.resize( pSize );
 	}
 
+	virtual void listClear() Q_DECL_OVERRIDE
+	{
+		mValue.clear();
+	}
+
+	virtual void listAppend( const QVariant &pValue ) Q_DECL_OVERRIDE
+	{
+		mValue << pValue.value<QColor>();
+	}
+
+	virtual bool listIsEmpty() const Q_DECL_OVERRIDE
+	{
+		return( mValue.isEmpty() );
+	}
+
 signals:
 	void valueChanged( const QVector<QColor> &pValue );
 

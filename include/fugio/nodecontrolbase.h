@@ -159,11 +159,6 @@ public:
 		return( QList<NodeControlInterface::AvailablePinEntry>() );
 	}
 
-	virtual QString helpUrl( void ) const Q_DECL_OVERRIDE
-	{
-		return( QString() );
-	}
-
 	virtual QList<QUuid> pinAddTypesInput( void ) const Q_DECL_OVERRIDE
 	{
 		return( QList<QUuid>() );
@@ -304,6 +299,54 @@ public:
 		}
 
 		return( qobject_cast<T>( pPin->connectedPin()->control()->qobject() ) );
+	}
+
+	template <class T> QList<T> outputs( QSharedPointer<fugio::PinInterface> &pPin )
+	{
+		QList<T>		CtlLst;
+
+		for( QSharedPointer<fugio::PinInterface> P : pPin->connectedPins() )
+		{
+			if( !P->hasControl() )
+			{
+				continue;
+			}
+
+			T PinCtl = qobject_cast<T>( P->control()->qobject() );
+
+			if( !PinCtl )
+			{
+				continue;
+			}
+
+			CtlLst << PinCtl;
+		}
+
+		return( CtlLst );
+	}
+
+	template <class T> T outputs( const QSharedPointer<fugio::PinInterface> &pPin ) const
+	{
+		QList<T>		CtlLst;
+
+		for( QSharedPointer<fugio::PinInterface> P : pPin->connectedPins() )
+		{
+			if( !P->hasControl() )
+			{
+				continue;
+			}
+
+			T PinCtl = qobject_cast<T>( P->control()->qobject() );
+
+			if( !PinCtl )
+			{
+				continue;
+			}
+
+			CtlLst << PinCtl;
+		}
+
+		return( CtlLst );
 	}
 
 	//-------------------------------------------------------------------------

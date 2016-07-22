@@ -45,6 +45,7 @@ public:
 	}
 
 	static void incrementStatistic( const QString &pName );
+	static void recordData( const QString &pName, const QString &pValue );
 
 private:
 	MainWindow				*mMainWindow;

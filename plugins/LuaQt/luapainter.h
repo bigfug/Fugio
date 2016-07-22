@@ -19,13 +19,6 @@ FUGIO_NAMESPACE_END
 
 class LuaPainter
 {
-public:
-	LuaPainter();
-
-	static int luaOpen( lua_State *L );
-
-	static int luaNew( lua_State *L );
-private:
 	typedef struct LuaPainterData
 	{
 		static const char *TypeName;
@@ -34,6 +27,17 @@ private:
 		QImage			*mImage;
 		PinInterface	*mPin;
 	} LuaPainterData;
+
+public:
+	LuaPainter() {}
+
+	virtual ~LuaPainter( void ) {}
+
+#if defined( LUA_SUPPORTED )
+	static int luaOpen( lua_State *L );
+
+	static int luaNew( lua_State *L );
+private:
 
 	static LuaPainterData *checkpainter( lua_State *L, int i = 1 );
 
@@ -56,10 +60,19 @@ private:
 	static int luaDrawEllipse( lua_State *L );
 	static int luaDrawImage( lua_State *L );
 	static int luaDrawLine( lua_State *L );
+	static int luaDrawPoint( lua_State *L );
 	static int luaDrawRect( lua_State *L );
 	static int luaDrawText( lua_State *L );
 
 	static int luaEraseRect( lua_State *L );
+
+	static int luaResetTransform( lua_State *L );
+	static int luaRotate( lua_State *L );
+	static int luaScale( lua_State *L );
+	static int luaSetTransform( lua_State *L );
+	static int luaShear( lua_State *L );
+	static int luaTransform( lua_State *L );
+	static int luaTranslate( lua_State *L );
 
 private:
 	static LuaPainterData *checkactivepainter( lua_State *L, int i = 1 );
@@ -68,6 +81,7 @@ private:
 
 	static const luaL_Reg					mLuaFunctions[];
 	static const luaL_Reg					mLuaMethods[];
+#endif
 };
 
 #endif // LUAPAINTER_H

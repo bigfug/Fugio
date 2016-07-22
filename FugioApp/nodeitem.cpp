@@ -306,11 +306,33 @@ QVariant NodeItem::itemChange( QGraphicsItem::GraphicsItemChange pChange, const 
 	return QGraphicsItem::itemChange( pChange, pValue );
 }
 
+QString NodeItem::helpUrl( QSharedPointer<fugio::NodeInterface> NODE )
+{
+	QString		HelpUrl;
+
+	if( NODE && NODE->hasControl() )
+	{
+		const QMetaObject	*DMO = NODE->control()->qobject()->metaObject();
+
+		if( DMO )
+		{
+			int			 HelpClassInfoIndex = DMO->indexOfClassInfo( "URL" );
+
+			if( HelpClassInfoIndex != -1 )
+			{
+				HelpUrl = QString( DMO->classInfo( HelpClassInfoIndex ).value() );
+			}
+		}
+	}
+
+	return( HelpUrl );
+}
+
 void NodeItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 {
 	QSharedPointer<fugio::NodeInterface>		NODE = mContextView->context()->findNode( mNodeId );
 
-	QString		HelpUrl = NODE ? NODE->control()->helpUrl() : QString();
+	QString		HelpUrl = helpUrl( NODE );
 
 	QMenu		 Menu;
 	QAction		*Action;
@@ -324,7 +346,13 @@ void NodeItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 
 	if( ( Action = Menu.addAction( tr( "Rename..." ), this, SLOT(menuRename()) ) ) && mNodeGui )
 	{
+		// Under 5.6.x renaming nodes with GUI's caused very odd position
+		// jumping when the user renamed a node, then attempted to drag it
+		// This seems to be fixed in 5.7.0
+
+#if ( QT_VERSION < QT_VERSION_CHECK( 5, 7, 0 ) )
 		Action->setEnabled( false );
+#endif
 	}
 
 	Menu.addAction( tr( "Set Colour..." ), this, SLOT(menuSetColour()) );
@@ -760,6 +788,13 @@ void NodeItem::updateGui()
 
 	if( NODE )
 	{
+		if( NODE->status() == fugio::NodeInterface::Initialising )
+		{
+			QTimer::singleShot( 100, this, SLOT(updateGui()) );
+
+			return;
+		}
+
 		if( NODE->control() )
 		{
 			QWidget		*NodeGui = NODE->control()->gui();
@@ -1172,7 +1207,12 @@ void NodeItem::menuDelete()
 
 void NodeItem::menuHelp()
 {
-	QDesktopServices::openUrl( QUrl( mContextView->context()->findNode( mNodeId )->control()->helpUrl() ) );
+	QString		HelpUrl = helpUrl( mContextView->context()->findNode( mNodeId ) );
+
+	if( !HelpUrl.isEmpty() )
+	{
+		QDesktopServices::openUrl( QUrl( HelpUrl.append( "?utm_source=fugio&utm_medium=node-help" ) ) );
+	}
 }
 
 void NodeItem::menuUngroup()

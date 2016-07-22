@@ -19,3 +19,18 @@ void StringListPin::listSetIndex( int pIndex, const QVariant &pValue )
 		mValue[ pIndex ] = pValue.toString();
 	}
 }
+
+void StringListPin::listClear()
+{
+	mValue.clear();
+}
+
+void StringListPin::listAppend(const QVariant &pValue)
+{
+	mValue << pValue.toString();
+}
+
+bool StringListPin::listIsEmpty() const
+{
+	return( mValue.isEmpty() );
+}

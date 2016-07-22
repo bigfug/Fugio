@@ -23,8 +23,11 @@
 #include "luafontmetrics.h"
 #include "luagradient.h"
 #include "luaimage.h"
+#include "luatransform.h"
 
 const char *LuaPainter::LuaPainterData::TypeName = "qt.painter";
+
+#if defined( LUA_SUPPORTED )
 
 const luaL_Reg LuaPainter::mLuaFunctions[] =
 {
@@ -40,23 +43,26 @@ const luaL_Reg LuaPainter::mLuaMethods[] =
 	{ "drawEllipse",		LuaPainter::luaDrawEllipse },
 	{ "drawImage",			LuaPainter::luaDrawImage },
 	{ "drawLine",			LuaPainter::luaDrawLine },
+	{ "drawPoint",			LuaPainter::luaDrawPoint },
 	{ "drawRect",			LuaPainter::luaDrawRect },
 	{ "drawText",			LuaPainter::luaDrawText },
 	{ "eraseRect",			LuaPainter::luaEraseRect },
 	{ "finish",				LuaPainter::luaDelete },
 	{ "font",				LuaPainter::luaFont },
 	{ "pen",				LuaPainter::luaPen },
+	{ "resetTransform",		LuaPainter::luaResetTransform },
+	{ "rotate",				LuaPainter::luaRotate },
+	{ "scale",				LuaPainter::luaScale },
 	{ "setBackground",		LuaPainter::luaSetBackground },
 	{ "setBrush",			LuaPainter::luaSetBrush },
 	{ "setFont",			LuaPainter::luaSetFont },
 	{ "setPen",				LuaPainter::luaSetPen },
+	{ "setTransform",		LuaPainter::luaSetTransform },
+	{ "shear",				LuaPainter::luaShear },
+	{ "transform",			LuaPainter::luaTransform },
+	{ "translate",			LuaPainter::luaTranslate },
 	{ 0, 0 }
 };
-
-LuaPainter::LuaPainter()
-{
-
-}
 
 int LuaPainter::luaOpen( lua_State *L )
 {
@@ -233,14 +239,14 @@ int LuaPainter::luaSetBrush( lua_State *L )
 	return( 0 );
 }
 
-int LuaPainter::luaBackground(lua_State *L)
+int LuaPainter::luaBackground( lua_State *L )
 {
 	LuaPainterData		*PainterData = checkactivepainter( L );
 
 	return( LuaBrush::pushbrush( L, PainterData->mPainter->background() ) );
 }
 
-int LuaPainter::luaSetBackground(lua_State *L)
+int LuaPainter::luaSetBackground( lua_State *L )
 {
 	LuaPainterData		*PainterData = checkactivepainter( L );
 
@@ -507,6 +513,28 @@ int LuaPainter::luaDrawLine( lua_State *L )
 	return( 0 );
 }
 
+int LuaPainter::luaDrawPoint( lua_State *L )
+{
+	LuaPainterData		*PainterData = checkactivepainter( L );
+	QPointF				 P;
+
+	if( LuaPointF::isPointF( L, 2 ) )
+	{
+		P = LuaPointF::checkpointf( L, 2 );
+	}
+	else
+	{
+		float		x = luaL_checknumber( L, 2 );
+		float		y = luaL_checknumber( L, 3 );
+
+		P = QPointF( x, y );
+	}
+
+	PainterData->mPainter->drawPoint( P );
+
+	return( 0 );
+}
+
 int LuaPainter::luaDrawRect( lua_State *L )
 {
 	LuaPainterData		*PainterData = checkactivepainter( L );
@@ -596,7 +624,7 @@ int LuaPainter::drawText( lua_State *L, const QPointF &pPoint, int i )
 	return( 0 );
 }
 
-int LuaPainter::luaEraseRect(lua_State *L)
+int LuaPainter::luaEraseRect( lua_State *L )
 {
 	LuaPainterData		*PainterData = checkactivepainter( L );
 
@@ -614,6 +642,94 @@ int LuaPainter::luaEraseRect(lua_State *L)
 	return( 0 );
 }
 
+int LuaPainter::luaResetTransform( lua_State *L )
+{
+	LuaPainterData		*PainterData = checkactivepainter( L );
+
+	PainterData->mPainter->resetTransform();
+
+	return( 0 );
+}
+
+int LuaPainter::luaRotate( lua_State *L )
+{
+	LuaPainterData		*PainterData = checkactivepainter( L );
+	qreal				 Angle = luaL_checknumber( L, 2 );
+
+	PainterData->mPainter->rotate( Angle );
+
+	return( 0 );
+}
+
+int LuaPainter::luaScale( lua_State *L )
+{
+	LuaPainterData		*PainterData = checkactivepainter( L );
+	qreal				 X = luaL_checknumber( L, 2 );
+	qreal				 Y = luaL_checknumber( L, 3 );
+
+	PainterData->mPainter->scale( X, Y );
+
+	return( 0 );
+}
+
+int LuaPainter::luaSetTransform( lua_State *L )
+{
+	LuaPainterData		*PainterData = checkactivepainter( L );
+	QTransform			*Transform = LuaTransform::checktransform( L, 2 );
+	bool				 Combine = false;
+
+	if( lua_gettop( L ) > 2 )
+	{
+		Combine = lua_toboolean( L, 3 );
+	}
+
+	PainterData->mPainter->setTransform( *Transform, Combine );
+
+	return( 0 );
+}
+
+int LuaPainter::luaShear( lua_State *L )
+{
+	LuaPainterData		*PainterData = checkactivepainter( L );
+	qreal				 X = luaL_checknumber( L, 2 );
+	qreal				 Y = luaL_checknumber( L, 3 );
+
+	PainterData->mPainter->shear( X, Y );
+
+	return( 0 );
+}
+
+int LuaPainter::luaTransform( lua_State *L )
+{
+	LuaPainterData		*PainterData = checkactivepainter( L );
+
+	LuaTransform::pushtransform( L, PainterData->mPainter->transform() );
+
+	return( 1 );
+}
+
+int LuaPainter::luaTranslate( lua_State *L )
+{
+	LuaPainterData		*PainterData = checkactivepainter( L );
+	QPointF				 P;
+
+	if( LuaPointF::isPointF( L, 2 ) )
+	{
+		P = LuaPointF::checkpointf( L, 2 );
+	}
+	else
+	{
+		qreal				 X = luaL_checknumber( L, 2 );
+		qreal				 Y = luaL_checknumber( L, 3 );
+
+		P = QPointF( X, Y );
+	}
+
+	PainterData->mPainter->translate( P );
+
+	return( 0 );
+}
+
 LuaPainter::LuaPainterData *LuaPainter::checkactivepainter( lua_State *L, int i )
 {
 	LuaPainterData		*PainterData = checkpainter( L, i );
@@ -625,3 +741,5 @@ LuaPainter::LuaPainterData *LuaPainter::checkactivepainter( lua_State *L, int i 
 
 	return( PainterData );
 }
+
+#endif

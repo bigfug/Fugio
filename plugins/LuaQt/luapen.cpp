@@ -6,6 +6,7 @@
 
 const char *LuaPen::PenUserData::TypeName = "qt.pen";
 
+#if defined( LUA_SUPPORTED )
 const luaL_Reg LuaPen::mLuaInstance[] =
 {
 	{ 0, 0 }
@@ -139,3 +140,5 @@ int LuaPen::luaWidth( lua_State *L )
 
 	return( 1 );
 }
+
+#endif

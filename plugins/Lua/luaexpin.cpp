@@ -18,6 +18,7 @@
 
 using namespace fugio;
 
+#if defined( LUA_SUPPORTED )
 const luaL_Reg LuaExPin::mLuaPinFunctions[] =
 {
 	{ 0, 0 }
@@ -40,11 +41,6 @@ const luaL_Reg LuaExPin::mLuaPinMethods[] =
 	{ "update",		LuaExPin::luaUpdate },
 	{ 0, 0 }
 };
-
-LuaExPin::LuaExPin()
-{
-
-}
 
 //-------------------------------------------------------------------------
 // Register fugio.pin
@@ -280,3 +276,4 @@ int LuaExPin::luaPinGetValue( lua_State *L )
 	return( ArgCnt );
 }
 
+#endif

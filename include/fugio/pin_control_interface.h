@@ -4,6 +4,8 @@
 #include <QtPlugin>
 #include <QDebug>
 #include <QUuid>
+#include <QSharedPointer>
+
 #include "global.h"
 
 class QSettings;
@@ -11,6 +13,8 @@ class QWidget;
 class QTextStream;
 
 FUGIO_NAMESPACE_BEGIN
+
+class PinInterface;
 
 class PinControlInterface
 {
@@ -37,6 +41,8 @@ public:
 	virtual void dataExport( QTextStream &pDataStream ) const = 0;
 
 	virtual void dataImport( QTextStream &pDataStream ) = 0;
+
+	virtual QSharedPointer<fugio::PinInterface> pin( void ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

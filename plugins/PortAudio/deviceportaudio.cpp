@@ -233,15 +233,15 @@ DevicePortAudio::DevicePortAudio( PaDeviceIndex pDeviceIndex )
 	mInputChannelCount  = DevInf->maxInputChannels;
 	mOutputChannelCount = DevInf->maxOutputChannels;
 
-	if( DevInf->maxInputChannels > 0 )
-	{
-		deviceInputOpen( DevInf );
-	}
+//	if( DevInf->maxInputChannels > 0 )
+//	{
+//		deviceInputOpen( DevInf );
+//	}
 
-	if( DevInf->maxOutputChannels > 0 )
-	{
-		deviceOutputOpen( DevInf );
-	}
+//	if( DevInf->maxOutputChannels > 0 )
+//	{
+//		deviceOutputOpen( DevInf );
+//	}
 }
 
 DevicePortAudio::~DevicePortAudio( void )
@@ -268,6 +268,18 @@ void DevicePortAudio::setTimeOffset( qreal pTimeOffset )
 
 fugio::AudioInstanceBase *DevicePortAudio::audioAllocInstance( qreal pSampleRate, AudioSampleFormat pSampleFormat, int pChannels )
 {
+	if( !mInputSampleRate )
+	{
+		const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( mDeviceIndex );
+
+		if( !DevInf )
+		{
+			return( 0 );
+		}
+
+		deviceInputOpen( DevInf );
+	}
+
 	if( pSampleRate != mInputSampleRate || pSampleFormat != mInputSampleFormat || pChannels != mInputChannelCount )
 	{
 		return( 0 );
@@ -367,7 +379,7 @@ void DevicePortAudio::deviceInputOpen( const PaDeviceInfo *DevInf )
 
 	const PaStreamInfo	*StreamInfo = Pa_GetStreamInfo( mStreamInput );
 
-	qDebug() << DevInf->name << StreamInfo->sampleRate << StreamInfo->inputLatency << mInputChannelCount;
+	qDebug() << "INPUT:" << DevInf->name << StreamInfo->sampleRate << StreamInfo->inputLatency << mInputChannelCount;
 
 	mInputSampleRate   = StreamInfo->sampleRate;
 	mInputTimeLatency  = StreamInfo->inputLatency;
@@ -402,13 +414,13 @@ void DevicePortAudio::deviceOutputOpen( const PaDeviceInfo *DevInf )
 
 	const PaStreamInfo	*StreamInfo = Pa_GetStreamInfo( mStreamOutput );
 
-	qDebug() << DevInf->name << StreamInfo->sampleRate << StreamInfo->outputLatency << mOutputChannelCount;
+	qDebug() << "OUTPUT:" << DevInf->name << StreamInfo->sampleRate << StreamInfo->outputLatency << mOutputChannelCount;
 
 	mOutputSampleRate   = StreamInfo->sampleRate;
 	mOutputTimeLatency  = StreamInfo->outputLatency;
 	mOutputAudioOffset  = ( PortAudioPlugin::instance()->fugio()->timestamp() * mOutputSampleRate ) / 1000;
 
-	mOutputAudioOffset -= ( mOutputTimeLatency * mOutputSampleRate ) / 1000;
+	//mOutputAudioOffset -= ( mOutputTimeLatency * mOutputSampleRate ) / 1000;
 
 	if( Pa_StartStream( mStreamOutput ) != paNoError )
 	{
@@ -453,6 +465,7 @@ void DevicePortAudio::deviceInputClose()
 		delete [] AB.mData;
 	}
 
+	mInputSampleRate   = 0;
 	mInputTimeLatency  = 0;
 	mInputChannelCount = 0;
 }
@@ -477,6 +490,15 @@ int DevicePortAudio::streamCallbackStatic( const void *input, void *output, unsi
 int DevicePortAudio::streamCallbackOutput( void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags )
 {
 	Q_UNUSED( statusFlags )
+
+	qint64	ExpectedOutputOffset  = ( PortAudioPlugin::instance()->fugio()->timestamp() * mOutputSampleRate ) / 1000;
+
+	if( qAbs( ExpectedOutputOffset - mOutputAudioOffset ) > mOutputSampleRate / 4 )
+	{
+		qDebug() << "Audio Output Offset Reset" << ( ExpectedOutputOffset - mOutputAudioOffset );
+
+		mOutputAudioOffset = ExpectedOutputOffset;
+	}
 
 //	if( mStreamOutputOffset == 0 )
 //	{
@@ -504,9 +526,22 @@ int DevicePortAudio::streamCallbackOutput( void *output, unsigned long frameCoun
 
 	mProducerMutex.lock();
 
+	// Calculate the maximum input latency
+
+	qint64		MaxLat = 0;
+
 	for( PortAudioOutputNode *PAO : mProducers )
 	{
-		PAO->audio( mOutputAudioOffset, frameCount, 0, mOutputChannelCount, (void **)AudioBuffers, nullptr );
+		MaxLat = std::max<qint64>( PAO->audioLatency(), MaxLat );
+	}
+
+	MaxLat += mOutputTimeLatency * mOutputSampleRate;
+
+	// Get the audio
+
+	for( PortAudioOutputNode *PAO : mProducers )
+	{
+		PAO->audio( mOutputAudioOffset - MaxLat, frameCount, 0, mOutputChannelCount, (void **)AudioBuffers, nullptr );
 	}
 
 	mProducerMutex.unlock();
@@ -525,16 +560,16 @@ int DevicePortAudio::streamCallbackInput( const void *input, unsigned long frame
 	if( !mInputAudioOffset )
 	{
 		mInputAudioOffset = CurrTime;
-
-		mInputAudioOffset -= ( mInputSampleRate * mInputTimeLatency ) / 1000.0;
 	}
 
-	if( CurrTime - mInputAudioOffset > 1000 )
+	if( CurrTime - mInputAudioOffset > mInputSampleRate / 4 )
 	{
-		qDebug() << "DevicePortAudio" << ( CurrTime - mInputAudioOffset );
+		qDebug() << "Input Offset Reset" << ( CurrTime - mInputAudioOffset );
 
 		mInputAudioOffset = CurrTime;
 	}
+
+	const qint64		InpLat = mInputTimeLatency * mInputSampleRate;
 
 	mInputTimeInfo = *timeInfo;
 
@@ -575,7 +610,7 @@ int DevicePortAudio::streamCallbackInput( const void *input, unsigned long frame
 
 	memset( &AB, 0, sizeof( AB ) );
 
-	audioInput( AB, (const float **)input, frameCount, mInputChannelCount, mInputAudioOffset );
+	audioInput( AB, (const float **)input, frameCount, mInputChannelCount, mInputAudioOffset - InpLat );
 
 	mAudioBuffers.append( AB );
 
@@ -654,6 +689,18 @@ qreal DevicePortAudio::outputSampleRate() const
 
 void DevicePortAudio::addOutput( PortAudioOutputNode *pOutput )
 {
+	if( mProducers.isEmpty() && mOutputChannelCount )
+	{
+		const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( mDeviceIndex );
+
+		if( !DevInf )
+		{
+			return;
+		}
+
+		deviceOutputOpen( DevInf );
+	}
+
 	mProducerMutex.lock();
 
 	mProducers.append( pOutput );
@@ -668,8 +715,12 @@ void DevicePortAudio::remOutput( PortAudioOutputNode *pOutput )
 	mProducers.removeAll( pOutput );
 
 	mProducerMutex.unlock();
-}
 
+	if( mProducers.isEmpty() )
+	{
+		deviceOutputClose();
+	}
+}
 
 int DevicePortAudio::audioChannels() const
 {

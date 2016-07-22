@@ -8,6 +8,7 @@
 #include <fugio/lua/uuid.h>
 #include <fugio/image/uuid.h>
 #include <fugio/luaqt/uuid.h>
+#include <fugio/colour/uuid.h>
 
 #include <fugio/image/image_interface.h>
 
@@ -22,6 +23,7 @@
 #include "luafontmetrics.h"
 #include "luagradient.h"
 #include "luaimage.h"
+#include "luatransform.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
@@ -40,6 +42,7 @@ ClassEntry PinClasses[] =
 
 const luaL_Reg LuaQtPlugin::mLuaFunctions[] =
 {
+#if defined( LUA_SUPPORTED )
 	{ "painter", LuaPainter::luaNew },
 	{ "brush", LuaBrush::luaNew },
 	{ "color", LuaColor::luaNew },
@@ -51,6 +54,8 @@ const luaL_Reg LuaQtPlugin::mLuaFunctions[] =
 	{ "point", LuaPointF::luaNew },
 	{ "rect", LuaRectF::luaNew },
 	{ "size", LuaSizeF::luaNew },
+	{ "transform", LuaTransform::luaNew },
+#endif
 	{ 0, 0 }
 };
 
@@ -79,10 +84,7 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 
 	mApp->registerPinClasses( PinClasses );
 
-//	LUA->luaAddPinFunction( PID_IMAGE, "resize", LuaQtPlugin::luaImageResize );
-//	LUA->luaAddPinFunction( PID_IMAGE, "rect", LuaQtPlugin::luaImageRect );
-//	LUA->luaAddPinFunction( PID_IMAGE, "size", LuaQtPlugin::luaImageSize );
-
+#if defined( LUA_SUPPORTED )
 	LUA->luaRegisterLibrary( "qt", LuaQtPlugin::luaOpen );
 
 	LUA->luaRegisterExtension( LuaBrush::luaOpen );
@@ -95,9 +97,12 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaRegisterExtension( LuaPen::luaOpen );
 	LUA->luaRegisterExtension( LuaPointF::luaOpen );
 	LUA->luaRegisterExtension( LuaSizeF::luaOpen );
+	LUA->luaRegisterExtension( LuaTransform::luaOpen );
 	LUA->luaRegisterExtension( LuaRectF::luaOpen );
 
+	LUA->luaAddPinGet( PID_COLOUR, LuaColor::luaPinGet );
 	LUA->luaAddPinGet( PID_IMAGE, LuaImage::luaPinGet );
+#endif
 
 	return( INIT_OK );
 }
@@ -111,6 +116,7 @@ void LuaQtPlugin::deinitialise( void )
 	mApp = 0;
 }
 
+#if defined( LUA_SUPPORTED )
 int LuaQtPlugin::luaOpen( lua_State *L )
 {
 	luaL_newmetatable( L, "fugio.qt" );
@@ -125,127 +131,5 @@ int LuaQtPlugin::luaOpen( lua_State *L )
 
 	return( 1 );
 }
+#endif
 
-/*
-int LuaQtPlugin::luaImageRect( lua_State *L )
-{
-	LuaInterface		*Lua  = LuaQtPlugin::lua();
-	NodeInterface		*Node = Lua->node( L );
-	PinInterface		*Pin  = Node->findPinByGlobalId( Lua->checkpin( L, 1 ) ).data();
-
-	if( !Node || !Pin )
-	{
-		return( 0 );
-	}
-
-	QSharedPointer<fugio::PinControlInterface>	PinCtl;
-
-	if( Pin->direction() == PIN_OUTPUT )
-	{
-		PinCtl = Pin->control();
-	}
-	else if( Pin->isConnected() )
-	{
-		PinCtl = Pin->connectedPin()->control();
-	}
-
-	if( !PinCtl )
-	{
-		return( 0 );
-	}
-
-	fugio::ImageInterface		*Image = qobject_cast<fugio::ImageInterface *>( PinCtl->qobject() );
-
-	if( !Image )
-	{
-		return( luaL_error( L, "Source is not an image" ) );
-	}
-
-	LuaRectF::pushrectf( L, QRectF( QPoint(), Image->size() ) );
-
-	return( 1 );
-}
-
-int LuaQtPlugin::luaImageResize( lua_State *L )
-{
-	LuaInterface		*Lua  = LuaQtPlugin::lua();
-	NodeInterface		*Node = Lua->node( L );
-	PinInterface		*Pin  = Node->findPinByGlobalId( Lua->checkpin( L, 1 ) ).data();
-
-	if( !Node || !Pin || !Pin->hasControl() )
-	{
-		return( 0 );
-	}
-
-	fugio::ImageInterface		*Image = qobject_cast<fugio::ImageInterface *>( Pin->control()->qobject() );
-
-	if( !Image )
-	{
-		return( luaL_error( L, "Source is not an image" ) );
-	}
-
-	int			w = luaL_checkinteger( L, 2 );
-	int			h = luaL_checkinteger( L, 3 );
-
-	if( Image->width() != w || Image->height() != h )
-	{
-		Image->setFormat( fugio::ImageInterface::FORMAT_RGBA8 );
-		Image->setSize( w, h );
-		Image->setLineSize( 0, w * 4 );
-
-		Node->context()->pinUpdated( Node->findPinByGlobalId( Pin->globalId() ) );
-	}
-
-	return( 0 );
-}
-
-int LuaQtPlugin::luaImageSize(lua_State *L)
-{
-	LuaInterface		*Lua  = LuaQtPlugin::lua();
-	NodeInterface		*Node = Lua->node( L );
-	PinInterface		*Pin  = Node->findPinByGlobalId( Lua->checkpin( L, 1 ) ).data();
-
-	if( !Node || !Pin )
-	{
-		return( 0 );
-	}
-
-	QSharedPointer<fugio::PinControlInterface>	PinCtl;
-
-	if( Pin->direction() == PIN_OUTPUT )
-	{
-		PinCtl = Pin->control();
-	}
-	else if( Pin->isConnected() )
-	{
-		PinCtl = Pin->connectedPin()->control();
-	}
-
-	if( !PinCtl )
-	{
-		return( 0 );
-	}
-
-	fugio::ImageInterface		*Image = qobject_cast<fugio::ImageInterface *>( PinCtl->qobject() );
-
-	if( !Image )
-	{
-		return( luaL_error( L, "Source is not an image" ) );
-	}
-
-	LuaSizeF::pushsizef( L, Image->size() );
-
-	return( 1 );
-}
-
-int LuaQtPlugin::luaGetImage( const QUuid &pPinId, lua_State *L )
-{
-	LuaInterface							*Lua  = LuaQtPlugin::lua();
-	NodeInterface							*Node = Lua->node( L );
-	QSharedPointer<fugio::PinInterface>		 Pin = Node->findPinByGlobalId( pPinId );
-
-
-	return( 0 );
-}
-
-*/

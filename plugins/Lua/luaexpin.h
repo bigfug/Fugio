@@ -1,7 +1,7 @@
 #ifndef LUAEXPIN_H
 #define LUAEXPIN_H
 
-#if defined( LUA_PLUGIN_SUPPORTED )
+#if defined( LUA_SUPPORTED )
 #include <lua.hpp>
 #endif
 
@@ -12,8 +12,11 @@
 class LuaExPin : public fugio::LuaExtension
 {
 public:
-	LuaExPin();
+	LuaExPin() {}
 
+	virtual ~LuaExPin() {}
+
+#if defined( LUA_SUPPORTED )
 	static int luaPinGetName( lua_State *L );
 	static int luaPinGetValue( lua_State *L );
 	static int luaPinSetValue( lua_State *L );
@@ -33,6 +36,7 @@ private:
 	static const luaL_Reg					mLuaPinFunctions[];
 	static const luaL_Reg					mLuaInstance[];
 	static const luaL_Reg					mLuaPinMethods[];
+#endif
 };
 
 #endif // LUAEXPIN_H

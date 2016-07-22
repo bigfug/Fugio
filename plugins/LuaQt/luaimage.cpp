@@ -15,6 +15,8 @@
 
 const char *LuaImage::ImageUserData::TypeName = "qt.image";
 
+#if defined( LUA_SUPPORTED )
+
 const luaL_Reg LuaImage::mLuaInstance[] =
 {
 	{ 0, 0 }
@@ -224,3 +226,5 @@ int LuaImage::luaSize( lua_State *L )
 
 	return( 1 );
 }
+
+#endif

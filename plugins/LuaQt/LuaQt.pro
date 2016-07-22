@@ -31,7 +31,8 @@ SOURCES += \
     luafontmetrics.cpp \
     luagradient.cpp \
     luaqtplugin.cpp \
-    luaimage.cpp
+    luaimage.cpp \
+    luatransform.cpp
 
 HEADERS +=\
     ../../include/fugio/luaqt/uuid.h \
@@ -48,7 +49,8 @@ HEADERS +=\
     luafontmetrics.h \
     luagradient.h \
     luaqtplugin.h \
-    luaimage.h
+    luaimage.h \
+    luatransform.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -76,11 +78,15 @@ macx {
         QMAKE_POST_LINK += $$qtLibChange( QtGui )
         QMAKE_POST_LINK += $$qtLibChange( QtCore )
 
-        QMAKE_POST_LINK += && install_name_tool -change /usr/local/opt/lua/lib/liblua.5.2.dylib liblua.5.2.dylib $$LIBCHANGEDEST
-
         QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
+        # we don't want to copy the Lua library into the bundle, so change its name
+
+        QMAKE_POST_LINK += && install_name_tool -change /usr/local/opt/lua/lib/liblua.5.2.dylib liblua.5.2.dylib $$LIBCHANGEDEST
+
         QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+
+        # now change it back
 
         QMAKE_POST_LINK += && install_name_tool -change liblua.5.2.dylib /usr/local/lib/liblua.5.2.dylib $$LIBCHANGEDEST
 

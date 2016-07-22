@@ -190,6 +190,19 @@ void ContextWidgetPrivate::addWidget(QWidget *pWidget)
 	//	}
 }
 
+void ContextWidgetPrivate::setWindowTitleFromFileName(const QString &pFileName)
+{
+	QStringList	FileNameParts = QDir::fromNativeSeparators( pFileName ).split( '/' );
+
+	while( FileNameParts.size() > 2 )
+	{
+		FileNameParts.removeFirst();
+	}
+
+	setWindowTitle( QDir::toNativeSeparators( QString( "%1/%2" ).arg( FileNameParts.first() ).arg( FileNameParts.last() ) ) );
+}
+
+
 void ContextWidgetPrivate::userSave( void )
 {
 	if( filename().isEmpty() )
@@ -224,7 +237,7 @@ void ContextWidgetPrivate::userSaveAs( void )
 
 	Settings.setValue( "patch-directory", PatchDirectory );
 
-	mContextView->setWindowTitle( FileName );
+	setWindowTitleFromFileName( FileName );
 
 	context()->save( FileName );
 
@@ -237,7 +250,7 @@ void ContextWidgetPrivate::load(const QString &pFileName)
 {
 	mFileName = pFileName;
 
-	setWindowTitle( mFileName );
+	setWindowTitleFromFileName( mFileName );
 
 	mContextView->clearPasteOffset();
 

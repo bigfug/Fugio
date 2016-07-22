@@ -171,6 +171,20 @@ public:
 	virtual void listSetIndex( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE;
 	virtual void listSetSize( int pSize ) Q_DECL_OVERRIDE;
 
+	virtual void listClear() Q_DECL_OVERRIDE
+	{
+	}
+
+	virtual void listAppend( const QVariant &pValue ) Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pValue )
+	}
+
+	virtual bool listIsEmpty() const Q_DECL_OVERRIDE
+	{
+		return( mCount == 0 );
+	}
+
 private:
 	void				*mData;
 	QByteArray			 mArray;

@@ -24,12 +24,12 @@ public:
     {
     }
 
-    virtual QObject *qobject( void ) Q_DECL_OVERRIDE
+	virtual QObject *qobject( void ) Q_DECL_OVERRIDE Q_DECL_FINAL
     {
         return( this );
     }
 
-    virtual const QObject *qobject( void ) const Q_DECL_OVERRIDE
+	virtual const QObject *qobject( void ) const Q_DECL_OVERRIDE Q_DECL_FINAL
     {
         return( this );
     }
@@ -65,6 +65,11 @@ public:
     {
         return( mPin->value().value<T>() );
     }
+
+	virtual QSharedPointer<fugio::PinInterface> pin() const Q_DECL_OVERRIDE Q_DECL_FINAL
+	{
+		return( mPin );
+	}
 
 protected:
     QSharedPointer<fugio::PinInterface>			 mPin;

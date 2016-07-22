@@ -1,6 +1,17 @@
 #include "luacolor.h"
 
+#include <fugio/node_interface.h>
+#include <fugio/node_control_interface.h>
+#include <fugio/pin_interface.h>
+#include <fugio/pin_control_interface.h>
+#include <fugio/colour/colour_interface.h>
+#include <fugio/context_interface.h>
+
+#include "luaqtplugin.h"
+
 const char *LuaColor::ColorUserData::TypeName = "qt.color";
+
+#if defined( LUA_SUPPORTED )
 
 const luaL_Reg LuaColor::mLuaInstance[] =
 {
@@ -41,6 +52,42 @@ int LuaColor::luaNew( lua_State *L )
 	}
 
 	return( 1 );
+}
+
+int LuaColor::luaPinGet( const QUuid &pPinLocalId, lua_State *L )
+{
+	fugio::LuaInterface						*Lua  = LuaQtPlugin::lua();
+	NodeInterface							*Node = Lua->node( L );
+	QSharedPointer<fugio::PinInterface>		 Pin = Node->findPinByLocalId( pPinLocalId );
+	QSharedPointer<fugio::PinInterface>		 PinSrc;
+
+	if( !Pin )
+	{
+		return( luaL_error( L, "No source pin" ) );
+	}
+
+	if( Pin->direction() == PIN_OUTPUT )
+	{
+		PinSrc = Pin;
+	}
+	else
+	{
+		PinSrc = Pin->connectedPin();
+	}
+
+	if( !PinSrc || !PinSrc->hasControl() )
+	{
+		return( luaL_error( L, "No colour pin" ) );
+	}
+
+	fugio::ColourInterface			*SrcCol = qobject_cast<fugio::ColourInterface *>( PinSrc->control()->qobject() );
+
+	if( !SrcCol )
+	{
+		return( luaL_error( L, "Can't access colour" ) );
+	}
+
+	return( pushcolor( L, SrcCol->colour() ) );
 }
 
 QColor LuaColor::popRGBA( lua_State *L, int Top )
@@ -210,3 +257,5 @@ int LuaColor::luaSetRgba( lua_State *L )
 
 	return( 0 );
 }
+
+#endif

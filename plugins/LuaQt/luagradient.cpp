@@ -5,6 +5,8 @@
 
 const char *LuaGradient::GradientUserData::TypeName = "qt.gradient";
 
+#if defined( LUA_SUPPORTED )
+
 const luaL_Reg LuaGradient::mLuaInstance[] =
 {
 	{ 0, 0 }
@@ -127,3 +129,5 @@ int LuaGradient::luaSetColorAt( lua_State *L )
 
 	return( 0 );
 }
+
+#endif

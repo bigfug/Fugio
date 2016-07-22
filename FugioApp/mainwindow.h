@@ -63,7 +63,7 @@ public slots:
 
 	void addFileToRecent( const QString &pFileName );
 
-	QString patchOpenDialog( void );
+	QStringList patchOpenDialog( void );
 
 private:
 	virtual void closeEvent( QCloseEvent *pEvent ) Q_DECL_OVERRIDE;
@@ -157,6 +157,10 @@ private slots:
 	void on_actionGitHub_Page_triggered();
 
 	void on_actionCheck_for_updates_triggered();
+
+	void on_actionFacebook_Users_Group_triggered();
+
+	void on_actionSave_all_triggered();
 
 private:
 	Ui::MainWindow								*ui;

@@ -13,7 +13,7 @@
 
 #include <fugio/serialise_interface.h>
 
-class ByteArrayListPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::SerialiseInterface, fugio::ListInterface
+class ByteArrayListPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::SerialiseInterface, public fugio::ListInterface
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface fugio::ListInterface )
@@ -105,6 +105,21 @@ public:
 		{
 			mValue.append( QByteArray() );
 		}
+	}
+
+	virtual void listClear() Q_DECL_OVERRIDE
+	{
+		mValue.clear();
+	}
+
+	virtual void listAppend( const QVariant &pValue ) Q_DECL_OVERRIDE
+	{
+		mValue << pValue.value<QByteArray>();
+	}
+
+	virtual bool listIsEmpty() const Q_DECL_OVERRIDE
+	{
+		return( mValue.isEmpty() );
 	}
 
 private:

@@ -6,6 +6,8 @@
 
 const char *LuaRectF::RectFUserData::TypeName = "qt.rectf";
 
+#if defined( LUA_SUPPORTED )
+
 const luaL_Reg LuaRectF::mLuaInstance[] =
 {
 	{ 0, 0 }
@@ -244,3 +246,5 @@ int LuaRectF::luaY( lua_State *L )
 
 	return( 1 );
 }
+
+#endif

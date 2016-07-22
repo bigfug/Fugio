@@ -6,6 +6,9 @@
 #endif
 
 #include <QColor>
+#include <QUuid>
+
+#include <fugio/lua/lua_interface.h>
 
 class LuaColor
 {
@@ -22,9 +25,12 @@ public:
 
 	virtual ~LuaColor( void ) {}
 
+#if defined( LUA_SUPPORTED )
 	static int luaOpen( lua_State *L );
 
 	static int luaNew( lua_State *L );
+
+	static int luaPinGet( const QUuid &pPinLocalId, lua_State *L );
 
 	static int pushcolor( lua_State *L, const QColor &pColor )
 	{
@@ -77,6 +83,7 @@ private:
 private:
 	static const luaL_Reg					mLuaInstance[];
 	static const luaL_Reg					mLuaMethods[];
+#endif
 };
 
 

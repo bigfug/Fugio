@@ -15,6 +15,8 @@ BoolToTriggerNode::BoolToTriggerNode( QSharedPointer<fugio::NodeInterface> pNode
 	pinOutput<fugio::PinControlInterface *>( "Trigger", O, PID_TRIGGER );
 
 	mNode->pairPins( I, O );
+
+	I->setAutoRename( true );
 }
 
 bool BoolToTriggerNode::initialise()
@@ -97,3 +99,7 @@ bool BoolToTriggerNode::canAcceptPin( fugio::PinInterface *pPin ) const
 	return( pPin->direction() == PIN_OUTPUT );
 }
 
+bool BoolToTriggerNode::pinShouldAutoRename(fugio::PinInterface *pPin) const
+{
+	return( pPin->direction() == PIN_INPUT );
+}

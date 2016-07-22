@@ -23,6 +23,12 @@ public:
 	virtual void listSetIndex( int pIndex, const QVariant &pValue ) = 0;
 
 	virtual void listSetSize( int pSize ) = 0;
+
+	virtual void listClear( void ) = 0;
+
+	virtual void listAppend( const QVariant &pValue ) = 0;
+
+	virtual bool listIsEmpty( void ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

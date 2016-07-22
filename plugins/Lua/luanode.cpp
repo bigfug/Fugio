@@ -20,12 +20,14 @@ const luaL_Reg LuaNode::mLuaMethods[] =
 
 void LuaNode::registerFunctions()
 {
+#if defined( LUA_SUPPORTED )
 	LuaPlugin		*LUA = LuaPlugin::instance();
 
 	LUA->luaAddFunction( "input", LuaNode::luaInput );
 	LUA->luaAddFunction( "output", LuaNode::luaOutput );
 	LUA->luaAddFunction( "inputs", LuaNode::luaInputs );
 	LUA->luaAddFunction( "outputs", LuaNode::luaOutputs );
+#endif
 }
 
 LuaNode::LuaNode( QSharedPointer<fugio::NodeInterface> pNode )
@@ -65,18 +67,21 @@ bool LuaNode::initialise()
 
 bool LuaNode::deinitialise()
 {
+#if defined( LUA_SUPPORTED )
 	if( mL )
 	{
 		lua_close( mL );
 
 		mL = 0;
 	}
+#endif
 
 	return( NodeControlBase::deinitialise() );
 }
 
 void LuaNode::inputsUpdated( qint64 pTimeStamp )
 {
+#if defined( LUA_SUPPORTED )
 	fugio::Performance( node(), "inputsUpdated", pTimeStamp );
 
 	if( mPinSource->isUpdated( pTimeStamp ) )
@@ -252,8 +257,10 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 
 		lua_pop( mL, 1 );
 	}
+#endif
 }
 
+#if defined( LUA_SUPPORTED )
 int LuaNode::luaInput( lua_State *L )
 {
 	LuaInterface					*LUA = qobject_cast<LuaInterface *>( LuaPlugin::instance()->app()->findInterface( IID_LUA ) );
@@ -397,3 +404,4 @@ int LuaNode::luaopen_fugio( lua_State *L )
 
 	return 1;
 }
+#endif

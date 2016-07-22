@@ -13,6 +13,8 @@ AbsNode::AbsNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInput = pinInput( "Number", PII_NUMBER1 );
 
 	mValOutput = pinOutput<fugio::VariantInterface *>( "Number", mPinOutput, PID_FLOAT, PII_NUMBER2 );
+
+	mPinInput->setAutoRename( true );
 }
 
 void AbsNode::inputsUpdated( qint64 pTimeStamp )

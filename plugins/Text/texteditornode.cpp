@@ -12,6 +12,7 @@
 #include <fugio/node_signals.h>
 #include <fugio/pin_signals.h>
 #include <fugio/global_interface.h>
+#include <fugio/context_signals.h>
 
 #include "texteditorform.h"
 #include "cmdtexteditorupdate.h"
@@ -242,14 +243,10 @@ void TextEditorNode::onTextModified( bool pModified )
 
 void TextEditorNode::onTextUpdate()
 {
-	fugio::ContextWidgetInterface	*ICW = qobject_cast<fugio::ContextWidgetInterface *>( mNode->context()->findInterface( IID_CONTEXT_WIDGET ) );
+	// We need to trigger the update within the context of the frame start so
+	// pin processing takes place...
 
-	if( ICW )
-	{
-		CmdTextEditorUpdate		*CMD = new CmdTextEditorUpdate( mPinString, mTextEdit->textEdit()->document()->toPlainText() );
-
-		ICW->undoStack()->push( CMD );
-	}
+	connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
 }
 
 void TextEditorNode::onTextPinUpdated()
@@ -263,11 +260,36 @@ void TextEditorNode::onTextPinUpdated()
 
 	const QString	NewTxt = mPinStringInterface->variant().toString();
 
-	if( NewTxt != mTextEdit->textEdit()->document()->toPlainText() )
+	if( NewTxt != mTextEdit->textEdit()->document()->toPlainText() && !NewTxt.isEmpty() )
 	{
 		mTextEdit->textEdit()->document()->setPlainText( NewTxt );
 
 		emit modified( false );
 	}
+}
+
+void TextEditorNode::contextFrameStart()
+{
+	if( mTextEdit->textEdit()->document()->isModified() )
+	{
+		fugio::ContextWidgetInterface	*ICW = qobject_cast<fugio::ContextWidgetInterface *>( mNode->context()->findInterface( IID_CONTEXT_WIDGET ) );
+
+		if( ICW )
+		{
+			CmdTextEditorUpdate		*CMD = new CmdTextEditorUpdate( mPinString, mTextEdit->textEdit()->document()->toPlainText() );
+
+			ICW->undoStack()->push( CMD );
+		}
+
+		emit modified( false );
+	}
+	else
+	{
+		pinUpdated( mPinString );
+	}
+
+	// disconnect the frame start again
+
+	disconnect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
 }
 
