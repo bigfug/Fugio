@@ -191,7 +191,9 @@ int main(int argc, char *argv[])
 
 	CLP.setApplicationDescription( "Fugio Editor" );
 
-	//CLP.addOption( QCommandLineOption( "patch", "The patch (or patches) to load on startup" ) );
+	QCommandLineOption		ClearSettingsOption( "clear-settings", "Clear all settings (mainly for testing purposes)" );
+
+	CLP.addOption( ClearSettingsOption );
 
 	//-------------------------------------------------------------------------
 	// Register and load plugins
@@ -247,9 +249,9 @@ int main(int argc, char *argv[])
 		}
 #endif
 
-		CLP.process( *APP );
-
 		APP->processEvents();
+
+		CLP.process( *APP );
 
 		WND->createDeviceMenu();
 
@@ -328,6 +330,13 @@ int main(int argc, char *argv[])
 	qApp->removeTranslator( &Translator );
 
 	qApp->removeTranslator( &qtTranslator );
+
+	if( CLP.isSet( ClearSettingsOption ) )
+	{
+		qInfo() << "Settings cleared";
+
+		Settings.clear();
+	}
 
 	delete APP;
 
