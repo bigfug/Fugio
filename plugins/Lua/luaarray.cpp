@@ -5,6 +5,8 @@
 
 #include "luaplugin.h"
 
+#if defined( LUA_SUPPORTED )
+
 const luaL_Reg LuaArray::mLuaFunctions[] =
 {
 	{ 0, 0 }
@@ -419,3 +421,4 @@ int LuaArray::luaSetType( lua_State *L )
 	return( 0 );
 }
 
+#endif

@@ -8,7 +8,7 @@
 
 #include <fugio/nodecontrolbase.h>
 
-#if defined( LUA_PLUGIN_SUPPORTED )
+#if defined( LUA_SUPPORTED )
 #include <lua.hpp>
 #endif
 
@@ -39,6 +39,7 @@ ClassEntry PinClasses[] =
 	ClassEntry()
 };
 
+#if defined( LUA_SUPPORTED )
 void LuaPlugin::registerNodeToState( NodeInterface *N, lua_State *L ) const
 {
 	// Store a pointer to this in Lua's registry
@@ -48,6 +49,7 @@ void LuaPlugin::registerNodeToState( NodeInterface *N, lua_State *L ) const
 	/* registry[&Key] = myNumber */
 	lua_settable( L, LUA_REGISTRYINDEX );
 }
+#endif
 
 PluginInterface::InitResult LuaPlugin::initialise( fugio::GlobalInterface *pApp )
 {
@@ -59,6 +61,7 @@ PluginInterface::InitResult LuaPlugin::initialise( fugio::GlobalInterface *pApp 
 
 	mApp->registerInterface( IID_LUA, this );
 
+#if defined( LUA_SUPPORTED )
 	luaRegisterExtension( LuaExNode::lua_opennode );
 	luaRegisterExtension( LuaExPin::lua_openpin );
 	luaRegisterExtension( LuaArray::lua_openarray );
@@ -69,6 +72,7 @@ PluginInterface::InitResult LuaPlugin::initialise( fugio::GlobalInterface *pApp 
 	luaAddFunction( "timestamp", LuaPlugin::luaTimestamp );
 
 	LuaNode::registerFunctions();
+#endif
 
 	return( INIT_OK );
 }
@@ -102,12 +106,14 @@ void LuaPlugin::luaRegisterLibrary(const char *pName, int (*pFunction)(lua_State
 
 void LuaPlugin::luaAddExtensions( lua_State *L )
 {
+#if defined( LUA_SUPPORTED )
 	for( lua_CFunction F : mExtensions )
 	{
 		F( L );
 
 		lua_pop( L, 1 );
 	}
+#endif
 }
 
 void LuaPlugin::luaAddFunction(const char *pName, int (*pFunction)(lua_State *))
@@ -125,25 +131,34 @@ void LuaPlugin::luaAddPinGet(const QUuid &pPID, LuaInterface::luaPinGetFunc pFun
 	mGetFunctions.insert( pPID, pFunction );
 }
 
-NodeInterface *LuaPlugin::node(lua_State *L)
+NodeInterface *LuaPlugin::node( lua_State *L)
 {
+#if defined( LUA_SUPPORTED )
 	lua_pushlightuserdata( L, (void *)&NodeKey );
 	lua_gettable( L, LUA_REGISTRYINDEX );
 
 	return( static_cast<NodeInterface *>( lua_touserdata( L, -1 ) ) );
+#else
+	return( nullptr );
+#endif
 }
 
 QUuid LuaPlugin::checkpin( lua_State *L, int i)
 {
+#if defined( LUA_SUPPORTED )
 	void *ud = luaL_checkudata( L, i, "fugio.pin" );
 
 	luaL_argcheck( L, ud != NULL, i, "'pin' expected" );
 
 	return( QUuid::fromRfc4122( QByteArray::fromRawData( (const char *)ud, 16 ) ) );
+#else
+	return( QUuid() );
+#endif
 }
 
 void LuaPlugin::pushpin( lua_State *L, const QUuid &pUuid )
 {
+#if defined( LUA_SUPPORTED )
 	quint8	*UD = (quint8 *)lua_newuserdata( L, 16 );
 
 	if( UD )
@@ -153,6 +168,7 @@ void LuaPlugin::pushpin( lua_State *L, const QUuid &pUuid )
 
 		memcpy( UD, pUuid.toRfc4122().data(), 16 );
 	}
+#endif
 }
 
 NodeInterface *LuaPlugin::getnode( lua_State *L )
@@ -171,6 +187,7 @@ QSharedPointer<PinInterface> LuaPlugin::getpin( lua_State *L, int i )
 
 //-----------------------------------------------------------------------------
 
+#if defined( LUA_SUPPORTED )
 int LuaPlugin::luaLog( lua_State *L )
 {
 	for( int i = 1 ; i <= lua_gettop( L ) ; i++ )
@@ -368,3 +385,4 @@ QVariant LuaPlugin::popVariant( lua_State *L, int idx )
 	return( QVariant() );
 }
 
+#endif

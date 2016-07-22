@@ -2,6 +2,8 @@
 
 const char *LuaFont::FontUserData::TypeName = "qt.font";
 
+#if defined( LUA_SUPPORTED )
+
 const luaL_Reg LuaFont::mLuaInstance[] =
 {
 	{ 0, 0 }
@@ -139,3 +141,4 @@ int LuaFont::luaSetPointSize( lua_State *L )
 	return( 0 );
 }
 
+#endif

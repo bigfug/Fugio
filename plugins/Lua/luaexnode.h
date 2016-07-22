@@ -1,7 +1,7 @@
 #ifndef LUAEXNODE_H
 #define LUAEXNODE_H
 
-#if defined( LUA_PLUGIN_SUPPORTED )
+#if defined( LUA_SUPPORTED )
 #include <lua.hpp>
 #endif
 
@@ -12,8 +12,9 @@
 class LuaExNode
 {
 public:
-	LuaExNode();
+	LuaExNode() {}
 
+#if defined( LUA_SUPPORTED )
 	static int luaGetName( lua_State *L );
 
 	// LuaExtension interface
@@ -23,6 +24,7 @@ public:
 private:
 	static const luaL_Reg					mLuaFunctions[];
 	static const luaL_Reg					mLuaMethods[];
+#endif
 };
 
 #endif // LUAEXNODE_H

@@ -2,6 +2,8 @@
 
 const char *LuaTransform::TransformUserData::TypeName = "qt.transform";
 
+#if defined( LUA_SUPPORTED )
+
 const luaL_Reg LuaTransform::mLuaInstance[] =
 {
 	{ 0, 0 }
@@ -50,3 +52,5 @@ int LuaTransform::luaDelete( lua_State *L )
 
 	return( 0 );
 }
+
+#endif

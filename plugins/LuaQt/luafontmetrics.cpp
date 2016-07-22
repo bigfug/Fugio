@@ -5,6 +5,8 @@
 
 const char *LuaFontMetrics::FontMetricsUserData::TypeName = "qt.fontmetrics";
 
+#if defined( LUA_SUPPORTED )
+
 const luaL_Reg LuaFontMetrics::mLuaInstance[] =
 {
 	{ 0, 0 }
@@ -89,3 +91,5 @@ int LuaFontMetrics::luaBoundingRect( lua_State *L )
 
 	return( 1 );
 }
+
+#endif

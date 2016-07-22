@@ -40,13 +40,9 @@ public:
 	virtual void deinitialise( void ) Q_DECL_OVERRIDE;
 
 private:
+#if defined( LUA_SUPPORTED )
 	static int luaOpen( lua_State *L );
-
-//	static int luaImageRect( lua_State *L );
-//	static int luaImageResize( lua_State *L );
-//	static int luaImageSize( lua_State *L );
-
-//	static int luaGetImage( const QUuid &pPinId, lua_State *L );
+#endif
 
 private:
 	static LuaQtPlugin			*mInstance;

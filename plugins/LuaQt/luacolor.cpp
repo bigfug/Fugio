@@ -11,6 +11,8 @@
 
 const char *LuaColor::ColorUserData::TypeName = "qt.color";
 
+#if defined( LUA_SUPPORTED )
+
 const luaL_Reg LuaColor::mLuaInstance[] =
 {
 	{ "fromRgba", LuaColor::luaFromRgba },
@@ -255,3 +257,5 @@ int LuaColor::luaSetRgba( lua_State *L )
 
 	return( 0 );
 }
+
+#endif

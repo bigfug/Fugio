@@ -5,6 +5,8 @@
 
 const char *LuaBrush::BrushUserData::TypeName = "qt.brush";
 
+#if defined( LUA_SUPPORTED )
+
 const QMap<QString,Qt::BrushStyle>	LuaBrush::mBrushStyleMap =
 {
 	{ "none", Qt::NoBrush },
@@ -201,3 +203,5 @@ int LuaBrush::luaStyle( lua_State *L )
 
 	return( 1 );
 }
+
+#endif

@@ -19,13 +19,6 @@ FUGIO_NAMESPACE_END
 
 class LuaPainter
 {
-public:
-	LuaPainter();
-
-	static int luaOpen( lua_State *L );
-
-	static int luaNew( lua_State *L );
-private:
 	typedef struct LuaPainterData
 	{
 		static const char *TypeName;
@@ -34,6 +27,17 @@ private:
 		QImage			*mImage;
 		PinInterface	*mPin;
 	} LuaPainterData;
+
+public:
+	LuaPainter() {}
+
+	virtual ~LuaPainter( void ) {}
+
+#if defined( LUA_SUPPORTED )
+	static int luaOpen( lua_State *L );
+
+	static int luaNew( lua_State *L );
+private:
 
 	static LuaPainterData *checkpainter( lua_State *L, int i = 1 );
 
@@ -77,6 +81,7 @@ private:
 
 	static const luaL_Reg					mLuaFunctions[];
 	static const luaL_Reg					mLuaMethods[];
+#endif
 };
 
 #endif // LUAPAINTER_H

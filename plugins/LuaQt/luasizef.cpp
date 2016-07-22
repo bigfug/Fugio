@@ -2,6 +2,8 @@
 
 const char *LuaSizeF::SizeFUserData::TypeName = "qt.sizef";
 
+#if defined( LUA_SUPPORTED )
+
 const luaL_Reg LuaSizeF::mLuaInstance[] =
 {
 	{ 0, 0 }
@@ -94,3 +96,5 @@ int LuaSizeF::luaHeight( lua_State *L )
 
 	return( 1 );
 }
+
+#endif

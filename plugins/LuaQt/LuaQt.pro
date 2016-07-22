@@ -127,7 +127,7 @@ win32:exists( $$(LIBS)/Lua-5.3.2 ) {
 macx:exists( /usr/local/include/lua.hpp ) {
     INCLUDEPATH += /usr/local/include
 
-    LIBS += -L/usr/local/lib -llua.5.2
+    LIBS += -L/usr/local/lib -llua
 
     DEFINES += LUA_SUPPORTED
 }

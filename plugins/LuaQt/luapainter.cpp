@@ -27,6 +27,8 @@
 
 const char *LuaPainter::LuaPainterData::TypeName = "qt.painter";
 
+#if defined( LUA_SUPPORTED )
+
 const luaL_Reg LuaPainter::mLuaFunctions[] =
 {
 	{ 0, 0 }
@@ -61,11 +63,6 @@ const luaL_Reg LuaPainter::mLuaMethods[] =
 	{ "translate",			LuaPainter::luaTranslate },
 	{ 0, 0 }
 };
-
-LuaPainter::LuaPainter()
-{
-
-}
 
 int LuaPainter::luaOpen( lua_State *L )
 {
@@ -744,3 +741,5 @@ LuaPainter::LuaPainterData *LuaPainter::checkactivepainter( lua_State *L, int i 
 
 	return( PainterData );
 }
+
+#endif
