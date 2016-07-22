@@ -1,12 +1,12 @@
 #ifndef PAINTERPLUGIN_H
 #define PAINTERPLUGIN_H
 
-#include <fugio/plugin_interface.h>
-#include <fugio/lua/lua_interface.h>
-
 #if defined( LUA_SUPPORTED )
 #include <lua.hpp>
 #endif
+
+#include <fugio/plugin_interface.h>
+#include <fugio/lua/lua_interface.h>
 
 FUGIO_NAMESPACE_BEGIN
 class ImageInterface;
