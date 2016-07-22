@@ -114,7 +114,7 @@ win32 {
     }
 }
 
-macx {
+macx:exists( /usr/local/include/fftw3.h ) {
     INCLUDEPATH += /usr/local/include
 
     LIBS += -L/usr/local/lib -lfftw3f

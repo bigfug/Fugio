@@ -78,11 +78,15 @@ macx {
         QMAKE_POST_LINK += $$qtLibChange( QtGui )
         QMAKE_POST_LINK += $$qtLibChange( QtCore )
 
-        QMAKE_POST_LINK += && install_name_tool -change /usr/local/lib/liblua.5.2.dylib liblua.5.2.dylib $$LIBCHANGEDEST
-
         QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
+        # we don't want to copy the Lua library into the bundle, so change its name
+
+        QMAKE_POST_LINK += && install_name_tool -change /usr/local/opt/lua/lib/liblua.5.2.dylib liblua.5.2.dylib $$LIBCHANGEDEST
+
         QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+
+        # now change it back
 
         QMAKE_POST_LINK += && install_name_tool -change liblua.5.2.dylib /usr/local/lib/liblua.5.2.dylib $$LIBCHANGEDEST
 
@@ -127,7 +131,7 @@ win32:exists( $$(LIBS)/Lua-5.3.2 ) {
 macx:exists( /usr/local/include/lua.hpp ) {
     INCLUDEPATH += /usr/local/include
 
-    LIBS += -L/usr/local/lib -llua.5.2
+    LIBS += -L/usr/local/lib -llua
 
     DEFINES += LUA_SUPPORTED
 }

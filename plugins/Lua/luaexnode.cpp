@@ -12,6 +12,8 @@
 
 using namespace fugio;
 
+#if defined( LUA_SUPPORTED )
+
 const luaL_Reg LuaExNode::mLuaFunctions[] =
 {
 	{ 0, 0 }
@@ -22,11 +24,6 @@ const luaL_Reg LuaExNode::mLuaMethods[] =
 	{ "name", LuaExNode::luaGetName },
 	{ 0, 0 }
 };
-
-LuaExNode::LuaExNode()
-{
-
-}
 
 int LuaExNode::luaGetName(lua_State *L)
 {
@@ -54,3 +51,5 @@ int LuaExNode::lua_opennode( lua_State *L )
 
 	return( 1 );
 }
+
+#endif

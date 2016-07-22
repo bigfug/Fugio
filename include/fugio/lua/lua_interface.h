@@ -5,10 +5,19 @@
 #include <QtPlugin>
 #include <fugio/global.h>
 
+// Define some core Lua structures if Lua hasn't been included
+
+#if !defined( lua_h )
 struct lua_State;
 
-#if !defined( lua_CFunction )
 typedef int (*lua_CFunction) (lua_State *L);
+
+typedef struct luaL_Reg {
+  const char *name;
+  lua_CFunction func;
+} luaL_Reg;
+
+#define LUA_ERRERR      5
 #endif
 
 FUGIO_NAMESPACE_BEGIN

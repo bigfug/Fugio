@@ -2,6 +2,8 @@
 
 const char *LuaPointF::PointFUserData::TypeName = "qt.pointf";
 
+#if defined( LUA_SUPPORTED )
+
 const luaL_Reg LuaPointF::mLuaInstance[] =
 {
 	{ "dotProduct",		LuaPointF::luaDotProduct },
@@ -170,3 +172,5 @@ int LuaPointF::luaY( lua_State *L )
 
 	return( 1 );
 }
+
+#endif

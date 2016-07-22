@@ -23,6 +23,7 @@ public:
 
 	virtual ~LuaBrush( void ) {}
 
+#if defined( LUA_SUPPORTED )
 	static int luaOpen( lua_State *L );
 
 	static int luaNew( lua_State *L );
@@ -80,6 +81,7 @@ private:
 	static const luaL_Reg					mLuaMethods[];
 
 	static const QMap<QString,Qt::BrushStyle>	mBrushStyleMap;
+#endif
 };
 
 

@@ -1,11 +1,13 @@
 #ifndef LUAARRAY_H
 #define LUAARRAY_H
 
-#if defined( LUA_PLUGIN_SUPPORTED )
+#if defined( LUA_SUPPORTED )
 #include <lua.hpp>
 #endif
 
 #include <QObject>
+
+#include <fugio/lua/lua_interface.h>
 
 class LuaArray
 {
@@ -20,6 +22,7 @@ public:
 
 	}
 
+#if defined( LUA_SUPPORTED )
 private:
 	typedef struct LuaArrayUserData
 	{
@@ -69,6 +72,7 @@ private:
 private:
 	static const luaL_Reg					mLuaInstance[];
 	static const luaL_Reg					mLuaFunctions[];
+#endif
 };
 
 #endif // LUAARRAY_H

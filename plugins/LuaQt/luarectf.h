@@ -38,6 +38,7 @@ public:
 
 	virtual ~LuaRectF( void ) {}
 
+#if defined( LUA_SUPPORTED )
 	static int luaOpen( lua_State *L );
 
 	static QRectF parseRectF( lua_State *L, int &pNewTop, bool *pRectOk = nullptr );
@@ -103,6 +104,7 @@ private:
 private:
 	static const luaL_Reg					mLuaInstance[];
 	static const luaL_Reg					mLuaMethods[];
+#endif
 };
 
 #endif // LUARECTF_H

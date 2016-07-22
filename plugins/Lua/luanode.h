@@ -5,9 +5,11 @@
 
 #include <fugio/nodecontrolbase.h>
 
-#if defined( LUA_PLUGIN_SUPPORTED )
+#if defined( LUA_SUPPORTED )
 #include <lua.hpp>
 #endif
+
+#include <fugio/lua/lua_interface.h>
 
 typedef QMap<QString,lua_CFunction>		LuaMap;
 
@@ -43,6 +45,7 @@ public:
 	static void registerFunctions( void );
 
 private:
+#if defined( LUA_SUPPORTED )
 	static int luaopen_fugio( lua_State *L );
 
 	static int luaInput(lua_State *L);
@@ -52,9 +55,10 @@ private:
 
 	static int luaGet(lua_State *L);
 	static int luaSet(lua_State *L);
+#endif
 
 protected:
-	QSharedPointer<fugio::PinInterface>			 mPinSource;
+	QSharedPointer<fugio::PinInterface>		 mPinSource;
 
 	lua_State								*mL;
 	int										 mCompileStatus;
