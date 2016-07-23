@@ -1276,6 +1276,8 @@ void MainWindow::initBegin()
 void MainWindow::initEnd()
 {
 	ui->mNodeList->setNodelistUpdate( true );
+
+	ui->mLogger->verticalScrollBar()->setValue( ui->mLogger->verticalScrollBar()->maximum() );
 }
 
 void MainWindow::promptUserForPatch()
