@@ -16,7 +16,7 @@ public:
 	{
 		setText( QObject::tr( "New Context" ) );
 
-		App::incrementStatistic( "context-new" );
+		gApp->incrementStatistic( "context-new" );
 	}
 
 	virtual ~CmdNewContext( void )

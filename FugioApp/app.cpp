@@ -74,10 +74,8 @@ void App::recordData( const QString &pName, const QString &pValue )
 
 	QString			Url = QString( "http://stats.bigfug.com/fugio-stats.php?i=%1&%2=%3" ).arg( fugio::utils::uuid2string( Instance ) ).arg( pName ).arg( pValue );
 
-	static QNetworkAccessManager	NAM;
-
-	if( NAM.networkAccessible() == QNetworkAccessManager::Accessible )
+	if( mNetworkAccessManager.networkAccessible() == QNetworkAccessManager::Accessible )
 	{
-		NAM.get( QNetworkRequest( Url ) );
+		mNetworkAccessManager.get( QNetworkRequest( Url ) );
 	}
 }

@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 
 	//-------------------------------------------------------------------------
 
-	App::incrementStatistic( "started" );
+	APP->incrementStatistic( "started" );
 
 	//-------------------------------------------------------------------------
 	// Install translator
@@ -325,7 +325,7 @@ int main(int argc, char *argv[])
 		delete WND;
 	}
 
-	App::incrementStatistic( "finished" );
+	APP->incrementStatistic( "finished" );
 
 	qApp->removeTranslator( &Translator );
 

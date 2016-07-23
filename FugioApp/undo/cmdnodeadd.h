@@ -23,9 +23,9 @@ public:
 
 		mContext = mContextWidget->context();
 
-		App::incrementStatistic( "node-added" );
+		gApp->incrementStatistic( "node-added" );
 
-		App::recordData( "node-add",fugio::utils::uuid2string( mUuid ) );
+		gApp->recordData( "node-add", fugio::utils::uuid2string( mUuid ) );
 	}
 
 	virtual ~CmdNodeAdd( void )
