@@ -1545,12 +1545,7 @@ void ContextPrivate::processUpdatedNodes( qint64 pTimeStamp )
 
 			if( NODE->hasControl() )
 			{
-				QSharedPointer<NodePrivate>	NP = qSharedPointerCast<NodePrivate>( NODE );
-
-				if( NP )
-				{
-					NP->inputsUpdated( pTimeStamp );
-				}
+				processNode( NODE, pTimeStamp );
 			}
 
 			mUpdatedNodeMutex.lock();
