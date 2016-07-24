@@ -39,12 +39,16 @@ protected slots:
 	void serverAcceptError( QAbstractSocket::SocketError pError );
 
 	void socketReadyRead( void );
+	void socketError( QAbstractSocket::SocketError pError );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinPort;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputBuffer;
 	fugio::VariantInterface						*mValOutputBuffer;
+
+	QSharedPointer<fugio::PinInterface>			 mPinOutputConnected;
+	fugio::VariantInterface						*mValOutputConnected;
 
 	QTcpServer									 mServer;
 

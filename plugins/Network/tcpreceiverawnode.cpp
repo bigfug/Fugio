@@ -16,7 +16,8 @@
 TCPReceiveRawNode::TCPReceiveRawNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mStream( nullptr )
 {
-	static const QUuid	ID_DATA = QUuid( "{70E5469F-A27B-4A54-BDE0-C2547A8EA269}" );
+	FUGID( PIN_OUTPUT_BUFFER,		"70E5469F-A27B-4A54-BDE0-C2547A8EA269" );
+	FUGID( PIN_OUTPUT_CONNECTED,	"DF4D11E8-5761-4D3F-B7F9-AF81731D402F" );
 
 	mPinPort = pinInput( "Port" );
 
@@ -24,7 +25,9 @@ TCPReceiveRawNode::TCPReceiveRawNode( QSharedPointer<fugio::NodeInterface> pNode
 
 	mPinPort->setValue( 7878 );
 
-	mValOutputBuffer = pinOutput<fugio::VariantInterface *>( "Data", mPinOutputBuffer, PID_BYTEARRAY, ID_DATA );
+	mValOutputBuffer = pinOutput<fugio::VariantInterface *>( "Data", mPinOutputBuffer, PID_BYTEARRAY, PIN_OUTPUT_BUFFER );
+
+	mValOutputConnected = pinOutput<fugio::VariantInterface *>( "Connected", mPinOutputConnected, PID_BOOL, PIN_OUTPUT_CONNECTED );
 }
 
 bool TCPReceiveRawNode::initialise()
@@ -106,7 +109,7 @@ void TCPReceiveRawNode::serverNewConnection()
 
 		if( mStream )
 		{
-			connect( S, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(serverAcceptError(QAbstractSocket::SocketError)) );
+			connect( S,SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)) );
 			connect( S, SIGNAL(readyRead()), this, SLOT(socketReadyRead()) );
 		}
 	}
@@ -125,6 +128,16 @@ void TCPReceiveRawNode::socketReadyRead()
 	connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(frameStart(qint64)) );
 }
 
+void TCPReceiveRawNode::socketError( QAbstractSocket::SocketError pError )
+{
+	Q_UNUSED( pError )
+
+	qDebug() << pError << mServer.errorString();
+
+	mNode->setStatus( fugio::NodeInterface::Error );
+	mNode->setStatusMessage( mServer.errorString() );
+}
+
 void TCPReceiveRawNode::inputsUpdated( qint64 pTimeStamp )
 {
 	if( mPinPort->isUpdated( pTimeStamp ) )
@@ -140,8 +153,24 @@ void TCPReceiveRawNode::inputsUpdated( qint64 pTimeStamp )
 		{
 			mServer.listen( QHostAddress::AnyIPv4, NewPort );
 		}
+	}
 
-		return;
+	bool		Connected = false;
+
+	if( mStream )
+	{
+		QTcpSocket		*S = qobject_cast<QTcpSocket *>( mStream->device() );
+
+		if( S && S->isOpen() )
+		{
+			Connected = true;
+		}
+	}
+
+	if( Connected != mValOutputConnected->variant().toBool() )
+	{
+		mValOutputConnected->setVariant( Connected );
+
+		pinUpdated( mPinOutputConnected );
 	}
 }
-
