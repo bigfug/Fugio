@@ -1510,6 +1510,21 @@ void ContextPrivate::processNode( QSharedPointer<fugio::NodeInterface> pNode, qi
 
 	if( NP )
 	{
+		// If the node's input pins are marked as updated, set the timestamp to this frame
+
+		for( QSharedPointer<fugio::PinInterface> &P : pNode->enumInputPins() )
+		{
+			PinPrivate	*PP = dynamic_cast<PinPrivate *>( P->qobject() );
+
+			if( P->updated() > pTimeStamp )
+			{
+				if( PP )
+				{
+					PP->setUpdated( pTimeStamp );
+				}
+			}
+		}
+
 		NP->inputsUpdated( pTimeStamp );
 	}
 }
@@ -1590,24 +1605,6 @@ void ContextPrivate::doFrameInitialise( qint64 pTimeStamp )
 
 void ContextPrivate::doFrameStart( qint64 pTimeStamp )
 {
-	// Any nodes that were updated in the last frame need their updated inputs set to the current timestamp
-
-	for( QSharedPointer<fugio::NodeInterface> &N : mFutureNodeList )
-	{
-		for( QSharedPointer<fugio::PinInterface> &P : N->enumInputPins() )
-		{
-			if( P->updated() > pTimeStamp )
-			{
-				PinPrivate	*PP = dynamic_cast<PinPrivate *>( P->qobject() );
-
-				if( PP )
-				{
-					PP->setUpdated( pTimeStamp );
-				}
-			}
-		}
-	}
-
 	mUpdatedNodeMutex.lock();
 
 	mUpdatedNodeList << mFutureNodeList;
