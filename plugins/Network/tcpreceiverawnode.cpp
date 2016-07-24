@@ -34,9 +34,11 @@ bool TCPReceiveRawNode::initialise()
 		return( false );
 	}
 
-	connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(frameStart(qint64)) );
-
 	connect( &mServer, SIGNAL(newConnection()), this, SLOT(serverNewConnection()) );
+	connect( &mServer, SIGNAL(acceptError(QAbstractSocket::SocketError)), this, SLOT(serverAcceptError(QAbstractSocket::SocketError)) );
+
+	mNode->setStatus( fugio::NodeInterface::Initialising );
+	mNode->setStatusMessage( "Waiting for connection" );
 
 	return( true );
 }
@@ -48,33 +50,43 @@ bool TCPReceiveRawNode::deinitialise()
 
 void TCPReceiveRawNode::frameStart( qint64 pTimeStamp )
 {
-	if( !mStream )
-	{
-		return;
-	}
-
 	QTcpSocket		*S = qobject_cast<QTcpSocket *>( mStream->device() );
 
-	if( !S->isOpen() )
+	if( S )
 	{
-		delete mStream;
-		delete S;
+		if( !S->isOpen() )
+		{
+			delete mStream;
+			delete S;
 
-		mStream = nullptr;
+			mStream = nullptr;
 
-		return;
+			if( mNode->status() != fugio::NodeInterface::Warning )
+			{
+				mNode->setStatus( fugio::NodeInterface::Warning );
+				mNode->setStatusMessage( "Socket not open" );
+			}
+		}
+		else
+		{
+			if( mNode->status() != fugio::NodeInterface::Initialised )
+			{
+				mNode->setStatus( fugio::NodeInterface::Initialised );
+				mNode->setStatusMessage( "Connected" );
+			}
+
+			if( S->bytesAvailable() )
+			{
+				fugio::Performance	Perf( mNode, "frameStart", pTimeStamp );
+
+				mValOutputBuffer->setVariant( S->readAll() );
+
+				pinUpdated( mPinOutputBuffer );
+			}
+		}
 	}
 
-	if( !S->bytesAvailable() )
-	{
-		return;
-	}
-
-	fugio::Performance	Perf( mNode, "frameStart", pTimeStamp );
-
-	mValOutputBuffer->setVariant( S->readAll() );
-
-	pinUpdated( mPinOutputBuffer );
+	disconnect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(frameStart(qint64)) );
 }
 
 void TCPReceiveRawNode::serverNewConnection()
@@ -91,16 +103,43 @@ void TCPReceiveRawNode::serverNewConnection()
 		}
 
 		mStream = new QDataStream( S );
+
+		if( mStream )
+		{
+			connect( S, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(serverAcceptError(QAbstractSocket::SocketError)) );
+			connect( S, SIGNAL(readyRead()), this, SLOT(socketReadyRead()) );
+		}
 	}
+}
+
+void TCPReceiveRawNode::serverAcceptError( QAbstractSocket::SocketError pError )
+{
+	Q_UNUSED( pError )
+
+	mNode->setStatus( fugio::NodeInterface::Error );
+	mNode->setStatusMessage( mServer.errorString() );
+}
+
+void TCPReceiveRawNode::socketReadyRead()
+{
+	connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(frameStart(qint64)) );
 }
 
 void TCPReceiveRawNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( !pTimeStamp || mPinPort->isUpdated( pTimeStamp ) )
+	if( mPinPort->isUpdated( pTimeStamp ) )
 	{
-		mServer.close();
+		int			NewPort = variant( mPinPort ).toInt();
 
-		mServer.listen( QHostAddress::Any, variant( mPinPort ).toInt() );
+		if( mServer.isListening() && mServer.serverPort() != NewPort )
+		{
+			mServer.close();
+		}
+
+		if( !mServer.isListening() )
+		{
+			mServer.listen( QHostAddress::AnyIPv4, NewPort );
+		}
 
 		return;
 	}

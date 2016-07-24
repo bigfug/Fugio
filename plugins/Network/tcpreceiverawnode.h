@@ -36,6 +36,9 @@ protected slots:
 	void frameStart( qint64 pTimeStamp );
 
 	void serverNewConnection( void );
+	void serverAcceptError( QAbstractSocket::SocketError pError );
+
+	void socketReadyRead( void );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinPort;
