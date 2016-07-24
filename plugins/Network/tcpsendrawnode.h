@@ -30,6 +30,9 @@ public:
 
 protected slots:
 	void socketConnected( void );
+	void socketDisconnected( void );
+	void socketError( QAbstractSocket::SocketError pError );
+	void socketHostFound( void );
 
 	void sendData( qint64 pTimeStamp );
 
