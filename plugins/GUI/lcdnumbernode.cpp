@@ -20,8 +20,6 @@ bool LcdNumberNode::initialise()
 		return( false );
 	}
 
-	inputsUpdated( 0 );
-
 	return( true );
 }
 
