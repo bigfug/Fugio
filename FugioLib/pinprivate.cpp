@@ -255,7 +255,7 @@ void PinPrivate::setValue( const QVariant &pVariant )
 	{
 		mDefaultValue = pVariant;
 
-		mUpdated = mContext->global()->timestamp();
+		mUpdated = std::numeric_limits<qint64>::max(); //mContext->global()->timestamp();
 
 		emit valueChanged( mDefaultValue );
 	}

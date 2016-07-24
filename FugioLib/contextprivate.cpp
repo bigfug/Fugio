@@ -1601,7 +1601,7 @@ void ContextPrivate::doFrameStart( qint64 pTimeStamp )
 	{
 		for( QSharedPointer<fugio::PinInterface> &P : N->enumInputPins() )
 		{
-			if( P->updated() == mLastTimeStamp )
+			if( P->updated() == mLastTimeStamp || P->updated() > pTimeStamp )
 			{
 				PinPrivate	*PP = dynamic_cast<PinPrivate *>( P->qobject() );
 
