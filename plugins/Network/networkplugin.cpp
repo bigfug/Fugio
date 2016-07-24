@@ -19,6 +19,7 @@
 #include "udpsendrawnode.h"
 
 #include "slipdecodenode.h"
+#include "slipencodenode.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
@@ -32,6 +33,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "TCP Receive Raw", "Network", NID_TCP_RECEIVE_RAW, &TCPReceiveRawNode::staticMetaObject ),
 	ClassEntry( "UDP Receive Raw", "Network", NID_UDP_RECEIVE_RAW, &UDPReceiveRawNode::staticMetaObject ),
 	ClassEntry( "UDP Send Raw", "Network", NID_UDP_SEND_RAW, &UDPSendRawNode::staticMetaObject ),
+	ClassEntry( "SLIP Encode", "Network", NID_SLIP_ENCODE, &SLIPEncodeNode::staticMetaObject ),
 	ClassEntry( "SLIP Decode", "Network", NID_SLIP_DECODE, &SLIPDecodeNode::staticMetaObject ),
 	ClassEntry()
 };
