@@ -21,8 +21,33 @@ const luaL_Reg LuaColor::mLuaInstance[] =
 
 const luaL_Reg LuaColor::mLuaMethods[] =
 {
-	{ "__tostring", LuaColor::luaToString },
-	{ "setRgba",	LuaColor::luaSetRgba },
+	{ "__tostring",	 LuaColor::luaToString },
+	{ "alpha",			LuaColor::luaAlpha },
+	{ "alphaF",			LuaColor::luaAlphaF },
+	{ "blue",			LuaColor::luaBlue },
+	{ "blueF",			LuaColor::luaBlueF },
+	{ "green",			LuaColor::luaGreen },
+	{ "greenF",			LuaColor::luaGreenF },
+	{ "hue",			LuaColor::luaHue },
+	{ "hueF",			LuaColor::luaHueF },
+	{ "lightness",		LuaColor::luaLightness },
+	{ "lightnessF",		LuaColor::luaLightnessF },
+	{ "red",			LuaColor::luaRed },
+	{ "redF",			LuaColor::luaRedF },
+	{ "saturation",		LuaColor::luaSaturation },
+	{ "saturationF",	LuaColor::luaSaturationF },
+	{ "setAlpha",		LuaColor::luaSetAlpha },
+	{ "setAlphaF",		LuaColor::luaSetAlphaF },
+	{ "setBlue",		LuaColor::luaSetBlue },
+	{ "setBlueF",		LuaColor::luaSetBlueF },
+	{ "setGreen",		LuaColor::luaSetGreen },
+	{ "setGreenF",		LuaColor::luaSetGreenF },
+	{ "setRed",			LuaColor::luaSetRed },
+	{ "setRedF",		LuaColor::luaSetRedF },
+	{ "setHsl",			LuaColor::luaSetHsl },
+	{ "setRgb",			LuaColor::luaSetRgb },
+	{ "setHslF",		LuaColor::luaSetHslF },
+	{ "setRgbF",		LuaColor::luaSetRgbF },
 	{ 0, 0 }
 };
 
@@ -204,7 +229,117 @@ int LuaColor::luaFromRgba( lua_State *L )
 	return( 1 );
 }
 
-int LuaColor::luaSetRgba( lua_State *L )
+int LuaColor::luaSetHslF(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+	qreal				 hsla[ 4 ];
+
+	hsla[ 0 ] = Color.hueF();
+	hsla[ 1 ] = Color.saturationF();
+	hsla[ 2 ] = Color.lightnessF();
+	hsla[ 3 ] = Color.alphaF();
+
+	luaL_checkany( L, 2 );
+
+	if( lua_type( L, 2 ) == LUA_TNUMBER )
+	{
+		hsla[ 0 ] = luaL_checknumber( L, 2 );
+		hsla[ 1 ] = luaL_checknumber( L, 3 );
+		hsla[ 2 ] = luaL_checknumber( L, 4 );
+
+		if( lua_gettop( L ) >= 5 )
+		{
+			hsla[ 3 ] = luaL_checknumber( L, 5 );
+		}
+	}
+	else if( lua_type( L, 2 ) == LUA_TTABLE )
+	{
+		for( int i = 0 ; i < 3 ; i++ )
+		{
+			lua_rawgeti( L, 2, i );
+
+			if( lua_isnil( L, -1 ) )
+			{
+				lua_pop( L, 1 );
+
+				break;
+			}
+
+			hsla[ i ] = lua_tonumberx( L, -1, 0 );
+
+			lua_pop( L, 1 );
+		}
+	}
+
+	for( int i = 0 ; i < 4 ; i++ )
+	{
+		hsla[ i ] = qBound( 0.0, hsla[ i ], 1.0 );
+	}
+
+	Color.setHslF( hsla[ 0 ], hsla[ 2 ], hsla[ 2 ], hsla[ 3 ] );
+
+	ColorData->mColor = Color.rgba();
+
+	return( 0 );
+}
+
+int LuaColor::luaSetRgbF( lua_State *L )
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+	qreal				 rgba[ 4 ];
+
+	rgba[ 0 ] = Color.redF();
+	rgba[ 1 ] = Color.greenF();
+	rgba[ 2 ] = Color.blueF();
+	rgba[ 3 ] = Color.alphaF();
+
+	luaL_checkany( L, 2 );
+
+	if( lua_type( L, 2 ) == LUA_TNUMBER )
+	{
+		rgba[ 0 ] = luaL_checknumber( L, 2 );
+		rgba[ 1 ] = luaL_checknumber( L, 3 );
+		rgba[ 2 ] = luaL_checknumber( L, 4 );
+
+		if( lua_gettop( L ) >= 5 )
+		{
+			rgba[ 3 ] = luaL_checknumber( L, 5 );
+		}
+	}
+	else if( lua_type( L, 2 ) == LUA_TTABLE )
+	{
+		for( int i = 0 ; i < 3 ; i++ )
+		{
+			lua_rawgeti( L, 2, i );
+
+			if( lua_isnil( L, -1 ) )
+			{
+				lua_pop( L, 1 );
+
+				break;
+			}
+
+			rgba[ i ] = lua_tonumberx( L, -1, 0 );
+
+			lua_pop( L, 1 );
+		}
+	}
+
+	for( int i = 0 ; i < 4 ; i++ )
+	{
+		rgba[ i ] = qBound( 0.0, rgba[ i ], 1.0 );
+	}
+
+	Color.setRgbF( rgba[ 0 ], rgba[ 1 ], rgba[ 2 ], rgba[ 3 ] );
+
+	ColorData->mColor = Color.rgba();
+
+	return( 0 );
+}
+
+int LuaColor::luaSetRgb( lua_State *L )
 {
 	ColorUserData		*ColorData = checkcolordata( L );
 	QColor				 Color( ColorData->mColor );
@@ -222,9 +357,13 @@ int LuaColor::luaSetRgba( lua_State *L )
 		rgba[ 0 ] = luaL_checknumber( L, 2 );
 		rgba[ 1 ] = luaL_checknumber( L, 3 );
 		rgba[ 2 ] = luaL_checknumber( L, 4 );
-	}
 
-	if( lua_type( L, 2 ) == LUA_TTABLE )
+		if( lua_gettop( L ) >= 5 )
+		{
+			rgba[ 3 ] = luaL_checknumber( L, 5 );
+		}
+	}
+	else if( lua_type( L, 2 ) == LUA_TTABLE )
 	{
 		for( int i = 0 ; i < 3 ; i++ )
 		{
@@ -252,6 +391,323 @@ int LuaColor::luaSetRgba( lua_State *L )
 	Color.setGreen( rgba[ 1 ] );
 	Color.setBlue( rgba[ 2 ] );
 	Color.setAlpha( rgba[ 3 ] );
+
+	ColorData->mColor = Color.rgba();
+
+	return( 0 );
+}
+
+int LuaColor::luaSetHsl( lua_State *L )
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+	int					 hsla[ 4 ];
+
+	hsla[ 0 ] = Color.hue();
+	hsla[ 1 ] = Color.saturation();
+	hsla[ 2 ] = Color.lightness();
+	hsla[ 3 ] = Color.alpha();
+
+	luaL_checkany( L, 2 );
+
+	if( lua_type( L, 2 ) == LUA_TNUMBER )
+	{
+		hsla[ 0 ] = luaL_checknumber( L, 2 );
+		hsla[ 1 ] = luaL_checknumber( L, 3 );
+		hsla[ 2 ] = luaL_checknumber( L, 4 );
+
+		if( lua_gettop( L ) >= 5 )
+		{
+			hsla[ 3 ] = luaL_checknumber( L, 5 );
+		}
+	}
+	else if( lua_type( L, 2 ) == LUA_TTABLE )
+	{
+		for( int i = 0 ; i < 3 ; i++ )
+		{
+			lua_rawgeti( L, 2, i );
+
+			if( lua_isnil( L, -1 ) )
+			{
+				lua_pop( L, 1 );
+
+				break;
+			}
+
+			hsla[ i ] = lua_tointeger( L, -1 );
+
+			lua_pop( L, 1 );
+		}
+	}
+
+	hsla[ 0 ] = qBound( 0, hsla[ 0 ], 359 );
+
+	for( int i = 1 ; i < 4 ; i++ )
+	{
+		hsla[ i ] = qBound( 0, hsla[ i ], 255 );
+	}
+
+	Color.setHsl( hsla[ 0 ], hsla[ 2 ], hsla[ 2 ], hsla[ 3 ] );
+
+	ColorData->mColor = Color.rgba();
+
+	return( 0 );
+}
+
+int LuaColor::luaAlpha(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_pushinteger( L, Color.alpha() );
+
+	return( 1 );
+}
+
+int LuaColor::luaAlphaF(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_pushnumber( L, Color.alphaF() );
+
+	return( 1 );
+}
+
+int LuaColor::luaBlue(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_pushinteger( L, Color.blue() );
+
+	return( 1 );
+}
+
+int LuaColor::luaBlueF(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_pushnumber( L, Color.blueF() );
+
+	return( 1 );
+}
+
+int LuaColor::luaGreen(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_pushinteger( L, Color.green() );
+
+	return( 1 );
+}
+
+int LuaColor::luaGreenF(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_pushnumber( L, Color.greenF() );
+
+	return( 1 );
+}
+
+int LuaColor::luaRed(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_pushinteger( L, Color.red() );
+
+	return( 1 );
+}
+
+int LuaColor::luaRedF(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_pushnumber( L, Color.redF() );
+
+	return( 1 );
+}
+
+int LuaColor::luaHue(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_pushinteger( L, Color.hue() );
+
+	return( 1 );
+}
+
+int LuaColor::luaHueF(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_pushnumber( L, Color.hueF() );
+
+	return( 1 );
+}
+
+int LuaColor::luaSaturation(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_pushinteger( L, Color.saturation() );
+
+	return( 1 );
+}
+
+int LuaColor::luaSaturationF(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_pushnumber( L, Color.saturationF() );
+
+	return( 1 );
+}
+
+int LuaColor::luaLightness(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_pushinteger( L, Color.lightness() );
+
+	return( 1 );
+}
+
+int LuaColor::luaLightnessF(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_pushnumber( L, Color.lightnessF() );
+
+	return( 1 );
+}
+
+int LuaColor::luaSetAlpha(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+	int					 V = luaL_checkinteger( L, 2 );
+
+	luaL_argcheck( L, V >= 0 && V <= 255, 2, "value between 0 and 255 expected" );
+
+	Color.setAlpha( V );
+
+	ColorData->mColor = Color.rgba();
+
+	return( 0 );
+}
+
+int LuaColor::luaSetAlphaF(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+	qreal				 V = luaL_checknumber( L, 2 );
+
+	luaL_argcheck( L, V >= 0.0 && V <= 1.0, 2, "value between 0.0 and 1.0 expected" );
+
+	Color.setAlphaF( V );
+
+	ColorData->mColor = Color.rgba();
+
+	return( 0 );
+}
+
+int LuaColor::luaSetBlue(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+	int					 V = luaL_checkinteger( L, 2 );
+
+	luaL_argcheck( L, V >= 0 && V <= 255, 2, "value between 0 and 255 expected" );
+
+	Color.setBlue( V );
+
+	ColorData->mColor = Color.rgba();
+
+	return( 0 );
+}
+
+int LuaColor::luaSetBlueF(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+	qreal				 V = luaL_checknumber( L, 2 );
+
+	luaL_argcheck( L, V >= 0.0 && V <= 1.0, 2, "value between 0.0 and 1.0 expected" );
+
+	Color.setBlueF( V );
+
+	ColorData->mColor = Color.rgba();
+
+	return( 0 );
+}
+
+int LuaColor::luaSetGreen(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+	int					 V = luaL_checkinteger( L, 2 );
+
+	luaL_argcheck( L, V >= 0 && V <= 255, 2, "value between 0 and 255 expected" );
+
+	Color.setGreen( V );
+
+	ColorData->mColor = Color.rgba();
+
+	return( 0 );
+}
+
+int LuaColor::luaSetGreenF(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+	qreal				 V = luaL_checknumber( L, 2 );
+
+	luaL_argcheck( L, V >= 0.0 && V <= 1.0, 2, "value between 0.0 and 1.0 expected" );
+
+	Color.setGreenF( V );
+
+	ColorData->mColor = Color.rgba();
+
+	return( 0 );
+}
+
+int LuaColor::luaSetRed(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+	int					 V = luaL_checkinteger( L, 2 );
+
+	luaL_argcheck( L, V >= 0 && V <= 255, 2, "value between 0 and 255 expected" );
+
+	Color.setRed( V );
+
+	ColorData->mColor = Color.rgba();
+
+	return( 0 );
+}
+
+int LuaColor::luaSetRedF(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+	qreal				 V = luaL_checknumber( L, 2 );
+
+	luaL_argcheck( L, V >= 0.0 && V <= 1.0, 2, "value between 0.0 and 1.0 expected" );
+
+	Color.setRedF( V );
 
 	ColorData->mColor = Color.rgba();
 
