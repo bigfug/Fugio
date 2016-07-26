@@ -42,7 +42,6 @@ SOURCES += \
     joinsizenode.cpp \
     arraypin.cpp \
     pointpin.cpp \
-    fadenode.cpp \
     size3dpin.cpp \
     coreplugin.cpp \
     splitlistnode.cpp \
@@ -65,7 +64,8 @@ SOURCES += \
     typesizenode.cpp \
     bytearraylistpin.cpp \
     switchnode.cpp \
-    floatthresholdnode.cpp
+    floatthresholdnode.cpp \
+    smoothnode.cpp
 
 HEADERS += \
     stringpin.h \
@@ -92,7 +92,6 @@ HEADERS += \
     joinsizenode.h \
     arraypin.h \
     pointpin.h \
-    fadenode.h \
     size3dpin.h \
     coreplugin.h \
     splitlistnode.h \
@@ -119,7 +118,8 @@ HEADERS += \
     typesizenode.h \
     bytearraylistpin.h \
     switchnode.h \
-    floatthresholdnode.h
+    floatthresholdnode.h \
+    smoothnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

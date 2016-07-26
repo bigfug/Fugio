@@ -1,4 +1,4 @@
-#include "fadenode.h"
+#include "smoothnode.h"
 
 #include <fugio/core/uuid.h>
 
@@ -6,8 +6,8 @@
 #include <fugio/context_signals.h>
 #include <fugio/node_signals.h>
 
-FadeNode::FadeNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mLastTime( 0 )
+SmoothNode::SmoothNode( QSharedPointer<fugio::NodeInterface> pNode )
+	: NodeControlBase( pNode ), mLastTime( std::numeric_limits<qint64>::max() )
 {
 	mPinInput = pinInput( "Number" );
 
@@ -32,7 +32,26 @@ FadeNode::FadeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinOutput->setDescription( tr( "The output Number" ) );
 }
 
-void FadeNode::onContextFrame( qint64 pTimeStamp )
+bool SmoothNode::initialise()
+{
+	if( !NodeControlBase::initialise() )
+	{
+		return( false );
+	}
+
+	connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(onContextFrame(qint64)) );
+
+	return( true );
+}
+
+bool SmoothNode::deinitialise()
+{
+	disconnect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(onContextFrame(qint64)) );
+
+	return( NodeControlBase::deinitialise() );
+}
+
+void SmoothNode::onContextFrame( qint64 pTimeStamp )
 {
 	if( pTimeStamp < mLastTime )
 	{
@@ -98,7 +117,7 @@ void FadeNode::onContextFrame( qint64 pTimeStamp )
 	mLastTime = pTimeStamp;
 }
 
-QList<QUuid> FadeNode::pinAddTypesInput() const
+QList<QUuid> SmoothNode::pinAddTypesInput() const
 {
 	static QList<QUuid>	PinLst =
 	{
@@ -108,19 +127,19 @@ QList<QUuid> FadeNode::pinAddTypesInput() const
 	return( PinLst );
 }
 
-bool FadeNode::canAcceptPin(fugio::PinInterface *pPin) const
+bool SmoothNode::canAcceptPin(fugio::PinInterface *pPin) const
 {
 	return( pPin->direction() == PIN_OUTPUT );
 }
 
-bool FadeNode::pinShouldAutoRename( fugio::PinInterface *pPin ) const
+bool SmoothNode::pinShouldAutoRename( fugio::PinInterface *pPin ) const
 {
 	Q_UNUSED( pPin )
 
 	return( true );
 }
 
-QUuid FadeNode::pairedPinControlUuid( QSharedPointer<fugio::PinInterface> pPin ) const
+QUuid SmoothNode::pairedPinControlUuid( QSharedPointer<fugio::PinInterface> pPin ) const
 {
 	Q_UNUSED( pPin )
 
