@@ -132,18 +132,8 @@ bool ContextPrivate::load( const QString &pFileName, bool pPartial )
 
 	for( QSharedPointer<fugio::NodeInterface> N : InitialisedNodes )
 	{
-		N->control()->inputsUpdated( 0 );
-
 		emit nodeComplete( N->uuid() );
 	}
-
-	//-------------------------------------------------------------------------
-
-	mUpdatedNodeMutex.lock();
-
-	mUpdatedNodeList.append( InitialisedNodes );
-
-	mUpdatedNodeMutex.unlock();
 
 	//-------------------------------------------------------------------------
 
@@ -1439,8 +1429,6 @@ void ContextPrivate::processDeferredNodes()
 
 	for( QSharedPointer<fugio::NodeInterface> N : InitialisedNodes )
 	{
-		N->control()->inputsUpdated( 0 );
-
 		emit nodeComplete( N->uuid() );
 	}
 
