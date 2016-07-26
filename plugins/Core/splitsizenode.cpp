@@ -19,19 +19,22 @@ SplitSizeNode::SplitSizeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void SplitSizeNode::inputsUpdated( qint64 pTimeStamp )
 {
-	QSizeF				 CurSze = variant( mPinInput ).toSizeF();
-
-	if( !pTimeStamp || mWidth->variant().toReal() != CurSze.width() )
+	if( mPinInput->isUpdated( pTimeStamp ) )
 	{
-		mWidth->setVariant( CurSze.width() );
+		QSizeF				 CurSze = variant( mPinInput ).toSizeF();
 
-		pinUpdated( mPinWidth );
-	}
+		if( mWidth->variant().toReal() != CurSze.width() )
+		{
+			mWidth->setVariant( CurSze.width() );
 
-	if( !pTimeStamp || mHeight->variant().toReal() != CurSze.height() )
-	{
-		mHeight->setVariant( CurSze.height() );
+			pinUpdated( mPinWidth );
+		}
 
-		pinUpdated( mPinHeight );
+		if( mHeight->variant().toReal() != CurSze.height() )
+		{
+			mHeight->setVariant( CurSze.height() );
+
+			pinUpdated( mPinHeight );
+		}
 	}
 }

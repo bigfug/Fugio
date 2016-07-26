@@ -99,13 +99,6 @@ bool FFTNode::deinitialise()
 
 void FFTNode::onContextFrame( qint64 pTimeStamp )
 {
-	if( !pTimeStamp )
-	{
-		mSamplePosition = 0;
-
-		return;
-	}
-
 	if( mProducerInstance && !mProducerInstance->isValid() )
 	{
 		delete mProducerInstance;

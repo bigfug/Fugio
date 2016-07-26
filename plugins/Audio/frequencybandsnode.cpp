@@ -72,7 +72,7 @@ void FrequencyBandsNode::inputsUpdated( qint64 pTimeStamp )
 		mValOutputBands->setType( QMetaType::Float );
 	}
 
-	if( !pTimeStamp || mPinInputFFT->isUpdated( pTimeStamp ) )
+	if( mPinInputFFT->isUpdated( pTimeStamp ) )
 	{
 		fugio::FftInterface		*FFT = input<fugio::FftInterface *>( mPinInputFFT );
 

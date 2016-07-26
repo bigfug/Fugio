@@ -50,7 +50,7 @@ void FloatThresholdNode::inputsUpdated( qint64 pTimeStamp )
 		const float			PinVal = variant( PinI ).toFloat();
 		const bool			PinRes = PinVal >= Threshold;
 
-		if( !pTimeStamp || VarO->variant().toBool() != PinRes )
+		if( VarO->variant().toBool() != PinRes )
 		{
 			VarO->setVariant( PinRes );
 

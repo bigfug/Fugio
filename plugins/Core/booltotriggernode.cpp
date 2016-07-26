@@ -33,11 +33,6 @@ bool BoolToTriggerNode::initialise()
 
 void BoolToTriggerNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( !pTimeStamp )
-	{
-		return;
-	}
-
 	for( fugio::NodeInterface::UuidPair UP : mNode->pairedPins() )
 	{
 		QSharedPointer<fugio::PinInterface> SrcPin = mNode->findPinByLocalId( UP.first );

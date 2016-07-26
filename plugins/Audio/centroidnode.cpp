@@ -23,19 +23,9 @@ CentroidNode::CentroidNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void CentroidNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( !pTimeStamp )
-	{
-		return;
-	}
-
 	fugio::FftInterface	*FFT = input<fugio::FftInterface *>( mPinInputFFT );
 
-	if( !FFT )
-	{
-		return;
-	}
-
-	if( !FFT->fft() )
+	if( !FFT || !FFT->fft() )
 	{
 		return;
 	}

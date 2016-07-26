@@ -21,10 +21,7 @@ AnyTriggerNode::AnyTriggerNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void AnyTriggerNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( !pTimeStamp )
-	{
-		return;
-	}
+	NodeControlBase::inputsUpdated( pTimeStamp );
 
 	pinUpdated( mPinOutput );
 }
