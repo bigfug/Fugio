@@ -222,22 +222,30 @@ public slots:
 
 	void popGroup( void );
 
-	QUuid group( const QString &pGroupName, QList<NodeItem *> &pNodeList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId = QUuid() );
+	QUuid group( const QString &pGroupName, QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId = QUuid() );
 
-	void ungroup( QList<NodeItem *> &pNodeList, QList<NoteItem *> &pNoteList , const QUuid &pGroupId );
+	void ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId );
 
 	void ungroup( NodeItem *pGroup );
 
 protected:
 	virtual void keyReleaseEvent( QKeyEvent *pEvent ) Q_DECL_OVERRIDE;
 
-	void sortSelectedItems( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkList, QList<NoteItem *> &pNoteList );
+	void sortSelectedItems( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkList, QList<NoteItem *> &pNoteList, bool pRecurse );
 
 	bool itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkItemList, QList<NoteItem *> &pNoteItemList, QList<QSharedPointer<fugio::NodeInterface>> &NodeList, QMultiMap<QUuid,QUuid> &LinkList, QList<QSharedPointer<NoteItem>> &NoteList );
 
 	bool itemsForRemoval( QList<QSharedPointer<fugio::NodeInterface>> &NodeList, QMultiMap<QUuid,QUuid> &LinkList, QList<QSharedPointer<NoteItem> > &NoteList );
 
 	virtual void mouseDoubleClickEvent( QMouseEvent *pEvent ) Q_DECL_OVERRIDE;
+
+	static QList<QUuid> nodeItemIds( const QList<NodeItem *> &pNodeList );
+
+	QList<NodeItem *> nodesFromIds( const QList<QUuid> &pIdsLst ) const;
+
+	QList<QUuid> recursiveGroupIds( const QList<NodeItem *> &pGroupList ) const;
+
+	void itemsInGroups( const QList<QUuid> &pGroupIdList, QList<NodeItem *> &pNodeList ) const;
 
 protected slots:
 	void loadStarted( QSettings &pSettings, bool pPartial );

@@ -120,21 +120,22 @@ ContextWidgetPrivate *ContextView::widget( void )
 	return( C );
 }
 
-void ContextView::sortSelectedItems( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkList, QList<NoteItem *> &pNoteList )
+void ContextView::sortSelectedItems( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkList, QList<NoteItem *> &pNoteList, bool pRecurse )
 {
 	for( QGraphicsItem *Item : mContextScene.selectedItems() )
 	{
 		if( NodeItem *NI = qgraphicsitem_cast<NodeItem *>( Item ) )
 		{
-			QSharedPointer<fugio::NodeInterface>		NODE = context()->findNode( NI->id() );
-
-			if( NODE )
+			if( NI->groupId() == groupId() )
 			{
-				pNodeList.append( NI );
-			}
-			else
-			{
-				pGroupList.append( NI );
+				if( !NI->isGroup() )
+				{
+					pNodeList.append( NI );
+				}
+				else
+				{
+					pGroupList.append( NI );
+				}
 			}
 
 			continue;
@@ -149,16 +150,34 @@ void ContextView::sortSelectedItems( QList<NodeItem *> &pNodeList, QList<NodeIte
 
 		if( NoteItem *TI = qgraphicsitem_cast<NoteItem *>( Item ) )
 		{
-			pNoteList.append( TI );
+			if( TI->groupId() == groupId() )
+			{
+				pNoteList.append( TI );
+			}
 
 			continue;
 		}
+	}
+
+	// Check if we have selected groups - we need to select their contents if so
+
+	if( pRecurse && !pGroupList.isEmpty() )
+	{
+		QList<QUuid>		GrpIds = recursiveGroupIds( pGroupList );
+
+		pGroupList = nodesFromIds( GrpIds );
+
+		// We need to select all the nodes that may have just been added in groups
+
+		GrpIds = nodeItemIds( pGroupList );
+
+		itemsInGroups( GrpIds, pNodeList );
 	}
 }
 
 bool ContextView::itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkItemList, QList<NoteItem *> &pNoteItemList, QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NoteItem> > &pNoteList )
 {
-	sortSelectedItems( pNodeItemList, pGroupList, pLinkItemList, pNoteItemList );
+	sortSelectedItems( pNodeItemList, pGroupList, pLinkItemList, pNoteItemList, true );
 
 	if( pNodeItemList.isEmpty() && pLinkItemList.isEmpty() && pNoteItemList.isEmpty() )
 	{
@@ -252,6 +271,82 @@ void ContextView::mouseDoubleClickEvent( QMouseEvent *pEvent )
 	QGraphicsView::mouseDoubleClickEvent( pEvent );
 }
 
+QList<QUuid> ContextView::nodeItemIds( const QList<NodeItem *> &pNodeList )
+{
+	QList<QUuid>		IdsLst;
+
+	for( NodeItem *NI : pNodeList )
+	{
+		IdsLst << NI->id();
+	}
+
+	return( IdsLst );
+}
+
+QList<NodeItem *> ContextView::nodesFromIds( const QList<QUuid> &pIdsLst) const
+{
+	QList<NodeItem *>		NodeList;
+
+	for( const QUuid &NID : pIdsLst )
+	{
+		QSharedPointer<NodeItem>		NI = mNodeList.value( NID );
+
+		if( NI )
+		{
+			NodeList << NI.data();
+		}
+	}
+
+	return( NodeList );
+}
+
+QList<QUuid> ContextView::recursiveGroupIds( const QList<NodeItem *> &pGroupList ) const
+{
+	QList<QUuid>		IdsLst;
+
+	for( NodeItem *NI : pGroupList )
+	{
+		if( !IdsLst.contains( NI->id() ) )
+		{
+			IdsLst << NI->id();
+		}
+	}
+
+	QList<QUuid>		GrpLst;
+
+	do
+	{
+		IdsLst.append( GrpLst );
+
+		GrpLst.clear();
+
+		for( QMap<QUuid, QSharedPointer<NodeItem> >::const_iterator it = mNodeList.cbegin() ; it != mNodeList.cend() ; it++ )
+		{
+			if( !IdsLst.contains( it.key() ) )
+			{
+				if( !GrpLst.contains( it.key() ) && IdsLst.contains( it.value()->groupId() ) && it.value()->isGroup() )
+				{
+					GrpLst << it.key();
+				}
+			}
+		}
+
+	} while( !GrpLst.isEmpty() );
+
+	return( IdsLst );
+}
+
+void ContextView::itemsInGroups( const QList<QUuid> &pGroupIdList, QList<NodeItem *> &pNodeList ) const
+{
+	for( QMap<QUuid, QSharedPointer<NodeItem> >::const_iterator it = mNodeList.cbegin() ; it != mNodeList.cend() ; it++ )
+	{
+		if( pGroupIdList.contains( it.value()->groupId() ) )
+		{
+			pNodeList << it.value().data();
+		}
+	}
+}
+
 void ContextView::keyReleaseEvent( QKeyEvent *pEvent )
 {
 	// Only process delete/backspace if there is no item that currently has focus (such as notes/editors)
@@ -267,7 +362,7 @@ void ContextView::keyReleaseEvent( QKeyEvent *pEvent )
 		QMultiMap<QUuid,QUuid>							LinkList;
 		QList<QSharedPointer<NoteItem>>					NoteList;
 
-		if( itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, NodeList, LinkList, NoteList) )
+		if( itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, NodeList, LinkList, NoteList ) )
 		{
 			QStringList		StuckNodes;
 
@@ -425,33 +520,6 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 	}
 
 	//-------------------------------------------------------------------------
-	// Node Groups
-
-	if( pSettings.childGroups().contains( "node-groups" ) )
-	{
-		pSettings.beginGroup( "node-groups" );
-
-		for( const QString &KS : pSettings.childKeys() )
-		{
-			QUuid	KID = fugio::utils::string2uuid( KS );
-
-			if( KID.isNull() )
-			{
-				continue;
-			}
-
-			QUuid	GID = fugio::utils::string2uuid( pSettings.value( KS ).toString() );
-
-			if( QSharedPointer<NodeItem> NI = mNodeList[ KID ] )
-			{
-				NI->setGroupId( GID );
-			}
-		}
-
-		pSettings.endGroup();
-	}
-
-	//-------------------------------------------------------------------------
 	// Groups
 
 	if( pSettings.childGroups().contains( "groups" ) )
@@ -481,9 +549,11 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 					nodeAdded( K, K );
 				}
 
-				if( QSharedPointer<NodeItem> NI = mNodeList[ K ] )
+				if( QSharedPointer<NodeItem> NI = mNodeList.value( K ) )
 				{
 					NI->setName( pSettings.value( KS ).toString() );
+
+					NI->setIsGroup( true );
 
 					QPointF	NP = mPositions.value( NI->id(), NI->pos() );
 
@@ -524,9 +594,11 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 					nodeAdded( GroupId, GroupId );
 				}
 
-				if( QSharedPointer<NodeItem> NI = mNodeList[ GroupId ] )
+				if( QSharedPointer<NodeItem> NI = mNodeList.value( GroupId ) )
 				{
 					NI->setName( GroupName );
+
+					NI->setIsGroup( true );
 
 					QPointF	NP = mPositions.value( NI->id(), NI->pos() );
 
@@ -538,6 +610,33 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 			pSettings.endArray();
 		}
+	}
+
+	//-------------------------------------------------------------------------
+	// Node Groups
+
+	if( pSettings.childGroups().contains( "node-groups" ) )
+	{
+		pSettings.beginGroup( "node-groups" );
+
+		for( const QString &KS : pSettings.childKeys() )
+		{
+			QUuid	KID = fugio::utils::string2uuid( KS );
+
+			if( KID.isNull() )
+			{
+				continue;
+			}
+
+			QUuid	GID = fugio::utils::string2uuid( pSettings.value( KS ).toString() );
+
+			if( QSharedPointer<NodeItem> NI = mNodeList.value( KID ) )
+			{
+				NI->setGroupId( GID );
+			}
+		}
+
+		pSettings.endGroup();
 	}
 
 	//-------------------------------------------------------------------------
@@ -1251,7 +1350,7 @@ void ContextView::setSelectedColour(const QColor &pColor)
 	QList<LinkItem *>  LinkList;
 	QList<NoteItem *>  NoteList;
 
-	sortSelectedItems( NodeList, GroupList, LinkList, NoteList );
+	sortSelectedItems( NodeList, GroupList, LinkList, NoteList, false );
 
 	//CmdSetColour	*CMD = new CmdSetColour( )
 	foreach( NodeItem *I, NodeList )
@@ -1400,7 +1499,7 @@ void ContextView::copy()
 	QList<LinkItem *>  LinkItemList;
 	QList<NoteItem *>  NoteItemList;
 
-	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList );
+	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList, true );
 
 	if( NodeItemList.isEmpty() && LinkItemList.isEmpty() && NoteItemList.isEmpty() )
 	{
@@ -1453,7 +1552,7 @@ void ContextView::saveSelectedTo( const QString &pFileName )
 	QList<LinkItem *>  LinkItemList;
 	QList<NoteItem *>  NoteItemList;
 
-	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList );
+	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList, true );
 
 	if( NodeItemList.isEmpty() && LinkItemList.isEmpty() && NoteItemList.isEmpty() )
 	{
@@ -1880,7 +1979,7 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 	NI->layoutPins();
 }
 
-QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId )
+QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId )
 {
 	const QUuid		NewGroupId = pGroupId.isNull() ? QUuid::createUuid() : pGroupId;
 
@@ -1890,6 +1989,11 @@ QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeLis
 	}
 
 	for( NodeItem *NI : pNodeList )
+	{
+		NI->setGroupId( NewGroupId );
+	}
+
+	for( NodeItem *NI : pGroupList )
 	{
 		NI->setGroupId( NewGroupId );
 	}
@@ -1908,6 +2012,8 @@ QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeLis
 
 	NI->setName( pGroupName );
 
+	NI->setIsGroup( true );
+
 	// Calculate the position of the group as the center of the nodes/notes
 
 	moveNodeRelative( NI.data(), pNodeList, pNoteList, TO_CENTER );
@@ -1921,7 +2027,7 @@ QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeLis
 	return( NewGroupId );
 }
 
-void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId )
+void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId )
 {
 	// Find the NodeItem for the supplied GroupId
 
@@ -2018,6 +2124,11 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NoteItem *> &pNot
 		NI->setGroupId( groupId() );
 	}
 
+	for( NodeItem *NI : pGroupList )
+	{
+		NI->setGroupId( groupId() );
+	}
+
 	for( NoteItem *NI : pNoteList )
 	{
 		NI->setGroupId( groupId() );
@@ -2105,9 +2216,9 @@ void ContextView::groupSelected()
 	QList<LinkItem *>  LinkItemList;
 	QList<NoteItem *>  NoteItemList;
 
-	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList );
+	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList, false );
 
-	if( NodeItemList.isEmpty() && NoteItemList.isEmpty() )
+	if( NodeItemList.isEmpty() && GroupItemList.isEmpty() && NoteItemList.isEmpty() )
 	{
 		return;
 	}
@@ -2121,7 +2232,7 @@ void ContextView::groupSelected()
 		GroupName = DefaultGroupName;
 	}
 
-	CmdGroup	*CMD = new CmdGroup( this, GroupName, NodeItemList, NoteItemList );
+	CmdGroup	*CMD = new CmdGroup( this, GroupName, NodeItemList, GroupItemList, NoteItemList );
 
 	if( CMD )
 	{
@@ -2136,7 +2247,7 @@ void ContextView::ungroupSelected()
 	QList<LinkItem *>  LinkItemList;
 	QList<NoteItem *>  NoteItemList;
 
-	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList );
+	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList, false );
 
 	if( NodeItemList.isEmpty() && NoteItemList.isEmpty() )
 	{
