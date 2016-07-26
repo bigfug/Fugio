@@ -52,7 +52,7 @@ public:
 		return( 20 );
 	}
 
-	QSharedPointer<fugio::ContextInterface> context( void )
+	inline QSharedPointer<fugio::ContextInterface> context( void )
 	{
 		return( mContext );
 	}
@@ -231,11 +231,11 @@ public slots:
 protected:
 	virtual void keyReleaseEvent( QKeyEvent *pEvent ) Q_DECL_OVERRIDE;
 
-	void sortSelectedItems( QList<NodeItem *> &pNodeList, QList<LinkItem *> &pLinkList, QList<NoteItem *> &pNoteList );
+	void sortSelectedItems( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkList, QList<NoteItem *> &pNoteList );
 
-	bool itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<LinkItem *> &pLinkItemList, QList<NoteItem *> &pNoteItemList, QList<QSharedPointer<fugio::NodeInterface>> &NodeList, QMultiMap<QUuid,QUuid> &LinkList, QList<QSharedPointer<NoteItem>> &NoteList );
+	bool itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkItemList, QList<NoteItem *> &pNoteItemList, QList<QSharedPointer<fugio::NodeInterface>> &NodeList, QMultiMap<QUuid,QUuid> &LinkList, QList<QSharedPointer<NoteItem>> &NoteList );
 
-	bool itemsForRemoval(QList<QSharedPointer<fugio::NodeInterface>> &NodeList, QMultiMap<QUuid,QUuid> &LinkList, QList<QSharedPointer<NoteItem> > &NoteList );
+	bool itemsForRemoval( QList<QSharedPointer<fugio::NodeInterface>> &NodeList, QMultiMap<QUuid,QUuid> &LinkList, QList<QSharedPointer<NoteItem> > &NoteList );
 
 	virtual void mouseDoubleClickEvent( QMouseEvent *pEvent ) Q_DECL_OVERRIDE;
 
@@ -324,6 +324,18 @@ public slots:
 	}
 
 private:
+	typedef struct GroupStateEntry
+	{
+		QUuid		mGroupId;
+		QTransform	mViewTransform;
+
+		GroupStateEntry( QUuid pGroupId, QTransform pViewTransform )
+			: mGroupId( pGroupId ), mViewTransform( pViewTransform )
+		{
+
+		}
+	} GroupStateEntry;
+
 	QGraphicsScene							 mContextScene;
 	QSharedPointer<fugio::ContextInterface>	 mContext;
 	QMap<QUuid,QPointF>						 mPositions;

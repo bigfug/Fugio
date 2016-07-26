@@ -120,7 +120,7 @@ ContextWidgetPrivate *ContextView::widget( void )
 	return( C );
 }
 
-void ContextView::sortSelectedItems( QList<NodeItem *> &pNodeList, QList<LinkItem *> &pLinkList, QList<NoteItem *> &pNoteList )
+void ContextView::sortSelectedItems( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkList, QList<NoteItem *> &pNoteList )
 {
 	for( QGraphicsItem *Item : mContextScene.selectedItems() )
 	{
@@ -131,6 +131,10 @@ void ContextView::sortSelectedItems( QList<NodeItem *> &pNodeList, QList<LinkIte
 			if( NODE )
 			{
 				pNodeList.append( NI );
+			}
+			else
+			{
+				pGroupList.append( NI );
 			}
 
 			continue;
@@ -152,9 +156,9 @@ void ContextView::sortSelectedItems( QList<NodeItem *> &pNodeList, QList<LinkIte
 	}
 }
 
-bool ContextView::itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<LinkItem *> &pLinkItemList, QList<NoteItem *> &pNoteItemList, QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NoteItem> > &pNoteList )
+bool ContextView::itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkItemList, QList<NoteItem *> &pNoteItemList, QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NoteItem> > &pNoteList )
 {
-	sortSelectedItems( pNodeItemList, pLinkItemList, pNoteItemList );
+	sortSelectedItems( pNodeItemList, pGroupList, pLinkItemList, pNoteItemList );
 
 	if( pNodeItemList.isEmpty() && pLinkItemList.isEmpty() && pNoteItemList.isEmpty() )
 	{
@@ -190,10 +194,11 @@ bool ContextView::itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<LinkI
 bool ContextView::itemsForRemoval( QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NoteItem> > &pNoteList )
 {
 	QList<NodeItem *>  NodeItemList;
+	QList<NodeItem *>  GroupItemList;
 	QList<LinkItem *>  LinkItemList;
 	QList<NoteItem *>  NoteItemList;
 
-	return( itemsForRemoval( NodeItemList, LinkItemList, NoteItemList, pNodeList, pLinkList, pNoteList ) );
+	return( itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, pNodeList, pLinkList, pNoteList ) );
 }
 
 void ContextView::mouseDoubleClickEvent( QMouseEvent *pEvent )
@@ -254,6 +259,7 @@ void ContextView::keyReleaseEvent( QKeyEvent *pEvent )
 	if( !mContextScene.focusItem() && ( pEvent->key() == Qt::Key_Delete || pEvent->key() == Qt::Key_Backspace ) )
 	{
 		QList<NodeItem *>								NodeItemList;
+		QList<NodeItem *>								GroupItemList;
 		QList<LinkItem *>								LinkItemList;
 		QList<NoteItem *>								NoteItemList;
 
@@ -261,11 +267,11 @@ void ContextView::keyReleaseEvent( QKeyEvent *pEvent )
 		QMultiMap<QUuid,QUuid>							LinkList;
 		QList<QSharedPointer<NoteItem>>					NoteList;
 
-		if( itemsForRemoval( NodeItemList, LinkItemList, NoteItemList, NodeList, LinkList, NoteList) )
+		if( itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, NodeList, LinkList, NoteList) )
 		{
 			QStringList		StuckNodes;
 
-			for( NodeItem *NI : NodeItemList )
+			for( NodeItem *NI : GroupItemList )
 			{
 				if( NI->hasPinsInGroup() )
 				{
@@ -1241,10 +1247,11 @@ void ContextView::setGroupId( QUuid GroupId )
 void ContextView::setSelectedColour(const QColor &pColor)
 {
 	QList<NodeItem *>  NodeList;
+	QList<NodeItem *>  GroupList;
 	QList<LinkItem *>  LinkList;
 	QList<NoteItem *>  NoteList;
 
-	sortSelectedItems( NodeList, LinkList, NoteList );
+	sortSelectedItems( NodeList, GroupList, LinkList, NoteList );
 
 	//CmdSetColour	*CMD = new CmdSetColour( )
 	foreach( NodeItem *I, NodeList )
@@ -1286,6 +1293,7 @@ void ContextView::cut()
 	mPasteOffset = 0;
 
 	QList<NodeItem *>  NodeItemList;
+	QList<NodeItem *>  GroupItemList;
 	QList<LinkItem *>  LinkItemList;
 	QList<NoteItem *>  NoteItemList;
 
@@ -1293,7 +1301,7 @@ void ContextView::cut()
 	QMultiMap<QUuid,QUuid>							LinkList;
 	QList<QSharedPointer<NoteItem>>					NoteList;
 
-	if( !itemsForRemoval( NodeItemList, LinkItemList, NoteItemList, NodeList, LinkList, NoteList ) )
+	if( !itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, NodeList, LinkList, NoteList ) )
 	{
 		return;
 	}
@@ -1388,10 +1396,11 @@ void ContextView::copy()
 	resetPasteOffset();
 
 	QList<NodeItem *>  NodeItemList;
+	QList<NodeItem *>  GroupItemList;
 	QList<LinkItem *>  LinkItemList;
 	QList<NoteItem *>  NoteItemList;
 
-	sortSelectedItems( NodeItemList, LinkItemList, NoteItemList );
+	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList );
 
 	if( NodeItemList.isEmpty() && LinkItemList.isEmpty() && NoteItemList.isEmpty() )
 	{
@@ -1440,10 +1449,11 @@ void ContextView::saveSelectedTo( const QString &pFileName )
 	resetPasteOffset();
 
 	QList<NodeItem *>  NodeItemList;
+	QList<NodeItem *>  GroupItemList;
 	QList<LinkItem *>  LinkItemList;
 	QList<NoteItem *>  NoteItemList;
 
-	sortSelectedItems( NodeItemList, LinkItemList, NoteItemList );
+	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList );
 
 	if( NodeItemList.isEmpty() && LinkItemList.isEmpty() && NoteItemList.isEmpty() )
 	{
@@ -2091,10 +2101,11 @@ void ContextView::ungroup( NodeItem *GI )
 void ContextView::groupSelected()
 {
 	QList<NodeItem *>  NodeItemList;
+	QList<NodeItem *>  GroupItemList;
 	QList<LinkItem *>  LinkItemList;
 	QList<NoteItem *>  NoteItemList;
 
-	sortSelectedItems( NodeItemList, LinkItemList, NoteItemList );
+	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList );
 
 	if( NodeItemList.isEmpty() && NoteItemList.isEmpty() )
 	{
@@ -2121,10 +2132,11 @@ void ContextView::groupSelected()
 void ContextView::ungroupSelected()
 {
 	QList<NodeItem *>  NodeItemList;
+	QList<NodeItem *>  GroupItemList;
 	QList<LinkItem *>  LinkItemList;
 	QList<NoteItem *>  NoteItemList;
 
-	sortSelectedItems( NodeItemList, LinkItemList, NoteItemList );
+	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList );
 
 	if( NodeItemList.isEmpty() && NoteItemList.isEmpty() )
 	{
