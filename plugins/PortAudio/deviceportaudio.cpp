@@ -221,7 +221,9 @@ PaDeviceIndex DevicePortAudio::deviceInputNameIndex( const QString &pDeviceName 
 
 #if defined( PORTAUDIO_SUPPORTED )
 DevicePortAudio::DevicePortAudio( PaDeviceIndex pDeviceIndex )
-	: mDeviceIndex( pDeviceIndex ), mStreamOutput( 0 ), mStreamInput( 0 ), mOutputTimeLatency ( 0 ), mOutputSampleRate( 0 )
+	: mDeviceIndex( pDeviceIndex ), mStreamOutput( 0 ), mStreamInput( 0 ), mOutputTimeLatency( 0 ), mInputTimeLatency( 0 ),
+	  mOutputAudioOffset( 0 ), mInputAudioOffset( 0 ), mOutputSampleRate( 0 ), mOutputChannelCount( 0 ), mInputChannelCount( 0 ),
+	  mInputSampleRate( 0 ), mInputSampleFormat( fugio::AudioSampleFormat::FormatUnknown )
 {
 	const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( mDeviceIndex );
 
@@ -233,25 +235,32 @@ DevicePortAudio::DevicePortAudio( PaDeviceIndex pDeviceIndex )
 	mInputChannelCount  = DevInf->maxInputChannels;
 	mOutputChannelCount = DevInf->maxOutputChannels;
 
-//	if( DevInf->maxInputChannels > 0 )
-//	{
-//		deviceInputOpen( DevInf );
-//	}
+	if( DevInf->maxInputChannels > 0 )
+	{
+		mInputChannelCount = DevInf->maxInputChannels;
+		mInputSampleRate   = AUDIO_DEFAULT_SAMPLE_RATE;
+		mInputSampleFormat = fugio::AudioSampleFormat::Format32FS;
+		mInputTimeLatency  = DevInf->defaultLowInputLatency;
+		mInputAudioOffset  = 0;
+	}
 
-//	if( DevInf->maxOutputChannels > 0 )
-//	{
-//		deviceOutputOpen( DevInf );
-//	}
+	if( DevInf->maxOutputChannels > 0 )
+	{
+		mOutputChannelCount = DevInf->maxOutputChannels;
+		mOutputSampleRate   = AUDIO_DEFAULT_SAMPLE_RATE;
+		mOutputTimeLatency  = DevInf->defaultLowOutputLatency;
+		mOutputAudioOffset  = ( PortAudioPlugin::instance()->fugio()->timestamp() * mOutputSampleRate ) / 1000;
+	}
 }
 
 DevicePortAudio::~DevicePortAudio( void )
 {
-	if( mInputChannelCount > 0 )
+	if( mStreamInput )
 	{
 		deviceInputClose();
 	}
 
-	if( mOutputChannelCount > 0 )
+	if( mStreamOutput )
 	{
 		deviceOutputClose();
 	}
@@ -268,7 +277,7 @@ void DevicePortAudio::setTimeOffset( qreal pTimeOffset )
 
 fugio::AudioInstanceBase *DevicePortAudio::audioAllocInstance( qreal pSampleRate, AudioSampleFormat pSampleFormat, int pChannels )
 {
-	if( !mInputSampleRate )
+	if( !mStreamInput )
 	{
 		const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( mDeviceIndex );
 
@@ -297,16 +306,6 @@ fugio::AudioInstanceBase *DevicePortAudio::audioAllocInstance( qreal pSampleRate
 
 	return( nullptr );
 }
-
-//void DevicePortAudio::audioFreeInstance( void *pInstanceData )
-//{
-//	InputInstanceData		*AID = static_cast<InputInstanceData *>( pInstanceData );
-
-//	if( AID )
-//	{
-//		delete AID;
-//	}
-//}
 
 void DevicePortAudio::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const
 {
@@ -370,7 +369,7 @@ void DevicePortAudio::deviceInputOpen( const PaDeviceInfo *DevInf )
 	StrPrm.sampleFormat     = paNonInterleaved | paFloat32;
 	StrPrm.suggestedLatency = DevInf->defaultLowInputLatency;
 
-	if( Pa_OpenStream( &mStreamInput, &StrPrm, nullptr, outputSampleRate(), paFramesPerBufferUnspecified, paNoFlag, &DevicePortAudio::streamCallbackStatic, this ) != paNoError )
+	if( Pa_OpenStream( &mStreamInput, &StrPrm, nullptr, mInputSampleRate, paFramesPerBufferUnspecified, paNoFlag, &DevicePortAudio::streamCallbackStatic, this ) != paNoError )
 	{
 		return;
 	}
@@ -432,18 +431,12 @@ void DevicePortAudio::deviceOutputOpen( const PaDeviceInfo *DevInf )
 
 void DevicePortAudio::deviceOutputClose()
 {
-	if( mStreamOutput != 0 )
+	if( mStreamOutput )
 	{
 		Pa_CloseStream( mStreamOutput );
 
 		mStreamOutput = 0;
 	}
-
-//	mStreamOutputOffset = 0;
-
-	mOutputSampleRate   = 0;
-	mOutputTimeLatency  = 0;
-	mOutputChannelCount = 0;
 }
 
 void DevicePortAudio::deviceInputClose()
@@ -464,10 +457,6 @@ void DevicePortAudio::deviceInputClose()
 
 		delete [] AB.mData;
 	}
-
-	mInputSampleRate   = 0;
-	mInputTimeLatency  = 0;
-	mInputChannelCount = 0;
 }
 
 int DevicePortAudio::streamCallbackStatic( const void *input, void *output, unsigned long frameCount, const PaStreamCallbackTimeInfo *timeInfo, PaStreamCallbackFlags statusFlags, void *userData)
@@ -684,7 +673,7 @@ void DevicePortAudio::audioInput( DevicePortAudio::AudioBuffer &AB, const float 
 
 qreal DevicePortAudio::outputSampleRate() const
 {
-	return( mOutputSampleRate > 0 ? mOutputSampleRate : QSettings().value( "audio/output-sample-rate", double( AUDIO_DEFAULT_SAMPLE_RATE ) ).toDouble() );
+	return( mOutputSampleRate );
 }
 
 void DevicePortAudio::addOutput( PortAudioOutputNode *pOutput )
