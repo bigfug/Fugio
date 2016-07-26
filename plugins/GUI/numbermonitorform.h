@@ -17,6 +17,9 @@ public:
 
 	void value( const QList< QPair<QColor,qreal> > &pValLst );
 
+public slots:
+	void setNodeName( const QString &pName );
+
 protected:
 	virtual void paintEvent( QPaintEvent *pEvent );
 

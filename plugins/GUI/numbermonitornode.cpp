@@ -5,7 +5,7 @@
 
 #include <fugio/global_interface.h>
 #include <fugio/context_interface.h>
-//#include <fugio/colour/colour_interface.h>
+#include <fugio/colour/colour_interface.h>
 #include <fugio/core/uuid.h>
 
 #include <fugio/context_signals.h>
@@ -13,19 +13,21 @@
 #include "numbermonitorform.h"
 
 NumberMonitorNode::NumberMonitorNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mDockWidget( nullptr ), mMonitor( nullptr ), mDockArea( Qt::BottomDockWidgetArea ), mLastTime( 0 )
+	: NodeControlBase( pNode ), mDockWidget( nullptr ), mMonitor( nullptr ), mDockArea( Qt::BottomDockWidgetArea )
 {
-	mPinValue = pinInput( "Number" );
+	FUGID( PIN_INPUT_NUMBER, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+
+	mPinInputTrigger = pinInput( "Trigger", PID_FUGIO_NODE_TRIGGER );
+
+	mPinInputValue = pinInput( "Number", PIN_INPUT_NUMBER );
+
+	mPinInputValue->setAutoRename( true );
 }
 
 NumberMonitorNode::~NumberMonitorNode( void )
 {
-	QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
-
-	if( mDockWidget != 0 )
+	if( mDockWidget )
 	{
-		MainWindow->removeDockWidget( mDockWidget );
-
 		delete mDockWidget;
 
 		mDockWidget = 0;
@@ -50,29 +52,27 @@ bool NumberMonitorNode::initialise( void )
 
 	QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
 
-	if( MainWindow != 0 )
+	if( MainWindow )
 	{
 		if( ( mDockWidget = new QDockWidget( QString( "Monitor: %1" ).arg( mNode->name() ), MainWindow ) ) == 0 )
 		{
 			return( false );
 		}
 
-		mDockWidget->setObjectName( mNode->name() );
+		mDockWidget->setObjectName( mNode->uuid().toString() );
 
 		if( ( mMonitor = new NumberMonitorForm( mDockWidget ) ) == 0 )
 		{
 			return( false );
 		}
 
-		//setupTextEditor( mTextEdit->textEdit() );
-
-		//connect( mTextEdit, SIGNAL(updateText()), this, SLOT(onTextUpdate()) );
-
 		mDockWidget->setWidget( mMonitor );
 
 		MainWindow->addDockWidget( mDockArea, mDockWidget );
 
-		connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(onContextFrame(qint64)) );
+		connect( mNode->qobject(), SIGNAL(nameChanged(QString)), this, SLOT(updateNodeName(QString)) );
+
+		connect( this, SIGNAL(nodeNameUpdated(QString)), mMonitor, SLOT(setNodeName(QString)) );
 	}
 
 	return( true );
@@ -80,21 +80,16 @@ bool NumberMonitorNode::initialise( void )
 
 bool NumberMonitorNode::deinitialise( void )
 {
-	if( mDockWidget != 0 )
+	if( mDockWidget )
 	{
-		mDockWidget->deleteLater();
+		delete mDockWidget;
 
 		mDockWidget = nullptr;
 
 		mMonitor = nullptr;
 	}
 
-	return( true );
-}
-
-void NumberMonitorNode::inputsUpdated( qint64 pTimeStamp )
-{
-	NodeControlBase::inputsUpdated( pTimeStamp );
+	return( NodeControlBase::deinitialise() );
 }
 
 void NumberMonitorNode::onShowClicked( void )
@@ -112,19 +107,19 @@ void NumberMonitorNode::onShowClicked( void )
 	mMonitor->activateWindow();
 }
 
-void NumberMonitorNode::onContextFrame( qint64 pTimeStamp )
+void NumberMonitorNode::updateNodeName( const QString &pName )
 {
-	if( !mLastTime )
-	{
-		mLastTime = pTimeStamp - 40;
-	}
+	emit nodeNameUpdated( pName );
+}
 
-	if( pTimeStamp - mLastTime < 40 )
+void NumberMonitorNode::inputsUpdated( qint64 pTimeStamp )
+{
+	NodeControlBase::inputsUpdated( pTimeStamp );
+
+	if( !mPinInputTrigger->isUpdated( pTimeStamp ) )
 	{
 		return;
 	}
-
-	mLastTime += 40;
 
 	QList< QPair<QColor,qreal> >	ValLst;
 	QPair<QColor,qreal>				CurVal;
@@ -136,6 +131,17 @@ void NumberMonitorNode::onContextFrame( qint64 pTimeStamp )
 	{
 		if( P->isConnected() )
 		{
+			// Colour before Variant, because Colours are Variants too!
+
+			fugio::ColourInterface		*C = qobject_cast<fugio::ColourInterface *>( P->connectedPin()->control()->qobject() );
+
+			if( C )
+			{
+				CurVal.first = C->colour();
+
+				continue;
+			}
+
 			fugio::VariantInterface	*V = qobject_cast<fugio::VariantInterface *>( P->connectedPin()->control()->qobject() );
 
 			if( V )
@@ -146,34 +152,22 @@ void NumberMonitorNode::onContextFrame( qint64 pTimeStamp )
 
 				continue;
 			}
-
-//			InterfaceColour		*C = qobject_cast<InterfaceColour *>( P->connectedPin()->control()->qobject() );
-
-//			if( C )
-//			{
-//				CurVal.first = C->colour();
-
-//				continue;
-//			}
 		}
 	}
 
 	mMonitor->value( ValLst );
 }
 
-
 QList<QUuid> NumberMonitorNode::pinAddTypesInput( void ) const
 {
-	static QList<QUuid>	PinLst;
-
-	if( PinLst.isEmpty() )
+	static QList<QUuid>	PinLst =
 	{
-		PinLst << PID_BOOL;
-		PinLst << PID_INTEGER;
-		PinLst << PID_FLOAT;
-		PinLst << PID_STRING;
-//		PinLst << PID_COLOUR;
-	}
+		PID_BOOL,
+		PID_INTEGER,
+		PID_FLOAT,
+		PID_STRING,
+		PID_COLOUR
+	};
 
 	return( PinLst );
 }
@@ -186,4 +180,9 @@ bool NumberMonitorNode::canAcceptPin( fugio::PinInterface *pPin ) const
 	}
 
 	return( true );
+}
+
+bool NumberMonitorNode::pinShouldAutoRename( fugio::PinInterface *pPin ) const
+{
+	return( pPin->direction() == PIN_INPUT );
 }
