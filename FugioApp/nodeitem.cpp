@@ -51,7 +51,8 @@
 //static const int		PIN_HEIGHT = 10;
 
 NodeItem::NodeItem( ContextView *pContextView )
-	: mContextView( pContextView ), mNodeGui( 0 ), mStatusItem( 0 ), mBackgroundColour( QColor( Qt::cyan ).lighter( 180 ) ), mUndoId( 1 )
+	: mContextView( pContextView ), mNodeGui( 0 ), mStatusItem( 0 ), mBackgroundColour( QColor( Qt::cyan ).lighter( 180 ) ), mUndoId( 1 ),
+	  mIsGroup( false )
 {
 	pContextView->scene()->addItem( this );
 
@@ -59,7 +60,8 @@ NodeItem::NodeItem( ContextView *pContextView )
 }
 
 NodeItem::NodeItem( ContextView *pContextView, QUuid pNodeId, const QPointF &pPosition )
-	: mContextView( pContextView ), mNodeGui( 0 ), mStatusItem( 0 ), mNodeId( pNodeId ), mBackgroundColour( QColor( Qt::cyan ).lighter( 180 ) ), mUndoId( 1 )
+	: mContextView( pContextView ), mNodeGui( 0 ), mStatusItem( 0 ), mNodeId( pNodeId ), mBackgroundColour( QColor( Qt::cyan ).lighter( 180 ) ), mUndoId( 1 ),
+	  mIsGroup( false )
 {
 	pContextView->scene()->addItem( this );
 
@@ -78,6 +80,11 @@ NodeItem::~NodeItem( void )
 	}
 
 	//qDebug() << "~NodeItem" << mNodeId;
+}
+
+bool NodeItem::isGroup() const
+{
+	return( mIsGroup );
 }
 
 void NodeItem::setNodeId( const QUuid &pNodeId )

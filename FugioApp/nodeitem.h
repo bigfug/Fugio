@@ -39,6 +39,8 @@ public:
 		return Type;
 	}
 
+	bool isGroup( void ) const;
+
 	inline QUuid id( void ) const
 	{
 		return( mNodeId );
@@ -123,6 +125,11 @@ public slots:
 
 	void updateGui( void );
 
+	inline void setIsGroup( bool pIsGroup )
+	{
+		mIsGroup = pIsGroup;
+	}
+
 protected:
 	typedef QPair<QGraphicsSimpleTextItem *, PinItem *>		PinPair;
 
@@ -196,6 +203,8 @@ private:
 	int									 mUndoId;
 
 	QUuid								 mGroupId;
+
+	bool								 mIsGroup;
 };
 
 #endif // NODEITEM_H
