@@ -126,7 +126,12 @@ void ContextView::sortSelectedItems( QList<NodeItem *> &pNodeList, QList<LinkIte
 	{
 		if( NodeItem *NI = qgraphicsitem_cast<NodeItem *>( Item ) )
 		{
-			pNodeList.append( NI );
+			QSharedPointer<fugio::NodeInterface>		NODE = context()->findNode( NI->id() );
+
+			if( NODE )
+			{
+				pNodeList.append( NI );
+			}
 
 			continue;
 		}
