@@ -15,11 +15,6 @@ TriggerRangeNumberNode::TriggerRangeNumberNode( QSharedPointer<fugio::NodeInterf
 
 void TriggerRangeNumberNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( !pTimeStamp )
-	{
-		return;
-	}
-
 	int		PinCnt = mNode->enumInputPins().size();
 	int		PinVal = mPinIdx;
 

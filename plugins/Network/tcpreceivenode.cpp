@@ -105,7 +105,7 @@ void TCPReceiveNode::serverNewConnection()
 
 void TCPReceiveNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( !pTimeStamp || mPinPort->isUpdated( pTimeStamp ) )
+	if( mPinPort->isUpdated( pTimeStamp ) )
 	{
 		mServer.close();
 

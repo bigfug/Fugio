@@ -21,10 +21,7 @@ GrabScreenNode::GrabScreenNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void GrabScreenNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( !pTimeStamp )
-	{
-		return;
-	}
+	Q_UNUSED( pTimeStamp )
 
 	QScreen		*Screen = QGuiApplication::primaryScreen();
 

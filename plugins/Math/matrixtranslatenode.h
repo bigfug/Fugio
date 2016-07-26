@@ -20,7 +20,7 @@ class MatrixTranslateNode : public fugio::NodeControlBase
 public:
 	Q_INVOKABLE explicit MatrixTranslateNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~MatrixTranslateNode( void );
+	virtual ~MatrixTranslateNode( void ) {}
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface

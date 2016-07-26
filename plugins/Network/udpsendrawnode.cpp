@@ -29,7 +29,7 @@ void UDPSendRawNode::inputsUpdated( qint64 pTimeStamp )
 {
 	fugio::Performance	Perf( mNode, "inputsUpdated", pTimeStamp );
 
-	if( !pTimeStamp || mAddress == QHostAddress::Null || mPinHost->isUpdated( pTimeStamp ) )
+	if( mAddress == QHostAddress::Null || mPinHost->isUpdated( pTimeStamp ) )
 	{
 		mAddress = QHostAddress::Null;
 

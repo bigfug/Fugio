@@ -21,13 +21,10 @@ MatrixTranslateNode::MatrixTranslateNode( QSharedPointer<fugio::NodeInterface> p
 	mPinInputZ->setValue( 0.0 );
 }
 
-MatrixTranslateNode::~MatrixTranslateNode( void )
-{
-
-}
-
 void MatrixTranslateNode::inputsUpdated( qint64 pTimeStamp )
 {
+	Q_UNUSED( pTimeStamp )
+
 	qreal				 x = variant( mPinInputX ).toReal();
 	qreal				 y = variant( mPinInputY ).toReal();
 	qreal				 z = variant( mPinInputZ ).toReal();
@@ -36,7 +33,7 @@ void MatrixTranslateNode::inputsUpdated( qint64 pTimeStamp )
 
 	m.translate( x, y, z );
 
-	if( !pTimeStamp || m != mValue->variant().value<QMatrix4x4>() )
+	if( m != mValue->variant().value<QMatrix4x4>() )
 	{
 		mValue->setVariant( m );
 

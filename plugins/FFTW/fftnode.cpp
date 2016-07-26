@@ -226,12 +226,9 @@ bool is_power_of_2(int i)
 
 void FFTNode::inputsUpdated( qint64 pTimeStamp )
 {
-	fugio::VariantInterface	*V;
+	Q_UNUSED( pTimeStamp )
 
-	if( !pTimeStamp )
-	{
-		mSamplePosition = 0;
-	}
+	fugio::VariantInterface	*V;
 
 	WindowType	WT = mWindowTypes.value( variant( mPinInputWindow ).toString() );
 
