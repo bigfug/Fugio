@@ -825,6 +825,8 @@ void NodeItem::updateGui()
 
 	layoutPins();
 
+	pinLinkMove( mOutputs, QPointF() );
+
 	updateActiveState();
 }
 
