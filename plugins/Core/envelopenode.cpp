@@ -72,49 +72,9 @@ bool EnvelopeNode::canAcceptPin( fugio::PinInterface *pPin ) const
 	return( pPin->direction() == PIN_OUTPUT );
 }
 
-void EnvelopeNode::pinAdded( QSharedPointer<fugio::NodeInterface> pNode, QSharedPointer<fugio::PinInterface> pPin )
+QUuid EnvelopeNode::pairedPinControlUuid( QSharedPointer<fugio::PinInterface> pPin ) const
 {
-	Q_UNUSED( pNode )
-
-	if( pPin->direction() == PIN_INPUT )
-	{
-		QSharedPointer<fugio::PinInterface> DstPin;
-
-		if( !pPin->pairedUuid().isNull() )
-		{
-			DstPin = mNode->findPinByLocalId( pPin->pairedUuid() );
-
-			if( DstPin )
-			{
-				return;
-			}
-		}
-
-		if( !DstPin )
-		{
-			pinOutput<fugio::VariantInterface *>( pPin->name(), DstPin, PID_FLOAT );
-
-			if( DstPin )
-			{
-				mNode->pairPins( pPin, DstPin );
-			}
-		}
-	}
-}
-
-void EnvelopeNode::inputsUpdated( qint64 pTimeStamp )
-{
-	if( !pTimeStamp )
-	{
-		return;
-	}
-
-//	if( mPinInput->isUpdated( pTimeStamp ) )
-//	{
-//		mInputState = variant( mPinInput ).toBool();
-
-//		mInputTime  = pTimeStamp;
-//	}
+	return( pPin->direction() == PIN_OUTPUT ? PID_FLOAT : PID_BOOL );
 }
 
 void EnvelopeNode::contextFrame( qint64 pTimeStamp )
