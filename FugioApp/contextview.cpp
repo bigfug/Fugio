@@ -448,40 +448,91 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 	//-------------------------------------------------------------------------
 	// Groups
 
-	pSettings.beginGroup( "groups" );
-
-	for( const QString &KS : pSettings.childKeys() )
+	if( pSettings.childGroups().contains( "groups" ) )
 	{
-		const QUuid	K = fugio::utils::string2uuid( KS );
+		pSettings.beginGroup( "groups" );
 
-		if( K.isNull() )
+		const int	GroupsVersion = pSettings.value( "version", 2 ).toInt();
+
+		if( GroupsVersion == 2 )
 		{
-			continue;
+			for( const QString &KS : pSettings.childKeys() )
+			{
+				const QUuid	K = fugio::utils::string2uuid( KS );
+
+				if( K.isNull() )
+				{
+					continue;
+				}
+
+				if( !mGroupIds.contains( K ) )
+				{
+					mGroupIds << K;
+				}
+
+				if( !mNodeList.contains( K ) )
+				{
+					nodeAdded( K, K );
+				}
+
+				if( QSharedPointer<NodeItem> NI = mNodeList[ K ] )
+				{
+					NI->setName( pSettings.value( KS ).toString() );
+
+					QPointF	NP = mPositions.value( NI->id(), NI->pos() );
+
+					processGroupLinks( NI );
+
+					NI->setNodePos( NP );
+				}
+			}
+
+			pSettings.endGroup();
 		}
-
-		if( !mGroupIds.contains( K ) )
+		else if( GroupsVersion == 3 )
 		{
-			mGroupIds << K;
-		}
+			pSettings.endGroup();
 
-		if( !mNodeList.contains( K ) )
-		{
-			nodeAdded( K, K );
-		}
+			int		NoteCount = pSettings.beginReadArray( "groups" );
 
-		if( QSharedPointer<NodeItem> NI = mNodeList[ K ] )
-		{
-			NI->setName( pSettings.value( KS ).toString() );
+			for( int i = 0 ; i < NoteCount ; i++ )
+			{
+				pSettings.setArrayIndex( i );
 
-			QPointF	NP = mPositions.value( NI->id(), NI->pos() );
+				const QString		GroupName = pSettings.value( "name" ).toString();
+				const QUuid			GroupId   = fugio::utils::string2uuid( pSettings.value( "uuid" ).toString() );
+				//const QTransform	Transform = pSettings.value( "transform" ).value<QTransform>();
 
-			processGroupLinks( NI );
+				if( GroupId.isNull() )
+				{
+					continue;
+				}
 
-			NI->setNodePos( NP );
+				if( !mGroupIds.contains( GroupId ) )
+				{
+					mGroupIds << GroupId;
+				}
+
+				if( !mNodeList.contains( GroupId ) )
+				{
+					nodeAdded( GroupId, GroupId );
+				}
+
+				if( QSharedPointer<NodeItem> NI = mNodeList[ GroupId ] )
+				{
+					NI->setName( GroupName );
+
+					QPointF	NP = mPositions.value( NI->id(), NI->pos() );
+
+					processGroupLinks( NI );
+
+					NI->setNodePos( NP );
+				}
+			}
+
+			pSettings.endArray();
 		}
 	}
-
-	pSettings.endGroup();
 
 	//-------------------------------------------------------------------------
 	// Colours
@@ -610,6 +661,32 @@ void ContextView::saveContext( QSettings &pSettings ) const
 	//-------------------------------------------------------------------------
 	// Groups
 
+	pSettings.beginWriteArray( "groups" );
+
+	pSettings.setValue( "version", 3 );
+
+	ArrayIndex = 0;
+
+	for( int i = 0 ; i < mGroupIds.size() ; i++ )
+	{
+		const QUuid					GID  = mGroupIds[ i ];
+		QSharedPointer<NodeItem>	Node = mNodeList[ GID ];
+
+		if( !Node || ( mSaveOnlySelected && !Node->isSelected() ) )
+		{
+			continue;
+		}
+
+		pSettings.setArrayIndex( ArrayIndex++ );
+
+		pSettings.setValue( "name", Node->name() );
+		pSettings.setValue( "uuid", fugio::utils::uuid2string( GID ) );
+		pSettings.setValue( "transform", QTransform() );
+	}
+
+	pSettings.endArray();
+
+/*
 	pSettings.beginGroup( "groups" );
 
 	pSettings.setValue( "version", 2 );
@@ -627,6 +704,7 @@ void ContextView::saveContext( QSettings &pSettings ) const
 	}
 
 	pSettings.endGroup();
+*/
 
 	//-------------------------------------------------------------------------
 	// Node Groups
