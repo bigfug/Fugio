@@ -106,7 +106,7 @@ void ContextView::setContext( QSharedPointer<fugio::ContextInterface> pContext )
 		connect( C.data(), SIGNAL(linkRemoved(QUuid,QUuid)), this, SLOT(linkRemoved(QUuid,QUuid)) );
 	}
 
-#if defined( CONTEXT_MODEL )
+#if defined( USE_CONTEXT_MODEL )
 	mContextModel.setContext( pContext );
 #endif
 }
@@ -1307,7 +1307,7 @@ void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 
 QSharedPointer<NoteItem> ContextView::noteAdd( const QString &pText, QUuid pUuid )
 {
-#if defined( CONTEXT_MODEL )
+#if defined( USE_CONTEXT_MODEL )
 	QUuid						NoteUuid = mContextModel.createNote( pUuid );
 #else
 	QUuid						NoteUuid = ( pUuid.isNull() ? QUuid::createUuid() : pUuid );
@@ -2036,7 +2036,7 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 
 QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId )
 {
-#if defined( CONTEXT_MODEL )
+#if defined( USE_CONTEXT_MODEL )
 	const QUuid		NewGroupId = mContextModel.createGroup( pGroupId, pGroupName );
 #else
 	const QUuid		NewGroupId = ( pGroupId.isNull() ? QUuid::createUuid() : pGroupId );
@@ -2067,7 +2067,7 @@ QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeLis
 		nodeAdded( NewGroupId, NewGroupId );
 	}
 
-#if defined( CONTEXT_MODEL )
+#if defined( USE_CONTEXT_MODEL )
 	mContextModel.moveToGroup( NewGroupId, nodeItemIds( pNodeList ), nodeItemIds( pGroupList ), noteItemIds( pNoteList ) );
 #endif
 
@@ -2358,7 +2358,7 @@ void ContextView::pushGroup( const QUuid &pGroupId )
 
 	setGroupId( pGroupId );
 
-#if defined( CONTEXT_MODEL )
+#if defined( USE_CONTEXT_MODEL )
 	mContextModel.setCurrentGroup( pGroupId );
 #endif
 }
@@ -2379,10 +2379,9 @@ void ContextView::popGroup()
 
 	setGroupId( GroupId );
 
-#if defined( CONTEXT_MODEL )
+#if defined( USE_CONTEXT_MODEL )
 	mContextModel.setCurrentGroup( GroupId );
-#endif#if defined( CONTEXT_MODEL )
-
+#endif
 }
 
 bool ContextView::event( QEvent *pEvent )
