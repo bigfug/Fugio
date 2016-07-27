@@ -15,8 +15,8 @@
 class CmdRemove : public QUndoCommand
 {
 public:
-	explicit CmdRemove( QSharedPointer<fugio::ContextInterface> pContext, QList< QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid,QUuid> &pLinkList, QList<QSharedPointer<NoteItem>> &pNoteList )
-		: mContext( pContext ), mNodeList( pNodeList ), mLinkList( pLinkList ), mNoteList( pNoteList )
+	explicit CmdRemove( QSharedPointer<fugio::ContextInterface> pContext, QList< QSharedPointer<fugio::NodeInterface> > &pNodeList, QList<QSharedPointer<NodeItem>> &pGroupList, QMultiMap<QUuid,QUuid> &pLinkList, QList<QSharedPointer<NoteItem>> &pNoteList )
+		: mContext( pContext ), mNodeList( pNodeList ), mGroupList( pGroupList ), mLinkList( pLinkList ), mNoteList( pNoteList )
 	{
 		setText( QObject::tr( "Remove Nodes/Links" ) );
 
@@ -102,6 +102,7 @@ public:
 private:
 	QSharedPointer<fugio::ContextInterface>			 mContext;
 	QList< QSharedPointer<fugio::NodeInterface> >	 mNodeList;
+	QList<QSharedPointer<NodeItem>>					 mGroupList;
 	QMultiMap<QUuid,QUuid>							 mLinkList;
 	QList<QSharedPointer<NoteItem>>					 mNoteList;
 };

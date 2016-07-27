@@ -39,10 +39,10 @@
 
 bool ContextView::mShownWizard = false;
 
-ContextView::ContextView( QWidget *pParent ) :
+ContextView::ContextView( QGraphicsScene *pScene, QWidget *pParent ) :
 	QGraphicsView( pParent ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 )
 {
-	setScene( &mContextScene );
+	setScene( pScene );
 
 	setViewportUpdateMode( QGraphicsView::FullViewportUpdate );
 
@@ -122,7 +122,7 @@ ContextWidgetPrivate *ContextView::widget( void )
 
 void ContextView::sortSelectedItems( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkList, QList<NoteItem *> &pNoteList, bool pRecurse )
 {
-	for( QGraphicsItem *Item : mContextScene.selectedItems() )
+	for( QGraphicsItem *Item : scene()->selectedItems() )
 	{
 		if( NodeItem *NI = qgraphicsitem_cast<NodeItem *>( Item ) )
 		{
@@ -175,21 +175,26 @@ void ContextView::sortSelectedItems( QList<NodeItem *> &pNodeList, QList<NodeIte
 	}
 }
 
-bool ContextView::itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkItemList, QList<NoteItem *> &pNoteItemList, QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NoteItem> > &pNoteList )
+bool ContextView::itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<NodeItem *> &pGroupItemList, QList<LinkItem *> &pLinkItemList, QList<NoteItem *> &pNoteItemList, QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QList<QSharedPointer<NodeItem>> &pGroupList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NoteItem> > &pNoteList )
 {
-	sortSelectedItems( pNodeItemList, pGroupList, pLinkItemList, pNoteItemList, true );
+	sortSelectedItems( pNodeItemList, pGroupItemList, pLinkItemList, pNoteItemList, true );
 
 	if( pNodeItemList.isEmpty() && pLinkItemList.isEmpty() && pNoteItemList.isEmpty() )
 	{
 		return( false );
 	}
 
-	foreach( NodeItem *Node, pNodeItemList )
+	for( NodeItem *Node : pNodeItemList )
 	{
 		pNodeList.append( mContext->findNode( Node->id() ) );
 	}
 
-	foreach( LinkItem *Link, pLinkItemList )
+	for( NodeItem *GI : pGroupItemList )
+	{
+		pGroupList.append( mNodeList.value( GI->id() ) );
+	}
+
+	for( LinkItem *Link : pLinkItemList )
 	{
 		pLinkList.insert( Link->srcPin()->pin()->globalId(), Link->dstPin()->pin()->globalId() );
 	}
@@ -210,65 +215,14 @@ bool ContextView::itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<NodeI
 	return( true );
 }
 
-bool ContextView::itemsForRemoval( QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NoteItem> > &pNoteList )
+bool ContextView::itemsForRemoval( QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NodeItem>> &pGroupList, QList<QSharedPointer<NoteItem> > &pNoteList )
 {
 	QList<NodeItem *>  NodeItemList;
 	QList<NodeItem *>  GroupItemList;
 	QList<LinkItem *>  LinkItemList;
 	QList<NoteItem *>  NoteItemList;
 
-	return( itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, pNodeList, pLinkList, pNoteList ) );
-}
-
-void ContextView::mouseDoubleClickEvent( QMouseEvent *pEvent )
-{
-	if( mContextScene.selectedItems().size() == 1 )
-	{
-		NodeItem		*NI = qgraphicsitem_cast<NodeItem *>( mContextScene.selectedItems().first() );
-
-		if( NI )
-		{
-			if( mGroupIds.contains( NI->id() ) )
-			{
-				CmdGroupPush	*CMD = new CmdGroupPush( this, NI->id() );
-
-				if( CMD )
-				{
-					widget()->undoStack()->push( CMD );
-				}
-			}
-
-			pEvent->accept();
-
-			return;
-		}
-	}
-
-//	emit nodeInspection( 0 );
-
-	if( !itemAt( pEvent->pos() ) )
-	{
-		NodeNameDialog		NodeDiag( this );
-
-		if( NodeDiag.exec() == QDialog::Accepted )
-		{
-			CmdNodeAdd		*Cmd = new CmdNodeAdd( widget(), gApp->global().nodeMap().value( NodeDiag.nodename() ).mName, NodeDiag.nodename() );
-
-			setNodePositionFlag();
-
-			mNodePosition = mapToScene( pEvent->pos() );
-
-			resetPasteOffset();
-
-			widget()->undoStack()->push( Cmd );
-		}
-
-		pEvent->accept();
-
-		return;
-	}
-
-	QGraphicsView::mouseDoubleClickEvent( pEvent );
+	return( itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, pNodeList, pGroupList, pLinkList, pNoteList ) );
 }
 
 QList<QUuid> ContextView::nodeItemIds( const QList<NodeItem *> &pNodeList )
@@ -283,7 +237,7 @@ QList<QUuid> ContextView::nodeItemIds( const QList<NodeItem *> &pNodeList )
 	return( IdsLst );
 }
 
-QList<NodeItem *> ContextView::nodesFromIds( const QList<QUuid> &pIdsLst) const
+QList<NodeItem *> ContextView::nodesFromIds( const QList<QUuid> &pIdsLst ) const
 {
 	QList<NodeItem *>		NodeList;
 
@@ -347,11 +301,63 @@ void ContextView::itemsInGroups( const QList<QUuid> &pGroupIdList, QList<NodeIte
 	}
 }
 
+
+void ContextView::mouseDoubleClickEvent( QMouseEvent *pEvent )
+{
+	if( scene()->selectedItems().size() == 1 )
+	{
+		NodeItem		*NI = qgraphicsitem_cast<NodeItem *>( scene()->selectedItems().first() );
+
+		if( NI )
+		{
+			if( mGroupIds.contains( NI->id() ) )
+			{
+				CmdGroupPush	*CMD = new CmdGroupPush( this, NI->id() );
+
+				if( CMD )
+				{
+					widget()->undoStack()->push( CMD );
+				}
+			}
+
+			pEvent->accept();
+
+			return;
+		}
+	}
+
+//	emit nodeInspection( 0 );
+
+	if( !itemAt( pEvent->pos() ) )
+	{
+		NodeNameDialog		NodeDiag( this );
+
+		if( NodeDiag.exec() == QDialog::Accepted )
+		{
+			CmdNodeAdd		*Cmd = new CmdNodeAdd( widget(), gApp->global().nodeMap().value( NodeDiag.nodename() ).mName, NodeDiag.nodename() );
+
+			setNodePositionFlag();
+
+			mNodePosition = mapToScene( pEvent->pos() );
+
+			resetPasteOffset();
+
+			widget()->undoStack()->push( Cmd );
+		}
+
+		pEvent->accept();
+
+		return;
+	}
+
+	QGraphicsView::mouseDoubleClickEvent( pEvent );
+}
+
 void ContextView::keyReleaseEvent( QKeyEvent *pEvent )
 {
 	// Only process delete/backspace if there is no item that currently has focus (such as notes/editors)
 
-	if( !mContextScene.focusItem() && ( pEvent->key() == Qt::Key_Delete || pEvent->key() == Qt::Key_Backspace ) )
+	if( !scene()->focusItem() && ( pEvent->key() == Qt::Key_Delete || pEvent->key() == Qt::Key_Backspace ) )
 	{
 		QList<NodeItem *>								NodeItemList;
 		QList<NodeItem *>								GroupItemList;
@@ -359,10 +365,11 @@ void ContextView::keyReleaseEvent( QKeyEvent *pEvent )
 		QList<NoteItem *>								NoteItemList;
 
 		QList< QSharedPointer<fugio::NodeInterface> >	NodeList;
+		QList<QSharedPointer<NodeItem>>					GroupList;
 		QMultiMap<QUuid,QUuid>							LinkList;
 		QList<QSharedPointer<NoteItem>>					NoteList;
 
-		if( itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, NodeList, LinkList, NoteList ) )
+		if( itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, NodeList, GroupList, LinkList, NoteList ) )
 		{
 			QStringList		StuckNodes;
 
@@ -381,9 +388,9 @@ void ContextView::keyReleaseEvent( QKeyEvent *pEvent )
 				return;
 			}
 
-			CmdRemove		*Cmd = new CmdRemove( mContext, NodeList, LinkList, NoteList );
+			CmdRemove		*Cmd = new CmdRemove( mContext, NodeList, GroupList, LinkList, NoteList );
 
-			if( Cmd != 0 )
+			if( Cmd )
 			{
 				widget()->undoStack()->push( Cmd );
 			}
@@ -397,6 +404,8 @@ void ContextView::keyReleaseEvent( QKeyEvent *pEvent )
 	}
 }
 
+//-----------------------------------------------------------------------------
+// LOAD AND SAVE
 
 void ContextView::loadStarted( QSettings &pSettings, bool pPartial )
 {
@@ -890,8 +899,11 @@ void ContextView::clearContext( void )
 
 	mNodeList.clear();
 
-	mContextScene.clear();
+	scene()->clear();
 }
+
+//-----------------------------------------------------------------------------
+// fugio::ContextSignals
 
 void ContextView::nodeAdded( QUuid pNodeId, QUuid pOrigId )
 {
@@ -930,7 +942,7 @@ void ContextView::nodeAdded( QUuid pNodeId, QUuid pOrigId )
 	}
 	else
 	{
-		mContextScene.addItem( mNodeList.value( pNodeId ).data() );
+		scene()->addItem( mNodeList.value( pNodeId ).data() );
 	}
 
 	mNodePositionFlag = false;
@@ -954,7 +966,7 @@ void ContextView::nodeRemoved( QUuid pNodeId )
 		return;
 	}
 
-	mContextScene.removeItem( Node.data() );
+	scene()->removeItem( Node.data() );
 
 	mNodeList.remove( pNodeId );
 }
@@ -1131,7 +1143,7 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 
 	if( RealLink )
 	{
-		mContextScene.addItem( RealLink );
+		scene()->addItem( RealLink );
 
 		RealLink->setSrcPin( PinItem2 );
 		RealLink->setDstPin( PinItem1 );
@@ -1182,7 +1194,7 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 
 		if( GroupLink )
 		{
-			mContextScene.addItem( GroupLink );
+			scene()->addItem( GroupLink );
 
 			GroupLink->setSrcPin( PinItem2 );
 			GroupLink->setDstPin( PinItem1 );
@@ -1281,7 +1293,7 @@ QSharedPointer<NoteItem> ContextView::noteAdd( const QString &pText )
 
 void ContextView::updateItemVisibility()
 {
-	for( QGraphicsItem *Item : mContextScene.items() )
+	for( QGraphicsItem *Item : scene()->items() )
 	{
 		NodeItem		*NI = qgraphicsitem_cast<NodeItem *>( Item );
 
@@ -1301,7 +1313,6 @@ void ContextView::updateItemVisibility()
 
 			if( SrcPin && DstPin )
 			{
-
 				NodeItem		*SrcNod = qgraphicsitem_cast<NodeItem *>( SrcPin->parentItem() );
 				NodeItem		*DstNod = qgraphicsitem_cast<NodeItem *>( DstPin->parentItem() );
 
@@ -1353,7 +1364,7 @@ void ContextView::setSelectedColour(const QColor &pColor)
 	sortSelectedItems( NodeList, GroupList, LinkList, NoteList, false );
 
 	//CmdSetColour	*CMD = new CmdSetColour( )
-	foreach( NodeItem *I, NodeList )
+	for( NodeItem *I : NodeList )
 	{
 		if( I->isSelected() )
 		{
@@ -1361,7 +1372,7 @@ void ContextView::setSelectedColour(const QColor &pColor)
 		}
 	}
 
-	foreach( LinkItem *I, LinkList )
+	for( LinkItem *I : LinkList )
 	{
 		if( I->isSelected() )
 		{
@@ -1377,6 +1388,28 @@ void ContextView::setSelectedColour(const QColor &pColor)
 
 			N->update();
 		}
+	}
+}
+
+void ContextView::updatePastePoint(QList<NodeItem *> NodeItemList, QList<NoteItem *> NoteItemList)
+{
+	if( !NodeItemList.isEmpty() )
+	{
+		m_PastePoint = NodeItemList.first()->pos();
+	}
+	else if( !NoteItemList.isEmpty() )
+	{
+		m_PastePoint = NoteItemList.first()->pos();
+	}
+	else
+	{
+		m_PastePoint = QPointF();
+	}
+
+	for( NodeItem *Node : NodeItemList )
+	{
+		m_PastePoint.rx() = qMin( Node->x(), m_PastePoint.x() );
+		m_PastePoint.ry() = qMin( Node->x(), m_PastePoint.y() );
 	}
 }
 
@@ -1397,10 +1430,11 @@ void ContextView::cut()
 	QList<NoteItem *>  NoteItemList;
 
 	QList<QSharedPointer<fugio::NodeInterface>>		NodeList;
+	QList<QSharedPointer<NodeItem>>					GroupList;
 	QMultiMap<QUuid,QUuid>							LinkList;
 	QList<QSharedPointer<NoteItem>>					NoteList;
 
-	if( !itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, NodeList, LinkList, NoteList ) )
+	if( !itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, NodeList, GroupList, LinkList, NoteList ) )
 	{
 		return;
 	}
@@ -1428,10 +1462,8 @@ void ContextView::cut()
 
 	QList<QUuid>	SaveNodeList;
 
-	for( NodeItem *Node : NodeItemList )
-	{
-		SaveNodeList.append( Node->id() );
-	}
+	SaveNodeList << nodeItemIds( NodeItemList );
+	SaveNodeList << nodeItemIds( GroupItemList );
 
 	mSaveOnlySelected = true;
 
@@ -1453,33 +1485,11 @@ void ContextView::cut()
 
 	mSaveOnlySelected = false;
 
-	CmdRemove		*Cmd = new CmdRemove( mContext, NodeList, LinkList, NoteList );
+	CmdRemove		*Cmd = new CmdRemove( mContext, NodeList, GroupList, LinkList, NoteList );
 
 	if( Cmd != 0 )
 	{
 		widget()->undoStack()->push( Cmd );
-	}
-}
-
-void ContextView::updatePastePoint(QList<NodeItem *> NodeItemList, QList<NoteItem *> NoteItemList)
-{
-	if( !NodeItemList.isEmpty() )
-	{
-		m_PastePoint = NodeItemList.first()->pos();
-	}
-	else if( !NoteItemList.isEmpty() )
-	{
-		m_PastePoint = NoteItemList.first()->pos();
-	}
-	else
-	{
-		m_PastePoint = QPointF();
-	}
-
-	for( NodeItem *Node : NodeItemList )
-	{
-		m_PastePoint.rx() = qMin( Node->x(), m_PastePoint.x() );
-		m_PastePoint.ry() = qMin( Node->x(), m_PastePoint.y() );
 	}
 }
 
@@ -1519,6 +1529,8 @@ void ContextView::copy()
 
 	const QString		TempFile = QDir( QDir::tempPath() ).absoluteFilePath( "fugio-copy.tmp" );
 
+	qDebug() << TempFile;
+
 	if( C->save( TempFile, &NodeList ) )
 	{
 		QFile		FH( TempFile );
@@ -1531,7 +1543,7 @@ void ContextView::copy()
 		}
 	}
 
-	QFile::remove( TempFile );
+	//QFile::remove( TempFile );
 
 	mSaveOnlySelected = false;
 }
@@ -1766,7 +1778,7 @@ void ContextView::nodeMoveStarted()
 	mNodeMoveData.clear();
 	mNoteMoveData.clear();
 
-	for( QGraphicsItem *Item : mContextScene.selectedItems() )
+	for( QGraphicsItem *Item : scene()->selectedItems() )
 	{
 		if( NodeItem *NI = qgraphicsitem_cast<NodeItem *>( Item ) )
 		{
@@ -1838,7 +1850,7 @@ void ContextView::noteRemove( QSharedPointer<NoteItem> pNoteItem )
 
 bool ContextView::isGroupEmpty( const QUuid &pGroupId ) const
 {
-	for( QGraphicsItem *Item : mContextScene.items() )
+	for( QGraphicsItem *Item : scene()->items() )
 	{
 		if( NodeItem *NI = qgraphicsitem_cast<NodeItem *>( Item ) )
 		{
@@ -1864,6 +1876,13 @@ bool ContextView::isGroupEmpty( const QUuid &pGroupId ) const
 	return( true );
 }
 
+void ContextView::clearTempLists()
+{
+	mNodeItemList.clear();
+	mGroupItemList.clear();
+	mLinkItemList.clear();
+	mNoteItemList.clear();
+}
 
 void ContextView::moveNodeRelative( NodeItem *pNode, const QList<NodeItem *> &pNodeList, const QList<NoteItem *> &pNoteList, ContextView::NodeMoveRelation pRelation )
 {
@@ -1904,7 +1923,7 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 {
 	const QUuid		NewGroupId = NI->id();
 
-	for( QGraphicsItem *Item : mContextScene.items() )
+	for( QGraphicsItem *Item : scene()->items() )
 	{
 		LinkItem		*LI = qgraphicsitem_cast<LinkItem *>( Item );
 
@@ -1939,7 +1958,7 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 			{
 				if( LinkItem *Link = new LinkItem() )
 				{
-					mContextScene.addItem( Link );
+					scene()->addItem( Link );
 
 					Link->setSrcPin( NewPin );
 					Link->setDstPin( DstPin );
@@ -1964,7 +1983,7 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 			{
 				if( LinkItem *Link = new LinkItem() )
 				{
-					mContextScene.addItem( Link );
+					scene()->addItem( Link );
 
 					Link->setSrcPin( SrcPin );
 					Link->setDstPin( NewPin );
@@ -2041,7 +2060,7 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGro
 	// Search for any links that link from the ungrouping nodes to outside nodes
 	// and delete them
 
-	for( QGraphicsItem *Item : mContextScene.items() )
+	for( QGraphicsItem *Item : scene()->items() )
 	{
 		LinkItem		*LI = qgraphicsitem_cast<LinkItem *>( Item );
 
@@ -2096,7 +2115,7 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGro
 			continue;
 		}
 
-		mContextScene.removeItem( LI );
+		scene()->removeItem( LI );
 
 		LI->setSrcPin( nullptr );
 		LI->setDstPin( nullptr );
@@ -2150,7 +2169,7 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGro
 
 void ContextView::ungroup( NodeItem *GI )
 {
-	for( QGraphicsItem *Item : mContextScene.items() )
+	for( QGraphicsItem *Item : scene()->items() )
 	{
 		if( Item == GI )
 		{
@@ -2200,7 +2219,7 @@ void ContextView::ungroup( NodeItem *GI )
 		}
 	}
 
-	mContextScene.removeItem( GI );
+	scene()->removeItem( GI );
 
 	mGroupIds.removeAll( GI->id() );
 
@@ -2394,3 +2413,4 @@ void ContextView::zoom( qreal factor, QPointF centerPoint )
 
 	setTransform( Transform );
 }
+

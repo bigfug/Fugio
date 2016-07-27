@@ -38,7 +38,7 @@ ContextWidgetPrivate::ContextWidgetPrivate(QWidget *parent) :
 
 	ui->mVerticalLayout->insertWidget( 1, mSplitter, 1 );
 
-	if( ( mContextView = new ContextView( mSplitter ) ) == 0 )
+	if( ( mContextView = new ContextView( &mContextScene, mSplitter ) ) == 0 )
 	{
 		return;
 	}
@@ -107,6 +107,8 @@ void ContextWidgetPrivate::setContext( QSharedPointer<fugio::ContextInterface> p
 	mContext = pContext;
 
 	mContextView->setContext( pContext );
+
+	mContextModel.setContext( pContext );
 
 	pContext->registerInterface( IID_CONTEXT_WIDGET, this );
 
