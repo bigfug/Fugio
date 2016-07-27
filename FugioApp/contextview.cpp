@@ -39,10 +39,10 @@
 
 bool ContextView::mShownWizard = false;
 
-ContextView::ContextView( QGraphicsScene *pScene, QWidget *pParent ) :
-	QGraphicsView( pParent ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 )
+ContextView::ContextView( QSharedPointer<QGraphicsScene> pScene, QWidget *pParent ) :
+	QGraphicsView( pParent ), mContextScene( pScene ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 )
 {
-	setScene( pScene );
+	setScene( pScene.data() );
 
 	setViewportUpdateMode( QGraphicsView::FullViewportUpdate );
 

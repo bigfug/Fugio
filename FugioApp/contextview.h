@@ -41,7 +41,7 @@ class ContextView : public QGraphicsView, public fugio::EditInterface
 	Q_PROPERTY( QPointF PastePoint READ PastePoint WRITE setPastePoint )
 
 public:
-	explicit ContextView( QGraphicsScene *pScene, QWidget *pParent = 0 );
+	explicit ContextView( QSharedPointer<QGraphicsScene> pScene, QWidget *pParent = 0 );
 
 	virtual ~ContextView( void );
 
@@ -377,6 +377,7 @@ private:
 		}
 	} GroupStateEntry;
 
+	QSharedPointer<QGraphicsScene>			 mContextScene;
 	QSharedPointer<fugio::ContextInterface>	 mContext;
 	QMap<QUuid,QPointF>						 mPositions;
 	QMap<QUuid,QPointF>						 mPastePositions;

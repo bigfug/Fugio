@@ -118,7 +118,7 @@ private slots:
 private:
     Ui::ContextWidgetPrivate				*ui;
     QSplitter								*mSplitter;
-	QGraphicsScene							 mContextScene;
+	QSharedPointer<QGraphicsScene>			 mContextScene;
 	ContextModel							 mContextModel;
     ContextView								*mContextView;
     QButtonGroup							*mButtonGroup;

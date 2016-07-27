@@ -38,7 +38,9 @@ ContextWidgetPrivate::ContextWidgetPrivate(QWidget *parent) :
 
 	ui->mVerticalLayout->insertWidget( 1, mSplitter, 1 );
 
-	if( ( mContextView = new ContextView( &mContextScene, mSplitter ) ) == 0 )
+	mContextScene = QSharedPointer<QGraphicsScene>( new QGraphicsScene() );
+
+	if( ( mContextView = new ContextView( mContextScene, mSplitter ) ) == 0 )
 	{
 		return;
 	}
