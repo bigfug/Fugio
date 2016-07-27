@@ -899,7 +899,10 @@ void ContextView::clearContext( void )
 
 	mNodeList.clear();
 
-	scene()->clear();
+	if( scene() )
+	{
+		scene()->clear();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -966,7 +969,10 @@ void ContextView::nodeRemoved( QUuid pNodeId )
 		return;
 	}
 
-	scene()->removeItem( Node.data() );
+	if( scene() )
+	{
+		scene()->removeItem( Node.data() );
+	}
 
 	mNodeList.remove( pNodeId );
 }

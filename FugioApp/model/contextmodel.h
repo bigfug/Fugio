@@ -20,8 +20,10 @@ public:
 
 	void setContext( QSharedPointer<fugio::ContextInterface> pContext );
 
-	QUuid createGroup( const QUuid &pParentId );
-	QUuid createNote( const QUuid &pParentId );
+	void setCurrentGroup( const QUuid &pGroupId );
+
+	QUuid createGroup( void );
+	QUuid createNote( void );
 
 	void removeGroup( const QUuid &pGroupId );
 	void removeNote( const QUuid &pNoteId );
@@ -48,7 +50,7 @@ private slots:
 
 	void pinAdded( QUuid pNodeId, QUuid pPinId );
 	void pinRemoved( QUuid pNodeId, QUuid pPinId );
-	void pinRenamed( QUuid pNewId, QUuid pOldId );
+	void pinRenamed( QUuid pNodeId, QUuid pOldId, QUuid pNewId );
 
 	// QAbstractItemModel interface
 public:
@@ -61,6 +63,7 @@ public:
 private:
 	QSharedPointer<fugio::ContextInterface>		 mContext;
 	GroupModel									*mRootItem;
+	QUuid										 mCurrentGroup;
 	QMap<QUuid,NodeModel *>						 mNodeMap;
 	QMap<QUuid,GroupModel *>					 mGroupMap;
 	QMap<QUuid,PinModel *>						 mPinMap;

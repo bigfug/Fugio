@@ -53,11 +53,16 @@ void ContextModel::setContext( QSharedPointer<fugio::ContextInterface> pContext 
 	//	}
 }
 
+void ContextModel::setCurrentGroup( const QUuid &pGroupId )
+{
+	mCurrentGroup = pGroupId;
+}
+
 //-----------------------------------------------------------------------------
 
-QUuid ContextModel::createGroup( const QUuid &pParentId )
+QUuid ContextModel::createGroup( void )
 {
-	GroupModel			*Parent = ( pParentId.isNull() ? mRootItem : mGroupMap.value( pParentId ) );
+	GroupModel			*Parent = ( mCurrentGroup.isNull() ? mRootItem : mGroupMap.value( mCurrentGroup ) );
 
 	if( !Parent )
 	{
@@ -219,9 +224,9 @@ void ContextModel::moveToGroup( const QUuid &pGroupId, const QList<QUuid> &pNode
 	}
 }
 
-QUuid ContextModel::createNote( const QUuid &pParentId )
+QUuid ContextModel::createNote( void )
 {
-	GroupModel			*Parent = ( pParentId.isNull() ? mRootItem : mGroupMap.value( pParentId ) );
+	GroupModel			*Parent = ( mCurrentGroup.isNull() ? mRootItem : mGroupMap.value( mCurrentGroup ) );
 
 	if( !Parent )
 	{
@@ -305,7 +310,9 @@ void ContextModel::clearContext()
 
 void ContextModel::nodeAdded( QUuid pNodeId, QUuid /* pOrigId */ )
 {
-	GroupModel		*Parent = mRootItem;
+	GroupModel		*Parent = ( mCurrentGroup.isNull() ? mRootItem : mGroupMap.value( mCurrentGroup ) );
+
+	qDebug() << "nodeAdded" << pNodeId;
 
 	const int		 ChildCount = Parent->rowCount( 0 );
 
@@ -372,17 +379,15 @@ void ContextModel::pinAdded( QUuid pNodeId, QUuid pPinId )
 				beginInsertRows( createIndex( Node->parent()->childRow( Node ), 0, Node ), Node->inputCount(), Node->inputCount() );
 
 				Node->addPinInput( pPinId );
-
-				endInsertRows();
 			}
 			else
 			{
 				beginInsertRows( createIndex( Node->parent()->childRow( Node ), 1, Node ), Node->outputCount(), Node->outputCount() );
 
 				Node->addPinOutput( pPinId );
-
-				endInsertRows();
 			}
+
+			endInsertRows();
 		}
 	}
 }
@@ -409,8 +414,10 @@ void ContextModel::pinRemoved( QUuid pNodeId, QUuid pPinId )
 	}
 }
 
-void ContextModel::pinRenamed( QUuid pNewId, QUuid pOldId )
+void ContextModel::pinRenamed( QUuid pNodeId, QUuid pOldId, QUuid pNewId )
 {
+	Q_UNUSED( pNodeId )
+
 	PinModel		*Pin = mPinMap.value( pOldId );
 
 	if( Pin )
