@@ -176,6 +176,8 @@ void ContextView::sortSelectedItems( QList<NodeItem *> &pNodeList, QList<NodeIte
 		GrpIds = nodeItemIds( pGroupList );
 
 		itemsInGroups( GrpIds, pNodeList );
+
+		notesInGroups( GrpIds, pNoteList );
 	}
 }
 
@@ -183,7 +185,7 @@ bool ContextView::itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<NodeI
 {
 	sortSelectedItems( pNodeItemList, pGroupItemList, pLinkItemList, pNoteItemList, true );
 
-	if( pNodeItemList.isEmpty() && pLinkItemList.isEmpty() && pNoteItemList.isEmpty() )
+	if( pNodeItemList.isEmpty() && pGroupItemList.isEmpty() && pLinkItemList.isEmpty() && pNoteItemList.isEmpty() )
 	{
 		return( false );
 	}
@@ -317,6 +319,17 @@ void ContextView::itemsInGroups( const QList<QUuid> &pGroupIdList, QList<NodeIte
 	}
 }
 
+void ContextView::notesInGroups( const QList<QUuid> &pGroupIdList, QList<NoteItem *> &pNoteList ) const
+{
+	for( QSharedPointer<NoteItem> NI : mNoteList )
+	{
+		if( pGroupIdList.contains( NI->groupId() ) )
+		{
+			pNoteList << NI.data();
+		}
+	}
+}
+
 void ContextView::mouseDoubleClickEvent( QMouseEvent *pEvent )
 {
 	if( scene()->selectedItems().size() == 1 )
@@ -403,7 +416,9 @@ void ContextView::keyReleaseEvent( QKeyEvent *pEvent )
 				return;
 			}
 
-			CmdRemove		*Cmd = new CmdRemove( mContext, NodeList, GroupList, LinkList, NoteList );
+			QMap<QUuid,QUuid>								NodeGroups = nodeGroups( NodeItemList );
+
+			CmdRemove		*Cmd = new CmdRemove( this, NodeList, GroupList, LinkList, NoteList, NodeGroups );
 
 			if( Cmd )
 			{
@@ -975,6 +990,26 @@ void ContextView::nodeAdded( QUuid pNodeId, QUuid pOrigId )
 	mNodePositionFlag = false;
 }
 
+void ContextView::nodeAdd( QSharedPointer<NodeItem> Node )
+{
+	if( scene() )
+	{
+		scene()->addItem( Node.data() );
+	}
+
+	mNodeList.insert( Node->id(), Node );
+}
+
+void ContextView::nodeRemove( QSharedPointer<NodeItem> Node )
+{
+	if( scene() )
+	{
+		scene()->removeItem( Node.data() );
+	}
+
+	mNodeList.remove( Node->id() );
+}
+
 void ContextView::nodeRemoved( QUuid pNodeId )
 {
 //	mPositions.remove( pNodeId );
@@ -993,12 +1028,7 @@ void ContextView::nodeRemoved( QUuid pNodeId )
 		return;
 	}
 
-	if( scene() )
-	{
-		scene()->removeItem( Node.data() );
-	}
-
-	mNodeList.remove( pNodeId );
+	nodeRemove( Node );
 }
 
 void ContextView::nodeRenamed( QUuid pNodeId1, QUuid pNodeId2 )
@@ -1449,6 +1479,21 @@ void ContextView::updatePastePoint(QList<NodeItem *> NodeItemList, QList<NoteIte
 	}
 }
 
+QMap<QUuid, QUuid> ContextView::nodeGroups(QList<NodeItem *> pNodeList)
+{
+	QMap<QUuid, QUuid>		NodeGroups;
+
+	for( NodeItem *NI : pNodeList )
+	{
+		if( !NI->groupId().isNull() )
+		{
+			NodeGroups.insert( NI->id(), NI->groupId() );
+		}
+	}
+
+	return( NodeGroups );
+}
+
 void ContextView::cut()
 {
 	QSharedPointer<ContextPrivate> C = qSharedPointerCast<ContextPrivate>( mContext );
@@ -1469,6 +1514,8 @@ void ContextView::cut()
 	QList<QSharedPointer<NodeItem>>					GroupList;
 	QMultiMap<QUuid,QUuid>							LinkList;
 	QList<QSharedPointer<NoteItem>>					NoteList;
+
+	QMap<QUuid,QUuid>								NodeGroups;
 
 	if( !itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, NodeList, GroupList, LinkList, NoteList ) )
 	{
@@ -1521,7 +1568,7 @@ void ContextView::cut()
 
 	mSaveOnlySelected = false;
 
-	CmdRemove		*Cmd = new CmdRemove( mContext, NodeList, GroupList, LinkList, NoteList );
+	CmdRemove		*Cmd = new CmdRemove( this, NodeList, GroupList, LinkList, NoteList, NodeGroups );
 
 	if( Cmd != 0 )
 	{

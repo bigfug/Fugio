@@ -15,8 +15,8 @@
 class CmdRemove : public QUndoCommand
 {
 public:
-	explicit CmdRemove( QSharedPointer<fugio::ContextInterface> pContext, QList< QSharedPointer<fugio::NodeInterface> > &pNodeList, QList<QSharedPointer<NodeItem>> &pGroupList, QMultiMap<QUuid,QUuid> &pLinkList, QList<QSharedPointer<NoteItem>> &pNoteList )
-		: mContext( pContext ), mNodeList( pNodeList ), mGroupList( pGroupList ), mLinkList( pLinkList ), mNoteList( pNoteList )
+	explicit CmdRemove( ContextView *pContextView, QList< QSharedPointer<fugio::NodeInterface> > &pNodeList, QList<QSharedPointer<NodeItem>> &pGroupList, QMultiMap<QUuid,QUuid> &pLinkList, QList<QSharedPointer<NoteItem>> &pNoteList, QMap<QUuid,QUuid> pNodeGroups )
+		: mContextView( pContextView ), mNodeList( pNodeList ), mGroupList( pGroupList ), mLinkList( pLinkList ), mNoteList( pNoteList )
 	{
 		setText( QObject::tr( "Remove Nodes/Links" ) );
 
@@ -53,16 +53,33 @@ public:
 
 	virtual void undo( void )
 	{
+		QSharedPointer<fugio::ContextInterface>		Context = mContextView->context();
+
+		for( QSharedPointer<NodeItem> G : mGroupList )
+		{
+			mContextView->nodeAdd( G );
+		}
+
 		for( QSharedPointer<fugio::NodeInterface> mNode : mNodeList )
 		{
-			mContext->registerNode( mNode, mNode->uuid() );
+			Context->registerNode( mNode, mNode->uuid() );
+		}
+
+		for( QMap<QUuid,QUuid>::const_iterator it = mNodeGroups.begin() ; it != mNodeGroups.end() ; it++ )
+		{
+			QSharedPointer<NodeItem> N = mContextView->findNodeItem( it.key() );
+
+			if( N )
+			{
+				N->setGroupId( it.value() );
+			}
 		}
 
 		for( QUuid Src : mLinkList.keys() )
 		{
 			for( QUuid Dst : mLinkList.values( Src ) )
 			{
-				mContext->connectPins( Src, Dst );
+				Context->connectPins( Src, Dst );
 			}
 		}
 
@@ -70,41 +87,49 @@ public:
 		{
 			if( P )
 			{
-				P->view()->noteAdd( P );
+				mContextView->noteAdd( P );
 			}
 		}
 	}
 
 	virtual void redo( void )
 	{
+		QSharedPointer<fugio::ContextInterface>		Context = mContextView->context();
+
 		for( QUuid Src : mLinkList.keys() )
 		{
 			for( QUuid Dst : mLinkList.values( Src ) )
 			{
-				mContext->disconnectPins( Src, Dst );
+				Context->disconnectPins( Src, Dst );
 			}
 		}
 
 		for( QSharedPointer<fugio::NodeInterface> mNode : mNodeList )
 		{
-			mContext->unregisterNode( mNode->uuid() );
+			Context->unregisterNode( mNode->uuid() );
 		}
 
 		for( QSharedPointer<NoteItem> P : mNoteList )
 		{
 			if( P )
 			{
-				P->view()->noteRemove( P );
+				mContextView->noteRemove( P );
 			}
+		}
+
+		for( QSharedPointer<NodeItem> G : mGroupList )
+		{
+			mContextView->nodeRemove( G );
 		}
 	}
 
 private:
-	QSharedPointer<fugio::ContextInterface>			 mContext;
+	ContextView										*mContextView;
 	QList< QSharedPointer<fugio::NodeInterface> >	 mNodeList;
 	QList<QSharedPointer<NodeItem>>					 mGroupList;
 	QMultiMap<QUuid,QUuid>							 mLinkList;
 	QList<QSharedPointer<NoteItem>>					 mNoteList;
+	QMap<QUuid,QUuid>								 mNodeGroups;
 };
 
 #endif // CMDREMOVE_H

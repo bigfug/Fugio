@@ -252,9 +252,13 @@ protected:
 
 	void itemsInGroups( const QList<QUuid> &pGroupIdList, QList<NodeItem *> &pNodeList ) const;
 
+	void notesInGroups( const QList<QUuid> &pGroupIdList, QList<NoteItem *> &pNoteList ) const;
+
 	void processGroupLinks(QSharedPointer<NodeItem> NI );
 
 	void updatePastePoint(QList<NodeItem *> NodeItemList, QList<NoteItem *> NoteItemList);
+
+	QMap<QUuid,QUuid> nodeGroups( QList<NodeItem *> pNodeList );
 
 protected slots:
 	void loadStarted( QSettings &pSettings, bool pPartial );
@@ -310,6 +314,9 @@ private slots:
 public:
 	virtual bool event( QEvent * ) Q_DECL_OVERRIDE;
 
+
+	void nodeAdd( QSharedPointer<NodeItem> Node );
+	void nodeRemove( QSharedPointer<NodeItem> Node );
 
 public slots:
 	QSharedPointer<NoteItem> noteAdd(const QString &pText , QUuid pUuid);

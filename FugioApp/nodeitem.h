@@ -33,6 +33,16 @@ public:
 
 	enum { Type = UserType + 1 };
 
+	inline ContextView *view( void )
+	{
+		return( mContextView );
+	}
+
+	inline ContextView *view( void ) const
+	{
+		return( mContextView );
+	}
+
 	int type( void ) const
 	{
 		// Enable the use of qgraphicsitem_cast with this item.
