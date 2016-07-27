@@ -1922,55 +1922,65 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 
 		if( SrcNod->groupId() == NewGroupId && DstNod->groupId() != NewGroupId )
 		{
-			if( ( NewPin = NI->findPinOutput( SrcPin->pin() ) ) == nullptr )
+			QSharedPointer<NodeItem>	GroupItem = findNodeItem( DstNod->groupId() );
+
+			if( !GroupItem || GroupItem->groupId() != NewGroupId )
 			{
-				if( ( NewPin = NI->pinOutputAdd( SrcPin->pin() ) ) )
+				if( ( NewPin = NI->findPinOutput( SrcPin->pin() ) ) == nullptr )
 				{
-					NewPin->setName( SrcPin->name() );
+					if( ( NewPin = NI->pinOutputAdd( SrcPin->pin() ) ) )
+					{
+						NewPin->setName( SrcPin->name() );
 
-					NewPin->setColour( SrcPin->colour() );
+						NewPin->setColour( SrcPin->colour() );
 
-					connect( NewPin, SIGNAL(colourUpdated(QColor)), SrcPin, SLOT(setColour(QColor)) );
-					connect( SrcPin, SIGNAL(colourUpdated(QColor)), NewPin, SLOT(setColour(QColor)) );
+						connect( NewPin, SIGNAL(colourUpdated(QColor)), SrcPin, SLOT(setColour(QColor)) );
+						connect( SrcPin, SIGNAL(colourUpdated(QColor)), NewPin, SLOT(setColour(QColor)) );
+					}
 				}
-			}
 
-			if( NewPin )
-			{
-				if( LinkItem *Link = new LinkItem() )
+				if( NewPin )
 				{
-					mContextScene.addItem( Link );
+					if( LinkItem *Link = new LinkItem() )
+					{
+						scene()->addItem( Link );
 
-					Link->setSrcPin( NewPin );
-					Link->setDstPin( DstPin );
+						Link->setSrcPin( NewPin );
+						Link->setDstPin( DstPin );
 
-					NewPin->linkAdd( Link );
-					DstPin->linkAdd( Link );
+						NewPin->linkAdd( Link );
+						DstPin->linkAdd( Link );
+					}
 				}
 			}
 		}
 
 		if( SrcNod->groupId() != NewGroupId && DstNod->groupId() == NewGroupId )
 		{
-			if( ( NewPin = NI->findPinInput( DstPin->pin() ) ) == nullptr )
+			QSharedPointer<NodeItem>	GroupItem = findNodeItem( SrcNod->groupId() );
+
+			if( !GroupItem || GroupItem->groupId() != NewGroupId )
 			{
-				if( ( NewPin = NI->pinInputAdd( DstPin->pin() ) ) )
+				if( ( NewPin = NI->findPinInput( DstPin->pin() ) ) == nullptr )
 				{
-					NewPin->setName( DstPin->name() );
+					if( ( NewPin = NI->pinInputAdd( DstPin->pin() ) ) )
+					{
+						NewPin->setName( DstPin->name() );
+					}
 				}
-			}
 
-			if( NewPin )
-			{
-				if( LinkItem *Link = new LinkItem() )
+				if( NewPin )
 				{
-					mContextScene.addItem( Link );
+					if( LinkItem *Link = new LinkItem() )
+					{
+						scene()->addItem( Link );
 
-					Link->setSrcPin( SrcPin );
-					Link->setDstPin( NewPin );
+						Link->setSrcPin( SrcPin );
+						Link->setDstPin( NewPin );
 
-					SrcPin->linkAdd( Link );
-					NewPin->linkAdd( Link );
+						SrcPin->linkAdd( Link );
+						NewPin->linkAdd( Link );
+					}
 				}
 			}
 		}
