@@ -17,6 +17,8 @@
 #include "contextprivate.h"
 #include "model/contextmodel.h"
 
+//#define USE_CONTEXT_MODEL
+
 class QGestureEvent;
 class QPanGesture;
 class QPinchGesture;
@@ -381,7 +383,11 @@ private:
 	} GroupStateEntry;
 
 	QGraphicsScene							 mContextScene;
+
+#if defined( CONTEXT_MODEL )
 	ContextModel							 mContextModel;
+#endif
+
 	QSharedPointer<fugio::ContextInterface>	 mContext;
 	QMap<QUuid,QPointF>						 mPositions;
 	QMap<QUuid,QPointF>						 mPastePositions;

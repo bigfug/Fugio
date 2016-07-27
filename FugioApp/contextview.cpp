@@ -106,7 +106,9 @@ void ContextView::setContext( QSharedPointer<fugio::ContextInterface> pContext )
 		connect( C.data(), SIGNAL(linkRemoved(QUuid,QUuid)), this, SLOT(linkRemoved(QUuid,QUuid)) );
 	}
 
+#if defined( CONTEXT_MODEL )
 	mContextModel.setContext( pContext );
+#endif
 }
 
 ContextWidgetPrivate *ContextView::widget( void )
@@ -315,7 +317,6 @@ void ContextView::itemsInGroups( const QList<QUuid> &pGroupIdList, QList<NodeIte
 	}
 }
 
-
 void ContextView::mouseDoubleClickEvent( QMouseEvent *pEvent )
 {
 	if( scene()->selectedItems().size() == 1 )
@@ -504,48 +505,6 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 	}
 
 	//-------------------------------------------------------------------------
-	// Notes
-
-	if( pSettings.childGroups().contains( "notes" ) )
-	{
-		int		NoteCount = pSettings.beginReadArray( "notes" );
-
-		for( int i = 0 ; i < NoteCount ; i++ )
-		{
-			pSettings.setArrayIndex( i );
-
-			QString		Text = pSettings.value( "note" ).toString();
-			QColor		Col  = pSettings.value( "colour", noteColour() ).value<QColor>();
-			QUuid		Id   = fugio::utils::string2uuid( pSettings.value( "uuid", fugio::utils::uuid2string( QUuid::createUuid() ) ).toString() );
-			QUuid		GroupId = fugio::utils::string2uuid( pSettings.value( "group", fugio::utils::uuid2string( QUuid() ) ).toString() );
-
-			QPointF		Pos  = pSettings.value( "position" ).toPointF();
-
-			if( pSettings.value( "position" ).type() == QVariant::PointF )
-			{
-				Pos  = pSettings.value( "position" ).toPointF();
-			}
-			else if( pSettings.value( "position" ).type() == QVariant::String )
-			{
-				Pos = fugio::utils::string2point( pSettings.value( "position" ).toString() );
-			}
-
-			QSharedPointer<NoteItem>	Note = noteAdd( Text, Id );
-
-			Note->setPos( Pos );
-			Note->setBackgroundColour( Col );
-			Note->setGroupId( GroupId );
-
-			if( mPasteOffset > 0 )
-			{
-				Note->moveBy( mPasteOffset, mPasteOffset );
-			}
-		}
-
-		pSettings.endArray();
-	}
-
-	//-------------------------------------------------------------------------
 	// Groups
 
 	if( pSettings.childGroups().contains( "groups" ) )
@@ -636,6 +595,48 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 			pSettings.endArray();
 		}
+	}
+
+	//-------------------------------------------------------------------------
+	// Notes
+
+	if( pSettings.childGroups().contains( "notes" ) )
+	{
+		int		NoteCount = pSettings.beginReadArray( "notes" );
+
+		for( int i = 0 ; i < NoteCount ; i++ )
+		{
+			pSettings.setArrayIndex( i );
+
+			QString		Text = pSettings.value( "note" ).toString();
+			QColor		Col  = pSettings.value( "colour", noteColour() ).value<QColor>();
+			QUuid		Id   = fugio::utils::string2uuid( pSettings.value( "uuid", fugio::utils::uuid2string( QUuid::createUuid() ) ).toString() );
+			QUuid		GroupId = fugio::utils::string2uuid( pSettings.value( "group", fugio::utils::uuid2string( QUuid() ) ).toString() );
+
+			QPointF		Pos  = pSettings.value( "position" ).toPointF();
+
+			if( pSettings.value( "position" ).type() == QVariant::PointF )
+			{
+				Pos  = pSettings.value( "position" ).toPointF();
+			}
+			else if( pSettings.value( "position" ).type() == QVariant::String )
+			{
+				Pos = fugio::utils::string2point( pSettings.value( "position" ).toString() );
+			}
+
+			QSharedPointer<NoteItem>	Note = noteAdd( Text, Id );
+
+			Note->setPos( Pos );
+			Note->setBackgroundColour( Col );
+			Note->setGroupId( GroupId );
+
+			if( mPasteOffset > 0 )
+			{
+				Note->moveBy( mPasteOffset, mPasteOffset );
+			}
+		}
+
+		pSettings.endArray();
 	}
 
 	//-------------------------------------------------------------------------
@@ -1306,7 +1307,11 @@ void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 
 QSharedPointer<NoteItem> ContextView::noteAdd( const QString &pText, QUuid pUuid )
 {
+#if defined( CONTEXT_MODEL )
 	QUuid						NoteUuid = mContextModel.createNote( pUuid );
+#else
+	QUuid						NoteUuid = ( pUuid.isNull() ? QUuid::createUuid() : pUuid );
+#endif
 
 	QSharedPointer<NoteItem>	TextItem = QSharedPointer<NoteItem>( new NoteItem( this, NoteUuid, pText ) );
 
@@ -1547,12 +1552,7 @@ void ContextView::copy()
 		return;
 	}
 
-	QList<QUuid>	NodeList;
-
-	for( NodeItem *Node : NodeItemList )
-	{
-		NodeList.append( Node->id() );
-	}
+	QList<QUuid>	NodeList = nodeItemIds( NodeItemList );
 
 	updatePastePoint( NodeItemList, NoteItemList );
 
@@ -1560,7 +1560,7 @@ void ContextView::copy()
 
 	const QString		TempFile = QDir( QDir::tempPath() ).absoluteFilePath( "fugio-copy.tmp" );
 
-	qDebug() << TempFile;
+	//qDebug() << TempFile;
 
 	if( C->save( TempFile, &NodeList ) )
 	{
@@ -1574,7 +1574,7 @@ void ContextView::copy()
 		}
 	}
 
-	//QFile::remove( TempFile );
+	QFile::remove( TempFile );
 
 	mSaveOnlySelected = false;
 }
@@ -1602,12 +1602,7 @@ void ContextView::saveSelectedTo( const QString &pFileName )
 		return;
 	}
 
-	QList<QUuid>	NodeList;
-
-	for( NodeItem *Node : NodeItemList )
-	{
-		NodeList.append( Node->id() );
-	}
+	QList<QUuid>	NodeList = nodeItemIds( NodeItemList );
 
 	mSaveOnlySelected = true;
 
@@ -2041,7 +2036,11 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 
 QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId )
 {
+#if defined( CONTEXT_MODEL )
 	const QUuid		NewGroupId = mContextModel.createGroup( pGroupId, pGroupName );
+#else
+	const QUuid		NewGroupId = ( pGroupId.isNull() ? QUuid::createUuid() : pGroupId );
+#endif
 
 	if( !mGroupIds.contains( NewGroupId ) )
 	{
@@ -2068,7 +2067,9 @@ QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeLis
 		nodeAdded( NewGroupId, NewGroupId );
 	}
 
+#if defined( CONTEXT_MODEL )
 	mContextModel.moveToGroup( NewGroupId, nodeItemIds( pNodeList ), nodeItemIds( pGroupList ), noteItemIds( pNoteList ) );
+#endif
 
 	QSharedPointer<NodeItem>	NI = mNodeList[ NewGroupId ];
 
@@ -2357,7 +2358,9 @@ void ContextView::pushGroup( const QUuid &pGroupId )
 
 	setGroupId( pGroupId );
 
+#if defined( CONTEXT_MODEL )
 	mContextModel.setCurrentGroup( pGroupId );
+#endif
 }
 
 void ContextView::popGroup()
@@ -2376,7 +2379,10 @@ void ContextView::popGroup()
 
 	setGroupId( GroupId );
 
+#if defined( CONTEXT_MODEL )
 	mContextModel.setCurrentGroup( GroupId );
+#endif#if defined( CONTEXT_MODEL )
+
 }
 
 bool ContextView::event( QEvent *pEvent )
