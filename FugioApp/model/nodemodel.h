@@ -85,6 +85,11 @@ public:
 		return( 2 );
 	}
 
+	virtual QVariant data( int pColumn ) const Q_DECL_OVERRIDE
+	{
+		return( pColumn == 0 ? mNodeId.toString() : QVariant() );
+	}
+
 private:
 	GroupModel				*mParent;
 	QUuid					 mNodeId;

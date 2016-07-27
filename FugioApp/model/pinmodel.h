@@ -42,6 +42,11 @@ public:
 		return( mPinGlobalId );
 	}
 
+	virtual QVariant data( int pColumn ) const Q_DECL_OVERRIDE
+	{
+		return( pColumn == 0 ? mPinGlobalId.toString() : QVariant() );
+	}
+
 private:
 	NodeModel		*mParent;
 	QUuid			 mPinGlobalId;

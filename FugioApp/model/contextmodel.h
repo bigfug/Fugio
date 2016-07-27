@@ -42,6 +42,9 @@ signals:
 public slots:
 
 private slots:
+	void loadStarted( QSettings &pSettings, bool pPartial );
+	void loadEnded( QSettings &pSettings, bool pPartial );
+
 	void clearContext( void );
 
 	void nodeAdded( QUuid pNodeId, QUuid pOrigId );

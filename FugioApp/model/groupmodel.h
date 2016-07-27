@@ -37,12 +37,17 @@ public:
 
 	virtual int rowCount( int pColumn ) const Q_DECL_OVERRIDE
 	{
-		return( pColumn == 0 ? mChildren.size() : 0 );
+		return( pColumn <= 0 ? mChildren.size() : 0 );
 	}
 
 	virtual int columnCount( void ) const Q_DECL_OVERRIDE
 	{
 		return( 1 );
+	}
+
+	virtual QVariant data( int pColumn ) const Q_DECL_OVERRIDE
+	{
+		return( pColumn == 0 ? "Group" : QVariant() );
 	}
 
 private:

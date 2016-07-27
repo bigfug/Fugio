@@ -8,6 +8,12 @@
 #include "pinmodel.h"
 #include "notemodel.h"
 
+#include "app.h"
+#include "mainwindow.h"
+
+#include <QTreeView>
+#include <QDockWidget>
+
 ContextModel::ContextModel( QObject *pParent )
 	: QAbstractItemModel( pParent )
 {
@@ -37,11 +43,12 @@ void ContextModel::setContext( QSharedPointer<fugio::ContextInterface> pContext 
 	connect( CS, SIGNAL(pinRemoved(QUuid,QUuid)), this, SLOT(pinRemoved(QUuid,QUuid)) );
 	connect( CS, SIGNAL(pinRenamed(QUuid,QUuid,QUuid)), this, SLOT(pinRenamed(QUuid,QUuid,QUuid)) );
 
+	connect( CS, SIGNAL(loadStart(QSettings&,bool)), this, SLOT(loadStarted(QSettings&,bool)) );
+	connect( CS, SIGNAL(loadEnd(QSettings&,bool)), this, SLOT(loadEnded(QSettings&,bool)) );
+
 //	if( QSharedPointer<ContextPrivate> C = qSharedPointerCast<ContextPrivate>( mContext ) )
 //	{
-//		connect( C.data(), SIGNAL(loadStart(QSettings&,bool)), this, SLOT(loadStarted(QSettings&,bool)) );
 //		connect( C.data(), SIGNAL(loading(QSettings&,bool)), this, SLOT(loadContext(QSettings&,bool)) );
-//		connect( C.data(), SIGNAL(loadEnd(QSettings&,bool)), this, SLOT(loadEnded(QSettings&,bool)) );
 
 //		connect( C.data(), SIGNAL(saving(QSettings&)), this, SLOT(saveContext(QSettings&)) );
 
@@ -51,6 +58,21 @@ void ContextModel::setContext( QSharedPointer<fugio::ContextInterface> pContext 
 //		connect( C.data(), SIGNAL(linkAdded(QUuid,QUuid)), this, SLOT(linkAdded(QUuid,QUuid)) );
 //		connect( C.data(), SIGNAL(linkRemoved(QUuid,QUuid)), this, SLOT(linkRemoved(QUuid,QUuid)) );
 	//	}
+
+
+	MainWindow		*MW = gApp->mainWindow();
+
+	QDockWidget		*DW = new QDockWidget( "Context Model", MW );
+
+	DW->setObjectName( "ContextModel" );
+
+	QTreeView		*TV = new QTreeView( DW );
+
+	TV->setModel( this );
+
+	DW->setWidget( TV );
+
+	MW->addDockWidget( Qt::RightDockWidgetArea, DW );
 }
 
 void ContextModel::setCurrentGroup( const QUuid &pGroupId )
@@ -281,6 +303,18 @@ QModelIndex ContextModel::pinIndex( const QUuid &pId ) const
 	PinModel		*Pin = mPinMap.value( pId );
 
 	return( Pin ? createIndex( Pin->row(), Pin->direction() == PIN_INPUT ? 0 : 1, Pin ) : QModelIndex() );
+}
+
+void ContextModel::loadStarted(QSettings &pSettings, bool pPartial)
+{
+	emit layoutAboutToBeChanged();
+}
+
+void ContextModel::loadEnded( QSettings &pSettings, bool pPartial )
+{
+	changePersistentIndex( createIndex( 0, 0, mRootItem ), createIndex( mRootItem->rowCount( 0 ), 0, mRootItem ) );
+
+	emit layoutChanged();
 }
 
 //-----------------------------------------------------------------------------
