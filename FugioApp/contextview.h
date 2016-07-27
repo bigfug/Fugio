@@ -310,7 +310,7 @@ public:
 
 
 public slots:
-	QSharedPointer<NoteItem> noteAdd( const QString &pText );
+	QSharedPointer<NoteItem> noteAdd(const QString &pText , QUuid pUuid);
 
 	void setLabelFont(QFont arg)
 	{

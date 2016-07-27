@@ -43,7 +43,7 @@ public:
 		{
 			mContextWidget->view()->scene()->clearSelection();
 
-			mNoteItem = mContextWidget->view()->noteAdd( QObject::tr( "New Note" ) );
+			mNoteItem = mContextWidget->view()->noteAdd( QObject::tr( "New Note" ), QUuid() );
 		}
 	}
 

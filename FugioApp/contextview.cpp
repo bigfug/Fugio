@@ -516,6 +516,8 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 			QString		Text = pSettings.value( "note" ).toString();
 			QColor		Col  = pSettings.value( "colour", noteColour() ).value<QColor>();
+			QUuid		Id   = fugio::utils::string2uuid( pSettings.value( "uuid", fugio::utils::uuid2string( QUuid::createUuid() ) ).toString() );
+			QUuid		GroupId = fugio::utils::string2uuid( pSettings.value( "group", fugio::utils::uuid2string( QUuid() ) ).toString() );
 
 			QPointF		Pos  = pSettings.value( "position" ).toPointF();
 
@@ -528,10 +530,11 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 				Pos = fugio::utils::string2point( pSettings.value( "position" ).toString() );
 			}
 
-			QSharedPointer<NoteItem>	Note = noteAdd( Text );
+			QSharedPointer<NoteItem>	Note = noteAdd( Text, Id );
 
 			Note->setPos( Pos );
 			Note->setBackgroundColour( Col );
+			Note->setGroupId( GroupId );
 
 			if( mPasteOffset > 0 )
 			{
@@ -777,6 +780,12 @@ void ContextView::saveContext( QSettings &pSettings ) const
 
 		pSettings.setValue( "note", Note->toPlainText() );
 		pSettings.setValue( "position", fugio::utils::point2string( Note->pos() ) );
+		pSettings.setValue( "uuid", fugio::utils::uuid2string( Note->id() ) );
+
+		if( !Note->groupId().isNull() )
+		{
+			pSettings.setValue( "group", fugio::utils::uuid2string( Note->groupId() ) );
+		}
 
 		if( Note->backgroundColour() != noteColour() )
 		{
@@ -1295,9 +1304,9 @@ void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 	}
 }
 
-QSharedPointer<NoteItem> ContextView::noteAdd( const QString &pText )
+QSharedPointer<NoteItem> ContextView::noteAdd( const QString &pText, QUuid pUuid )
 {
-	QUuid						NoteUuid = mContextModel.createNote();
+	QUuid						NoteUuid = mContextModel.createNote( pUuid );
 
 	QSharedPointer<NoteItem>	TextItem = QSharedPointer<NoteItem>( new NoteItem( this, NoteUuid, pText ) );
 

@@ -269,7 +269,7 @@ void ContextModel::moveToGroup( const QUuid &pGroupId, const QList<QUuid> &pNode
 	emit layoutChanged();
 }
 
-QUuid ContextModel::createNote( void )
+QUuid ContextModel::createNote( QUuid pUuid )
 {
 	BaseListModel		*Parent = ( mCurrentGroup.isNull() ? mRootItem : mNodeMap.value( mCurrentGroup )->children() );
 
@@ -285,7 +285,7 @@ QUuid ContextModel::createNote( void )
 		return( QUuid() );
 	}
 
-	QUuid				 NoteId = QUuid::createUuid();
+	QUuid				 NoteId = ( pUuid.isNull() ? QUuid::createUuid() : pUuid );
 
 	int					 NoteIdx = Parent->rowCount();
 

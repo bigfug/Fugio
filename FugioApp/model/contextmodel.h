@@ -22,7 +22,7 @@ public:
 	void setCurrentGroup( const QUuid &pGroupId );
 
 	QUuid createGroup( const QUuid &pGroupId = QUuid(), QString pGroupName = QString() );
-	QUuid createNote( void );
+	QUuid createNote( QUuid pUuid );
 
 	void removeGroup( const QUuid &pGroupId );
 	void removeNote( const QUuid &pNoteId );
