@@ -3,10 +3,15 @@
 #include <fugio/context_signals.h>
 
 #include <fugio/context_interface.h>
+#include <fugio/node_interface.h>
+#include <fugio/node_signals.h>
+#include <fugio/pin_interface.h>
+#include <fugio/pin_signals.h>
 
 #include "basemodel.h"
 #include "pinmodel.h"
 #include "notemodel.h"
+#include "baselistmodel.h"
 
 #include "app.h"
 #include "mainwindow.h"
@@ -17,7 +22,7 @@
 ContextModel::ContextModel( QObject *pParent )
 	: QAbstractItemModel( pParent )
 {
-	mRootItem = new GroupModel();
+	mRootItem = new BaseListModel();
 }
 
 ContextModel::~ContextModel()
@@ -82,23 +87,25 @@ void ContextModel::setCurrentGroup( const QUuid &pGroupId )
 
 //-----------------------------------------------------------------------------
 
-QUuid ContextModel::createGroup( const QUuid &pGroupId )
+QUuid ContextModel::createGroup( const QUuid &pGroupId, QString pGroupName )
 {
-	GroupModel			*Parent = ( mCurrentGroup.isNull() ? mRootItem : mGroupMap.value( mCurrentGroup ) );
+	BaseListModel		*Parent = ( mCurrentGroup.isNull() ? mRootItem : mNodeMap.value( mCurrentGroup )->children() );
 
 	if( !Parent )
 	{
 		return( QUuid() );
 	}
 
-	GroupModel			*Group = new GroupModel( Parent );
+	QUuid				 GroupId = pGroupId.isNull() ? QUuid::createUuid() : pGroupId;
+
+	NodeModel			*Group = new NodeModel( GroupId, Parent );
 
 	if( !Group )
 	{
 		return( QUuid() );
 	}
 
-	QUuid				 GroupId = pGroupId.isNull() ? QUuid::createUuid() : pGroupId;
+	Group->setName( pGroupName );
 
 	int					 GroupIdx = Parent->rowCount();
 
@@ -106,9 +113,11 @@ QUuid ContextModel::createGroup( const QUuid &pGroupId )
 
 	Parent->appendChild( Group );
 
-	mGroupMap.insert( GroupId, Group );
+	mNodeMap.insert( GroupId, Group );
 
 	endInsertRows();
+
+	emit layoutChanged();
 
 	emit groupAdded( GroupId );
 
@@ -117,20 +126,22 @@ QUuid ContextModel::createGroup( const QUuid &pGroupId )
 
 void ContextModel::removeGroup( const QUuid &pGroupId )
 {
-	GroupModel			*Group = mGroupMap.value( pGroupId );
+	NodeModel			*Group = mNodeMap.value( pGroupId );
 
 	if( Group )
 	{
-		GroupModel		*Parent = Group->parent();
+		BaseListModel	*Parent = Group->parentList();
 		int				 GroupIndex = Group->row();
 
 		beginRemoveRows( createIndex( Parent->row(), 0, Parent ), GroupIndex, GroupIndex );
 
-		Parent->removeChild( GroupIndex );
+		Parent->removeChildAt( GroupIndex );
 
-		mGroupMap.remove( pGroupId );
+		mNodeMap.remove( pGroupId );
 
 		endRemoveRows();
+
+		emit layoutChanged();
 
 		delete Group;
 	}
@@ -142,16 +153,18 @@ void ContextModel::removeNote( const QUuid &pNoteId )
 
 	if( Note )
 	{
-		GroupModel		*Parent = Note->parent();
+		BaseListModel	*Parent = Note->parentList();
 		int				 NoteIndex = Note->row();
 
 		beginRemoveRows( createIndex( Parent->row(), 0, Parent ), NoteIndex, NoteIndex );
 
-		Parent->removeChild( NoteIndex );
+		Parent->removeChildAt( NoteIndex );
 
 		mNoteMap.remove( pNoteId );
 
 		endRemoveRows();
+
+		emit layoutChanged();
 
 		delete Note;
 	}
@@ -159,7 +172,7 @@ void ContextModel::removeNote( const QUuid &pNoteId )
 
 void ContextModel::moveToGroup( const QUuid &pGroupId, const QList<QUuid> &pNodeList, const QList<QUuid> &pGroupList, const QList<QUuid> &pNoteList)
 {
-	GroupModel			*GroupDest = mGroupMap.value( pGroupId );
+	BaseListModel		*GroupDest = mNodeMap.value( pGroupId )->children();
 
 	if( !GroupDest )
 	{
@@ -175,7 +188,7 @@ void ContextModel::moveToGroup( const QUuid &pGroupId, const QList<QUuid> &pNode
 			continue;
 		}
 
-		GroupModel		*GroupSource = Node->parent();
+		BaseListModel	*GroupSource = Node->parentList();
 
 		if( !GroupSource || GroupSource == GroupDest )
 		{
@@ -186,7 +199,7 @@ void ContextModel::moveToGroup( const QUuid &pGroupId, const QList<QUuid> &pNode
 
 		beginMoveRows( createIndex( GroupSource->row(), 0, GroupSource ), NodeRow, NodeRow, createIndex( GroupDest->row(), 0, GroupDest ), GroupDest->rowCount() );
 
-		GroupSource->removeChild( NodeRow );
+		GroupSource->removeChildAt( NodeRow );
 
 		GroupDest->appendChild( Node );
 
@@ -197,14 +210,14 @@ void ContextModel::moveToGroup( const QUuid &pGroupId, const QList<QUuid> &pNode
 
 	for( const QUuid &Id : pGroupList )
 	{
-		GroupModel		*Group = mGroupMap.value( Id );
+		NodeModel		*Group = mNodeMap.value( Id );
 
 		if( !Group )
 		{
 			continue;
 		}
 
-		GroupModel		*GroupSource = Group->parent();
+		BaseListModel	*GroupSource = Group->parentList();
 
 		if( !GroupSource || GroupSource == GroupDest )
 		{
@@ -215,7 +228,7 @@ void ContextModel::moveToGroup( const QUuid &pGroupId, const QList<QUuid> &pNode
 
 		beginMoveRows( createIndex( GroupSource->row(), 0, GroupSource ), GroupRow, GroupRow, createIndex( GroupDest->row(), 0, GroupDest ), GroupDest->rowCount() );
 
-		GroupSource->removeChild( GroupRow );
+		GroupSource->removeChildAt( GroupRow );
 
 		GroupDest->appendChild( Group );
 
@@ -233,7 +246,7 @@ void ContextModel::moveToGroup( const QUuid &pGroupId, const QList<QUuid> &pNode
 			continue;
 		}
 
-		GroupModel		*GroupSource = Note->parent();
+		BaseListModel	*GroupSource = Note->parentList();
 
 		if( !GroupSource || GroupSource == GroupDest )
 		{
@@ -244,7 +257,7 @@ void ContextModel::moveToGroup( const QUuid &pGroupId, const QList<QUuid> &pNode
 
 		beginMoveRows( createIndex( GroupSource->row(), 0, GroupSource ), NoteRow, NoteRow, createIndex( GroupDest->row(), 0, GroupDest ), GroupDest->rowCount() );
 
-		GroupSource->removeChild( NoteRow );
+		GroupSource->removeChildAt( NoteRow );
 
 		GroupDest->appendChild( Note );
 
@@ -258,7 +271,7 @@ void ContextModel::moveToGroup( const QUuid &pGroupId, const QList<QUuid> &pNode
 
 QUuid ContextModel::createNote( void )
 {
-	GroupModel			*Parent = ( mCurrentGroup.isNull() ? mRootItem : mGroupMap.value( mCurrentGroup ) );
+	BaseListModel		*Parent = ( mCurrentGroup.isNull() ? mRootItem : mNodeMap.value( mCurrentGroup )->children() );
 
 	if( !Parent )
 	{
@@ -280,7 +293,11 @@ QUuid ContextModel::createNote( void )
 
 	Parent->appendChild( Note );
 
+	mNoteMap.insert( NoteId, Note );
+
 	endInsertRows();
+
+	emit layoutChanged();
 
 	emit noteAdded( NoteId );
 
@@ -292,13 +309,6 @@ QModelIndex ContextModel::nodeIndex( const QUuid &pId ) const
 	NodeModel		*Node = mNodeMap.value( pId );
 
 	return( Node ? createIndex( Node->row(), 0, Node ) : QModelIndex() );
-}
-
-QModelIndex ContextModel::groupIndex( const QUuid &pId ) const
-{
-	GroupModel		*Group = mGroupMap.value( pId );
-
-	return( Group ? createIndex( Group->row(), 0, Group ) : QModelIndex() );
 }
 
 QModelIndex ContextModel::noteIndex( const QUuid &pId ) const
@@ -336,8 +346,6 @@ void ContextModel::clearContext()
 
 	mNodeMap.clear();
 
-	mGroupMap.clear();
-
 	mNoteMap.clear();
 
 	mPinMap.clear();
@@ -347,14 +355,14 @@ void ContextModel::clearContext()
 		delete mRootItem;
 	}
 
-	mRootItem = new GroupModel();
+	mRootItem = new BaseListModel();
 
 	endResetModel();
 }
 
 void ContextModel::nodeAdded( QUuid pNodeId, QUuid /* pOrigId */ )
 {
-	GroupModel		*Parent = ( mCurrentGroup.isNull() ? mRootItem : mGroupMap.value( mCurrentGroup ) );
+	BaseListModel	*Parent = ( mCurrentGroup.isNull() ? mRootItem : mNodeMap.value( mCurrentGroup )->children() );
 
 	qDebug() << "nodeAdded" << pNodeId;
 
@@ -364,13 +372,24 @@ void ContextModel::nodeAdded( QUuid pNodeId, QUuid /* pOrigId */ )
 
 	if( Node )
 	{
+		QSharedPointer<fugio::NodeInterface>	NI = mContext->findNode( pNodeId );
+
+		if( NI )
+		{
+			fugio::NodeSignals		*NS = NI->qobject();
+
+			connect( NS, SIGNAL(nameChanged(QSharedPointer<fugio::NodeInterface>)), this, SLOT(nodeNameChanged(QSharedPointer<fugio::NodeInterface>)) );
+
+			Node->setName( NI->name() );
+		}
+
 		beginInsertRows( createIndex( Parent->row(), 0, Parent ), ChildCount, ChildCount );
 
-		mRootItem->appendChild( Node );
-
-		endInsertRows();
+		Parent->appendChild( Node );
 
 		mNodeMap.insert( pNodeId, Node );
+
+		endInsertRows();
 	}
 
 	emit layoutChanged();
@@ -382,7 +401,7 @@ void ContextModel::nodeRemoved( QUuid pNodeId )
 
 	if( Node )
 	{
-		GroupModel		*Parent = Node->parent();
+		BaseListModel		*Parent = Node->parentList();
 
 		if( Parent )
 		{
@@ -390,7 +409,7 @@ void ContextModel::nodeRemoved( QUuid pNodeId )
 
 			beginRemoveRows( createIndex( Parent->row(), 0, Parent ), Index, Index );
 
-			Parent->removeChild( Index );
+			Parent->removeChildAt( Index );
 
 			endRemoveRows();
 		}
@@ -398,6 +417,15 @@ void ContextModel::nodeRemoved( QUuid pNodeId )
 		mNodeMap.remove( pNodeId );
 
 		delete Node;
+	}
+
+	QSharedPointer<fugio::NodeInterface>	NI = mContext->findNode( pNodeId );
+
+	if( NI )
+	{
+		fugio::NodeSignals		*NS = NI->qobject();
+
+		disconnect( NS, SIGNAL(nameChanged(QSharedPointer<fugio::NodeInterface>)), this, SLOT(nodeNameChanged(QSharedPointer<fugio::NodeInterface>)) );
 	}
 }
 
@@ -421,15 +449,21 @@ void ContextModel::pinAdded( QUuid pNodeId, QUuid pPinId )
 
 	if( Node )
 	{
-		QSharedPointer<fugio::PinInterface>	Pin = mContext->findPin( pPinId );
+		QSharedPointer<fugio::PinInterface>	PI = mContext->findPin( pPinId );
 
-		if( Pin )
+		if( PI )
 		{
-			PinListModel	*PinList = ( Pin->direction() == PIN_INPUT ? Node->inputs() : Node->outputs() );
+			fugio::PinSignals		*PS = PI->qobject();
+
+			connect( PS, SIGNAL(nameChanged(QSharedPointer<fugio::PinInterface>)), this, SLOT(pinNameChanged(QSharedPointer<fugio::PinInterface>)) );
+
+			PinListModel	*PinList = ( PI->direction() == PIN_INPUT ? Node->inputs() : Node->outputs() );
 
 			beginInsertRows( createIndex( PinList->row(), 0, PinList ), PinList->rowCount(), PinList->rowCount() );
 
-			PinList->appendPinId( pPinId );
+			PinModel		*Pin = PinList->appendPin( pPinId, PI->name() );
+
+			mPinMap.insert( pPinId, Pin );
 
 			endInsertRows();
 		}
@@ -475,6 +509,30 @@ void ContextModel::pinRenamed( QUuid pNodeId, QUuid pOldId, QUuid pNewId )
 	}
 }
 
+void ContextModel::nodeNameChanged( QSharedPointer<fugio::NodeInterface> pNode )
+{
+	NodeModel		*Node = mNodeMap.value( pNode->uuid() );
+
+	if( Node )
+	{
+		Node->setName( pNode->name() );
+
+		emit layoutChanged();
+	}
+}
+
+void ContextModel::pinNameChanged( QSharedPointer<fugio::PinInterface> pPin )
+{
+	PinModel		*Pin = mPinMap.value( pPin->globalId() );
+
+	if( Pin )
+	{
+		Pin->setName( pPin->name() );
+
+		emit layoutChanged();
+	}
+}
+
 //-----------------------------------------------------------------------------
 // QAbstractItemModel
 
@@ -496,25 +554,15 @@ QModelIndex ContextModel::index( int row, int column, const QModelIndex &parent 
 		Parent = mRootItem;
 	}
 
-	GroupModel		*GroupParent = dynamic_cast<GroupModel *>( Parent );
-
-	if( GroupParent )
-	{
-		BaseModel		*Child = GroupParent->childAt( row );
-
-		if( Child )
-		{
-			return( createIndex( row, column, Child ) );
-		}
-
-		return( QModelIndex() );
-	}
-
 	NodeModel		*NodeParent = dynamic_cast<NodeModel *>( Parent );
 
 	if( NodeParent )
 	{
-		PinListModel		*Child = ( !row ? NodeParent->inputs() : NodeParent->outputs() );
+		BaseModel			*Child = nullptr;
+
+		if( row == 0 ) Child = NodeParent->inputs();
+		if( row == 1 ) Child = NodeParent->outputs();
+		if( row == 2 ) Child = NodeParent->children();
 
 		if( Child )
 		{
@@ -529,6 +577,20 @@ QModelIndex ContextModel::index( int row, int column, const QModelIndex &parent 
 	if( PinListParent )
 	{
 		PinModel		*Child = PinListParent->childAt( row );
+
+		if( Child )
+		{
+			return( createIndex( row, column, Child ) );
+		}
+
+		return( QModelIndex() );
+	}
+
+	BaseListModel	*BaseListParent = dynamic_cast<BaseListModel *>( Parent );
+
+	if( BaseListParent )
+	{
+		BaseModel		*Child = BaseListParent->childAt( row );
 
 		if( Child )
 		{
@@ -572,11 +634,11 @@ int ContextModel::rowCount( const QModelIndex &pParent ) const
 		return( 0 );
 	}
 
-	GroupModel		*Parent;
+	BaseModel		*Parent;
 
 	if( pParent.isValid() )
 	{
-		Parent = static_cast<GroupModel *>( pParent.internalPointer() );
+		Parent = static_cast<BaseModel *>( pParent.internalPointer() );
 	}
 	else
 	{
@@ -588,11 +650,11 @@ int ContextModel::rowCount( const QModelIndex &pParent ) const
 
 int ContextModel::columnCount( const QModelIndex &pParent ) const
 {
-	GroupModel		*Parent;
+	BaseModel		*Parent;
 
 	if( pParent.isValid() )
 	{
-		Parent = static_cast<GroupModel *>( pParent.internalPointer() );
+		Parent = static_cast<BaseModel *>( pParent.internalPointer() );
 	}
 	else
 	{

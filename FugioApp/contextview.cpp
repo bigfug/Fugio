@@ -239,6 +239,18 @@ QList<QUuid> ContextView::nodeItemIds( const QList<NodeItem *> &pNodeList )
 	return( IdsLst );
 }
 
+QList<QUuid> ContextView::noteItemIds( const QList<NoteItem *> &pNoteList )
+{
+	QList<QUuid>		IdsLst;
+
+	for( NoteItem *NI : pNoteList )
+	{
+		IdsLst << NI->id();
+	}
+
+	return( IdsLst );
+}
+
 QList<NodeItem *> ContextView::nodesFromIds( const QList<QUuid> &pIdsLst ) const
 {
 	QList<NodeItem *>		NodeList;
@@ -1285,9 +1297,11 @@ void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 
 QSharedPointer<NoteItem> ContextView::noteAdd( const QString &pText )
 {
-	QSharedPointer<NoteItem>	TextItem = QSharedPointer<NoteItem>( new NoteItem( this, pText ) );
+	QUuid						NoteUuid = mContextModel.createNote();
 
-	if( TextItem != 0 )
+	QSharedPointer<NoteItem>	TextItem = QSharedPointer<NoteItem>( new NoteItem( this, NoteUuid, pText ) );
+
+	if( TextItem )
 	{
 		mNoteList.append( TextItem );
 
@@ -2008,7 +2022,7 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 
 QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId )
 {
-	const QUuid		NewGroupId = mContextModel.createGroup( pGroupId );
+	const QUuid		NewGroupId = mContextModel.createGroup( pGroupId, pGroupName );
 
 	if( !mGroupIds.contains( NewGroupId ) )
 	{
@@ -2035,7 +2049,7 @@ QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeLis
 		nodeAdded( NewGroupId, NewGroupId );
 	}
 
-	mContextModel.moveToGroup( NewGroupId, nodeItemIds( pNodeList ), nodeItemIds( pGroupList ), QList<QUuid>() );
+	mContextModel.moveToGroup( NewGroupId, nodeItemIds( pNodeList ), nodeItemIds( pGroupList ), noteItemIds( pNoteList ) );
 
 	QSharedPointer<NodeItem>	NI = mNodeList[ NewGroupId ];
 
@@ -2323,6 +2337,8 @@ void ContextView::pushGroup( const QUuid &pGroupId )
 	mGroupStack << pGroupId;
 
 	setGroupId( pGroupId );
+
+	mContextModel.setCurrentGroup( pGroupId );
 }
 
 void ContextView::popGroup()
@@ -2332,14 +2348,16 @@ void ContextView::popGroup()
 		mGroupStack.pop_back();
 	}
 
-	if( mGroupStack.isEmpty() )
+	QUuid		GroupId;
+
+	if( !mGroupStack.isEmpty() )
 	{
-		setGroupId( QUuid() );
+		GroupId = mGroupStack.back();
 	}
-	else
-	{
-		setGroupId( mGroupStack.back() );
-	}
+
+	setGroupId( GroupId );
+
+	mContextModel.setCurrentGroup( GroupId );
 }
 
 bool ContextView::event( QEvent *pEvent )

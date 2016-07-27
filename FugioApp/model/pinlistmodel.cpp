@@ -33,9 +33,16 @@ int PinListModel::childRow( PinModel *pChild ) const
 	return( mPinList.indexOf( pChild ) );
 }
 
-void PinListModel::appendPinId( const QUuid &pPinId )
+PinModel *PinListModel::appendPin( const QUuid &pPinId, QString pName )
 {
-	mPinList << new PinModel( pPinId, mDirection, this );
+	PinModel		*Pin = new PinModel( pPinId, mDirection, pName, this );
+
+	if( Pin )
+	{
+		mPinList << Pin;
+	}
+
+	return( Pin );
 }
 
 void PinListModel::remPin(PinModel *pPin)

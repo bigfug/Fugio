@@ -7,29 +7,44 @@
 #include <fugio.h>
 
 #include "basemodel.h"
-#include "groupmodel.h"
 
 class PinModel;
 class PinListModel;
+class BaseListModel;
 
 class NodeModel : public BaseModel
 {
 public:
-	NodeModel( const QUuid &pNodeId, GroupModel *pParent = nullptr );
+	NodeModel( const QUuid &pNodeId, BaseListModel *pParent = nullptr );
 
 	virtual ~NodeModel( void ) {}
 
-	inline GroupModel *parent( void ) Q_DECL_OVERRIDE
+	BaseModel *parent( void ) Q_DECL_OVERRIDE;
+
+	BaseListModel *parentList( void )
 	{
 		return( mParent );
 	}
 
-	inline void setParent( GroupModel *pParent )
+	inline void setParent( BaseListModel *pParent )
 	{
 		mParent = pParent;
 	}
 
+	inline void setName( QString pName )
+	{
+		mName = pName;
+	}
+
 	virtual int row( void ) Q_DECL_OVERRIDE;
+
+	int childRow( BaseModel *pChild );
+
+	void appendChild( BaseModel *pChild );
+
+	void removeChild( BaseModel *pChild );
+
+	void removeChildAt( int pChildIndex );
 
 	void setNodeId( const QUuid &pNodeId )
 	{
@@ -46,6 +61,11 @@ public:
 		return( mOutputs );
 	}
 
+	BaseListModel *children( void )
+	{
+		return( mChildren );
+	}
+
 	inline QUuid id( void ) const
 	{
 		return( mNodeId );
@@ -53,7 +73,7 @@ public:
 
 	virtual int rowCount( void ) const Q_DECL_OVERRIDE
 	{
-		return( 2 );
+		return( 3 );
 	}
 
 	virtual int columnCount( void ) const Q_DECL_OVERRIDE
@@ -61,16 +81,15 @@ public:
 		return( 1 );
 	}
 
-	virtual QVariant data( int pColumn ) const Q_DECL_OVERRIDE
-	{
-		return( pColumn == 0 ? mNodeId.toString() : QVariant() );
-	}
+	virtual QVariant data( int pColumn ) const Q_DECL_OVERRIDE;
 
 private:
-	GroupModel				*mParent;
+	BaseListModel			*mParent;
+	QString					 mName;
 	QUuid					 mNodeId;
 	PinListModel			*mInputs;
 	PinListModel			*mOutputs;
+	BaseListModel			*mChildren;
 };
 
 #endif // NODEMODEL_H

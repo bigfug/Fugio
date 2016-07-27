@@ -2,8 +2,8 @@
 
 #include "pinlistmodel.h"
 
-PinModel::PinModel( const QUuid &pPinId, PinDirection PinDirection, PinListModel *pParent )
-	: mParent( pParent ), mPinGlobalId( pPinId ), mDirection( PinDirection )
+PinModel::PinModel( const QUuid &pPinId, PinDirection PinDirection, QString pName, PinListModel *pParent )
+	: mParent( pParent ), mPinGlobalId( pPinId ), mDirection( PinDirection ), mName( pName )
 {
 
 }

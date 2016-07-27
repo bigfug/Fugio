@@ -4,21 +4,23 @@
 #include <QString>
 
 #include "basemodel.h"
-#include "groupmodel.h"
+#include "nodemodel.h"
 
 class NoteModel : public BaseModel
 {
 public:
-	NoteModel( GroupModel *pParent = nullptr );
+	NoteModel( BaseListModel *pParent = nullptr );
 
 	virtual ~NoteModel( void ) {}
 
-	inline GroupModel *parent( void ) Q_DECL_OVERRIDE
+	BaseModel *parent( void ) Q_DECL_OVERRIDE;
+
+	BaseListModel *parentList( void )
 	{
 		return( mParent );
 	}
 
-	inline void setParent( GroupModel *pParent )
+	inline void setParent( BaseListModel *pParent )
 	{
 		mParent = pParent;
 	}
@@ -36,7 +38,7 @@ public:
 	virtual int row( void ) Q_DECL_OVERRIDE;
 
 private:
-	GroupModel			*mParent;
+	BaseListModel		*mParent;
 	QString				 mNote;
 };
 

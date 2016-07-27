@@ -11,7 +11,7 @@
 class PinModel : public BaseModel
 {
 public:
-	PinModel( const QUuid &pPinId, PinDirection pDirection, PinListModel *pParent = nullptr );
+	PinModel( const QUuid &pPinId, PinDirection pDirection, QString pName, PinListModel *pParent = nullptr );
 
 	virtual ~PinModel( void ) {}
 
@@ -39,13 +39,19 @@ public:
 
 	virtual QVariant data( int pColumn ) const Q_DECL_OVERRIDE
 	{
-		return( pColumn == 0 ? mPinGlobalId.toString() : QVariant() );
+		return( pColumn == 0 ? mName : QVariant() );
+	}
+
+	inline void setName( QString pName )
+	{
+		mName = pName;
 	}
 
 private:
 	PinListModel	*mParent;
 	QUuid			 mPinGlobalId;
 	PinDirection	 mDirection;
+	QString			 mName;
 };
 
 #endif // PINMODEL_H

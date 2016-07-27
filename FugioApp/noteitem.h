@@ -12,9 +12,14 @@ class ContextView;
 class NoteItem : public QGraphicsTextItem
 {
 public:
-	NoteItem( ContextView *pContextView, const QString &pText );
+	NoteItem( ContextView *pContextView, const QUuid &pNoteId, const QString &pText );
 
 	virtual ~NoteItem( void );
+
+	inline QUuid id( void ) const
+	{
+		return( mNoteId );
+	}
 
 	void setBackgroundColour( const QColor &pColour )
 	{
@@ -53,7 +58,8 @@ protected:
 	QPointF					 mOffset;
 	QPointF					 mMoveStart;
 
-	QUuid								 mGroupId;
+	QUuid					 mGroupId;
+	QUuid					 mNoteId;
 };
 
 #endif // NOTEITEM_H

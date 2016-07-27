@@ -242,6 +242,8 @@ protected:
 
 	static QList<QUuid> nodeItemIds( const QList<NodeItem *> &pNodeList );
 
+	static QList<QUuid> noteItemIds( const QList<NoteItem *> &pNoteList );
+
 	QList<NodeItem *> nodesFromIds( const QList<QUuid> &pIdsLst ) const;
 
 	QList<QUuid> recursiveGroupIds( const QList<NodeItem *> &pGroupList ) const;

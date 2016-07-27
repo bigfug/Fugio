@@ -7,8 +7,8 @@
 
 #include "contextview.h"
 
-NoteItem::NoteItem( ContextView *pContextView, const QString &pText )
-	: mContextView( pContextView )
+NoteItem::NoteItem( ContextView *pContextView, const QUuid &pNoteId, const QString &pText )
+	: mContextView( pContextView ), mNoteId( pNoteId )
 {
 	setPlainText( pText );
 

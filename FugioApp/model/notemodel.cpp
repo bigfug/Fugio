@@ -1,9 +1,16 @@
 #include "notemodel.h"
 
-NoteModel::NoteModel( GroupModel *pParent )
+#include "baselistmodel.h"
+
+NoteModel::NoteModel( BaseListModel *pParent )
 	: mParent( pParent )
 {
+	mNote = "Note";
+}
 
+BaseModel *NoteModel::parent( void )
+{
+	return( mParent );
 }
 
 int NoteModel::row()

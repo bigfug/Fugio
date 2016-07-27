@@ -5,7 +5,6 @@
 
 #include <fugio/context_interface.h>
 
-#include "groupmodel.h"
 #include "nodemodel.h"
 #include "notemodel.h"
 
@@ -22,7 +21,7 @@ public:
 
 	void setCurrentGroup( const QUuid &pGroupId );
 
-	QUuid createGroup( const QUuid &pGroupId = QUuid() );
+	QUuid createGroup( const QUuid &pGroupId = QUuid(), QString pGroupName = QString() );
 	QUuid createNote( void );
 
 	void removeGroup( const QUuid &pGroupId );
@@ -31,7 +30,6 @@ public:
 	void moveToGroup( const QUuid &pGroupId, const QList<QUuid> &pNodeList, const QList<QUuid> &pGroupList, const QList<QUuid> &pNoteList );
 
 	QModelIndex nodeIndex( const QUuid &pId ) const;
-	QModelIndex groupIndex( const QUuid &pId ) const;
 	QModelIndex noteIndex( const QUuid &pId ) const;
 	QModelIndex pinIndex( const QUuid &pId ) const;
 
@@ -55,6 +53,10 @@ private slots:
 	void pinRemoved( QUuid pNodeId, QUuid pPinId );
 	void pinRenamed( QUuid pNodeId, QUuid pOldId, QUuid pNewId );
 
+	void nodeNameChanged( QSharedPointer<fugio::NodeInterface> pNode );
+
+	void pinNameChanged( QSharedPointer<fugio::PinInterface> pPin );
+
 	// QAbstractItemModel interface
 public:
 	virtual QModelIndex index(int row, int column, const QModelIndex &parent) const Q_DECL_OVERRIDE;
@@ -65,10 +67,9 @@ public:
 
 private:
 	QSharedPointer<fugio::ContextInterface>		 mContext;
-	GroupModel									*mRootItem;
+	BaseListModel								*mRootItem;
 	QUuid										 mCurrentGroup;
 	QMap<QUuid,NodeModel *>						 mNodeMap;
-	QMap<QUuid,GroupModel *>					 mGroupMap;
 	QMap<QUuid,PinModel *>						 mPinMap;
 	QMap<QUuid,NoteModel *>						 mNoteMap;
 };

@@ -37,7 +37,7 @@ public:
 
 	int childRow( PinModel *pChild ) const;
 
-	void appendPinId( const QUuid &pPinId );
+	PinModel *appendPin( const QUuid &pPinId, QString pName );
 
 	void remPin( PinModel *pPin );
 

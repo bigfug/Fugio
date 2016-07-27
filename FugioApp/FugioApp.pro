@@ -51,11 +51,11 @@ SOURCES += main.cpp\
     patchpromptdialog.cpp \
     model/contextmodel.cpp \
     model/nodemodel.cpp \
-    model/groupmodel.cpp \
     model/basemodel.cpp \
     model/notemodel.cpp \
     model/pinmodel.cpp \
-    model/pinlistmodel.cpp
+    model/pinlistmodel.cpp \
+    model/baselistmodel.cpp
 
 HEADERS  += mainwindow.h \
     app.h \
@@ -115,11 +115,11 @@ HEADERS  += mainwindow.h \
     patchpromptdialog.h \
     model/contextmodel.h \
     model/nodemodel.h \
-    model/groupmodel.h \
     model/basemodel.h \
     model/notemodel.h \
     model/pinmodel.h \
-    model/pinlistmodel.h
+    model/pinlistmodel.h \
+    model/baselistmodel.h
 
 FORMS    += mainwindow.ui \
     contextwidgetprivate.ui \
