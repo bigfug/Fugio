@@ -14,9 +14,7 @@ public:
 
 	virtual BaseModel *parent( void ) = 0;
 
-	virtual bool isGroup( void ) const = 0;
-
-	virtual int rowCount( int ) const
+	virtual int rowCount( void ) const
 	{
 		return( 0 );
 	}

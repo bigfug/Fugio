@@ -54,7 +54,8 @@ SOURCES += main.cpp\
     model/groupmodel.cpp \
     model/basemodel.cpp \
     model/notemodel.cpp \
-    model/pinmodel.cpp
+    model/pinmodel.cpp \
+    model/pinlistmodel.cpp
 
 HEADERS  += mainwindow.h \
     app.h \
@@ -117,7 +118,8 @@ HEADERS  += mainwindow.h \
     model/groupmodel.h \
     model/basemodel.h \
     model/notemodel.h \
-    model/pinmodel.h
+    model/pinmodel.h \
+    model/pinlistmodel.h
 
 FORMS    += mainwindow.ui \
     contextwidgetprivate.ui \

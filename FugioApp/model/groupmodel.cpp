@@ -28,5 +28,5 @@ void GroupModel::removeChild( int pRow )
 
 BaseModel *GroupModel::childAt( int pRow ) const
 {
-	return( mChildren.value( pRow ) );
+	return( mChildren.at( pRow ) );
 }

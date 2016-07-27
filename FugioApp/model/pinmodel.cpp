@@ -1,8 +1,8 @@
 #include "pinmodel.h"
 
-#include "nodemodel.h"
+#include "pinlistmodel.h"
 
-PinModel::PinModel( const QUuid &pPinId, PinDirection PinDirection, NodeModel *pParent )
+PinModel::PinModel( const QUuid &pPinId, PinDirection PinDirection, PinListModel *pParent )
 	: mParent( pParent ), mPinGlobalId( pPinId ), mDirection( PinDirection )
 {
 
@@ -10,17 +10,5 @@ PinModel::PinModel( const QUuid &pPinId, PinDirection PinDirection, NodeModel *p
 
 int PinModel::row()
 {
-	if( mParent )
-	{
-		if( mDirection == PIN_INPUT )
-		{
-			return( mParent->inputRow( this ) );
-		}
-		else
-		{
-			return( mParent->outputRow( this ) );
-		}
-	}
-
-	return( 0 );
+	return( mParent ? mParent->childRow( this ) : 0 );
 }

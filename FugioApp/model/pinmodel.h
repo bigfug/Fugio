@@ -6,12 +6,12 @@
 #include <fugio/pin_interface.h>
 
 #include "basemodel.h"
-#include "nodemodel.h"
+#include "pinlistmodel.h"
 
 class PinModel : public BaseModel
 {
 public:
-	PinModel( const QUuid &pPinId, PinDirection pDirection, NodeModel *pParent = nullptr );
+	PinModel( const QUuid &pPinId, PinDirection pDirection, PinListModel *pParent = nullptr );
 
 	virtual ~PinModel( void ) {}
 
@@ -20,7 +20,7 @@ public:
 		return( mDirection );
 	}
 
-	inline NodeModel *parent( void ) Q_DECL_OVERRIDE
+	inline PinListModel *parent( void ) Q_DECL_OVERRIDE
 	{
 		return( mParent );
 	}
@@ -30,11 +30,6 @@ public:
 	inline void setId( const QUuid &pPinId )
 	{
 		mPinGlobalId = pPinId;
-	}
-
-	virtual bool isGroup( void ) const Q_DECL_OVERRIDE
-	{
-		return( false );
 	}
 
 	inline QUuid globalId( void ) const
@@ -48,7 +43,7 @@ public:
 	}
 
 private:
-	NodeModel		*mParent;
+	PinListModel	*mParent;
 	QUuid			 mPinGlobalId;
 	PinDirection	 mDirection;
 };

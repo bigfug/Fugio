@@ -22,7 +22,7 @@ public:
 
 	void setCurrentGroup( const QUuid &pGroupId );
 
-	QUuid createGroup( void );
+	QUuid createGroup( const QUuid &pGroupId = QUuid() );
 	QUuid createNote( void );
 
 	void removeGroup( const QUuid &pGroupId );
@@ -49,7 +49,7 @@ private slots:
 
 	void nodeAdded( QUuid pNodeId, QUuid pOrigId );
 	void nodeRemoved( QUuid pNodeId );
-	void nodeRenamed( QUuid pNodeId, QUuid pOrigId );
+	void nodeRenamed( QUuid pOrigId, QUuid pNodeId);
 
 	void pinAdded( QUuid pNodeId, QUuid pPinId );
 	void pinRemoved( QUuid pNodeId, QUuid pPinId );

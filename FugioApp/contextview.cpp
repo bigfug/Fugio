@@ -39,10 +39,10 @@
 
 bool ContextView::mShownWizard = false;
 
-ContextView::ContextView( QSharedPointer<QGraphicsScene> pScene, QWidget *pParent ) :
-	QGraphicsView( pParent ), mContextScene( pScene ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 )
+ContextView::ContextView( QWidget *pParent ) :
+	QGraphicsView( pParent ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 )
 {
-	setScene( pScene.data() );
+	setScene( &mContextScene );
 
 	setViewportUpdateMode( QGraphicsView::FullViewportUpdate );
 
@@ -105,6 +105,8 @@ void ContextView::setContext( QSharedPointer<fugio::ContextInterface> pContext )
 		connect( C.data(), SIGNAL(linkAdded(QUuid,QUuid)), this, SLOT(linkAdded(QUuid,QUuid)) );
 		connect( C.data(), SIGNAL(linkRemoved(QUuid,QUuid)), this, SLOT(linkRemoved(QUuid,QUuid)) );
 	}
+
+	mContextModel.setContext( pContext );
 }
 
 ContextWidgetPrivate *ContextView::widget( void )
@@ -2006,7 +2008,7 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 
 QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId )
 {
-	const QUuid		NewGroupId = pGroupId.isNull() ? QUuid::createUuid() : pGroupId;
+	const QUuid		NewGroupId = mContextModel.createGroup( pGroupId );
 
 	if( !mGroupIds.contains( NewGroupId ) )
 	{
@@ -2032,6 +2034,8 @@ QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeLis
 	{
 		nodeAdded( NewGroupId, NewGroupId );
 	}
+
+	mContextModel.moveToGroup( NewGroupId, nodeItemIds( pNodeList ), nodeItemIds( pGroupList ), QList<QUuid>() );
 
 	QSharedPointer<NodeItem>	NI = mNodeList[ NewGroupId ];
 

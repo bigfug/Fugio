@@ -17,6 +17,11 @@ public:
 		return( mParent );
 	}
 
+	inline void setParent( GroupModel *pParent )
+	{
+		mParent = pParent;
+	}
+
 	virtual int row( void ) Q_DECL_OVERRIDE;
 
 	void appendChild( BaseModel *pChild );
@@ -30,14 +35,9 @@ public:
 		return( mChildren.indexOf( pChild ) );
 	}
 
-	virtual bool isGroup( void ) const Q_DECL_OVERRIDE
+	virtual int rowCount( void ) const Q_DECL_OVERRIDE
 	{
-		return( true );
-	}
-
-	virtual int rowCount( int pColumn ) const Q_DECL_OVERRIDE
-	{
-		return( pColumn <= 0 ? mChildren.size() : 0 );
+		return( mChildren.size() );
 	}
 
 	virtual int columnCount( void ) const Q_DECL_OVERRIDE

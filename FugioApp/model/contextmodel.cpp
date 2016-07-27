@@ -46,17 +46,17 @@ void ContextModel::setContext( QSharedPointer<fugio::ContextInterface> pContext 
 	connect( CS, SIGNAL(loadStart(QSettings&,bool)), this, SLOT(loadStarted(QSettings&,bool)) );
 	connect( CS, SIGNAL(loadEnd(QSettings&,bool)), this, SLOT(loadEnded(QSettings&,bool)) );
 
-//	if( QSharedPointer<ContextPrivate> C = qSharedPointerCast<ContextPrivate>( mContext ) )
-//	{
-//		connect( C.data(), SIGNAL(loading(QSettings&,bool)), this, SLOT(loadContext(QSettings&,bool)) );
+	//	if( QSharedPointer<ContextPrivate> C = qSharedPointerCast<ContextPrivate>( mContext ) )
+	//	{
+	//		connect( C.data(), SIGNAL(loading(QSettings&,bool)), this, SLOT(loadContext(QSettings&,bool)) );
 
-//		connect( C.data(), SIGNAL(saving(QSettings&)), this, SLOT(saveContext(QSettings&)) );
+	//		connect( C.data(), SIGNAL(saving(QSettings&)), this, SLOT(saveContext(QSettings&)) );
 
-//		connect( C.data(), SIGNAL(nodeUpdated(QUuid)), this, SLOT(nodeChanged(QUuid)) );
-//		connect( C.data(), SIGNAL(nodeActivated(QUuid)), this, SLOT(nodeActivated(QUuid)) );
+	//		connect( C.data(), SIGNAL(nodeUpdated(QUuid)), this, SLOT(nodeChanged(QUuid)) );
+	//		connect( C.data(), SIGNAL(nodeActivated(QUuid)), this, SLOT(nodeActivated(QUuid)) );
 
-//		connect( C.data(), SIGNAL(linkAdded(QUuid,QUuid)), this, SLOT(linkAdded(QUuid,QUuid)) );
-//		connect( C.data(), SIGNAL(linkRemoved(QUuid,QUuid)), this, SLOT(linkRemoved(QUuid,QUuid)) );
+	//		connect( C.data(), SIGNAL(linkAdded(QUuid,QUuid)), this, SLOT(linkAdded(QUuid,QUuid)) );
+	//		connect( C.data(), SIGNAL(linkRemoved(QUuid,QUuid)), this, SLOT(linkRemoved(QUuid,QUuid)) );
 	//	}
 
 
@@ -82,7 +82,7 @@ void ContextModel::setCurrentGroup( const QUuid &pGroupId )
 
 //-----------------------------------------------------------------------------
 
-QUuid ContextModel::createGroup( void )
+QUuid ContextModel::createGroup( const QUuid &pGroupId )
 {
 	GroupModel			*Parent = ( mCurrentGroup.isNull() ? mRootItem : mGroupMap.value( mCurrentGroup ) );
 
@@ -98,13 +98,15 @@ QUuid ContextModel::createGroup( void )
 		return( QUuid() );
 	}
 
-	QUuid				 GroupId = QUuid::createUuid();
+	QUuid				 GroupId = pGroupId.isNull() ? QUuid::createUuid() : pGroupId;
 
-	int					 GroupIdx = Parent->rowCount( 0 );
+	int					 GroupIdx = Parent->rowCount();
 
-	beginInsertRows( createIndex( 0, Parent->row(), Parent ), GroupIdx, GroupIdx );
+	beginInsertRows( createIndex( Parent->row(), 0, Parent ), GroupIdx, GroupIdx );
 
 	Parent->appendChild( Group );
+
+	mGroupMap.insert( GroupId, Group );
 
 	endInsertRows();
 
@@ -182,11 +184,13 @@ void ContextModel::moveToGroup( const QUuid &pGroupId, const QList<QUuid> &pNode
 
 		const int		NodeRow = Node->row();
 
-		beginMoveRows( createIndex( GroupSource->row(), 0, GroupSource ), NodeRow, NodeRow, createIndex( GroupDest->row(), 0, GroupDest ), GroupDest->rowCount( 0 ) );
+		beginMoveRows( createIndex( GroupSource->row(), 0, GroupSource ), NodeRow, NodeRow, createIndex( GroupDest->row(), 0, GroupDest ), GroupDest->rowCount() );
 
 		GroupSource->removeChild( NodeRow );
 
 		GroupDest->appendChild( Node );
+
+		Node->setParent( GroupDest );
 
 		endMoveRows();
 	}
@@ -209,11 +213,13 @@ void ContextModel::moveToGroup( const QUuid &pGroupId, const QList<QUuid> &pNode
 
 		const int		GroupRow = Group->row();
 
-		beginMoveRows( createIndex( GroupSource->row(), 0, GroupSource ), GroupRow, GroupRow, createIndex( GroupDest->row(), 0, GroupDest ), GroupDest->rowCount( 0 ) );
+		beginMoveRows( createIndex( GroupSource->row(), 0, GroupSource ), GroupRow, GroupRow, createIndex( GroupDest->row(), 0, GroupDest ), GroupDest->rowCount() );
 
 		GroupSource->removeChild( GroupRow );
 
 		GroupDest->appendChild( Group );
+
+		Group->setParent( GroupDest );
 
 		endMoveRows();
 	}
@@ -236,14 +242,18 @@ void ContextModel::moveToGroup( const QUuid &pGroupId, const QList<QUuid> &pNode
 
 		const int		NoteRow = Note->row();
 
-		beginMoveRows( createIndex( GroupSource->row(), 0, GroupSource ), NoteRow, NoteRow, createIndex( GroupDest->row(), 0, GroupDest ), GroupDest->rowCount( 0 ) );
+		beginMoveRows( createIndex( GroupSource->row(), 0, GroupSource ), NoteRow, NoteRow, createIndex( GroupDest->row(), 0, GroupDest ), GroupDest->rowCount() );
 
 		GroupSource->removeChild( NoteRow );
 
 		GroupDest->appendChild( Note );
 
+		Note->setParent( GroupDest );
+
 		endMoveRows();
 	}
+
+	emit layoutChanged();
 }
 
 QUuid ContextModel::createNote( void )
@@ -264,9 +274,9 @@ QUuid ContextModel::createNote( void )
 
 	QUuid				 NoteId = QUuid::createUuid();
 
-	int					 NoteIdx = Parent->rowCount( 0 );
+	int					 NoteIdx = Parent->rowCount();
 
-	beginInsertRows( createIndex( 0, Parent->row(), Parent ), NoteIdx, NoteIdx );
+	beginInsertRows( createIndex( Parent->row(), 0, Parent ), NoteIdx, NoteIdx );
 
 	Parent->appendChild( Note );
 
@@ -312,7 +322,7 @@ void ContextModel::loadStarted(QSettings &pSettings, bool pPartial)
 
 void ContextModel::loadEnded( QSettings &pSettings, bool pPartial )
 {
-	changePersistentIndex( createIndex( 0, 0, mRootItem ), createIndex( mRootItem->rowCount( 0 ), 0, mRootItem ) );
+	changePersistentIndex( createIndex( 0, 0, mRootItem ), createIndex( mRootItem->rowCount(), 0, mRootItem ) );
 
 	emit layoutChanged();
 }
@@ -348,13 +358,13 @@ void ContextModel::nodeAdded( QUuid pNodeId, QUuid /* pOrigId */ )
 
 	qDebug() << "nodeAdded" << pNodeId;
 
-	const int		 ChildCount = Parent->rowCount( 0 );
+	const int		 ChildCount = Parent->rowCount();
 
 	NodeModel		*Node = new NodeModel( pNodeId, Parent );
 
 	if( Node )
 	{
-		beginInsertRows( QModelIndex(), ChildCount, ChildCount );
+		beginInsertRows( createIndex( Parent->row(), 0, Parent ), ChildCount, ChildCount );
 
 		mRootItem->appendChild( Node );
 
@@ -362,6 +372,8 @@ void ContextModel::nodeAdded( QUuid pNodeId, QUuid /* pOrigId */ )
 
 		mNodeMap.insert( pNodeId, Node );
 	}
+
+	emit layoutChanged();
 }
 
 void ContextModel::nodeRemoved( QUuid pNodeId )
@@ -370,13 +382,18 @@ void ContextModel::nodeRemoved( QUuid pNodeId )
 
 	if( Node )
 	{
-		const int		 Index = Node->parent()->childRow( Node );
+		GroupModel		*Parent = Node->parent();
 
-		beginRemoveRows( createIndex( 0, 0, Node->parent() ), Index, Index );
+		if( Parent )
+		{
+			const int		 Index = Parent->childRow( Node );
 
-		Node->parent()->removeChild( Index );
+			beginRemoveRows( createIndex( Parent->row(), 0, Parent ), Index, Index );
 
-		endRemoveRows();
+			Parent->removeChild( Index );
+
+			endRemoveRows();
+		}
 
 		mNodeMap.remove( pNodeId );
 
@@ -384,7 +401,7 @@ void ContextModel::nodeRemoved( QUuid pNodeId )
 	}
 }
 
-void ContextModel::nodeRenamed( QUuid pNodeId, QUuid pOrigId )
+void ContextModel::nodeRenamed( QUuid pOrigId, QUuid pNodeId )
 {
 	NodeModel		*Node = mNodeMap.value( pOrigId );
 
@@ -408,18 +425,11 @@ void ContextModel::pinAdded( QUuid pNodeId, QUuid pPinId )
 
 		if( Pin )
 		{
-			if( Pin->direction() == PIN_INPUT )
-			{
-				beginInsertRows( createIndex( Node->parent()->childRow( Node ), 0, Node ), Node->inputCount(), Node->inputCount() );
+			PinListModel	*PinList = ( Pin->direction() == PIN_INPUT ? Node->inputs() : Node->outputs() );
 
-				Node->addPinInput( pPinId );
-			}
-			else
-			{
-				beginInsertRows( createIndex( Node->parent()->childRow( Node ), 1, Node ), Node->outputCount(), Node->outputCount() );
+			beginInsertRows( createIndex( PinList->row(), 0, PinList ), PinList->rowCount(), PinList->rowCount() );
 
-				Node->addPinOutput( pPinId );
-			}
+			PinList->appendPinId( pPinId );
 
 			endInsertRows();
 		}
@@ -433,12 +443,13 @@ void ContextModel::pinRemoved( QUuid pNodeId, QUuid pPinId )
 
 	if( Node && Pin )
 	{
-		const int		PinRow = Pin->row();
-		const int		PinCol = ( Pin->direction() == PIN_INPUT ? 0 : 1 );
+		const int		 PinRow = Pin->row();
 
-		beginRemoveRows( createIndex( Node->row(), PinCol, Node ), PinRow, PinRow );
+		PinListModel	*PinList = ( Pin->direction() == PIN_INPUT ? Node->inputs() : Node->outputs() );
 
-		Node->remPin( Pin );
+		beginRemoveRows( createIndex( PinList->row(), 0, PinList ), PinRow, PinRow );
+
+		PinList->remPin( Pin );
 
 		endRemoveRows();
 
@@ -469,20 +480,65 @@ void ContextModel::pinRenamed( QUuid pNodeId, QUuid pOldId, QUuid pNewId )
 
 QModelIndex ContextModel::index( int row, int column, const QModelIndex &parent ) const
 {
-	GroupModel		*Parent;
+	if( !hasIndex( row, column, parent ) )
+	{
+		return QModelIndex();
+	}
+
+	BaseModel		*Parent;
 
 	if( parent.isValid() )
 	{
-		Parent = static_cast<GroupModel *>( parent.internalPointer() );
+		Parent = static_cast<BaseModel *>( parent.internalPointer() );
 	}
 	else
 	{
 		Parent = mRootItem;
 	}
 
-	BaseModel		*Child = Parent->childAt( row );
+	GroupModel		*GroupParent = dynamic_cast<GroupModel *>( Parent );
 
-	return( Child ? createIndex( row, column, Child ) : QModelIndex() );
+	if( GroupParent )
+	{
+		BaseModel		*Child = GroupParent->childAt( row );
+
+		if( Child )
+		{
+			return( createIndex( row, column, Child ) );
+		}
+
+		return( QModelIndex() );
+	}
+
+	NodeModel		*NodeParent = dynamic_cast<NodeModel *>( Parent );
+
+	if( NodeParent )
+	{
+		PinListModel		*Child = ( !row ? NodeParent->inputs() : NodeParent->outputs() );
+
+		if( Child )
+		{
+			return( createIndex( row, column, Child ) );
+		}
+
+		return( QModelIndex() );
+	}
+
+	PinListModel	*PinListParent = dynamic_cast<PinListModel *>( Parent );
+
+	if( PinListParent )
+	{
+		PinModel		*Child = PinListParent->childAt( row );
+
+		if( Child )
+		{
+			return( createIndex( row, column, Child ) );
+		}
+
+		return( QModelIndex() );
+	}
+
+	return( QModelIndex() );
 }
 
 QModelIndex ContextModel::parent( const QModelIndex &pChildIndex ) const
@@ -493,6 +549,12 @@ QModelIndex ContextModel::parent( const QModelIndex &pChildIndex ) const
 	}
 
 	BaseModel		*Child = static_cast<BaseModel *>( pChildIndex.internalPointer() );
+
+	if( Child == mRootItem )
+	{
+		return( QModelIndex() );
+	}
+
 	BaseModel		*Parent = Child->parent();
 
 	if( Parent == mRootItem )
@@ -505,6 +567,11 @@ QModelIndex ContextModel::parent( const QModelIndex &pChildIndex ) const
 
 int ContextModel::rowCount( const QModelIndex &pParent ) const
 {
+	if( pParent.column() > 0 )
+	{
+		return( 0 );
+	}
+
 	GroupModel		*Parent;
 
 	if( pParent.isValid() )
@@ -516,7 +583,7 @@ int ContextModel::rowCount( const QModelIndex &pParent ) const
 		Parent = mRootItem;
 	}
 
-	return( Parent->rowCount( pParent.column() ) );
+	return( Parent->rowCount() );
 }
 
 int ContextModel::columnCount( const QModelIndex &pParent ) const

@@ -18,9 +18,9 @@ public:
 		return( mParent );
 	}
 
-	virtual bool isGroup( void ) const Q_DECL_OVERRIDE
+	inline void setParent( GroupModel *pParent )
 	{
-		return( false );
+		mParent = pParent;
 	}
 
 	inline QString note( void ) const

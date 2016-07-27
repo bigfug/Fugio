@@ -15,6 +15,7 @@
 #include "nodeitem.h"
 #include "pinitem.h"
 #include "contextprivate.h"
+#include "model/contextmodel.h"
 
 class QGestureEvent;
 class QPanGesture;
@@ -41,7 +42,7 @@ class ContextView : public QGraphicsView, public fugio::EditInterface
 	Q_PROPERTY( QPointF PastePoint READ PastePoint WRITE setPastePoint )
 
 public:
-	explicit ContextView( QSharedPointer<QGraphicsScene> pScene, QWidget *pParent = 0 );
+	explicit ContextView( QWidget *pParent = 0 );
 
 	virtual ~ContextView( void );
 
@@ -377,7 +378,8 @@ private:
 		}
 	} GroupStateEntry;
 
-	QSharedPointer<QGraphicsScene>			 mContextScene;
+	QGraphicsScene							 mContextScene;
+	ContextModel							 mContextModel;
 	QSharedPointer<fugio::ContextInterface>	 mContext;
 	QMap<QUuid,QPointF>						 mPositions;
 	QMap<QUuid,QPointF>						 mPastePositions;

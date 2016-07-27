@@ -10,6 +10,7 @@
 #include "groupmodel.h"
 
 class PinModel;
+class PinListModel;
 
 class NodeModel : public BaseModel
 {
@@ -23,6 +24,11 @@ public:
 		return( mParent );
 	}
 
+	inline void setParent( GroupModel *pParent )
+	{
+		mParent = pParent;
+	}
+
 	virtual int row( void ) Q_DECL_OVERRIDE;
 
 	void setNodeId( const QUuid &pNodeId )
@@ -30,34 +36,14 @@ public:
 		mNodeId = pNodeId;
 	}
 
-	void addPinInput( const QUuid &pPinId );
-	void addPinOutput( const QUuid &pPinId );
-
-	void remPin( PinModel *pPin );
-
-	inline int inputCount( void ) const
+	PinListModel *inputs( void )
 	{
-		return( mInputs.size() );
+		return( mInputs );
 	}
 
-	inline int outputCount( void ) const
+	PinListModel *outputs( void )
 	{
-		return( mOutputs.size() );
-	}
-
-	inline int inputRow( PinModel *pChild ) const
-	{
-		return( mInputs.indexOf( pChild ) );
-	}
-
-	inline int outputRow( PinModel *pChild ) const
-	{
-		return( mOutputs.indexOf( pChild ) );
-	}
-
-	virtual bool isGroup( void ) const Q_DECL_OVERRIDE
-	{
-		return( false );
+		return( mOutputs );
 	}
 
 	inline QUuid id( void ) const
@@ -65,24 +51,14 @@ public:
 		return( mNodeId );
 	}
 
-	virtual int rowCount( int pColumn ) const Q_DECL_OVERRIDE
+	virtual int rowCount( void ) const Q_DECL_OVERRIDE
 	{
-		if( pColumn == 0 )
-		{
-			return( mInputs.size() );
-		}
-
-		if( pColumn == 1 )
-		{
-			return( mOutputs.size() );
-		}
-
-		return( 0 );
+		return( 2 );
 	}
 
 	virtual int columnCount( void ) const Q_DECL_OVERRIDE
 	{
-		return( 2 );
+		return( 1 );
 	}
 
 	virtual QVariant data( int pColumn ) const Q_DECL_OVERRIDE
@@ -93,8 +69,8 @@ public:
 private:
 	GroupModel				*mParent;
 	QUuid					 mNodeId;
-	QList<PinModel *>		 mInputs;
-	QList<PinModel *>		 mOutputs;
+	PinListModel			*mInputs;
+	PinListModel			*mOutputs;
 };
 
 #endif // NODEMODEL_H
