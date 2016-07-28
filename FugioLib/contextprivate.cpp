@@ -207,6 +207,8 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 {
 	QSettings		CFG( pSettings.fileName(), pSettings.format() );
 
+	QList<QSharedPointer<fugio::NodeInterface>>		NodeLst;
+
 	QMap<QUuid,QUuid>		NodeMap;
 	QMap<QUuid,QUuid>		PinsMap;
 
@@ -240,7 +242,7 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 			CFG.endGroup();
 		}
 
-		QSharedPointer<fugio::NodeInterface>	N = mApp->createNode( NodeName, ControlUuid, NodeData );
+		QSharedPointer<fugio::NodeInterface>	N = mApp->createNode( NodeName, NodeUuid, ControlUuid, NodeData );
 
 		if( !N )
 		{
@@ -249,38 +251,24 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 			continue;
 		}
 
-		if( NodeOrigUuid != NodeUuid )
-		{
-			qobject_cast<NodePrivate *>( N->qobject() )->setUuid( NodeUuid );
-		}
-		else
-		{
-#if defined( QT_DEBUG ) && defined( DEBUG_CONNECTIONS )
-			qDebug() << "NODE PARTIAL:" << N->uuid() << NodeUuid;
-#endif
-		}
+		NodeLst << N;
 
-		NodeMap.insert( N->uuid(), NodeOrigUuid );
+		NodeMap.insert( NodeUuid, NodeOrigUuid );
 	}
 
 	pSettings.endGroup();
 
 	//-------------------------------------------------------------------------
 
-	for( QMap<QUuid,QUuid>::iterator it = NodeMap.begin() ; it != NodeMap.end() ; it++ )
+	for( QSharedPointer<fugio::NodeInterface> N : NodeLst )
 	{
-		QSharedPointer<fugio::NodeInterface>	N = findNode( it.key() );
+		registerNode( N, NodeMap.value( N->uuid() ) );
 
-		if( N )
-		{
-			pSettings.beginGroup( fugio::utils::uuid2string( it.value() ) );
+		pSettings.beginGroup( fugio::utils::uuid2string( NodeMap.value( N->uuid() ) ) );
 
-			N->loadSettings( pSettings, PinsMap, pPartial );
+		N->loadSettings( pSettings, PinsMap, pPartial );
 
-			pSettings.endGroup();
-
-			registerNode( N, NodeMap.value( N->uuid() ) );
-		}
+		pSettings.endGroup();
 	}
 
 	//-------------------------------------------------------------------------

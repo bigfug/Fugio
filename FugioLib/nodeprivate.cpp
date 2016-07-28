@@ -93,11 +93,6 @@ void NodePrivate::addPin( QSharedPointer<fugio::PinInterface> pPin )
 	if( PinPrivate *PP = qobject_cast<PinPrivate *>( pPin->qobject() ) )
 	{
 		PP->setNode( this );
-
-		if( mContext )
-		{
-			PP->setContext( mContext );
-		}
 	}
 
 	mPinMap.insert( pPin->globalId(), pPin );
@@ -122,6 +117,14 @@ void NodePrivate::addPin( QSharedPointer<fugio::PinInterface> pPin )
 	}
 
 	connect( pPin->qobject(), &fugio::PinSignals::renamed, this, &NodePrivate::pinRenamed );
+
+	if( PinPrivate *PP = qobject_cast<PinPrivate *>( pPin->qobject() ) )
+	{
+		if( mContext )
+		{
+			PP->setContext( mContext );
+		}
+	}
 
 	emit pinAdded( pPin );
 

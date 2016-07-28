@@ -375,13 +375,8 @@ void GlobalPrivate::unregisterPinClass( const QUuid &pUUID )
 	mPinNameMap.remove( pUUID );
 }
 
-QSharedPointer<fugio::NodeInterface> GlobalPrivate::createNode( const QString &pName, const QUuid &pUUID, const QVariantHash &pSettings )
+QSharedPointer<fugio::NodeInterface> GlobalPrivate::createNode( const QString &pName, const QUuid &pGlobalId, const QUuid &pControlId, const QVariantHash &pSettings )
 {
-	if( !mNodeMap.contains( pUUID ) )
-	{
-		qWarning() << "Unknown NodeControlInterface" << pUUID;
-	}
-
 	NodePrivate	*NODE = new NodePrivate();
 
 	if( !NODE )
@@ -391,16 +386,16 @@ QSharedPointer<fugio::NodeInterface> GlobalPrivate::createNode( const QString &p
 
 	NODE->moveToThread( thread() );
 
-//	NODE->setContext( pContext );
 	NODE->setName( pName );
-	NODE->setControlUuid( pUUID );
+	NODE->setUuid( pGlobalId );
+	NODE->setControlUuid( pControlId );
 	NODE->setSettings( pSettings );
 
 	QSharedPointer<fugio::NodeInterface>		NODE_PTR = QSharedPointer<fugio::NodeInterface>( NODE );
 
-	if( mNodeMap.contains( pUUID ) )
+	if( mNodeMap.contains( pControlId ) )
 	{
-		QObject		*ClassInstance = mNodeMap.value( pUUID ).mMetaObject->newInstance( Q_ARG( QSharedPointer<fugio::NodeInterface>, NODE_PTR ) );
+		QObject		*ClassInstance = mNodeMap.value( pControlId ).mMetaObject->newInstance( Q_ARG( QSharedPointer<fugio::NodeInterface>, NODE_PTR ) );
 
 		if( ClassInstance )
 		{
@@ -413,6 +408,10 @@ QSharedPointer<fugio::NodeInterface> GlobalPrivate::createNode( const QString &p
 				NODE->setControl( QSharedPointer<fugio::NodeControlInterface>( NodeControl ) );
 			}
 		}
+	}
+	else
+	{
+		qWarning() << "Unknown NodeControlInterface" << pControlId;
 	}
 
 	return( NODE_PTR );

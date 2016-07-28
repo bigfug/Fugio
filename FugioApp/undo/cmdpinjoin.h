@@ -8,8 +8,8 @@
 class CmdPinJoin : public QUndoCommand
 {
 public:
-	explicit CmdPinJoin( QSharedPointer<fugio::ContextInterface> pContext, QSharedPointer<fugio::PinInterface> pPin, const QUuid &pUuid )
-		: mContext( pContext ), mPin( pPin ), mControlUuid( pUuid )
+	explicit CmdPinJoin( QSharedPointer<fugio::ContextInterface> pContext, QSharedPointer<fugio::PinInterface> pPin, const QUuid &pControlId )
+		: mContext( pContext ), mPin( pPin ), mControlId( pControlId )
 	{
 		setText( QObject::tr( "Pin Join" ) );
 	}
@@ -36,7 +36,7 @@ public:
 	{
 		if( !mNode )
 		{
-			mNode = mContext->global()->createNode( QObject::tr( "Join" ), mControlUuid );
+			mNode = mContext->global()->createNode( QObject::tr( "Join" ), QUuid::createUuid(), mControlId );
 
 			if( mNode )
 			{
@@ -75,7 +75,7 @@ private:
 	QSharedPointer<fugio::ContextInterface>	 mContext;
 	QSharedPointer<fugio::NodeInterface>		 mNode;
 	QSharedPointer<fugio::PinInterface>		 mPin;
-	QUuid								 mControlUuid;
+	QUuid								 mControlId;
 	QUuid								 mNodePinId;
 };
 

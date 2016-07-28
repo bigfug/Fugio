@@ -111,7 +111,7 @@ public:
 	virtual void registerPinClasses( const fugio::ClassEntry pNodes[] ) Q_DECL_OVERRIDE;
 	virtual void unregisterPinClasses( const fugio::ClassEntry pNodes[] ) Q_DECL_OVERRIDE;
 
-	virtual QSharedPointer<fugio::NodeInterface> createNode( const QString &pName, const QUuid &pUuid, const QVariantHash &pSettings ) Q_DECL_OVERRIDE;
+	virtual QSharedPointer<fugio::NodeInterface> createNode( const QString &pName, const QUuid &pGlobalId, const QUuid &pControlId, const QVariantHash &pSettings ) Q_DECL_OVERRIDE;
 
 	virtual QSharedPointer<fugio::PinInterface> createPin(const QString &pName, const QUuid &pLocalId, PinDirection pDirection, const QUuid &pControlUUID, const QVariantHash &pSettings ) Q_DECL_OVERRIDE;
 

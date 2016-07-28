@@ -206,14 +206,20 @@ void FFTNode::audioPinLinked( QSharedPointer<fugio::PinInterface> P )
 {
 	Q_UNUSED( P )
 
-	connect( mNode->context()->qobject(), SIGNAL(frameProcess(qint64)), this, SLOT(onContextFrame(qint64)) );
+	if( mNode && mNode->context() )
+	{
+		connect( mNode->context()->qobject(), SIGNAL(frameProcess(qint64)), this, SLOT(onContextFrame(qint64)) );
+	}
 }
 
 void FFTNode::audioPinUnlinked( QSharedPointer<fugio::PinInterface> P )
 {
 	Q_UNUSED( P )
 
-	disconnect( mNode->context()->qobject(), SIGNAL(frameProcess(qint64)), this, SLOT(onContextFrame(qint64)) );
+	if( mNode && mNode->context() )
+	{
+		disconnect( mNode->context()->qobject(), SIGNAL(frameProcess(qint64)), this, SLOT(onContextFrame(qint64)) );
+	}
 }
 
 bool is_power_of_2(int i)
