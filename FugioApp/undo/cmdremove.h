@@ -16,7 +16,7 @@ class CmdRemove : public QUndoCommand
 {
 public:
 	explicit CmdRemove( ContextView *pContextView, QList< QSharedPointer<fugio::NodeInterface> > &pNodeList, QList<QSharedPointer<NodeItem>> &pGroupList, QMultiMap<QUuid,QUuid> &pLinkList, QList<QSharedPointer<NoteItem>> &pNoteList, QMap<QUuid,QUuid> pNodeGroups )
-		: mContextView( pContextView ), mNodeList( pNodeList ), mGroupList( pGroupList ), mLinkList( pLinkList ), mNoteList( pNoteList )
+		: mContextView( pContextView ), mNodeList( pNodeList ), mGroupList( pGroupList ), mLinkList( pLinkList ), mNoteList( pNoteList ), mNodeGroups( pNodeGroups )
 	{
 		setText( QObject::tr( "Remove Nodes/Links" ) );
 
@@ -90,6 +90,8 @@ public:
 				mContextView->noteAdd( P );
 			}
 		}
+
+		mContextView->updateItemVisibility();
 	}
 
 	virtual void redo( void )

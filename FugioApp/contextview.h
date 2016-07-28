@@ -307,7 +307,7 @@ protected:
 
 	void clearTempLists( void );
 
-private slots:
+public slots:
 	void updateItemVisibility();
 
 	// QObject interface
