@@ -24,13 +24,10 @@ PortAudioOutputNode::PortAudioOutputNode( QSharedPointer<fugio::NodeInterface> p
 #if defined( PORTAUDIO_SUPPORTED )
 	mDeviceName = DevicePortAudio::deviceOutputDefaultName();
 #endif
-
-	mNode->context()->registerPlayhead( this );
 }
 
 PortAudioOutputNode::~PortAudioOutputNode()
 {
-	mNode->context()->unregisterPlayhead( this );
 }
 
 bool PortAudioOutputNode::initialise()
@@ -39,6 +36,8 @@ bool PortAudioOutputNode::initialise()
 	{
 		return( false );
 	}
+
+	mNode->context()->registerPlayhead( this );
 
 #if defined( PORTAUDIO_SUPPORTED )
 	PaDeviceIndex		DevIdx = DevicePortAudio::deviceOutputNameIndex( mDeviceName );
@@ -81,6 +80,8 @@ bool PortAudioOutputNode::deinitialise()
 
 		mPortAudio.clear();
 	}
+
+	mNode->context()->unregisterPlayhead( this );
 
 	return( NodeControlBase::deinitialise() );
 }
