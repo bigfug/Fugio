@@ -1,15 +1,15 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2016-01-22T09:23:05
+# Project created by QtCreator 2014-07-26T22:35:57
 #
 #-------------------------------------------------
 
-TARGET = $$qtLibraryTarget(fugio-lua)
+QT       += widgets
+
+TARGET = $$qtLibraryTarget(fugio-portmidi)
 TEMPLATE = lib
-
-CONFIG += plugin c++11
-
-QT += gui widgets
+CONFIG += plugin
+CONFIG += c++11
 
 CONFIG(debug,debug|release) {
     DESTDIR = $$OUT_PWD/../../../deploy-debug-$$QMAKE_HOST.arch/plugins
@@ -19,27 +19,22 @@ CONFIG(debug,debug|release) {
 
 include( ../../../Fugio/FugioGlobal.pri )
 
-DEFINES += LUA_LIBRARY
+SOURCES += \
+    devicemidi.cpp \
+    portmidiplugin.cpp \
+    portmidiinputnode.cpp \
+    portmidioutputnode.cpp
 
-SOURCES += luaplugin.cpp \
-    luanode.cpp \
-    syntaxhighlighterlua.cpp \
-    luahighlighter.cpp \
-    luaexnode.cpp \
-    luaexpin.cpp \
-    luaarray.cpp
-
-HEADERS += luaplugin.h \
+HEADERS += \
     ../../include/fugio/nodecontrolbase.h \
     ../../include/fugio/pincontrolbase.h \
-    ../../include/fugio/lua/uuid.h \
-    ../../include/fugio/lua/lua_interface.h \
-    luanode.h \
-    syntaxhighlighterlua.h \
-    luahighlighter.h \
-    luaexnode.h \
-    luaexpin.h \
-    luaarray.h
+    ../../include/fugio/portmidi/uuid.h \
+    devicemidi.h \
+    portmidiplugin.h \
+    portmidiinputnode.h \
+    portmidioutputnode.h
+
+FORMS +=
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -54,6 +49,7 @@ macx {
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
     INSTALLDEST  = $$INSTALLDIR/data/plugins
     INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
+    FRAMEWORKDIR = $$BUNDLEDIR/Contents/Frameworks
 
     DESTDIR = $$BUNDLEDIR/Contents/MacOS
     DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
@@ -71,13 +67,13 @@ macx {
 
         # we don't want to copy the Lua library into the bundle, so change its name
 
-        QMAKE_POST_LINK += && install_name_tool -change /usr/local/opt/lua/lib/liblua.5.2.dylib liblua.5.2.dylib $$LIBCHANGEDEST
+        QMAKE_POST_LINK += && install_name_tool -change /usr/local/opt/portmidi/lib/libportmidi.dylib libportmidi.dylib $$LIBCHANGEDEST
 
         QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
         # now change it back
 
-        QMAKE_POST_LINK += && install_name_tool -change liblua.5.2.dylib /usr/local/lib/liblua.5.2.dylib $$LIBCHANGEDEST
+        QMAKE_POST_LINK += && install_name_tool -change libportmidi.dylib /usr/local/lib/libportmidi.dylib $$LIBCHANGEDEST
 
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
@@ -89,53 +85,29 @@ macx {
     }
 }
 
-windows {
-    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
-    INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-
-    CONFIG(release,debug|release) {
-        QMAKE_POST_LINK += echo
-
-        QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
-
-        QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
-
-        win32 {
-             QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/Lua-5.3.2/lua53.dll ) $$shell_path( $$INSTALLDIR/data )
-        }
-    }
-}
-
 #------------------------------------------------------------------------------
-# Lua
+# portmidi
 
-win32:exists( $$(LIBS)/Lua-5.3.2 ) {
-    INCLUDEPATH += $$(LIBS)/Lua-5.3.2/include
-
-    LIBS += -L$$(LIBS)/Lua-5.3.2 -llua53
-
-    DEFINES += LUA_SUPPORTED
+windows {
+	LIBS += -L$$(LIBS)/portmidi.32.2013/Release
+	INCLUDEPATH += $$(LIBS)/portmidi/pm_common
+	INCLUDEPATH += $$(LIBS)/portmidi/porttime
 }
 
-macx:exists( /usr/local/include/lua.hpp ) {
+win64 {
+	LIBS += -L$$(LIBS)/portmidi.64.2013/Release
+}
+
+win32 {
+	LIBS += -L$$(LIBS)/portmidi.32.2013/Release
+}
+
+macx {
     INCLUDEPATH += /usr/local/include
-
-    LIBS += -L/usr/local/lib -llua
-
-    DEFINES += LUA_SUPPORTED
+    LIBS += -L/usr/local/lib
 }
 
-unix:!macx:exists( /usr/include/lua5.3/lua.h ) {
-    INCLUDEPATH += /usr/include/lua5.3
-
-    LIBS += -llua5.3
-
-    DEFINES += LUA_SUPPORTED
-}
-
-!contains( DEFINES, LUA_SUPPORTED ) {
-    warning( "Lua not supported" )
-}
+LIBS += -lportmidi
 
 #------------------------------------------------------------------------------
 # API

@@ -1,0 +1,9 @@
+#ifndef FUGIO_PORTMIDI_H
+#define FUGIO_PORTMIDI_H
+
+#include <QUuid>
+
+#define NID_PORTMIDI_INPUT			(QUuid("{26E3B32F-ED58-4dbb-9155-461943AED225}"))
+#define NID_PORTMIDI_OUTPUT			(QUuid("{3985fdf7-2468-424d-9996-1143d1da8eb4}"))
+
+#endif // FUGIO_PORTMIDI_H
