@@ -402,6 +402,7 @@ private:
 	QList<QSharedPointer<NoteItem>>			 mNoteList;
 	QList<QUuid>							 mGroupIds;
 	QList<QUuid>							 mGroupStack;
+	QMap<QUuid,QUuid>						 mNodeOrig;
 	bool									 mChanged;
 	QBrush									 mLabelBrush;
 	QFont									 m_LabelFont;

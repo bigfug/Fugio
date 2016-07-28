@@ -436,6 +436,8 @@ void ContextView::loadStarted( QSettings &pSettings, bool pPartial )
 {
 	Q_UNUSED( pPartial )
 
+	mNodeOrig.clear();
+
 	if( pSettings.childGroups().contains( "positions" ) )
 	{
 		pSettings.beginGroup( "positions" );
@@ -566,15 +568,15 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 		{
 			pSettings.endGroup();
 
-			int		NoteCount = pSettings.beginReadArray( "groups" );
+			int		GroupCount = pSettings.beginReadArray( "groups" );
 
-			for( int i = 0 ; i < NoteCount ; i++ )
+			for( int i = 0 ; i < GroupCount ; i++ )
 			{
 				pSettings.setArrayIndex( i );
 
 				const QString		GroupName = pSettings.value( "name" ).toString();
 				const QUuid			OrigId    = fugio::utils::string2uuid( pSettings.value( "uuid" ).toString() );
-				const QUuid			NodeId    = ( pPartial ? QUuid::createUuid() : OrigId );
+				const QUuid			NodeId    = ( mNodeList.contains( OrigId ) ? QUuid::createUuid() : OrigId );
 
 				//const QTransform	Transform = pSettings.value( "transform" ).value<QTransform>();
 
@@ -598,11 +600,6 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 				if( QSharedPointer<NodeItem> NI = mNodeList.value( NodeId ) )
 				{
 					NI->setName( GroupName );
-
-					if( pPartial )
-					{
-						NI->setGroupId( groupId() );
-					}
 
 					NI->setIsGroup( true );
 
@@ -634,11 +631,17 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 			QUuid		Id   = fugio::utils::string2uuid( pSettings.value( "uuid", fugio::utils::uuid2string( QUuid::createUuid() ) ).toString() );
 			QUuid		GroupId = fugio::utils::string2uuid( pSettings.value( "group", fugio::utils::uuid2string( QUuid() ) ).toString() );
 
-			if( pPartial )
+			if( GroupIdMap.contains( GroupId ) )
 			{
 				GroupId = GroupIdMap.value( GroupId );
+			}
 
-				Id = QUuid::createUuid();
+			for( QSharedPointer<NoteItem> NI : mNoteList )
+			{
+				if( NI->id() == Id )
+				{
+					Id = QUuid::createUuid();
+				}
 			}
 
 			QPointF		Pos  = pSettings.value( "position" ).toPointF();
@@ -683,9 +686,14 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 				continue;
 			}
 
+			if( mNodeOrig.contains( KID ) )
+			{
+				KID = mNodeOrig.value( KID );
+			}
+
 			QUuid	GID = fugio::utils::string2uuid( pSettings.value( KS ).toString() );
 
-			if( pPartial )
+			if( GroupIdMap.contains( GID ) )
 			{
 				GID = GroupIdMap.value( GID );
 			}
@@ -693,6 +701,10 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 			if( QSharedPointer<NodeItem> NI = mNodeList.value( KID ) )
 			{
 				NI->setGroupId( GID );
+			}
+			else
+			{
+				NI->setGroupId( groupId() );
 			}
 		}
 
@@ -721,11 +733,16 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 				for( const QString &KP : pSettings.childKeys() )
 				{
-					const QUuid	K = fugio::utils::string2uuid( KP );
+					QUuid	K = fugio::utils::string2uuid( KP );
 
 					if( K.isNull() )
 					{
 						continue;
+					}
+
+					if( mNodeOrig.contains( K ) )
+					{
+						K = mNodeOrig.value( K );
 					}
 
 					if( PinItem	*PI = NI->findPinOutput( fugio::utils::string2uuid( KP ) ) )
@@ -765,6 +782,8 @@ void ContextView::loadEnded( QSettings &pSettings, bool pPartial )
 	Q_UNUSED( pPartial )
 
 	mPastePositions.clear();
+
+	mNodeOrig.clear();
 }
 
 void ContextView::saveContext( QSettings &pSettings ) const
@@ -818,7 +837,15 @@ void ContextView::saveContext( QSettings &pSettings ) const
 
 		if( !Note->groupId().isNull() )
 		{
-			pSettings.setValue( "group", fugio::utils::uuid2string( Note->groupId() ) );
+			QSharedPointer<NodeItem>	Node = mNodeList[ Note->groupId() ];
+
+			if( Node )
+			{
+				if( !mSaveOnlySelected || mGroupItemList.contains( Node.data() ) )
+				{
+					pSettings.setValue( "group", fugio::utils::uuid2string( Note->groupId() ) );
+				}
+			}
 		}
 
 		if( Note->backgroundColour() != noteColour() )
@@ -896,6 +923,18 @@ void ContextView::saveContext( QSettings &pSettings ) const
 		QUuid	G = Node->groupId();
 
 		if( G.isNull() )
+		{
+			continue;
+		}
+
+		QSharedPointer<NodeItem>	Group = mNodeList[ G ];
+
+		if( !Group )
+		{
+			continue;
+		}
+
+		if( mSaveOnlySelected && !mGroupItemList.contains( Group.data() ) )
 		{
 			continue;
 		}
@@ -1018,6 +1057,8 @@ void ContextView::nodeAdded( QUuid pNodeId, QUuid pOrigId )
 	}
 
 	mNodePositionFlag = false;
+
+	mNodeOrig.insert( pOrigId, pNodeId );
 }
 
 void ContextView::nodeAdd( QSharedPointer<NodeItem> Node )
