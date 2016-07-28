@@ -1678,7 +1678,7 @@ void ContextView::copy()
 
 	const QString		TempFile = QDir( QDir::tempPath() ).absoluteFilePath( "fugio-copy.tmp" );
 
-	qDebug() << TempFile;
+	//qDebug() << TempFile;
 
 	if( C->save( TempFile, &NodeList ) )
 	{
@@ -1692,7 +1692,7 @@ void ContextView::copy()
 		}
 	}
 
-	//QFile::remove( TempFile );
+	QFile::remove( TempFile );
 
 	mSaveOnlySelected = false;
 
