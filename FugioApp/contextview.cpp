@@ -221,15 +221,10 @@ bool ContextView::itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<NodeI
 	return( true );
 }
 
-bool ContextView::itemsForRemoval( QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NodeItem>> &pGroupList, QList<QSharedPointer<NoteItem> > &pNoteList )
-{
-	QList<NodeItem *>  NodeItemList;
-	QList<NodeItem *>  GroupItemList;
-	QList<LinkItem *>  LinkItemList;
-	QList<NoteItem *>  NoteItemList;
-
-	return( itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, pNodeList, pGroupList, pLinkList, pNoteList ) );
-}
+//bool ContextView::itemsForRemoval( QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NodeItem>> &pGroupList, QList<QSharedPointer<NoteItem> > &pNoteList )
+//{
+//	return( itemsForRemoval( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, pNodeList, pGroupList, pLinkList, pNoteList ) );
+//}
 
 QList<QUuid> ContextView::nodeItemIds( const QList<NodeItem *> &pNodeList )
 {
