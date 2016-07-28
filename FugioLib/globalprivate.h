@@ -113,7 +113,7 @@ public:
 
 	virtual QSharedPointer<fugio::NodeInterface> createNode( fugio::ContextInterface *pContext, const QString &pName, const QUuid &pUuid, const QUuid &pOrigId, const QVariantHash &pSettings ) Q_DECL_OVERRIDE;
 
-	virtual QSharedPointer<fugio::PinInterface> createPin(const QString &pName, const QUuid &pLocalId, QSharedPointer<fugio::NodeInterface> pNode, PinDirection pDirection, const QUuid &pControlUUID , const QVariantHash &pSettings ) Q_DECL_OVERRIDE;
+	virtual QSharedPointer<fugio::PinInterface> createPin(const QString &pName, const QUuid &pLocalId, QSharedPointer<fugio::NodeInterface> pNode, PinDirection pDirection, const QUuid &pControlUUID, const QVariantHash &pSettings ) Q_DECL_OVERRIDE;
 
 	virtual QSharedPointer<fugio::PinControlInterface> createPinControl( const QUuid &pUUID , QSharedPointer<fugio::PinInterface> pPin ) Q_DECL_OVERRIDE;
 

@@ -1315,6 +1315,11 @@ void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 	QSharedPointer<NodeItem>				 NodeItem1 = mNodeList.value( Node1->uuid() );
 	QSharedPointer<NodeItem>				 NodeItem2 = mNodeList.value( Node2->uuid() );
 
+	if( !NodeItem1 || !NodeItem2 )
+	{
+		return;
+	}
+
 	PinItem									*PinItem1 = NodeItem1->findPinInput( Pin1 );
 	PinItem									*PinItem2 = NodeItem2->findPinOutput( Pin2 );
 

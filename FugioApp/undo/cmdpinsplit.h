@@ -44,10 +44,6 @@ public:
 				{
 					mNode.clear();
 				}
-				else
-				{
-					mContext->addDeferredNode( mNode );
-				}
 			}
 		}
 

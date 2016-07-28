@@ -327,11 +327,17 @@ QModelIndex ContextModel::pinIndex( const QUuid &pId ) const
 
 void ContextModel::loadStarted(QSettings &pSettings, bool pPartial)
 {
+	Q_UNUSED( pSettings )
+	Q_UNUSED( pPartial )
+
 	emit layoutAboutToBeChanged();
 }
 
 void ContextModel::loadEnded( QSettings &pSettings, bool pPartial )
 {
+	Q_UNUSED( pSettings )
+	Q_UNUSED( pPartial )
+
 	changePersistentIndex( createIndex( 0, 0, mRootItem ), createIndex( mRootItem->rowCount(), 0, mRootItem ) );
 
 	emit layoutChanged();

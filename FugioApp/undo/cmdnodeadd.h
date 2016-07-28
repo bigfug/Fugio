@@ -55,12 +55,6 @@ public:
 				{
 					mNode.clear();
 				}
-				else
-				{
-					mContext->addDeferredNode( mNode );
-
-					mContext->nodeInitialised();
-				}
 			}
 
 			mContextWidget->saveRecovery();

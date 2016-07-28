@@ -202,8 +202,10 @@ void NodePrivate::loadPins( QSettings &pSettings, const QString &pArrayName, Pin
 
 		CFG.beginGroup( PinGrp );
 
-		const QUuid		PinGlobalId = fugio::utils::string2uuid( PinGrp );
+		const QUuid		PinOrigGlobalId = fugio::utils::string2uuid( PinGrp );
 		const QUuid		PinLocalId  = CFG.value( "uuid" ).value<QUuid>();
+		const bool		ContextHasGlobalId = ( mContext->findPin( PinOrigGlobalId ).isNull() ? false : true );
+		const QUuid		PinGlobalId = ( ContextHasGlobalId ? QUuid::createUuid() : PinOrigGlobalId );
 
 		QVariantHash			PinData;
 
@@ -224,16 +226,12 @@ void NodePrivate::loadPins( QSettings &pSettings, const QString &pArrayName, Pin
 		{
 			PinPrivate *PP = qobject_cast<PinPrivate *>( PIN->qobject() );
 
-			if( !pPartial )
+			if( !ContextHasGlobalId )
 			{
 				PP->setGlobalId( PinGlobalId );
 			}
-			else
-			{
-				//qDebug() << "PIN PARTIAL:" << PP->uuid() << PinId;
-			}
 
-			pPinMap.insert( PinGlobalId, PP->globalId() );
+			pPinMap.insert( PinOrigGlobalId, PP->globalId() );
 
 			PP->setSettings( PinData );
 
@@ -245,14 +243,12 @@ void NodePrivate::loadPins( QSettings &pSettings, const QString &pArrayName, Pin
 		{
 			const QString			PinName = CFG.value( "name" ).toString();
 
-			QUuid	TmpId = pPartial ? QUuid::createUuid() : PinGlobalId;
-
 			if( pPartial )
 			{
 				//qDebug() << "NEW PIN PARTIAL:" << TmpId << PinId;
 			}
 
-			pPinMap.insert( PinGlobalId, TmpId );
+			pPinMap.insert( PinOrigGlobalId, PinGlobalId );
 
 			PIN = context()->global()->createPin( PinName, PinLocalId, context()->findNode( uuid() ), pDirection, fugio::utils::string2uuid( PinCtl ), PinData );
 
@@ -260,7 +256,7 @@ void NodePrivate::loadPins( QSettings &pSettings, const QString &pArrayName, Pin
 			{
 				if( PinPrivate *PP = qobject_cast<PinPrivate *>( PIN->qobject() ) )
 				{
-					PP->setGlobalId( TmpId );
+					PP->setGlobalId( PinGlobalId );
 
 					PP->setSettings( PinData );
 				}

@@ -96,7 +96,7 @@ public:
 
 	virtual void updateNode( QSharedPointer<fugio::NodeInterface> pNode ) = 0;
 
-	virtual void addDeferredNode( QSharedPointer<fugio::NodeInterface> pNode ) = 0;
+	//virtual void addDeferredNode( QSharedPointer<fugio::NodeInterface> pNode ) = 0;
 
 	//-------------------------------------------------------------------------
 	// Pins - id's are globalId() not localId()
