@@ -758,8 +758,6 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 		pSettings.endGroup();
 	}
 
-	updateItemVisibility();
-
 	//-------------------------------------------------------------------------
 
 #if !defined( Q_OS_RASPERRY_PI )
@@ -780,6 +778,16 @@ void ContextView::loadEnded( QSettings &pSettings, bool pPartial )
 {
 	Q_UNUSED( pSettings )
 	Q_UNUSED( pPartial )
+
+	for( QSharedPointer<NodeItem> NI : mNodeList.values() )
+	{
+		if( NI->isGroup() )
+		{
+			processGroupLinks( NI );
+		}
+	}
+
+	updateItemVisibility();
 
 	mPastePositions.clear();
 
