@@ -1468,7 +1468,7 @@ void ContextView::updatePastePoint(QList<NodeItem *> NodeItemList, QList<NoteIte
 	for( NodeItem *Node : NodeItemList )
 	{
 		m_PastePoint.rx() = qMin( Node->x(), m_PastePoint.x() );
-		m_PastePoint.ry() = qMin( Node->x(), m_PastePoint.y() );
+		m_PastePoint.ry() = qMin( Node->y(), m_PastePoint.y() );
 	}
 }
 
