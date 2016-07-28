@@ -556,8 +556,6 @@ bool ContextPrivate::isPlaying( void ) const
 
 void ContextPrivate::registerNode( QSharedPointer<fugio::NodeInterface> pNode, const QUuid &pOrigId )
 {
-	QUuid			OrigId = pNode->uuid();
-
 	if( mNodeHash.contains( pNode->uuid() ) )
 	{
 		if( NodePrivate *NP = qobject_cast<NodePrivate *>( pNode->qobject() ) )
@@ -583,7 +581,7 @@ void ContextPrivate::registerNode( QSharedPointer<fugio::NodeInterface> pNode, c
 
 	mNodeDeferProcess = true;
 
-	emit nodeAdded( pNode->uuid(), OrigId );
+	emit nodeAdded( pNode->uuid(), pOrigId );
 }
 
 void ContextPrivate::unregisterNode( const QUuid &pUUID )
