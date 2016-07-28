@@ -2383,7 +2383,7 @@ void ContextView::ungroup( NodeItem *GI )
 
 void ContextView::groupSelected()
 {
-	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, true );
+	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, false );
 
 	if( mNodeItemList.isEmpty() && mGroupItemList.isEmpty() && mLinkItemList.isEmpty() && mNoteItemList.isEmpty() )
 	{
@@ -2411,7 +2411,7 @@ void ContextView::groupSelected()
 
 void ContextView::ungroupSelected()
 {
-	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, true );
+	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, false );
 
 	if( mNodeItemList.isEmpty() && mGroupItemList.isEmpty() && mLinkItemList.isEmpty() && mNoteItemList.isEmpty() )
 	{
