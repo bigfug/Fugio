@@ -48,6 +48,8 @@ void NumberMonitorForm::value( const QList< QPair<QColor,qreal> > &pValLst )
 		Painter.eraseRect( mImage.rect() );
 
 		mIndex = 0;
+
+		update();
 	}
 
 	if( mIndex >= mImage.width() )
@@ -81,7 +83,7 @@ void NumberMonitorForm::value( const QList< QPair<QColor,qreal> > &pValLst )
 		mY[ i ] = y;
 	}
 
-	update( mIndex - 1, 0, mIndex, height() );
+	update( mIndex - 1, 0, 1, height() );
 
 	mIndex++;
 }
