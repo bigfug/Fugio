@@ -1,5 +1,5 @@
 [00231fc2-2eba-4c39-bbcc-ecd0a3a8444b]
-control\array="@ByteArray(\xd2\x43\x14<\x9cI <\x9dKB<\n^\x8c<\xb0\xb7\x9e<\0\xbb\xca<\xec\xed\xe1<\xfc\x9c\f=FV =\xab\x42\n=d\xdf\v=O}\xe1<\x14Q\xcc<6\xe5\xac<P\xcc\x8f<y\xd6?<\xa1\xe8'<\xb6\xef\xe7;zc\xf0;\xc7\xe8\b<(p\xc8;\xc6\x89\xc0;\x80\xcb\xc1;_m\xaa;\xba\x97 ;\xb0;0;|\xf2L;#X#;\xc8\x1a~;\xc0\xab^;\xcdu);\x8d\xe0 ;#\x17\0;=\f\xb1:\xbc\xd8\xbb:Z\x9e\f;y\xd2\x99:7^\xf1:\b7::\x1w\x14;CY=;J\x9f%;}\xc6\xd8:j\xd2\x87:\xfa\xdfj:\x8c>J:\x86\xf7\n;R\xcb\xea:T\x97\xba:\x11\xfaj;\xe6\x1b\xa5:\xa6\xb4\x88;\"\x1f\xd1;~+\a<u\xba\xee;\x9d`\xf5;\xd4\xa7\xcc;\xa7\x3\xba;.\x85\xae;\xa1\xb7\x82;\xd4\xf0;;\x86\xb9|;\xc0Ir;x\x96];)"
+control\array="@ByteArray(\x8f?\f;\xa0L6;\x16\x35 ;\xa2;e;\xac\x37\x4;\xf9\x18I;\x16\xa7\x83;y\x85\x87;\xf4q\xf4;\x5v\x1f<\xea\xb2M<X\xab\x12<\x87\xeb\xc2;\xd2uk;\x98p\xa2:\x8d\xc9\xa8:\xa6 \xf0:\x9b\xf5\x1;\xee\x12\x14;\xea\xd6\x10;TP\x7f:\xb2\xfe\xe5\x39\xaf\x15\xd5:\xe5%\x93:p\f\xee:D\xa3\xfc:\xc5\x9e\xbe\x39\x89\xc5\x2;\xd5\xe7\xc9:\xb5\xbb\x98\x39\xe0\xcd\x39:\x82N\xa7:X\xa7\x43;\xf8|(;\xec\fZ:\xbc\x91x:|\x9a\xe1:G\\\f9j\xb0<;\x83\x96/;\xa0Vd;\xbb|\xbc;\xf4\xfa\x61;\xb4\xd6\x38:\x84\x8b\xd7;\x8dQw<\xee\xf6\x9b<\x80\xe5\x87<\xcd\x38R<|\xdf*<\xae\x99Q<\xbe\xafM<\x8a\xa5G<@\xa8/<v\x10\xf1;\x98\xc9\x46<\xed\xf4M<\xd9*\xfe;\x9fu\x86;\x8a\xa5\x9e;\x9a@\x95;w.g;\x9e\xec\a;\x8b\xfe^;)"
 direction=2
 name=Bands
 order=0
@@ -24,7 +24,7 @@ version=2
 default=Hanning
 direction=1
 name=Window
-order=2
+order=3
 uuid=f6830fed-0b9d-4ecf-94e5-156cd704a102
 version=2
 
@@ -81,6 +81,14 @@ order=1
 uuid=261cc653-d7fa-4c34-a08b-3603e8ae71d5
 version=2
 
+[6d9ea915-224d-4e2f-b9f0-11bf5b8887bf]
+default=512
+direction=1
+name=Shift
+order=2
+uuid=ce8d578e-c5a4-422f-b3c4-a1bdf40facdb
+version=2
+
 [7d8fb621-f9bd-4ab0-9afa-7fa029e7fe50]
 direction=2
 name=FFT
@@ -106,7 +114,7 @@ version=2
 
 [a9036efe-8c82-44bf-823e-c76854bcad9d]
 control\dockarea=8
-control\value="\nfugio = require \"fugio\"\nqt    = require \"qt\"\n\nPinImage = fugio.output( \"Image\" )\n\nImage = PinImage:get()\n\nImage:setSize( 640, 480 )\n\nPinBands = fugio.input( \"Bands\" )\nBands    = PinBands:get()\n\nBackground = qt.brush( qt.color( 0, 0, 0 ) )\n\nGradient = qt.gradient( \"linear\", qt.point( 0, 0 ), qt.point( 0, 480 ) )\n\nGradient:setColorAt( 0, qt.color( 255, 0, 0 ) )\nGradient:setColorAt( 1, qt.color( 255, 255, 0 ) )\n\nBrush     = qt.brush( Gradient )\n\nfunction main()\n\tlocal P = qt.painter( PinImage )\n\n\tP:setBackground( Background )\n\n\tP:eraseRect( Image:rect() )\n\n\tif #Bands == 0 then return end\n\n\tP:setBrush( Brush )\n\n\tlocal\tBandWidth = 640 / #Bands\n\n\tfor i = 1,#Bands do\n\t\tlocal\tv = Bands[ i ] * 20\t\t-- Scale the output\n\t\tlocal\th = v * 480\n\t\tlocal\ty = 479 - h\n\n\t\tP:drawRect( ( i - 1 ) * BandWidth, y, BandWidth - 1, 480 - y )\n\tend\n\n\tP:finish()\nend\n"
+control\value="\nfugio = require \"fugio\"\nqt    = require \"qt\"\n\nPinImage = fugio.output( \"Image\" )\n\nImage = PinImage:get()\n\nImage:setSize( 640, 480 )\n\nPinBands = fugio.input( \"Bands\" )\nBands    = PinBands:get()\n\nBackground = qt.brush( qt.color( 0, 0, 0 ) )\n\nGradient = qt.gradient( \"linear\", qt.point( 0, 0 ), qt.point( 0, 480 ) )\n\nGradient:setColorAt( 0, qt.color( 255, 0, 0 ) )\nGradient:setColorAt( 1, qt.color( 255, 255, 0 ) )\n\nBrush     = qt.brush( Gradient )\n\nBandBuffer = {}\n\nMaxVal = 0.1\n\nfunction main()\n\tlocal P = qt.painter( PinImage )\n\n\tP:setBackground( Background )\n\n\tP:eraseRect( Image:rect() )\n\n\tif #Bands == 0 then return end\n\n\twhile #Bands > #BandBuffer do\n\t\ttable.insert( BandBuffer, 0 )\n\tend\n\n\tP:setBrush( Brush )\n\n\tlocal\tBandWidth = 640 / #Bands\n\n\tfor i = 1,#Bands do\n\t\tif Bands[ i ] > BandBuffer[ i ] then\n\t\t\tBandBuffer[ i ] = Bands[ i ]\n\t\telse\n\t\t\tBandBuffer[ i ] = math.max( 0, BandBuffer[ i ] - 0.005 )\n\t\tend\n\n\t\tMaxVal = math.max( MaxVal, BandBuffer[ i ] )\n\n\t\tlocal\tv = BandBuffer[ i ] * ( 1 / MaxVal )\t\t-- Scale the output\n\t\tlocal\th = v * 480\n\t\tlocal\ty = 479 - h\n\n\t\tP:drawRect( ( i - 1 ) * BandWidth, y, BandWidth - 1, 480 - y )\n\tend\n\n\tP:finish()\n\n\tMaxVal = math.max( 0.5, MaxVal * 0.99 )\nend\n"
 inputs\size=0
 name=Text Editor
 outputs\1\c04809b0-b2dd-477d-9015-68e3c1f40d01=73d477f8-54b1-43c2-a8d7-6cff03c293ff
@@ -139,8 +147,9 @@ version=2
 [cc36c9b6-7481-44a7-9560-06edf054b235]
 inputs\1\b531e639-2891-4909-91a2-c2a012d39131=00000000-0000-0000-0000-000000000000
 inputs\2\642d9a32-8539-4cc5-847f-61117eec6d84=00000000-0000-0000-0000-000000000000
-inputs\3\211651e0-9cb0-4247-bc11-2d16aa173c2d=c90a7f2b-7a6d-4919-8710-9bfb4ce5cd26
-inputs\size=3
+inputs\3\6d9ea915-224d-4e2f-b9f0-11bf5b8887bf=00000000-0000-0000-0000-000000000000
+inputs\4\211651e0-9cb0-4247-bc11-2d16aa173c2d=c90a7f2b-7a6d-4919-8710-9bfb4ce5cd26
+inputs\size=4
 name=FFT
 outputs\1\7d8fb621-f9bd-4ab0-9afa-7fa029e7fe50=9497417c-42ff-4a4e-a48c-f7ac0470e1f0
 outputs\size=1
@@ -217,11 +226,12 @@ duration=30
 version=2
 
 [groups]
-version=2
+size=0
+version=3
 
 [mainwindow]
 geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x2\0\0\0\0\0\0\0\0\0\x15\0\0\x5\xdf\0\0\x3}\0\0\0\0\0\0\0+\0\0\x5\xdf\0\0\x3}\0\0\0\0\x2\0\0\0\x5\xa0)
-state="@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x3\0\0\0\0\0\0\x1I\0\0\x1\xa7\xfc\x2\0\0\0\x3\xfb\0\0\0\x1e\0m\0N\0o\0\x64\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\x15\0\0\x1\xa0\0\0\0\xfd\0\xff\xff\xff\xfc\0\0\0\0\0\0\x1\xa7\0\0\0\x65\0\xff\xff\xff\xfa\0\0\0\x1\x1\0\0\0\x3\xfb\0\0\0\x14\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0 \0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0t\0h\0L\0o\0g\0g\0\x65\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0O\0\xff\xff\xff\xfb\0\0\0\x18\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0_\0\x33\x1\0\0\0\0\0\0\x1\x16\0\0\0\0\0\0\0\0\xfb\0\0\0\"\0M\0u\0l\0t\0i\0m\0\x65\0\x64\0i\0\x61\0 \0P\0l\0\x61\0y\0\x65\0r\x1\0\0\x3\xa7\0\0\0\xb6\0\0\0\0\0\0\0\0\0\0\0\x1\0\0\x1\x82\0\0\x1\xa7\xfc\x2\0\0\0\x4\xfb\0\0\0*\0m\0S\0t\0y\0l\0\x65\0S\0h\0\x65\0\x65\0t\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x93\0\xff\xff\xff\xfb\0\0\0$\0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\x42\0r\0o\0w\0s\0\x65\0r\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x65\0\xff\xff\xff\xfb\0\0\0,\0m\0P\0\x65\0r\0\x66\0o\0r\0m\0\x61\0n\0\x63\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\0\0\x1\xa7\0\0\0\x65\0\xff\xff\xff\xfb\0\0\0&\0m\0S\0n\0i\0p\0p\0i\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0}\0\xff\xff\xff\0\0\0\x3\0\0\x5\xe0\0\0\x1\x96\xfc\x1\0\0\0\a\xfb\0\0\0\x1a\0V\0\x65\0r\0t\0\x65\0x\0 \0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\0\0\0\0\x2\xbe\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0 \0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\x2\xc2\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x10\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\x1\0\0\0\0\0\0\x2\xbe\0\0\0\0\0\0\0\0\xfb\0\0\0\f\0V\0\x65\0r\0t\0\x65\0x\x1\0\0\x2\xc2\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0m\0P\0l\0\x61\0y\0L\0i\0s\0t\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0\x16\0T\0\x65\0x\0t\0 \0\x45\0\x64\0i\0t\0o\0r\x1\0\0\0\0\0\0\x3\x94\0\0\x1^\0\xff\xff\xff\xfb\0\0\0\x1a\0I\0m\0\x61\0g\0\x65\0 \0P\0r\0\x65\0v\0i\0\x65\0w\x1\0\0\x3\x95\0\0\x2K\0\0\x2\0\0\xff\xff\xff\0\0\x3\x13\0\0\x1\xa7\0\0\0\x4\0\0\0\x4\0\0\0\b\0\0\0\b\xfc\0\0\0\0)"
+state="@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x3\0\0\0\0\0\0\x1I\0\0\x1\xa7\xfc\x2\0\0\0\x3\xfb\0\0\0\x1e\0m\0N\0o\0\x64\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\x15\0\0\x1\xa0\0\0\0\xfd\0\xff\xff\xff\xfc\0\0\0\0\0\0\x1\xa7\0\0\0\x65\0\xff\xff\xff\xfa\0\0\0\x1\x1\0\0\0\x3\xfb\0\0\0\x14\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0 \0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0t\0h\0L\0o\0g\0g\0\x65\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0O\0\xff\xff\xff\xfb\0\0\0\x18\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0_\0\x33\x1\0\0\0\0\0\0\x1\x16\0\0\0\0\0\0\0\0\xfb\0\0\0\"\0M\0u\0l\0t\0i\0m\0\x65\0\x64\0i\0\x61\0 \0P\0l\0\x61\0y\0\x65\0r\x1\0\0\x3\xa7\0\0\0\xb6\0\0\0\0\0\0\0\0\0\0\0\x1\0\0\x1\x82\0\0\x1\xa7\xfc\x2\0\0\0\x4\xfb\0\0\0*\0m\0S\0t\0y\0l\0\x65\0S\0h\0\x65\0\x65\0t\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x93\0\xff\xff\xff\xfb\0\0\0$\0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\x42\0r\0o\0w\0s\0\x65\0r\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x65\0\xff\xff\xff\xfb\0\0\0,\0m\0P\0\x65\0r\0\x66\0o\0r\0m\0\x61\0n\0\x63\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\0\0\x1\xa7\0\0\0\x65\0\xff\xff\xff\xfb\0\0\0&\0m\0S\0n\0i\0p\0p\0i\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0}\0\xff\xff\xff\0\0\0\x3\0\0\x5\xe0\0\0\x1\x96\xfc\x1\0\0\0\a\xfb\0\0\0\x1a\0V\0\x65\0r\0t\0\x65\0x\0 \0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\0\0\0\0\x2\xbe\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0 \0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\x2\xc2\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x10\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\x1\0\0\0\0\0\0\x2\xbe\0\0\0\0\0\0\0\0\xfb\0\0\0\f\0V\0\x65\0r\0t\0\x65\0x\x1\0\0\x2\xc2\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0m\0P\0l\0\x61\0y\0L\0i\0s\0t\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0\x16\0T\0\x65\0x\0t\0 \0\x45\0\x64\0i\0t\0o\0r\x1\0\0\0\0\0\0\x3\x94\0\0\0O\0\xff\xff\xff\xfb\0\0\0\x1a\0I\0m\0\x61\0g\0\x65\0 \0P\0r\0\x65\0v\0i\0\x65\0w\x1\0\0\x3\x95\0\0\x2K\0\0\x2\0\0\xff\xff\xff\0\0\x3\x13\0\0\x1\xa7\0\0\0\x4\0\0\0\x4\0\0\0\b\0\0\0\b\xfc\0\0\0\0)"
 
 [meta]
 name=Untitled

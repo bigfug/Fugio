@@ -24,7 +24,12 @@ FFTNode::FFTNode( QSharedPointer<fugio::NodeInterface> pNode )
 	, mPlan( 0 ), mBufSrc( 0 ), mBufDst( 0 )
 	#endif
 {
-	static const QUuid	PID_WINDOW   = QUuid( "{f6830fed-0b9d-4ecf-94e5-156cd704a102}" );
+	FUGID( PIN_INPUT_AUDIO, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_OUTPUT_FFT, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+	FUGID( PIN_INPUT_SAMPLES, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
+	FUGID( PIN_INPUT_SHIFT, "ce8d578e-c5a4-422f-b3c4-a1bdf40facdb" );
+
+	FUGID( PIN_INPUT_WINDOW, "f6830fed-0b9d-4ecf-94e5-156cd704a102" );
 
 	if( mWindowTypes.isEmpty() )
 	{
@@ -37,18 +42,19 @@ FFTNode::FFTNode( QSharedPointer<fugio::NodeInterface> pNode )
 		mWindowTypes.insert( "Steeper",		WindowType::STEEPER );
 	}
 
-	mPinInputAudio = pinInput( "Audio" );
+	mPinInputAudio = pinInput( "Audio", PIN_INPUT_AUDIO );
 
-	mValOutputFFT = pinOutput<fugio::FftInterface *>( "FFT", mPinOutputFFT, PID_FFT );
+	mValOutputFFT = pinOutput<fugio::FftInterface *>( "FFT", mPinOutputFFT, PID_FFT, PIN_OUTPUT_FFT );
 
 	mValOutputFFT->setSource( this );
 
-	mPinInputSamples = pinInput( tr( "Samples" ) );
+	mPinInputSamples = pinInput( tr( "Samples" ), PIN_INPUT_SAMPLES );
 
 	mPinInputSamples->setValue( mSampleCount );
 
+	mPinInputShift = pinInput( tr( "Shift" ), PIN_INPUT_SHIFT );
 
-	mPinInputWindowChoice = pinInput<fugio::ChoiceInterface *>( tr( "Window" ), mPinInputWindow, PID_CHOICE, PID_WINDOW );
+	mPinInputWindowChoice = pinInput<fugio::ChoiceInterface *>( tr( "Window" ), mPinInputWindow, PID_CHOICE, PIN_INPUT_WINDOW );
 
 	mPinInputWindowChoice->setChoices( mWindowTypes.keys() );
 
@@ -81,6 +87,8 @@ bool FFTNode::initialise()
 		return( false );
 	}
 
+	inputsUpdated( 0 );
+
 	connect( mPinInputAudio->qobject(), SIGNAL(linked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audioPinLinked(QSharedPointer<fugio::PinInterface>)) );
 	connect( mPinInputAudio->qobject(), SIGNAL(unlinked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audioPinUnlinked(QSharedPointer<fugio::PinInterface>)) );
 
@@ -94,6 +102,8 @@ bool FFTNode::initialise()
 
 bool FFTNode::deinitialise()
 {
+	mPinInputAudio->qobject()->disconnect( this );
+
 	return( NodeControlBase::deinitialise() );
 }
 
@@ -199,7 +209,7 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 	pinUpdated( mPinOutputFFT );
 #endif
 
-	mSamplePosition += samples();
+	mSamplePosition += shift();
 }
 
 void FFTNode::audioPinLinked( QSharedPointer<fugio::PinInterface> P )
@@ -256,12 +266,21 @@ void FFTNode::inputsUpdated( qint64 pTimeStamp )
 		SampleCount = mPinInputSamples->value().toInt();
 	}
 
-	if( SampleCount <= 0 || SampleCount == mSampleCount )
+	if( !is_power_of_2( SampleCount ) )
 	{
 		return;
 	}
 
-	if( !is_power_of_2( SampleCount ) )
+	int			SampleShift = variant( mPinInputShift ).toInt();
+
+	if( SampleShift <= 0 || SampleShift > SampleCount )
+	{
+		SampleShift = SampleCount;
+	}
+
+	mSampleShift    = SampleShift;
+
+	if( SampleCount <= 0 || SampleCount == mSampleCount )
 	{
 		return;
 	}

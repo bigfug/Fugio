@@ -46,6 +46,11 @@ public:
 		return( mFFT ? mFFT->samples() : 0 );
 	}
 
+	virtual int shift( void ) const
+	{
+		return( mFFT ? mFFT->shift() : 0 );
+	}
+
 	virtual int count( void ) const
 	{
 		return( mFFT ? mFFT->count() : 0 );
