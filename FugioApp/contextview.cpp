@@ -1210,8 +1210,8 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 	QSharedPointer<fugio::PinInterface>		 Pin1 = mContext->findPin( pPinId1 );
 	QSharedPointer<fugio::PinInterface>		 Pin2 = mContext->findPin( pPinId2 );
 
-	QSharedPointer<fugio::NodeInterface>	 Node1 = Pin1->node();
-	QSharedPointer<fugio::NodeInterface>	 Node2 = Pin2->node();
+	fugio::NodeInterface					*Node1 = Pin1->node();
+	fugio::NodeInterface					*Node2 = Pin2->node();
 
 	QSharedPointer<NodeItem>				 NodeItem1 = mNodeList.value( Node1->uuid() );
 	QSharedPointer<NodeItem>				 NodeItem2 = mNodeList.value( Node2->uuid() );
@@ -1309,8 +1309,8 @@ void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 	QSharedPointer<fugio::PinInterface>		 Pin1 = mContext->findPin( pPinId1 );
 	QSharedPointer<fugio::PinInterface>		 Pin2 = mContext->findPin( pPinId2 );
 
-	QSharedPointer<fugio::NodeInterface>	 Node1 = Pin1->node();
-	QSharedPointer<fugio::NodeInterface>	 Node2 = Pin2->node();
+	fugio::NodeInterface					*Node1 = Pin1->node();
+	fugio::NodeInterface					*Node2 = Pin2->node();
 
 	QSharedPointer<NodeItem>				 NodeItem1 = mNodeList.value( Node1->uuid() );
 	QSharedPointer<NodeItem>				 NodeItem2 = mNodeList.value( Node2->uuid() );

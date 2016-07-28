@@ -7,6 +7,8 @@
 #include <fugio/global_interface.h>
 #include <fugio/context_interface.h>
 
+#include "fugio.h"
+
 #include <fugio/utils.h>
 
 #include "pinprivate.h"
@@ -23,9 +25,25 @@ NodePrivate::~NodePrivate( void )
 	//qDebug() << "~NodePrivate" << mName;
 }
 
+void NodePrivate::setContext( fugio::ContextInterface *pContext )
+{
+	mContext = pContext;
+
+	for( QSharedPointer<fugio::PinInterface> P : mPinMap.values() )
+	{
+		if( PinPrivate *PP = qobject_cast<PinPrivate *>( P->qobject() ) )
+		{
+			PP->setContext( pContext );
+		}
+	}
+}
+
 void NodePrivate::clear()
 {
-	mContext->unregisterNode( mUUID );
+	if( mContext )
+	{
+		mContext->unregisterNode( mUUID );
+	}
 
 	mControl.clear();
 
@@ -38,47 +56,18 @@ void NodePrivate::clear()
 
 QSharedPointer<fugio::PinInterface> NodePrivate::createPin( const QString &pName, PinDirection pDirection, const QUuid &pUuid )
 {
-	if( mContext == 0 )
-	{
-		return( QSharedPointer<fugio::PinInterface>() );
-	}
+	QSharedPointer<fugio::PinInterface>		Pin;
 
-	QSharedPointer<fugio::NodeInterface>	NODE = context()->findNode( uuid() );
+	createPin( pName, pDirection, pUuid, Pin, QUuid() );
 
-	if( NODE == 0 )
-	{
-		return( QSharedPointer<fugio::PinInterface>() );
-	}
-
-	QSharedPointer<fugio::PinInterface>	PIN  = context()->global()->createPin( pName, pUuid, NODE, pDirection );
-
-	if( PIN == 0 )
-	{
-		return( QSharedPointer<fugio::PinInterface>() );
-	}
-
-	addPin( PIN );
-
-	return( PIN );
+	return( Pin );
 }
 
-QObject *NodePrivate::createPin(const QString &pName, PinDirection pDirection, const QUuid &pUuid, QSharedPointer<fugio::PinInterface> &pPinInterface, const QUuid &pControlUUID )
+QObject *NodePrivate::createPin( const QString &pName, PinDirection pDirection, const QUuid &pUuid, QSharedPointer<fugio::PinInterface> &pPinInterface, const QUuid &pControlUUID )
 {
-	if( mContext == 0 )
-	{
-		return( 0 );
-	}
+	pPinInterface = fugio::fugio()->createPin( pName, pUuid, pDirection, pControlUUID );
 
-	QSharedPointer<fugio::NodeInterface>	NODE = context()->findNode( uuid() );
-
-	if( NODE == 0 )
-	{
-		return( 0 );
-	}
-
-	pPinInterface = context()->global()->createPin( pName, pUuid, NODE, pDirection, pControlUUID );
-
-	if( pPinInterface == 0 )
+	if( !pPinInterface )
 	{
 		return( 0 );
 	}
@@ -100,6 +89,16 @@ void NodePrivate::addPin( QSharedPointer<fugio::PinInterface> pPin )
 
 	Q_ASSERT( !hasPin( pPin->name() ) );
 #endif
+
+	if( PinPrivate *PP = qobject_cast<PinPrivate *>( pPin->qobject() ) )
+	{
+		PP->setNode( this );
+
+		if( mContext )
+		{
+			PP->setContext( mContext );
+		}
+	}
 
 	mPinMap.insert( pPin->globalId(), pPin );
 
@@ -126,10 +125,13 @@ void NodePrivate::addPin( QSharedPointer<fugio::PinInterface> pPin )
 
 	emit pinAdded( pPin );
 
-	emit pinAdded( mContext->findNode( mUUID ), pPin );
+	if( mContext )
+	{
+		emit pinAdded( mContext->findNode( mUUID ), pPin );
+	}
 }
 
-void NodePrivate::removePin(QSharedPointer<fugio::PinInterface> pPin)
+void NodePrivate::removePin( QSharedPointer<fugio::PinInterface> pPin )
 {
 	disconnect( pPin->qobject() );
 
@@ -146,7 +148,16 @@ void NodePrivate::removePin(QSharedPointer<fugio::PinInterface> pPin)
 
 	emit pinRemoved( pPin );
 
-	emit pinRemoved( mContext->findNode( mUUID ), pPin );
+	if( mContext )
+	{
+		emit pinRemoved( mContext->findNode( mUUID ), pPin );
+	}
+
+	if( PinPrivate *PP = qobject_cast<PinPrivate *>( pPin->qobject() ) )
+	{
+		PP->setContext( nullptr );
+		PP->setNode( nullptr );
+	}
 }
 
 void NodePrivate::inputsUpdated( qint64 pTimeStamp )
@@ -250,7 +261,7 @@ void NodePrivate::loadPins( QSettings &pSettings, const QString &pArrayName, Pin
 
 			pPinMap.insert( PinOrigGlobalId, PinGlobalId );
 
-			PIN = context()->global()->createPin( PinName, PinLocalId, context()->findNode( uuid() ), pDirection, fugio::utils::string2uuid( PinCtl ), PinData );
+			PIN = context()->global()->createPin( PinName, PinLocalId, pDirection, fugio::utils::string2uuid( PinCtl ), PinData );
 
 			if( PIN )
 			{
@@ -412,7 +423,12 @@ void NodePrivate::updateOutputs( void )
 			continue;
 		}
 
-		mContext->updateNode( it.value()->connectedNode() );
+		fugio::NodeInterface		*NI = it.value()->connectedNode();
+
+		if( NI && mContext )
+		{
+			mContext->updateNode( mContext->findNode( NI->uuid() ) );
+		}
 	}
 }
 

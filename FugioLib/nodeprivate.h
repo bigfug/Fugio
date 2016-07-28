@@ -33,7 +33,10 @@ public:
 	{
 		mControl = pControl;
 
-		emit controlChanged( mContext->findNode( mUUID ) );
+		if( mContext )
+		{
+			emit controlChanged( mContext->findNode( mUUID ) );
+		}
 	}
 
 	void setUuid( const QUuid &pUUID )
@@ -43,14 +46,12 @@ public:
 			return;
 		}
 
-		mContext->renameNode( mUUID, pUUID );
+		if( mContext )
+		{
+			mContext->renameNode( mUUID, pUUID );
+		}
 
 		mUUID = pUUID;
-	}
-
-	void setContext( fugio::ContextInterface *pContext )
-	{
-		mContext = pContext;
 	}
 
 	void setControlUuid( const QUuid &pUUID )
@@ -76,6 +77,8 @@ public:
 		return( mContext );
 	}
 
+	virtual void setContext( fugio::ContextInterface *pContext ) Q_DECL_OVERRIDE;
+
 	virtual QSharedPointer<fugio::NodeControlInterface> control( void ) const Q_DECL_OVERRIDE
 	{
 		return( mControl );
@@ -95,7 +98,10 @@ public:
 
 		mName = pName;
 
-		emit nameChanged( mContext->findNode( mUUID ) );
+		if( mContext )
+		{
+			emit nameChanged( mContext->findNode( mUUID ) );
+		}
 
 		emit nameChanged( mName );
 	}

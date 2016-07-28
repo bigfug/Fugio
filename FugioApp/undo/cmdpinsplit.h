@@ -36,7 +36,7 @@ public:
 	{
 		if( !mNode )
 		{
-			mNode = mContext->createNode( QObject::tr( "Split" ), mControlUuid );
+			mNode = mContext->global()->createNode( QObject::tr( "Split" ), mControlUuid );
 
 			if( mNode )
 			{

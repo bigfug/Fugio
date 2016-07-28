@@ -60,7 +60,7 @@ public:
 
 			mPinDst->setName( mPinSrc->name() );
 
-			QSharedPointer<fugio::NodeInterface>	NI = mPinDst->node();
+			fugio::NodeInterface		*NI = mPinDst->node();
 
 			if( NI )
 			{

@@ -9,17 +9,18 @@
 #include <fugio/node_control_interface.h>
 #include <fugio/pin_control_interface.h>
 #include <fugio/context_interface.h>
+#include <fugio/context_signals.h>
 #include <fugio/utils.h>
 
 PinPrivate::PinPrivate( void )
-	: mContext( 0 ), mGlobalId( QUuid::createUuid() ), mLocalId( QUuid::createUuid() ), mDirection( PIN_UNKNOWN ),
+	: mContext( 0 ), mNode( 0 ), mGlobalId( QUuid::createUuid() ), mLocalId( QUuid::createUuid() ), mDirection( PIN_UNKNOWN ),
 	  mUpdated( 0 ), mOrder( -1 ), mFlags( Updatable )
 {
 }
 
 PinPrivate::~PinPrivate( void )
 {
-	if( mContext != 0 )
+	if( mContext )
 	{
 		mContext->unregisterPin( mGlobalId );
 	}
@@ -119,7 +120,7 @@ void PinPrivate::setAutoRename( bool pAutoRename )
 
 QList< QSharedPointer<fugio::PinInterface> > PinPrivate::connectedPins( void ) const
 {
-	return( mContext->connections( mGlobalId ) );
+	return( mContext ? mContext->connections( mGlobalId ) : QList< QSharedPointer<fugio::PinInterface> >() );
 }
 
 void PinPrivate::setSetting( const QString &pKey, const QVariant &pValue )
@@ -154,7 +155,7 @@ qint64 PinPrivate::updated( void ) const
 
 bool PinPrivate::isConnected( void ) const
 {
-	return( mContext->isConnected( mGlobalId ) );
+	return( mContext ? mContext->isConnected( mGlobalId ) : false );
 }
 
 bool PinPrivate::isConnectedToActiveNode() const
@@ -237,15 +238,15 @@ void PinPrivate::update( qint64 pTimeStamp, bool pUpdatedConnectedNode )
 
 			DstPin->mUpdated = qMax( pTimeStamp, DstPin->mUpdated );
 
-			if( pUpdatedConnectedNode )
+			if( pUpdatedConnectedNode && mContext )
 			{
-				mContext->updateNode( DstPin->node() );
+				mContext->updateNode( mContext->findNode( DstPin->node()->uuid() ) );
 			}
 		}
 	}
 	else if( mDirection == PIN_INPUT )
 	{
-		mContext->updateNode( node() );
+		mContext->updateNode( mContext->findNode( node()->uuid() ) );
 	}
 }
 
@@ -368,18 +369,18 @@ void PinPrivate::saveSettings( QSettings &pSettings ) const
 	pSettings.endGroup();
 }
 
-QSharedPointer<fugio::NodeInterface> PinPrivate::node( void )
+fugio::NodeInterface *PinPrivate::node( void )
 {
-	return( mNode.toStrongRef() );
+	return( mNode );
 }
 
-QSharedPointer<fugio::NodeInterface> PinPrivate::connectedNode( void )
+fugio::NodeInterface *PinPrivate::connectedNode( void )
 {
 	QSharedPointer<fugio::PinInterface>		ConnectedPin = connectedPin();
 
 	if( ConnectedPin.isNull() )
 	{
-		return( QSharedPointer<fugio::NodeInterface>() );
+		return( nullptr );
 	}
 
 	return( ConnectedPin->node() );
@@ -389,13 +390,37 @@ QSharedPointer<fugio::PinInterface> PinPrivate::connectedPin() const
 {
 	//Q_ASSERT( direction() == PIN_INPUT );
 
-	QList< QSharedPointer<fugio::PinInterface> >	PinLst = mContext->connections( globalId() );
+	QList< QSharedPointer<fugio::PinInterface> >	PinLst;
+
+	if( mContext )
+	{
+		PinLst = mContext->connections( globalId() );
+	}
 
 	return( PinLst.empty() ? QSharedPointer<fugio::PinInterface>() : PinLst.first() );
 }
 
 void PinPrivate::setContext( fugio::ContextInterface *pContext )
 {
+	Q_ASSERT( mNode );
+
+	if( pContext && !mContext )
+	{
+		QUuid			OldGlobalId = mGlobalId;
+		QUuid			NewGlobalId = pContext->findPin( mGlobalId ).isNull() ? OldGlobalId : QUuid::createUuid();
+
+		if( OldGlobalId != NewGlobalId )
+		{
+			mGlobalId = NewGlobalId;
+
+			emit renamed( OldGlobalId, NewGlobalId );
+		}
+
+		pContext->registerPin( mNode->findPinByLocalId( mLocalId ) );
+
+		emit pContext->qobject()->pinRenamed( mNode->uuid(), OldGlobalId, NewGlobalId );
+	}
+
 	mContext = pContext;
 }
 
@@ -406,7 +431,10 @@ void PinPrivate::setGlobalId( const QUuid &pUUID )
 		return;
 	}
 
-	mContext->renamePin( mGlobalId, pUUID );
+	if( mContext )
+	{
+		mContext->renamePin( mGlobalId, pUUID );
+	}
 
 	emit renamed( mGlobalId, pUUID );
 
@@ -426,7 +454,10 @@ void PinPrivate::setName( const QString &pName )
 
 		emit nameChanged( mName );
 
-		emit PinSignals::nameChanged( mContext->findPin( globalId() ) );
+		if( mContext )
+		{
+			emit PinSignals::nameChanged( mContext->findPin( globalId() ) );
+		}
 	}
 }
 
@@ -445,7 +476,7 @@ void PinPrivate::setDirection( PinDirection pDirection )
 	mDirection = pDirection;
 }
 
-void PinPrivate::setNode( QSharedPointer<fugio::NodeInterface> pNode )
+void PinPrivate::setNode( fugio::NodeInterface *pNode )
 {
 	mNode = pNode;
 }

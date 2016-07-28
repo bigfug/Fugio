@@ -15,7 +15,7 @@ SwitchNode::SwitchNode( QSharedPointer<fugio::NodeInterface> pNode )
 	pinInput( "Input1" );
 	pinInput( "Input2" );
 
-	if( ( mPinOutputValue = mNode->context()->global()->createPin( "OutputValue", next_uuid(), mNode, PIN_OUTPUT ) ) != 0 )
+	if( ( mPinOutputValue = mNode->createPin( "OutputValue", PIN_OUTPUT, next_uuid() ) ) != 0 )
 	{
 		mNode->addPin( mPinOutputValue );
 	}

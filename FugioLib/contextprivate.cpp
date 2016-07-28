@@ -117,23 +117,12 @@ bool ContextPrivate::load( const QString &pFileName, bool pPartial )
 		CFG.endGroup();
 	}
 
-	QList< QSharedPointer<fugio::NodeInterface> >		NewNodeList;
-
 	if( VER == 2 )
 	{
-		RET = loadSettings( CFG, NewNodeList, pPartial );
+		RET = loadSettings( CFG, pPartial );
 	}
 
 	//-------------------------------------------------------------------------
-
-//	QList< QSharedPointer<fugio::NodeInterface> >		InitialisedNodes;
-
-//	processDeferredNodes( NewNodeList, InitialisedNodes );
-
-//	for( QSharedPointer<fugio::NodeInterface> N : InitialisedNodes )
-//	{
-//		emit nodeComplete( N->uuid() );
-//	}
 
 	processDeferredNodes();
 
@@ -214,7 +203,7 @@ void ContextPrivate::loadNodeSettings( QSettings &pSettings, QVariantHash &pVarH
 	}
 }
 
-bool ContextPrivate::loadSettings( QSettings &pSettings, QList< QSharedPointer<fugio::NodeInterface> > &pNewNodeList, bool pPartial )
+bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 {
 	QSettings		CFG( pSettings.fileName(), pSettings.format() );
 
@@ -251,7 +240,7 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, QList< QSharedPointer<f
 			CFG.endGroup();
 		}
 
-		QSharedPointer<fugio::NodeInterface>	N = mApp->createNode( this, NodeName, ControlUuid, NodeOrigUuid, NodeData );
+		QSharedPointer<fugio::NodeInterface>	N = mApp->createNode( NodeName, ControlUuid, NodeData );
 
 		if( !N )
 		{
@@ -259,8 +248,6 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, QList< QSharedPointer<f
 
 			continue;
 		}
-
-		pNewNodeList.append( N );
 
 		if( NodeOrigUuid != NodeUuid )
 		{
@@ -273,7 +260,7 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, QList< QSharedPointer<f
 #endif
 		}
 
-		NodeMap.insert( N->uuid(), NodeUuid );
+		NodeMap.insert( N->uuid(), NodeOrigUuid );
 	}
 
 	pSettings.endGroup();
@@ -291,6 +278,8 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, QList< QSharedPointer<f
 			N->loadSettings( pSettings, PinsMap, pPartial );
 
 			pSettings.endGroup();
+
+			registerNode( N, NodeMap.value( N->uuid() ) );
 		}
 	}
 
@@ -560,11 +549,6 @@ void ContextPrivate::setMetaInfo(fugio::ContextInterface::MetaInfo pType, const 
 	emit metaInfoChanged( pType, pMetaData );
 }
 
-QSharedPointer<fugio::NodeInterface> ContextPrivate::createNode( const QString &pName, const QUuid &pUUID )
-{
-	return( mApp->createNode( this, pName, pUUID, QUuid() ) );
-}
-
 void ContextPrivate::registerPlayhead( fugio::PlayheadInterface *pPlayHead )
 {
 	mPlayheadList.removeAll( pPlayHead );
@@ -584,10 +568,17 @@ bool ContextPrivate::isPlaying( void ) const
 
 void ContextPrivate::registerNode( QSharedPointer<fugio::NodeInterface> pNode, const QUuid &pOrigId )
 {
+	QUuid			OrigId = pNode->uuid();
+
 	if( mNodeHash.contains( pNode->uuid() ) )
 	{
-		return;
+		if( NodePrivate *NP = qobject_cast<NodePrivate *>( pNode->qobject() ) )
+		{
+			NP->setUuid( QUuid::createUuid() );
+		}
 	}
+
+	pNode->setContext( this );
 
 	mNodeHash.insert( pNode->uuid(), pNode );
 
@@ -602,7 +593,9 @@ void ContextPrivate::registerNode( QSharedPointer<fugio::NodeInterface> pNode, c
 
 	addDeferredNode( pNode );
 
-	emit nodeAdded( pNode->uuid(), pOrigId );
+	mNodeDeferProcess = true;
+
+	emit nodeAdded( pNode->uuid(), OrigId );
 }
 
 void ContextPrivate::unregisterNode( const QUuid &pUUID )
@@ -633,6 +626,8 @@ void ContextPrivate::unregisterNode( const QUuid &pUUID )
 		}
 
 		Node->setStatus( fugio::NodeInterface::Initialising );
+
+		Node->setContext( nullptr );
 	}
 
 	emit nodeRemoved( pUUID );

@@ -24,9 +24,9 @@ void JoinPin::oscJoin( QStringList pPath, const QVariant &pValue )
 
 	if( mPin->direction() == PIN_OUTPUT )
 	{
-		QSharedPointer<fugio::NodeInterface>	 NI = mPin->connectedNode();
+		fugio::NodeInterface			*NI = mPin->connectedNode();
 
-		fugio::osc::JoinInterface				*JI = qobject_cast<fugio::osc::JoinInterface *>( NI && NI->hasControl() ? NI->control()->qobject() : nullptr );
+		fugio::osc::JoinInterface		*JI = qobject_cast<fugio::osc::JoinInterface *>( NI && NI->hasControl() ? NI->control()->qobject() : nullptr );
 
 		if( JI )
 		{
@@ -39,7 +39,7 @@ void JoinPin::oscPath( QStringList &pPath ) const
 {
 	pPath.prepend( mPin->name() );
 
-	QSharedPointer<fugio::NodeInterface>	 NI;
+	fugio::NodeInterface		*NI;
 
 	if( mPin->direction() == PIN_OUTPUT )
 	{

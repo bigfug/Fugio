@@ -47,7 +47,7 @@ public:
 		{
 			mContextWidget->saveRecovery();
 			
-			mNode = mContext->createNode( mName, mUuid );
+			mNode = mContext->global()->createNode( mName, mUuid );
 
 			if( mNode )
 			{

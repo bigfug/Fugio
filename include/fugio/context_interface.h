@@ -79,8 +79,6 @@ public:
 	//-------------------------------------------------------------------------
 	// Nodes
 
-	virtual QSharedPointer<fugio::NodeInterface> createNode( const QString &pName, const QUuid &pUUID ) = 0;
-
 	virtual void registerNode( QSharedPointer<fugio::NodeInterface> pNode, const QUuid &pOrigId ) = 0;
 
 	virtual void unregisterNode( const QUuid &pUUID ) = 0;
