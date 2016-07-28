@@ -517,6 +517,8 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 	//-------------------------------------------------------------------------
 	// Groups
 
+	QMap<QUuid,QUuid>		GroupIdMap;
+
 	if( pSettings.childGroups().contains( "groups" ) )
 	{
 		pSettings.beginGroup( "groups" );
@@ -581,6 +583,8 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 					continue;
 				}
 
+				GroupIdMap.insert( OrigId, NodeId );
+
 				if( !mGroupIds.contains( NodeId ) )
 				{
 					mGroupIds << NodeId;
@@ -595,7 +599,10 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 				{
 					NI->setName( GroupName );
 
-					NI->setGroupId( groupId() );
+					if( pPartial )
+					{
+						NI->setGroupId( groupId() );
+					}
 
 					NI->setIsGroup( true );
 
@@ -626,6 +633,13 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 			QColor		Col  = pSettings.value( "colour", noteColour() ).value<QColor>();
 			QUuid		Id   = fugio::utils::string2uuid( pSettings.value( "uuid", fugio::utils::uuid2string( QUuid::createUuid() ) ).toString() );
 			QUuid		GroupId = fugio::utils::string2uuid( pSettings.value( "group", fugio::utils::uuid2string( QUuid() ) ).toString() );
+
+			if( pPartial )
+			{
+				GroupId = GroupIdMap.value( GroupId );
+
+				Id = QUuid::createUuid();
+			}
 
 			QPointF		Pos  = pSettings.value( "position" ).toPointF();
 
@@ -670,6 +684,11 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 			}
 
 			QUuid	GID = fugio::utils::string2uuid( pSettings.value( KS ).toString() );
+
+			if( pPartial )
+			{
+				GID = GroupIdMap.value( GID );
+			}
 
 			if( QSharedPointer<NodeItem> NI = mNodeList.value( KID ) )
 			{
