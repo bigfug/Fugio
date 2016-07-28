@@ -576,27 +576,31 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 				pSettings.setArrayIndex( i );
 
 				const QString		GroupName = pSettings.value( "name" ).toString();
-				const QUuid			GroupId   = fugio::utils::string2uuid( pSettings.value( "uuid" ).toString() );
+				const QUuid			OrigId    = fugio::utils::string2uuid( pSettings.value( "uuid" ).toString() );
+				const QUuid			NodeId    = ( pPartial ? QUuid::createUuid() : OrigId );
+
 				//const QTransform	Transform = pSettings.value( "transform" ).value<QTransform>();
 
-				if( GroupId.isNull() )
+				if( NodeId.isNull() )
 				{
 					continue;
 				}
 
-				if( !mGroupIds.contains( GroupId ) )
+				if( !mGroupIds.contains( NodeId ) )
 				{
-					mGroupIds << GroupId;
+					mGroupIds << NodeId;
 				}
 
-				if( !mNodeList.contains( GroupId ) )
+				if( !mNodeList.contains( NodeId ) )
 				{
-					nodeAdded( GroupId, GroupId );
+					nodeAdded( NodeId, OrigId );
 				}
 
-				if( QSharedPointer<NodeItem> NI = mNodeList.value( GroupId ) )
+				if( QSharedPointer<NodeItem> NI = mNodeList.value( NodeId ) )
 				{
 					NI->setName( GroupName );
+
+					NI->setGroupId( groupId() );
 
 					NI->setIsGroup( true );
 
@@ -835,6 +839,11 @@ void ContextView::saveContext( QSettings &pSettings ) const
 		pSettings.setValue( "name", Node->name() );
 		pSettings.setValue( "uuid", fugio::utils::uuid2string( GID ) );
 		pSettings.setValue( "transform", QTransform() );
+
+		if( !Node->groupId().isNull() )
+		{
+			pSettings.setValue( "group", fugio::utils::uuid2string( Node->groupId() ) );
+		}
 	}
 
 	pSettings.endArray();
@@ -1420,41 +1429,23 @@ void ContextView::setGroupId( QUuid GroupId )
 	updateItemVisibility();
 }
 
-void ContextView::setSelectedColour(const QColor &pColor)
+void ContextView::setSelectedColour( const QColor &pColor )
 {
-	QList<NodeItem *>  NodeList;
-	QList<NodeItem *>  GroupList;
-	QList<LinkItem *>  LinkList;
-	QList<NoteItem *>  NoteList;
+	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, true );
 
-	sortSelectedItems( NodeList, GroupList, LinkList, NoteList, false );
-
-	//CmdSetColour	*CMD = new CmdSetColour( )
-	for( NodeItem *I : NodeList )
+	if( mNodeItemList.isEmpty() && mGroupItemList.isEmpty() && mLinkItemList.isEmpty() && mNoteItemList.isEmpty() )
 	{
-		if( I->isSelected() )
-		{
-			I->setColour( pColor );
-		}
+		return;
 	}
 
-	for( LinkItem *I : LinkList )
+	CmdSetColour	*CMD = new CmdSetColour( pColor, mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList );
+
+	if( CMD )
 	{
-		if( I->isSelected() )
-		{
-			I->setColour( pColor );
-		}
+		widget()->undoStack()->push( CMD );
 	}
 
-	for( NoteItem *N : NoteList )
-	{
-		if( N->isSelected() )
-		{
-			N->setBackgroundColour( pColor );
-
-			N->update();
-		}
-	}
+	clearTempLists();
 }
 
 void ContextView::updatePastePoint(QList<NodeItem *> NodeItemList, QList<NoteItem *> NoteItemList)
@@ -1570,7 +1561,7 @@ void ContextView::cut()
 
 	CmdRemove		*Cmd = new CmdRemove( this, NodeList, GroupList, LinkList, NoteList, NodeGroups );
 
-	if( Cmd != 0 )
+	if( Cmd )
 	{
 		widget()->undoStack()->push( Cmd );
 	}
@@ -1587,27 +1578,22 @@ void ContextView::copy()
 
 	resetPasteOffset();
 
-	QList<NodeItem *>  NodeItemList;
-	QList<NodeItem *>  GroupItemList;
-	QList<LinkItem *>  LinkItemList;
-	QList<NoteItem *>  NoteItemList;
+	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, true );
 
-	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList, true );
-
-	if( NodeItemList.isEmpty() && LinkItemList.isEmpty() && NoteItemList.isEmpty() )
+	if( mNodeItemList.isEmpty() && mGroupItemList.isEmpty() && mLinkItemList.isEmpty() && mNoteItemList.isEmpty() )
 	{
 		return;
 	}
 
-	QList<QUuid>	NodeList = nodeItemIds( NodeItemList );
+	QList<QUuid>	NodeList = nodeItemIds( mNodeItemList );
 
-	updatePastePoint( NodeItemList, NoteItemList );
+	updatePastePoint( mNodeItemList, mNoteItemList );
 
 	mSaveOnlySelected = true;
 
 	const QString		TempFile = QDir( QDir::tempPath() ).absoluteFilePath( "fugio-copy.tmp" );
 
-	//qDebug() << TempFile;
+	qDebug() << TempFile;
 
 	if( C->save( TempFile, &NodeList ) )
 	{
@@ -1621,9 +1607,11 @@ void ContextView::copy()
 		}
 	}
 
-	QFile::remove( TempFile );
+	//QFile::remove( TempFile );
 
 	mSaveOnlySelected = false;
+
+	clearTempLists();
 }
 
 void ContextView::saveSelectedTo( const QString &pFileName )
@@ -1637,19 +1625,14 @@ void ContextView::saveSelectedTo( const QString &pFileName )
 
 	resetPasteOffset();
 
-	QList<NodeItem *>  NodeItemList;
-	QList<NodeItem *>  GroupItemList;
-	QList<LinkItem *>  LinkItemList;
-	QList<NoteItem *>  NoteItemList;
+	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, true );
 
-	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList, true );
-
-	if( NodeItemList.isEmpty() && LinkItemList.isEmpty() && NoteItemList.isEmpty() )
+	if( mNodeItemList.isEmpty() && mGroupItemList.isEmpty() && mLinkItemList.isEmpty() && mNoteItemList.isEmpty() )
 	{
 		return;
 	}
 
-	QList<QUuid>	NodeList = nodeItemIds( NodeItemList );
+	QList<QUuid>	NodeList = nodeItemIds( mNodeItemList );
 
 	mSaveOnlySelected = true;
 
@@ -1658,6 +1641,8 @@ void ContextView::saveSelectedTo( const QString &pFileName )
 	}
 
 	mSaveOnlySelected = false;
+
+	clearTempLists();
 }
 
 void ContextView::paste()
@@ -2321,14 +2306,9 @@ void ContextView::ungroup( NodeItem *GI )
 
 void ContextView::groupSelected()
 {
-	QList<NodeItem *>  NodeItemList;
-	QList<NodeItem *>  GroupItemList;
-	QList<LinkItem *>  LinkItemList;
-	QList<NoteItem *>  NoteItemList;
+	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, true );
 
-	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList, false );
-
-	if( NodeItemList.isEmpty() && GroupItemList.isEmpty() && NoteItemList.isEmpty() )
+	if( mNodeItemList.isEmpty() && mGroupItemList.isEmpty() && mLinkItemList.isEmpty() && mNoteItemList.isEmpty() )
 	{
 		return;
 	}
@@ -2342,31 +2322,28 @@ void ContextView::groupSelected()
 		GroupName = DefaultGroupName;
 	}
 
-	CmdGroup	*CMD = new CmdGroup( this, GroupName, NodeItemList, GroupItemList, NoteItemList );
+	CmdGroup	*CMD = new CmdGroup( this, GroupName, mNodeItemList, mGroupItemList, mNoteItemList );
 
 	if( CMD )
 	{
 		widget()->undoStack()->push( CMD );
 	}
+
+	clearTempLists();
 }
 
 void ContextView::ungroupSelected()
 {
-	QList<NodeItem *>  NodeItemList;
-	QList<NodeItem *>  GroupItemList;
-	QList<LinkItem *>  LinkItemList;
-	QList<NoteItem *>  NoteItemList;
+	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, true );
 
-	sortSelectedItems( NodeItemList, GroupItemList, LinkItemList, NoteItemList, false );
-
-	if( NodeItemList.isEmpty() && NoteItemList.isEmpty() )
+	if( mNodeItemList.isEmpty() && mGroupItemList.isEmpty() && mLinkItemList.isEmpty() && mNoteItemList.isEmpty() )
 	{
 		return;
 	}
 
 	// TODO: Add Undo
 
-	for( NodeItem *NI : NodeItemList )
+	for( NodeItem *NI : mNodeItemList )
 	{
 		if( !mContext->findNode( NI->id() ) )
 		{
@@ -2380,6 +2357,8 @@ void ContextView::ungroupSelected()
 //	{
 //		widget()->undoStack()->push( CMD );
 //	}
+
+	clearTempLists();
 }
 
 void ContextView::groupParent()

@@ -15,45 +15,29 @@
 class CmdSetColour : public QUndoCommand
 {
 public:
-	explicit CmdSetColour( QList<QWeakPointer<NodeItem>> &pNodeList, QList<QWeakPointer<LinkItem>> &pLinkList, QList<QWeakPointer<NoteItem>> &pNoteList, const QColor &pColour )
+	explicit CmdSetColour( const QColor &pColour, QList<NodeItem *> pNodeList, QList<NodeItem *> pGroupList, QList<LinkItem *> pLinkList, QList<NoteItem *> pNoteList )
 		: mColour( pColour )
 	{
 		setText( QObject::tr( "Change colour of Nodes/Links" ) );
 
-		for( QWeakPointer<NodeItem> W : pNodeList )
+		for( NodeItem *I : pNodeList )
 		{
-			QSharedPointer<NodeItem>	 P = W.toStrongRef();
-
-			if( !P )
-			{
-				continue;
-			}
-
-			mNodeList << QPair<QWeakPointer<NodeItem>,QColor>( W, P->colour() );
+			mNodeMap.insert( I, I->colour() );
 		}
 
-		for( QWeakPointer<LinkItem> W : pLinkList )
+		for( NodeItem *I : pGroupList )
 		{
-			QSharedPointer<LinkItem>	 P = W.toStrongRef();
-
-			if( !P )
-			{
-				continue;
-			}
-
-			mLinkList << QPair<QWeakPointer<LinkItem>,QColor>( W, P->colour() );
+			mGroupMap.insert( I, I->colour() );
 		}
 
-		for( QWeakPointer<NoteItem> W : pNoteList )
+		for( LinkItem *I : pLinkList )
 		{
-			QSharedPointer<NoteItem>	 P = W.toStrongRef();
+			mLinkMap.insert( I, I->colour() );
+		}
 
-			if( !P )
-			{
-				continue;
-			}
-
-			mNoteList << QPair<QWeakPointer<NoteItem>,QColor>( W, P->backgroundColour() );
+		for( NoteItem *N : pNoteList )
+		{
+			mNoteMap.insert( N, N->backgroundColour() );
 		}
 	}
 
@@ -64,87 +48,61 @@ public:
 
 	virtual void undo( void )
 	{
-		for( QPair<QWeakPointer<NodeItem>,QColor> E : mNodeList )
+		for( QMap<NodeItem *,QColor>::iterator it = mNodeMap.begin() ; it != mNodeMap.end() ; it++ )
 		{
-			QSharedPointer<NodeItem>	 P = E.first.toStrongRef();
-
-			if( !P )
-			{
-				continue;
-			}
-
-			P->setColour( E.second );
+			it.key()->setColour( it.value() );
 		}
 
-		for( QPair<QWeakPointer<LinkItem>,QColor> E : mLinkList )
+		for( QMap<NodeItem *,QColor>::iterator it = mGroupMap.begin() ; it != mGroupMap.end() ; it++ )
 		{
-			QSharedPointer<LinkItem>	 P = E.first.toStrongRef();
-
-			if( !P )
-			{
-				continue;
-			}
-
-			P->setColour( E.second );
+			it.key()->setColour( it.value() );
 		}
 
-		for( QPair<QWeakPointer<NoteItem>,QColor> E : mNoteList )
+		for( QMap<LinkItem *,QColor>::iterator it = mLinkMap.begin() ; it != mLinkMap.end() ; it++ )
 		{
-			QSharedPointer<NoteItem>	 P = E.first.toStrongRef();
+			it.key()->setColour( it.value() );
+		}
 
-			if( !P )
-			{
-				continue;
-			}
+		for( QMap<NoteItem *,QColor>::iterator it = mNoteMap.begin() ; it != mNoteMap.end() ; it++ )
+		{
+			it.key()->setBackgroundColour( it.value() );
 
-			P->setBackgroundColour( E.second );
+			it.key()->update();
 		}
 	}
 
 	virtual void redo( void )
 	{
-		for( QPair<QWeakPointer<NodeItem>,QColor> E : mNodeList )
+		for( QMap<NodeItem *,QColor>::iterator it = mNodeMap.begin() ; it != mNodeMap.end() ; it++ )
 		{
-			QSharedPointer<NodeItem>	 P = E.first.toStrongRef();
-
-			if( !P )
-			{
-				continue;
-			}
-
-			P->setColour( mColour );
+			it.key()->setColour( mColour );
 		}
 
-		for( QPair<QWeakPointer<LinkItem>,QColor> E : mLinkList )
+		for( QMap<NodeItem *,QColor>::iterator it = mGroupMap.begin() ; it != mGroupMap.end() ; it++ )
 		{
-			QSharedPointer<LinkItem>	 P = E.first.toStrongRef();
-
-			if( !P )
-			{
-				continue;
-			}
-
-			P->setColour( mColour );
+			it.key()->setColour( mColour );
 		}
 
-		for( QPair<QWeakPointer<NoteItem>,QColor> E : mNoteList )
+		for( QMap<LinkItem *,QColor>::iterator it = mLinkMap.begin() ; it != mLinkMap.end() ; it++ )
 		{
-			QSharedPointer<NoteItem>	 P = E.first.toStrongRef();
+			it.key()->setColour( mColour );
+		}
 
-			if( !P )
-			{
-				continue;
-			}
+		for( QMap<NoteItem *,QColor>::iterator it = mNoteMap.begin() ; it != mNoteMap.end() ; it++ )
+		{
+			it.key()->setBackgroundColour( mColour );
 
-			P->setBackgroundColour( mColour );
+			it.key()->update();
 		}
 	}
 
 private:
-	QList<QPair<QWeakPointer<NodeItem>,QColor>>			 mNodeList;
-	QList<QPair<QWeakPointer<LinkItem>,QColor>>			 mLinkList;
-	QList<QPair<QWeakPointer<NoteItem>,QColor>>			 mNoteList;
-	QColor												 mColour;
+	QColor									 mColour;
+
+	QMap<NodeItem *,QColor>					 mNodeMap;
+	QMap<NodeItem *,QColor>					 mGroupMap;
+	QMap<LinkItem *,QColor>					 mLinkMap;
+	QMap<NoteItem *,QColor>					 mNoteMap;
 };
 
 #endif // CMDSETCOLOUR_H

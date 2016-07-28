@@ -429,10 +429,10 @@ private:
 
 	QUuid									 m_GroupId;
 
-	QList<NodeItem *>						mNodeItemList;
-	QList<NodeItem *>						mGroupItemList;
-	QList<LinkItem *>						mLinkItemList;
-	QList<NoteItem *>						mNoteItemList;
+	QList<NodeItem *>						 mNodeItemList;
+	QList<NodeItem *>						 mGroupItemList;
+	QList<LinkItem *>						 mLinkItemList;
+	QList<NoteItem *>						 mNoteItemList;
 };
 
 #endif // CONTEXTVIEW_H
