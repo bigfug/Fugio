@@ -768,7 +768,7 @@ void ContextView::saveContext( QSettings &pSettings ) const
 	{
 		QSharedPointer<NodeItem>	Node = mNodeList[ Uuid ];
 
-		if( mSaveOnlySelected && !Node->isSelected() )
+		if( mSaveOnlySelected && !mNodeItemList.contains( Node.data() ) && !mGroupItemList.contains( Node.data() ) )
 		{
 			continue;
 		}
@@ -791,7 +791,7 @@ void ContextView::saveContext( QSettings &pSettings ) const
 	{
 		QSharedPointer<NoteItem>	Note = mNoteList.at( i );
 
-		if( mSaveOnlySelected && !Note->isSelected() )
+		if( mSaveOnlySelected && !mNoteItemList.contains( Note.data() ) )
 		{
 			continue;
 		}
@@ -829,7 +829,7 @@ void ContextView::saveContext( QSettings &pSettings ) const
 		const QUuid					GID  = mGroupIds[ i ];
 		QSharedPointer<NodeItem>	Node = mNodeList[ GID ];
 
-		if( !Node || ( mSaveOnlySelected && !Node->isSelected() ) )
+		if( !Node || ( mSaveOnlySelected && !mGroupItemList.contains( Node.data() ) ) )
 		{
 			continue;
 		}
@@ -877,9 +877,16 @@ void ContextView::saveContext( QSettings &pSettings ) const
 
 	for( const QUuid &K : mNodeList.keys() )
 	{
-		QUuid	G = mNodeList[ K ]->groupId();
+		QSharedPointer<NodeItem>	Node = mNodeList[ K ];
+
+		QUuid	G = Node->groupId();
 
 		if( G.isNull() )
+		{
+			continue;
+		}
+
+		if( mSaveOnlySelected && !mNodeItemList.contains( Node.data() ) && !mGroupItemList.contains( Node.data() ) )
 		{
 			continue;
 		}
@@ -900,7 +907,7 @@ void ContextView::saveContext( QSettings &pSettings ) const
 	{
 		QSharedPointer<NodeItem>	NI = it.value();
 
-		if( mSaveOnlySelected && !NI->isSelected() )
+		if( mSaveOnlySelected && !mNodeItemList.contains( NI.data() ) && !mGroupItemList.contains( NI.data() ) )
 		{
 			continue;
 		}
