@@ -22,7 +22,7 @@ MidiNoteNode::MidiNoteNode( QSharedPointer<fugio::NodeInterface> pNode ) :
 
 void MidiNoteNode::inputsUpdated( qint64 pTimeStamp )
 {
-	const int Channel = qBound( 0, variant( mPinChannel ).toInt(), 15 );
+	const int Channel = qBound( 1, variant( mPinChannel ).toInt(), 16 ) - 1;
 
 	for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
 	{
