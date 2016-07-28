@@ -50,13 +50,15 @@ void FloatThresholdNode::inputsUpdated( qint64 pTimeStamp )
 		const float			PinVal = variant( PinI ).toFloat();
 		const bool			PinRes = PinVal >= Threshold;
 
-		if( VarO->variant().toBool() != PinRes )
+		if( !mLastTime || VarO->variant().toBool() != PinRes )
 		{
 			VarO->setVariant( PinRes );
 
 			pinUpdated( PinO );
 		}
 	}
+
+	mLastTime = pTimeStamp;
 }
 
 QList<QUuid> FloatThresholdNode::pinAddTypesInput() const
@@ -84,4 +86,17 @@ bool FloatThresholdNode::pinShouldAutoRename( fugio::PinInterface *pPin ) const
 QUuid FloatThresholdNode::pairedPinControlUuid( QSharedPointer<fugio::PinInterface> pPin ) const
 {
 	return( pPin->direction() == PIN_OUTPUT ? PID_FLOAT : PID_BOOL );
+}
+
+
+bool FloatThresholdNode::initialise()
+{
+	if( !NodeControlBase::initialise() )
+	{
+		return( false );
+	}
+
+	mLastTime = 0;
+
+	return( true );
 }
