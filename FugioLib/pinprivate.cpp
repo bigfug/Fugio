@@ -246,7 +246,10 @@ void PinPrivate::update( qint64 pTimeStamp, bool pUpdatedConnectedNode )
 	}
 	else if( mDirection == PIN_INPUT )
 	{
-		mContext->updateNode( mContext->findNode( node()->uuid() ) );
+		if( mContext )
+		{
+			mContext->updateNode( mContext->findNode( node()->uuid() ) );
+		}
 	}
 }
 
@@ -419,6 +422,11 @@ void PinPrivate::setContext( fugio::ContextInterface *pContext )
 		pContext->registerPin( mNode->findPinByLocalId( mLocalId ) );
 
 		emit pContext->qobject()->pinRenamed( mNode->uuid(), OldGlobalId, NewGlobalId );
+	}
+
+	if( !pContext && mContext )
+	{
+		mContext->unregisterPin( mGlobalId );
 	}
 
 	mContext = pContext;

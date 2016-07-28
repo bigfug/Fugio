@@ -1210,6 +1210,11 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 	QSharedPointer<fugio::PinInterface>		 Pin1 = mContext->findPin( pPinId1 );
 	QSharedPointer<fugio::PinInterface>		 Pin2 = mContext->findPin( pPinId2 );
 
+	if( !Pin1 || !Pin2 )
+	{
+		return;
+	}
+
 	fugio::NodeInterface					*Node1 = Pin1->node();
 	fugio::NodeInterface					*Node2 = Pin2->node();
 
@@ -1308,6 +1313,11 @@ void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 {
 	QSharedPointer<fugio::PinInterface>		 Pin1 = mContext->findPin( pPinId1 );
 	QSharedPointer<fugio::PinInterface>		 Pin2 = mContext->findPin( pPinId2 );
+
+	if( !Pin1 || !Pin2 )
+	{
+		return;
+	}
 
 	fugio::NodeInterface					*Node1 = Pin1->node();
 	fugio::NodeInterface					*Node2 = Pin2->node();

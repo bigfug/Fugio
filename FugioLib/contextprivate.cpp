@@ -705,22 +705,29 @@ QSharedPointer<fugio::NodeInterface> ContextPrivate::findNode( const QString &pN
 
 void ContextPrivate::registerPin( QSharedPointer<fugio::PinInterface> pPin )
 {
-	if( mPinHash.contains( pPin->globalId() ) )
+	if( !mPinHash.contains( pPin->globalId() ) )
 	{
-		return;
+		mPinHash.insert( pPin->globalId(), pPin );
 	}
-
-	mPinHash.insert( pPin->globalId(), pPin );
 }
 
 void ContextPrivate::unregisterPin( const QUuid &pUUID )
 {
-	if( !mPinHash.contains( pUUID ) )
+	QSharedPointer<fugio::PinInterface>		PinInt = findPin( pUUID );
+
+	if( PinInt )
 	{
-		return;
+		mUpdatePinMapMutex.lock();
+
+		mUpdatePinMap.remove( PinInt );
+
+		mUpdatePinMapMutex.unlock();
 	}
 
-	mPinHash.remove( pUUID );
+	if( mPinHash.contains( pUUID ) )
+	{
+		mPinHash.remove( pUUID );
+	}
 }
 
 void ContextPrivate::renamePin( const QUuid &pUUID1, const QUuid &pUUID2 )
