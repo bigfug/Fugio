@@ -35,32 +35,37 @@ public:
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
 
-	virtual QWidget *gui( void );
+	virtual QWidget *gui( void ) Q_DECL_OVERRIDE;
 
-	virtual bool initialise( void );
+	virtual bool initialise( void ) Q_DECL_OVERRIDE;
 
-	virtual bool deinitialise( void );
+	virtual bool deinitialise( void ) Q_DECL_OVERRIDE;
 
-	virtual void inputsUpdated( qint64 pTimeStamp );
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
-	virtual QList<QUuid> pinAddTypesInput() const;
+	virtual QList<QUuid> pinAddTypesInput() const Q_DECL_OVERRIDE;
 
-	virtual bool canAcceptPin(fugio::PinInterface *pPin) const;
+	virtual bool canAcceptPin(fugio::PinInterface *pPin) const Q_DECL_OVERRIDE;
+
+	virtual bool pinShouldAutoRename(fugio::PinInterface *pPin) const Q_DECL_OVERRIDE;
 
 protected slots:
 	void onShowClicked( void );
 
-	void onContextFrame( qint64 pTimeStamp );
+	void updateNodeName( const QString &pName );
+
+signals:
+	void nodeNameUpdated( const QString &pName );
 
 private:
-	QSharedPointer<fugio::PinInterface>			 mPinValue;
+	QSharedPointer<fugio::PinInterface>		 mPinInputTrigger;
+
+	QSharedPointer<fugio::PinInterface>		 mPinInputValue;
 
 	QDockWidget								*mDockWidget;
 	NumberMonitorForm						*mMonitor;
 
 	Qt::DockWidgetArea						 mDockArea;
-
-	qint64									 mLastTime;
 };
 
 #endif // NUMBERMONITORNODE_H

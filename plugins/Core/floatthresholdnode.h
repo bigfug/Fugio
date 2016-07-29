@@ -22,7 +22,10 @@ public:
 
 	virtual ~FloatThresholdNode( void ) {}
 
+
 	// NodeControlInterface interface
+public:
+	virtual bool initialise() Q_DECL_OVERRIDE;
 
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
@@ -38,6 +41,8 @@ public:
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputThreshold;
+
+	qint64										 mLastTime;
 };
 
 #endif // FLOATTHRESHOLDNODE_H

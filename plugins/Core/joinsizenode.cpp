@@ -21,7 +21,7 @@ void JoinSizeNode::inputsUpdated( qint64 pTimeStamp )
 	QSizeF			CurSze = mSize->variant().toSizeF();
 	QSizeF			NewSze = QSizeF( NewW, NewH );
 
-	if( !pTimeStamp || CurSze != NewSze )
+	if( CurSze != NewSze )
 	{
 		mSize->setVariant( NewSze );
 

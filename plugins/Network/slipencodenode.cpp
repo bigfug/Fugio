@@ -2,6 +2,7 @@
 
 #include <fugio/core/uuid.h>
 #include <fugio/core/list_interface.h>
+#include <fugio/performance.h>
 
 #define END             0300    /* indicates end of packet */
 #define ESC             0333    /* indicates byte stuffing */
@@ -23,25 +24,32 @@ SLIPEncodeNode::SLIPEncodeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void SLIPEncodeNode::inputsUpdated( qint64 pTimeStamp )
 {
-	Q_UNUSED( pTimeStamp );
+	fugio::Performance		Perf( mNode, "inputsUpdated", pTimeStamp );
+
+	QByteArray				DatOut;
 
 	fugio::ListInterface	*LI = input<fugio::ListInterface *>( mPinInput );
 
-	if( !LI )
+	if( LI )
 	{
-		return;
-	}
-
-	QByteArray		DatOut;
-
-	for( int i = 0 ; i < LI->listSize() ; i++ )
-	{
-		if( !LI->listIndex( i ).canConvert( QVariant::ByteArray ) )
+		for( int i = 0 ; i < LI->listSize() ; i++ )
 		{
-			continue;
-		}
+			if( !LI->listIndex( i ).canConvert( QVariant::ByteArray ) )
+			{
+				continue;
+			}
 
-		processByteArray( LI->listIndex( i ).toByteArray(), DatOut );
+			processByteArray( LI->listIndex( i ).toByteArray(), DatOut );
+		}
+	}
+	else
+	{
+		const QVariant		VarInt = variant( mPinInput );
+
+		if( VarInt.type() == QVariant::ByteArray )
+		{
+			processByteArray( VarInt.toByteArray(), DatOut );
+		}
 	}
 
 	mValOutput->setVariant( DatOut );

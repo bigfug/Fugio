@@ -21,14 +21,23 @@ EveryNode::EveryNode(QSharedPointer<fugio::NodeInterface> pNode)
 
 bool EveryNode::initialise( void )
 {
-	if( !fugio::NodeControlBase::initialise() )
+	if( !NodeControlBase::initialise() )
 	{
 		return( false );
 	}
 
+	mLastTime = -1;
+
 	connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(frameStart(qint64)) );
 
 	return( true );
+}
+
+bool EveryNode::deinitialise()
+{
+	mNode->context()->qobject()->disconnect( this );
+
+	return( NodeControlBase::deinitialise() );
 }
 
 void EveryNode::frameStart( qint64 pTimeStamp )

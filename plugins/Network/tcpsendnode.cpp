@@ -48,7 +48,7 @@ void TCPSendNode::inputsUpdated( qint64 pTimeStamp )
 {
 	fugio::Performance	Perf( mNode, "inputsUpdated", pTimeStamp );
 
-	if( !pTimeStamp || mPinHost->isUpdated( pTimeStamp ) || mPinPort->isUpdated( pTimeStamp ) )
+	if( mPinHost->isUpdated( pTimeStamp ) || mPinPort->isUpdated( pTimeStamp ) )
 	{
 		mSocket.disconnectFromHost();
 

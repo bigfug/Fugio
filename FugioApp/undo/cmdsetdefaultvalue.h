@@ -26,14 +26,24 @@ public:
 	{
 		mPin->setValue( mValOld );
 
-		mPin->node()->context()->updateNode( mPin->node() );
+		fugio::ContextInterface		*Context = ( mPin->node() && mPin->node()->context() ? mPin->node()->context() : nullptr );
+
+		if( Context )
+		{
+			Context->updateNode( Context->findNode( mPin->node()->uuid() ) );
+		}
 	}
 
 	virtual void redo( void )
 	{
 		mPin->setValue( mValNew );
 
-		mPin->node()->context()->updateNode( mPin->node() );
+		fugio::ContextInterface		*Context = ( mPin->node() && mPin->node()->context() ? mPin->node()->context() : nullptr );
+
+		if( Context )
+		{
+			Context->updateNode( Context->findNode( mPin->node()->uuid() ) );
+		}
 	}
 
 private:

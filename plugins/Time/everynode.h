@@ -24,7 +24,8 @@ public:
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
 
-	virtual bool initialise( void );
+	virtual bool initialise( void ) Q_DECL_OVERRIDE;
+	virtual bool deinitialise( void ) Q_DECL_OVERRIDE;
 
 private slots:
 	void frameStart( qint64 pTimeStamp );

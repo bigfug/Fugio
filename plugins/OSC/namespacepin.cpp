@@ -15,7 +15,7 @@ NamespacePin::NamespacePin( QSharedPointer<fugio::PinInterface> pPin )
 
 QStringList NamespacePin::oscNamespace()
 {
-	QSharedPointer<fugio::NodeInterface>	 NI;
+	fugio::NodeInterface				*NI;
 
 	if( mPin->direction() == PIN_INPUT )
 	{
@@ -26,7 +26,7 @@ QStringList NamespacePin::oscNamespace()
 		NI = mPin->node();
 	}
 
-	fugio::osc::NamespaceInterface				*JI = qobject_cast<fugio::osc::NamespaceInterface *>( NI && NI->hasControl() ? NI->control()->qobject() : nullptr );
+	fugio::osc::NamespaceInterface		*JI = qobject_cast<fugio::osc::NamespaceInterface *>( NI && NI->hasControl() ? NI->control()->qobject() : nullptr );
 
 	if( JI )
 	{

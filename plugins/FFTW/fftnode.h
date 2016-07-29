@@ -53,6 +53,11 @@ public:
 		return( mSampleCount );
 	}
 
+	virtual inline int shift() const Q_DECL_OVERRIDE
+	{
+		return( mSampleShift );
+	}
+
 	virtual int count() const Q_DECL_OVERRIDE
 	{
 		return( samples() / 2 + 1 );
@@ -126,6 +131,7 @@ protected:
 
 	QSharedPointer<fugio::PinInterface>		 mPinInputAudio;
 	QSharedPointer<fugio::PinInterface>		 mPinInputSamples;
+	QSharedPointer<fugio::PinInterface>		 mPinInputShift;
 	QSharedPointer<fugio::PinInterface>		 mPinInputWindow;
 
 	QSharedPointer<fugio::PinInterface>		 mPinOutputFFT;
@@ -136,6 +142,7 @@ protected:
 	WindowType								 mWindowType;
 	int										 mSampleCount;
 	qint64									 mSamplePosition;
+	qint64									 mSampleShift;
 
 	fugio::AudioInstanceBase				*mProducerInstance;
 

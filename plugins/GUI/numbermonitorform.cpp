@@ -3,10 +3,11 @@
 
 #include <QPainter>
 #include <QPaintEvent>
+#include <QDockWidget>
 
 NumberMonitorForm::NumberMonitorForm(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::NumberMonitorForm), mIndex( 0 ), mMin( 10000000000000 ), mMax( -10000000000000 ), mY( 0 )
+	ui(new Ui::NumberMonitorForm), mIndex( 0 ), mMin( 0 ), mMax( 1 ), mY( 0 )
 {
 	ui->setupUi(this);
 }
@@ -47,6 +48,8 @@ void NumberMonitorForm::value( const QList< QPair<QColor,qreal> > &pValLst )
 		Painter.eraseRect( mImage.rect() );
 
 		mIndex = 0;
+
+		update();
 	}
 
 	if( mIndex >= mImage.width() )
@@ -80,9 +83,19 @@ void NumberMonitorForm::value( const QList< QPair<QColor,qreal> > &pValLst )
 		mY[ i ] = y;
 	}
 
-	update( mIndex - 1, 0, mIndex, height() );
+	update( mIndex - 1, 0, 1, height() );
 
 	mIndex++;
+}
+
+void NumberMonitorForm::setNodeName(const QString &pName)
+{
+	QDockWidget			*DW = qobject_cast<QDockWidget *>( parent() );
+
+	if( DW )
+	{
+		DW->setWindowTitle( tr( "Monitor: %1" ).arg( pName ) );
+	}
 }
 
 void NumberMonitorForm::paintEvent( QPaintEvent *pEvent )

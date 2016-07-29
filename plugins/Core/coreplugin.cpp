@@ -18,7 +18,7 @@
 #include "splitsizenode.h"
 #include "joinsizenode.h"
 #include "splitlistnode.h"
-#include "fadenode.h"
+#include "smoothnode.h"
 #include "indexnode.h"
 #include "booltotriggernode.h"
 #include "signalnumbernode.h"
@@ -63,7 +63,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Envelope", "Number", NID_ENVELOPE, &EnvelopeNode::staticMetaObject ),
 	ClassEntry( "Float Threshold", NID_FLOAT_THRESHOLD, &FloatThresholdNode::staticMetaObject ),
 	ClassEntry( "Frame Delay", "Context", NID_FRAME_DELAY, &FrameDelayNode::staticMetaObject ),
-	ClassEntry( "Smooth", "Number", ClassEntry::None, NID_FADE, &FadeNode::staticMetaObject ),
+	ClassEntry( "Smooth", "Number", ClassEntry::None, NID_FADE, &SmoothNode::staticMetaObject ),
 	ClassEntry( "Join Size", "Size", NID_JOIN_SIZE, &JoinSizeNode::staticMetaObject ),
 	ClassEntry( "Last Updated Input", NID_LAST_UPDATED_INPUT, &LastUpdatedInputNode::staticMetaObject ),
 	ClassEntry( "Index", NID_INDEX, &IndexNode::staticMetaObject ),

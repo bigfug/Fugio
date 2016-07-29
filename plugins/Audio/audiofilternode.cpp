@@ -77,11 +77,6 @@ void AudioFilterNode::inputsUpdated( qint64 pTimeStamp )
 		updateTaps();
 	}
 
-	if( !pTimeStamp )
-	{
-		emit updateDisplay( mTaps );
-	}
-
 	mLastDisplayChange = pTimeStamp;
 }
 

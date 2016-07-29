@@ -78,7 +78,38 @@ private:
 
 	static int luaFromRgba( lua_State *L );
 
-	static int luaSetRgba( lua_State *L );
+	static int luaSetHsl( lua_State *L );
+	static int luaSetRgb( lua_State *L );
+
+	static int luaSetHslF( lua_State *L );
+	static int luaSetRgbF( lua_State *L );
+
+	static int luaAlpha( lua_State *L );
+	static int luaAlphaF( lua_State *L );
+
+	static int luaBlue( lua_State *L );
+	static int luaBlueF( lua_State *L );
+	static int luaGreen( lua_State *L );
+	static int luaGreenF( lua_State *L );
+	static int luaRed( lua_State *L );
+	static int luaRedF( lua_State *L );
+
+	static int luaHue( lua_State *L );
+	static int luaHueF( lua_State *L );
+	static int luaSaturation( lua_State *L );
+	static int luaSaturationF( lua_State *L );
+	static int luaLightness( lua_State *L );
+	static int luaLightnessF( lua_State *L );
+
+	static int luaSetAlpha( lua_State *L );
+	static int luaSetAlphaF( lua_State *L );
+
+	static int luaSetBlue( lua_State *L );
+	static int luaSetBlueF( lua_State *L );
+	static int luaSetGreen( lua_State *L );
+	static int luaSetGreenF( lua_State *L );
+	static int luaSetRed( lua_State *L );
+	static int luaSetRedF( lua_State *L );
 
 private:
 	static const luaL_Reg					mLuaInstance[];

@@ -70,7 +70,7 @@ public:
 
 	virtual void setAutoRename( bool pAutoRename ) Q_DECL_OVERRIDE;
 
-	virtual QSharedPointer<fugio::NodeInterface> node( void ) Q_DECL_OVERRIDE;
+	virtual fugio::NodeInterface *node( void ) Q_DECL_OVERRIDE;
 
 	virtual qint64 updated( void ) const Q_DECL_OVERRIDE;
 
@@ -96,7 +96,7 @@ public:
 
 	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
 
-	virtual QSharedPointer<fugio::NodeInterface> connectedNode( void ) Q_DECL_OVERRIDE;
+	virtual fugio::NodeInterface *connectedNode( void ) Q_DECL_OVERRIDE;
 
 	virtual QSharedPointer<fugio::PinInterface> connectedPin( void ) const Q_DECL_OVERRIDE;
 
@@ -171,7 +171,7 @@ public:
 
 	void setDirection( PinDirection pDirection );
 
-	void setNode( QSharedPointer<fugio::NodeInterface> pNode );
+	void setNode( fugio::NodeInterface *pNode );
 
 	void setSettings( const QVariantHash &pSettings )
 	{
@@ -195,13 +195,13 @@ signals:
 
 private:
 	fugio::ContextInterface					*mContext;
+	fugio::NodeInterface					*mNode;
 	QUuid								 mGlobalId;		// Context PinMap - Globally unique
 	QUuid								 mLocalId;		// Node
 	QUuid								 mControlId;		// PinControl PID_*
 	QUuid								 mPairedId;			// PinPair input <-> output
 	QString								 mName;
 	PinDirection						 mDirection;
-	QWeakPointer<fugio::NodeInterface>			 mNode;
 	QSharedPointer<fugio::PinControlInterface>	 mControl;
 	qint64								 mUpdated;
 	QVariant							 mDefaultValue;

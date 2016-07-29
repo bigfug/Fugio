@@ -57,7 +57,7 @@ public:
 
 	virtual void setAutoRename( bool pAutoRename ) = 0;
 
-	virtual QSharedPointer<fugio::NodeInterface> node( void ) = 0;
+	virtual fugio::NodeInterface *node( void ) = 0;
 
 	virtual qint64 updated( void ) const = 0;
 
@@ -85,7 +85,7 @@ public:
 
 	virtual void saveSettings( QSettings &pSettings ) const = 0;
 
-	virtual QSharedPointer<fugio::NodeInterface> connectedNode( void ) = 0;
+	virtual fugio::NodeInterface *connectedNode( void ) = 0;
 
 	virtual QSharedPointer<fugio::PinInterface> connectedPin( void ) const = 0;
 

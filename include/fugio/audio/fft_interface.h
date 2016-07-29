@@ -14,6 +14,7 @@ public:
 
 	virtual qreal sampleRate( void ) const = 0;
 	virtual int samples( void ) const = 0;
+	virtual int shift( void ) const = 0;
 	virtual int count( void ) const = 0;
 	virtual const float *fft( void ) const = 0;
 };

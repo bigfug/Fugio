@@ -44,13 +44,15 @@ public:
 		return( mUndoGroup );
 	}
 
-	static void incrementStatistic( const QString &pName );
-	static void recordData( const QString &pName, const QString &pValue );
+	void incrementStatistic( const QString &pName );
+
+	void recordData( const QString &pName, const QString &pValue );
 
 private:
 	MainWindow				*mMainWindow;
 	GlobalPrivate			*mGlobal;
 	QUndoGroup				 mUndoGroup;
+	QNetworkAccessManager	 mNetworkAccessManager;
 };
 
 #define gApp (static_cast<App *>(QCoreApplication::instance()))

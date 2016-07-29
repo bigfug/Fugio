@@ -85,8 +85,6 @@ public:
 	virtual void doFrameProcess( qint64 pTimeStamp );
 	virtual void doFrameEnd( qint64 pTimeStamp );
 
-	virtual QSharedPointer<fugio::NodeInterface> createNode( const QString &pName, const QUuid &pUUID );
-
 	virtual void updateNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual void registerNode( QSharedPointer<fugio::NodeInterface> pNode, const QUuid &pOrigId );
@@ -200,7 +198,7 @@ private:
 
 	static void processNode( QSharedPointer<fugio::NodeInterface> pNode, qint64 pTimeStamp );
 
-	bool loadSettings( QSettings &pSettings, QList< QSharedPointer<fugio::NodeInterface> > &pNewNodeList, bool pPartial );
+	bool loadSettings( QSettings &pSettings, bool pPartial );
 
 	void loadNodeSettings( QSettings &pSettings, QVariantHash &pVarHsh, QStringList &pVarBse ) const;
 

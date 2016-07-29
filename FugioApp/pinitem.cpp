@@ -111,15 +111,65 @@ void PinItem::paint( QPainter *pPainter, const QStyleOptionGraphicsItem *pOption
 	Q_UNUSED( pWidget )
 
 	pPainter->setPen( Qt::black );
-	pPainter->setBrush( mPinColour);
+	pPainter->setBrush( mPinColour );
 	pPainter->drawRect( boundingRect() );
+
+	NodeItem			*Node  = qobject_cast<NodeItem *>( parentObject() );
+	NodeItem			*Group = mContextView->findNodeItem( Node->groupId() ).data();
+
+	if( mPin->direction() == PIN_INPUT )
+	{
+		// Are we in a group?  Do we want to add/remove this pin from the group's pins?
+
+		if( Group )
+		{
+			if( Group->findPinInput( mPin->globalId() ) )
+			{
+				QRectF				R( -50, 2, 50, 6 );
+
+				QLinearGradient		Gradient( 0, 0, 1, 0 );
+
+				Gradient.setColorAt( 0, Qt::transparent );
+				Gradient.setColorAt( 1, mPinColour );
+
+				Gradient.setCoordinateMode( QGradient::ObjectBoundingMode );
+
+				pPainter->setPen( Qt::transparent );
+				pPainter->setBrush( Gradient );
+
+				pPainter->drawRect( R );
+			}
+		}
+	}
+	else
+	{
+		if( Group )
+		{
+			if( Group->findPinOutput( mPin->globalId() ) )
+			{
+				QRectF				R( 11, 2, 50, 6 );
+
+				QLinearGradient		Gradient( 0, 0, 1, 0 );
+
+				Gradient.setColorAt( 0, mPinColour );
+				Gradient.setColorAt( 1, Qt::transparent );
+
+				Gradient.setCoordinateMode( QGradient::ObjectBoundingMode );
+
+				pPainter->setPen( Qt::transparent );
+				pPainter->setBrush( Gradient );
+
+				pPainter->drawRect( R );
+			}
+		}
+	}
 }
 
 void PinItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 {
 	QSignalMapper		SigMap;
 
-	NodeItem			*Node = qobject_cast<NodeItem *>( parentObject() );
+	NodeItem			*Node  = qobject_cast<NodeItem *>( parentObject() );
 	NodeItem			*Group = mContextView->findNodeItem( Node->groupId() ).data();
 
 	QMenu		Menu( mPinName );

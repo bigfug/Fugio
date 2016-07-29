@@ -14,18 +14,6 @@ RandomNumberNode::RandomNumberNode( QSharedPointer<fugio::NodeInterface> pNode )
 	pinOutput<fugio::VariantInterface *>( tr( "Random" ), PinTmp, PID_FLOAT );
 }
 
-bool RandomNumberNode::initialise( void )
-{
-	if( !fugio::NodeControlBase::initialise() )
-	{
-		return( false );
-	}
-
-	inputsUpdated( 0 );
-
-	return( true );
-}
-
 void RandomNumberNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
@@ -40,7 +28,6 @@ void RandomNumberNode::inputsUpdated( qint64 pTimeStamp )
 		}
 	}
 }
-
 
 QList<QUuid> RandomNumberNode::pinAddTypesOutput() const
 {

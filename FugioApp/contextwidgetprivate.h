@@ -6,11 +6,14 @@
 #include <QUndoStack>
 #include <QSplitter>
 #include <QButtonGroup>
+#include <QGraphicsScene>
 
 #include <fugio/context_interface.h>
 #include <fugio/playhead_interface.h>
 #include <fugio/context_widget_interface.h>
 #include <fugio/context_widget_signals.h>
+
+#include "model/contextmodel.h"
 
 namespace Ui {
 class ContextWidgetPrivate;

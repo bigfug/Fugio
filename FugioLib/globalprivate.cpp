@@ -375,13 +375,8 @@ void GlobalPrivate::unregisterPinClass( const QUuid &pUUID )
 	mPinNameMap.remove( pUUID );
 }
 
-QSharedPointer<fugio::NodeInterface> GlobalPrivate::createNode( fugio::ContextInterface *pContext, const QString &pName, const QUuid &pUUID, const QUuid &pOrigId, const QVariantHash &pSettings )
+QSharedPointer<fugio::NodeInterface> GlobalPrivate::createNode( const QString &pName, const QUuid &pGlobalId, const QUuid &pControlId, const QVariantHash &pSettings )
 {
-	if( !mNodeMap.contains( pUUID ) )
-	{
-		qWarning() << "Unknown NodeControlInterface" << pUUID;
-	}
-
 	NodePrivate	*NODE = new NodePrivate();
 
 	if( !NODE )
@@ -391,18 +386,16 @@ QSharedPointer<fugio::NodeInterface> GlobalPrivate::createNode( fugio::ContextIn
 
 	NODE->moveToThread( thread() );
 
-	NODE->setContext( pContext );
 	NODE->setName( pName );
-	NODE->setControlUuid( pUUID );
+	NODE->setUuid( pGlobalId );
+	NODE->setControlUuid( pControlId );
 	NODE->setSettings( pSettings );
 
 	QSharedPointer<fugio::NodeInterface>		NODE_PTR = QSharedPointer<fugio::NodeInterface>( NODE );
 
-	pContext->registerNode( NODE_PTR, pOrigId );
-
-	if( mNodeMap.contains( pUUID ) )
+	if( mNodeMap.contains( pControlId ) )
 	{
-		QObject		*ClassInstance = mNodeMap.value( pUUID ).mMetaObject->newInstance( Q_ARG( QSharedPointer<fugio::NodeInterface>, NODE_PTR ) );
+		QObject		*ClassInstance = mNodeMap.value( pControlId ).mMetaObject->newInstance( Q_ARG( QSharedPointer<fugio::NodeInterface>, NODE_PTR ) );
 
 		if( ClassInstance )
 		{
@@ -416,11 +409,15 @@ QSharedPointer<fugio::NodeInterface> GlobalPrivate::createNode( fugio::ContextIn
 			}
 		}
 	}
+	else
+	{
+		qWarning() << "Unknown NodeControlInterface" << pControlId;
+	}
 
 	return( NODE_PTR );
 }
 
-QSharedPointer<fugio::PinInterface> GlobalPrivate::createPin( const QString &pName, const QUuid &pLocalId, QSharedPointer<fugio::NodeInterface> pNode, PinDirection pDirection, const QUuid &pControlUUID, const QVariantHash &pSettings )
+QSharedPointer<fugio::PinInterface> GlobalPrivate::createPin( const QString &pName, const QUuid &pLocalId, PinDirection pDirection, const QUuid &pControlUUID, const QVariantHash &pSettings )
 {
 	Q_ASSERT( !pLocalId.isNull() );
 
@@ -435,10 +432,8 @@ QSharedPointer<fugio::PinInterface> GlobalPrivate::createPin( const QString &pNa
 
 	P->moveToThread( thread() );
 
-	P->setContext( pNode->context() );
 	P->setLocalId( pLocalId );
 	P->setName( pName );
-	P->setNode( pNode );
 	P->setDirection( pDirection );
 	P->setSettings( pSettings );
 	P->setControlUuid( pControlUUID );

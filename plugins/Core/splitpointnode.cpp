@@ -19,19 +19,22 @@ SplitPointNode::SplitPointNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void SplitPointNode::inputsUpdated( qint64 pTimeStamp )
 {
-	QPointF				 CurPnt = variant( mPinInput ).toPointF();
-
-	if( !pTimeStamp || mX->variant().toFloat() != CurPnt.x() )
+	if( mPinInput->isUpdated( pTimeStamp ) )
 	{
-		mX->setVariant( CurPnt.x() );
+		QPointF				 CurPnt = variant( mPinInput ).toPointF();
 
-		pinUpdated( mPinX );
-	}
+		if( mX->variant().toFloat() != CurPnt.x() )
+		{
+			mX->setVariant( CurPnt.x() );
 
-	if( !pTimeStamp || mY->variant().toFloat() != CurPnt.y() )
-	{
-		mY->setVariant( CurPnt.y() );
+			pinUpdated( mPinX );
+		}
 
-		pinUpdated( mPinY );
+		if( mY->variant().toFloat() != CurPnt.y() )
+		{
+			mY->setVariant( CurPnt.y() );
+
+			pinUpdated( mPinY );
+		}
 	}
 }

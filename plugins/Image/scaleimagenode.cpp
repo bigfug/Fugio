@@ -27,11 +27,6 @@ ScaleImageNode::ScaleImageNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void ScaleImageNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( !pTimeStamp )
-	{
-		return;
-	}
-
 	fugio::ImageInterface	*SRC = input<fugio::ImageInterface *>( mPinInputImage );
 
 	if( !SRC || SRC->size().isEmpty() )

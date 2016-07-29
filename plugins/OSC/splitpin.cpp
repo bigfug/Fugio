@@ -22,9 +22,9 @@ void SplitPin::oscSplit( QStringList pPath, const QVariant &pValue )
 {
 	if( mPin->direction() == PIN_OUTPUT )
 	{
-		QSharedPointer<fugio::NodeInterface>		NI = mPin->connectedNode();
+		fugio::NodeInterface			*NI = mPin->connectedNode();
 
-		fugio::osc::SplitInterface					*SI = qobject_cast<fugio::osc::SplitInterface *>( NI && NI->hasControl() ? NI->control()->qobject() : nullptr );
+		fugio::osc::SplitInterface		*SI = qobject_cast<fugio::osc::SplitInterface *>( NI && NI->hasControl() ? NI->control()->qobject() : nullptr );
 
 		if( SI )
 		{
@@ -42,7 +42,7 @@ void SplitPin::oscPath( QStringList &pPath ) const
 		pPath.prepend( *it );
 	}
 
-	QSharedPointer<fugio::NodeInterface>	 NI;
+	fugio::NodeInterface	*NI;
 
 	if( mPin->direction() == PIN_INPUT )
 	{
@@ -64,7 +64,7 @@ void SplitPin::oscPath( QStringList &pPath ) const
 
 QStringList SplitPin::oscNamespace()
 {
-	QSharedPointer<fugio::NodeInterface>	 NI;
+	fugio::NodeInterface	*NI;
 
 	if( mPin->direction() == PIN_INPUT )
 	{
@@ -75,7 +75,7 @@ QStringList SplitPin::oscNamespace()
 		NI = mPin->node();
 	}
 
-	fugio::osc::NamespaceInterface					*SI = qobject_cast<fugio::osc::NamespaceInterface *>( NI && NI->hasControl() ? NI->control()->qobject() : nullptr );
+	fugio::osc::NamespaceInterface		*SI = qobject_cast<fugio::osc::NamespaceInterface *>( NI && NI->hasControl() ? NI->control()->qobject() : nullptr );
 
 	if( SI )
 	{
@@ -87,7 +87,7 @@ QStringList SplitPin::oscNamespace()
 
 QList<fugio::NodeControlInterface::AvailablePinEntry> SplitPin::oscPins( const QStringList &pCurDir ) const
 {
-	QSharedPointer<fugio::NodeInterface>	 NI;
+	fugio::NodeInterface	*NI;
 
 	if( mPin->direction() == PIN_INPUT )
 	{
@@ -98,7 +98,7 @@ QList<fugio::NodeControlInterface::AvailablePinEntry> SplitPin::oscPins( const Q
 		NI = mPin->node();
 	}
 
-	fugio::osc::NamespaceInterface					*SI = qobject_cast<fugio::osc::NamespaceInterface *>( NI && NI->hasControl() ? NI->control()->qobject() : nullptr );
+	fugio::osc::NamespaceInterface		*SI = qobject_cast<fugio::osc::NamespaceInterface *>( NI && NI->hasControl() ? NI->control()->qobject() : nullptr );
 
 	if( SI )
 	{

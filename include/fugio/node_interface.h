@@ -32,6 +32,8 @@ public:
 
 	virtual fugio::ContextInterface *context( void ) = 0;
 
+	virtual void setContext( fugio::ContextInterface *pContext ) = 0;
+
 	//-------------------------------------------------------------------------
 	// Node Control
 

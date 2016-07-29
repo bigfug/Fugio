@@ -15,6 +15,9 @@
 #include "nodeitem.h"
 #include "pinitem.h"
 #include "contextprivate.h"
+#include "model/contextmodel.h"
+
+//#define USE_CONTEXT_MODEL
 
 class QGestureEvent;
 class QPanGesture;
@@ -52,7 +55,7 @@ public:
 		return( 20 );
 	}
 
-	QSharedPointer<fugio::ContextInterface> context( void )
+	inline QSharedPointer<fugio::ContextInterface> context( void )
 	{
 		return( mContext );
 	}
@@ -222,22 +225,40 @@ public slots:
 
 	void popGroup( void );
 
-	QUuid group( const QString &pGroupName, QList<NodeItem *> &pNodeList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId = QUuid() );
+	QUuid group( const QString &pGroupName, QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId = QUuid() );
 
-	void ungroup( QList<NodeItem *> &pNodeList, QList<NoteItem *> &pNoteList , const QUuid &pGroupId );
+	void ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId );
 
 	void ungroup( NodeItem *pGroup );
 
 protected:
 	virtual void keyReleaseEvent( QKeyEvent *pEvent ) Q_DECL_OVERRIDE;
 
-	void sortSelectedItems( QList<NodeItem *> &pNodeList, QList<LinkItem *> &pLinkList, QList<NoteItem *> &pNoteList );
+	void sortSelectedItems( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkList, QList<NoteItem *> &pNoteList, bool pRecurse );
 
-	bool itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<LinkItem *> &pLinkItemList, QList<NoteItem *> &pNoteItemList, QList<QSharedPointer<fugio::NodeInterface>> &NodeList, QMultiMap<QUuid,QUuid> &LinkList, QList<QSharedPointer<NoteItem>> &NoteList );
+	bool itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkItemList, QList<NoteItem *> &pNoteItemList, QList<QSharedPointer<fugio::NodeInterface>> &NodeList, QList<QSharedPointer<NodeItem>> &GroupList, QMultiMap<QUuid,QUuid> &LinkList, QList<QSharedPointer<NoteItem>> &NoteList );
 
-	bool itemsForRemoval(QList<QSharedPointer<fugio::NodeInterface>> &NodeList, QMultiMap<QUuid,QUuid> &LinkList, QList<QSharedPointer<NoteItem> > &NoteList );
+	//bool itemsForRemoval( QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NodeItem>> &pGroupList, QList<QSharedPointer<NoteItem> > &pNoteList );
 
 	virtual void mouseDoubleClickEvent( QMouseEvent *pEvent ) Q_DECL_OVERRIDE;
+
+	static QList<QUuid> nodeItemIds( const QList<NodeItem *> &pNodeList );
+
+	static QList<QUuid> noteItemIds( const QList<NoteItem *> &pNoteList );
+
+	QList<NodeItem *> nodesFromIds( const QList<QUuid> &pIdsLst ) const;
+
+	QList<QUuid> recursiveGroupIds( const QList<NodeItem *> &pGroupList ) const;
+
+	void itemsInGroups( const QList<QUuid> &pGroupIdList, QList<NodeItem *> &pNodeList ) const;
+
+	void notesInGroups( const QList<QUuid> &pGroupIdList, QList<NoteItem *> &pNoteList ) const;
+
+	void processGroupLinks(QSharedPointer<NodeItem> NI );
+
+	void updatePastePoint(QList<NodeItem *> NodeItemList, QList<NoteItem *> NoteItemList);
+
+	QMap<QUuid,QUuid> nodeGroups( QList<NodeItem *> pNodeList );
 
 protected slots:
 	void loadStarted( QSettings &pSettings, bool pPartial );
@@ -265,8 +286,40 @@ protected slots:
 
 	void zoom(qreal factor, QPointF centerPoint);
 
+protected:
+	virtual void dragEnterEvent(QDragEnterEvent *) Q_DECL_OVERRIDE;
+	virtual void dropEvent(QDropEvent *) Q_DECL_OVERRIDE;
+	virtual void dragMoveEvent(QDragMoveEvent *) Q_DECL_OVERRIDE;
+
+	virtual void focusInEvent(QFocusEvent *) Q_DECL_OVERRIDE;
+	virtual void focusOutEvent(QFocusEvent *) Q_DECL_OVERRIDE;
+
+	virtual void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
+
+	virtual void wheelEvent(QWheelEvent *) Q_DECL_OVERRIDE;
+
+	bool gestureEvent( QGestureEvent *pEvent );
+
+	void panTriggered( QPanGesture *pGesture );
+	void pinchTriggered( QPinchGesture *pGesture );
+
+	bool isGroupEmpty( const QUuid &pGroupId ) const;
+
+	void clearTempLists( void );
+
 public slots:
-	QSharedPointer<NoteItem> noteAdd( const QString &pText );
+	void updateItemVisibility();
+
+	// QObject interface
+public:
+	virtual bool event( QEvent * ) Q_DECL_OVERRIDE;
+
+
+	void nodeAdd( QSharedPointer<NodeItem> Node );
+	void nodeRemove( QSharedPointer<NodeItem> Node );
+
+public slots:
+	QSharedPointer<NoteItem> noteAdd(const QString &pText , QUuid pUuid);
 
 	void setLabelFont(QFont arg)
 	{
@@ -324,7 +377,24 @@ public slots:
 	}
 
 private:
+	typedef struct GroupStateEntry
+	{
+		QUuid		mGroupId;
+		QTransform	mViewTransform;
+
+		GroupStateEntry( QUuid pGroupId, QTransform pViewTransform )
+			: mGroupId( pGroupId ), mViewTransform( pViewTransform )
+		{
+
+		}
+	} GroupStateEntry;
+
 	QGraphicsScene							 mContextScene;
+
+#if defined( CONTEXT_MODEL )
+	ContextModel							 mContextModel;
+#endif
+
 	QSharedPointer<fugio::ContextInterface>	 mContext;
 	QMap<QUuid,QPointF>						 mPositions;
 	QMap<QUuid,QPointF>						 mPastePositions;
@@ -332,6 +402,7 @@ private:
 	QList<QSharedPointer<NoteItem>>			 mNoteList;
 	QList<QUuid>							 mGroupIds;
 	QList<QUuid>							 mGroupStack;
+	QMap<QUuid,QUuid>						 mNodeOrig;
 	bool									 mChanged;
 	QBrush									 mLabelBrush;
 	QFont									 m_LabelFont;
@@ -359,36 +430,10 @@ private:
 
 	QUuid									 m_GroupId;
 
-protected:
-	virtual void dragEnterEvent(QDragEnterEvent *) Q_DECL_OVERRIDE;
-	virtual void dropEvent(QDropEvent *) Q_DECL_OVERRIDE;
-	virtual void dragMoveEvent(QDragMoveEvent *) Q_DECL_OVERRIDE;
-
-	// QWidget interface
-protected:
-	virtual void focusInEvent(QFocusEvent *) Q_DECL_OVERRIDE;
-	virtual void focusOutEvent(QFocusEvent *) Q_DECL_OVERRIDE;
-	virtual void showEvent(QShowEvent *) Q_DECL_OVERRIDE;
-
-	bool gestureEvent( QGestureEvent *pEvent );
-
-	void panTriggered( QPanGesture *pGesture );
-	void pinchTriggered( QPinchGesture *pGesture );
-
-private slots:
-	void updateItemVisibility();
-
-	// QObject interface
-public:
-	virtual bool event(QEvent *) Q_DECL_OVERRIDE;
-
-	// QWidget interface
-	bool isGroupEmpty( const QUuid &pGroupId ) const;
-
-protected:
-	virtual void wheelEvent(QWheelEvent *) Q_DECL_OVERRIDE;
-	void processGroupLinks(QSharedPointer<NodeItem> NI );
-	void updatePastePoint(QList<NodeItem *> NodeItemList, QList<NoteItem *> NoteItemList);
+	QList<NodeItem *>						 mNodeItemList;
+	QList<NodeItem *>						 mGroupItemList;
+	QList<LinkItem *>						 mLinkItemList;
+	QList<NoteItem *>						 mNoteItemList;
 };
 
 #endif // CONTEXTVIEW_H

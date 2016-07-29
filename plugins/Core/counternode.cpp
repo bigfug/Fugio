@@ -19,15 +19,6 @@ CounterNode::CounterNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void CounterNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( !pTimeStamp )
-	{
-		mOutputCount->setVariant( 0 );
-
-		pinUpdated( mPinOutputCount );
-
-		return;
-	}
-
 	if( mPinInputReset->isUpdated( pTimeStamp ) )
 	{
 		if( mOutputCount->variant().toInt() != 0 )

@@ -15,11 +15,6 @@ OutputRangeNode::OutputRangeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void OutputRangeNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( !pTimeStamp )
-	{
-		return;
-	}
-
 	QList< QSharedPointer<fugio::PinInterface> >	PinLst = mNode->enumOutputPins();
 
 	int						 PinIdx = -1;

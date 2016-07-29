@@ -33,11 +33,23 @@ public:
 
 	enum { Type = UserType + 1 };
 
+	inline ContextView *view( void )
+	{
+		return( mContextView );
+	}
+
+	inline ContextView *view( void ) const
+	{
+		return( mContextView );
+	}
+
 	int type( void ) const
 	{
 		// Enable the use of qgraphicsitem_cast with this item.
 		return Type;
 	}
+
+	bool isGroup( void ) const;
 
 	inline QUuid id( void ) const
 	{
@@ -123,6 +135,11 @@ public slots:
 
 	void updateGui( void );
 
+	inline void setIsGroup( bool pIsGroup )
+	{
+		mIsGroup = pIsGroup;
+	}
+
 protected:
 	typedef QPair<QGraphicsSimpleTextItem *, PinItem *>		PinPair;
 
@@ -196,6 +213,8 @@ private:
 	int									 mUndoId;
 
 	QUuid								 mGroupId;
+
+	bool								 mIsGroup;
 };
 
 #endif // NODEITEM_H

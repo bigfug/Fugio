@@ -148,9 +148,9 @@ public:
 	//-------------------------------------------------------------------------
 	// Nodes and Pins
 
-	virtual QSharedPointer<fugio::NodeInterface> createNode( fugio::ContextInterface *pContext, const QString &pName, const QUuid &pUUID, const QUuid &pOrigId, const QVariantHash &pSettings = QVariantHash() ) = 0;
+	virtual QSharedPointer<fugio::NodeInterface> createNode( const QString &pName, const QUuid &pGlobalId, const QUuid &pControlId, const QVariantHash &pSettings = QVariantHash() ) = 0;
 
-	virtual QSharedPointer<fugio::PinInterface> createPin( const QString &pName, const QUuid &pLocalId, QSharedPointer<fugio::NodeInterface> pNode, PinDirection pDirection, const QUuid &pControlId = QUuid(), const QVariantHash &pSettings = QVariantHash() ) = 0;
+	virtual QSharedPointer<fugio::PinInterface> createPin( const QString &pName, const QUuid &pLocalId, PinDirection pDirection, const QUuid &pControlId = QUuid(), const QVariantHash &pSettings = QVariantHash() ) = 0;
 
 	virtual QSharedPointer<fugio::PinControlInterface> createPinControl( const QUuid &pUUID, QSharedPointer<fugio::PinInterface> pPin ) = 0;
 

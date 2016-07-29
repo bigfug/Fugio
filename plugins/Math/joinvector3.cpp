@@ -17,6 +17,8 @@ JoinVector3Node::JoinVector3Node( QSharedPointer<fugio::NodeInterface> pNode )
 
 void JoinVector3Node::inputsUpdated( qint64 pTimeStamp )
 {
+	Q_UNUSED( pTimeStamp )
+
 	qreal			NewX = variant( mPinX ).toReal();
 	qreal			NewY = variant( mPinY ).toReal();
 	qreal			NewZ = variant( mPinZ ).toReal();
@@ -24,7 +26,7 @@ void JoinVector3Node::inputsUpdated( qint64 pTimeStamp )
 	QVector3D		CurVec = mVector3->variant().value<QVector3D>();
 	QVector3D		NewVec = QVector3D( NewX, NewY, NewZ );
 
-	if( !pTimeStamp || CurVec != NewVec )
+	if( CurVec != NewVec )
 	{
 		mVector3->setVariant( NewVec );
 

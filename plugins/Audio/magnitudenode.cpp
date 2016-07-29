@@ -53,13 +53,6 @@ bool MagnitudeNode::deinitialise()
 
 void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 {
-	if( !pTimeStamp )
-	{
-		mSamplePosition = 0;
-
-		return;
-	}
-
 	if( mProducerInstance && !mProducerInstance->isValid() )
 	{
 		delete mProducerInstance;

@@ -48,7 +48,14 @@ SOURCES += main.cpp\
     performanceform.cpp \
     nodelistform.cpp \
     snippits/snippitsform.cpp \
-    patchpromptdialog.cpp
+    patchpromptdialog.cpp \
+    model/contextmodel.cpp \
+    model/nodemodel.cpp \
+    model/basemodel.cpp \
+    model/notemodel.cpp \
+    model/pinmodel.cpp \
+    model/pinlistmodel.cpp \
+    model/baselistmodel.cpp
 
 HEADERS  += mainwindow.h \
     app.h \
@@ -105,7 +112,14 @@ HEADERS  += mainwindow.h \
     undo/cmdgroupaddinput.h \
     undo/cmdgroupreminput.h \
     undo/cmdgroupremoutput.h \
-    patchpromptdialog.h
+    patchpromptdialog.h \
+    model/contextmodel.h \
+    model/nodemodel.h \
+    model/basemodel.h \
+    model/notemodel.h \
+    model/pinmodel.h \
+    model/pinlistmodel.h \
+    model/baselistmodel.h
 
 FORMS    += mainwindow.ui \
     contextwidgetprivate.ui \

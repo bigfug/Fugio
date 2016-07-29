@@ -15,6 +15,7 @@
 #include <QStyle>
 #include <QThread>
 #include <QProcess>
+#include <QScrollBar>
 
 #include "nodeprivate.h"
 
@@ -277,6 +278,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	mMessageHandler = qInstallMessageHandler( MainWindow::logger_static );
 
 	connect( this, SIGNAL(log(QString)), ui->mLogger, SLOT(appendHtml(QString)) );
+
+	// Add a custom context menu to the Logger Window
+
+	ui->mLogger->setContextMenuPolicy( Qt::CustomContextMenu );
+
+	connect( ui->mLogger, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(loggerContextMenu(QPoint)) );
 }
 
 MainWindow::~MainWindow( void )
@@ -885,15 +892,6 @@ void MainWindow::updateRecentFileList( void )
 		RecentFiles << RecentFile;
 	}
 
-	if( RecentFiles.isEmpty() )
-	{
-		ui->menuRecent->setEnabled( false );
-
-		return;
-	}
-
-	ui->menuRecent->setEnabled( true );
-
 	for( int i = 0 ; i < RecentActions.size() ; i++ )
 	{
 		if( i >= RecentFiles.size() )
@@ -1285,6 +1283,8 @@ void MainWindow::initBegin()
 void MainWindow::initEnd()
 {
 	ui->mNodeList->setNodelistUpdate( true );
+
+	ui->mLogger->verticalScrollBar()->setValue( ui->mLogger->verticalScrollBar()->maximum() );
 }
 
 void MainWindow::promptUserForPatch()
@@ -1369,4 +1369,15 @@ void MainWindow::on_actionSave_all_triggered()
 		}
 	}
 
+}
+
+void MainWindow::loggerContextMenu( const QPoint &pPoint )
+{
+	QMenu		*Menu = ui->mLogger->createStandardContextMenu();
+
+	Menu->addAction( "Clear", ui->mLogger, &QPlainTextEdit::clear );
+
+	Menu->exec( ui->mLogger->mapToGlobal( pPoint ) );
+
+	delete Menu;
 }

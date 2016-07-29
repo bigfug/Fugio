@@ -105,6 +105,10 @@ void ContextView::setContext( QSharedPointer<fugio::ContextInterface> pContext )
 		connect( C.data(), SIGNAL(linkAdded(QUuid,QUuid)), this, SLOT(linkAdded(QUuid,QUuid)) );
 		connect( C.data(), SIGNAL(linkRemoved(QUuid,QUuid)), this, SLOT(linkRemoved(QUuid,QUuid)) );
 	}
+
+#if defined( USE_CONTEXT_MODEL )
+	mContextModel.setContext( pContext );
+#endif
 }
 
 ContextWidgetPrivate *ContextView::widget( void )
@@ -120,13 +124,23 @@ ContextWidgetPrivate *ContextView::widget( void )
 	return( C );
 }
 
-void ContextView::sortSelectedItems( QList<NodeItem *> &pNodeList, QList<LinkItem *> &pLinkList, QList<NoteItem *> &pNoteList )
+void ContextView::sortSelectedItems( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkList, QList<NoteItem *> &pNoteList, bool pRecurse )
 {
-	for( QGraphicsItem *Item : mContextScene.selectedItems() )
+	for( QGraphicsItem *Item : scene()->selectedItems() )
 	{
 		if( NodeItem *NI = qgraphicsitem_cast<NodeItem *>( Item ) )
 		{
-			pNodeList.append( NI );
+			if( NI->groupId() == groupId() )
+			{
+				if( !NI->isGroup() )
+				{
+					pNodeList.append( NI );
+				}
+				else
+				{
+					pGroupList.append( NI );
+				}
+			}
 
 			continue;
 		}
@@ -140,28 +154,53 @@ void ContextView::sortSelectedItems( QList<NodeItem *> &pNodeList, QList<LinkIte
 
 		if( NoteItem *TI = qgraphicsitem_cast<NoteItem *>( Item ) )
 		{
-			pNoteList.append( TI );
+			if( TI->groupId() == groupId() )
+			{
+				pNoteList.append( TI );
+			}
 
 			continue;
 		}
 	}
+
+	// Check if we have selected groups - we need to select their contents if so
+
+	if( pRecurse && !pGroupList.isEmpty() )
+	{
+		QList<QUuid>		GrpIds = recursiveGroupIds( pGroupList );
+
+		pGroupList = nodesFromIds( GrpIds );
+
+		// We need to select all the nodes that may have just been added in groups
+
+		GrpIds = nodeItemIds( pGroupList );
+
+		itemsInGroups( GrpIds, pNodeList );
+
+		notesInGroups( GrpIds, pNoteList );
+	}
 }
 
-bool ContextView::itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<LinkItem *> &pLinkItemList, QList<NoteItem *> &pNoteItemList, QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NoteItem> > &pNoteList )
+bool ContextView::itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<NodeItem *> &pGroupItemList, QList<LinkItem *> &pLinkItemList, QList<NoteItem *> &pNoteItemList, QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QList<QSharedPointer<NodeItem>> &pGroupList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NoteItem> > &pNoteList )
 {
-	sortSelectedItems( pNodeItemList, pLinkItemList, pNoteItemList );
+	sortSelectedItems( pNodeItemList, pGroupItemList, pLinkItemList, pNoteItemList, true );
 
-	if( pNodeItemList.isEmpty() && pLinkItemList.isEmpty() && pNoteItemList.isEmpty() )
+	if( pNodeItemList.isEmpty() && pGroupItemList.isEmpty() && pLinkItemList.isEmpty() && pNoteItemList.isEmpty() )
 	{
 		return( false );
 	}
 
-	foreach( NodeItem *Node, pNodeItemList )
+	for( NodeItem *Node : pNodeItemList )
 	{
 		pNodeList.append( mContext->findNode( Node->id() ) );
 	}
 
-	foreach( LinkItem *Link, pLinkItemList )
+	for( NodeItem *GI : pGroupItemList )
+	{
+		pGroupList.append( mNodeList.value( GI->id() ) );
+	}
+
+	for( LinkItem *Link : pLinkItemList )
 	{
 		pLinkList.insert( Link->srcPin()->pin()->globalId(), Link->dstPin()->pin()->globalId() );
 	}
@@ -182,20 +221,115 @@ bool ContextView::itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<LinkI
 	return( true );
 }
 
-bool ContextView::itemsForRemoval( QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NoteItem> > &pNoteList )
-{
-	QList<NodeItem *>  NodeItemList;
-	QList<LinkItem *>  LinkItemList;
-	QList<NoteItem *>  NoteItemList;
+//bool ContextView::itemsForRemoval( QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NodeItem>> &pGroupList, QList<QSharedPointer<NoteItem> > &pNoteList )
+//{
+//	return( itemsForRemoval( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, pNodeList, pGroupList, pLinkList, pNoteList ) );
+//}
 
-	return( itemsForRemoval( NodeItemList, LinkItemList, NoteItemList, pNodeList, pLinkList, pNoteList ) );
+QList<QUuid> ContextView::nodeItemIds( const QList<NodeItem *> &pNodeList )
+{
+	QList<QUuid>		IdsLst;
+
+	for( NodeItem *NI : pNodeList )
+	{
+		IdsLst << NI->id();
+	}
+
+	return( IdsLst );
+}
+
+QList<QUuid> ContextView::noteItemIds( const QList<NoteItem *> &pNoteList )
+{
+	QList<QUuid>		IdsLst;
+
+	for( NoteItem *NI : pNoteList )
+	{
+		IdsLst << NI->id();
+	}
+
+	return( IdsLst );
+}
+
+QList<NodeItem *> ContextView::nodesFromIds( const QList<QUuid> &pIdsLst ) const
+{
+	QList<NodeItem *>		NodeList;
+
+	for( const QUuid &NID : pIdsLst )
+	{
+		QSharedPointer<NodeItem>		NI = mNodeList.value( NID );
+
+		if( NI )
+		{
+			NodeList << NI.data();
+		}
+	}
+
+	return( NodeList );
+}
+
+QList<QUuid> ContextView::recursiveGroupIds( const QList<NodeItem *> &pGroupList ) const
+{
+	QList<QUuid>		IdsLst;
+
+	for( NodeItem *NI : pGroupList )
+	{
+		if( !IdsLst.contains( NI->id() ) )
+		{
+			IdsLst << NI->id();
+		}
+	}
+
+	QList<QUuid>		GrpLst;
+
+	do
+	{
+		IdsLst.append( GrpLst );
+
+		GrpLst.clear();
+
+		for( QMap<QUuid, QSharedPointer<NodeItem> >::const_iterator it = mNodeList.cbegin() ; it != mNodeList.cend() ; it++ )
+		{
+			if( !IdsLst.contains( it.key() ) )
+			{
+				if( !GrpLst.contains( it.key() ) && IdsLst.contains( it.value()->groupId() ) && it.value()->isGroup() )
+				{
+					GrpLst << it.key();
+				}
+			}
+		}
+
+	} while( !GrpLst.isEmpty() );
+
+	return( IdsLst );
+}
+
+void ContextView::itemsInGroups( const QList<QUuid> &pGroupIdList, QList<NodeItem *> &pNodeList ) const
+{
+	for( QMap<QUuid, QSharedPointer<NodeItem> >::const_iterator it = mNodeList.cbegin() ; it != mNodeList.cend() ; it++ )
+	{
+		if( pGroupIdList.contains( it.value()->groupId() ) )
+		{
+			pNodeList << it.value().data();
+		}
+	}
+}
+
+void ContextView::notesInGroups( const QList<QUuid> &pGroupIdList, QList<NoteItem *> &pNoteList ) const
+{
+	for( QSharedPointer<NoteItem> NI : mNoteList )
+	{
+		if( pGroupIdList.contains( NI->groupId() ) )
+		{
+			pNoteList << NI.data();
+		}
+	}
 }
 
 void ContextView::mouseDoubleClickEvent( QMouseEvent *pEvent )
 {
-	if( mContextScene.selectedItems().size() == 1 )
+	if( scene()->selectedItems().size() == 1 )
 	{
-		NodeItem		*NI = qgraphicsitem_cast<NodeItem *>( mContextScene.selectedItems().first() );
+		NodeItem		*NI = qgraphicsitem_cast<NodeItem *>( scene()->selectedItems().first() );
 
 		if( NI )
 		{
@@ -246,21 +380,23 @@ void ContextView::keyReleaseEvent( QKeyEvent *pEvent )
 {
 	// Only process delete/backspace if there is no item that currently has focus (such as notes/editors)
 
-	if( !mContextScene.focusItem() && ( pEvent->key() == Qt::Key_Delete || pEvent->key() == Qt::Key_Backspace ) )
+	if( !scene()->focusItem() && ( pEvent->key() == Qt::Key_Delete || pEvent->key() == Qt::Key_Backspace ) )
 	{
 		QList<NodeItem *>								NodeItemList;
+		QList<NodeItem *>								GroupItemList;
 		QList<LinkItem *>								LinkItemList;
 		QList<NoteItem *>								NoteItemList;
 
 		QList< QSharedPointer<fugio::NodeInterface> >	NodeList;
+		QList<QSharedPointer<NodeItem>>					GroupList;
 		QMultiMap<QUuid,QUuid>							LinkList;
 		QList<QSharedPointer<NoteItem>>					NoteList;
 
-		if( itemsForRemoval( NodeItemList, LinkItemList, NoteItemList, NodeList, LinkList, NoteList) )
+		if( itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, NodeList, GroupList, LinkList, NoteList ) )
 		{
 			QStringList		StuckNodes;
 
-			for( NodeItem *NI : NodeItemList )
+			for( NodeItem *NI : GroupItemList )
 			{
 				if( NI->hasPinsInGroup() )
 				{
@@ -275,9 +411,11 @@ void ContextView::keyReleaseEvent( QKeyEvent *pEvent )
 				return;
 			}
 
-			CmdRemove		*Cmd = new CmdRemove( mContext, NodeList, LinkList, NoteList );
+			QMap<QUuid,QUuid>								NodeGroups = nodeGroups( NodeItemList );
 
-			if( Cmd != 0 )
+			CmdRemove		*Cmd = new CmdRemove( this, NodeList, GroupList, LinkList, NoteList, NodeGroups );
+
+			if( Cmd )
 			{
 				widget()->undoStack()->push( Cmd );
 			}
@@ -291,10 +429,14 @@ void ContextView::keyReleaseEvent( QKeyEvent *pEvent )
 	}
 }
 
+//-----------------------------------------------------------------------------
+// LOAD AND SAVE
 
 void ContextView::loadStarted( QSettings &pSettings, bool pPartial )
 {
 	Q_UNUSED( pPartial )
+
+	mNodeOrig.clear();
 
 	if( pSettings.childGroups().contains( "positions" ) )
 	{
@@ -375,6 +517,105 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 	}
 
 	//-------------------------------------------------------------------------
+	// Groups
+
+	QMap<QUuid,QUuid>		GroupIdMap;
+
+	if( pSettings.childGroups().contains( "groups" ) )
+	{
+		pSettings.beginGroup( "groups" );
+
+		const int	GroupsVersion = pSettings.value( "version", 2 ).toInt();
+
+		if( GroupsVersion == 2 )
+		{
+			for( const QString &KS : pSettings.childKeys() )
+			{
+				const QUuid	K = fugio::utils::string2uuid( KS );
+
+				if( K.isNull() )
+				{
+					continue;
+				}
+
+				if( !mGroupIds.contains( K ) )
+				{
+					mGroupIds << K;
+				}
+
+				if( !mNodeList.contains( K ) )
+				{
+					nodeAdded( K, K );
+				}
+
+				if( QSharedPointer<NodeItem> NI = mNodeList.value( K ) )
+				{
+					NI->setName( pSettings.value( KS ).toString() );
+
+					NI->setIsGroup( true );
+
+					QPointF	NP = mPositions.value( NI->id(), NI->pos() );
+
+					processGroupLinks( NI );
+
+					NI->setNodePos( NP );
+				}
+			}
+
+			pSettings.endGroup();
+		}
+		else if( GroupsVersion == 3 )
+		{
+			pSettings.endGroup();
+
+			int		GroupCount = pSettings.beginReadArray( "groups" );
+
+			for( int i = 0 ; i < GroupCount ; i++ )
+			{
+				pSettings.setArrayIndex( i );
+
+				const QString		GroupName = pSettings.value( "name" ).toString();
+				const QUuid			OrigId    = fugio::utils::string2uuid( pSettings.value( "uuid" ).toString() );
+				const QUuid			NodeId    = ( mNodeList.contains( OrigId ) ? QUuid::createUuid() : OrigId );
+
+				//const QTransform	Transform = pSettings.value( "transform" ).value<QTransform>();
+
+				if( NodeId.isNull() )
+				{
+					continue;
+				}
+
+				GroupIdMap.insert( OrigId, NodeId );
+
+				if( !mGroupIds.contains( NodeId ) )
+				{
+					mGroupIds << NodeId;
+				}
+
+				if( !mNodeList.contains( NodeId ) )
+				{
+					nodeAdded( NodeId, OrigId );
+				}
+
+				if( QSharedPointer<NodeItem> NI = mNodeList.value( NodeId ) )
+				{
+					NI->setName( GroupName );
+
+					NI->setIsGroup( true );
+
+					QPointF	NP = mPositions.value( NI->id(), NI->pos() );
+
+					processGroupLinks( NI );
+
+					NI->setNodePos( NP );
+				}
+			}
+
+			pSettings.endArray();
+		}
+	}
+
+	//-------------------------------------------------------------------------
 	// Notes
 
 	if( pSettings.childGroups().contains( "notes" ) )
@@ -387,6 +628,21 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 			QString		Text = pSettings.value( "note" ).toString();
 			QColor		Col  = pSettings.value( "colour", noteColour() ).value<QColor>();
+			QUuid		Id   = fugio::utils::string2uuid( pSettings.value( "uuid", fugio::utils::uuid2string( QUuid::createUuid() ) ).toString() );
+			QUuid		GroupId = fugio::utils::string2uuid( pSettings.value( "group", fugio::utils::uuid2string( QUuid() ) ).toString() );
+
+			if( GroupIdMap.contains( GroupId ) )
+			{
+				GroupId = GroupIdMap.value( GroupId );
+			}
+
+			for( QSharedPointer<NoteItem> NI : mNoteList )
+			{
+				if( NI->id() == Id )
+				{
+					Id = QUuid::createUuid();
+				}
+			}
 
 			QPointF		Pos  = pSettings.value( "position" ).toPointF();
 
@@ -399,10 +655,11 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 				Pos = fugio::utils::string2point( pSettings.value( "position" ).toString() );
 			}
 
-			QSharedPointer<NoteItem>	Note = noteAdd( Text );
+			QSharedPointer<NoteItem>	Note = noteAdd( Text, Id );
 
 			Note->setPos( Pos );
 			Note->setBackgroundColour( Col );
+			Note->setGroupId( GroupId );
 
 			if( mPasteOffset > 0 )
 			{
@@ -429,54 +686,30 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 				continue;
 			}
 
+			if( mNodeOrig.contains( KID ) )
+			{
+				KID = mNodeOrig.value( KID );
+			}
+
 			QUuid	GID = fugio::utils::string2uuid( pSettings.value( KS ).toString() );
 
-			if( QSharedPointer<NodeItem> NI = mNodeList[ KID ] )
+			if( GroupIdMap.contains( GID ) )
+			{
+				GID = GroupIdMap.value( GID );
+			}
+
+			if( QSharedPointer<NodeItem> NI = mNodeList.value( KID ) )
 			{
 				NI->setGroupId( GID );
+			}
+			else
+			{
+				NI->setGroupId( groupId() );
 			}
 		}
 
 		pSettings.endGroup();
 	}
-
-	//-------------------------------------------------------------------------
-	// Groups
-
-	pSettings.beginGroup( "groups" );
-
-	for( const QString &KS : pSettings.childKeys() )
-	{
-		const QUuid	K = fugio::utils::string2uuid( KS );
-
-		if( K.isNull() )
-		{
-			continue;
-		}
-
-		if( !mGroupIds.contains( K ) )
-		{
-			mGroupIds << K;
-		}
-
-		if( !mNodeList.contains( K ) )
-		{
-			nodeAdded( K, K );
-		}
-
-		if( QSharedPointer<NodeItem> NI = mNodeList[ K ] )
-		{
-			NI->setName( pSettings.value( KS ).toString() );
-
-			QPointF	NP = mPositions.value( NI->id(), NI->pos() );
-
-			processGroupLinks( NI );
-
-			NI->setNodePos( NP );
-		}
-	}
-
-	pSettings.endGroup();
 
 	//-------------------------------------------------------------------------
 	// Colours
@@ -500,11 +733,16 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 				for( const QString &KP : pSettings.childKeys() )
 				{
-					const QUuid	K = fugio::utils::string2uuid( KP );
+					QUuid	K = fugio::utils::string2uuid( KP );
 
 					if( K.isNull() )
 					{
 						continue;
+					}
+
+					if( mNodeOrig.contains( K ) )
+					{
+						K = mNodeOrig.value( K );
 					}
 
 					if( PinItem	*PI = NI->findPinOutput( fugio::utils::string2uuid( KP ) ) )
@@ -519,8 +757,6 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 		pSettings.endGroup();
 	}
-
-	updateItemVisibility();
 
 	//-------------------------------------------------------------------------
 
@@ -543,7 +779,19 @@ void ContextView::loadEnded( QSettings &pSettings, bool pPartial )
 	Q_UNUSED( pSettings )
 	Q_UNUSED( pPartial )
 
+	for( QSharedPointer<NodeItem> NI : mNodeList.values() )
+	{
+		if( NI->isGroup() )
+		{
+			processGroupLinks( NI );
+		}
+	}
+
+	updateItemVisibility();
+
 	mPastePositions.clear();
+
+	mNodeOrig.clear();
 }
 
 void ContextView::saveContext( QSettings &pSettings ) const
@@ -561,7 +809,7 @@ void ContextView::saveContext( QSettings &pSettings ) const
 	{
 		QSharedPointer<NodeItem>	Node = mNodeList[ Uuid ];
 
-		if( mSaveOnlySelected && !Node->isSelected() )
+		if( mSaveOnlySelected && !mNodeItemList.contains( Node.data() ) && !mGroupItemList.contains( Node.data() ) )
 		{
 			continue;
 		}
@@ -584,7 +832,7 @@ void ContextView::saveContext( QSettings &pSettings ) const
 	{
 		QSharedPointer<NoteItem>	Note = mNoteList.at( i );
 
-		if( mSaveOnlySelected && !Note->isSelected() )
+		if( mSaveOnlySelected && !mNoteItemList.contains( Note.data() ) )
 		{
 			continue;
 		}
@@ -593,6 +841,20 @@ void ContextView::saveContext( QSettings &pSettings ) const
 
 		pSettings.setValue( "note", Note->toPlainText() );
 		pSettings.setValue( "position", fugio::utils::point2string( Note->pos() ) );
+		pSettings.setValue( "uuid", fugio::utils::uuid2string( Note->id() ) );
+
+		if( !Note->groupId().isNull() )
+		{
+			QSharedPointer<NodeItem>	Node = mNodeList[ Note->groupId() ];
+
+			if( Node )
+			{
+				if( !mSaveOnlySelected || mGroupItemList.contains( Node.data() ) )
+				{
+					pSettings.setValue( "group", fugio::utils::uuid2string( Note->groupId() ) );
+				}
+			}
+		}
 
 		if( Note->backgroundColour() != noteColour() )
 		{
@@ -605,6 +867,37 @@ void ContextView::saveContext( QSettings &pSettings ) const
 	//-------------------------------------------------------------------------
 	// Groups
 
+	pSettings.beginWriteArray( "groups" );
+
+	pSettings.setValue( "version", 3 );
+
+	ArrayIndex = 0;
+
+	for( int i = 0 ; i < mGroupIds.size() ; i++ )
+	{
+		const QUuid					GID  = mGroupIds[ i ];
+		QSharedPointer<NodeItem>	Node = mNodeList[ GID ];
+
+		if( !Node || ( mSaveOnlySelected && !mGroupItemList.contains( Node.data() ) ) )
+		{
+			continue;
+		}
+
+		pSettings.setArrayIndex( ArrayIndex++ );
+
+		pSettings.setValue( "name", Node->name() );
+		pSettings.setValue( "uuid", fugio::utils::uuid2string( GID ) );
+		pSettings.setValue( "transform", QTransform() );
+
+		if( !Node->groupId().isNull() )
+		{
+			pSettings.setValue( "group", fugio::utils::uuid2string( Node->groupId() ) );
+		}
+	}
+
+	pSettings.endArray();
+
+/*
 	pSettings.beginGroup( "groups" );
 
 	pSettings.setValue( "version", 2 );
@@ -622,6 +915,7 @@ void ContextView::saveContext( QSettings &pSettings ) const
 	}
 
 	pSettings.endGroup();
+*/
 
 	//-------------------------------------------------------------------------
 	// Node Groups
@@ -632,9 +926,28 @@ void ContextView::saveContext( QSettings &pSettings ) const
 
 	for( const QUuid &K : mNodeList.keys() )
 	{
-		QUuid	G = mNodeList[ K ]->groupId();
+		QSharedPointer<NodeItem>	Node = mNodeList[ K ];
+
+		QUuid	G = Node->groupId();
 
 		if( G.isNull() )
+		{
+			continue;
+		}
+
+		QSharedPointer<NodeItem>	Group = mNodeList[ G ];
+
+		if( !Group )
+		{
+			continue;
+		}
+
+		if( mSaveOnlySelected && !mGroupItemList.contains( Group.data() ) )
+		{
+			continue;
+		}
+
+		if( mSaveOnlySelected && !mNodeItemList.contains( Node.data() ) && !mGroupItemList.contains( Node.data() ) )
 		{
 			continue;
 		}
@@ -655,7 +968,7 @@ void ContextView::saveContext( QSettings &pSettings ) const
 	{
 		QSharedPointer<NodeItem>	NI = it.value();
 
-		if( mSaveOnlySelected && !NI->isSelected() )
+		if( mSaveOnlySelected && !mNodeItemList.contains( NI.data() ) && !mGroupItemList.contains( NI.data() ) )
 		{
 			continue;
 		}
@@ -702,8 +1015,14 @@ void ContextView::clearContext( void )
 
 	mNodeList.clear();
 
-	mContextScene.clear();
+	if( scene() )
+	{
+		scene()->clear();
+	}
 }
+
+//-----------------------------------------------------------------------------
+// fugio::ContextSignals
 
 void ContextView::nodeAdded( QUuid pNodeId, QUuid pOrigId )
 {
@@ -742,10 +1061,32 @@ void ContextView::nodeAdded( QUuid pNodeId, QUuid pOrigId )
 	}
 	else
 	{
-		mContextScene.addItem( mNodeList.value( pNodeId ).data() );
+		scene()->addItem( mNodeList.value( pNodeId ).data() );
 	}
 
 	mNodePositionFlag = false;
+
+	mNodeOrig.insert( pOrigId, pNodeId );
+}
+
+void ContextView::nodeAdd( QSharedPointer<NodeItem> Node )
+{
+	if( scene() )
+	{
+		scene()->addItem( Node.data() );
+	}
+
+	mNodeList.insert( Node->id(), Node );
+}
+
+void ContextView::nodeRemove( QSharedPointer<NodeItem> Node )
+{
+	if( scene() )
+	{
+		scene()->removeItem( Node.data() );
+	}
+
+	mNodeList.remove( Node->id() );
 }
 
 void ContextView::nodeRemoved( QUuid pNodeId )
@@ -766,9 +1107,7 @@ void ContextView::nodeRemoved( QUuid pNodeId )
 		return;
 	}
 
-	mContextScene.removeItem( Node.data() );
-
-	mNodeList.remove( pNodeId );
+	nodeRemove( Node );
 }
 
 void ContextView::nodeRenamed( QUuid pNodeId1, QUuid pNodeId2 )
@@ -920,8 +1259,13 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 	QSharedPointer<fugio::PinInterface>		 Pin1 = mContext->findPin( pPinId1 );
 	QSharedPointer<fugio::PinInterface>		 Pin2 = mContext->findPin( pPinId2 );
 
-	QSharedPointer<fugio::NodeInterface>	 Node1 = Pin1->node();
-	QSharedPointer<fugio::NodeInterface>	 Node2 = Pin2->node();
+	if( !Pin1 || !Pin2 )
+	{
+		return;
+	}
+
+	fugio::NodeInterface					*Node1 = Pin1->node();
+	fugio::NodeInterface					*Node2 = Pin2->node();
 
 	QSharedPointer<NodeItem>				 NodeItem1 = mNodeList.value( Node1->uuid() );
 	QSharedPointer<NodeItem>				 NodeItem2 = mNodeList.value( Node2->uuid() );
@@ -943,7 +1287,7 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 
 	if( RealLink )
 	{
-		mContextScene.addItem( RealLink );
+		scene()->addItem( RealLink );
 
 		RealLink->setSrcPin( PinItem2 );
 		RealLink->setDstPin( PinItem1 );
@@ -994,7 +1338,7 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 
 		if( GroupLink )
 		{
-			mContextScene.addItem( GroupLink );
+			scene()->addItem( GroupLink );
 
 			GroupLink->setSrcPin( PinItem2 );
 			GroupLink->setDstPin( PinItem1 );
@@ -1019,11 +1363,21 @@ void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 	QSharedPointer<fugio::PinInterface>		 Pin1 = mContext->findPin( pPinId1 );
 	QSharedPointer<fugio::PinInterface>		 Pin2 = mContext->findPin( pPinId2 );
 
-	QSharedPointer<fugio::NodeInterface>	 Node1 = Pin1->node();
-	QSharedPointer<fugio::NodeInterface>	 Node2 = Pin2->node();
+	if( !Pin1 || !Pin2 )
+	{
+		return;
+	}
+
+	fugio::NodeInterface					*Node1 = Pin1->node();
+	fugio::NodeInterface					*Node2 = Pin2->node();
 
 	QSharedPointer<NodeItem>				 NodeItem1 = mNodeList.value( Node1->uuid() );
 	QSharedPointer<NodeItem>				 NodeItem2 = mNodeList.value( Node2->uuid() );
+
+	if( !NodeItem1 || !NodeItem2 )
+	{
+		return;
+	}
 
 	PinItem									*PinItem1 = NodeItem1->findPinInput( Pin1 );
 	PinItem									*PinItem2 = NodeItem2->findPinOutput( Pin2 );
@@ -1075,11 +1429,17 @@ void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 	}
 }
 
-QSharedPointer<NoteItem> ContextView::noteAdd( const QString &pText )
+QSharedPointer<NoteItem> ContextView::noteAdd( const QString &pText, QUuid pUuid )
 {
-	QSharedPointer<NoteItem>	TextItem = QSharedPointer<NoteItem>( new NoteItem( this, pText ) );
+#if defined( USE_CONTEXT_MODEL )
+	QUuid						NoteUuid = mContextModel.createNote( pUuid );
+#else
+	QUuid						NoteUuid = ( pUuid.isNull() ? QUuid::createUuid() : pUuid );
+#endif
 
-	if( TextItem != 0 )
+	QSharedPointer<NoteItem>	TextItem = QSharedPointer<NoteItem>( new NoteItem( this, NoteUuid, pText ) );
+
+	if( TextItem )
 	{
 		mNoteList.append( TextItem );
 
@@ -1093,7 +1453,7 @@ QSharedPointer<NoteItem> ContextView::noteAdd( const QString &pText )
 
 void ContextView::updateItemVisibility()
 {
-	for( QGraphicsItem *Item : mContextScene.items() )
+	for( QGraphicsItem *Item : scene()->items() )
 	{
 		NodeItem		*NI = qgraphicsitem_cast<NodeItem *>( Item );
 
@@ -1113,7 +1473,6 @@ void ContextView::updateItemVisibility()
 
 			if( SrcPin && DstPin )
 			{
-
 				NodeItem		*SrcNod = qgraphicsitem_cast<NodeItem *>( SrcPin->parentItem() );
 				NodeItem		*DstNod = qgraphicsitem_cast<NodeItem *>( DstPin->parentItem() );
 
@@ -1155,40 +1514,60 @@ void ContextView::setGroupId( QUuid GroupId )
 	updateItemVisibility();
 }
 
-void ContextView::setSelectedColour(const QColor &pColor)
+void ContextView::setSelectedColour( const QColor &pColor )
 {
-	QList<NodeItem *>  NodeList;
-	QList<LinkItem *>  LinkList;
-	QList<NoteItem *>  NoteList;
+	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, true );
 
-	sortSelectedItems( NodeList, LinkList, NoteList );
-
-	//CmdSetColour	*CMD = new CmdSetColour( )
-	foreach( NodeItem *I, NodeList )
+	if( mNodeItemList.isEmpty() && mGroupItemList.isEmpty() && mLinkItemList.isEmpty() && mNoteItemList.isEmpty() )
 	{
-		if( I->isSelected() )
+		return;
+	}
+
+	CmdSetColour	*CMD = new CmdSetColour( pColor, mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList );
+
+	if( CMD )
+	{
+		widget()->undoStack()->push( CMD );
+	}
+
+	clearTempLists();
+}
+
+void ContextView::updatePastePoint(QList<NodeItem *> NodeItemList, QList<NoteItem *> NoteItemList)
+{
+	if( !NodeItemList.isEmpty() )
+	{
+		m_PastePoint = NodeItemList.first()->pos();
+	}
+	else if( !NoteItemList.isEmpty() )
+	{
+		m_PastePoint = NoteItemList.first()->pos();
+	}
+	else
+	{
+		m_PastePoint = QPointF();
+	}
+
+	for( NodeItem *Node : NodeItemList )
+	{
+		m_PastePoint.rx() = qMin( Node->x(), m_PastePoint.x() );
+		m_PastePoint.ry() = qMin( Node->y(), m_PastePoint.y() );
+	}
+}
+
+QMap<QUuid, QUuid> ContextView::nodeGroups(QList<NodeItem *> pNodeList)
+{
+	QMap<QUuid, QUuid>		NodeGroups;
+
+	for( NodeItem *NI : pNodeList )
+	{
+		if( !NI->groupId().isNull() )
 		{
-			I->setColour( pColor );
+			NodeGroups.insert( NI->id(), NI->groupId() );
 		}
 	}
 
-	foreach( LinkItem *I, LinkList )
-	{
-		if( I->isSelected() )
-		{
-			I->setColour( pColor );
-		}
-	}
-
-	for( NoteItem *N : NoteList )
-	{
-		if( N->isSelected() )
-		{
-			N->setBackgroundColour( pColor );
-
-			N->update();
-		}
-	}
+	return( NodeGroups );
 }
 
 void ContextView::cut()
@@ -1203,14 +1582,18 @@ void ContextView::cut()
 	mPasteOffset = 0;
 
 	QList<NodeItem *>  NodeItemList;
+	QList<NodeItem *>  GroupItemList;
 	QList<LinkItem *>  LinkItemList;
 	QList<NoteItem *>  NoteItemList;
 
 	QList<QSharedPointer<fugio::NodeInterface>>		NodeList;
+	QList<QSharedPointer<NodeItem>>					GroupList;
 	QMultiMap<QUuid,QUuid>							LinkList;
 	QList<QSharedPointer<NoteItem>>					NoteList;
 
-	if( !itemsForRemoval( NodeItemList, LinkItemList, NoteItemList, NodeList, LinkList, NoteList ) )
+	QMap<QUuid,QUuid>								NodeGroups;
+
+	if( !itemsForRemoval( NodeItemList, GroupItemList, LinkItemList, NoteItemList, NodeList, GroupList, LinkList, NoteList ) )
 	{
 		return;
 	}
@@ -1238,10 +1621,8 @@ void ContextView::cut()
 
 	QList<QUuid>	SaveNodeList;
 
-	for( NodeItem *Node : NodeItemList )
-	{
-		SaveNodeList.append( Node->id() );
-	}
+	SaveNodeList << nodeItemIds( NodeItemList );
+	SaveNodeList << nodeItemIds( GroupItemList );
 
 	mSaveOnlySelected = true;
 
@@ -1263,33 +1644,11 @@ void ContextView::cut()
 
 	mSaveOnlySelected = false;
 
-	CmdRemove		*Cmd = new CmdRemove( mContext, NodeList, LinkList, NoteList );
+	CmdRemove		*Cmd = new CmdRemove( this, NodeList, GroupList, LinkList, NoteList, NodeGroups );
 
-	if( Cmd != 0 )
+	if( Cmd )
 	{
 		widget()->undoStack()->push( Cmd );
-	}
-}
-
-void ContextView::updatePastePoint(QList<NodeItem *> NodeItemList, QList<NoteItem *> NoteItemList)
-{
-	if( !NodeItemList.isEmpty() )
-	{
-		m_PastePoint = NodeItemList.first()->pos();
-	}
-	else if( !NoteItemList.isEmpty() )
-	{
-		m_PastePoint = NoteItemList.first()->pos();
-	}
-	else
-	{
-		m_PastePoint = QPointF();
-	}
-
-	for( NodeItem *Node : NodeItemList )
-	{
-		m_PastePoint.rx() = qMin( Node->x(), m_PastePoint.x() );
-		m_PastePoint.ry() = qMin( Node->x(), m_PastePoint.y() );
 	}
 }
 
@@ -1304,29 +1663,22 @@ void ContextView::copy()
 
 	resetPasteOffset();
 
-	QList<NodeItem *>  NodeItemList;
-	QList<LinkItem *>  LinkItemList;
-	QList<NoteItem *>  NoteItemList;
+	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, true );
 
-	sortSelectedItems( NodeItemList, LinkItemList, NoteItemList );
-
-	if( NodeItemList.isEmpty() && LinkItemList.isEmpty() && NoteItemList.isEmpty() )
+	if( mNodeItemList.isEmpty() && mGroupItemList.isEmpty() && mLinkItemList.isEmpty() && mNoteItemList.isEmpty() )
 	{
 		return;
 	}
 
-	QList<QUuid>	NodeList;
+	QList<QUuid>	NodeList = nodeItemIds( mNodeItemList );
 
-	for( NodeItem *Node : NodeItemList )
-	{
-		NodeList.append( Node->id() );
-	}
-
-	updatePastePoint( NodeItemList, NoteItemList );
+	updatePastePoint( mNodeItemList, mNoteItemList );
 
 	mSaveOnlySelected = true;
 
 	const QString		TempFile = QDir( QDir::tempPath() ).absoluteFilePath( "fugio-copy.tmp" );
+
+	//qDebug() << TempFile;
 
 	if( C->save( TempFile, &NodeList ) )
 	{
@@ -1343,6 +1695,8 @@ void ContextView::copy()
 	QFile::remove( TempFile );
 
 	mSaveOnlySelected = false;
+
+	clearTempLists();
 }
 
 void ContextView::saveSelectedTo( const QString &pFileName )
@@ -1356,23 +1710,14 @@ void ContextView::saveSelectedTo( const QString &pFileName )
 
 	resetPasteOffset();
 
-	QList<NodeItem *>  NodeItemList;
-	QList<LinkItem *>  LinkItemList;
-	QList<NoteItem *>  NoteItemList;
+	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, true );
 
-	sortSelectedItems( NodeItemList, LinkItemList, NoteItemList );
-
-	if( NodeItemList.isEmpty() && LinkItemList.isEmpty() && NoteItemList.isEmpty() )
+	if( mNodeItemList.isEmpty() && mGroupItemList.isEmpty() && mLinkItemList.isEmpty() && mNoteItemList.isEmpty() )
 	{
 		return;
 	}
 
-	QList<QUuid>	NodeList;
-
-	for( NodeItem *Node : NodeItemList )
-	{
-		NodeList.append( Node->id() );
-	}
+	QList<QUuid>	NodeList = nodeItemIds( mNodeItemList );
 
 	mSaveOnlySelected = true;
 
@@ -1381,6 +1726,8 @@ void ContextView::saveSelectedTo( const QString &pFileName )
 	}
 
 	mSaveOnlySelected = false;
+
+	clearTempLists();
 }
 
 void ContextView::paste()
@@ -1574,7 +1921,7 @@ void ContextView::nodeMoveStarted()
 	mNodeMoveData.clear();
 	mNoteMoveData.clear();
 
-	for( QGraphicsItem *Item : mContextScene.selectedItems() )
+	for( QGraphicsItem *Item : scene()->selectedItems() )
 	{
 		if( NodeItem *NI = qgraphicsitem_cast<NodeItem *>( Item ) )
 		{
@@ -1646,7 +1993,7 @@ void ContextView::noteRemove( QSharedPointer<NoteItem> pNoteItem )
 
 bool ContextView::isGroupEmpty( const QUuid &pGroupId ) const
 {
-	for( QGraphicsItem *Item : mContextScene.items() )
+	for( QGraphicsItem *Item : scene()->items() )
 	{
 		if( NodeItem *NI = qgraphicsitem_cast<NodeItem *>( Item ) )
 		{
@@ -1672,6 +2019,13 @@ bool ContextView::isGroupEmpty( const QUuid &pGroupId ) const
 	return( true );
 }
 
+void ContextView::clearTempLists()
+{
+	mNodeItemList.clear();
+	mGroupItemList.clear();
+	mLinkItemList.clear();
+	mNoteItemList.clear();
+}
 
 void ContextView::moveNodeRelative( NodeItem *pNode, const QList<NodeItem *> &pNodeList, const QList<NoteItem *> &pNoteList, ContextView::NodeMoveRelation pRelation )
 {
@@ -1712,7 +2066,7 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 {
 	const QUuid		NewGroupId = NI->id();
 
-	for( QGraphicsItem *Item : mContextScene.items() )
+	for( QGraphicsItem *Item : scene()->items() )
 	{
 		LinkItem		*LI = qgraphicsitem_cast<LinkItem *>( Item );
 
@@ -1730,55 +2084,65 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 
 		if( SrcNod->groupId() == NewGroupId && DstNod->groupId() != NewGroupId )
 		{
-			if( ( NewPin = NI->findPinOutput( SrcPin->pin() ) ) == nullptr )
+			QSharedPointer<NodeItem>	GroupItem = findNodeItem( DstNod->groupId() );
+
+			if( !GroupItem || GroupItem->groupId() != NewGroupId )
 			{
-				if( ( NewPin = NI->pinOutputAdd( SrcPin->pin() ) ) )
+				if( ( NewPin = NI->findPinOutput( SrcPin->pin() ) ) == nullptr )
 				{
-					NewPin->setName( SrcPin->name() );
+					if( ( NewPin = NI->pinOutputAdd( SrcPin->pin() ) ) )
+					{
+						NewPin->setName( SrcPin->name() );
 
-					NewPin->setColour( SrcPin->colour() );
+						NewPin->setColour( SrcPin->colour() );
 
-					connect( NewPin, SIGNAL(colourUpdated(QColor)), SrcPin, SLOT(setColour(QColor)) );
-					connect( SrcPin, SIGNAL(colourUpdated(QColor)), NewPin, SLOT(setColour(QColor)) );
+						connect( NewPin, SIGNAL(colourUpdated(QColor)), SrcPin, SLOT(setColour(QColor)) );
+						connect( SrcPin, SIGNAL(colourUpdated(QColor)), NewPin, SLOT(setColour(QColor)) );
+					}
 				}
-			}
 
-			if( NewPin )
-			{
-				if( LinkItem *Link = new LinkItem() )
+				if( NewPin )
 				{
-					mContextScene.addItem( Link );
+					if( LinkItem *Link = new LinkItem() )
+					{
+						scene()->addItem( Link );
 
-					Link->setSrcPin( NewPin );
-					Link->setDstPin( DstPin );
+						Link->setSrcPin( NewPin );
+						Link->setDstPin( DstPin );
 
-					NewPin->linkAdd( Link );
-					DstPin->linkAdd( Link );
+						NewPin->linkAdd( Link );
+						DstPin->linkAdd( Link );
+					}
 				}
 			}
 		}
 
 		if( SrcNod->groupId() != NewGroupId && DstNod->groupId() == NewGroupId )
 		{
-			if( ( NewPin = NI->findPinInput( DstPin->pin() ) ) == nullptr )
+			QSharedPointer<NodeItem>	GroupItem = findNodeItem( SrcNod->groupId() );
+
+			if( !GroupItem || GroupItem->groupId() != NewGroupId )
 			{
-				if( ( NewPin = NI->pinInputAdd( DstPin->pin() ) ) )
+				if( ( NewPin = NI->findPinInput( DstPin->pin() ) ) == nullptr )
 				{
-					NewPin->setName( DstPin->name() );
+					if( ( NewPin = NI->pinInputAdd( DstPin->pin() ) ) )
+					{
+						NewPin->setName( DstPin->name() );
+					}
 				}
-			}
 
-			if( NewPin )
-			{
-				if( LinkItem *Link = new LinkItem() )
+				if( NewPin )
 				{
-					mContextScene.addItem( Link );
+					if( LinkItem *Link = new LinkItem() )
+					{
+						scene()->addItem( Link );
 
-					Link->setSrcPin( SrcPin );
-					Link->setDstPin( NewPin );
+						Link->setSrcPin( SrcPin );
+						Link->setDstPin( NewPin );
 
-					SrcPin->linkAdd( Link );
-					NewPin->linkAdd( Link );
+						SrcPin->linkAdd( Link );
+						NewPin->linkAdd( Link );
+					}
 				}
 			}
 		}
@@ -1787,9 +2151,13 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 	NI->layoutPins();
 }
 
-QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId )
+QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId )
 {
-	const QUuid		NewGroupId = pGroupId.isNull() ? QUuid::createUuid() : pGroupId;
+#if defined( USE_CONTEXT_MODEL )
+	const QUuid		NewGroupId = mContextModel.createGroup( pGroupId, pGroupName );
+#else
+	const QUuid		NewGroupId = ( pGroupId.isNull() ? QUuid::createUuid() : pGroupId );
+#endif
 
 	if( !mGroupIds.contains( NewGroupId ) )
 	{
@@ -1797,6 +2165,11 @@ QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeLis
 	}
 
 	for( NodeItem *NI : pNodeList )
+	{
+		NI->setGroupId( NewGroupId );
+	}
+
+	for( NodeItem *NI : pGroupList )
 	{
 		NI->setGroupId( NewGroupId );
 	}
@@ -1811,9 +2184,15 @@ QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeLis
 		nodeAdded( NewGroupId, NewGroupId );
 	}
 
+#if defined( USE_CONTEXT_MODEL )
+	mContextModel.moveToGroup( NewGroupId, nodeItemIds( pNodeList ), nodeItemIds( pGroupList ), noteItemIds( pNoteList ) );
+#endif
+
 	QSharedPointer<NodeItem>	NI = mNodeList[ NewGroupId ];
 
 	NI->setName( pGroupName );
+
+	NI->setIsGroup( true );
 
 	// Calculate the position of the group as the center of the nodes/notes
 
@@ -1828,7 +2207,7 @@ QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeLis
 	return( NewGroupId );
 }
 
-void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId )
+void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId )
 {
 	// Find the NodeItem for the supplied GroupId
 
@@ -1842,7 +2221,7 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NoteItem *> &pNot
 	// Search for any links that link from the ungrouping nodes to outside nodes
 	// and delete them
 
-	for( QGraphicsItem *Item : mContextScene.items() )
+	for( QGraphicsItem *Item : scene()->items() )
 	{
 		LinkItem		*LI = qgraphicsitem_cast<LinkItem *>( Item );
 
@@ -1897,7 +2276,7 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NoteItem *> &pNot
 			continue;
 		}
 
-		mContextScene.removeItem( LI );
+		scene()->removeItem( LI );
 
 		LI->setSrcPin( nullptr );
 		LI->setDstPin( nullptr );
@@ -1925,6 +2304,11 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NoteItem *> &pNot
 		NI->setGroupId( groupId() );
 	}
 
+	for( NodeItem *NI : pGroupList )
+	{
+		NI->setGroupId( groupId() );
+	}
+
 	for( NoteItem *NI : pNoteList )
 	{
 		NI->setGroupId( groupId() );
@@ -1946,7 +2330,7 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NoteItem *> &pNot
 
 void ContextView::ungroup( NodeItem *GI )
 {
-	for( QGraphicsItem *Item : mContextScene.items() )
+	for( QGraphicsItem *Item : scene()->items() )
 	{
 		if( Item == GI )
 		{
@@ -1996,7 +2380,7 @@ void ContextView::ungroup( NodeItem *GI )
 		}
 	}
 
-	mContextScene.removeItem( GI );
+	scene()->removeItem( GI );
 
 	mGroupIds.removeAll( GI->id() );
 
@@ -2007,13 +2391,9 @@ void ContextView::ungroup( NodeItem *GI )
 
 void ContextView::groupSelected()
 {
-	QList<NodeItem *>  NodeItemList;
-	QList<LinkItem *>  LinkItemList;
-	QList<NoteItem *>  NoteItemList;
+	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, false );
 
-	sortSelectedItems( NodeItemList, LinkItemList, NoteItemList );
-
-	if( NodeItemList.isEmpty() && NoteItemList.isEmpty() )
+	if( mNodeItemList.isEmpty() && mGroupItemList.isEmpty() && mLinkItemList.isEmpty() && mNoteItemList.isEmpty() )
 	{
 		return;
 	}
@@ -2027,30 +2407,28 @@ void ContextView::groupSelected()
 		GroupName = DefaultGroupName;
 	}
 
-	CmdGroup	*CMD = new CmdGroup( this, GroupName, NodeItemList, NoteItemList );
+	CmdGroup	*CMD = new CmdGroup( this, GroupName, mNodeItemList, mGroupItemList, mNoteItemList );
 
 	if( CMD )
 	{
 		widget()->undoStack()->push( CMD );
 	}
+
+	clearTempLists();
 }
 
 void ContextView::ungroupSelected()
 {
-	QList<NodeItem *>  NodeItemList;
-	QList<LinkItem *>  LinkItemList;
-	QList<NoteItem *>  NoteItemList;
+	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, false );
 
-	sortSelectedItems( NodeItemList, LinkItemList, NoteItemList );
-
-	if( NodeItemList.isEmpty() && NoteItemList.isEmpty() )
+	if( mNodeItemList.isEmpty() && mGroupItemList.isEmpty() && mLinkItemList.isEmpty() && mNoteItemList.isEmpty() )
 	{
 		return;
 	}
 
 	// TODO: Add Undo
 
-	for( NodeItem *NI : NodeItemList )
+	for( NodeItem *NI : mNodeItemList )
 	{
 		if( !mContext->findNode( NI->id() ) )
 		{
@@ -2064,6 +2442,8 @@ void ContextView::ungroupSelected()
 //	{
 //		widget()->undoStack()->push( CMD );
 //	}
+
+	clearTempLists();
 }
 
 void ContextView::groupParent()
@@ -2088,6 +2468,10 @@ void ContextView::pushGroup( const QUuid &pGroupId )
 	mGroupStack << pGroupId;
 
 	setGroupId( pGroupId );
+
+#if defined( USE_CONTEXT_MODEL )
+	mContextModel.setCurrentGroup( pGroupId );
+#endif
 }
 
 void ContextView::popGroup()
@@ -2097,14 +2481,18 @@ void ContextView::popGroup()
 		mGroupStack.pop_back();
 	}
 
-	if( mGroupStack.isEmpty() )
+	QUuid		GroupId;
+
+	if( !mGroupStack.isEmpty() )
 	{
-		setGroupId( QUuid() );
+		GroupId = mGroupStack.back();
 	}
-	else
-	{
-		setGroupId( mGroupStack.back() );
-	}
+
+	setGroupId( GroupId );
+
+#if defined( USE_CONTEXT_MODEL )
+	mContextModel.setCurrentGroup( GroupId );
+#endif
 }
 
 bool ContextView::event( QEvent *pEvent )
@@ -2188,3 +2576,4 @@ void ContextView::zoom( qreal factor, QPointF centerPoint )
 
 	setTransform( Transform );
 }
+

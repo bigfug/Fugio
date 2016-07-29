@@ -20,11 +20,11 @@ public:
 	{
 		setText( QObject::tr( "Cut" ) );
 
-		foreach( QSharedPointer<fugio::NodeInterface> mNode, mNodeList )
+		for( QSharedPointer<fugio::NodeInterface> mNode : mNodeList )
 		{
-			foreach( auto PinPtr, mNode->enumInputPins() )
+			for( auto PinPtr : mNode->enumInputPins() )
 			{
-				foreach( auto SrcPin, PinPtr->connectedPins() )
+				for( auto SrcPin : PinPtr->connectedPins() )
 				{
 					if( !mLinkList.contains( SrcPin->globalId(), PinPtr->globalId() ) )
 					{
@@ -33,9 +33,9 @@ public:
 				}
 			}
 
-			foreach( auto PinPtr, mNode->enumOutputPins() )
+			for( auto PinPtr : mNode->enumOutputPins() )
 			{
-				foreach( auto DstPin, PinPtr->connectedPins() )
+				for( auto DstPin : PinPtr->connectedPins() )
 				{
 					if( !mLinkList.contains( PinPtr->globalId(), DstPin->globalId() ) )
 					{
@@ -58,9 +58,9 @@ public:
 			mContext->registerNode( mNode, mNode->uuid() );
 		}
 
-		foreach( QUuid Src, mLinkList.keys() )
+		for( QUuid Src : mLinkList.keys() )
 		{
-			foreach( QUuid Dst, mLinkList.values( Src ) )
+			for( QUuid Dst : mLinkList.values( Src ) )
 			{
 				mContext->connectPins( Src, Dst );
 			}
@@ -79,15 +79,15 @@ public:
 
 	virtual void redo( void )
 	{
-		foreach( QUuid Src, mLinkList.keys() )
+		for( QUuid Src : mLinkList.keys() )
 		{
-			foreach( QUuid Dst, mLinkList.values( Src ) )
+			for( QUuid Dst : mLinkList.values( Src ) )
 			{
 				mContext->disconnectPins( Src, Dst );
 			}
 		}
 
-		foreach( QSharedPointer<fugio::NodeInterface> mNode, mNodeList )
+		for( QSharedPointer<fugio::NodeInterface> mNode : mNodeList )
 		{
 			mContext->unregisterNode( mNode->uuid() );
 		}
@@ -104,10 +104,10 @@ public:
 	}
 
 private:
-	QSharedPointer<fugio::ContextInterface>		 mContext;
+	QSharedPointer<fugio::ContextInterface>			 mContext;
 	QList< QSharedPointer<fugio::NodeInterface> >	 mNodeList;
-	QMultiMap<QUuid,QUuid>					 mLinkList;
-	QList<QWeakPointer<NoteItem>>			 mNoteList;
+	QMultiMap<QUuid,QUuid>							 mLinkList;
+	QList<QWeakPointer<NoteItem>>					 mNoteList;
 };
 
 #endif // CMDCONTEXTVIEWCUT_H

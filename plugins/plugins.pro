@@ -12,7 +12,9 @@ SUBDIRS += \
     Lua \
     LuaQt \
     Math \
+    MIDI \
     PortAudio \
+    PortMidi \
     OSC \
     Network \
     Text \

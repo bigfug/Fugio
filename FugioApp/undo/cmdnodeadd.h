@@ -17,15 +17,15 @@ class CmdNodeAdd : public QUndoCommand
 {
 public:
 	explicit CmdNodeAdd( ContextWidgetPrivate *pContextWidget, const QString &pName, const QUuid &pUuid )
-		: mContextWidget( pContextWidget ), mName( pName ), mUuid( pUuid )
+		: mContextWidget( pContextWidget ), mName( pName ), mControlId( pUuid )
 	{
 		setText( QObject::tr( "Add Node" ) );
 
 		mContext = mContextWidget->context();
 
-		App::incrementStatistic( "node-added" );
+		gApp->incrementStatistic( "node-added" );
 
-		App::recordData( "node-add",fugio::utils::uuid2string( mUuid ) );
+		gApp->recordData( "node-add", fugio::utils::uuid2string( mControlId ) );
 	}
 
 	virtual ~CmdNodeAdd( void )
@@ -47,19 +47,13 @@ public:
 		{
 			mContextWidget->saveRecovery();
 			
-			mNode = mContext->createNode( mName, mUuid );
+			mNode = mContext->global()->createNode( mName, QUuid::createUuid(), mControlId );
 
 			if( mNode )
 			{
 				if( mNode->control().isNull() )
 				{
 					mNode.clear();
-				}
-				else
-				{
-					mContext->addDeferredNode( mNode );
-
-					mContext->nodeInitialised();
 				}
 			}
 
@@ -68,7 +62,7 @@ public:
 
 		if( mNode )
 		{
-			mContext->registerNode( mNode, mUuid );
+			mContext->registerNode( mNode, mControlId );
 		}
 	}
 
@@ -77,7 +71,7 @@ private:
 	QSharedPointer<fugio::ContextInterface>	 mContext;
 	QSharedPointer<fugio::NodeInterface>	 mNode;
 	QString									 mName;
-	QUuid									 mUuid;
+	QUuid									 mControlId;
 };
 
 #endif // CMDNODEADD_H
