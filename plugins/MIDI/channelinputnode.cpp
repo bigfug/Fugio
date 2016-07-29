@@ -7,7 +7,7 @@
 #include <fugio/context_signals.h>
 
 ChannelInputNode::ChannelInputNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mListen( false )
+	: NodeControlBase( pNode ), mListen( false ), mRPNState( NONE ), mRPNCount( 0 )
 {
 	FUGID( PIN_INPUT_MIDI,	"b85ce7d2-b21b-49da-861e-74d22e63d50b" );
 
@@ -151,6 +151,11 @@ void ChannelInputNode::pinToMidiEntry( QSharedPointer<fugio::PinInterface> P, Mi
 	MPP.mVal = qobject_cast<fugio::VariantInterface *>( P->hasControl() ? P->control()->qobject() : nullptr );
 }
 
+void ChannelInputNode::setRPNControl( quint16 pValue )
+{
+	qDebug() << CombineBytes( mRPNParamLSB, mRPNParamMSB ) << pValue;
+}
+
 QList<fugio::NodeControlInterface::AvailablePinEntry> ChannelInputNode::availableOutputPins() const
 {
 	static QList<fugio::NodeControlInterface::AvailablePinEntry>		PinLst;
@@ -177,6 +182,12 @@ void ChannelInputNode::midiProcessInput( const fugio::MidiEvent *pMessages, quin
 		const quint8		MsgStatus  = Pm_MessageStatus( CurEvt.message ) & 0xf0;
 		const quint8		MsgData1   = Pm_MessageData1( CurEvt.message );
 		const quint8		MsgData2   = Pm_MessageData2( CurEvt.message );
+
+		if( MsgStatus != MIDI_CONTROL && mRPNState != NONE )
+		{
+			mRPNState = NONE;
+			mRPNCount = 0;
+		}
 
 		switch( MsgStatus )
 		{
@@ -260,6 +271,115 @@ void ChannelInputNode::midiProcessInput( const fugio::MidiEvent *pMessages, quin
 
 			case MIDI_CONTROL:		// Control Change
 				{
+					if( mRPNCount == 3 )
+					{
+						if( MsgData1 == 38 )
+						{
+							mRPNValueLSB   = MsgData2;
+
+							setRPNControl( CombineBytes( mRPNValueLSB, mRPNValueMSB ) );
+
+							mRPNState = NONE;
+							mRPNCount = 0;
+
+							continue;
+						}
+						else
+						{
+							setRPNControl( CombineBytes( mRPNValueMSB, 0 ) );
+						}
+
+						mRPNState = NONE;
+						mRPNCount = 0;
+					}
+
+					if( mRPNState == NONE )
+					{
+						if( MsgData1 == 101 )
+						{
+							mRPNState  = RPN;
+							mRPNCount  = 1;
+							mRPNParamMSB = MsgData2;
+
+							continue;
+						}
+
+						if( MsgData1 == 99 )
+						{
+							mRPNState  = NRPN;
+							mRPNCount  = 1;
+							mRPNParamMSB = MsgData2;
+
+							continue;
+						}
+					}
+					else if( mRPNCount == 1 )
+					{
+						if( mRPNState == RPN && MsgData1 == 100 )
+						{
+							mRPNCount = 2;
+							mRPNParamLSB = MsgData2;
+
+							if( mRPNParamMSB == 127 && mRPNParamLSB == 127 )
+							{
+								mRPNState = NONE;
+								mRPNCount = 0;
+							}
+
+							continue;
+						}
+
+						if( mRPNState == NRPN && MsgData1 == 98 )
+						{
+							mRPNCount = 2;
+							mRPNParamLSB = MsgData2;
+
+							if( mRPNParamMSB == 127 && mRPNParamLSB == 127 )
+							{
+								mRPNState = NONE;
+								mRPNCount = 0;
+							}
+
+							continue;
+						}
+
+						if( mRPNState == RPN )
+						{
+							//setControl( 101, mRPNParam1 );
+						}
+						else if( mRPNState == NRPN )
+						{
+							//setControl( 99, mRPNParam1 );
+						}
+
+						mRPNState = NONE;
+						mRPNCount = 0;
+					}
+					else
+					{
+						if( mRPNCount == 2 && MsgData1 == 6 )
+						{
+							mRPNValueMSB   = MsgData2;
+							mRPNCount = 3;
+
+							continue;
+						}
+
+						if( mRPNState == RPN )
+						{
+							//setControl( 101, mRPNParam1 );
+							//setControl( 100, mRPNParam2 );
+						}
+						else if( mRPNState == NRPN )
+						{
+							//setControl( 99, mRPNParam1 );
+							//setControl( 98, mRPNParam2 );
+						}
+
+						mRPNState = NONE;
+						mRPNCount = 0;
+					}
+
 					PinItr = findOrCreatePin( QString( "control/%1" ).arg( MsgData1 ), mControlsPins, MsgData1, mListen, SortPins, PID_INTEGER );
 
 					if( PinItr != mControlsPins.end() )
