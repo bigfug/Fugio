@@ -85,6 +85,28 @@ macx {
     }
 }
 
+windows {
+	INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	INSTALLDEST  = $$INSTALLDIR/data/plugins/portmidi
+
+	CONFIG(release,debug|release) {
+		QMAKE_POST_LINK += echo
+
+		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDEST )
+
+		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
+
+		win32 {
+			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/portmidi.32.2013/Release/portmidi.dll ) $$shell_path( $$INSTALLDEST )
+		}
+
+		win64 {
+			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/portmidi.64.2013/Release/portmidi.dll ) $$shell_path( $$INSTALLDEST )
+		}
+	}
+}
+
 #------------------------------------------------------------------------------
 # portmidi
 
@@ -105,6 +127,11 @@ win32 {
 macx {
     INCLUDEPATH += /usr/local/include
     LIBS += -L/usr/local/lib
+}
+
+unix:!macx:exists( /usr/local/include/portmidi.h ) {
+	INCLUDEPATH += /usr/local/include
+	LIBS += -L/usr/local/lib
 }
 
 LIBS += -lportmidi
