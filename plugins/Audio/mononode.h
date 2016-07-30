@@ -42,9 +42,7 @@ public:
 
 	virtual bool isValid( fugio::AudioInstanceBase *pInstance ) const Q_DECL_OVERRIDE
 	{
-		Q_UNUSED( pInstance )
-
-		return( true );
+		return( pInstance->isValid() );
 	}
 
 protected:

@@ -203,18 +203,6 @@ PaDeviceIndex DevicePortAudio::deviceInputNameIndex( const QString &pDeviceName 
 	return( paNoDevice );
 }
 
-//void DevicePortAudio::delDevice( DevicePortAudio *pDelDev )
-//{
-//	if( pDelDev )
-//	{
-//		//gApp->devices().unregisterDevice( pDelDev );
-
-//		mDeviceList.removeAll( pDelDev );
-
-//		delete pDelDev;
-//	}
-//}
-
 #endif
 
 //-----------------------------------------------------------------------------
@@ -299,6 +287,11 @@ fugio::AudioInstanceBase *DevicePortAudio::audioAllocInstance( qreal pSampleRate
 		if( DevAud && DevAud->mDeviceIndex == mDeviceIndex )
 		{
 			AudioInstanceData		*AID = new AudioInstanceData( DevAud, pSampleRate, pSampleFormat, pChannels );
+
+			if( AID )
+			{
+				AID->mDeviceIndex = mDeviceIndex;
+			}
 
 			return( AID );
 		}
@@ -729,4 +722,9 @@ AudioSampleFormat DevicePortAudio::audioSampleFormat() const
 qint64 DevicePortAudio::audioLatency() const
 {
 	return( ( mInputSampleRate * mInputTimeLatency ) / 1000.0 );
+}
+
+bool DevicePortAudio::isValid( AudioInstanceBase *pInstance ) const
+{
+	return( pInstance ? pInstance->isValid() : false );
 }

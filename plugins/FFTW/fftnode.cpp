@@ -82,21 +82,6 @@ bool FFTNode::initialise()
 		return( false );
 	}
 
-	if( mPinInputAudio->isConnected() && !mPinInputAudio->connectedNode()->isInitialised() )
-	{
-		return( false );
-	}
-
-	inputsUpdated( 0 );
-
-	connect( mPinInputAudio->qobject(), SIGNAL(linked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audioPinLinked(QSharedPointer<fugio::PinInterface>)) );
-	connect( mPinInputAudio->qobject(), SIGNAL(unlinked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audioPinUnlinked(QSharedPointer<fugio::PinInterface>)) );
-
-	if( mPinInputAudio->isConnected() )
-	{
-		audioPinLinked( mPinInputAudio->connectedPin() );
-	}
-
 	return( true );
 }
 
@@ -109,7 +94,9 @@ bool FFTNode::deinitialise()
 
 void FFTNode::onContextFrame( qint64 pTimeStamp )
 {
-	if( mProducerInstance && !mProducerInstance->isValid() )
+	fugio::AudioProducerInterface	*API = input<fugio::AudioProducerInterface *>( mPinInputAudio );
+
+	if( mProducerInstance && ( !mProducerInstance->isValid() || ( API && !API->isValid( mProducerInstance ) ) ) )
 	{
 		delete mProducerInstance;
 
@@ -118,11 +105,9 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 		fftwFree();
 	}
 
-	fugio::AudioProducerInterface	*API = input<fugio::AudioProducerInterface *>( mPinInputAudio );
-
 	if( !API )
 	{
-		if( mProducerInstance )
+		if( mProducerInstance)
 		{
 			delete mProducerInstance;
 
@@ -212,26 +197,6 @@ void FFTNode::onContextFrame( qint64 pTimeStamp )
 	mSamplePosition += shift();
 }
 
-void FFTNode::audioPinLinked( QSharedPointer<fugio::PinInterface> P )
-{
-	Q_UNUSED( P )
-
-	if( mNode && mNode->context() )
-	{
-		connect( mNode->context()->qobject(), SIGNAL(frameProcess(qint64)), this, SLOT(onContextFrame(qint64)) );
-	}
-}
-
-void FFTNode::audioPinUnlinked( QSharedPointer<fugio::PinInterface> P )
-{
-	Q_UNUSED( P )
-
-	if( mNode && mNode->context() )
-	{
-		disconnect( mNode->context()->qobject(), SIGNAL(frameProcess(qint64)), this, SLOT(onContextFrame(qint64)) );
-	}
-}
-
 bool is_power_of_2(int i)
 {
 	if ( i <= 0 ) {
@@ -242,32 +207,36 @@ bool is_power_of_2(int i)
 
 void FFTNode::inputsUpdated( qint64 pTimeStamp )
 {
-	Q_UNUSED( pTimeStamp )
-
-	fugio::VariantInterface	*V;
-
-	WindowType	WT = mWindowTypes.value( variant( mPinInputWindow ).toString() );
-
-	if( WT != mWindowType )
+	if( mProducerInstance )
 	{
-		mWindowType = WT;
+		delete mProducerInstance;
 
-		calculateWindow();
+		mProducerInstance = nullptr;
+
+		fftwFree();
+
+		mSamplePosition = 0;
 	}
 
-	int			SampleCount = mSampleCount;
+	if( mPinInputWindow->isUpdated( pTimeStamp ) )
+	{
+		WindowType	WT = mWindowTypes.value( variant( mPinInputWindow ).toString() );
 
-	if( ( V = input<fugio::VariantInterface *>( mPinInputSamples ) ) != 0 )
-	{
-		SampleCount = V->variant().toInt();
+		if( WT != mWindowType )
+		{
+			mWindowType = WT;
+
+			calculateWindow();
+		}
 	}
-	else
-	{
-		SampleCount = mPinInputSamples->value().toInt();
-	}
+
+	int			SampleCount = variant( mPinInputSamples ).toInt();
 
 	if( !is_power_of_2( SampleCount ) )
 	{
+		mNode->setStatus( fugio::NodeInterface::Warning );
+		mNode->setStatusMessage( tr( "Sample count must be power of two" ) );
+
 		return;
 	}
 
@@ -280,17 +249,24 @@ void FFTNode::inputsUpdated( qint64 pTimeStamp )
 
 	mSampleShift    = SampleShift;
 
-	if( SampleCount <= 0 || SampleCount == mSampleCount )
+	if( SampleCount > 0 && SampleCount != mSampleCount )
 	{
-		return;
+		mSampleCount    = SampleCount;
+		mSamplePosition = 0;
+
+		calculateWindow();
+
+		fftwFree();
 	}
 
-	mSampleCount    = SampleCount;
-	mSamplePosition = 0;
-
-	calculateWindow();
-
-	fftwFree();
+	if( mPinInputAudio->isConnected() )
+	{
+		connect( mNode->context()->qobject(), SIGNAL(frameProcess(qint64)), this, SLOT(onContextFrame(qint64)) );
+	}
+	else
+	{
+		disconnect( mNode->context()->qobject(), SIGNAL(frameProcess(qint64)), this, SLOT(onContextFrame(qint64)) );
+	}
 }
 
 void FFTNode::calculateWindow()

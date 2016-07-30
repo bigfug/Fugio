@@ -23,8 +23,6 @@ PortAudioInputNode::~PortAudioInputNode()
 {
 	if( mPortAudio )
 	{
-		//disconnect( mPortAudio.data(), SIGNAL(audio(const float**,quint64,int,qint64)), this, SLOT(audioInput(const float**,quint64,int,qint64)) );
-
 		mPortAudio.clear();
 	}
 }
@@ -46,42 +44,25 @@ bool PortAudioInputNode::initialise()
 
 	if( ( mPortAudio = DevicePortAudio::newDevice( DevIdx ) ) )
 	{
-		//connect( mPortAudio.data(), SIGNAL(audio(const float**,quint64,int,qint64)), this, SLOT(audioInput(const float**,quint64,int,qint64)) );
+		return( true );
 	}
-
-	return( true );
 #else
 	mNode->setStatus( fugio::NodeInterface::Error );
 	mNode->setStatusMessage( "No PortAudio Support" );
+#endif
 
 	return( false );
-#endif
 }
 
 bool PortAudioInputNode::deinitialise()
 {
 	if( mPortAudio )
 	{
-		//disconnect( mPortAudio.data(), SIGNAL(audio(const float**,quint64,int,qint64)), this, SLOT(audioInput(const float**,quint64,int,qint64)) );
-
 		mPortAudio.clear();
 	}
 
 	return( NodeControlBase::deinitialise() );
 }
-
-//void PortAudioInputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, qint64 pLatency, void *pInstanceData ) const
-//{
-//	Q_UNUSED( pInstanceData )
-//	Q_UNUSED( pLatency )
-
-//	//AudioInstanceData		*AID = static_cast<AudioInstanceData *>( pInstanceData );
-
-//	if( mPortAudio )
-//	{
-//		mPortAudio->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers );
-//	}
-//}
 
 void PortAudioInputNode::clicked()
 {
@@ -96,54 +77,29 @@ void PortAudioInputNode::clicked()
 #endif
 }
 
-//void *PortAudioInputNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
-//{
-//	AudioInstanceData		*AID = new AudioInstanceData();
-
-//	if( AID )
-//	{
-//		AID->mSampleRate   = pSampleRate;
-//		AID->mSampleFormat = pSampleFormat;
-//		AID->mChannels     = pChannels;
-//	}
-
-//	return( AID );
-//}
-
-//void PortAudioInputNode::audioFreeInstance( void *pInstanceData )
-//{
-//	AudioInstanceData		*AID = static_cast<AudioInstanceData *>( pInstanceData );
-
-//	if( AID )
-//	{
-//		delete AID;
-//	}
-//}
-
 void PortAudioInputNode::audioDeviceSelected(const QString &pDeviceName)
 {
 	if( mPortAudio )
 	{
-		//disconnect( mPortAudio.data(), SIGNAL(audio(const float**,quint64,int,qint64)), this, SLOT(audioInput(const float**,quint64,int,qint64)) );
-
 		mPortAudio.clear();
 	}
 
 	mDeviceName = pDeviceName;
 
 #if defined( PORTAUDIO_SUPPORTED )
-	PaDeviceIndex		DevIdx = DevicePortAudio::deviceInputNameIndex( mDeviceName );
+	mDeviceIndex = DevicePortAudio::deviceInputNameIndex( mDeviceName );
 
-	if( DevIdx == paNoDevice )
+	if( mDeviceIndex == paNoDevice )
 	{
 		return;
 	}
 
-	if( ( mPortAudio = DevicePortAudio::newDevice( DevIdx ) ) )
+	if( ( mPortAudio = DevicePortAudio::newDevice( mDeviceIndex ) ) )
 	{
-		//connect( mPortAudio.data(), SIGNAL(audio(const float**,quint64,int,qint64)), this, SLOT(audioInput(const float**,quint64,int,qint64)) );
 	}
 #endif
+
+	pinUpdated( mPinAudio );
 }
 
 QWidget *PortAudioInputNode::gui()
@@ -185,6 +141,33 @@ fugio::AudioSampleFormat PortAudioInputNode::audioSampleFormat() const
 	return( mPortAudio ? mPortAudio->inputSampleFormat() : fugio::AudioSampleFormat::FormatUnknown );
 }
 
+bool PortAudioInputNode::isValid( fugio::AudioInstanceBase *pInstance ) const
+{
+	if( !mPortAudio )
+	{
+		return( false );
+	}
+
+	if( !mPortAudio->isValid( pInstance ) )
+	{
+		return( false );
+	}
+
+	DevicePortAudio::AudioInstanceData	*AudIns = dynamic_cast<DevicePortAudio::AudioInstanceData *>( pInstance );
+
+	if( !AudIns )
+	{
+		return( false );
+	}
+
+	if( AudIns->mDeviceIndex != mDeviceIndex )
+	{
+		return( false );
+	}
+
+	return( true );
+}
+
 fugio::AudioInstanceBase *PortAudioInputNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
 {
 	if( !mPortAudio )
@@ -194,22 +177,6 @@ fugio::AudioInstanceBase *PortAudioInputNode::audioAllocInstance( qreal pSampleR
 
 	return( mPortAudio->audioAllocInstance( pSampleRate, pSampleFormat, pChannels ) );
 }
-
-//void PortAudioInputNode::audioFreeInstance(void *pInstanceData)
-//{
-//	if( mPortAudio )
-//	{
-//		mPortAudio->audioFreeInstance( pInstanceData );
-//	}
-//}
-
-//void PortAudioInputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const
-//{
-//	if( mPortAudio )
-//	{
-//		mPortAudio->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pInstanceData );
-//	}
-//}
 
 qint64 PortAudioInputNode::audioLatency() const
 {

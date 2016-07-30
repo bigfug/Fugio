@@ -133,13 +133,7 @@ public:
 	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
 	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;
 	virtual qint64 audioLatency() const Q_DECL_OVERRIDE;
-
-	virtual bool isValid( fugio::AudioInstanceBase *pInstance ) const Q_DECL_OVERRIDE
-	{
-		Q_UNUSED( pInstance )
-
-		return( true );
-	}
+	virtual bool isValid( fugio::AudioInstanceBase *pInstance ) const Q_DECL_OVERRIDE;
 
 private:
 #if defined( PORTAUDIO_SUPPORTED )
@@ -172,10 +166,11 @@ private:
 public slots:
 
 private:
-	QList<AudioBuffer>						 mAudioBuffers;
+	QList<AudioBuffer>									 mAudioBuffers;
 
 	static QList<QWeakPointer<DevicePortAudio>>			 mDeviceList;
 
+public:
 	class AudioInstanceData : public fugio::AudioInstanceBase
 	{
 	public:
@@ -201,6 +196,10 @@ private:
 
 	public:
 		fugio::AudioInstanceBase			*mInstance;
+
+#if defined( PORTAUDIO_SUPPORTED )
+		PaDeviceIndex						 mDeviceIndex;
+#endif
 	};
 
 public:

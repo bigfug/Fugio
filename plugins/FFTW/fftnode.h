@@ -75,9 +75,6 @@ public:
 protected slots:
 	void onContextFrame( qint64 pTimeStamp );
 
-	void audioPinLinked( QSharedPointer<fugio::PinInterface> P );
-	void audioPinUnlinked( QSharedPointer<fugio::PinInterface> P );
-
 protected:
 	void processAudio(qint64 pTimeStamp);
 

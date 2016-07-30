@@ -38,7 +38,10 @@ bool MonoNode::deinitialise()
 
 void MonoNode::inputsUpdated( qint64 pTimeStamp )
 {
-	NodeControlBase::inputsUpdated( pTimeStamp );
+	if( mPinAudioInput->isUpdated( pTimeStamp ) )
+	{
+		pinUpdated( mPinAudioOutput );
+	}
 }
 
 fugio::AudioInstanceBase *MonoNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
@@ -75,29 +78,6 @@ fugio::AudioInstanceBase *MonoNode::audioAllocInstance( qreal pSampleRate, fugio
 
 	return( InsDat );
 }
-
-//void MonoNode::audioFreeInstance( void *pInstanceData )
-//{
-//	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
-
-//	if( InsDat )
-//	{
-//		mInstanceDataMutex.lock();
-
-//		mInstanceData.removeAll( InsDat );
-
-//		mInstanceDataMutex.unlock();
-
-//		if( fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput ) )
-//		{
-//			IAP->audioFreeInstance( InsDat->mAudIns );
-
-//			InsDat->mAudIns = nullptr;
-//		}
-
-//		delete InsDat;
-//	}
-//}
 
 void MonoNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const
 {
