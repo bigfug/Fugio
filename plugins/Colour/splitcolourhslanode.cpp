@@ -18,18 +18,6 @@ SplitColourHSLANode::SplitColourHSLANode( QSharedPointer<fugio::NodeInterface> p
 	mOutA = pinOutput<fugio::VariantInterface *>( "Alpha", mPinOutA, PID_FLOAT );
 }
 
-bool SplitColourHSLANode::initialise()
-{
-	if( !NodeControlBase::initialise() )
-	{
-		return( false );
-	}
-
-	inputsUpdated( 0 );
-
-	return( true );
-}
-
 void SplitColourHSLANode::inputsUpdated( qint64 pTimeStamp )
 {
 	Q_UNUSED( pTimeStamp )

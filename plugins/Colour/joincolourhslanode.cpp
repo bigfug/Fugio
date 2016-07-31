@@ -43,18 +43,6 @@ void JoinColourHSLANode::saveSettings( QSettings &pSettings ) const
 	pSettings.setValue( "colour", V );
 }
 
-bool JoinColourHSLANode::initialise()
-{
-	if( !NodeControlBase::initialise() )
-	{
-		return( false );
-	}
-
-	inputsUpdated( 0 );
-
-	return( true );
-}
-
 qreal JoinColourHSLANode::value( QSharedPointer<fugio::PinInterface> pPin, qreal pVal )
 {
 	bool				 ValOk;

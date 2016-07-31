@@ -33,8 +33,6 @@ bool VCFNode::initialise()
 	connect( mPinResonance->qobject(), SIGNAL(linked(QSharedPointer<fugio::PinInterface>)), this, SLOT(resonanceLinked(QSharedPointer<fugio::PinInterface>)) );
 	connect( mPinResonance->qobject(), SIGNAL(unlinked(QSharedPointer<fugio::PinInterface>)), this, SLOT(resonanceUnlinked(QSharedPointer<fugio::PinInterface>)) );
 
-	inputsUpdated( 0 );
-
 	return( true );
 }
 

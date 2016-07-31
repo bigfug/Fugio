@@ -18,18 +18,6 @@ SplitColourRGBANode::SplitColourRGBANode( QSharedPointer<fugio::NodeInterface> p
 	mOutA = pinOutput<fugio::VariantInterface *>( "Alpha", mPinOutA, PID_FLOAT );
 }
 
-bool SplitColourRGBANode::initialise()
-{
-	if( !NodeControlBase::initialise() )
-	{
-		return( false );
-	}
-
-	inputsUpdated( 0 );
-
-	return( true );
-}
-
 void SplitColourRGBANode::inputsUpdated( qint64 pTimeStamp )
 {
 	Q_UNUSED( pTimeStamp )

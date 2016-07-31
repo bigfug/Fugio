@@ -39,8 +39,6 @@ public:
 
 	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
 
-	virtual bool initialise() Q_DECL_OVERRIDE;
-
 private:
 	static qreal value( QSharedPointer<fugio::PinInterface> pPin, qreal pVal );
 

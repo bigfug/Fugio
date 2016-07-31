@@ -1372,6 +1372,9 @@ void ContextPrivate::processDeferredNodes( QList< QSharedPointer<fugio::NodeInte
 #if defined( LOG_NODE_UPDATES )
 			qDebug() << "Node Initialised:" << N->name();
 #endif
+
+			N->control()->inputsUpdated( 0 );
+
 			InitialisedNodes.append( N );
 		}
 		else if( N->status() == fugio::NodeInterface::Deferred )

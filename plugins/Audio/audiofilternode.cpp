@@ -35,8 +35,6 @@ bool AudioFilterNode::initialise()
 
 	connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(onContextFrame(qint64)) );
 
-	inputsUpdated( 0 );
-
 	return( true );
 }
 

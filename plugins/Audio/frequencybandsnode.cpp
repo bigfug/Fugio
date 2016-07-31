@@ -38,18 +38,6 @@ FrequencyBandsNode::FrequencyBandsNode( QSharedPointer<fugio::NodeInterface> pNo
 
 }
 
-bool FrequencyBandsNode::initialise()
-{
-	if( !NodeControlBase::initialise() )
-	{
-		return( false );
-	}
-
-	inputsUpdated( 0 );
-
-	return( true );
-}
-
 float FrequencyBandsNode::getBandWidth( float timeSize, float sampleRate )
 {
 	return( ( 2.0f / timeSize ) * ( sampleRate / 2.0f ) );

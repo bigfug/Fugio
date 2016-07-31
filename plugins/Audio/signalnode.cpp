@@ -86,8 +86,6 @@ bool SignalNode::initialise()
 		return( false );
 	}
 
-	inputsUpdated( 0 );
-
 	//connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(onContextFrame(qint64)) );
 
 	return( true );

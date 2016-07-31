@@ -43,18 +43,6 @@ void JoinColourRGBANode::saveSettings( QSettings &pSettings ) const
 	pSettings.setValue( "colour", V );
 }
 
-bool JoinColourRGBANode::initialise()
-{
-	if( !NodeControlBase::initialise() )
-	{
-		return( false );
-	}
-
-	inputsUpdated( 0 );
-
-	return( true );
-}
-
 qreal JoinColourRGBANode::value( QSharedPointer<fugio::PinInterface> pPin, qreal pVal )
 {
 	bool				 ValOk;
