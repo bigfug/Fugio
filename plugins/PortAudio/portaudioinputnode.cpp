@@ -160,10 +160,12 @@ bool PortAudioInputNode::isValid( fugio::AudioInstanceBase *pInstance ) const
 		return( false );
 	}
 
+#if defined( PORTAUDIO_SUPPORTED )
 	if( AudIns->mDeviceIndex != mDeviceIndex )
 	{
 		return( false );
 	}
+#endif
 
 	return( true );
 }

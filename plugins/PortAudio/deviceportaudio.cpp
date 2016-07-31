@@ -240,9 +240,11 @@ DevicePortAudio::DevicePortAudio( PaDeviceIndex pDeviceIndex )
 		mOutputAudioOffset  = ( PortAudioPlugin::instance()->fugio()->timestamp() * mOutputSampleRate ) / 1000;
 	}
 }
+#endif
 
 DevicePortAudio::~DevicePortAudio( void )
 {
+#if defined( PORTAUDIO_SUPPORTED )
 	if( mStreamInput )
 	{
 		deviceInputClose();
@@ -252,8 +254,9 @@ DevicePortAudio::~DevicePortAudio( void )
 	{
 		deviceOutputClose();
 	}
-}
 #endif
+}
+
 void DevicePortAudio::setTimeOffset( qreal pTimeOffset )
 {
 	Q_UNUSED( pTimeOffset )
@@ -265,6 +268,7 @@ void DevicePortAudio::setTimeOffset( qreal pTimeOffset )
 
 fugio::AudioInstanceBase *DevicePortAudio::audioAllocInstance( qreal pSampleRate, AudioSampleFormat pSampleFormat, int pChannels )
 {
+#if defined( PORTAUDIO_SUPPORTED )
 	if( !mStreamInput )
 	{
 		const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( mDeviceIndex );
@@ -296,6 +300,7 @@ fugio::AudioInstanceBase *DevicePortAudio::audioAllocInstance( qreal pSampleRate
 			return( AID );
 		}
 	}
+#endif
 
 	return( nullptr );
 }
@@ -671,6 +676,7 @@ qreal DevicePortAudio::outputSampleRate() const
 
 void DevicePortAudio::addOutput( PortAudioOutputNode *pOutput )
 {
+#if defined( PORTAUDIO_SUPPORTED )
 	if( mProducers.isEmpty() && mOutputChannelCount )
 	{
 		const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( mDeviceIndex );
@@ -682,6 +688,7 @@ void DevicePortAudio::addOutput( PortAudioOutputNode *pOutput )
 
 		deviceOutputOpen( DevInf );
 	}
+#endif
 
 	mProducerMutex.lock();
 
@@ -698,10 +705,12 @@ void DevicePortAudio::remOutput( PortAudioOutputNode *pOutput )
 
 	mProducerMutex.unlock();
 
+#if defined( PORTAUDIO_SUPPORTED )
 	if( mProducers.isEmpty() )
 	{
 		deviceOutputClose();
 	}
+#endif
 }
 
 int DevicePortAudio::audioChannels() const
@@ -721,7 +730,11 @@ AudioSampleFormat DevicePortAudio::audioSampleFormat() const
 
 qint64 DevicePortAudio::audioLatency() const
 {
+#if defined( PORTAUDIO_SUPPORTED )
 	return( ( mInputSampleRate * mInputTimeLatency ) / 1000.0 );
+#else
+	return( 0 );
+#endif
 }
 
 bool DevicePortAudio::isValid( AudioInstanceBase *pInstance ) const
