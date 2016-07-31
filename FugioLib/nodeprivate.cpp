@@ -264,7 +264,7 @@ void NodePrivate::loadPins( QSettings &pSettings, const QString &pArrayName, Pin
 
 			pPinMap.insert( PinOrigGlobalId, PinGlobalId );
 
-			PIN = context()->global()->createPin( PinName, PinLocalId, pDirection, fugio::utils::string2uuid( PinCtl ), PinData );
+			PIN = fugio::fugio()->createPin( PinName, PinLocalId, pDirection, fugio::utils::string2uuid( PinCtl ), PinData );
 
 			if( PIN )
 			{
