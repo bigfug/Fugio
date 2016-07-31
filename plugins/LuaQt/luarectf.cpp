@@ -25,6 +25,7 @@ const luaL_Reg LuaRectF::mLuaMethods[] =
 	{ "setX",				LuaRectF::luaSetX },
 	{ "setY",				LuaRectF::luaSetY },
 	{ "size",				LuaRectF::luaSize },
+	{ "toArray",			LuaRectF::luaToArray },
 	{ "translate",			LuaRectF::luaTranslate },
 	{ "width",				LuaRectF::luaWidth },
 	{ "x",					LuaRectF::luaX },
@@ -201,6 +202,20 @@ int LuaRectF::luaSize(lua_State *L)
 	QRectF				 R( *RUD );
 
 	LuaSizeF::pushsizef( L, R.size() );
+
+	return( 1 );
+}
+
+int LuaRectF::luaToArray(lua_State *L)
+{
+	RectFUserData		*RUD = checkrectfuserdata( L );
+
+	lua_newtable( L );
+
+	lua_pushnumber( L, RUD->x );	lua_rawseti( L, -2, 1 );
+	lua_pushnumber( L, RUD->y );	lua_rawseti( L, -2, 2 );
+	lua_pushnumber( L, RUD->w );	lua_rawseti( L, -2, 3 );
+	lua_pushnumber( L, RUD->h );	lua_rawseti( L, -2, 4 );
 
 	return( 1 );
 }

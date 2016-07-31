@@ -24,9 +24,10 @@ const luaL_Reg LuaMatrix4x4::mLuaMethods[] =
 //	{ "__add",				LuaMatrix4x4::luaAdd },
 //	{ "__div",				LuaMatrix4x4::luaDiv },
 //	{ "__eq",				LuaMatrix4x4::luaEq },
-//	{ "__mul",				LuaMatrix4x4::luaMul },
+	{ "__mul",				LuaMatrix4x4::luaMul },
 //	{ "__sub",				LuaMatrix4x4::luaSub },
-//	{ "isNull",				LuaMatrix4x4::luaIsNull },
+	{ "isAffine",			LuaMatrix4x4::luaIsAffine },
+	{ "isIdentity",			LuaMatrix4x4::luaIsIdentity },
 //	{ "manhattanLength",	LuaMatrix4x4::luaManhattanLength },
 //	{ "setX",				LuaMatrix4x4::luaSetX },
 //	{ "setY",				LuaMatrix4x4::luaSetY },
@@ -100,6 +101,50 @@ int LuaMatrix4x4::luaPinGet( const QUuid &pPinLocalId, lua_State *L )
 	}
 
 	return( pushmatrix4x4( L, SrcVar->variant().value<QMatrix4x4>() ) );
+}
+
+int LuaMatrix4x4::luaMul( lua_State *L )
+{
+	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
+	QMatrix4x4			 Matrix = *MatrixData;
+
+	return( 0 );
+}
+
+int LuaMatrix4x4::luaIsAffine(lua_State *L)
+{
+	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
+	QMatrix4x4			 Matrix = *MatrixData;
+
+	lua_pushboolean( L, Matrix.isAffine() );
+
+	return( 0 );
+}
+
+int LuaMatrix4x4::luaIsIdentity(lua_State *L)
+{
+	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
+	QMatrix4x4			 Matrix = *MatrixData;
+
+	lua_pushboolean( L, Matrix.isIdentity() );
+
+	return( 0 );
+}
+
+int LuaMatrix4x4::luaToArray( lua_State *L )
+{
+	Matrix4x4UserData *MatrixData = checkMatrix4x4userdata( L );
+
+	lua_newtable( L );
+
+	for( int i = 0 ; i < 16 ; i++ )
+	{
+		lua_pushnumber( L, MatrixData->mMatDat[ i ] );
+
+		lua_rawseti( L, -2, i + 1 );
+	}
+
+	return( 1 );
 }
 
 #endif

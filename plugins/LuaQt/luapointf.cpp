@@ -21,6 +21,7 @@ const luaL_Reg LuaPointF::mLuaMethods[] =
 	{ "manhattanLength",	LuaPointF::luaManhattanLength },
 	{ "setX",				LuaPointF::luaSetX },
 	{ "setY",				LuaPointF::luaSetY },
+	{ "toArray",			LuaPointF::luaToArray },
 	{ "x",					LuaPointF::luaX },
 	{ "y",					LuaPointF::luaY },
 	{ 0, 0 }
@@ -153,6 +154,18 @@ int LuaPointF::luaSetY( lua_State *L )
 	PUD->y = i;
 
 	return( 0 );
+}
+
+int LuaPointF::luaToArray( lua_State *L )
+{
+	PointFUserData		*PUD = checkpointfuserdata( L );
+
+	lua_newtable( L );
+
+	lua_pushnumber( L, PUD->x );	lua_rawseti( L, -2, 1 );
+	lua_pushnumber( L, PUD->y );	lua_rawseti( L, -2, 2 );
+
+	return( 1 );
 }
 
 int LuaPointF::luaX( lua_State *L )

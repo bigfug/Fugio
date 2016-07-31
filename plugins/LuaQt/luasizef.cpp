@@ -14,6 +14,7 @@ const luaL_Reg LuaSizeF::mLuaMethods[] =
 	{ "__tostring",			LuaSizeF::luaToString },
 	{ "setWidth",			LuaSizeF::luaSetWidth },
 	{ "setHeight",			LuaSizeF::luaSetHeight },
+	{ "toArray",			LuaSizeF::luaToArray },
 	{ "width",				LuaSizeF::luaWidth },
 	{ "height",				LuaSizeF::luaHeight },
 	{ 0, 0 }
@@ -93,6 +94,18 @@ int LuaSizeF::luaHeight( lua_State *L )
 	SizeFUserData		*SUD = checksizefuserdata( L );
 
 	lua_pushnumber( L, SUD->h );
+
+	return( 1 );
+}
+
+int LuaSizeF::luaToArray( lua_State *L )
+{
+	SizeFUserData		*SUD = checksizefuserdata( L );
+
+	lua_newtable( L );
+
+	lua_pushnumber( L, SUD->w );	lua_rawseti( L, -2, 1 );
+	lua_pushnumber( L, SUD->h );	lua_rawseti( L, -2, 2 );
 
 	return( 1 );
 }

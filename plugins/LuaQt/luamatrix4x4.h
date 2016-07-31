@@ -84,7 +84,7 @@ private:
 //	static int luaAdd( lua_State *L );
 //	static int luaDiv( lua_State *L );
 //	static int luaEq( lua_State *L );
-//	static int luaMul( lua_State *L );
+	static int luaMul( lua_State *L );
 //	static int luaSub( lua_State *L );
 
 //	static int luaIsNull( lua_State *L );
@@ -93,6 +93,11 @@ private:
 //	static int luaSetY( lua_State *L );
 //	static int luaX( lua_State *L );
 //	static int luaY( lua_State *L );
+
+	static int luaIsAffine( lua_State *L );
+	static int luaIsIdentity( lua_State *L );
+
+	static int luaToArray( lua_State *L );
 
 private:
 	static const luaL_Reg					mLuaInstance[];

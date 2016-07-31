@@ -62,6 +62,10 @@ public:
 	}
 
 private:
+	static void pushFloatArray( lua_State *L, float *A, int LstIdx, int LstCnt );
+	static void pushIntArray( lua_State *L, float *A, int LstIdx, int LstCnt );
+
+private:
 	static int luaGet( lua_State *L );
 	static int luaSet( lua_State *L );
 	static int luaLen( lua_State *L );

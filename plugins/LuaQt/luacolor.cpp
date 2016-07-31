@@ -48,6 +48,7 @@ const luaL_Reg LuaColor::mLuaMethods[] =
 	{ "setRgb",			LuaColor::luaSetRgb },
 	{ "setHslF",		LuaColor::luaSetHslF },
 	{ "setRgbF",		LuaColor::luaSetRgbF },
+	{ "toArray",		LuaColor::luaToArray },
 	{ 0, 0 }
 };
 
@@ -712,6 +713,21 @@ int LuaColor::luaSetRedF(lua_State *L)
 	ColorData->mColor = Color.rgba();
 
 	return( 0 );
+}
+
+int LuaColor::luaToArray(lua_State *L)
+{
+	ColorUserData		*ColorData = checkcolordata( L );
+	QColor				 Color( ColorData->mColor );
+
+	lua_newtable( L );
+
+	lua_pushnumber( L, Color.redF() );		lua_rawseti( L, -2, 1 );
+	lua_pushnumber( L, Color.greenF() );	lua_rawseti( L, -2, 2 );
+	lua_pushnumber( L, Color.blueF() );		lua_rawseti( L, -2, 3 );
+	lua_pushnumber( L, Color.alphaF() );	lua_rawseti( L, -2, 4 );
+
+	return( 1 );
 }
 
 #endif

@@ -72,6 +72,56 @@ int LuaArray::luaGet( lua_State *L )
 	return( LuaPlugin::pushVariant( L, LstInt->listIndex( LstIdx - 1 ) ) );
 }
 
+void LuaArray::pushFloatArray( lua_State *L, float *A, int LstIdx, int LstCnt )
+{
+	if( A )
+	{
+		if( lua_type( L, 3 ) == LUA_TTABLE )
+		{
+			for( int i = 1 ; i <= LstCnt ; i++ )
+			{
+				lua_rawgeti( L, 3, i );
+
+				if( lua_isnil( L, -1 ) )
+				{
+					lua_pop( L, 1 );
+
+					break;
+				}
+
+				A[ ( LstIdx * LstCnt ) + i - 1 ] = lua_tonumber( L, -1 );
+
+				lua_pop( L, 1 );
+			}
+		}
+	}
+}
+
+void LuaArray::pushIntArray( lua_State *L, float *A, int LstIdx, int LstCnt )
+{
+	if( A )
+	{
+		if( lua_type( L, 3 ) == LUA_TTABLE )
+		{
+			for( int i = 1 ; i <= LstCnt ; i++ )
+			{
+				lua_rawgeti( L, 3, i );
+
+				if( lua_isnil( L, -1 ) )
+				{
+					lua_pop( L, 1 );
+
+					break;
+				}
+
+				A[ ( LstIdx * LstCnt ) + i - 1 ] = lua_tointeger( L, -1 );
+
+				lua_pop( L, 1 );
+			}
+		}
+	}
+}
+
 int LuaArray::luaSet( lua_State *L )
 {
 	LuaArrayUserData			*LstDat = checkarray( L );
@@ -159,60 +209,30 @@ int LuaArray::luaSet( lua_State *L )
 			return( 0 );
 		}
 
+		if( ArrInt->type() == QMetaType::QPointF || ArrInt->type() == QMetaType::QVector2D )
+		{
+			pushFloatArray( L, (float *)ArrInt->array(), LstIdx, 2 );
+
+			return( 0 );
+		}
+
 		if( ArrInt->type() == QMetaType::QVector3D )
 		{
-			float		*A = (float *)ArrInt->array();
+			pushFloatArray( L, (float *)ArrInt->array(), LstIdx, 3 );
 
-			if( A )
-			{
-				if( lua_type( L, 3 ) == LUA_TTABLE )
-				{
-					for( int i = 1 ; i <= 3 ; i++ )
-					{
-						lua_rawgeti( L, 3, i );
+			return( 0 );
+		}
 
-						if( lua_isnil( L, -1 ) )
-						{
-							lua_pop( L, 1 );
-
-							break;
-						}
-
-						A[ ( LstIdx * 3 ) + i - 1 ] = lua_tonumber( L, -1 );
-
-						lua_pop( L, 1 );
-					}
-				}
-			}
+		if( ArrInt->type() == QMetaType::QVector4D || ArrInt->type() == QMetaType::QColor )
+		{
+			pushFloatArray( L, (float *)ArrInt->array(), LstIdx, 4 );
 
 			return( 0 );
 		}
 
 		if( ArrInt->type() == QMetaType::QMatrix4x4 )
 		{
-			float		*A = (float *)ArrInt->array();
-
-			if( A )
-			{
-				if( lua_type( L, 3 ) == LUA_TTABLE )
-				{
-					for( int i = 1 ; i <= 16 ; i++ )
-					{
-						lua_rawgeti( L, 3, i );
-
-						if( lua_isnil( L, -1 ) )
-						{
-							lua_pop( L, 1 );
-
-							break;
-						}
-
-						A[ ( LstIdx * 16 ) + ( i - 1 ) ] = lua_tonumber( L, -1 );
-
-						lua_pop( L, 1 );
-					}
-				}
-			}
+			pushFloatArray( L, (float *)ArrInt->array(), LstIdx, 16 );
 
 			return( 0 );
 		}
