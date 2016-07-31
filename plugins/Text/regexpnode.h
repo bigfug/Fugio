@@ -26,25 +26,20 @@ class RegExpNode : public fugio::NodeControlBase
 public:
 	Q_INVOKABLE explicit RegExpNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~RegExpNode( void );
+	virtual ~RegExpNode( void ) {}
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
 
-	virtual QWidget *gui( void );
-
 	virtual void inputsUpdated( qint64 pTimeStamp );
-
-protected slots:
-	void patternUpdate( const QString &pPattern );
 
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
 
+	QSharedPointer<fugio::PinInterface>			 mPinRegExp;
+
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
 	fugio::VariantInterface						*mValOutput;
-
-	QRegExp										 mRegExp;
 };
 
 #endif // REGEXPNODE_H
