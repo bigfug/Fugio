@@ -43,6 +43,18 @@ void JoinColourHSLANode::saveSettings( QSettings &pSettings ) const
 	pSettings.setValue( "colour", V );
 }
 
+bool JoinColourHSLANode::initialise()
+{
+	if( !NodeControlBase::initialise() )
+	{
+		return( false );
+	}
+
+	inputsUpdated( 0 );
+
+	return( true );
+}
+
 qreal JoinColourHSLANode::value( QSharedPointer<fugio::PinInterface> pPin, qreal pVal )
 {
 	bool				 ValOk;
@@ -90,7 +102,7 @@ void JoinColourHSLANode::inputsUpdated( qint64 pTimeStamp )
 
 	QColor		C = QColor::fromHslF( H, S, L, A );
 
-	if( C == mColour )
+	if( !C.isValid() || C == mColour )
 	{
 		return;
 	}
@@ -101,3 +113,4 @@ void JoinColourHSLANode::inputsUpdated( qint64 pTimeStamp )
 
 	mNode->context()->pinUpdated( mPinOutputColour );
 }
+

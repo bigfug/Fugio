@@ -43,6 +43,18 @@ void JoinColourRGBANode::saveSettings( QSettings &pSettings ) const
 	pSettings.setValue( "colour", V );
 }
 
+bool JoinColourRGBANode::initialise()
+{
+	if( !NodeControlBase::initialise() )
+	{
+		return( false );
+	}
+
+	inputsUpdated( 0 );
+
+	return( true );
+}
+
 qreal JoinColourRGBANode::value( QSharedPointer<fugio::PinInterface> pPin, qreal pVal )
 {
 	bool				 ValOk;
@@ -90,7 +102,7 @@ void JoinColourRGBANode::inputsUpdated( qint64 pTimeStamp )
 
 	QColor		C = QColor::fromRgbF( R, G, B, A );
 
-	if( C == mColour )
+	if( !C.isValid() || C == mColour )
 	{
 		return;
 	}

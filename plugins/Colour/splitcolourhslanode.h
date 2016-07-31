@@ -34,6 +34,8 @@ public:
 
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
+	virtual bool initialise() Q_DECL_OVERRIDE;
+
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
 
