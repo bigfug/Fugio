@@ -45,7 +45,7 @@ void FrequencyToNoteNode::inputsUpdated( qint64 pTimeStamp )
 	if( MidiNote < 0 || std::fabs( std::log2f( Freq / mLastFreq ) * 1200.0f ) > Range )
 	{
 		MidiNote = qBound<int>( 0, 12.0f * std::log2f( Freq / 440.0f ) + 69.0f, 127 );
-		MidiFreq = 440.0 * std::powf( 2.0f, float( MidiNote - 69 ) / 12.0f );
+		MidiFreq = 440.0 * powf( 2.0f, float( MidiNote - 69 ) / 12.0f );
 	}
 
 	float	CentDiff = std::log2f( Freq / MidiFreq ) * 1200.0f;
