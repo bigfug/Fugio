@@ -15,7 +15,7 @@ class ListIndexNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE ListIndexNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE ListIndexNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~ListIndexNode( void ) {}
 

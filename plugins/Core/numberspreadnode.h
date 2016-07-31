@@ -15,7 +15,7 @@ class NumberSpreadNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE NumberSpreadNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE NumberSpreadNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~NumberSpreadNode( void ) {}
 

@@ -17,13 +17,13 @@ class NotNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE NotNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE NotNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~NotNode( void ) {}
 
 	// NodeControlInterface interface
 
-	virtual void inputsUpdated(qint64 pTimeStamp);
+	virtual void inputsUpdated( qint64 pTimeStamp );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;

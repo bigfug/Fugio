@@ -20,7 +20,7 @@ class MonoNode : public fugio::NodeControlBase, public fugio::AudioProducerInter
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE MonoNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE MonoNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~MonoNode( void ) {}
 

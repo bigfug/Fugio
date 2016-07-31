@@ -17,7 +17,7 @@ class LedNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE LedNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE LedNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~LedNode( void ) {}
 

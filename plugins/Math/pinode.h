@@ -15,7 +15,7 @@ class PiNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE PiNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE PiNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~PiNode( void ) {}
 

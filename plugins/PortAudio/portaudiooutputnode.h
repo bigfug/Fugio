@@ -40,7 +40,7 @@ public:
 
 	virtual QWidget *gui() Q_DECL_OVERRIDE;
 
-	virtual void inputsUpdated(qint64 pTimeStamp) Q_DECL_OVERRIDE;
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
 	virtual void loadSettings( QSettings &pSettings ) Q_DECL_OVERRIDE;
 	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;

@@ -3,7 +3,7 @@
 #include <QSlider>
 #include <QSettings>
 
-SliderNode::SliderNode(QSharedPointer<fugio::NodeInterface> pNode)
+SliderNode::SliderNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
 	mValue = pinOutput<fugio::VariantInterface *>( "Number", mPinValue, PID_FLOAT );

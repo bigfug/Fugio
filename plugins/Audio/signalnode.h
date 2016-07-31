@@ -23,7 +23,7 @@ class SignalNode : public fugio::NodeControlBase, public fugio::AudioProducerInt
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE SignalNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE SignalNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~SignalNode( void ) {}
 

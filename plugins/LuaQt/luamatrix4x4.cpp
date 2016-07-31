@@ -36,7 +36,7 @@ const luaL_Reg LuaMatrix4x4::mLuaMethods[] =
 	{ 0, 0 }
 };
 
-int LuaMatrix4x4::luaOpen(lua_State *L)
+int LuaMatrix4x4::luaOpen (lua_State *L )
 {
 	luaL_newmetatable( L, Matrix4x4UserData::TypeName );
 

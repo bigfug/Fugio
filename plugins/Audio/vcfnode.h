@@ -20,7 +20,7 @@ class VCFNode : public fugio::NodeControlBase, public fugio::AudioProducerInterf
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE VCFNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE VCFNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~VCFNode( void ) {}
 

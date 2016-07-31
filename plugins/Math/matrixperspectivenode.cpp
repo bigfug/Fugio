@@ -6,7 +6,7 @@
 #include <fugio/math/uuid.h>
 #include <fugio/context_interface.h>
 
-MatrixPerspectiveNode::MatrixPerspectiveNode(QSharedPointer<fugio::NodeInterface> pNode)
+MatrixPerspectiveNode::MatrixPerspectiveNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
 	mOutputMatrix = pinOutput<fugio::VariantInterface *>( "Matrix", mPinOutputMatrix, PID_MATRIX4 );

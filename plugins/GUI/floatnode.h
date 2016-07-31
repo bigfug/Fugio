@@ -33,7 +33,7 @@ public:
 	
 	virtual QWidget *gui( void ) Q_DECL_OVERRIDE;
 
-	virtual void inputsUpdated(qint64 pTimeStamp) Q_DECL_OVERRIDE;
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
 	virtual void loadSettings( QSettings &pSettings ) Q_DECL_OVERRIDE;
 

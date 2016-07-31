@@ -17,13 +17,13 @@ class DivideNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE DivideNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE DivideNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~DivideNode( void ) {}
 
 	// NodeControlInterface interface
 
-	virtual void inputsUpdated(qint64 pTimeStamp);
+	virtual void inputsUpdated( qint64 pTimeStamp );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinNumerator;

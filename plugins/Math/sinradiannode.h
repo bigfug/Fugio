@@ -15,13 +15,13 @@ class SinRadianNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE SinRadianNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE SinRadianNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~SinRadianNode( void ) {}
 
 	// NodeControlInterface interface
 
-	virtual void inputsUpdated(qint64 pTimeStamp);
+	virtual void inputsUpdated( qint64 pTimeStamp );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;

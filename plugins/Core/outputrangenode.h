@@ -19,13 +19,13 @@ class OutputRangeNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE OutputRangeNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE OutputRangeNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~OutputRangeNode( void ) {}
 
 	// NodeControlInterface interface
 
-	virtual void inputsUpdated(qint64 pTimeStamp);
+	virtual void inputsUpdated( qint64 pTimeStamp );
 
 	virtual bool canAcceptPin( fugio::PinInterface *pPin ) const;
 

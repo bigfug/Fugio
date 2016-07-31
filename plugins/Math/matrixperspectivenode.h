@@ -21,7 +21,7 @@ public:
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
 
-	virtual void inputsUpdated(qint64 pTimeStamp);
+	virtual void inputsUpdated( qint64 pTimeStamp );
 
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinAngle;

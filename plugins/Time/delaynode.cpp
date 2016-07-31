@@ -9,7 +9,7 @@
 #include <fugio/core/uuid.h>
 #include <fugio/core/variant_interface.h>
 
-DelayNode::DelayNode(QSharedPointer<fugio::NodeInterface> pNode)
+DelayNode::DelayNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mTriggerTime( -1 )
 {
 	mPinNumber = pinInput( "Number" );

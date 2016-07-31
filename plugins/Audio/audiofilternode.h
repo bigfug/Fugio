@@ -22,7 +22,7 @@ class AudioFilterNode : public fugio::NodeControlBase, public fugio::AudioProduc
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE AudioFilterNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE AudioFilterNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~AudioFilterNode( void ) {}
 

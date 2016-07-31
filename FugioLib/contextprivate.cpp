@@ -1029,7 +1029,7 @@ void ContextPrivate::nodeNameChanged( QSharedPointer<fugio::NodeInterface> pNode
 	emit nodeUpdated( pNode->uuid() );
 }
 
-void ContextPrivate::onNodeActivationChanged(QSharedPointer<fugio::NodeInterface> pNode)
+void ContextPrivate::onNodeActivationChanged( QSharedPointer<fugio::NodeInterface> pNode )
 {
 	emit nodeActivated( pNode->uuid() );
 }

@@ -28,7 +28,7 @@ class FFTNode : public fugio::NodeControlBase, public fugio::FftInterface
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE FFTNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE FFTNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~FFTNode( void );
 
@@ -76,7 +76,7 @@ protected slots:
 	void onContextFrame( qint64 pTimeStamp );
 
 protected:
-	void processAudio(qint64 pTimeStamp);
+	void processAudio( qint64 pTimeStamp );
 
 	void calculateWindow();
 

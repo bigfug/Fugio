@@ -17,7 +17,7 @@ class NormaliseNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE NormaliseNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE NormaliseNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~NormaliseNode( void ) {}
 

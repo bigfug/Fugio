@@ -9,7 +9,7 @@
 #include <fugio/core/uuid.h>
 #include <fugio/core/variant_interface.h>
 
-EveryNode::EveryNode(QSharedPointer<fugio::NodeInterface> pNode)
+EveryNode::EveryNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mLastTime( -1 )
 {
 	mPinNumber = pinInput( "Number" );

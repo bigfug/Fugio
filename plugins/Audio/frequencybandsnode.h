@@ -18,7 +18,7 @@ class FrequencyBandsNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE FrequencyBandsNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE FrequencyBandsNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~FrequencyBandsNode( void ) {}
 

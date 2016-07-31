@@ -67,7 +67,7 @@ void FloatNode::textChanged( const QString &pText )
 }
 
 
-void FloatNode::inputsUpdated(qint64 pTimeStamp)
+void FloatNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 

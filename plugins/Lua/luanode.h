@@ -23,7 +23,7 @@ class LuaNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE LuaNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE LuaNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~LuaNode( void ) {}
 
@@ -33,7 +33,7 @@ public:
 
 	virtual bool deinitialise() Q_DECL_OVERRIDE;
 
-	virtual void inputsUpdated(qint64 pTimeStamp) Q_DECL_OVERRIDE;
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
 	virtual QList<QUuid> pinAddTypesInput() const Q_DECL_OVERRIDE;
 	virtual QList<QUuid> pinAddTypesOutput() const Q_DECL_OVERRIDE;

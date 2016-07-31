@@ -19,7 +19,7 @@ class Vector3Node : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE Vector3Node( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE Vector3Node( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~Vector3Node( void ) {}
 
