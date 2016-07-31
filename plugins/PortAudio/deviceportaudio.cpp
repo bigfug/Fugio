@@ -237,7 +237,7 @@ DevicePortAudio::DevicePortAudio( PaDeviceIndex pDeviceIndex )
 		mOutputChannelCount = DevInf->maxOutputChannels;
 		mOutputSampleRate   = AUDIO_DEFAULT_SAMPLE_RATE;
 		mOutputTimeLatency  = DevInf->defaultLowOutputLatency;
-		mOutputAudioOffset  = ( PortAudioPlugin::instance()->fugio()->timestamp() * mOutputSampleRate ) / 1000;
+		mOutputAudioOffset  = 0;
 	}
 }
 #endif
@@ -415,7 +415,7 @@ void DevicePortAudio::deviceOutputOpen( const PaDeviceInfo *DevInf )
 
 	mOutputSampleRate   = StreamInfo->sampleRate;
 	mOutputTimeLatency  = StreamInfo->outputLatency;
-	mOutputAudioOffset  = ( PortAudioPlugin::instance()->fugio()->timestamp() * mOutputSampleRate ) / 1000;
+	mOutputAudioOffset  = 0;
 
 	//mOutputAudioOffset -= ( mOutputTimeLatency * mOutputSampleRate ) / 1000;
 
