@@ -4,6 +4,8 @@
 #include <fugio/plugin_interface.h>
 #include <fugio/device_factory_interface.h>
 
+#include <QNetworkAccessManager>
+
 using namespace fugio;
 
 class NetworkPlugin : public QObject, public PluginInterface
@@ -13,7 +15,7 @@ class NetworkPlugin : public QObject, public PluginInterface
 	Q_INTERFACES( fugio::PluginInterface )
 
 public:
-	Q_INVOKABLE explicit NetworkPlugin( void ) : mApp( 0 ) { mInstance = this; }
+	Q_INVOKABLE explicit NetworkPlugin( void );
 
 	virtual ~NetworkPlugin( void ) {}
 
@@ -25,6 +27,11 @@ public:
 	inline GlobalInterface *app( void )
 	{
 		return( mApp );
+	}
+
+	static QNetworkAccessManager *nam( void )
+	{
+		return( mInstance->mNetworkAccessManager );
 	}
 
 	//-------------------------------------------------------------------------
@@ -41,6 +48,7 @@ private:
 	static NetworkPlugin		*mInstance;
 
 	GlobalInterface				*mApp;
+	QNetworkAccessManager		*mNetworkAccessManager;
 };
 
 #endif // NETWORKPLUGIN_H
