@@ -32,7 +32,8 @@ SOURCES += \
     luagradient.cpp \
     luaqtplugin.cpp \
     luaimage.cpp \
-    luatransform.cpp
+    luatransform.cpp \
+    luamatrix4x4.cpp
 
 HEADERS +=\
     ../../include/fugio/luaqt/uuid.h \
@@ -50,7 +51,8 @@ HEADERS +=\
     luagradient.h \
     luaqtplugin.h \
     luaimage.h \
-    luatransform.h
+    luatransform.h \
+    luamatrix4x4.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

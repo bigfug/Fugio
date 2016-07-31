@@ -187,6 +187,35 @@ int LuaArray::luaSet( lua_State *L )
 
 			return( 0 );
 		}
+
+		if( ArrInt->type() == QMetaType::QMatrix4x4 )
+		{
+			float		*A = (float *)ArrInt->array();
+
+			if( A )
+			{
+				if( lua_type( L, 3 ) == LUA_TTABLE )
+				{
+					for( int i = 1 ; i <= 16 ; i++ )
+					{
+						lua_rawgeti( L, 3, i );
+
+						if( lua_isnil( L, -1 ) )
+						{
+							lua_pop( L, 1 );
+
+							break;
+						}
+
+						A[ ( LstIdx * 16 ) + ( i - 1 ) ] = lua_tonumber( L, -1 );
+
+						lua_pop( L, 1 );
+					}
+				}
+			}
+
+			return( 0 );
+		}
 	}
 
 	fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( LstDat->mObject );

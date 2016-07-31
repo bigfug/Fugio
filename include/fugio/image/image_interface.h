@@ -31,6 +31,26 @@ public:
 		FORMAT_HSV8
 	} Format;
 
+	static int formatPixelByteCount( Format pFormat, int pBuffer = 0 )
+	{
+		switch( pFormat )
+		{
+			case FORMAT_RGB8:		return( 3 );
+			case FORMAT_RGBA8:		return( 4 );
+			case FORMAT_BGR8:		return( 3 );
+			case FORMAT_BGRA8:		return( 4 );
+			case FORMAT_YUYV422:	return( !pBuffer ? 2 : 1 );
+			case FORMAT_GRAY16:		return( 2 );
+			case FORMAT_GRAY8:		return( 1 );
+			case FORMAT_RG32:		return( 4 );
+			case FORMAT_HSV8:		return( 3 );
+
+			default:			break;
+		}
+
+		return( 0 );
+	}
+
 	const static int PLANE_COUNT = 8;
 
 	virtual ~ImageInterface( void ) {}

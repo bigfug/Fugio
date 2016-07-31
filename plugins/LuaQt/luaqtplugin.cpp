@@ -9,6 +9,7 @@
 #include <fugio/image/uuid.h>
 #include <fugio/luaqt/uuid.h>
 #include <fugio/colour/uuid.h>
+#include <fugio/math/uuid.h>
 
 #include <fugio/image/image_interface.h>
 
@@ -24,6 +25,7 @@
 #include "luagradient.h"
 #include "luaimage.h"
 #include "luatransform.h"
+#include "luamatrix4x4.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
@@ -99,9 +101,11 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaRegisterExtension( LuaSizeF::luaOpen );
 	LUA->luaRegisterExtension( LuaTransform::luaOpen );
 	LUA->luaRegisterExtension( LuaRectF::luaOpen );
+	LUA->luaRegisterExtension( LuaMatrix4x4::luaOpen );
 
 	LUA->luaAddPinGet( PID_COLOUR, LuaColor::luaPinGet );
 	LUA->luaAddPinGet( PID_IMAGE, LuaImage::luaPinGet );
+	LUA->luaAddPinGet( PID_MATRIX4, LuaMatrix4x4::luaPinGet );
 #endif
 
 	return( INIT_OK );
