@@ -69,7 +69,7 @@ void LedWidget::mouseDoubleClickEvent(QMouseEvent *)
 {
 	QColor		C = QColorDialog::getColor( mColour );
 
-	if( C != mColour )
+	if( C.isValid() && C != mColour )
 	{
 		mColour = C;
 

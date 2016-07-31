@@ -725,7 +725,10 @@ void MainWindow::on_actionSet_Colour_triggered()
 
 	QColor C = QColorDialog::getColor( Qt::white, this );
 
-	CV->view()->setSelectedColour( C );
+	if( C.isValid() )
+	{
+		CV->view()->setSelectedColour( C );
+	}
 }
 
 void MainWindow::on_actionCut_triggered()

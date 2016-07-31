@@ -261,7 +261,7 @@ void LinkItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *pEvent)
 	{
 		QColor C = QColorDialog::getColor( brush().color() );
 
-		if( C != brush().color() )
+		if( C.isValid() && C != brush().color() )
 		{
 //			CmdNodeSetColour		*Cmd = new CmdNodeSetColour( this, C );
 

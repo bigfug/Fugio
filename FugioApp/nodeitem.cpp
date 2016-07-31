@@ -1079,7 +1079,7 @@ void NodeItem::menuSetColour()
 {
 	QColor C = QColorDialog::getColor( mBackgroundColour );
 
-	if( C != mBackgroundColour )
+	if( C.isValid() && C != mBackgroundColour )
 	{
 		if( CmdNodeSetColour *Cmd = new CmdNodeSetColour( mContextView->findNodeItem( mNodeId ), C ) )
 		{

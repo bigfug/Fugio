@@ -27,7 +27,7 @@ class ColourButtonNode : public fugio::NodeControlBase
 public:
 	Q_INVOKABLE explicit ColourButtonNode( QSharedPointer<fugio::NodeInterface> pNode );
 	
-	virtual ~ColourButtonNode( void );
+	virtual ~ColourButtonNode( void ) {}
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
