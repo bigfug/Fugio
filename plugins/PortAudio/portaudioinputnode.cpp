@@ -86,6 +86,13 @@ void PortAudioInputNode::audioDeviceSelected(const QString &pDeviceName)
 
 	mDeviceName = pDeviceName;
 
+	if( mNode->status() == fugio::NodeInterface::Deferred )
+	{
+		mNode->context()->nodeInitialised();
+
+		return;
+	}
+
 #if defined( PORTAUDIO_SUPPORTED )
 	mDeviceIndex = DevicePortAudio::deviceInputNameIndex( mDeviceName );
 
