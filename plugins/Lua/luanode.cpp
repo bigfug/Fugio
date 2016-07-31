@@ -212,7 +212,7 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 		}
 	}
 
-	if( !mL || mCompileStatus != LUA_OK || mCallStatus != LUA_OK )
+	if( !pTimeStamp || !mL || mCompileStatus != LUA_OK || mCallStatus != LUA_OK )
 	{
 		return;
 	}
