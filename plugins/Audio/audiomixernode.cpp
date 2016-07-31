@@ -8,6 +8,8 @@ AudioMixerNode::AudioMixerNode( QSharedPointer<fugio::NodeInterface> pNode )
 {
 	QSharedPointer<fugio::PinInterface>	P1 = pinInput( "Audio" );
 
+	P1->setAutoRename( true );
+
 	mValOutput = pinOutput<fugio::AudioProducerInterface *>( "Audio Mix", mPinOutput, PID_AUDIO );
 
 	P1->setDescription( tr( "The first audio source" ) );
@@ -17,11 +19,6 @@ AudioMixerNode::AudioMixerNode( QSharedPointer<fugio::NodeInterface> pNode )
 	connect( mNode->qobject(), SIGNAL(pinLinked(QSharedPointer<fugio::PinInterface>,QSharedPointer<fugio::PinInterface>)), this, SLOT(pinLinked(QSharedPointer<fugio::PinInterface>,QSharedPointer<fugio::PinInterface>)) );
 
 	connect( mNode->qobject(), SIGNAL(pinUnlinked(QSharedPointer<fugio::PinInterface>,QSharedPointer<fugio::PinInterface>)), this, SLOT(pinUnlinked(QSharedPointer<fugio::PinInterface>,QSharedPointer<fugio::PinInterface>)) );
-}
-
-AudioMixerNode::~AudioMixerNode( void )
-{
-
 }
 
 void AudioMixerNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, const AudioInstanceData *pInstanceData ) const
@@ -183,4 +180,10 @@ qint64 AudioMixerNode::audioLatency() const
 	}
 
 	return( Latency );
+}
+
+
+bool AudioMixerNode::pinShouldAutoRename(fugio::PinInterface *pPin) const
+{
+	return( pPin->direction() == PIN_INPUT );
 }
