@@ -407,6 +407,19 @@ win64 {
 
 windows:exists( $$NDI_DIR ) {
 	LIBS += -L$$NDI_DIR
-
-	message( $$NDI_DIR )
 }
+
+#------------------------------------------------------------------------------
+# OpenNI
+
+windows:exists( "C:/Program Files (x86)/OpenNI2/Redist" ) {
+	LIBS += -L"C:/Program Files (x86)/OpenNI2/Redist"
+}
+
+#------------------------------------------------------------------------------
+# NiTE2
+
+windows:exists( "C:/Program Files (x86)/PrimeSense/NiTE2/Redist" ) {
+	LIBS += -L"C:/Program Files (x86)/PrimeSense/NiTE2/Redist"
+}
+
