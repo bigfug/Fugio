@@ -27,7 +27,7 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString( "" ) );
+		return( QString( "%1 bytes" ).arg( mValue.size() ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
