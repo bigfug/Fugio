@@ -24,7 +24,13 @@ public:
 
 	// NodeControlInterface interface
 public:
-	virtual void inputsUpdated( qint64 pTimeStamp );
+	virtual bool initialise() Q_DECL_OVERRIDE;
+
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
+
+private:
+	static float getBandWidth(float timeSize, float sampleRate);
+	static int freqToIndex(int timeSize, int sampleRate, int freq);
 
 protected:
 	QSharedPointer<fugio::PinInterface>				 mPinInputFFT;
