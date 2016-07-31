@@ -47,6 +47,7 @@ const luaL_Reg LuaPainter::mLuaMethods[] =
 	{ "drawRect",			LuaPainter::luaDrawRect },
 	{ "drawText",			LuaPainter::luaDrawText },
 	{ "eraseRect",			LuaPainter::luaEraseRect },
+	{ "fillRect",			LuaPainter::luaFillRect },
 	{ "finish",				LuaPainter::luaDelete },
 	{ "font",				LuaPainter::luaFont },
 	{ "pen",				LuaPainter::luaPen },
@@ -638,6 +639,17 @@ int LuaPainter::luaEraseRect( lua_State *L )
 	}
 
 	PainterData->mPainter->eraseRect( Rect );
+
+	return( 0 );
+}
+
+int LuaPainter::luaFillRect(lua_State *L)
+{
+	LuaPainterData		*PainterData = checkactivepainter( L );
+	QRectF				 Rect = LuaRectF::checkrectf( L, 2 );
+	QColor				 Colour = LuaColor::checkcolor( L, 3 );
+
+	PainterData->mPainter->fillRect( Rect, Colour );
 
 	return( 0 );
 }
