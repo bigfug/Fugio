@@ -70,7 +70,22 @@ protected:
 
 		}
 
-		virtual ~AudioInstanceData( void ) {}
+		virtual ~AudioInstanceData( void )
+		{
+			if( mCutoffInstance )
+			{
+				delete mCutoffInstance;
+
+				mCutoffInstance = nullptr;
+			}
+
+			if( mResonanceInstance )
+			{
+				delete mResonanceInstance;
+
+				mResonanceInstance = nullptr;
+			}
+		}
 
 		virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers ) Q_DECL_OVERRIDE
 		{
