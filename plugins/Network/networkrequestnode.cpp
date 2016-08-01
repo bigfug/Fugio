@@ -15,11 +15,7 @@ NetworkRequestNode::NetworkRequestNode( QSharedPointer<fugio::NodeInterface> pNo
 	: NodeControlBase( pNode ), mNetRep( 0 ), mTempFile( &mTempFile1 )
 {
 	FUGID( PIN_INPUT_URL, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
-
-	//FUGID( PIN_XXX_XXX, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
-
 	FUGID( PIN_OUTPUT_FILENAME, "249f2932-f483-422f-b811-ab679f006381" );
-	//FUGID( PIN_OUTPUT_ERROR,	"B5F5E882-DC79-47E0-8129-FFC7D31B3C2B" );
 
 	mPinInputTrigger = pinInput( "Trigger", PID_FUGIO_NODE_TRIGGER );
 
@@ -28,9 +24,10 @@ NetworkRequestNode::NetworkRequestNode( QSharedPointer<fugio::NodeInterface> pNo
 	mValOutput = pinOutput<fugio::FilenameInterface *>( "Filename", mPinOutput, PID_FILENAME, PIN_OUTPUT_FILENAME );
 
 	QDir		TempPath( QDir::tempPath() );
+	QUuid		TempUuid = QUuid::createUuid();
 
-	mTempFile1.setFileName( TempPath.absoluteFilePath( QString( "%1.1" ).arg( mNode->uuid().toString() ) ) );
-	mTempFile2.setFileName( TempPath.absoluteFilePath( QString( "%1.2" ).arg( mNode->uuid().toString() ) ) );
+	mTempFile1.setFileName( TempPath.absoluteFilePath( QString( "%1.1" ).arg( TempUuid.toString() ) ) );
+	mTempFile2.setFileName( TempPath.absoluteFilePath( QString( "%1.2" ).arg( TempUuid.toString() ) ) );
 }
 
 bool NetworkRequestNode::initialise()
@@ -124,6 +121,8 @@ void NetworkRequestNode::replyFinished()
 	{
 		const QVariant RedirectionTarget = mNetRep->attribute( QNetworkRequest::RedirectionTargetAttribute );
 
+		mNetRep->disconnect( this );
+
 		mNetRep->deleteLater();
 
 		mNetRep = nullptr;
@@ -133,10 +132,12 @@ void NetworkRequestNode::replyFinished()
 			const QUrl RedirectedUrl = NetUrl.resolved( RedirectionTarget.toUrl() );
 
 			request( RedirectedUrl );
-
-			return;
 		}
+
+		return;
 	}
+
+	mNetRep->disconnect( this );
 
 	mNetRep->deleteLater();
 
@@ -145,8 +146,6 @@ void NetworkRequestNode::replyFinished()
 	mTempFile->close();
 
 	mFilename = mTempFile->fileName();
-
-	qDebug() << mFilename;
 
 	mNode->setStatus( fugio::NodeInterface::Initialised );
 	mNode->setStatusMessage( tr( "Received %1 bytes" ).arg( mTempFile->size() ) );
