@@ -4,6 +4,7 @@
 
 #include "filewatchernode.h"
 #include "filenamenode.h"
+#include "loadnode.h"
 
 #include "filenamepin.h"
 
@@ -11,8 +12,9 @@ QList<QUuid>				NodeControlBase::PID_UUID;
 
 ClassEntry		mNodeClasses[] =
 {
-	ClassEntry( "Filename", "GUI", ClassEntry::None, NID_FILENAME, &FilenameNode::staticMetaObject ),
-	ClassEntry( "File Watcher", "File", ClassEntry::None, NID_FILE_WATCH, &FileWatcherNode::staticMetaObject ),
+	ClassEntry( "Filename", "GUI", NID_FILENAME, &FilenameNode::staticMetaObject ),
+	ClassEntry( "File Load", "File", NID_FILE_LOAD, &LoadNode::staticMetaObject ),
+	ClassEntry( "File Watcher", "File", NID_FILE_WATCH, &FileWatcherNode::staticMetaObject ),
 	ClassEntry()
 };
 
