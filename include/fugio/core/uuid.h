@@ -26,6 +26,7 @@
 #define NID_FRAME_DELAY				(QUuid("{b52cdf32-52a0-4ac9-aaca-3da9b312140c}"))
 #define NID_TYPE_SIZE				(QUuid("{9bf765fa-6bde-4766-82be-03751e75348f}"))
 #define NID_FLOAT_THRESHOLD			(QUuid("{EB3D3721-A8B1-46D3-906D-EED2368E925B}"))
+#define NID_AUTO_NUMBER_RANGE		(QUuid("{4023e1f6-e46a-45d0-93e4-9d0247f8b888}"))
 
 #define NID_FADE					(QUuid("{420e29aa-b990-4a05-b643-78e6a53e6404}"))
 #define NID_INDEX					(QUuid("{1DA6D451-561E-4E03-93A3-B723046F43EB}"))
