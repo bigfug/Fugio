@@ -78,5 +78,5 @@ void EveryNode::frameStart( qint64 pTimeStamp )
 		mLastTime += TriggerTime;
 	}
 
-	mNode->context()->pinUpdated( mPinTrigger );
+	pinUpdated( mPinTrigger );
 }
