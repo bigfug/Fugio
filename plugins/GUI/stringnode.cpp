@@ -34,7 +34,7 @@ QWidget *StringNode::gui()
 {
 	QLineEdit	*GUI = new QLineEdit();
 
-	GUI->setText( mString->variant().toString() );
+	GUI->setText( mText );
 
 	connect( GUI, SIGNAL(textChanged(QString)), this, SLOT(valueChanged(QString)) );
 
