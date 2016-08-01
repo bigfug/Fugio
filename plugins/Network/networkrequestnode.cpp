@@ -3,60 +3,84 @@
 #include "networkplugin.h"
 
 #include <fugio/core/uuid.h>
+#include <fugio/file/uuid.h>
+
+#include <fugio/context_interface.h>
+#include <fugio/context_signals.h>
 
 NetworkRequestNode::NetworkRequestNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mTempFile( 0 )
+	: NodeControlBase( pNode ), mNetRep( 0 ), mTempFile( &mTempFile1 )
 {
 	FUGID( PIN_INPUT_URL, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 
 	//FUGID( PIN_XXX_XXX, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
-	//FUGID( PIN_XXX_XXX, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
 
-	FUGID( PIN_OUTPUT_OUTPUT, "249f2932-f483-422f-b811-ab679f006381" );
+	FUGID( PIN_OUTPUT_FILENAME, "249f2932-f483-422f-b811-ab679f006381" );
+	//FUGID( PIN_OUTPUT_ERROR,	"B5F5E882-DC79-47E0-8129-FFC7D31B3C2B" );
 
 	mPinInputTrigger = pinInput( "Trigger", PID_FUGIO_NODE_TRIGGER );
 
 	mPinInputUrl = pinInput( "URL", PIN_INPUT_URL );
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_BYTEARRAY, PIN_OUTPUT_OUTPUT );
+	mValOutput = pinOutput<fugio::FilenameInterface *>( "Filename", mPinOutput, PID_FILENAME, PIN_OUTPUT_FILENAME );
 }
 
 void NetworkRequestNode::inputsUpdated( qint64 pTimeStamp )
 {
 	QNetworkAccessManager	*NAM = NetworkPlugin::nam();
+	bool					 Update = mPinInputTrigger->isUpdated( pTimeStamp );
 
-	QUrl					 URL( variant( mPinInputUrl ).toString() );
-
-	if( !URL.isValid() )
+	if( mPinInputUrl->isUpdated( pTimeStamp ) )
 	{
-		return;
+		QUrl					 URL( variant( mPinInputUrl ).toString() );
+
+		if( !URL.isValid() )
+		{
+			return;
+		}
+
+		if( URL != mUrl )
+		{
+			Update = true;
+
+			mUrl = URL;
+		}
 	}
 
-	if( mPinInputTrigger->isUpdated( pTimeStamp ) )
+	if( Update )
 	{
-		if( !mTempFile )
+		if( mNetRep )
 		{
-			mTempFile = new QTemporaryFile( this );
+			return;
+		}
 
-			if( mTempFile )
+		if( mTempFile == &mTempFile1 )
+		{
+			if( !mTempFile2.fileName().isEmpty() )
 			{
-				if( mTempFile->open() )
-				{
-					QNetworkRequest		 NetReq( URL );
-					QNetworkReply		*NetRep;
+				mTempFile2.remove();
+			}
 
-					if( ( NetRep = NAM->get( NetReq ) ) != nullptr )
-					{
-						connect( NetRep, SIGNAL(readyRead()), this, SLOT(replyReadReady()) );
-						connect( NetRep, SIGNAL(finished()), this, SLOT(replyFinished()) );
-					}
-				}
-				else
-				{
-					mTempFile->deleteLater();
+			mTempFile = &mTempFile2;
+		}
+		else
+		{
+			if( !mTempFile1.fileName().isEmpty() )
+			{
+				mTempFile1.remove();
+			}
 
-					mTempFile = nullptr;
-				}
+			mTempFile = &mTempFile1;
+		}
+
+		if( mTempFile->open() )
+		{
+			QNetworkRequest		 NetReq( mUrl );
+
+			if( ( mNetRep = NAM->get( NetReq ) ) != nullptr )
+			{
+				connect( mNetRep, SIGNAL(readyRead()), this, SLOT(replyReadReady()) );
+				connect( mNetRep, SIGNAL(finished()), this, SLOT(replyFinished()) );
 			}
 		}
 	}
@@ -64,27 +88,24 @@ void NetworkRequestNode::inputsUpdated( qint64 pTimeStamp )
 
 void NetworkRequestNode::replyReadReady()
 {
-	QNetworkReply		*NetRep = qobject_cast<QNetworkReply *>( sender() );
-
 	if( mTempFile )
 	{
-		mTempFile->write( NetRep->readAll() );
+		mTempFile->write( mNetRep->readAll() );
 	}
 }
 
 void NetworkRequestNode::replyFinished()
 {
 	QNetworkAccessManager	*NAM = NetworkPlugin::nam();
-	QNetworkReply			*NetRep = qobject_cast<QNetworkReply *>( sender() );
-	QUrl					 NetUrl = NetRep->url();
+	QUrl					 NetUrl = mNetRep->url();
 
-	if( NetRep->error() != QNetworkReply::NoError )
+	if( mNetRep->error() != QNetworkReply::NoError )
 	{
-		const QVariant RedirectionTarget = NetRep->attribute( QNetworkRequest::RedirectionTargetAttribute );
+		const QVariant RedirectionTarget = mNetRep->attribute( QNetworkRequest::RedirectionTargetAttribute );
 
-		NetRep->deleteLater();
+		mNetRep->deleteLater();
 
-		NetRep = nullptr;
+		mNetRep = nullptr;
 
 		if( !RedirectionTarget.isNull() )
 		{
@@ -92,33 +113,30 @@ void NetworkRequestNode::replyFinished()
 
 			QNetworkRequest		 NetReq( RedirectedUrl );
 
-			if( ( NetRep = NAM->get( NetReq ) ) != nullptr )
+			if( ( mNetRep = NAM->get( NetReq ) ) != nullptr )
 			{
-				connect( NetRep, SIGNAL(readyRead()), this, SLOT(replyReadReady()) );
-				connect( NetRep, SIGNAL(finished()), this, SLOT(replyFinished()) );
+				connect( mNetRep, SIGNAL(readyRead()), this, SLOT(replyReadReady()) );
+				connect( mNetRep, SIGNAL(finished()), this, SLOT(replyFinished()) );
 
 				return;
 			}
 		}
 	}
 
-	NetRep->deleteLater();
+	mNetRep->deleteLater();
 
-	NetRep = nullptr;
+	mNetRep = nullptr;
 
-	if( mTempFile )
-	{
-		if( mTempFile->reset() )
-		{
-			QByteArray	RepDat = mTempFile->readAll();
+	mTempFile->close();
 
-			mValOutput->setVariant( RepDat );
+	connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
+}
 
-			pinUpdated( mPinOutput );
-		}
+void NetworkRequestNode::contextFrameStart()
+{
+	mValOutput->setFilename( mTempFile->fileName() );
 
-		delete mTempFile;
+	pinUpdated( mPinOutput );
 
-		mTempFile = nullptr;
-	}
+	disconnect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
 }

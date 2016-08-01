@@ -7,6 +7,8 @@
 
 #include <fugio/nodecontrolbase.h>
 
+#include <fugio/file/filename_interface.h>
+
 class NetworkRequestNode : public fugio::NodeControlBase
 {
 	Q_OBJECT
@@ -29,14 +31,20 @@ protected slots:
 	void replyReadReady( void );
 	void replyFinished( void );
 
+	void contextFrameStart( void );
+
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputTrigger;
 	QSharedPointer<fugio::PinInterface>			 mPinInputUrl;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::VariantInterface						*mValOutput;
+	fugio::FilenameInterface					*mValOutput;
 
+	QUrl										 mUrl;
+	QNetworkReply								*mNetRep;
 	QTemporaryFile								*mTempFile;
+	QTemporaryFile								 mTempFile1;
+	QTemporaryFile								 mTempFile2;
 };
 
 #endif // NETWORKREQUESTNODE_H
