@@ -60,21 +60,18 @@ void GetNode::inputsUpdated( qint64 pTimeStamp )
 {
 	bool					 Update = mPinInputTrigger->isUpdated( pTimeStamp );
 
-	if( !pTimeStamp || mPinInputUrl->isUpdated( pTimeStamp ) )
+	QUrl					 URL( variant( mPinInputUrl ).toString() );
+
+	if( !URL.isValid() )
 	{
-		QUrl					 URL( variant( mPinInputUrl ).toString() );
+		return;
+	}
 
-		if( !URL.isValid() )
-		{
-			return;
-		}
+	if( URL != mUrl )
+	{
+		Update = true;
 
-		if( URL != mUrl )
-		{
-			Update = true;
-
-			mUrl = URL;
-		}
+		mUrl = URL;
 	}
 
 	if( !mUrl.isValid() )
@@ -200,6 +197,8 @@ void GetNode::request( const QUrl &pUrl )
 
 	if( ( mNetRep = NAM->get( NetReq ) ) != nullptr )
 	{
+		//qDebug() << pUrl;
+
 		connect( mNetRep, SIGNAL(readyRead()), this, SLOT(replyReadReady()) );
 		connect( mNetRep, SIGNAL(finished()), this, SLOT(replyFinished()) );
 		connect( mNetRep, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)) );

@@ -24,15 +24,16 @@ MinMaxNode::MinMaxNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void MinMaxNode::inputsUpdated( qint64 pTimeStamp )
 {
+	bool		Reset = ( !pTimeStamp || mPinInputReset->isUpdated( pTimeStamp ) );
 	bool		OK;
 	float		Value = variant( mPinInputValue ).toFloat( &OK );
 
-	if( !pTimeStamp || mPinInputReset->isUpdated( pTimeStamp ) )
+	if( Reset )
 	{
 		mMin = mMax = -1;
 	}
 
-	if( !OK )
+	if( !OK || !pTimeStamp || Reset )
 	{
 		return;
 	}
@@ -70,7 +71,7 @@ void MinMaxNode::inputsUpdated( qint64 pTimeStamp )
 	}
 	else
 	{
-		OutVal = 0;
+		OutVal = 1;
 	}
 
 	//qDebug() << Value << mMin << mMax << OutRng << OutVal;
