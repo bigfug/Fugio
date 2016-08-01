@@ -10,6 +10,8 @@
 
 #include "luaqtplugin.h"
 
+#include "luapointf.h"
+
 const char *LuaMatrix4x4::Matrix4x4UserData::TypeName = "qt.matrix4x4";
 
 #if defined( LUA_SUPPORTED )
@@ -107,6 +109,40 @@ int LuaMatrix4x4::luaMul( lua_State *L )
 {
 	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
 	QMatrix4x4			 Matrix = *MatrixData;
+
+	luaL_checkany( L, 2 );
+
+	if( isMatrix4x4( L, 2 ) )
+	{
+		Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L, 2 );
+		QMatrix4x4			 Matrix2 = *MatrixData;
+		QMatrix4x4			 Matrix3 = Matrix * Matrix2;
+
+		pushmatrix4x4( L, Matrix3 );
+
+		return( 1 );
+	}
+
+	if( LuaPointF::isPointF( L, 2 ) )
+	{
+		QPointF				 Point1 = LuaPointF::checkpointf( L, 2 );
+		QPointF				 Point2 = Matrix * Point1;
+
+		LuaPointF::pushpointf( L, Point2 );
+
+		return( 1 );
+	}
+
+	if( lua_type( L, 2 ) == LUA_TNUMBER )
+	{
+		QMatrix4x4			 Matrix2 = Matrix * lua_tonumber( L, 2 );
+
+		pushmatrix4x4( L, Matrix2 );
+
+		return( 1 );
+	}
+
+	luaL_argerror( L, 2, "Bad argument type" );
 
 	return( 0 );
 }
