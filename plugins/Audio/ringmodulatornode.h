@@ -1,5 +1,5 @@
-#ifndef VCFNODE_H
-#define VCFNODE_H
+#ifndef RINGMODULATORNODE_H
+#define RINGMODULATORNODE_H
 
 #include <QObject>
 #include <QLabel>
@@ -8,21 +8,21 @@
 #include <fugio/audio/audio_producer_interface.h>
 #include <fugio/audio/audio_instance_base.h>
 
-class VCFNode : public fugio::NodeControlBase, public fugio::AudioProducerInterface
+class RingModulatorNode : public fugio::NodeControlBase, public fugio::AudioProducerInterface
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::AudioProducerInterface )
 
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
-	Q_CLASSINFO( "Description", "VCF" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/VCF" )
+	Q_CLASSINFO( "Description", "Ring Modulator" )
+	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Ring_Modulator" )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE VCFNode( QSharedPointer<fugio::NodeInterface> pNode );
+	Q_INVOKABLE RingModulatorNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~VCFNode( void ) {}
+	virtual ~RingModulatorNode( void ) {}
 
 	// NodeControlInterface interface
 public:
@@ -34,7 +34,6 @@ public:
 	// InterfaceAudioProducer interface
 public:
 	virtual fugio::AudioInstanceBase *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels ) Q_DECL_OVERRIDE;
-//	virtual void audioFreeInstance(void *pInstanceData) Q_DECL_OVERRIDE;
 	virtual int audioChannels() const Q_DECL_OVERRIDE;
 	virtual qreal audioSampleRate() const Q_DECL_OVERRIDE;
 	virtual fugio::AudioSampleFormat audioSampleFormat() const Q_DECL_OVERRIDE;
@@ -42,25 +41,17 @@ public:
 
 	virtual bool isValid( fugio::AudioInstanceBase *pInstance ) const Q_DECL_OVERRIDE
 	{
-		Q_UNUSED( pInstance )
-
-		return( true );
+		return( pInstance->isValid() );
 	}
 
 protected slots:
-	void cutoffLinked( QSharedPointer<fugio::PinInterface> pPin );
-	void cutoffUnlinked( QSharedPointer<fugio::PinInterface> pPin );
+	void audio1Linked( QSharedPointer<fugio::PinInterface> pPin );
+	void audio1Unlinked( QSharedPointer<fugio::PinInterface> pPin );
 
-	void resonanceLinked( QSharedPointer<fugio::PinInterface> pPin );
-	void resonanceUnlinked( QSharedPointer<fugio::PinInterface> pPin );
+	void audio2Linked( QSharedPointer<fugio::PinInterface> pPin );
+	void audio2Unlinked( QSharedPointer<fugio::PinInterface> pPin );
 
 protected:
-	typedef struct AudioChannelData
-	{
-		float									 y1, y2, y3, y4;
-		float									 oldx, oldy1, oldy2, oldy3;
-	} AudioChannelData;
-
 	class AudioInstanceData : public fugio::AudioInstanceBase
 	{
 	public:
@@ -72,24 +63,24 @@ protected:
 
 		virtual ~AudioInstanceData( void )
 		{
-			if( mCutoffInstance )
+			if( mAudioIns1 )
 			{
-				delete mCutoffInstance;
+				delete mAudioIns1;
 
-				mCutoffInstance = nullptr;
+				mAudioIns1 = nullptr;
 			}
 
-			if( mResonanceInstance )
+			if( mAudioIns2 )
 			{
-				delete mResonanceInstance;
+				delete mAudioIns2;
 
-				mResonanceInstance = nullptr;
+				mAudioIns2 = nullptr;
 			}
 		}
 
 		virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers ) Q_DECL_OVERRIDE
 		{
-			QSharedPointer<VCFNode>	API = qSharedPointerCast<VCFNode>( mProducer );
+			QSharedPointer<RingModulatorNode>	API = qSharedPointerCast<RingModulatorNode>( mProducer );
 
 			if( !API )
 			{
@@ -102,35 +93,25 @@ protected:
 	public:
 		qint64									 mAudPts;
 		qint64									 mAudSmp;
-		QVector<QVector<float>>					 mAudDat;
-		fugio::AudioInstanceBase				*mAudIns;
 
-		QVector<AudioChannelData>				 mChnDat;
+		QVector<QVector<float>>					 mAudioDat1;
+		fugio::AudioInstanceBase				*mAudioIns1;
 
-		QVector<float>							 mCutoffData;
-		fugio::AudioInstanceBase				*mCutoffInstance;
-
-		QVector<float>							 mResonanceData;
-		fugio::AudioInstanceBase				*mResonanceInstance;
+		QVector<float>							 mAudioDat2;
+		fugio::AudioInstanceBase				*mAudioIns2;
 	};
 
 	void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const;
 
-	static void updateFilter( const float cutoff, const float res, float &p, float &k, float &r );
-
 protected:
-	QSharedPointer<fugio::PinInterface>			 mPinAudioInput;
-	QSharedPointer<fugio::PinInterface>			 mPinCutoff;
-	QSharedPointer<fugio::PinInterface>			 mPinResonance;
+	QSharedPointer<fugio::PinInterface>			 mPinAudioInput1;
+	QSharedPointer<fugio::PinInterface>			 mPinAudioInput2;
 
 	QSharedPointer<fugio::PinInterface>			 mPinAudioOutput;
 	fugio::AudioProducerInterface				*mAudioOutput;
 
 	QMutex										 mInstanceDataMutex;
 	QList<AudioInstanceData *>					 mInstanceData;
-
-	float										 mCutoff;
-	float										 mResonance;
 };
 
-#endif // VCFNODE_H
+#endif // RINGMODULATORNODE_H

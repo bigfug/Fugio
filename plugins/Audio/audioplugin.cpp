@@ -13,6 +13,7 @@
 #include "frequencybandsnode.h"
 #include "audiofilternode.h"
 #include "vcfnode.h"
+#include "ringmodulatornode.h"
 
 #include "audiopin.h"
 #include "fftpin.h"
@@ -27,6 +28,7 @@ ClassEntry		mNodeClasses[] =
 	ClassEntry( "Magnitude", "Audio",  NID_AUDIO_MAGNITUDE, &MagnitudeNode::staticMetaObject ),
 	ClassEntry( "Mixer", "Audio",  NID_AUDIO_MIXER, &AudioMixerNode::staticMetaObject ),
 	ClassEntry( "Mono", "Audio",  NID_AUDIO_MONO, &MonoNode::staticMetaObject ),
+	ClassEntry( "Ring Modulator", "Audio",  NID_AUDIO_RING_MODULATOR, &RingModulatorNode::staticMetaObject ),
 	ClassEntry( "Signal", "Audio", NID_SIGNAL, &SignalNode::staticMetaObject ),
 	ClassEntry( "Filter", "Audio", NID_AUDIO_FILTER, &AudioFilterNode::staticMetaObject ),
 	ClassEntry( "VCF", "Audio", NID_VCF, &VCFNode::staticMetaObject ),
