@@ -24,7 +24,14 @@ void StringJoinNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		StrLst << variant( P ).toString();
+		if( P->controlUuid() == PID_STRING_LIST )
+		{
+			StrLst << variant( P ).toStringList();
+		}
+		else
+		{
+			StrLst << variant( P ).toString();
+		}
 	}
 
 	StrSep = variant( mPinInputJoinChar ).toString();
@@ -36,4 +43,30 @@ void StringJoinNode::inputsUpdated( qint64 pTimeStamp )
 	mPinOutputValue->setVariant( StrRes );
 
 	pinUpdated( mPinOutput );
+}
+
+QList<QUuid> StringJoinNode::pinAddTypesInput() const
+{
+	static QList<QUuid> PinLst =
+	{
+		PID_BOOL,
+		PID_BYTEARRAY,
+		PID_FLOAT,
+		PID_INTEGER,
+		PID_STRING,
+		PID_STRING_LIST,
+		PID_VARIANT
+	};
+
+	return( PinLst );
+}
+
+bool StringJoinNode::canAcceptPin(fugio::PinInterface *pPin) const
+{
+	return( pPin->direction() == PIN_OUTPUT );
+}
+
+bool StringJoinNode::pinShouldAutoRename(fugio::PinInterface *pPin) const
+{
+	return( pPin->direction() == PIN_INPUT );
 }
