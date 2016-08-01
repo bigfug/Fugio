@@ -55,7 +55,8 @@ SOURCES += mathplugin.cpp \
     arccosnode.cpp \
     radianstodegreesnode.cpp \
     crossproducenode.cpp \
-    normalisenode.cpp
+    normalisenode.cpp \
+    minmaxnode.cpp
 
 HEADERS += mathplugin.h \
     ../../include/fugio/math/uuid.h \
@@ -95,7 +96,8 @@ HEADERS += mathplugin.h \
     arccosnode.h \
     radianstodegreesnode.h \
     crossproducenode.h \
-    normalisenode.h
+    normalisenode.h \
+    minmaxnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
