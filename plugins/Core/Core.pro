@@ -65,7 +65,8 @@ SOURCES += \
     bytearraylistpin.cpp \
     switchnode.cpp \
     floatthresholdnode.cpp \
-    smoothnode.cpp
+    smoothnode.cpp \
+    autorangenode.cpp
 
 HEADERS += \
     stringpin.h \
@@ -119,7 +120,8 @@ HEADERS += \
     bytearraylistpin.h \
     switchnode.h \
     floatthresholdnode.h \
-    smoothnode.h
+    smoothnode.h \
+    autorangenode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

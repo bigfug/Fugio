@@ -34,6 +34,7 @@
 #include "typesizenode.h"
 #include "switchnode.h"
 #include "floatthresholdnode.h"
+#include "autorangenode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -56,6 +57,7 @@ QList<QUuid>				NodeControlBase::PID_UUID;
 ClassEntry		CorePlugin::mNodeClasses[] =
 {
 	ClassEntry( QT_TR_NOOP( "Any Trigger" ), NID_ANY_TRIGGER, &AnyTriggerNode::staticMetaObject ),
+	ClassEntry( "Auto Number Range", NID_AUTO_NUMBER_RANGE, &AutoRangeNode::staticMetaObject ),
 	ClassEntry( "Bool Range", NID_BOOL_RANGE, &BoolRangeNode::staticMetaObject ),
 	ClassEntry( "Bool To Trigger", NID_BOOL_TO_TRIGGER, &BoolToTriggerNode::staticMetaObject ),
 	ClassEntry( "Counter", NID_COUNTER, &CounterNode::staticMetaObject ),
