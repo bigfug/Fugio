@@ -51,12 +51,32 @@ void ScaleImageNode::inputsUpdated( qint64 pTimeStamp )
 
 	QSize			NewSze( Xscl, Yscl );
 
-	QImage			NewImg = SRC->image().scaled( NewSze, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
+	if( !NewSze.width() && !NewSze.height() )
+	{
+		return;
+	}
+
+	QImage			NewImg;
+
+	if( NewSze.width() > 0 && NewSze.height() == 0 )
+	{
+		NewImg = SRC->image().scaledToWidth( NewSze.width(), Qt::SmoothTransformation );
+	}
+	else if( NewSze.height() > 0 && NewSze.width() == 0 )
+	{
+		NewImg = SRC->image().scaledToHeight( NewSze.height(), Qt::SmoothTransformation );
+	}
+	else
+	{
+		NewImg = SRC->image().scaled( NewSze, Qt::IgnoreAspectRatio, Qt::SmoothTransformation );
+	}
 
 	if( NewImg.isNull() )
 	{
 		return;
 	}
+
+	NewSze = NewImg.size();
 
 	mValOutputImage->setSize( NewImg.width(), NewImg.height() );
 

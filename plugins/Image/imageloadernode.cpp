@@ -43,28 +43,20 @@ void ImageLoaderNode::inputsUpdated( qint64 pTimeStamp )
 
 	QUrl		ImageUrl;
 
-	if( mPinFileName->isConnected() )
+	if( mPinFileName->isUpdated( pTimeStamp ) )
 	{
-		QSharedPointer<fugio::PinControlInterface>		 CTL = mPinFileName->connectedPin()->control();
-		fugio::VariantInterface						*VAR = ( CTL == 0 ? 0 : qobject_cast<fugio::VariantInterface *>( CTL->qobject() ) );
+		fugio::FilenameInterface		*F = input<fugio::FilenameInterface *>( mPinFileName );
 
-		if( VAR != 0 )
+		if( F )
 		{
-			ImageFileName = VAR->variant().toString();
-		}
-
-		fugio::FilenameInterface						*IFN = ( CTL == 0 ? 0 : qobject_cast<fugio::FilenameInterface *>( CTL->qobject() ) );
-
-		if( IFN )
-		{
-			ImageFileName = IFN->filename();
+			ImageFileName = F->filename();
 
 			ImageUrl = QUrl::fromLocalFile( ImageFileName );
 		}
-	}
-	else
-	{
-		ImageFileName = mPinFileName->value().toString();
+		else
+		{
+			ImageFileName = variant( mPinFileName ).toString();
+		}
 	}
 
 	if( ImageFileName.isEmpty() )
@@ -90,6 +82,7 @@ void ImageLoaderNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		qWarning() << ImageUrl.toLocalFile() << ImageReader.errorString();
 
+		qDebug() << QImageReader::supportedImageFormats();
 		return;
 	}
 
