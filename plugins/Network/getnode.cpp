@@ -1,4 +1,4 @@
-#include "networkrequestnode.h"
+#include "getnode.h"
 
 #include "networkplugin.h"
 
@@ -11,7 +11,7 @@
 #include <fugio/context_interface.h>
 #include <fugio/context_signals.h>
 
-NetworkRequestNode::NetworkRequestNode( QSharedPointer<fugio::NodeInterface> pNode )
+GetNode::GetNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mNetRep( 0 ), mTempFile( &mTempFile1 )
 {
 	FUGID( PIN_INPUT_URL, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
@@ -30,7 +30,7 @@ NetworkRequestNode::NetworkRequestNode( QSharedPointer<fugio::NodeInterface> pNo
 	mTempFile2.setFileName( TempPath.absoluteFilePath( QString( "%1.2" ).arg( TempUuid.toString() ) ) );
 }
 
-bool NetworkRequestNode::initialise()
+bool GetNode::initialise()
 {
 	if( !NodeControlBase::initialise() )
 	{
@@ -44,7 +44,7 @@ bool NetworkRequestNode::initialise()
 	return( true );
 }
 
-bool NetworkRequestNode::deinitialise()
+bool GetNode::deinitialise()
 {
 	QNetworkAccessManager	*NAM = NetworkPlugin::nam();
 
@@ -56,11 +56,11 @@ bool NetworkRequestNode::deinitialise()
 	return( NodeControlBase::deinitialise() );
 }
 
-void NetworkRequestNode::inputsUpdated( qint64 pTimeStamp )
+void GetNode::inputsUpdated( qint64 pTimeStamp )
 {
 	bool					 Update = mPinInputTrigger->isUpdated( pTimeStamp );
 
-	if( mPinInputUrl->isUpdated( pTimeStamp ) )
+	if( !pTimeStamp || mPinInputUrl->isUpdated( pTimeStamp ) )
 	{
 		QUrl					 URL( variant( mPinInputUrl ).toString() );
 
@@ -75,6 +75,11 @@ void NetworkRequestNode::inputsUpdated( qint64 pTimeStamp )
 
 			mUrl = URL;
 		}
+	}
+
+	if( !mUrl.isValid() )
+	{
+		return;
 	}
 
 	if( Update )
@@ -104,7 +109,7 @@ void NetworkRequestNode::inputsUpdated( qint64 pTimeStamp )
 	}
 }
 
-void NetworkRequestNode::replyReadReady()
+void GetNode::replyReadReady()
 {
 	if( mTempFile )
 	{
@@ -112,7 +117,7 @@ void NetworkRequestNode::replyReadReady()
 	}
 }
 
-void NetworkRequestNode::replyFinished()
+void GetNode::replyFinished()
 {
 	QUrl								 NetUrl = mNetRep->url();
 	QNetworkReply::NetworkError			 NetErr = mNetRep->error();
@@ -156,13 +161,13 @@ void NetworkRequestNode::replyFinished()
 	}
 }
 
-void NetworkRequestNode::replyError( QNetworkReply::NetworkError )
+void GetNode::replyError( QNetworkReply::NetworkError )
 {
 	mNode->setStatus( fugio::NodeInterface::Error );
-	mNode->setStatusMessage( mNetRep->errorString() );
+	mNode->setStatusMessage( QString( "%1\n%2" ).arg( mNetRep->url().toDisplayString() ).arg( mNetRep->errorString() ) );
 }
 
-void NetworkRequestNode::networkSslErrors( QNetworkReply *pNetRep, QList<QSslError> pSslErr )
+void GetNode::networkSslErrors( QNetworkReply *pNetRep, QList<QSslError> pSslErr )
 {
 	if( pNetRep == mNetRep )
 	{
@@ -178,7 +183,7 @@ void NetworkRequestNode::networkSslErrors( QNetworkReply *pNetRep, QList<QSslErr
 	}
 }
 
-void NetworkRequestNode::contextFrameStart()
+void GetNode::contextFrameStart()
 {
 	mValOutput->setFilename( mFilename );
 
@@ -187,13 +192,11 @@ void NetworkRequestNode::contextFrameStart()
 	disconnect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
 }
 
-void NetworkRequestNode::request( const QUrl &pUrl )
+void GetNode::request( const QUrl &pUrl )
 {
 	QNetworkAccessManager	*NAM = NetworkPlugin::nam();
 
 	QNetworkRequest			 NetReq( pUrl );
-
-	NetReq.setRawHeader( "User-Agent", ( QString( "Fugio/%1 (bigfug.com)" ).arg( qApp->applicationVersion() ) ).toLatin1() );
 
 	if( ( mNetRep = NAM->get( NetReq ) ) != nullptr )
 	{

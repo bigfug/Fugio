@@ -30,7 +30,7 @@ SOURCES += networkplugin.cpp \
     udpsendrawnode.cpp \
     slipencodenode.cpp \
     slipdecodenode.cpp \
-    networkrequestnode.cpp
+    getnode.cpp
 
 HEADERS += networkplugin.h\
     ../../include/fugio/network/uuid.h \
@@ -44,7 +44,7 @@ HEADERS += networkplugin.h\
     udpsendrawnode.h \
     slipencodenode.h \
     slipdecodenode.h \
-    networkrequestnode.h
+    getnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

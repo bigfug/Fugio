@@ -1,5 +1,5 @@
-#ifndef NETWORKREQUESTNODE_H
-#define NETWORKREQUESTNODE_H
+#ifndef GETNODE_H
+#define GETNODE_H
 
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -9,21 +9,24 @@
 
 #include <fugio/file/filename_interface.h>
 
-class NetworkRequestNode : public fugio::NodeControlBase
+class GetNode : public fugio::NodeControlBase
 {
 	Q_OBJECT
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
-	Q_CLASSINFO( "Description", "Performs a network request" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Network_Request" )
+	Q_CLASSINFO( "Description", "Performs a network get" )
+	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Get" )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE NetworkRequestNode( QSharedPointer<fugio::NodeInterface> pNode );
+	Q_INVOKABLE GetNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~NetworkRequestNode( void ) {}
+	virtual ~GetNode( void ) {}
 
 	// NodeControlInterface interface
+
+	virtual bool initialise() Q_DECL_OVERRIDE;
+	virtual bool deinitialise() Q_DECL_OVERRIDE;
 
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
@@ -52,11 +55,6 @@ protected:
 	QFile										 mTempFile2;
 
 	QString										 mFilename;
-
-	// NodeControlInterface interface
-public:
-	virtual bool initialise() Q_DECL_OVERRIDE;
-	virtual bool deinitialise() Q_DECL_OVERRIDE;
 };
 
-#endif // NETWORKREQUESTNODE_H
+#endif // GETNODE_H

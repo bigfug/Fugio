@@ -10,7 +10,7 @@
 
 #include <fugio/network/uuid.h>
 
-#include "networkrequestnode.h"
+#include "getnode.h"
 
 #include "tcpsendnode.h"
 #include "tcpreceivenode.h"
@@ -29,7 +29,7 @@ NetworkPlugin *NetworkPlugin::mInstance = 0;
 
 ClassEntry	NodeClasses[] =
 {
-	ClassEntry( "Network Request", "Network", NID_NETWORK_REQUEST, &NetworkRequestNode::staticMetaObject ),
+	ClassEntry( "Get", "Network", NID_NETWORK_GET, &GetNode::staticMetaObject ),
 	ClassEntry( "TCP Send", "Network", NID_TCP_SEND, &TCPSendNode::staticMetaObject ),
 	ClassEntry( "TCP Receive", "Network", NID_TCP_RECEIVE, &TCPReceiveNode::staticMetaObject ),
 	ClassEntry( "TCP Send Raw", "Network", NID_TCP_SEND_RAW, &TCPSendRawNode::staticMetaObject ),

@@ -3,7 +3,7 @@
 
 #include <QUuid>
 
-#define NID_NETWORK_REQUEST			(QUuid("{4231a257-5fa6-4ef4-8e78-5b3611da415a}"))
+#define NID_NETWORK_GET				(QUuid("{4231a257-5fa6-4ef4-8e78-5b3611da415a}"))
 
 #define NID_TCP_SEND				(QUuid("{84163E8D-C110-48E1-89F3-7627B6BA3BC8}"))
 #define NID_TCP_RECEIVE				(QUuid("{F2549472-D7C3-4A83-91D2-0A82BD896F61}"))
