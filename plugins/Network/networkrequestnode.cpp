@@ -2,6 +2,9 @@
 
 #include "networkplugin.h"
 
+#include <QCoreApplication>
+#include <QDir>
+
 #include <fugio/core/uuid.h>
 #include <fugio/file/uuid.h>
 
@@ -23,11 +26,41 @@ NetworkRequestNode::NetworkRequestNode( QSharedPointer<fugio::NodeInterface> pNo
 	mPinInputUrl = pinInput( "URL", PIN_INPUT_URL );
 
 	mValOutput = pinOutput<fugio::FilenameInterface *>( "Filename", mPinOutput, PID_FILENAME, PIN_OUTPUT_FILENAME );
+
+	QDir		TempPath( QDir::tempPath() );
+
+	mTempFile1.setFileName( TempPath.absoluteFilePath( QString( "%1.1" ).arg( mNode->uuid().toString() ) ) );
+	mTempFile2.setFileName( TempPath.absoluteFilePath( QString( "%1.2" ).arg( mNode->uuid().toString() ) ) );
+}
+
+bool NetworkRequestNode::initialise()
+{
+	if( !NodeControlBase::initialise() )
+	{
+		return( false );
+	}
+
+	QNetworkAccessManager	*NAM = NetworkPlugin::nam();
+
+	connect( NAM, SIGNAL(sslErrors(QNetworkReply*,QList<QSslError>)), this, SLOT(networkSslErrors(QNetworkReply*,QList<QSslError>)) );
+
+	return( true );
+}
+
+bool NetworkRequestNode::deinitialise()
+{
+	QNetworkAccessManager	*NAM = NetworkPlugin::nam();
+
+	NAM->disconnect( this );
+
+	mTempFile1.remove();
+	mTempFile2.remove();
+
+	return( NodeControlBase::deinitialise() );
 }
 
 void NetworkRequestNode::inputsUpdated( qint64 pTimeStamp )
 {
-	QNetworkAccessManager	*NAM = NetworkPlugin::nam();
 	bool					 Update = mPinInputTrigger->isUpdated( pTimeStamp );
 
 	if( mPinInputUrl->isUpdated( pTimeStamp ) )
@@ -56,32 +89,20 @@ void NetworkRequestNode::inputsUpdated( qint64 pTimeStamp )
 
 		if( mTempFile == &mTempFile1 )
 		{
-			if( !mTempFile2.fileName().isEmpty() )
-			{
-				mTempFile2.remove();
-			}
+			mTempFile2.remove();
 
 			mTempFile = &mTempFile2;
 		}
 		else
 		{
-			if( !mTempFile1.fileName().isEmpty() )
-			{
-				mTempFile1.remove();
-			}
+			mTempFile1.remove();
 
 			mTempFile = &mTempFile1;
 		}
 
-		if( mTempFile->open() )
+		if( mTempFile->open( QFile::WriteOnly ) )
 		{
-			QNetworkRequest		 NetReq( mUrl );
-
-			if( ( mNetRep = NAM->get( NetReq ) ) != nullptr )
-			{
-				connect( mNetRep, SIGNAL(readyRead()), this, SLOT(replyReadReady()) );
-				connect( mNetRep, SIGNAL(finished()), this, SLOT(replyFinished()) );
-			}
+			request( mUrl );
 		}
 	}
 }
@@ -96,10 +117,10 @@ void NetworkRequestNode::replyReadReady()
 
 void NetworkRequestNode::replyFinished()
 {
-	QNetworkAccessManager	*NAM = NetworkPlugin::nam();
-	QUrl					 NetUrl = mNetRep->url();
+	QUrl								 NetUrl = mNetRep->url();
+	QNetworkReply::NetworkError			 NetErr = mNetRep->error();
 
-	if( mNetRep->error() != QNetworkReply::NoError )
+	if( NetErr != QNetworkReply::NoError )
 	{
 		const QVariant RedirectionTarget = mNetRep->attribute( QNetworkRequest::RedirectionTargetAttribute );
 
@@ -111,15 +132,9 @@ void NetworkRequestNode::replyFinished()
 		{
 			const QUrl RedirectedUrl = NetUrl.resolved( RedirectionTarget.toUrl() );
 
-			QNetworkRequest		 NetReq( RedirectedUrl );
+			request( RedirectedUrl );
 
-			if( ( mNetRep = NAM->get( NetReq ) ) != nullptr )
-			{
-				connect( mNetRep, SIGNAL(readyRead()), this, SLOT(replyReadReady()) );
-				connect( mNetRep, SIGNAL(finished()), this, SLOT(replyFinished()) );
-
-				return;
-			}
+			return;
 		}
 	}
 
@@ -129,14 +144,62 @@ void NetworkRequestNode::replyFinished()
 
 	mTempFile->close();
 
-	connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
+	mFilename = mTempFile->fileName();
+
+	qDebug() << mFilename;
+
+	mNode->setStatus( fugio::NodeInterface::Initialised );
+	mNode->setStatusMessage( tr( "Received %1 bytes" ).arg( mTempFile->size() ) );
+
+	if( NetErr == QNetworkReply::NoError )
+	{
+		connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
+	}
+}
+
+void NetworkRequestNode::replyError( QNetworkReply::NetworkError )
+{
+	mNode->setStatus( fugio::NodeInterface::Error );
+	mNode->setStatusMessage( mNetRep->errorString() );
+}
+
+void NetworkRequestNode::networkSslErrors( QNetworkReply *pNetRep, QList<QSslError> pSslErr )
+{
+	if( pNetRep == mNetRep )
+	{
+		QStringList		ErrLst;
+
+		for( QSslError E : pSslErr )
+		{
+			ErrLst << E.errorString();
+		}
+
+		mNode->setStatus( fugio::NodeInterface::Error );
+		mNode->setStatusMessage( ErrLst.join( '\n' ) );
+	}
 }
 
 void NetworkRequestNode::contextFrameStart()
 {
-	mValOutput->setFilename( mTempFile->fileName() );
+	mValOutput->setFilename( mFilename );
 
 	pinUpdated( mPinOutput );
 
 	disconnect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
+}
+
+void NetworkRequestNode::request( const QUrl &pUrl )
+{
+	QNetworkAccessManager	*NAM = NetworkPlugin::nam();
+
+	QNetworkRequest			 NetReq( pUrl );
+
+	NetReq.setRawHeader( "User-Agent", ( QString( "Fugio/%1 (bigfug.com)" ).arg( qApp->applicationVersion() ) ).toLatin1() );
+
+	if( ( mNetRep = NAM->get( NetReq ) ) != nullptr )
+	{
+		connect( mNetRep, SIGNAL(readyRead()), this, SLOT(replyReadReady()) );
+		connect( mNetRep, SIGNAL(finished()), this, SLOT(replyFinished()) );
+		connect( mNetRep, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(replyError(QNetworkReply::NetworkError)) );
+	}
 }

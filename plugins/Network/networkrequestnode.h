@@ -3,7 +3,7 @@
 
 #include <QNetworkRequest>
 #include <QNetworkReply>
-#include <QTemporaryFile>
+#include <QFile>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -30,8 +30,13 @@ public:
 protected slots:
 	void replyReadReady( void );
 	void replyFinished( void );
+	void replyError( QNetworkReply::NetworkError pError );
+
+	void networkSslErrors( QNetworkReply *pNetRep, QList<QSslError> pSslErr );
 
 	void contextFrameStart( void );
+
+	void request( const QUrl &pUrl );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputTrigger;
@@ -42,9 +47,16 @@ protected:
 
 	QUrl										 mUrl;
 	QNetworkReply								*mNetRep;
-	QTemporaryFile								*mTempFile;
-	QTemporaryFile								 mTempFile1;
-	QTemporaryFile								 mTempFile2;
+	QFile										*mTempFile;
+	QFile										 mTempFile1;
+	QFile										 mTempFile2;
+
+	QString										 mFilename;
+
+	// NodeControlInterface interface
+public:
+	virtual bool initialise() Q_DECL_OVERRIDE;
+	virtual bool deinitialise() Q_DECL_OVERRIDE;
 };
 
 #endif // NETWORKREQUESTNODE_H
