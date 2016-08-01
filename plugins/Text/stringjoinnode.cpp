@@ -14,6 +14,11 @@ void StringJoinNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
+	if( !pTimeStamp )
+	{
+		return;
+	}
+
 	QStringList		StrLst;
 	QString			StrSep;
 
