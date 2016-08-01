@@ -125,6 +125,7 @@ name=Output
 order=1
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
 version=2
+updatable=false
 
 [6c566c3a-881a-4bbb-b2bb-702e48e4b3ed]
 direction=2
@@ -288,6 +289,10 @@ version=2
 92655fc2-93be-4890-90ae-9cf7b57a9df4=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 39acf137-77ef-42f1-bf13-43351009a46d=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 39acf137-77ef-42f1-bf13-43351009a46d\3ab1a569-fe52-4ad9-b16c-6ad994fa05ed=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
+7f40e4dc-ce99-407d-b560-191809d2aacf=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
+7f40e4dc-ce99-407d-b560-191809d2aacf\b359bdaf-ca88-4d94-9506-6398a111d823=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
+e3bf1112-e4b7-4716-959c-c79228dff3f2=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
+e3bf1112-e4b7-4716-959c-c79228dff3f2\e054f5c9-6e7c-4cf9-9354-b5253d61bed9=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 
 [connections]
 028a9831-822f-462e-9e15-61ac891bcb8b=6c566c3a-881a-4bbb-b2bb-702e48e4b3ed
@@ -297,7 +302,7 @@ version=2
 57901e01-1e16-4717-b6e6-5647ca42731e=8dc86e8d-74c2-46d9-a296-54594812d084
 78243b83-727b-46c7-8194-021631746644=3db41f4e-59ea-44fd-9184-19761a61dda2
 7bfa58a9-0b06-48c4-a22f-bb314f9ce72e=777b4fb8-1c78-4381-849f-d2678cf18ef9
-831a10e4-2ba4-424f-82e6-afe5910e846f=8dc86e8d-74c2-46d9-a296-54594812d084
+831a10e4-2ba4-424f-82e6-afe5910e846f=b359bdaf-ca88-4d94-9506-6398a111d823
 9d268d09-eab5-450a-9eb5-4bc02ee20b71=42569682-795b-4448-9397-c14e06fb00f2
 ba28fc60-e5b0-49b8-8117-8f95b8361fe0=94375f93-5f45-4f77-add4-d672af1003b1
 d3bf14d8-d274-4b6a-8bd6-eb736f9e4890=19ca693b-619a-4f2a-be98-5b9143e9c907
@@ -308,6 +313,7 @@ acd32173-881e-48fe-901a-8e891249b4f3=4aefe7d2-6a5f-4f8a-8d7f-2f6ae2c25790
 5d12bf19-9d94-4ec6-bfe2-171cf100601a=1f2c7e68-718f-4ced-8ef3-54f00f4f741c
 84679429-110b-494b-87d4-9573acf439bc=3ab1a569-fe52-4ad9-b16c-6ad994fa05ed
 a82177c4-26fd-4188-b7ed-fe0273acbedf=4aefe7d2-6a5f-4f8a-8d7f-2f6ae2c25790
+aaab8595-b5a8-4517-b9ac-923b5ef58c91=e054f5c9-6e7c-4cf9-9354-b5253d61bed9
 
 [d3bf14d8-d274-4b6a-8bd6-eb736f9e4890]
 direction=1
@@ -318,7 +324,7 @@ uuid=32fabd43-1d97-4b29-9800-9e6d1e1bbafd
 version=2
 
 [dc23ba2f-b6d4-40d9-8e50-d5f1e53bc135]
-default=60000
+default=30000
 direction=1
 name=Number
 order=0
@@ -377,6 +383,8 @@ dfbdef53-eca0-407b-a021-37cb9456a9bc=327cfef0-537c-42d8-a8b6-29fa4416f1b4
 7457f01b-8224-4380-8e74-5c308e363812=63794cc4-fa17-4de0-a512-ff038d467fd1
 92655fc2-93be-4890-90ae-9cf7b57a9df4=63794cc4-fa17-4de0-a512-ff038d467fd1
 39acf137-77ef-42f1-bf13-43351009a46d=b52cdf32-52a0-4ac9-aaca-3da9b312140c
+e3bf1112-e4b7-4716-959c-c79228dff3f2=b9e4aaf3-7713-41d5-a746-734bb041c1b7
+7f40e4dc-ce99-407d-b560-191809d2aacf=3f0fca51-a785-4644-9753-c767e02ae450
 
 [notes]
 size=0
@@ -387,20 +395,22 @@ version=2
 2bd13df1-fccd-4b9f-a497-5d1c6996fb1d="-720,0"
 2be52c51-8775-42e5-9a24-1d6dfec09035="140,-180"
 347ffdb9-075c-4807-9f8d-e0660c005f52="-240,-60"
-3b9d5dcf-f7c9-478d-9eb7-3bba3811b8c4="-580,-100"
+3b9d5dcf-f7c9-478d-9eb7-3bba3811b8c4="-520,-100"
 6fb887aa-0444-43d2-aa7f-b2fc5d21b0a5="-400,-200"
 7411b22d-8aab-4097-b561-62a72505ae96="140,-20"
 8f564753-93a4-44fc-9595-ec329c5bbc71="-320,0"
 96dc1722-4d26-4625-a111-a0d7c69f687b="140,-100"
-a1166e56-7ed1-490b-8ad2-1228ae12c13b="-20,-100"
-b324e00f-47d7-4138-a7f8-a9114705e8a1="-680,-200"
+a1166e56-7ed1-490b-8ad2-1228ae12c13b="-40,-100"
+b324e00f-47d7-4138-a7f8-a9114705e8a1="-700,-80"
 dfbdef53-eca0-407b-a021-37cb9456a9bc="-240,-140"
 version=2
-9aaf7d42-d07e-43d3-8373-0a73af5f5df6="-400,-100"
-757b0103-12bb-43d5-ae6c-1550af5ed0b2="-20,100"
+9aaf7d42-d07e-43d3-8373-0a73af5f5df6="-360,-100"
+757b0103-12bb-43d5-ae6c-1550af5ed0b2="-20,80"
 7457f01b-8224-4380-8e74-5c308e363812="140,60"
 92655fc2-93be-4890-90ae-9cf7b57a9df4="140,140"
 39acf137-77ef-42f1-bf13-43351009a46d="-240,100"
+7f40e4dc-ce99-407d-b560-191809d2aacf="0,-240"
+e3bf1112-e4b7-4716-959c-c79228dff3f2="-140,-240"
 
 [9aaf7d42-d07e-43d3-8373-0a73af5f5df6]
 version=2
@@ -417,7 +427,7 @@ name=Filename
 direction=2
 order=0
 uuid=249f2932-f483-422f-b811-ab679f006381
-control\filename=C:/Users/Alex/AppData/Local/Temp/{5d349a6f-c212-40cf-a3fe-8dc2c54f1297}.1
+control\filename=C:/Users/Alex/AppData/Local/Temp/{97bc007a-a650-48d9-b1eb-bf33488a9ff8}.2
 
 [acd32173-881e-48fe-901a-8e891249b4f3]
 version=2
@@ -530,4 +540,60 @@ direction=1
 order=0
 uuid=fff9cb4f-48c5-48fa-818d-ca7b0af19bb8
 paired=83f4fd43-5c0a-4889-88dd-5cbad137a3cd
+auto-rename=true
+
+[e3bf1112-e4b7-4716-959c-c79228dff3f2]
+version=2
+name=Every
+inputs\1\254006ba-7912-4824-8b1a-04c19e98912d=00000000-0000-0000-0000-000000000000
+inputs\size=1
+outputs\1\e054f5c9-6e7c-4cf9-9354-b5253d61bed9=9f47ca6a-f8b8-4029-8dee-98caa049374e
+outputs\size=1
+
+[e054f5c9-6e7c-4cf9-9354-b5253d61bed9]
+version=2
+name=Trigger
+direction=2
+order=0
+uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
+
+[254006ba-7912-4824-8b1a-04c19e98912d]
+version=2
+name=Number
+direction=1
+order=0
+uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
+default=5000
+
+[7f40e4dc-ce99-407d-b560-191809d2aacf]
+version=2
+name=Any Trigger
+inputs\1\aaab8595-b5a8-4517-b9ac-923b5ef58c91=00000000-0000-0000-0000-000000000000
+inputs\2\dc9c5cf0-8fb3-44ad-9d5e-8e61fc33db01=00000000-0000-0000-0000-000000000000
+inputs\size=2
+outputs\1\b359bdaf-ca88-4d94-9506-6398a111d823=9f47ca6a-f8b8-4029-8dee-98caa049374e
+outputs\size=1
+
+[aaab8595-b5a8-4517-b9ac-923b5ef58c91]
+version=2
+name=Trigger
+direction=1
+order=0
+uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
+auto-rename=true
+
+[b359bdaf-ca88-4d94-9506-6398a111d823]
+version=2
+name=Trigger
+direction=2
+order=0
+uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
+
+[dc9c5cf0-8fb3-44ad-9d5e-8e61fc33db01]
+version=2
+name=Output
+direction=1
+order=1
+uuid=7c71e2e6-263d-4cf9-9958-7f1c0a857896
+removable=true
 auto-rename=true
