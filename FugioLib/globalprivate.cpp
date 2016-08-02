@@ -178,7 +178,7 @@ void GlobalPrivate::loadPlugins( QDir pDir )
 
 void GlobalPrivate::unloadPlugins()
 {
-	for( QList<QObject *>::iterator it = mPluginInstances.begin() ; it != mPluginInstances.end() ; it++ )
+	for( QList<QObject *>::reverse_iterator it = mPluginInstances.rbegin() ; it != mPluginInstances.rend() ; it++ )
 	{
 		fugio::PluginInterface	*Plugin = qobject_cast<fugio::PluginInterface *>( *it );
 
@@ -188,7 +188,10 @@ void GlobalPrivate::unloadPlugins()
 		}
 	}
 
-	qDeleteAll( mPluginInstances );
+	for( QList<QObject *>::reverse_iterator it = mPluginInstances.rbegin() ; it != mPluginInstances.rend() ; it++ )
+	{
+		delete *it;
+	}
 
 	mPluginInstances.clear();
 
