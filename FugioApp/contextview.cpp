@@ -11,6 +11,7 @@
 #include <QScrollBar>
 #include <QInputDialog>
 #include <QClipboard>
+#include <QTemporaryFile>
 
 #include <fugio/pin_interface.h>
 #include <fugio/node_control_interface.h>
@@ -1627,30 +1628,26 @@ void ContextView::cut()
 
 	mSaveOnlySelected = true;
 
-	const QString		TempFile = QDir( QDir::tempPath() ).absoluteFilePath( "fugio-copy.tmp" );
+	QTemporaryFile		TempFile;
 
-	if( C->save( TempFile, &SaveNodeList ) )
+	if( C->save( TempFile.fileName(), &SaveNodeList ) )
 	{
-		QFile		FH( TempFile );
-
-		if( FH.open( QFile::ReadOnly ) )
+		if( TempFile.open() )
 		{
 			QMimeData		*MimeData = new QMimeData();
 
-			QByteArray		 PasteData = FH.readAll();
+			QByteArray		 PasteData = TempFile.readAll();
 
 			if( MimeData )
 			{
-				MimeData->setData( "fugio/copy", PasteData );
+				MimeData->setData( "text/plain", PasteData );
 
 				QApplication::clipboard()->setMimeData( MimeData );
 			}
 
-			FH.close();
+			TempFile.close();
 		}
 	}
-
-	QFile::remove( TempFile );
 
 	mSaveOnlySelected = false;
 
@@ -1686,32 +1683,26 @@ void ContextView::copy()
 
 	mSaveOnlySelected = true;
 
-	const QString		TempFile = QDir( QDir::tempPath() ).absoluteFilePath( "fugio-copy.tmp" );
+	QTemporaryFile		TempFile;
 
-	//qDebug() << TempFile;
-
-	if( C->save( TempFile, &NodeList ) )
+	if( C->save( TempFile.fileName(), &NodeList ) )
 	{
-		QFile		FH( TempFile );
-
-		if( FH.open( QFile::ReadOnly ) )
+		if( TempFile.open() )
 		{
 			QMimeData		*MimeData = new QMimeData();
 
-			QByteArray		 PasteData = FH.readAll();
+			QByteArray		 PasteData = TempFile.readAll();
 
 			if( MimeData )
 			{
-				MimeData->setData( "fugio/copy", PasteData );
+				MimeData->setData( "text/plain", PasteData );
 
 				QApplication::clipboard()->setMimeData( MimeData );
 			}
 
-			FH.close();
+			TempFile.close();
 		}
 	}
-
-	QFile::remove( TempFile );
 
 	mSaveOnlySelected = false;
 
@@ -1755,9 +1746,9 @@ void ContextView::paste()
 
 	QByteArray		PasteData;
 
-	if( MimeData->hasFormat( "fugio/copy" ) )
+	if( MimeData->hasFormat( "text/plain" ) )
 	{
-		PasteData = MimeData->data( "fugio/copy" );
+		PasteData = MimeData->data( "text/plain" );
 	}
 
 	if( !PasteData.isEmpty() )
