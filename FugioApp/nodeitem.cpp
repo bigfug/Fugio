@@ -29,6 +29,8 @@
 
 #include "nodeprivate.h"
 
+#include <fugio/utils.h>
+
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
 
@@ -652,7 +654,7 @@ void NodeItem::layoutPins()
 	const qreal		GuiWidth    = ( mNodeGui ? mNodeGui->size().width()  : 0 );
 	const qreal		GuiHeight   = ( mNodeGui ? mNodeGui->size().height() : 0 );
 	const qreal		LabelHeight = mLabelText->boundingRect().height();
-	const qreal		MaxWidth    = qMax( InputWidth + 5 + GuiWidth + 5 + OutputWidth, mLabelText->boundingRect().width() + 2 + ( mStatusItem ? LabelHeight + 2 : 0 ) );
+	const qreal		MaxWidth    = fugio::utils::roundUp( qMax( InputWidth + 5 + GuiWidth + 5 + OutputWidth, mLabelText->boundingRect().width() + 2 + ( mStatusItem ? LabelHeight + 2 : 0 ) ), 5 );
 
 	prepareGeometryChange();
 
@@ -767,7 +769,7 @@ void NodeItem::layoutPins()
 	{
 		mPinsItem->show();
 
-		mPinsItem->setRect( 0, mLabelItem->boundingRect().height() - 1, 5 + MaxWidth + 5, 5 + qMax<qreal>( FM.height() * PinTotalIdx, GuiHeight + 5 ) );
+		mPinsItem->setRect( 0, mLabelItem->boundingRect().height() - 1, 5 + MaxWidth + 5, 5 + qMax<qreal>( FM.height() * PinTotalIdx, fugio::utils::roundUp( GuiHeight + 2, 5 ) ) );
 
 		if( mNodeGui )
 		{
