@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QSettings>
 #include <QUuid>
+#include <QMutex>
 
 #include <portmidi.h>
 
