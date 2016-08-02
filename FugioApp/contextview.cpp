@@ -10,6 +10,7 @@
 #include <QGestureEvent>
 #include <QScrollBar>
 #include <QInputDialog>
+#include <QClipboard>
 
 #include <fugio/pin_interface.h>
 #include <fugio/node_control_interface.h>
@@ -1634,7 +1635,16 @@ void ContextView::cut()
 
 		if( FH.open( QFile::ReadOnly ) )
 		{
-			mPasteData = FH.readAll();
+			QMimeData		*MimeData = new QMimeData();
+
+			QByteArray		 PasteData = FH.readAll();
+
+			if( MimeData )
+			{
+				MimeData->setData( "fugio/copy", PasteData );
+
+				QApplication::clipboard()->setMimeData( MimeData );
+			}
 
 			FH.close();
 		}
@@ -1686,7 +1696,16 @@ void ContextView::copy()
 
 		if( FH.open( QFile::ReadOnly ) )
 		{
-			mPasteData = FH.readAll();
+			QMimeData		*MimeData = new QMimeData();
+
+			QByteArray		 PasteData = FH.readAll();
+
+			if( MimeData )
+			{
+				MimeData->setData( "fugio/copy", PasteData );
+
+				QApplication::clipboard()->setMimeData( MimeData );
+			}
 
 			FH.close();
 		}
@@ -1732,9 +1751,21 @@ void ContextView::saveSelectedTo( const QString &pFileName )
 
 void ContextView::paste()
 {
-	CmdContextViewPaste		*Cmd = new CmdContextViewPaste( this, mPasteData, m_PastePoint );
+	const QMimeData	*MimeData = QApplication::clipboard()->mimeData();
 
-	widget()->undoStack()->push( Cmd );
+	QByteArray		PasteData;
+
+	if( MimeData->hasFormat( "fugio/copy" ) )
+	{
+		PasteData = MimeData->data( "fugio/copy" );
+	}
+
+	if( !PasteData.isEmpty() )
+	{
+		CmdContextViewPaste		*Cmd = new CmdContextViewPaste( this, PasteData, m_PastePoint );
+
+		widget()->undoStack()->push( Cmd );
+	}
 }
 
 void ContextView::dragEnterEvent( QDragEnterEvent *pEvent )

@@ -409,7 +409,6 @@ private:
 	QFont									 m_pin_font;
 	bool									 mNodePositionFlag;
 	QPointF									 mNodePosition;
-	QByteArray								 mPasteData;
 	int										 mPasteOffset;
 	QList<QUuid>							 mPasteNodes;
 	bool									 mSaveOnlySelected;
