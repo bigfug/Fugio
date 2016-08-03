@@ -102,19 +102,19 @@ public:
 
 		QMap<QUuid,QUuid>	PinMap = mContextView->loadPinIds();
 
-		for( QUuid Src : mInternalLinkList.keys() )
+		for( QUuid Src : mInternalLinkList.keys().toSet() )
 		{
-			for( QUuid Dst : mInternalLinkList.values( Src ) )
+			for( QUuid Dst : mInternalLinkList.values( Src ).toSet() )
 			{
 				Context->connectPins( Src, Dst );
 			}
 		}
 
-		for( QUuid Src : mExternalLinkList.keys() )
+		for( QUuid Src : mExternalLinkList.keys().toSet() )
 		{
 			const QUuid	NewSrc = PinMap.value( Src, Src );
 
-			for( QUuid Dst : mExternalLinkList.values( Src ) )
+			for( QUuid Dst : mExternalLinkList.values( Src ).toSet() )
 			{
 				const QUuid	NewDst = PinMap.value( Dst, Dst );
 
@@ -134,19 +134,19 @@ public:
 	{
 		QSharedPointer<fugio::ContextInterface>		Context = mContextView->context();
 
-		CHECK_NULL_LINKS( mContextView );
-
-		for( QUuid Src : mExternalLinkList.keys() )
+		for( QUuid Src : mExternalLinkList.keys().toSet() )
 		{
-			for( QUuid Dst : mExternalLinkList.values( Src ) )
+			for( QUuid Dst : mExternalLinkList.values( Src ).toSet() )
 			{
+				qDebug() << Src << Dst;
+
 				Context->disconnectPins( Src, Dst );
 			}
 		}
 
-		for( QUuid Src : mInternalLinkList.keys() )
+		for( QUuid Src : mInternalLinkList.keys().toSet() )
 		{
-			for( QUuid Dst : mInternalLinkList.values( Src ) )
+			for( QUuid Dst : mInternalLinkList.values( Src ).toSet() )
 			{
 				Context->disconnectPins( Src, Dst );
 			}
@@ -166,8 +166,6 @@ public:
 		{
 			mContextView->groupRemove( ID );
 		}
-
-		CHECK_NULL_LINKS( mContextView );
 	}
 
 private:

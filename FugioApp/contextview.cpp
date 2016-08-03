@@ -1294,6 +1294,8 @@ void ContextView::pinRemoved( QUuid pNodeId, QUuid pPinId )
 
 void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 {
+//	qDebug() << "linkAdded" << pPinId1 << pPinId2;
+
 	QSharedPointer<fugio::PinInterface>		 Pin1 = mContext->findPin( pPinId1 );
 	QSharedPointer<fugio::PinInterface>		 Pin2 = mContext->findPin( pPinId2 );
 
@@ -1325,6 +1327,8 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 
 	if( RealLink )
 	{
+		mLinkList << RealLink;
+
 		scene()->addItem( RealLink );
 
 		RealLink->setSrcPin( PinItem2 );
@@ -1376,6 +1380,8 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 
 		if( GroupLink )
 		{
+			mLinkList << GroupLink;
+
 			scene()->addItem( GroupLink );
 
 			GroupLink->setSrcPin( PinItem2 );
@@ -1398,6 +1404,8 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 
 void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 {
+//	qDebug() << "linkRemoved" << pPinId1 << pPinId2;
+
 	QSharedPointer<fugio::PinInterface>		 Pin1 = mContext->findPin( pPinId1 );
 	QSharedPointer<fugio::PinInterface>		 Pin2 = mContext->findPin( pPinId2 );
 
@@ -1436,40 +1444,26 @@ void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 		PinItem1->linkRem( Link );
 		PinItem2->linkRem( Link );
 
-		delete Link;
-	}
-
-	if( NodeItem1 && NodeItem1->groupId() != m_GroupId )
-	{
-		NodeItem1 = mNodeList.value( NodeItem1->groupId() );
-
-		if( NodeItem1 )
-		{
-			PinItem1 = NodeItem1->findPinInput( Pin1 );
-		}
-	}
-
-	if( NodeItem2 && NodeItem2->groupId() != m_GroupId )
-	{
-		NodeItem2 = mNodeList.value( NodeItem2->groupId() );
-
-		if( NodeItem2 )
-		{
-			PinItem2 = NodeItem2->findPinOutput( Pin2 );
-		}
-	}
-
-	if( !PinItem1 || !PinItem2 )
-	{
-		return;
-	}
-
-	if( LinkItem *Link = PinItem2->findLink( PinItem1 ) )
-	{
-		PinItem1->linkRem( Link );
-		PinItem2->linkRem( Link );
+		mLinkList.removeAll( Link );
 
 		delete Link;
+	}
+
+	for( LinkItem *Link : mLinkList.toSet() )
+	{
+		qDebug() << Link->srcPin()->uuid() << Link->dstPin()->uuid();
+
+		if( Link->srcPin()->uuid() == PinItem2->uuid() && Link->dstPin()->uuid() == PinItem1->uuid() )
+		{
+			qDebug() << "Found Link";
+
+			Link->srcPin()->linkRem( Link );
+			Link->dstPin()->linkRem( Link );
+
+			mLinkList.removeAll( Link );
+
+			delete Link;
+		}
 	}
 }
 
@@ -1642,33 +1636,6 @@ QMap<QUuid, QUuid> ContextView::nodeGroups(QList<NodeItem *> pNodeList)
 	}
 
 	return( NodeGroups );
-}
-
-void ContextView::checkNullLinks( const char *pFile, const int pLine )
-{
-	QList<QGraphicsItem *>	NullList;
-
-	for( QGraphicsItem *Item : scene()->items() )
-	{
-		LinkItem		*LI = qgraphicsitem_cast<LinkItem *>( Item );
-
-		if( !LI )
-		{
-			continue;
-		}
-
-		PinItem			*SrcPin = LI->srcPin();
-		PinItem			*DstPin = LI->dstPin();
-
-		if( !SrcPin || !DstPin )
-		{
-			qWarning() << "Found null link" << pFile << pLine;
-
-			NullList << Item;
-		}
-	}
-
-	qDeleteAll( NullList );
 }
 
 void ContextView::cut()
@@ -2082,8 +2049,6 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 {
 	const QUuid		NewGroupId = NI->id();
 
-	CHECK_NULL_LINKS( this );
-
 	for( QGraphicsItem *Item : scene()->items() )
 	{
 		LinkItem		*LI = qgraphicsitem_cast<LinkItem *>( Item );
@@ -2126,15 +2091,30 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 
 				if( NewPin )
 				{
-					if( LinkItem *Link = new LinkItem() )
+					bool	LinkFound = false;
+
+					for( LinkItem *LI : mLinkList )
 					{
-						scene()->addItem( Link );
+						if( LI->srcPin() == NewPin && LI->dstPin() == DstPin )
+						{
+							LinkFound = true;
+						}
+					}
 
-						Link->setSrcPin( NewPin );
-						Link->setDstPin( DstPin );
+					if( !LinkFound )
+					{
+						if( LinkItem *Link = new LinkItem() )
+						{
+							mLinkList << Link;
 
-						NewPin->linkAdd( Link );
-						DstPin->linkAdd( Link );
+							scene()->addItem( Link );
+
+							Link->setSrcPin( NewPin );
+							Link->setDstPin( DstPin );
+
+							NewPin->linkAdd( Link );
+							DstPin->linkAdd( Link );
+						}
 					}
 				}
 			}
@@ -2156,15 +2136,30 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 
 				if( NewPin )
 				{
-					if( LinkItem *Link = new LinkItem() )
+					bool	LinkFound = false;
+
+					for( LinkItem *LI : mLinkList )
 					{
-						scene()->addItem( Link );
+						if( LI->srcPin() == SrcPin && LI->dstPin() == NewPin )
+						{
+							LinkFound = true;
+						}
+					}
 
-						Link->setSrcPin( SrcPin );
-						Link->setDstPin( NewPin );
+					if( !LinkFound )
+					{
+						if( LinkItem *Link = new LinkItem() )
+						{
+							mLinkList << Link;
 
-						SrcPin->linkAdd( Link );
-						NewPin->linkAdd( Link );
+							scene()->addItem( Link );
+
+							Link->setSrcPin( SrcPin );
+							Link->setDstPin( NewPin );
+
+							SrcPin->linkAdd( Link );
+							NewPin->linkAdd( Link );
+						}
 					}
 				}
 			}
@@ -2172,8 +2167,6 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 	}
 
 	NI->layoutPins();
-
-	CHECK_NULL_LINKS( this );
 }
 
 QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId )

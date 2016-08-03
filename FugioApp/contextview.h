@@ -19,8 +19,6 @@
 
 //#define USE_CONTEXT_MODEL
 
-#define CHECK_NULL_LINKS(x)	(x)->checkNullLinks( __FILE__, __LINE__ )
-
 class QGestureEvent;
 class QPanGesture;
 class QPinchGesture;
@@ -257,8 +255,6 @@ public slots:
 
 	void processGroupLinks( const QUuid &pGroupId );
 
-	void checkNullLinks( const char *pFile, const int pLine );
-
 protected:
 	void processSelection( bool pSaveToClipboard, bool pDeleteData );
 
@@ -426,6 +422,7 @@ private:
 
 	QMap<QUuid, QSharedPointer<NodeItem>>	 mNodeList;
 	QList<QSharedPointer<NoteItem>>			 mNoteList;
+	QList<LinkItem *>						 mLinkList;
 
 	QList<QUuid>							 mGroupIds;
 	QList<QUuid>							 mGroupStack;

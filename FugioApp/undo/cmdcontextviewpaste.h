@@ -28,7 +28,19 @@ public:
 	{
 		QSharedPointer<fugio::ContextInterface>	Context = mContext->context();
 
+		QList<QUuid>	UniqNode;
+
 		for( QUuid U : mPasteNodes.values() )
+		{
+			if( UniqNode.contains( U ) )
+			{
+				continue;
+			}
+
+			UniqNode << U;
+		}
+
+		for( QUuid U : UniqNode )
 		{
 			QSharedPointer<NodeItem> NI = mContext->findNodeItem( U );
 
@@ -51,7 +63,7 @@ public:
 			}
 		}
 
-		for( QUuid U : mPasteNodes.values() )
+		for( QUuid U : UniqNode )
 		{
 			QSharedPointer<NodeItem> NI = mContext->findNodeItem( U );
 
@@ -61,7 +73,7 @@ public:
 			}
 		}
 
-		for( QUuid U : mPasteNodes.values() )
+		for( QUuid U : UniqNode )
 		{
 			QSharedPointer<NodeItem> NI = mContext->findNodeItem( U );
 
