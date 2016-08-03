@@ -99,9 +99,9 @@ public:
 	//-------------------------------------------------------------------------
 	// Specialised/lower-level pin creation - generally use NodeControl helpers instead
 
-	virtual QSharedPointer<fugio::PinInterface> createPin( const QString &pName, PinDirection pDirection, const QUuid &pLocalId ) = 0;
+	virtual QSharedPointer<fugio::PinInterface> createPin( const QString &pName, PinDirection pDirection, const QUuid &pGlobalId, const QUuid &pLocalId ) = 0;
 
-	virtual QObject *createPin( const QString &pName, PinDirection pDirection, const QUuid &pLocalId, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID ) = 0;
+	virtual QObject *createPin( const QString &pName, PinDirection pDirection, const QUuid &pGlobalId, const QUuid &pLocalId, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID ) = 0;
 
 	virtual void addPin( QSharedPointer<fugio::PinInterface> pPin ) = 0;
 

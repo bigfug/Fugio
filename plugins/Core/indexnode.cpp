@@ -13,7 +13,7 @@ IndexNode::IndexNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mOutputIndex = pinOutput<fugio::VariantInterface *>( "Index", mPinOutputIndex, PID_INTEGER, PIN_OUTPUT_INDEX );
 
-	mNode->createPin( "Value", PIN_OUTPUT, PIN_OUTPUT_VALUE, mPinOutputValue, QUuid() );
+	mPinOutputValue = pinOutput( "Value", PIN_OUTPUT_VALUE );
 
 	QSharedPointer<fugio::PinInterface>	PinI = pinInput( "Input", PIN_INPUT_1 );
 

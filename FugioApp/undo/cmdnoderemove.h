@@ -24,9 +24,9 @@ public:
 
 	virtual void undo( void )
 	{
-		mContext->registerNode( mNode, mNode->uuid() );
+		mContext->registerNode( mNode );
 
-		foreach( auto PinCon, mPinLst )
+		for( auto PinCon : mPinLst )
 		{
 			mContext->connectPins( PinCon.first, PinCon.second );
 		}
@@ -34,9 +34,9 @@ public:
 
 	virtual void redo( void )
 	{
-		foreach( auto PinPtr, mNode->enumInputPins() )
+		for( auto PinPtr : mNode->enumInputPins() )
 		{
-			foreach( auto SrcPin, PinPtr->connectedPins() )
+			for( auto SrcPin : PinPtr->connectedPins() )
 			{
 				mPinLst.append( QPair<QUuid,QUuid>( SrcPin->globalId(), PinPtr->globalId() ) );
 			}
@@ -44,9 +44,9 @@ public:
 			mContext->disconnectPin( PinPtr->globalId() );
 		}
 
-		foreach( auto PinPtr, mNode->enumOutputPins() )
+		for( auto PinPtr : mNode->enumOutputPins() )
 		{
-			foreach( auto DstPin, PinPtr->connectedPins() )
+			for( auto DstPin : PinPtr->connectedPins() )
 			{
 				mPinLst.append( QPair<QUuid,QUuid>( PinPtr->globalId(), DstPin->globalId() ) );
 			}
@@ -59,10 +59,10 @@ public:
 
 private:
 	QSharedPointer<fugio::ContextInterface>		 mContext;
-	QSharedPointer<fugio::NodeInterface>			 mNode;
-	QString									 mName;
-	QUuid									 mUuid;
-	QList< QPair<QUuid,QUuid> >				 mPinLst;
+	QSharedPointer<fugio::NodeInterface>		 mNode;
+	QString										 mName;
+	QUuid										 mUuid;
+	QList< QPair<QUuid,QUuid> >					 mPinLst;
 };
 
 #endif // CMDNODEREMOVE_H

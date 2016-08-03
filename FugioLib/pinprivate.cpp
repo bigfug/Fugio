@@ -248,7 +248,13 @@ void PinPrivate::update( qint64 pTimeStamp, bool pUpdatedConnectedNode )
 	{
 		if( mContext )
 		{
-			mContext->updateNode( mContext->findNode( node()->uuid() ) );
+			fugio::NodeInterface					*NI = node();
+			QSharedPointer<fugio::NodeInterface>	 NP = mContext->findNode( NI->uuid() );
+
+			if( NP )
+			{
+				mContext->updateNode( NP );
+			}
 		}
 	}
 }
@@ -421,7 +427,10 @@ void PinPrivate::setContext( fugio::ContextInterface *pContext )
 
 		pContext->registerPin( mNode->findPinByLocalId( mLocalId ) );
 
-		emit pContext->qobject()->pinRenamed( mNode->uuid(), OldGlobalId, NewGlobalId );
+		if( OldGlobalId != NewGlobalId )
+		{
+			emit pContext->qobject()->pinRenamed( mNode->uuid(), OldGlobalId, NewGlobalId );
+		}
 	}
 
 	if( !pContext && mContext )

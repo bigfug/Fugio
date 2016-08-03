@@ -45,7 +45,7 @@ private slots:
 
 	void clearContext( void );
 
-	void nodeAdded( QUuid pNodeId, QUuid pOrigId );
+	void nodeAdded( QUuid pNodeId );
 	void nodeRemoved( QUuid pNodeId );
 	void nodeRenamed( QUuid pOrigId, QUuid pNodeId);
 

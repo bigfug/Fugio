@@ -10,7 +10,7 @@ RateControlNode::RateControlNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInput   = pinInput( "Input" );
 	mPinTrigger = pinInput( "Trigger" );
 
-	mPinOutput = mNode->createPin( "Output", PIN_OUTPUT, next_uuid() );
+	mPinOutput = pinOutput( "Output", next_uuid() );
 }
 
 void RateControlNode::inputsUpdated( qint64 pTimeStamp )

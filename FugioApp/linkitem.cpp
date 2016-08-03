@@ -234,14 +234,14 @@ void LinkItem::updateToolTip()
 {
 	QStringList		ToolTips;
 
-	if( mSrcPin && mSrcPin->pin() )
+	if( mSrcPin && mSrcPin->pin() && mSrcPin->pin()->node() )
 	{
 		ToolTips << mSrcPin->pin()->node()->name() << " / " << mSrcPin->pin()->name();
 	}
 
 	ToolTips << "->";
 
-	if( mDstPin && mDstPin->pin() )
+	if( mDstPin && mDstPin->pin() && mDstPin->pin()->node() )
 	{
 		ToolTips << mDstPin->pin()->node()->name() << " / " << mDstPin->pin()->name();
 	}

@@ -210,36 +210,45 @@ public:
 
 	QSharedPointer<fugio::PinInterface> pinInput( const QString &pName ) // soon... Q_DECL_DEPRECATED
 	{
-		return( mNode->createPin( pName, PIN_INPUT, next_uuid() ) );
+		return( mNode->createPin( pName, PIN_INPUT, QUuid::createUuid(), next_uuid() ) );
 	}
 
-	QSharedPointer<fugio::PinInterface> pinInput( const QString &pName, const QUuid &pUuid )
+	QSharedPointer<fugio::PinInterface> pinInput( const QString &pName, const QUuid &pLocalId )
 	{
-		return( mNode->createPin( pName, PIN_INPUT, pUuid ) );
+		return( mNode->createPin( pName, PIN_INPUT, QUuid::createUuid(), pLocalId ) );
 	}
 
 	template <class T> T pinInput( const QString &pName, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID ) // soon... Q_DECL_DEPRECATED
 	{
 		Q_ASSERT( mPinInterface.isNull() );
 
-		return( qobject_cast<T>( mNode->createPin( pName, PIN_INPUT, next_uuid(), mPinInterface, pControlUUID ) ) );
+		return( qobject_cast<T>( mNode->createPin( pName, PIN_INPUT, QUuid::createUuid(), next_uuid(), mPinInterface, pControlUUID ) ) );
 	}
 
-	template <class T = fugio::PinInterface *> T pinInput( const QString &pName, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID, const QUuid &pUuid )
+	template <class T = fugio::PinInterface *> T pinInput( const QString &pName, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID, const QUuid &pLocalId )
 	{
 		Q_ASSERT( mPinInterface.isNull() );
 
-		return( qobject_cast<T>( mNode->createPin( pName, PIN_INPUT, pUuid, mPinInterface, pControlUUID ) ) );
+		return( qobject_cast<T>( mNode->createPin( pName, PIN_INPUT, QUuid::createUuid(), pLocalId, mPinInterface, pControlUUID ) ) );
 	}
 
 	//-------------------------------------------------------------------------
 	// support methods for creating output pins
 
-	QSharedPointer<fugio::PinInterface> pinOutput( const QString &pName, const QUuid &pControlUUID, const QUuid &pUuid )
+	QSharedPointer<fugio::PinInterface> pinOutput( const QString &pName, const QUuid &pLocalId )
 	{
 		QSharedPointer<fugio::PinInterface>		PinInt;
 
-		mNode->createPin( pName, PIN_OUTPUT, pUuid, PinInt, pControlUUID );
+		mNode->createPin( pName, PIN_OUTPUT, QUuid::createUuid(), pLocalId, PinInt, QUuid() );
+
+		return( PinInt );
+	}
+
+	QSharedPointer<fugio::PinInterface> pinOutput( const QString &pName, const QUuid &pControlUUID, const QUuid &pLocalId )
+	{
+		QSharedPointer<fugio::PinInterface>		PinInt;
+
+		mNode->createPin( pName, PIN_OUTPUT, QUuid::createUuid(), pLocalId, PinInt, pControlUUID );
 
 		return( PinInt );
 	}
@@ -248,14 +257,14 @@ public:
 	{
 		Q_ASSERT( mPinInterface.isNull() );
 
-		return( qobject_cast<T>( mNode->createPin( pName, PIN_OUTPUT, next_uuid(), mPinInterface, pControlUUID ) ) );
+		return( qobject_cast<T>( mNode->createPin( pName, PIN_OUTPUT, QUuid::createUuid(), next_uuid(), mPinInterface, pControlUUID ) ) );
 	}
 
-	template <class T> T pinOutput( const QString &pName, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID, const QUuid &pUuid )
+	template <class T> T pinOutput( const QString &pName, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID, const QUuid &pLocalId )
 	{
 		Q_ASSERT( mPinInterface.isNull() );
 
-		return( qobject_cast<T>( mNode->createPin( pName, PIN_OUTPUT, pUuid, mPinInterface, pControlUUID ) ) );
+		return( qobject_cast<T>( mNode->createPin( pName, PIN_OUTPUT, QUuid::createUuid(), pLocalId, mPinInterface, pControlUUID ) ) );
 	}
 
 	//-------------------------------------------------------------------------

@@ -57,9 +57,10 @@ signals:
 
 	void clearContext( void );
 
-	void nodeAdded( QUuid pNodeId, QUuid pOriginalId );
+	void nodeAdded( QUuid pNodeId );
 	void nodeRemoved( QUuid pNodeId );
 	void nodeRenamed( QUuid pNodeId1, QUuid pNodeId2 );
+	void nodeRelabled( QUuid pOriginalNodeId, QUuid pNewNodeId );
 	void nodeUpdated( QUuid pNodeId );
 	void nodeActivated( QUuid pNodeId );
 	void nodeComplete( QUuid pNodeId );
@@ -68,6 +69,7 @@ signals:
 
 	void pinAdded( QUuid pNodeId, QUuid pPinId );
 	void pinRenamed( QUuid pNodeId, QUuid pPinId1, QUuid pPinId2 );
+	void pinRelabled( QUuid pNodeId, QUuid pOriginalPinId, QUuid pNewPinId );
 	void pinRemoved( QUuid pNodeId, QUuid pPinId );
 
 	void linkAdded( QUuid pPinId1, QUuid pPinId2 );

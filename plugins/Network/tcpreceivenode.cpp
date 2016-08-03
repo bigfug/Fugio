@@ -68,18 +68,18 @@ void TCPReceiveNode::frameStart( qint64 pTimeStamp )
 			continue;
 		}
 
-		QUuid		ControlId, GlobalId;
+		QUuid		ControlId, LocalId;
 		QString		Name;
 
-		*D >> GlobalId;
+		*D >> LocalId;
 		*D >> ControlId;
 		*D >> Name;
 
-		QSharedPointer<fugio::PinInterface>		P = mNode->findPinByLocalId( GlobalId );
+		QSharedPointer<fugio::PinInterface>		P = mNode->findPinByLocalId( LocalId );
 
 		if( !P )
 		{
-			mNode->createPin( Name, PIN_OUTPUT, GlobalId, P, ControlId );
+			P = pinOutput( Name, ControlId, LocalId );
 		}
 
 		if( SerialiseInterface *S = qobject_cast<SerialiseInterface *>( P->control()->qobject() ) )

@@ -16,7 +16,7 @@ LastUpdatedInputNode::LastUpdatedInputNode( QSharedPointer<fugio::NodeInterface>
 {
 	mPinInput = pinInput( "Input 1" );
 
-	mPinOutput = mNode->createPin( "Output", PIN_OUTPUT, next_uuid() );
+	mPinOutput = pinOutput( "Output", next_uuid() );
 }
 
 void LastUpdatedInputNode::inputsUpdated( qint64 pTimeStamp )

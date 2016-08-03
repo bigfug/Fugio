@@ -420,7 +420,7 @@ QSharedPointer<fugio::NodeInterface> GlobalPrivate::createNode( const QString &p
 	return( NODE_PTR );
 }
 
-QSharedPointer<fugio::PinInterface> GlobalPrivate::createPin( const QString &pName, const QUuid &pLocalId, PinDirection pDirection, const QUuid &pControlUUID, const QVariantHash &pSettings )
+QSharedPointer<fugio::PinInterface> GlobalPrivate::createPin( const QString &pName, const QUuid &pGlobalId, const QUuid &pLocalId, PinDirection pDirection, const QUuid &pControlUUID, const QVariantHash &pSettings )
 {
 	Q_ASSERT( !pLocalId.isNull() );
 
@@ -435,6 +435,7 @@ QSharedPointer<fugio::PinInterface> GlobalPrivate::createPin( const QString &pNa
 
 	P->moveToThread( thread() );
 
+	P->setGlobalId( pGlobalId );
 	P->setLocalId( pLocalId );
 	P->setName( pName );
 	P->setDirection( pDirection );

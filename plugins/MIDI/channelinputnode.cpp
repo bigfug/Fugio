@@ -486,7 +486,7 @@ void ChannelInputNode::setListenState( bool pChecked )
 
 void ChannelInputNode::createMidiPin( MidiPinPair &MPP, const QString &pName, const QUuid &pPinType )
 {
-	MPP.mVal = qobject_cast<fugio::VariantInterface *>( mNode->createPin( pName, PIN_OUTPUT, QUuid::createUuid(), MPP.mPin, pPinType ) );
+	MPP.mVal = qobject_cast<fugio::VariantInterface *>( mNode->createPin( pName, PIN_OUTPUT, QUuid::createUuid(), QUuid::createUuid(), MPP.mPin, pPinType ) );
 
 	if( MPP.mPin )
 	{

@@ -397,6 +397,8 @@ void ScaleNode::inputsUpdated( qint64 pTimeStamp )
 
 QUuid ScaleNode::pairedPinControlUuid( QSharedPointer<fugio::PinInterface> pPin ) const
 {
+	Q_UNUSED( pPin )
+
 	return( PID_INTEGER );
 }
 

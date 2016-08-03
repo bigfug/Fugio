@@ -198,9 +198,9 @@ public:
 		return( mPinMap.key( pPin ).isNull() ? false : true );
 	}
 
-	virtual QSharedPointer<fugio::PinInterface> createPin( const QString &pName, PinDirection pDirection, const QUuid &pUuid ) Q_DECL_OVERRIDE;
+	virtual QSharedPointer<fugio::PinInterface> createPin( const QString &pName, PinDirection pDirection, const QUuid &pGlobalId, const QUuid &pLocalId ) Q_DECL_OVERRIDE;
 
-	virtual QObject *createPin( const QString &pName, PinDirection pDirection, const QUuid &pUuid, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID ) Q_DECL_OVERRIDE;
+	virtual QObject *createPin( const QString &pName, PinDirection pDirection, const QUuid &pGlobalId, const QUuid &pLocalId, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID ) Q_DECL_OVERRIDE;
 
 	virtual void addPin( QSharedPointer<fugio::PinInterface> pPin ) Q_DECL_OVERRIDE;
 

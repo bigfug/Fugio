@@ -40,7 +40,7 @@ void ContextModel::setContext( QSharedPointer<fugio::ContextInterface> pContext 
 
 	connect( CS, SIGNAL(clearContext()), this, SLOT(clearContext()) );
 
-	connect( CS, SIGNAL(nodeAdded(QUuid,QUuid)), this, SLOT(nodeAdded(QUuid,QUuid)) );
+	connect( CS, SIGNAL(nodeAdded(QUuid)), this, SLOT(nodeAdded(QUuid)) );
 	connect( CS, SIGNAL(nodeRemoved(QUuid)), this, SLOT(nodeRemoved(QUuid)) );
 	connect( CS, SIGNAL(nodeRenamed(QUuid,QUuid)), this, SLOT(nodeRenamed(QUuid,QUuid)) );
 
@@ -366,7 +366,7 @@ void ContextModel::clearContext()
 	endResetModel();
 }
 
-void ContextModel::nodeAdded( QUuid pNodeId, QUuid /* pOrigId */ )
+void ContextModel::nodeAdded( QUuid pNodeId )
 {
 	BaseListModel	*Parent = ( mCurrentGroup.isNull() ? mRootItem : mNodeMap.value( mCurrentGroup )->children() );
 

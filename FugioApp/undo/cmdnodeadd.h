@@ -47,7 +47,12 @@ public:
 	{
 		mContextWidget->saveRecovery();
 
-		QSharedPointer<fugio::NodeInterface>	Node = mContext->global()->createNode( mName, QUuid::createUuid(), mControlId );
+		if( mNodeId.isNull() )
+		{
+			mNodeId = QUuid::createUuid();
+		}
+
+		QSharedPointer<fugio::NodeInterface>	Node = mContext->global()->createNode( mName, mNodeId, mControlId );
 
 		if( Node && Node->control().isNull() )
 		{
@@ -58,9 +63,7 @@ public:
 		{
 			mContextWidget->saveRecovery();
 
-			mContext->registerNode( Node, mControlId );
-
-			mNodeId = Node->uuid();
+			mContext->registerNode( Node );
 		}
 	}
 

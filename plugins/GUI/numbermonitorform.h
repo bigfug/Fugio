@@ -21,7 +21,7 @@ public slots:
 	void setNodeName( const QString &pName );
 
 protected:
-	virtual void paintEvent( QPaintEvent *pEvent );
+	virtual void paintEvent( QPaintEvent *pEvent ) Q_DECL_OVERRIDE;
 
 	void contextMenuEvent( QContextMenuEvent *pEvent ) Q_DECL_OVERRIDE;
 

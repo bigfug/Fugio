@@ -49,7 +49,7 @@ public:
 
 		if( mNode )
 		{
-			mContext->registerNode( mNode, mNode->uuid() );
+			mContext->registerNode( mNode );
 
 			if( mNodePinId.isNull() )
 			{
@@ -72,11 +72,11 @@ public:
 	}
 
 private:
-	QSharedPointer<fugio::ContextInterface>	 mContext;
+	QSharedPointer<fugio::ContextInterface>		 mContext;
 	QSharedPointer<fugio::NodeInterface>		 mNode;
-	QSharedPointer<fugio::PinInterface>		 mPin;
-	QUuid								 mControlId;
-	QUuid								 mNodePinId;
+	QSharedPointer<fugio::PinInterface>			 mPin;
+	QUuid										 mControlId;
+	QUuid										 mNodePinId;
 };
 
 #endif // CMDPINJOIN_H
