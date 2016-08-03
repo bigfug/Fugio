@@ -350,6 +350,11 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 {
 	QSettings				 CFG( pFileName, QSettings::IniFormat );
 
+	if( !CFG.isWritable() )
+	{
+		return( false );
+	}
+
 	CFG.clear();
 
 	emit saveStart( CFG );
