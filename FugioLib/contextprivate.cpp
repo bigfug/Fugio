@@ -619,6 +619,10 @@ void ContextPrivate::unregisterNode( const QUuid &pUUID )
 		Node->setStatus( fugio::NodeInterface::Initialising );
 
 		Node->setContext( nullptr );
+
+		NodePrivate		*NP = qobject_cast<NodePrivate *>( Node->qobject() );
+
+		NP->clear();
 	}
 
 	emit nodeRemoved( pUUID );
