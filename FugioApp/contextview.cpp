@@ -624,10 +624,7 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 			QUuid		Id   = fugio::utils::string2uuid( pSettings.value( "uuid", fugio::utils::uuid2string( QUuid::createUuid() ) ).toString() );
 			QUuid		GroupId = fugio::utils::string2uuid( pSettings.value( "group", fugio::utils::uuid2string( QUuid() ) ).toString() );
 
-			if( GroupIdMap.contains( GroupId ) )
-			{
-				GroupId = GroupIdMap.value( GroupId );
-			}
+			GroupId = GroupIdMap.value( GroupId, GroupId );
 
 			if( hasNoteItem( Id ) )
 			{
@@ -684,7 +681,14 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 				continue;
 			}
 
-			KID = mLoadNodeIds.value( KID, KID );
+			if( GroupIdMap.contains( KID ) )
+			{
+				KID = GroupIdMap.value( KID, KID );
+			}
+			else
+			{
+				KID = mLoadNodeIds.value( KID, KID );
+			}
 
 			QUuid	GID = fugio::utils::string2uuid( pSettings.value( KS ).toString() );
 
