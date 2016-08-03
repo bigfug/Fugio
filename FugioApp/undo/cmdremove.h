@@ -134,6 +134,8 @@ public:
 	{
 		QSharedPointer<fugio::ContextInterface>		Context = mContextView->context();
 
+		CHECK_NULL_LINKS( mContextView );
+
 		for( QUuid Src : mExternalLinkList.keys() )
 		{
 			for( QUuid Dst : mExternalLinkList.values( Src ) )
@@ -165,7 +167,7 @@ public:
 			mContextView->groupRemove( ID );
 		}
 
-		mContextView->checkNullLinks();
+		CHECK_NULL_LINKS( mContextView );
 	}
 
 private:

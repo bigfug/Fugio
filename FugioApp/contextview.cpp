@@ -591,7 +591,14 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 					pSettings.endArray();
 
-					QPointF	NP = mPositions.value( NI->id(), NI->pos() );
+					QPointF	NP = mPositions.value( OrigId, NI->pos() );
+
+					if( mPasteOffset > 0 )
+					{
+						QPoint		TmpPnt = mapFromScene( NP );
+
+						NP = mapToScene( TmpPnt + QPoint( mPasteOffset, mPasteOffset ) );
+					}
 
 					NI->setNodePos( NP );
 				}
@@ -1633,7 +1640,7 @@ QMap<QUuid, QUuid> ContextView::nodeGroups(QList<NodeItem *> pNodeList)
 	return( NodeGroups );
 }
 
-void ContextView::checkNullLinks()
+void ContextView::checkNullLinks( const char *pFile, const int pLine )
 {
 	QList<QGraphicsItem *>	NullList;
 
@@ -1651,7 +1658,7 @@ void ContextView::checkNullLinks()
 
 		if( !SrcPin || !DstPin )
 		{
-			qWarning() << "Found null link";
+			qWarning() << "Found null link" << pFile << pLine;
 
 			NullList << Item;
 		}
@@ -2071,6 +2078,8 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 {
 	const QUuid		NewGroupId = NI->id();
 
+	CHECK_NULL_LINKS( this );
+
 	for( QGraphicsItem *Item : scene()->items() )
 	{
 		LinkItem		*LI = qgraphicsitem_cast<LinkItem *>( Item );
@@ -2160,7 +2169,7 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
 
 	NI->layoutPins();
 
-	checkNullLinks();
+	CHECK_NULL_LINKS( this );
 }
 
 QUuid ContextView::group( const QString &pGroupName, QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<NoteItem *> &pNoteList, const QUuid &pGroupId )
@@ -2412,7 +2421,7 @@ void ContextView::processSelection( bool pSaveToClipboard, bool pDeleteData )
 
 	if( pSaveToClipboard )
 	{
-		mPasteOffset = 0;
+		mPasteOffset = pDeleteData ? 0 : gridSize();
 
 		updatePastePoint( mNodeItemList, mGroupItemList, mNoteItemList );
 	}
