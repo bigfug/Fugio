@@ -202,6 +202,10 @@ void ContextWidgetPrivate::setWindowTitleFromFileName(const QString &pFileName)
 	setWindowTitle( QDir::toNativeSeparators( QString( "%1/%2" ).arg( FileNameParts.first() ).arg( FileNameParts.last() ) ) );
 }
 
+void ContextWidgetPrivate::setGroupWidgetText(const QString pText)
+{
+	ui->mGroupLinks->setText( pText );
+}
 
 void ContextWidgetPrivate::userSave( void )
 {
@@ -458,4 +462,9 @@ void ContextWidgetPrivate::saveRecovery()
 	mContext->setMetaInfo( fugio::ContextInterface::Filename, mFileName );
 
 	mContext->save( mRecoveryFilename );
+}
+
+void ContextWidgetPrivate::on_mGroupLinks_linkActivated( const QString &link )
+{
+	emit groupLinkActivated( link );
 }

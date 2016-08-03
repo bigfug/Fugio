@@ -104,6 +104,16 @@
      </item>
     </layout>
    </item>
+   <item>
+    <widget class="QLabel" name="mGroupLinks">
+     <property name="text">
+      <string>Root</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::RichText</enum>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>

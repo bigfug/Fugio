@@ -312,6 +312,10 @@ protected slots:
 
 	void zoom(qreal factor, QPointF centerPoint);
 
+	void groupLinkActivated( const QString pLink );
+
+	void updateGroupWidgetText();
+
 protected:
 	virtual void dragEnterEvent(QDragEnterEvent *) Q_DECL_OVERRIDE;
 	virtual void dropEvent(QDropEvent *) Q_DECL_OVERRIDE;
@@ -333,6 +337,8 @@ protected:
 
 	void clearTempLists( void );
 
+	QString groupRichText( NodeItem *NI ) const;
+        
 public slots:
 	void updateItemVisibility();
 

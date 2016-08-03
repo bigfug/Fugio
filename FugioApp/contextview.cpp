@@ -109,6 +109,15 @@ void ContextView::setContext( QSharedPointer<fugio::ContextInterface> pContext )
 		connect( C.data(), SIGNAL(linkRemoved(QUuid,QUuid)), this, SLOT(linkRemoved(QUuid,QUuid)) );
 	}
 
+	ContextWidgetPrivate	*CWP = widget();
+
+	if( CWP )
+	{
+		connect( CWP, SIGNAL(groupLinkActivated(QString)), this, SLOT(groupLinkActivated(QString)) );
+
+		updateGroupWidgetText();
+	}
+
 #if defined( USE_CONTEXT_MODEL )
 	mContextModel.setContext( pContext );
 #endif
@@ -2221,7 +2230,7 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGro
 {
 	// Find the NodeItem for the supplied GroupId
 
-	QSharedPointer<NodeItem>	GI = mNodeList[ pGroupId ];
+	QSharedPointer<NodeItem>	GI = mNodeList.value( pGroupId );
 
 	if( !GI )
 	{
@@ -2546,13 +2555,56 @@ void ContextView::groupParent()
 	}
 }
 
+QString ContextView::groupRichText( NodeItem *NI ) const
+{
+	QString		Name = ( !NI ? "Root" : NI->name() );
+	QUuid		Uuid = ( !NI ? QUuid() : NI->id() );
+	bool		Bold = ( Uuid == m_GroupId );
+	QString		StrongStart = ( Bold ? "<strong>" : "" );
+	QString		StrongEnd   = ( Bold ? "</strong>" : "" );
+
+	return( QString( "<a href=\"%1\">%2%3%4</a>" ).arg( fugio::utils::uuid2string( Uuid ) ).arg( StrongStart ).arg( Name ).arg( StrongEnd ) );
+}
+
+void ContextView::updateGroupWidgetText()
+{
+	ContextWidgetPrivate	*CWP = widget();
+
+	QStringList				 GSL;
+
+	GSL << groupRichText( nullptr );
+
+	for( const QUuid GID : mGroupStack )
+	{
+		QSharedPointer<NodeItem>	GI = mNodeList.value( GID );
+
+		if( GI )
+		{
+			GSL << groupRichText( GI.data() );
+		}
+	}
+
+	CWP->setGroupWidgetText( GSL.join( " > " ) );
+}
+
 void ContextView::pushGroup( const QUuid &pGroupId )
 {
 	Q_ASSERT( mGroupIds.contains( pGroupId ) );
 
-	mGroupStack << pGroupId;
+	mGroupStack.clear();
+
+	QSharedPointer<NodeItem>	GI = mNodeList.value( pGroupId );
+
+	while( GI )
+	{
+		mGroupStack.prepend( GI->id() );
+
+		GI = mNodeList.value( GI->groupId() );
+	}
 
 	setGroupId( pGroupId );
+
+	updateGroupWidgetText();
 
 #if defined( USE_CONTEXT_MODEL )
 	mContextModel.setCurrentGroup( pGroupId );
@@ -2574,6 +2626,8 @@ void ContextView::popGroup()
 	}
 
 	setGroupId( GroupId );
+
+	updateGroupWidgetText();
 
 #if defined( USE_CONTEXT_MODEL )
 	mContextModel.setCurrentGroup( GroupId );
@@ -2660,5 +2714,14 @@ void ContextView::zoom( qreal factor, QPointF centerPoint )
 	Transform.translate( centerPoint.x(), centerPoint.y() );
 
 	setTransform( Transform );
+}
+
+void ContextView::groupLinkActivated( const QString pLink )
+{
+	const QUuid		GID = fugio::utils::string2uuid( pLink );
+
+	setGroupId( GID );
+
+	updateGroupWidgetText();
 }
 
