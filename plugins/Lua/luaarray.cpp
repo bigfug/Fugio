@@ -2,6 +2,7 @@
 
 #include <fugio/core/list_interface.h>
 #include <fugio/core/array_interface.h>
+#include <fugio/core/array_list_interface.h>
 
 #include "luaplugin.h"
 
@@ -56,6 +57,18 @@ int LuaArray::luaGet( lua_State *L )
 	}
 
 	int							 LstIdx = luaL_checkinteger( L, 2 );
+
+	fugio::ArrayListInterface	*ArrInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+
+	if( ArrInt )
+	{
+		if( LstIdx < 1 || LstIdx > ArrInt->count() )
+		{
+			return( luaL_error( L, "List index out of bounds (asked for %d, size is %d)", LstIdx, ArrInt->count() ) );
+		}
+
+		return( pusharray( L, dynamic_cast<QObject *>( ArrInt->array( LstIdx - 1 ) ), LstDat->mReadOnly ) );
+	}
 
 	fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( LstDat->mObject );
 
@@ -133,6 +146,13 @@ int LuaArray::luaSet( lua_State *L )
 	}
 
 	luaL_checkany( L, 3 );
+
+	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+
+	if( ArLInt )
+	{
+		return( luaL_error( L, "Can't set data in array list (yet)" ) );
+	}
 
 	fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
 
@@ -261,6 +281,15 @@ int LuaArray::luaLen( lua_State *L )
 {
 	LuaArrayUserData			*LstDat = checkarray( L );
 
+	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+
+	if( ArLInt )
+	{
+		lua_pushinteger( L, ArLInt->count() );
+
+		return( 1 );
+	}
+
 	fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( LstDat->mObject );
 
 	if( LstInt )
@@ -285,6 +314,13 @@ int LuaArray::luaLen( lua_State *L )
 int LuaArray::luaToArray( lua_State *L )
 {
 	LuaArrayUserData			*ArrDat = checkarray( L );
+
+	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( ArrDat->mObject );
+
+	if( ArLInt )
+	{
+		return( luaL_error( L, "Can't toArray from array list" ) );
+	}
 
 	fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( ArrDat->mObject );
 
@@ -385,6 +421,13 @@ int LuaArray::luaResize( lua_State *L )
 	LuaArrayUserData			*LstDat = checkarray( L );
 	int							 LstSiz = luaL_checkinteger( L, 2 );
 
+	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+
+	if( ArLInt )
+	{
+		return( luaL_error( L, "Can't resize array list (yet)" ) );
+	}
+
 	fugio::ArrayInterface		*LstInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
 
 	if( !LstInt )
@@ -419,6 +462,13 @@ int LuaArray::luaSetType( lua_State *L )
 {
 	LuaArrayUserData		*LstDat = checkarray( L );
 	const char				*LstTyp = lua_tostring( L, 2 );
+
+	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+
+	if( ArLInt )
+	{
+		return( luaL_error( L, "Can't setType on array list" ) );
+	}
 
 	fugio::ArrayInterface		*LstInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
 
