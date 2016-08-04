@@ -2522,15 +2522,12 @@ void ContextView::ungroupSelected()
 
 	// TODO: Add Undo
 
-	for( NodeItem *NI : mNodeItemList )
+	for( NodeItem *NI : mGroupItemList )
 	{
-		if( !mContext->findNode( NI->id() ) )
-		{
-			ungroup( NI );
-		}
+		ungroup( NI );
 	}
 
-//	CmdUngroup	*CMD = new CmdUngroup( this, NodeItemList, NoteItemList );
+//	CmdUngroup	*CMD = new CmdUngroup( this, "", mNodeItemList, mGroupItemList, mNoteItemList );
 
 //	if( CMD )
 //	{
