@@ -138,7 +138,7 @@ public:
 		{
 			for( QUuid Dst : mExternalLinkList.values( Src ).toSet() )
 			{
-				qDebug() << Src << Dst;
+				//qDebug() << Src << Dst;
 
 				Context->disconnectPins( Src, Dst );
 			}
