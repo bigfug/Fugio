@@ -67,7 +67,8 @@ SOURCES += \
     floatthresholdnode.cpp \
     smoothnode.cpp \
     autorangenode.cpp \
-    variantlistpin.cpp
+    variantlistpin.cpp \
+    arraylistpin.cpp
 
 HEADERS += \
     stringpin.h \
@@ -123,7 +124,9 @@ HEADERS += \
     floatthresholdnode.h \
     smoothnode.h \
     autorangenode.h \
-    variantlistpin.h
+    variantlistpin.h \
+    ../../include/fugio/core/array_list_interface.h \
+    arraylistpin.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
