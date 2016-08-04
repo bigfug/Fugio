@@ -1460,11 +1460,11 @@ void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 
 	for( LinkItem *Link : mLinkList.toSet() )
 	{
-		qDebug() << Link->srcPin()->uuid() << Link->dstPin()->uuid();
+		//qDebug() << Link->srcPin()->uuid() << Link->dstPin()->uuid();
 
 		if( Link->srcPin()->uuid() == PinItem2->uuid() && Link->dstPin()->uuid() == PinItem1->uuid() )
 		{
-			qDebug() << "Found Link";
+			//qDebug() << "Found Link";
 
 			Link->srcPin()->linkRem( Link );
 			Link->dstPin()->linkRem( Link );
