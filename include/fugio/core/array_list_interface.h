@@ -12,17 +12,11 @@ public:
 
 	virtual int count( void ) const = 0;
 
-	virtual ArrayInterface *array( int pIndex ) = 0;
+	virtual ArrayInterface *arrayIndex( int pIndex ) = 0;
 
-	virtual void appendArray( ArrayInterface *pArray ) = 0;
-
-	virtual void setArray( int pIndex, ArrayInterface *pArray ) = 0;
+	virtual void setCount( int pIndex ) = 0;
 
 	virtual void clear( void ) = 0;
-
-	virtual void removeAll( ArrayInterface *pArray ) = 0;
-
-	virtual void removeAt( int pIndex ) = 0;
 };
 
 FUGIO_NAMESPACE_END

@@ -126,7 +126,8 @@ HEADERS += \
     autorangenode.h \
     variantlistpin.h \
     ../../include/fugio/core/array_list_interface.h \
-    arraylistpin.h
+    arraylistpin.h \
+    arraylistentry.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

@@ -1,5 +1,7 @@
 #include "arraylistpin.h"
 
+#include <fugio/core/uuid.h>
+
 ArrayListPin::ArrayListPin( QSharedPointer<fugio::PinInterface> pPin )
 	: PinControlBase( pPin )
 {
@@ -11,19 +13,14 @@ int ArrayListPin::count() const
 	return( mArrayList.size() );
 }
 
-fugio::ArrayInterface *ArrayListPin::array( int pIndex )
+fugio::ArrayInterface *ArrayListPin::arrayIndex( int pIndex )
 {
-	return( mArrayList.value( pIndex ) );
+	return( &mArrayList[ pIndex ] );
 }
 
-void ArrayListPin::appendArray( fugio::ArrayInterface *pArray )
+void ArrayListPin::setCount( int pIndex )
 {
-	return( mArrayList.append( pArray ) );
-}
-
-void ArrayListPin::setArray( int pIndex, fugio::ArrayInterface *pArray)
-{
-	mArrayList[ pIndex ] = pArray;
+	mArrayList.resize( pIndex );
 }
 
 void ArrayListPin::clear()
@@ -31,12 +28,45 @@ void ArrayListPin::clear()
 	mArrayList.clear();
 }
 
-void ArrayListPin::removeAll(fugio::ArrayInterface *pArray)
+int ArrayListPin::listSize() const
 {
-	mArrayList.removeAll( pArray );
+	return( mArrayList.size() );
 }
 
-void ArrayListPin::removeAt(int pIndex)
+QUuid ArrayListPin::listPinControl() const
 {
-	mArrayList.removeAt( pIndex );
+	return( PID_ARRAY );
+}
+
+QVariant ArrayListPin::listIndex( int pIndex ) const
+{
+	Q_UNUSED( pIndex )
+
+	return( QVariant() );
+}
+
+void ArrayListPin::listSetIndex(int pIndex, const QVariant &pValue)
+{
+	Q_UNUSED( pIndex )
+	Q_UNUSED( pValue )
+}
+
+void ArrayListPin::listSetSize( int pSize )
+{
+	Q_UNUSED( pSize )
+}
+
+void ArrayListPin::listClear()
+{
+	mArrayList.clear();
+}
+
+void ArrayListPin::listAppend( const QVariant &pValue )
+{
+	Q_UNUSED( pValue )
+}
+
+bool ArrayListPin::listIsEmpty() const
+{
+	return( mArrayList.isEmpty() );
 }
