@@ -55,6 +55,8 @@ private:
 
 	static int luaGet(lua_State *L);
 	static int luaSet(lua_State *L);
+
+	static int luaSetPath( lua_State* L, const char* path );
 #endif
 
 protected:
