@@ -29,9 +29,18 @@ void ScaleImageNode::inputsUpdated( qint64 pTimeStamp )
 {
 	fugio::ImageInterface	*SRC = input<fugio::ImageInterface *>( mPinInputImage );
 
-	if( !SRC || SRC->size().isEmpty() )
+	if( !SRC ||! SRC->isValid() )
 	{
+		mNode->setStatus( fugio::NodeInterface::Warning );
+		mNode->setStatusMessage( "Image is not valid" );
+
 		return;
+	}
+
+	if( mNode->status() != fugio::NodeInterface::Initialised )
+	{
+		mNode->setStatus( fugio::NodeInterface::Initialised );
+		mNode->setStatusMessage( QString() );
 	}
 
 	fugio::Performance		Perf( mNode, "inputsUpdated", pTimeStamp );
