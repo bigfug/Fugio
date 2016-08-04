@@ -333,7 +333,7 @@ version=2
 
 [dfbdef53-eca0-407b-a021-37cb9456a9bc]
 control\dockarea=8
-control\value="\nfugio = require \"fugio\"\n\nPinStrings = fugio.input( \"Strings\" )\n\nStrings = PinStrings:get()\n\nPinValue = fugio.output( \"Value\" )\n\nfunction main()\n\tlocal\tNetRep = {}\n\n\tfor i = 1, #Strings, 2 do\n\t\tNetRep[ Strings[ i + 0 ] ] = Strings[ i + 1 ]\n\tend\n\n\tif NetRep[ \"l\" ] ~= nil and tonumber( NetRep[ \"l\" ] ) > 0 then\n\t\tPinValue:set( NetRep[ \"l\" ] )\n\t\tPinValue:update()\n\tend\nend\n"
+control\value="\nfugio = require \"fugio\"\n\nPinStrings = fugio.input( \"Strings\" )\n\nStrings = PinStrings:get()\n\nPinValue = fugio.output( \"Value\" )\n\nfunction main()\n\tlocal\tNetRep = {}\n\n\tfor i = 1, #Strings, 2 do\n\t\tNetRep[ Strings[ i + 0 ] ] = Strings[ i + 1 ]\n\tend\n\n\tif NetRep.l ~= nil and tonumber( NetRep.l ) > 0 then\n\t\tPinValue:set( NetRep.l )\n\t\tPinValue:update()\n\tend\nend\n"
 inputs\size=0
 name=Lua Source
 outputs\1\6c566c3a-881a-4bbb-b2bb-702e48e4b3ed=73d477f8-54b1-43c2-a8d7-6cff03c293ff
@@ -427,7 +427,7 @@ name=Filename
 direction=2
 order=0
 uuid=249f2932-f483-422f-b811-ab679f006381
-control\filename=C:/Users/Alex/AppData/Local/Temp/{97bc007a-a650-48d9-b1eb-bf33488a9ff8}.2
+control\filename=C:/Users/Alex/AppData/Local/Temp/{fe4f3220-d285-448e-9d19-00db3bbd0488}.1
 
 [acd32173-881e-48fe-901a-8e891249b4f3]
 version=2
