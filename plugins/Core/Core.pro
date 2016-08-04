@@ -66,7 +66,8 @@ SOURCES += \
     switchnode.cpp \
     floatthresholdnode.cpp \
     smoothnode.cpp \
-    autorangenode.cpp
+    autorangenode.cpp \
+    variantlistpin.cpp
 
 HEADERS += \
     stringpin.h \
@@ -121,7 +122,8 @@ HEADERS += \
     switchnode.h \
     floatthresholdnode.h \
     smoothnode.h \
-    autorangenode.h
+    autorangenode.h \
+    variantlistpin.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

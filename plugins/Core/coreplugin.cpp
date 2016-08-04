@@ -51,6 +51,7 @@
 #include "variantpin.h"
 #include "stringlistpin.h"
 #include "bytearraylistpin.h"
+#include "variantlistpin.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -105,6 +106,7 @@ ClassEntry		CorePlugin::mPinClasses[] =
 	ClassEntry( "String List", PID_STRING_LIST, &StringListPin::staticMetaObject ),
 	ClassEntry( "Trigger", PID_TRIGGER, &TriggerPin::staticMetaObject ),
 	ClassEntry( "Variant", PID_VARIANT, &VariantPin::staticMetaObject ),
+	ClassEntry( "Variant List", PID_VARIANT_LIST, &VariantListPin::staticMetaObject ),
 	ClassEntry()
 };
 
