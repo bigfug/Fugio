@@ -4,6 +4,7 @@
 
 #include <fugio/context_interface.h>
 #include <fugio/core/list_interface.h>
+#include <fugio/core/array_list_interface.h>
 
 ListIndexNode::ListIndexNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -23,14 +24,48 @@ void ListIndexNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
+	const int					 LstIdx = variant( mPinInputIndex ).toInt();
+
+	fugio::ArrayListInterface	*ArLInf = input<fugio::ArrayListInterface *>( mPinInputList );
+
+	if( ArLInf )
+	{
+		if( LstIdx < 0 || LstIdx >= ArLInf->count() )
+		{
+			return;
+		}
+
+		fugio::ArrayInterface	*SrcArr = ArLInf->arrayIndex( LstIdx );
+
+		fugio::ArrayInterface	*DstInf = qobject_cast<fugio::ArrayInterface *>( mPinOutputValue->control()->qobject() );
+
+		if( mPinOutputValue->controlUuid() != PID_ARRAY )
+		{
+			mNode->context()->global()->updatePinControl( mPinOutputValue, PID_ARRAY );
+
+			DstInf = qobject_cast<fugio::ArrayInterface *>( mPinOutputValue->control()->qobject() );
+		}
+
+		if( DstInf )
+		{
+			DstInf->setArray( SrcArr->array() );
+			DstInf->setCount( SrcArr->count() );
+			DstInf->setSize( SrcArr->size() );
+			DstInf->setStride( SrcArr->stride() );
+			DstInf->setType( SrcArr->type() );
+
+			pinUpdated( mPinOutputValue );
+		}
+
+		return;
+	}
+
 	fugio::ListInterface	*LstInf = input<fugio::ListInterface *>( mPinInputList );
 
 	if( !LstInf )
 	{
 		return;
 	}
-
-	int						 LstIdx = variant( mPinInputIndex ).toInt();
 
 	if( LstIdx < 0 || LstIdx >= LstInf->listSize() )
 	{
