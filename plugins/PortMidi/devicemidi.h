@@ -89,6 +89,10 @@ public:
 
 	void output( const QVector<fugio::MidiEvent> &pEvents );
 
+	void output( const int32_t *pEvents, int pCount );
+
+	void outputSysEx( const QByteArray pArray );
+
 	void registerMidiInputNode( fugio::MidiInputInterface *pMII )
 	{
 		QMutexLocker		Lock( &mMidiInputNodesMutex );
