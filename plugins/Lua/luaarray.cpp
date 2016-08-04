@@ -67,7 +67,7 @@ int LuaArray::luaGet( lua_State *L )
 			return( luaL_error( L, "List index out of bounds (asked for %d, size is %d)", LstIdx, ArrInt->count() ) );
 		}
 
-		return( pusharray( L, dynamic_cast<QObject *>( ArrInt->array( LstIdx - 1 ) ), LstDat->mReadOnly ) );
+		return( pusharray( L, dynamic_cast<QObject *>( ArrInt->arrayIndex( LstIdx - 1 ) ), LstDat->mReadOnly ) );
 	}
 
 	fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( LstDat->mObject );
@@ -395,6 +395,58 @@ int LuaArray::luaToArray( lua_State *L )
 
 			return( 1 );
 		}
+
+		if( ArrInt->type() == QMetaType::QPoint )
+		{
+			const int	*A = (const int *)ArrInt->array();
+
+			lua_newtable( L );
+
+			if( ArrInt->size() == 1 )
+			{
+				for( int i = 0 ; i < ArrInt->count() ; i++ )
+				{
+					lua_newtable( L );
+
+					for( int j = 0 ; j < 2 ; j++ )
+					{
+						lua_pushinteger( L, A[ ( i * 2 ) + j ] );
+
+						lua_rawseti( L, -2, j + 1 );
+					}
+
+					lua_rawseti( L, -2, i + 1 );
+				}
+			}
+
+			return( 1 );
+		}
+
+		if( ArrInt->type() == QMetaType::QPointF )
+		{
+			const float	*A = (const float *)ArrInt->array();
+
+			lua_newtable( L );
+
+			if( ArrInt->size() == 1 )
+			{
+				for( int i = 0 ; i < ArrInt->count() ; i++ )
+				{
+					lua_newtable( L );
+
+					for( int j = 0 ; j < 2 ; j++ )
+					{
+						lua_pushnumber( L, A[ ( i * 2 ) + j ] );
+
+						lua_rawseti( L, -2, j + 1 );
+					}
+
+					lua_rawseti( L, -2, i + 1 );
+				}
+			}
+
+			return( 1 );
+		}
 	}
 
 	fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( ArrDat->mObject );
@@ -494,23 +546,29 @@ int LuaArray::luaSetType( lua_State *L )
 		LstInt->setStride( sizeof( int ) );
 		LstInt->setSize( 1 );
 	}
+	else if( strcmp( LstTyp, "point" ) == 0 )
+	{
+		LstInt->setType( QMetaType::QPointF );
+		LstInt->setStride( sizeof( float ) * 2 );
+		LstInt->setSize( 1 );
+	}
 	else if( strcmp( LstTyp, "vec3" ) == 0 )
 	{
 		LstInt->setType( QMetaType::QVector3D );
 		LstInt->setStride( sizeof( float ) * 3 );
-		LstInt->setSize( 3 );
+		LstInt->setSize( 1 );
 	}
 	else if( strcmp( LstTyp, "vec4" ) == 0 )
 	{
 		LstInt->setType( QMetaType::QVector4D );
 		LstInt->setStride( sizeof( float ) * 4 );
-		LstInt->setSize( 4 );
+		LstInt->setSize( 1 );
 	}
 	else if( strcmp( LstTyp, "mat4" ) == 0 )
 	{
 		LstInt->setType( QMetaType::QMatrix4x4 );
 		LstInt->setStride( sizeof( float ) * 4 * 4 );
-		LstInt->setSize( 4 * 4 );
+		LstInt->setSize( 1 );
 	}
 	else
 	{

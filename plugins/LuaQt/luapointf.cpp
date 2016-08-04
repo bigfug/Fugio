@@ -41,19 +41,39 @@ int LuaPointF::luaOpen(lua_State *L)
 	return( 1 );
 }
 
-int LuaPointF::luaNew(lua_State *L)
+int LuaPointF::luaNew( lua_State *L )
 {
-	if( lua_gettop( L ) == 2 )
-	{
-		float		x = luaL_checknumber( L, 1 );
-		float		y = luaL_checknumber( L, 2 );
+	QPointF		P;
 
-		pushpointf( L, QPointF( x, y ) );
-	}
-	else
+	if( lua_gettop( L ) == 1 )
 	{
-		pushpointf( L, QPointF() );
+		if( lua_type( L, 1 ) == LUA_TTABLE )
+		{
+			for( int i = 1 ; i < 2 ; i++ )
+			{
+				lua_rawgeti( L, 1, i );
+
+				if( lua_isnil( L, -1 ) )
+				{
+					lua_pop( L, 1 );
+
+					break;
+				}
+
+				if( i == 1 ) P.setX( lua_tonumber( L, -1 ) );
+				if( i == 2 ) P.setY( lua_tonumber( L, -1 ) );
+
+				lua_pop( L, 1 );
+			}
+		}
 	}
+	else if( lua_gettop( L ) == 2 )
+	{
+		P.setX( luaL_checknumber( L, 1 ) );
+		P.setY( luaL_checknumber( L, 2 ) );
+	}
+
+	pushpointf( L, P );
 
 	return( 1 );
 }
