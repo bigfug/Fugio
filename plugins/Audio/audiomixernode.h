@@ -112,7 +112,7 @@ private:
 
 	void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, const AudioInstanceData *pInstanceData ) const;
 
-	QMutex										 mInstanceDataMutex;
+	mutable QMutex								 mInstanceDataMutex;
 	QList<AudioInstanceData *>					 mInstanceData;
 };
 

@@ -83,7 +83,11 @@ fugio::AudioInstanceBase *AudioMixerNode::audioAllocInstance( qreal pSampleRate,
 			InsDat->mMutex.unlock();
 		}
 
+		mInstanceDataMutex.lock();
+
 		mInstanceData << InsDat;
+
+		mInstanceDataMutex.unlock();
 	}
 
 	return( InsDat );
@@ -100,16 +104,16 @@ void AudioMixerNode::pinLinked( QSharedPointer<fugio::PinInterface> pPinSrc, QSh
 
 	if( IAP )
 	{
+		QMutexLocker	L1( &mInstanceDataMutex );
+
 		for( AudioInstanceData *InsDat : mInstanceData )
 		{
-			InsDat->mMutex.lock();
+			QMutexLocker	L2( &InsDat->mMutex );
 
 			if( !InsDat->mInstanceData.contains( IAP ) )
 			{
 				InsDat->mInstanceData.insert( IAP, IAP->audioAllocInstance( InsDat->sampleRate(), InsDat->sampleFormat(), InsDat->channels() ) );
 			}
-
-			InsDat->mMutex.unlock();
 		}
 	}
 }
@@ -125,9 +129,11 @@ void AudioMixerNode::pinUnlinked( QSharedPointer<fugio::PinInterface> pPinSrc, Q
 
 	if( IAP )
 	{
+		QMutexLocker	L1( &mInstanceDataMutex );
+
 		for( AudioInstanceData *InsDat : mInstanceData )
 		{
-			InsDat->mMutex.lock();
+			QMutexLocker	L2( &InsDat->mMutex );
 
 			QMap<fugio::AudioProducerInterface *,fugio::AudioInstanceBase *>::iterator	it = InsDat->mInstanceData.find( IAP );
 
@@ -137,14 +143,14 @@ void AudioMixerNode::pinUnlinked( QSharedPointer<fugio::PinInterface> pPinSrc, Q
 
 				InsDat->mInstanceData.remove( it.key() );
 			}
-
-			InsDat->mMutex.unlock();
 		}
 	}
 }
 
 int AudioMixerNode::audioChannels() const
 {
+	QMutexLocker	Lock( &mInstanceDataMutex );
+
 	int			Channels = 0;
 
 	for( AudioInstanceData *InsDat : mInstanceData )
@@ -187,7 +193,6 @@ bool AudioMixerNode::pinShouldAutoRename(fugio::PinInterface *pPin) const
 {
 	return( pPin->direction() == PIN_INPUT );
 }
-
 
 bool AudioMixerNode::initialise()
 {
