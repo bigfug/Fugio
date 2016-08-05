@@ -14,9 +14,7 @@ PortAudioInputNode::PortAudioInputNode( QSharedPointer<fugio::NodeInterface> pNo
 {
 	mValAudio = pinOutput<fugio::AudioProducerInterface *>( "Audio", mPinAudio, PID_AUDIO );
 
-#if defined( PORTAUDIO_SUPPORTED )
-	mDeviceName = DevicePortAudio::deviceInputDefaultName();
-#endif
+	rebuildDeviceList();
 }
 
 PortAudioInputNode::~PortAudioInputNode()
@@ -34,24 +32,14 @@ bool PortAudioInputNode::initialise()
 		return( false );
 	}
 
-#if defined( PORTAUDIO_SUPPORTED )
-	PaDeviceIndex		DevIdx = DevicePortAudio::deviceInputNameIndex( mDeviceName );
-
-	if( DevIdx == paNoDevice )
-	{
-		return( false );
-	}
-
-	if( ( mPortAudio = DevicePortAudio::newDevice( DevIdx ) ) )
-	{
-		return( true );
-	}
-#else
+#if !defined( PORTAUDIO_SUPPORTED )
 	mNode->setStatus( fugio::NodeInterface::Error );
 	mNode->setStatusMessage( "No PortAudio Support" );
-#endif
 
 	return( false );
+#else
+	return( true );
+#endif
 }
 
 bool PortAudioInputNode::deinitialise()
@@ -66,9 +54,11 @@ bool PortAudioInputNode::deinitialise()
 
 void PortAudioInputNode::clicked()
 {
+	rebuildDeviceList();
+
 #if defined( PORTAUDIO_SUPPORTED )
 	bool		OK;
-	QString		NewDev = QInputDialog::getItem( nullptr, mNode->name(), tr( "Select Audio Device" ), DevicePortAudio::deviceInputNameList(), DevicePortAudio::deviceInputNameList().indexOf( mDeviceName ), false, &OK );
+	QString		NewDev = QInputDialog::getItem( nullptr, mNode->name(), tr( "Select Audio Device" ), mDeviceList, mDeviceList.indexOf( mDeviceName ), false, &OK );
 
 	if( OK && NewDev != mDeviceName )
 	{
@@ -77,8 +67,25 @@ void PortAudioInputNode::clicked()
 #endif
 }
 
-void PortAudioInputNode::audioDeviceSelected(const QString &pDeviceName)
+void PortAudioInputNode::rebuildDeviceList()
 {
+	mDeviceList.clear();
+
+	mDeviceList << tr( "None" );
+	mDeviceList << tr( "Default Audio Input" );
+
+#if defined( PORTAUDIO_SUPPORTED )
+	mDeviceList << DevicePortAudio::deviceInputNameList();
+#endif
+}
+
+void PortAudioInputNode::audioDeviceSelected( const QString &pDeviceName )
+{
+	if( pDeviceName == mDeviceName )
+	{
+		return;
+	}
+
 	if( mPortAudio )
 	{
 		mPortAudio.clear();
@@ -86,23 +93,37 @@ void PortAudioInputNode::audioDeviceSelected(const QString &pDeviceName)
 
 	mDeviceName = pDeviceName;
 
-	if( mNode->status() == fugio::NodeInterface::Deferred )
-	{
-		mNode->context()->nodeInitialised();
-
-		return;
-	}
+	emit audioDeviceChanged( mDeviceName );
 
 #if defined( PORTAUDIO_SUPPORTED )
-	mDeviceIndex = DevicePortAudio::deviceInputNameIndex( mDeviceName );
+	const int	DevNamIdx = mDeviceList.indexOf( mDeviceName );
 
-	if( mDeviceIndex == paNoDevice )
+	if( DevNamIdx == 0 )
 	{
-		return;
+		mNode->setStatus( fugio::NodeInterface::Initialised );
 	}
-
-	if( ( mPortAudio = DevicePortAudio::newDevice( mDeviceIndex ) ) )
+	else
 	{
+		PaDeviceIndex		DevIdx;
+
+		if( DevNamIdx == 1 )
+		{
+			DevIdx = Pa_GetDefaultInputDevice();
+		}
+		else
+		{
+			DevIdx = DevicePortAudio::deviceInputNameIndex( mDeviceName );
+		}
+
+		if( DevIdx == paNoDevice )
+		{
+			mNode->setStatus( fugio::NodeInterface::Warning );
+		}
+
+		if( ( mPortAudio = DevicePortAudio::newDevice( DevIdx ) ) )
+		{
+			mNode->setStatus( fugio::NodeInterface::Initialised );
+		}
 	}
 #endif
 
@@ -123,14 +144,24 @@ QWidget *PortAudioInputNode::gui()
 
 void PortAudioInputNode::loadSettings( QSettings &pSettings )
 {
-	mDeviceName = pSettings.value( "device", mDeviceName ).toString();
+	rebuildDeviceList();
 
-	emit audioDeviceChanged( mDeviceName );
+	int		Index = pSettings.value( "index", 1 ).toInt();
+
+	QString	DeviceName = pSettings.value( "device", mDeviceName ).toString();
+
+	if( Index >= 0 && Index <= 1 )
+	{
+		DeviceName = mDeviceList[ Index ];
+	}
+
+	audioDeviceSelected( DeviceName );
 }
 
 void PortAudioInputNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "device", mDeviceName );
+	pSettings.setValue( "index", mDeviceList.indexOf( mDeviceName ) );
 }
 
 int PortAudioInputNode::audioChannels() const

@@ -61,12 +61,16 @@ protected slots:
 
 	void clicked( void );
 
+	void rebuildDeviceList( void );
+
 private:
 	QSharedPointer<fugio::PinInterface>		 mPinAudio;
 	fugio::AudioProducerInterface			*mValAudio;
 
 	QSharedPointer<DevicePortAudio>			 mPortAudio;
 	fugio::AudioInstanceBase				*mInstance;
+
+	QStringList								 mDeviceList;
 
 	QString									 mDeviceName;
 
