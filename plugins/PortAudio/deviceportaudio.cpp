@@ -81,6 +81,30 @@ QSharedPointer<DevicePortAudio> DevicePortAudio::newDevice( PaDeviceIndex pDevId
 	return( NewDev );
 }
 
+QString DevicePortAudio::deviceName( PaDeviceIndex pDevIdx )
+{
+	if( pDevIdx == paNoDevice )
+	{
+		return( QString() );
+	}
+
+	const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( pDevIdx );
+
+	if( !DevInf )
+	{
+		return( QString() );
+	}
+
+	const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
+
+	if( !HstInf )
+	{
+		return( QString() );
+	}
+
+	return( QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name ) );
+}
+
 QStringList DevicePortAudio::deviceOutputNameList()
 {
 	QStringList		DevLst;
@@ -91,12 +115,12 @@ QStringList DevicePortAudio::deviceOutputNameList()
 	{
 		const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( DevIdx );
 
-		const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
-
-		if( DevInf->maxOutputChannels > 0 )
+		if( DevInf->maxOutputChannels <= 0 )
 		{
-			DevLst << QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name );
+			continue;
 		}
+
+		DevLst << deviceName( DevIdx );
 	}
 
 	return( DevLst );
@@ -104,21 +128,10 @@ QStringList DevicePortAudio::deviceOutputNameList()
 
 QString DevicePortAudio::deviceOutputDefaultName()
 {
-	PaDeviceIndex		 DevIdx = Pa_GetDefaultOutputDevice();
-
-	if( DevIdx == paNoDevice )
-	{
-		return( QString() );
-	}
-
-	const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( DevIdx );
-
-	const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
-
-	return( QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name ) );
+	return( deviceName( Pa_GetDefaultOutputDevice() ) );
 }
 
-PaDeviceIndex DevicePortAudio::deviceOutputNameIndex(const QString &pDeviceName)
+PaDeviceIndex DevicePortAudio::deviceOutputNameIndex( const QString &pDeviceName )
 {
 	PaDeviceIndex	DevCnt = Pa_GetDeviceCount();
 
@@ -131,9 +144,7 @@ PaDeviceIndex DevicePortAudio::deviceOutputNameIndex(const QString &pDeviceName)
 			continue;
 		}
 
-		const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
-
-		if( pDeviceName ==  QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name ) )
+		if( pDeviceName == deviceName( DevIdx ) )
 		{
 			return( DevIdx );
 		}
@@ -152,11 +163,9 @@ QStringList DevicePortAudio::deviceInputNameList()
 	{
 		const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( DevIdx );
 
-		const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
-
 		if( DevInf->maxInputChannels > 0 )
 		{
-			DevLst << QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name );
+			DevLst << deviceName( DevIdx );
 		}
 	}
 
@@ -165,18 +174,7 @@ QStringList DevicePortAudio::deviceInputNameList()
 
 QString DevicePortAudio::deviceInputDefaultName()
 {
-	PaDeviceIndex		 DevIdx = Pa_GetDefaultInputDevice();
-
-	if( DevIdx == paNoDevice )
-	{
-		return( QString() );
-	}
-
-	const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( DevIdx );
-
-	const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
-
-	return( QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name ) );
+	return( deviceName( Pa_GetDefaultInputDevice() ) );
 }
 
 PaDeviceIndex DevicePortAudio::deviceInputNameIndex( const QString &pDeviceName )
@@ -192,9 +190,7 @@ PaDeviceIndex DevicePortAudio::deviceInputNameIndex( const QString &pDeviceName 
 			continue;
 		}
 
-		const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
-
-		if( pDeviceName ==  QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name ) )
+		if( pDeviceName == deviceName( DevIdx ) )
 		{
 			return( DevIdx );
 		}

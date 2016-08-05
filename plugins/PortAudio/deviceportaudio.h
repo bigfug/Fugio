@@ -34,6 +34,8 @@ public:
 #if defined( PORTAUDIO_SUPPORTED )
 	static QSharedPointer<DevicePortAudio> newDevice( PaDeviceIndex pDevIdx );
 
+	static QString deviceName( PaDeviceIndex pDevIdx );
+
 	static QStringList deviceOutputNameList( void );
 
 	static QString deviceOutputDefaultName( void );
