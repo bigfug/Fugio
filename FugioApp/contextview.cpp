@@ -1122,8 +1122,6 @@ void ContextView::nodeRemove( QSharedPointer<NodeItem> Node )
 
 void ContextView::nodeRemoved( QUuid pNodeId )
 {
-//	mPositions.remove( pNodeId );
-
 	auto	ItemIterator = mNodeList.find( pNodeId );
 
 	if( ItemIterator == mNodeList.end() )
@@ -1303,8 +1301,6 @@ void ContextView::pinRemoved( QUuid pNodeId, QUuid pPinId )
 
 void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 {
-//	qDebug() << "linkAdded" << pPinId1 << pPinId2;
-
 	QSharedPointer<fugio::PinInterface>		 Pin1 = mContext->findPin( pPinId1 );
 	QSharedPointer<fugio::PinInterface>		 Pin2 = mContext->findPin( pPinId2 );
 
@@ -1413,62 +1409,12 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 
 void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 {
-//	qDebug() << "linkRemoved" << pPinId1 << pPinId2;
-
-	QSharedPointer<fugio::PinInterface>		 Pin1 = mContext->findPin( pPinId1 );
-	QSharedPointer<fugio::PinInterface>		 Pin2 = mContext->findPin( pPinId2 );
-
-	if( !Pin1 || !Pin2 )
-	{
-		return;
-	}
-
-	fugio::NodeInterface					*Node1 = Pin1->node();
-	fugio::NodeInterface					*Node2 = Pin2->node();
-
-	QSharedPointer<NodeItem>				 NodeItem1 = mNodeList.value( Node1->uuid() );
-	QSharedPointer<NodeItem>				 NodeItem2 = mNodeList.value( Node2->uuid() );
-
-	if( !NodeItem1 || !NodeItem2 )
-	{
-		return;
-	}
-
-	PinItem									*PinItem1 = NodeItem1->findPinInput( Pin1 );
-	PinItem									*PinItem2 = NodeItem2->findPinOutput( Pin2 );
-
-	if( !PinItem1 || !PinItem2 )
-	{
-		PinItem1 = NodeItem2->findPinInput( Pin2 );
-		PinItem2 = NodeItem1->findPinOutput( Pin1 );
-
-		if( !PinItem1 || !PinItem2 )
-		{
-			return;
-		}
-	}
-
-	if( LinkItem *Link = PinItem2->findLink( PinItem1 ) )
-	{
-		PinItem1->linkRem( Link );
-		PinItem2->linkRem( Link );
-
-		mLinkList.removeAll( Link );
-
-		delete Link;
-	}
-
 	for( LinkItem *Link : mLinkList.toSet() )
 	{
-		//qDebug() << Link->srcPin()->uuid() << Link->dstPin()->uuid();
+		qDebug() << ( Link->srcPin() ? Link->srcPin()->uuid() : QUuid() ) << ( Link->dstPin() ? Link->dstPin()->uuid() : QUuid() );
 
-		if( Link->srcPin()->uuid() == PinItem2->uuid() && Link->dstPin()->uuid() == PinItem1->uuid() )
+		if( !Link->srcPin() || !Link->dstPin() || ( Link->srcPin()->uuid() == pPinId1 && Link->dstPin()->uuid() == pPinId2 ) || ( Link->srcPin()->uuid() == pPinId2 && Link->dstPin()->uuid() == pPinId1 ) )
 		{
-			//qDebug() << "Found Link";
-
-			Link->srcPin()->linkRem( Link );
-			Link->dstPin()->linkRem( Link );
-
 			mLinkList.removeAll( Link );
 
 			delete Link;
@@ -1740,7 +1686,7 @@ void ContextView::dropEvent( QDropEvent *pEvent )
 
 				if( NodeUuid.isNull() )
 				{
-					qDebug() << "Node UUID for" << NodeName << "is NULL";
+					qWarning() << "Node UUID for" << NodeName << "is NULL";
 				}
 				else
 				{
@@ -2660,7 +2606,7 @@ bool ContextView::gestureEvent(QGestureEvent *pEvent)
 
 void ContextView::panTriggered( QPanGesture *pGesture )
 {
-	qDebug() << pGesture->delta();
+	//qDebug() << pGesture->delta();
 }
 
 void ContextView::pinchTriggered( QPinchGesture *pGesture )

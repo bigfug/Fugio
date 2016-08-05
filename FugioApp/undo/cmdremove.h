@@ -29,15 +29,22 @@ public:
 		{
 			QSharedPointer<fugio::PinInterface> PS = Context->findPin( Src );
 
-			if( PS && !pNodeList.contains( PS->node()->uuid() ) )
+			if( PS && PS->node() )
 			{
+				const bool SrcInData = pNodeList.contains( PS->node()->uuid() );
+
 				for( QUuid Dst : pLinkLst.values( Src ) )
 				{
-					QSharedPointer<fugio::PinInterface> PD = Context->findPin( Src );
+					QSharedPointer<fugio::PinInterface> PD = Context->findPin( Dst );
 
-					if( PD && !pNodeList.contains( PD->node()->uuid() ) )
+					if( PD && PD->node() )
 					{
-						mInternalLinkList.insert( Src, Dst );
+						const bool DstInData = pNodeList.contains( PD->node()->uuid() );
+
+						if( SrcInData != DstInData )
+						{
+							mInternalLinkList.insert( Src, Dst );
+						}
 					}
 				}
 			}
