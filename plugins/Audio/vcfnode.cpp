@@ -33,6 +33,15 @@ bool VCFNode::initialise()
 	connect( mPinResonance->qobject(), SIGNAL(linked(QSharedPointer<fugio::PinInterface>)), this, SLOT(resonanceLinked(QSharedPointer<fugio::PinInterface>)) );
 	connect( mPinResonance->qobject(), SIGNAL(unlinked(QSharedPointer<fugio::PinInterface>)), this, SLOT(resonanceUnlinked(QSharedPointer<fugio::PinInterface>)) );
 
+	mInstanceDataMutex.lock();
+
+	for( AudioInstanceData *AID : mInstanceData )
+	{
+		AID->setEnabed( true );
+	}
+
+	mInstanceDataMutex.unlock();
+
 	return( true );
 }
 
@@ -43,6 +52,15 @@ bool VCFNode::deinitialise()
 
 	disconnect( mPinResonance->qobject(), SIGNAL(linked(QSharedPointer<fugio::PinInterface>)), this, SLOT(resonanceLinked(QSharedPointer<fugio::PinInterface>)) );
 	disconnect( mPinResonance->qobject(), SIGNAL(unlinked(QSharedPointer<fugio::PinInterface>)), this, SLOT(resonanceUnlinked(QSharedPointer<fugio::PinInterface>)) );
+
+	mInstanceDataMutex.lock();
+
+	for( AudioInstanceData *AID : mInstanceData )
+	{
+		AID->setEnabed( false );
+	}
+
+	mInstanceDataMutex.unlock();
 
 	return( NodeControlBase::deinitialise() );
 }

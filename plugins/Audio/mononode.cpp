@@ -28,11 +28,29 @@ bool MonoNode::initialise()
 		return( false );
 	}
 
+	mInstanceDataMutex.lock();
+
+	for( AudioInstanceData *AID : mInstanceData )
+	{
+		AID->setEnabed( true );
+	}
+
+	mInstanceDataMutex.unlock();
+
 	return( true );
 }
 
 bool MonoNode::deinitialise()
 {
+	mInstanceDataMutex.lock();
+
+	for( AudioInstanceData *AID : mInstanceData )
+	{
+		AID->setEnabed( false );
+	}
+
+	mInstanceDataMutex.unlock();
+
 	return( NodeControlBase::deinitialise() );
 }
 

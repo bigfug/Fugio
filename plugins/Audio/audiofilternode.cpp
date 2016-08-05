@@ -35,12 +35,30 @@ bool AudioFilterNode::initialise()
 
 	connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(onContextFrame(qint64)) );
 
+	mInstanceDataMutex.lock();
+
+	for( AudioInstanceData *AID : mInstanceData )
+	{
+		AID->setEnabed( true );
+	}
+
+	mInstanceDataMutex.unlock();
+
 	return( true );
 }
 
 bool AudioFilterNode::deinitialise()
 {
 	disconnect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(onContextFrame(qint64)) );
+
+	mInstanceDataMutex.lock();
+
+	for( AudioInstanceData *AID : mInstanceData )
+	{
+		AID->setEnabed( false );
+	}
+
+	mInstanceDataMutex.unlock();
 
 	return( true );
 }

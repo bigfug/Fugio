@@ -187,3 +187,37 @@ bool AudioMixerNode::pinShouldAutoRename(fugio::PinInterface *pPin) const
 {
 	return( pPin->direction() == PIN_INPUT );
 }
+
+
+bool AudioMixerNode::initialise()
+{
+	if( !NodeControlBase::initialise() )
+	{
+		return( false );
+	}
+
+	mInstanceDataMutex.lock();
+
+	for( AudioInstanceData *AID : mInstanceData )
+	{
+		AID->setEnabed( true );
+	}
+
+	mInstanceDataMutex.unlock();
+
+	return( true );
+}
+
+bool AudioMixerNode::deinitialise()
+{
+	mInstanceDataMutex.lock();
+
+	for( AudioInstanceData *AID : mInstanceData )
+	{
+		AID->setEnabed( true );
+	}
+
+	mInstanceDataMutex.unlock();
+
+	return( NodeControlBase::deinitialise() );
+}

@@ -71,6 +71,11 @@ protected:
 
 		virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers ) Q_DECL_OVERRIDE
 		{
+			if( !isEnabled() )
+			{
+				return;
+			}
+
 			QSharedPointer<AudioFilterNode>	API = qSharedPointerCast<AudioFilterNode>( mProducer );
 
 			if( !API )

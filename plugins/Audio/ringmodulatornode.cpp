@@ -32,6 +32,15 @@ bool RingModulatorNode::initialise()
 	connect( mPinAudioInput2->qobject(), SIGNAL(linked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audio2Linked(QSharedPointer<fugio::PinInterface>)) );
 	connect( mPinAudioInput2->qobject(), SIGNAL(unlinked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audio2Unlinked(QSharedPointer<fugio::PinInterface>)) );
 
+	mInstanceDataMutex.lock();
+
+	for( AudioInstanceData *AID : mInstanceData )
+	{
+		AID->setEnabed( true );
+	}
+
+	mInstanceDataMutex.unlock();
+
 	return( true );
 }
 
@@ -42,6 +51,15 @@ bool RingModulatorNode::deinitialise()
 
 	disconnect( mPinAudioInput2->qobject(), SIGNAL(linked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audio2Linked(QSharedPointer<fugio::PinInterface>)) );
 	disconnect( mPinAudioInput2->qobject(), SIGNAL(unlinked(QSharedPointer<fugio::PinInterface>)), this, SLOT(audio2Unlinked(QSharedPointer<fugio::PinInterface>)) );
+
+	mInstanceDataMutex.lock();
+
+	for( AudioInstanceData *AID : mInstanceData )
+	{
+		AID->setEnabed( false );
+	}
+
+	mInstanceDataMutex.unlock();
 
 	return( NodeControlBase::deinitialise() );
 }
