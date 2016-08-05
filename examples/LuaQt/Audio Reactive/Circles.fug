@@ -38,8 +38,9 @@ version=2
 [30f155a0-926a-44d1-a818-dc60cb59079c]
 inputs\1\ec0e0162-fa97-4439-9013-1c8e7e8cab3a=00000000-0000-0000-0000-000000000000
 inputs\2\10ab2a38-55db-44ef-af2f-c6b2a334e190=00000000-0000-0000-0000-000000000000
-inputs\3\73599c58-46cb-41ca-865f-26042e4f83f6=c90a7f2b-7a6d-4919-8710-9bfb4ce5cd26
-inputs\size=3
+inputs\3\f352a856-1e04-4661-950b-3ce435f22b1d=00000000-0000-0000-0000-000000000000
+inputs\4\73599c58-46cb-41ca-865f-26042e4f83f6=c90a7f2b-7a6d-4919-8710-9bfb4ce5cd26
+inputs\size=4
 name=FFT
 outputs\1\e7824f45-4f62-4d4f-809c-6f200eb04cfd=9497417c-42ff-4a4e-a48c-f7ac0470e1f0
 outputs\size=1
@@ -62,7 +63,7 @@ version=2
 
 [4e1144dc-7033-4e5f-a073-2c63a98120e2]
 control\dockarea=8
-control\value="-- main is our entry function\n\nfugio = require( \"fugio\" )\nqt    = require( \"qt\" )\n\nBandData = fugio.input( \"Bands\" ):get()\n\nImagePin = fugio.output( \"Image\" )\n\nImage = ImagePin:get()\n\nImage:setSize( 640, 480 )\n\nLastTime    = 0\nLastRadians = 0\n\nfunction main()\n\tlocal\tTime = fugio.timestamp()\n\n\tlocal\tPainter = qt.painter( Image )\n\n\tif LastTime == 0 then\n\t\tPainter:eraseRect( Image:rect() )\n\n\t\tLastTime = Time\n\tend\n\n\tlocal\tTimeInterval = Time - LastTime\n\n\t--LastRadians = LastRadians + ( fugio.input( \"Speed\" ):get() * 0.2 )\n\n\tLastRadians = LastRadians + ( TimeInterval / 2000 )\n\n\tPainter:setPen( qt.color( 0, 0, 255 ) )\n\tPainter:setBrush( qt.color( 0, 255, 255 ) )\n\n\tif #BandData > 0 then\n\t\tlocal\tcx = 320 + ( 200 * math.sin( LastRadians ) )\n\t\tlocal\tcy = 240 + ( 200 * math.cos( LastRadians ) )\n\t\tlocal\tcw = 20 + ( 150 * BandData[ 5 ] )\n\n\t\tPainter:drawEllipse( cx - ( cw / 2 ), cy - ( cw / 2 ), cw, cw )\n\tend\n\n\tPainter:finish()\n\n\tImagePin:update()\n\n\tLastTime = Time\nend\n"
+control\value="-- main is our entry function\n\nfugio = require( \"fugio\" )\nqt    = require( \"qt\" )\n\nBandData = fugio.input( \"Bands\" ):get()\n\nImagePin = fugio.output( \"Image\" )\n\nImage = ImagePin:get()\n\nImage:setSize( 640, 480 )\n\nLastTime    = 0\nLastRadians = 0\n\nfunction main()\n\tlocal\tTime = fugio.timestamp()\n\n\tlocal\tPainter = qt.painter( Image )\n\n\tif LastTime == 0 then\n\t\tPainter:eraseRect( Image:rect() )\n\n\t\tLastTime = Time\n\tend\n\n\tlocal\tTimeInterval = Time - LastTime\n\n\t--LastRadians = LastRadians + ( fugio.input( \"Speed\" ):get() * 0.2 )\n\n\tLastRadians = LastRadians + ( TimeInterval / 2000 )\n\n\tPainter:setPen( qt.color( 0, 0, 255 ) )\n\tPainter:setBrush( qt.color( 0, 255, 255 ) )\n\n\tif #BandData > 0 then\n\t\tlocal\tMaxBandData = 0\n\n\t\tfor i = 1, #BandData do\n\t\t\tMaxBandData = math.max( MaxBandData, BandData[ i ] )\n\t\tend\n\n\t\tlocal\tcx = 320 + ( 200 * math.sin( LastRadians ) )\n\t\tlocal\tcy = 240 + ( 200 * math.cos( LastRadians ) )\n\t\tlocal\tcw = 20 + ( 150 * MaxBandData )\n\n\t\tPainter:drawEllipse( cx - ( cw / 2 ), cy - ( cw / 2 ), cw, cw )\n\tend\n\n\tPainter:finish()\n\n\tImagePin:update()\n\n\tLastTime = Time\nend\n"
 inputs\size=0
 name=Text Editor
 outputs\1\d84205d2-c286-4152-81fb-d5ce4840d97e=73d477f8-54b1-43c2-a8d7-6cff03c293ff
@@ -113,7 +114,8 @@ settings\editor\position=@Variant(\0\0\0\x1a\xc0\x62\xc0\0\0\0\0\0\xc0i\0\0\0\0\
 version=2
 
 [8408fddd-276e-4813-9f7d-621ed4ab79be]
-control\device=Core Audio: Built-in Microphone
+control\device=Default Audio Input
+control\index=1
 inputs\size=0
 name=Audio Input
 outputs\1\fb91a3cf-658b-4315-9b0a-54d60a14281a=0e0875b3-3dd1-42fb-92ef-9d409fc26e3e
@@ -204,7 +206,7 @@ uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
 version=2
 
 [e7920dc8-2583-42b6-9c71-7847cf0fc317]
-control\array="@ByteArray((\xe6\xd4\x39H]W:$\x16\x9c:@\xef\xbc:^\x16Q;b\x94-<\xe6\x85\xaa;\xea\xf9\x42<\xe9\x84\b<\"~\xb8;\x11\xa5L:\xacj\xbd:)"
+control\array="@ByteArray(2\x83.8\x10\xb7\x99\x39u9\x8b:\xad\x9c\xff:\xaa\xb1\x11;df\xc5:\x1a:\xb0:H\xc1i:{\x84`;\xe2iJ;\x6\x42\x93;Z=\xc2;)"
 direction=2
 name=Bands
 order=0
@@ -226,6 +228,13 @@ order=1
 uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
 version=2
 
+[f352a856-1e04-4661-950b-3ce435f22b1d]
+direction=1
+name=Shift
+order=2
+uuid=ce8d578e-c5a4-422f-b3c4-a1bdf40facdb
+version=2
+
 [f8055b14-053a-4312-87a2-16478894da48]
 direction=2
 name=Audio
@@ -245,11 +254,12 @@ duration=30
 version=2
 
 [groups]
-version=2
+size=0
+version=3
 
 [mainwindow]
-geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x2\0\0\0\0\0\0\0\0\0\x15\0\0\x5\x9f\0\0\x3}\0\0\0\0\0\0\0+\0\0\x5\xc7\0\0\x2\xf5\0\0\0\0\x2\0\0\0\x5\xa0)
-state="@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x3\0\0\0\0\0\0\x1\x16\0\0\x1\xa7\xfc\x2\0\0\0\x3\xfb\0\0\0\x1e\0m\0N\0o\0\x64\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\0\0\0\xfd\0\0\0\xfd\0\xff\xff\xff\xfc\0\0\0\xfe\0\0\0\xa9\0\0\0\x65\0\xff\xff\xff\xfa\0\0\0\x1\x1\0\0\0\x3\xfb\0\0\0\x14\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0 \0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0t\0h\0L\0o\0g\0g\0\x65\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0O\0\xff\xff\xff\xfb\0\0\0\x18\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0_\0\x33\x1\0\0\0\0\0\0\x1\x16\0\0\0\0\0\0\0\0\xfb\0\0\0\"\0M\0u\0l\0t\0i\0m\0\x65\0\x64\0i\0\x61\0 \0P\0l\0\x61\0y\0\x65\0r\x1\0\0\x3\xa7\0\0\0\xb6\0\0\0\0\0\0\0\0\0\0\0\x1\0\0\x1\xe0\0\0\x1\xa7\xfc\x2\0\0\0\x4\xfb\0\0\0*\0m\0S\0t\0y\0l\0\x65\0S\0h\0\x65\0\x65\0t\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x93\0\xff\xff\xff\xfb\0\0\0$\0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\x42\0r\0o\0w\0s\0\x65\0r\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x65\0\xff\xff\xff\xfb\0\0\0,\0m\0P\0\x65\0r\0\x66\0o\0r\0m\0\x61\0n\0\x63\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\0\0\x1\xa7\0\0\0\x65\0\xff\xff\xff\xfb\0\0\0&\0m\0S\0n\0i\0p\0p\0i\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0}\0\xff\xff\xff\0\0\0\x3\0\0\x5\xa0\0\0\x1\x96\xfc\x1\0\0\0\b\xfb\0\0\0\x1a\0V\0\x65\0r\0t\0\x65\0x\0 \0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\0\0\0\0\x2\xbe\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0 \0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\x2\xc2\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x10\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\x1\0\0\0\0\0\0\x2\xbe\0\0\0\0\0\0\0\0\xfb\0\0\0\f\0V\0\x65\0r\0t\0\x65\0x\x1\0\0\x2\xc2\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0m\0P\0l\0\x61\0y\0L\0i\0s\0t\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0\x16\0T\0\x65\0x\0t\0 \0\x45\0\x64\0i\0t\0o\0r\x1\0\0\0\0\0\0\x3\x9f\0\0\0O\0\xff\xff\xff\xfb\0\0\0\x1a\0I\0m\0\x61\0g\0\x65\0 \0P\0r\0\x65\0v\0i\0\x65\0w\x1\0\0\x3\xa0\0\0\x2\0\0\0\x2\0\0\xff\xff\xff\xfb\0\0\0\x16\0T\0\x65\0x\0t\0 \0\x45\0\x64\0i\0t\0o\0r\0\0\0\x6\x42\0\0\x1>\0\0\0\0\0\0\0\0\0\0\x2\xa8\0\0\x1\xa7\0\0\0\x4\0\0\0\x4\0\0\0\b\0\0\0\b\xfc\0\0\0\0)"
+geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x2\0\0\0\0\0\0\0\0\0\x15\0\0\x5\xc7\0\0\x3\x39\0\0\0\0\0\0\0\0\xff\xff\xff\xfe\xff\xff\xff\xfe\0\0\0\0\x2\0\0\0\x5\xa0)
+state="@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x3\0\0\0\0\0\0\x1\x16\0\0\x1\x63\xfc\x2\0\0\0\x3\xfb\0\0\0\x1e\0m\0N\0o\0\x64\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\0\0\0\xfd\0\0\0\xfd\0\xff\xff\xff\xfc\0\0\0\xfe\0\0\0\x65\0\0\0\x65\0\xff\xff\xff\xfa\0\0\0\x1\x1\0\0\0\x3\xfb\0\0\0\x14\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0 \0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0t\0h\0L\0o\0g\0g\0\x65\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0O\0\xff\xff\xff\xfb\0\0\0\x18\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0_\0\x33\x1\0\0\0\0\0\0\x1\x16\0\0\0\0\0\0\0\0\xfb\0\0\0\"\0M\0u\0l\0t\0i\0m\0\x65\0\x64\0i\0\x61\0 \0P\0l\0\x61\0y\0\x65\0r\x1\0\0\x3\xa7\0\0\0\xb6\0\0\0\0\0\0\0\0\0\0\0\x1\0\0\x1\xe0\0\0\x1\x63\xfc\x2\0\0\0\x4\xfb\0\0\0*\0m\0S\0t\0y\0l\0\x65\0S\0h\0\x65\0\x65\0t\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x93\0\xff\xff\xff\xfb\0\0\0$\0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\x42\0r\0o\0w\0s\0\x65\0r\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x65\0\xff\xff\xff\xfb\0\0\0,\0m\0P\0\x65\0r\0\x66\0o\0r\0m\0\x61\0n\0\x63\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\0\0\x1\x63\0\0\0\x65\0\xff\xff\xff\xfb\0\0\0&\0m\0S\0n\0i\0p\0p\0i\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0}\0\xff\xff\xff\0\0\0\x3\0\0\x5\xc8\0\0\x1\x96\xfc\x1\0\0\0\b\xfb\0\0\0\x1a\0V\0\x65\0r\0t\0\x65\0x\0 \0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\0\0\0\0\x2\xbe\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0 \0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\x2\xc2\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x10\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\x1\0\0\0\0\0\0\x2\xbe\0\0\0\0\0\0\0\0\xfb\0\0\0\f\0V\0\x65\0r\0t\0\x65\0x\x1\0\0\x2\xc2\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0m\0P\0l\0\x61\0y\0L\0i\0s\0t\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0\x16\0T\0\x65\0x\0t\0 \0\x45\0\x64\0i\0t\0o\0r\x1\0\0\0\0\0\0\x3\xb9\0\0\0O\0\xff\xff\xff\xfb\0\0\0\x1a\0I\0m\0\x61\0g\0\x65\0 \0P\0r\0\x65\0v\0i\0\x65\0w\x1\0\0\x3\xba\0\0\x2\xe\0\0\x2\0\0\xff\xff\xff\xfb\0\0\0\x16\0T\0\x65\0x\0t\0 \0\x45\0\x64\0i\0t\0o\0r\0\0\0\x6\x42\0\0\x1>\0\0\0\0\0\0\0\0\0\0\x2\xd0\0\0\x1\x63\0\0\0\x4\0\0\0\x4\0\0\0\b\0\0\0\b\xfc\0\0\0\0)"
 
 [meta]
 name=Untitled
