@@ -2472,7 +2472,7 @@ void ContextView::processSelection( bool pSaveToClipboard, bool pDeleteData )
 
 	if( pDeleteData && !TempData.isEmpty() )
 	{
-		CmdRemove		*Cmd = new CmdRemove( this, TempData, nodeItemIds( mNodeItemList ), nodeItemIds( mGroupItemList ), linkItemIds( mLinkItemList ) );
+		CmdRemove		*Cmd = new CmdRemove( this, TempData, nodeItemIds( mNodeItemList ), nodeItemIds( mGroupItemList ), noteItemIds( mNoteItemList ), linkItemIds( mLinkItemList ) );
 
 		if( Cmd )
 		{

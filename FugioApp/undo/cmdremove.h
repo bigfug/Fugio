@@ -16,8 +16,8 @@
 class CmdRemove : public QUndoCommand
 {
 public:
-	explicit CmdRemove( ContextView *pContextView, QByteArray pNodeData, QList<QUuid> pNodeList, QList<QUuid> pGroupList, QMultiMap<QUuid, QUuid> pLinkLst )
-		: mContextView( pContextView ), mNodeData( pNodeData ), mNodeList( pNodeList ), mGroupList( pGroupList )
+	explicit CmdRemove( ContextView *pContextView, QByteArray pNodeData, QList<QUuid> pNodeList, QList<QUuid> pGroupList, QList<QUuid> pNoteList, QMultiMap<QUuid, QUuid> pLinkLst )
+		: mContextView( pContextView ), mNodeData( pNodeData ), mNodeList( pNodeList ), mGroupList( pGroupList ), mNoteList( pNoteList )
 	{
 		setText( QObject::tr( "Remove Nodes/Links" ) );
 
