@@ -22,15 +22,18 @@ void SplitColourHSLANode::inputsUpdated( qint64 pTimeStamp )
 {
 	Q_UNUSED( pTimeStamp )
 
-	fugio::ColourInterface			*V;
 	QColor							 C;
 
-	if( !mPinInput->isConnected() || ( V = qobject_cast<fugio::ColourInterface *>( mPinInput->connectedPin()->control()->qobject() ) ) == 0 )
-	{
-		return;
-	}
+	fugio::ColourInterface			*ColInt = input<fugio::ColourInterface *>( mPinInput );
 
-	C = V->colour();
+	if( ColInt )
+	{
+		C = ColInt->colour();
+	}
+	else
+	{
+		C = variant( mPinInput ).value<QColor>();
+	}
 
 	if( mOutH->variant().toFloat() != C.hslHueF() )
 	{

@@ -20,7 +20,7 @@ class ScaleImageNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE ScaleImageNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE ScaleImageNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~ScaleImageNode( void ) {}
 

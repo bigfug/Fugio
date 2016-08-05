@@ -23,35 +23,38 @@ CentroidNode::CentroidNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void CentroidNode::inputsUpdated( qint64 pTimeStamp )
 {
-	fugio::FftInterface	*FFT = input<fugio::FftInterface *>( mPinInputFFT );
-
-	if( !FFT || !FFT->fft() )
+	if( mPinInputFFT->isUpdated( pTimeStamp ) )
 	{
-		return;
-	}
+		fugio::FftInterface	*FFT = input<fugio::FftInterface *>( mPinInputFFT );
 
-	const double	v = double( FFT->sampleRate() ) / double( FFT->samples() );
+		if( !FFT || !FFT->fft() )
+		{
+			return;
+		}
 
-	double			u = 0;
-	double			d = 0;
+		const double	v = double( FFT->sampleRate() ) / double( FFT->samples() );
 
-	for( int i = 0 ; i < FFT->samples() / 2 ; i++ )
-	{
-		double		x = FFT->fft()[ i * 2 ];
+		double			u = 0;
+		double			d = 0;
 
-		x = sqrt( x * x );
+		for( int i = 0 ; i < FFT->samples() / 2 ; i++ )
+		{
+			double		x = FFT->fft()[ i * 2 ];
 
-		u += double( i ) * v * x;
-		d += x;
-	}
+			x = sqrt( x * x );
 
-	if( d )
-	{
-		mCentroid = u / d;
-	}
-	else
-	{
-		mCentroid = 0;
+			u += double( i ) * v * x;
+			d += x;
+		}
+
+		if( d )
+		{
+			mCentroid = u / d;
+		}
+		else
+		{
+			mCentroid = 0;
+		}
 	}
 
 	if( mCentroid != mValOutput->variant().toFloat() )

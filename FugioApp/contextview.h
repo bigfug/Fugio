@@ -127,14 +127,27 @@ public:
 		mPasteOffset += gridSize();
 	}
 
-	void clearPasteNodes( void )
+	void clearLoadRecord( void )
 	{
-		mPasteNodes.clear();
+		mLoadNodeIds.clear();
+		mLoadNoteIds.clear();
+		mLoadPinIds.clear();
+		mLoadPositions.clear();
 	}
 
-	QList<QUuid> pasteNodes( void )
+	QMap<QUuid,QUuid> loadNodeIds( void ) const
 	{
-		return( mPasteNodes );
+		return( mLoadNodeIds );
+	}
+
+	QMap<QUuid,QUuid> loadNoteIds( void ) const
+	{
+		return( mLoadNoteIds );
+	}
+
+	QMap<QUuid,QUuid> loadPinIds( void ) const
+	{
+		return( mLoadPinIds );
 	}
 
 	bool undoNodeUpdates( void ) const
@@ -165,6 +178,8 @@ public:
 	} NodeMoveRelation;
 
 	void moveNodeRelative( NodeItem *pNode, const QList<NodeItem *> &pNodeList, const QList<NoteItem *> &pNoteList, NodeMoveRelation pRelation );
+
+	bool hasNoteItem( const QUuid pNoteId ) const;
 
 signals:
 //	void nodeInspection( NodeItem *pNodeItem );
@@ -214,6 +229,13 @@ public slots:
 
 	void noteAdd( QSharedPointer<NoteItem> pNoteItem );
 	void noteRemove( QSharedPointer<NoteItem> pNoteItem );
+	void noteRemove( const QUuid &pNodeId );
+
+	void nodeAdd( QSharedPointer<NodeItem> Node );
+	void nodeRemove( QSharedPointer<NodeItem> Node );
+
+	void groupAdd( const QUuid NodeId );
+	void groupRemove( const QUuid pGroupId );
 
 	virtual void groupSelected( void );
 
@@ -231,14 +253,14 @@ public slots:
 
 	void ungroup( NodeItem *pGroup );
 
+	void processGroupLinks( const QUuid &pGroupId );
+
 protected:
+	void processSelection( bool pSaveToClipboard, bool pDeleteData );
+
 	virtual void keyReleaseEvent( QKeyEvent *pEvent ) Q_DECL_OVERRIDE;
 
 	void sortSelectedItems( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkList, QList<NoteItem *> &pNoteList, bool pRecurse );
-
-	bool itemsForRemoval( QList<NodeItem *> &pNodeItemList, QList<NodeItem *> &pGroupList, QList<LinkItem *> &pLinkItemList, QList<NoteItem *> &pNoteItemList, QList<QSharedPointer<fugio::NodeInterface>> &NodeList, QList<QSharedPointer<NodeItem>> &GroupList, QMultiMap<QUuid,QUuid> &LinkList, QList<QSharedPointer<NoteItem>> &NoteList );
-
-	//bool itemsForRemoval( QList<QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid, QUuid> &pLinkList, QList<QSharedPointer<NodeItem>> &pGroupList, QList<QSharedPointer<NoteItem> > &pNoteList );
 
 	virtual void mouseDoubleClickEvent( QMouseEvent *pEvent ) Q_DECL_OVERRIDE;
 
@@ -246,17 +268,19 @@ protected:
 
 	static QList<QUuid> noteItemIds( const QList<NoteItem *> &pNoteList );
 
+	static QMultiMap<QUuid,QUuid> linkItemIds( const QList<LinkItem *> &pLinkList );
+
 	QList<NodeItem *> nodesFromIds( const QList<QUuid> &pIdsLst ) const;
 
 	QList<QUuid> recursiveGroupIds( const QList<NodeItem *> &pGroupList ) const;
 
-	void itemsInGroups( const QList<QUuid> &pGroupIdList, QList<NodeItem *> &pNodeList ) const;
+	void nodesInGroups( const QList<QUuid> &pGroupIdList, QList<NodeItem *> &pNodeList ) const;
 
 	void notesInGroups( const QList<QUuid> &pGroupIdList, QList<NoteItem *> &pNoteList ) const;
 
 	void processGroupLinks(QSharedPointer<NodeItem> NI );
 
-	void updatePastePoint(QList<NodeItem *> NodeItemList, QList<NoteItem *> NoteItemList);
+	void updatePastePoint( QList<NodeItem *> NodeItemList, QList<NodeItem *> GroupItemList, QList<NoteItem *> NoteItemList);
 
 	QMap<QUuid,QUuid> nodeGroups( QList<NodeItem *> pNodeList );
 
@@ -269,14 +293,16 @@ protected slots:
 
 	void clearContext( void );
 
-	void nodeAdded( QUuid pNodeId, QUuid pOrigId );
+	void nodeAdded( QUuid pNodeId );
 	void nodeRemoved( QUuid pNodeId );
 	void nodeRenamed( QUuid pNodeId1, QUuid pNodeId2 );
+	void nodeRelabled( QUuid pOrigId, QUuid pNodeId );
 	void nodeChanged( QUuid pNodeId );
 	void nodeActivated( QUuid pNodeId );
 
 	void pinAdded( QUuid pNodeId, QUuid pPinId );
 	void pinRenamed( QUuid pNodeId, QUuid pPinId1, QUuid pPinId2 );
+	void pinRelabled( QUuid pNodId, QUuid pOrgId, QUuid pPinId );
 	void pinRemoved( QUuid pNodeId, QUuid pPinId );
 
 	void linkAdded( QUuid pPinId1, QUuid pPinId2 );
@@ -285,6 +311,10 @@ protected slots:
 	void showWizard( void );
 
 	void zoom(qreal factor, QPointF centerPoint);
+
+	void groupLinkActivated( const QString pLink );
+
+	void updateGroupWidgetText();
 
 protected:
 	virtual void dragEnterEvent(QDragEnterEvent *) Q_DECL_OVERRIDE;
@@ -307,16 +337,14 @@ protected:
 
 	void clearTempLists( void );
 
+	QString groupRichText( NodeItem *NI ) const;
+        
 public slots:
 	void updateItemVisibility();
 
 	// QObject interface
 public:
 	virtual bool event( QEvent * ) Q_DECL_OVERRIDE;
-
-
-	void nodeAdd( QSharedPointer<NodeItem> Node );
-	void nodeRemove( QSharedPointer<NodeItem> Node );
 
 public slots:
 	QSharedPointer<NoteItem> noteAdd(const QString &pText , QUuid pUuid);
@@ -397,24 +425,38 @@ private:
 
 	QSharedPointer<fugio::ContextInterface>	 mContext;
 	QMap<QUuid,QPointF>						 mPositions;
-	QMap<QUuid,QPointF>						 mPastePositions;
+
 	QMap<QUuid, QSharedPointer<NodeItem>>	 mNodeList;
 	QList<QSharedPointer<NoteItem>>			 mNoteList;
+	QList<LinkItem *>						 mLinkList;
+
 	QList<QUuid>							 mGroupIds;
 	QList<QUuid>							 mGroupStack;
-	QMap<QUuid,QUuid>						 mNodeOrig;
+
 	bool									 mChanged;
 	QBrush									 mLabelBrush;
 	QFont									 m_LabelFont;
 	QFont									 m_pin_font;
 	bool									 mNodePositionFlag;
 	QPointF									 mNodePosition;
-	QByteArray								 mPasteData;
 	int										 mPasteOffset;
-	QList<QUuid>							 mPasteNodes;
 	bool									 mSaveOnlySelected;
 	bool									 mUndoNodeUpdates;
 	int										 mNodeMoveUndoId;
+
+	QList<NodeItem *>						 mNodeItemList;
+	QList<NodeItem *>						 mGroupItemList;
+	QList<LinkItem *>						 mLinkItemList;
+	QList<NoteItem *>						 mNoteItemList;
+
+	QMap<QUuid,QPointF>						 mLoadPositions;
+	QMap<QUuid,QUuid>						 mLoadNodeIds;			// <orig, curr>
+	QMap<QUuid,QUuid>						 mLoadNoteIds;			// <orig, curr>
+	QMap<QUuid,QUuid>						 mLoadPinIds;			// <orig, curr>
+
+//	QList<QUuid>							 mPasteNodes;
+//	QList<QUuid>							 mPasteNotes;
+//	QList<QUuid>							 mPastePins;
 
 	NodeMoveData							 mNodeMoveData;
 	NoteMoveData							 mNoteMoveData;
@@ -429,11 +471,6 @@ private:
 	QPointF									 m_PastePoint;
 
 	QUuid									 m_GroupId;
-
-	QList<NodeItem *>						 mNodeItemList;
-	QList<NodeItem *>						 mGroupItemList;
-	QList<LinkItem *>						 mLinkItemList;
-	QList<NoteItem *>						 mNoteItemList;
 };
 
 #endif // CONTEXTVIEW_H

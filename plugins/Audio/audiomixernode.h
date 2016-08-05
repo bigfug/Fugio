@@ -28,13 +28,16 @@ class AudioMixerNode : public fugio::NodeControlBase, public fugio::AudioProduce
 public:
 	Q_INVOKABLE explicit AudioMixerNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~AudioMixerNode( void );
+	virtual ~AudioMixerNode( void ) {}
 
 	//-------------------------------------------------------------------------
 	// fugio::NoteControlInterface
 
+	virtual bool initialise() Q_DECL_OVERRIDE;
+	virtual bool deinitialise() Q_DECL_OVERRIDE;
 	virtual QList<QUuid> pinAddTypesInput() const Q_DECL_OVERRIDE;
 	virtual bool canAcceptPin(fugio::PinInterface *pPin) const Q_DECL_OVERRIDE;
+	virtual bool pinShouldAutoRename(fugio::PinInterface *pPin) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// InterfaceAudioProducer
@@ -109,6 +112,7 @@ private:
 
 	void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, const AudioInstanceData *pInstanceData ) const;
 
+	mutable QMutex								 mInstanceDataMutex;
 	QList<AudioInstanceData *>					 mInstanceData;
 };
 

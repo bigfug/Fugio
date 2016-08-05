@@ -130,9 +130,7 @@ void KeyboardNode::inputsUpdated( qint64 pTimeStamp )
 		}
 		else if( mListening )
 		{
-			QSharedPointer<fugio::PinInterface>		NewPin;
-
-			mNode->createPin( K, PIN_OUTPUT, QUuid::createUuid(), NewPin, PID_BOOL );
+			pinOutput( K, PID_BOOL, QUuid::createUuid() );
 
 			mListening = false;
 

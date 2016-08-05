@@ -87,7 +87,7 @@ public:
 
 	virtual void updateNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual void registerNode( QSharedPointer<fugio::NodeInterface> pNode, const QUuid &pOrigId );
+	virtual void registerNode( QSharedPointer<fugio::NodeInterface> pNode );
 	virtual void unregisterNode( const QUuid &pUUID );
 	virtual void renameNode( const QUuid &pUUID1, const QUuid &pUUID2 );
 	virtual QSharedPointer<fugio::NodeInterface> findNode( const QUuid &pUUID );
@@ -253,10 +253,10 @@ private:
 
 	QFutureSynchronizer<void>							 mFutureSync;
 
-	typedef QMap< QSharedPointer<fugio::PinInterface>, bool >		UpdatePinMap;
+	typedef QPair< QWeakPointer<fugio::PinInterface>, bool >		UpdatePinEntry;
 
 	QMutex												 mUpdatePinMapMutex;
-	UpdatePinMap										 mUpdatePinMap;
+	QList<UpdatePinEntry>								 mUpdatePinMap;
 
 	static QMap<fugio::ContextInterface::MetaInfo,QString>	 mMetaNameMap;
 

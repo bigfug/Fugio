@@ -19,10 +19,6 @@ ColourButtonNode::ColourButtonNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinValue->setDescription( tr( "The selected colour" ) );
 }
 
-ColourButtonNode::~ColourButtonNode()
-{
-}
-
 QWidget *ColourButtonNode::gui()
 {
 	ColourButton	*GUI = new ColourButton();
@@ -55,7 +51,7 @@ void ColourButtonNode::valueChanged( QColor pValue )
 
 	mColour->setColour( pValue );
 
-	mNode->context()->pinUpdated( mPinValue );
+	pinUpdated( mPinValue );
 
 	emit valueUpdated( pValue );
 }

@@ -12,7 +12,7 @@ DuplicatePinsNode::DuplicatePinsNode( QSharedPointer<fugio::NodeInterface> pNode
 {
 	mPinInput = pinInput( "Input" );
 
-	mPinOutput = mNode->createPin( "Output", PIN_OUTPUT, next_uuid() );
+	mPinOutput = pinOutput( "Output", next_uuid() );
 }
 
 bool DuplicatePinsNode::initialise()

@@ -15,6 +15,8 @@ JoinSizeNode::JoinSizeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void JoinSizeNode::inputsUpdated( qint64 pTimeStamp )
 {
+	Q_UNUSED( pTimeStamp )
+
 	qreal			NewW = variant( mPinWidth ).toReal();
 	qreal			NewH = variant( mPinHeight ).toReal();
 

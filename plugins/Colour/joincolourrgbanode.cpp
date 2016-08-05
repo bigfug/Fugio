@@ -90,7 +90,7 @@ void JoinColourRGBANode::inputsUpdated( qint64 pTimeStamp )
 
 	QColor		C = QColor::fromRgbF( R, G, B, A );
 
-	if( C == mColour )
+	if( !C.isValid() || C == mColour )
 	{
 		return;
 	}

@@ -122,7 +122,7 @@ void Vector3Node::saveSettings( QSettings &pSettings ) const
 	pSettings.setValue( "v", mVec3->variant() );
 }
 
-void Vector3Node::inputsUpdated(qint64 pTimeStamp)
+void Vector3Node::inputsUpdated( qint64 pTimeStamp )
 {
 	Q_UNUSED( pTimeStamp )
 

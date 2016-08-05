@@ -17,7 +17,7 @@ class RadiansToDegreesNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE RadiansToDegreesNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE RadiansToDegreesNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~RadiansToDegreesNode( void ) {}
 

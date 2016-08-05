@@ -18,13 +18,17 @@ class FrequencyBandsNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE FrequencyBandsNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE FrequencyBandsNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~FrequencyBandsNode( void ) {}
 
 	// NodeControlInterface interface
 public:
-	virtual void inputsUpdated( qint64 pTimeStamp );
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
+
+private:
+	static float getBandWidth(float timeSize, float sampleRate);
+	static int freqToIndex(int timeSize, int sampleRate, int freq);
 
 protected:
 	QSharedPointer<fugio::PinInterface>				 mPinInputFFT;

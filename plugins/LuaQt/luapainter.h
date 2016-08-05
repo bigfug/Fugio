@@ -66,6 +66,8 @@ private:
 
 	static int luaEraseRect( lua_State *L );
 
+	static int luaFillRect( lua_State *L );
+
 	static int luaResetTransform( lua_State *L );
 	static int luaRotate( lua_State *L );
 	static int luaScale( lua_State *L );

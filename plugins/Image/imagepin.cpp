@@ -121,9 +121,9 @@ quint8 *ImagePin::internalBuffer( int pIndex ) const
 			if( mImageBuffer[ pIndex ] )
 			{
 #if defined( Q_OS_WIN )
-			_aligned_free( mImageBuffer[ pIndex ] );
+				_aligned_free( mImageBuffer[ pIndex ] );
 #elif defined( Q_OS_UNIX )
-			free( mImageBuffer[ pIndex ] );
+				free( mImageBuffer[ pIndex ] );
 #endif
 
 				mImageBuffer[ pIndex ] = 0;

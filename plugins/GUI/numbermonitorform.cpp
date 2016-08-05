@@ -4,6 +4,9 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QDockWidget>
+#include <QMenu>
+#include <QFileDialog>
+#include <QImageWriter>
 
 NumberMonitorForm::NumberMonitorForm(QWidget *parent) :
 	QWidget(parent),
@@ -109,4 +112,34 @@ void NumberMonitorForm::paintEvent( QPaintEvent *pEvent )
 	Painter.setPen( Qt::red );
 
 	Painter.drawLine( mIndex, 0, mIndex, height() );
+}
+
+void NumberMonitorForm::contextMenuEvent( QContextMenuEvent *pEvent )
+{
+	QMenu	Menu;
+
+	Menu.addAction( "Save image...", this, SLOT(saveImage()) );
+
+	Menu.exec( pEvent->globalPos() );
+}
+
+void NumberMonitorForm::saveImage()
+{
+	QString		Filename = QFileDialog::getSaveFileName( this, tr( "Save Image" ), mSaveImageDir, tr( "PNG Images (*.png);;JPG Images (*jpg)" ) );
+
+	if( !Filename.isEmpty() )
+	{
+		QFileInfo		FileInfo( Filename );
+
+		if( FileInfo.suffix().toLower() != "png" && FileInfo.suffix().toLower() != "jpg" )
+		{
+			Filename += ".png";
+
+			FileInfo = QFileInfo( Filename );
+		}
+
+		mSaveImageDir = FileInfo.absolutePath();
+
+		mImage.save( Filename );
+	}
 }

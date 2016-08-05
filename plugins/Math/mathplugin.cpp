@@ -56,6 +56,8 @@
 
 #include "rotationfromvectorsnode.h"
 
+#include "minmaxnode.h"
+
 MathPlugin *MathPlugin::mInstance = nullptr;
 
 QList<QUuid>	NodeControlBase::PID_UUID;
@@ -73,6 +75,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Divide", "Math", NID_DIVIDE, &DivideNode::staticMetaObject ),
 	ClassEntry( "Join", "Vector3", NID_JOIN_VECTOR3, &JoinVector3Node::staticMetaObject ),
 	ClassEntry( "Look At", "Matrix", NID_MATRIX_LOOKAT, &MatrixLookAtNode::staticMetaObject ),
+	ClassEntry( "MinMax", "Math", NID_MINMAX, &MinMaxNode::staticMetaObject ),
 	ClassEntry( "Multiply", "Math", NID_MULTIPLY, &MultiplyNode::staticMetaObject ),
 	ClassEntry( "NAND", "Logic", NID_NAND, &NandNode::staticMetaObject ),
 	ClassEntry( "NOT", "Logic", NID_NOT, &NotNode::staticMetaObject ),

@@ -15,13 +15,13 @@ class SinDegreeNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE SinDegreeNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE SinDegreeNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~SinDegreeNode( void ) {}
 
 	// NodeControlInterface interface
 
-	virtual void inputsUpdated(qint64 pTimeStamp);
+	virtual void inputsUpdated( qint64 pTimeStamp );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;

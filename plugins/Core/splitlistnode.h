@@ -15,7 +15,7 @@ class SplitListNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE SplitListNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE SplitListNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~SplitListNode( void ) {}
 

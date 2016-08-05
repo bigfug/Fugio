@@ -406,7 +406,7 @@ void PinItem::linkMove( const QPointF &pMovement )
 {
 	Q_UNUSED( pMovement )
 
-	foreach( LinkItem *LI, mLinks )
+	for( LinkItem *LI : mLinks )
 	{
 		LI->updateSrcPin();
 		LI->updateDstPin();
@@ -425,7 +425,7 @@ void PinItem::linkRem( LinkItem *pLinkItem )
 
 LinkItem *PinItem::findLink( PinItem *pDst )
 {
-	foreach( LinkItem *LI, mLinks )
+	for( LinkItem *LI : mLinks )
 	{
 		if( LI->dstPin() == pDst )
 		{
@@ -438,7 +438,7 @@ LinkItem *PinItem::findLink( PinItem *pDst )
 
 bool PinItem::hasLink( PinItem *pDst ) const
 {
-	foreach( LinkItem *LI, mLinks )
+	for( LinkItem *LI : mLinks )
 	{
 		if( LI->dstPin() == pDst )
 		{

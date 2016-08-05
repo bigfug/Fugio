@@ -20,7 +20,7 @@ class SmoothNode : public fugio::NodeControlBase, public fugio::PairedPinsHelper
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE SmoothNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE SmoothNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~SmoothNode( void ) {}
 

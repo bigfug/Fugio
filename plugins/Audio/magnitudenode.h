@@ -18,7 +18,7 @@ class MagnitudeNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE MagnitudeNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE MagnitudeNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~MagnitudeNode( void ) {}
 

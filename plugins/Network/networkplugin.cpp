@@ -10,6 +10,8 @@
 
 #include <fugio/network/uuid.h>
 
+#include "getnode.h"
+
 #include "tcpsendnode.h"
 #include "tcpreceivenode.h"
 #include "tcpsendrawnode.h"
@@ -27,6 +29,7 @@ NetworkPlugin *NetworkPlugin::mInstance = 0;
 
 ClassEntry	NodeClasses[] =
 {
+	ClassEntry( "Get", "Network", NID_NETWORK_GET, &GetNode::staticMetaObject ),
 	ClassEntry( "TCP Send", "Network", NID_TCP_SEND, &TCPSendNode::staticMetaObject ),
 	ClassEntry( "TCP Receive", "Network", NID_TCP_RECEIVE, &TCPReceiveNode::staticMetaObject ),
 	ClassEntry( "TCP Send Raw", "Network", NID_TCP_SEND_RAW, &TCPSendRawNode::staticMetaObject ),
@@ -43,8 +46,16 @@ ClassEntry PinClasses[] =
 	ClassEntry()
 };
 
+NetworkPlugin::NetworkPlugin()
+	: mApp( 0 ), mNetworkAccessManager( 0 )
+{
+	mInstance = this;
+}
+
 PluginInterface::InitResult NetworkPlugin::initialise( fugio::GlobalInterface *pApp )
 {
+	mNetworkAccessManager = new QNetworkAccessManager();
+
 	mApp = pApp;
 
 	mApp->registerNodeClasses( NodeClasses );
@@ -63,6 +74,13 @@ void NetworkPlugin::deinitialise( void )
 	mApp->unregisterNodeClasses( NodeClasses );
 
 	mApp = 0;
+
+	if( mNetworkAccessManager )
+	{
+		delete mNetworkAccessManager;
+
+		mNetworkAccessManager = 0;
+	}
 }
 
 void NetworkPlugin::menuNetworkInformation()

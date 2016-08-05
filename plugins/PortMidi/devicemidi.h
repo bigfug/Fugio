@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QSettings>
 #include <QUuid>
+#include <QMutex>
 
 #include <portmidi.h>
 
@@ -87,6 +88,10 @@ public:
 	void output( const QVector<PmEvent> &pEvents );
 
 	void output( const QVector<fugio::MidiEvent> &pEvents );
+
+	void output( const int32_t *pEvents, int pCount );
+
+	void outputSysEx( const QByteArray pArray );
 
 	void registerMidiInputNode( fugio::MidiInputInterface *pMII )
 	{

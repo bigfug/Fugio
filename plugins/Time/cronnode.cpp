@@ -11,7 +11,7 @@
 
 #include "ui_cronform.h"
 
-CronNode::CronNode(QSharedPointer<fugio::NodeInterface> pNode)
+CronNode::CronNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mLastTime( -1 ), mGUI( nullptr ), mForm( nullptr )
 {
 	pinOutput<fugio::PinControlInterface *>( "Trigger", mPinTrigger, PID_TRIGGER );

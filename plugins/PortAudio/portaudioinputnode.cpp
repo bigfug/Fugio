@@ -14,17 +14,13 @@ PortAudioInputNode::PortAudioInputNode( QSharedPointer<fugio::NodeInterface> pNo
 {
 	mValAudio = pinOutput<fugio::AudioProducerInterface *>( "Audio", mPinAudio, PID_AUDIO );
 
-#if defined( PORTAUDIO_SUPPORTED )
-	mDeviceName = DevicePortAudio::deviceInputDefaultName();
-#endif
+	rebuildDeviceList();
 }
 
 PortAudioInputNode::~PortAudioInputNode()
 {
 	if( mPortAudio )
 	{
-		//disconnect( mPortAudio.data(), SIGNAL(audio(const float**,quint64,int,qint64)), this, SLOT(audioInput(const float**,quint64,int,qint64)) );
-
 		mPortAudio.clear();
 	}
 }
@@ -36,25 +32,20 @@ bool PortAudioInputNode::initialise()
 		return( false );
 	}
 
-#if defined( PORTAUDIO_SUPPORTED )
-	PaDeviceIndex		DevIdx = DevicePortAudio::deviceInputNameIndex( mDeviceName );
-
-	if( DevIdx == paNoDevice )
-	{
-		return( false );
-	}
-
-	if( ( mPortAudio = DevicePortAudio::newDevice( DevIdx ) ) )
-	{
-		//connect( mPortAudio.data(), SIGNAL(audio(const float**,quint64,int,qint64)), this, SLOT(audioInput(const float**,quint64,int,qint64)) );
-	}
-
-	return( true );
-#else
+#if !defined( PORTAUDIO_SUPPORTED )
 	mNode->setStatus( fugio::NodeInterface::Error );
 	mNode->setStatusMessage( "No PortAudio Support" );
 
 	return( false );
+#else
+	if( mDeviceName.isEmpty() )
+	{
+		mDeviceName = mDeviceList.at( 1 );
+	}
+
+	audioDeviceSelected( mDeviceName );
+
+	return( true );
 #endif
 }
 
@@ -62,32 +53,19 @@ bool PortAudioInputNode::deinitialise()
 {
 	if( mPortAudio )
 	{
-		//disconnect( mPortAudio.data(), SIGNAL(audio(const float**,quint64,int,qint64)), this, SLOT(audioInput(const float**,quint64,int,qint64)) );
-
 		mPortAudio.clear();
 	}
 
 	return( NodeControlBase::deinitialise() );
 }
 
-//void PortAudioInputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, qint64 pLatency, void *pInstanceData ) const
-//{
-//	Q_UNUSED( pInstanceData )
-//	Q_UNUSED( pLatency )
-
-//	//AudioInstanceData		*AID = static_cast<AudioInstanceData *>( pInstanceData );
-
-//	if( mPortAudio )
-//	{
-//		mPortAudio->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers );
-//	}
-//}
-
 void PortAudioInputNode::clicked()
 {
+	rebuildDeviceList();
+
 #if defined( PORTAUDIO_SUPPORTED )
 	bool		OK;
-	QString		NewDev = QInputDialog::getItem( nullptr, mNode->name(), tr( "Select Audio Device" ), DevicePortAudio::deviceInputNameList(), DevicePortAudio::deviceInputNameList().indexOf( mDeviceName ), false, &OK );
+	QString		NewDev = QInputDialog::getItem( nullptr, mNode->name(), tr( "Select Audio Device" ), mDeviceList, mDeviceList.indexOf( mDeviceName ), false, &OK );
 
 	if( OK && NewDev != mDeviceName )
 	{
@@ -96,54 +74,67 @@ void PortAudioInputNode::clicked()
 #endif
 }
 
-//void *PortAudioInputNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
-//{
-//	AudioInstanceData		*AID = new AudioInstanceData();
-
-//	if( AID )
-//	{
-//		AID->mSampleRate   = pSampleRate;
-//		AID->mSampleFormat = pSampleFormat;
-//		AID->mChannels     = pChannels;
-//	}
-
-//	return( AID );
-//}
-
-//void PortAudioInputNode::audioFreeInstance( void *pInstanceData )
-//{
-//	AudioInstanceData		*AID = static_cast<AudioInstanceData *>( pInstanceData );
-
-//	if( AID )
-//	{
-//		delete AID;
-//	}
-//}
-
-void PortAudioInputNode::audioDeviceSelected(const QString &pDeviceName)
+void PortAudioInputNode::rebuildDeviceList()
 {
+	mDeviceList.clear();
+
+	mDeviceList << tr( "None" );
+	mDeviceList << tr( "Default Audio Input" );
+
+#if defined( PORTAUDIO_SUPPORTED )
+	mDeviceList << DevicePortAudio::deviceInputNameList();
+#endif
+}
+
+void PortAudioInputNode::audioDeviceSelected( const QString &pDeviceName )
+{
+	if( pDeviceName == mDeviceName && mPortAudio )
+	{
+		return;
+	}
+
 	if( mPortAudio )
 	{
-		//disconnect( mPortAudio.data(), SIGNAL(audio(const float**,quint64,int,qint64)), this, SLOT(audioInput(const float**,quint64,int,qint64)) );
-
 		mPortAudio.clear();
 	}
 
 	mDeviceName = pDeviceName;
 
+	emit audioDeviceChanged( mDeviceName );
+
 #if defined( PORTAUDIO_SUPPORTED )
-	PaDeviceIndex		DevIdx = DevicePortAudio::deviceInputNameIndex( mDeviceName );
+	const int	DevNamIdx = mDeviceList.indexOf( mDeviceName );
 
-	if( DevIdx == paNoDevice )
+	if( DevNamIdx == 0 )
 	{
-		return;
+		mNode->setStatus( fugio::NodeInterface::Initialised );
 	}
-
-	if( ( mPortAudio = DevicePortAudio::newDevice( DevIdx ) ) )
+	else
 	{
-		//connect( mPortAudio.data(), SIGNAL(audio(const float**,quint64,int,qint64)), this, SLOT(audioInput(const float**,quint64,int,qint64)) );
+		PaDeviceIndex		DevIdx;
+
+		if( DevNamIdx == 1 )
+		{
+			DevIdx = Pa_GetDefaultInputDevice();
+		}
+		else
+		{
+			DevIdx = DevicePortAudio::deviceInputNameIndex( mDeviceName );
+		}
+
+		if( DevIdx == paNoDevice )
+		{
+			mNode->setStatus( fugio::NodeInterface::Warning );
+		}
+
+		if( ( mPortAudio = DevicePortAudio::newDevice( DevIdx ) ) )
+		{
+			mNode->setStatus( fugio::NodeInterface::Initialised );
+		}
 	}
 #endif
+
+	pinUpdated( mPinAudio );
 }
 
 QWidget *PortAudioInputNode::gui()
@@ -160,14 +151,24 @@ QWidget *PortAudioInputNode::gui()
 
 void PortAudioInputNode::loadSettings( QSettings &pSettings )
 {
-	mDeviceName = pSettings.value( "device", mDeviceName ).toString();
+	rebuildDeviceList();
 
-	emit audioDeviceChanged( mDeviceName );
+	int		Index = pSettings.value( "index", 1 ).toInt();
+
+	QString	DeviceName = pSettings.value( "device", mDeviceName ).toString();
+
+	if( Index >= 0 && Index <= 1 )
+	{
+		DeviceName = mDeviceList[ Index ];
+	}
+
+	audioDeviceSelected( DeviceName );
 }
 
 void PortAudioInputNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "device", mDeviceName );
+	pSettings.setValue( "index", mDeviceList.indexOf( mDeviceName ) );
 }
 
 int PortAudioInputNode::audioChannels() const
@@ -185,6 +186,35 @@ fugio::AudioSampleFormat PortAudioInputNode::audioSampleFormat() const
 	return( mPortAudio ? mPortAudio->inputSampleFormat() : fugio::AudioSampleFormat::FormatUnknown );
 }
 
+bool PortAudioInputNode::isValid( fugio::AudioInstanceBase *pInstance ) const
+{
+	if( !mPortAudio )
+	{
+		return( false );
+	}
+
+	if( !mPortAudio->isValid( pInstance ) )
+	{
+		return( false );
+	}
+
+	DevicePortAudio::AudioInstanceData	*AudIns = dynamic_cast<DevicePortAudio::AudioInstanceData *>( pInstance );
+
+	if( !AudIns )
+	{
+		return( false );
+	}
+
+#if defined( PORTAUDIO_SUPPORTED )
+	if( AudIns->mDeviceIndex != mDeviceIndex )
+	{
+		return( false );
+	}
+#endif
+
+	return( true );
+}
+
 fugio::AudioInstanceBase *PortAudioInputNode::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
 {
 	if( !mPortAudio )
@@ -194,22 +224,6 @@ fugio::AudioInstanceBase *PortAudioInputNode::audioAllocInstance( qreal pSampleR
 
 	return( mPortAudio->audioAllocInstance( pSampleRate, pSampleFormat, pChannels ) );
 }
-
-//void PortAudioInputNode::audioFreeInstance(void *pInstanceData)
-//{
-//	if( mPortAudio )
-//	{
-//		mPortAudio->audioFreeInstance( pInstanceData );
-//	}
-//}
-
-//void PortAudioInputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const
-//{
-//	if( mPortAudio )
-//	{
-//		mPortAudio->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers, pInstanceData );
-//	}
-//}
 
 qint64 PortAudioInputNode::audioLatency() const
 {

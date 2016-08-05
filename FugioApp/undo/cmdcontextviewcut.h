@@ -55,7 +55,7 @@ public:
 	{
 		for( QSharedPointer<fugio::NodeInterface> mNode : mNodeList )
 		{
-			mContext->registerNode( mNode, mNode->uuid() );
+			mContext->registerNode( mNode );
 		}
 
 		for( QUuid Src : mLinkList.keys() )

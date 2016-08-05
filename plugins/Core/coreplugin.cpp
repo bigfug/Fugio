@@ -34,6 +34,7 @@
 #include "typesizenode.h"
 #include "switchnode.h"
 #include "floatthresholdnode.h"
+#include "autorangenode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -50,12 +51,15 @@
 #include "variantpin.h"
 #include "stringlistpin.h"
 #include "bytearraylistpin.h"
+#include "variantlistpin.h"
+#include "arraylistpin.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
 ClassEntry		CorePlugin::mNodeClasses[] =
 {
 	ClassEntry( QT_TR_NOOP( "Any Trigger" ), NID_ANY_TRIGGER, &AnyTriggerNode::staticMetaObject ),
+	ClassEntry( "Auto Number Range", NID_AUTO_NUMBER_RANGE, &AutoRangeNode::staticMetaObject ),
 	ClassEntry( "Bool Range", NID_BOOL_RANGE, &BoolRangeNode::staticMetaObject ),
 	ClassEntry( "Bool To Trigger", NID_BOOL_TO_TRIGGER, &BoolToTriggerNode::staticMetaObject ),
 	ClassEntry( "Counter", NID_COUNTER, &CounterNode::staticMetaObject ),
@@ -89,6 +93,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 ClassEntry		CorePlugin::mPinClasses[] =
 {
 	ClassEntry( "Array", PID_ARRAY, &ArrayPin::staticMetaObject ),
+	ClassEntry( "Array List", PID_ARRAY_LIST, &ArrayListPin::staticMetaObject ),
 	ClassEntry( "Bool", PID_BOOL, &BoolPin::staticMetaObject ),
 	ClassEntry( "Byte Array", PID_BYTEARRAY, &ByteArrayPin::staticMetaObject ),
 	ClassEntry( "Byte Array List", PID_BYTEARRAY_LIST, &ByteArrayListPin::staticMetaObject ),
@@ -103,6 +108,7 @@ ClassEntry		CorePlugin::mPinClasses[] =
 	ClassEntry( "String List", PID_STRING_LIST, &StringListPin::staticMetaObject ),
 	ClassEntry( "Trigger", PID_TRIGGER, &TriggerPin::staticMetaObject ),
 	ClassEntry( "Variant", PID_VARIANT, &VariantPin::staticMetaObject ),
+	ClassEntry( "Variant List", PID_VARIANT_LIST, &VariantListPin::staticMetaObject ),
 	ClassEntry()
 };
 

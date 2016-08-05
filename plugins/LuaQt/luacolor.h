@@ -111,6 +111,8 @@ private:
 	static int luaSetRed( lua_State *L );
 	static int luaSetRedF( lua_State *L );
 
+	static int luaToArray( lua_State *L );
+
 private:
 	static const luaL_Reg					mLuaInstance[];
 	static const luaL_Reg					mLuaMethods[];

@@ -49,7 +49,7 @@ public:
 
 		if( mNode )
 		{
-			mContext->registerNode( mNode, mNode->uuid() );
+			mContext->registerNode( mNode );
 
 			if( mNodePinId.isNull() )
 			{

@@ -15,7 +15,7 @@ class UDPReceiveRawNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE UDPReceiveRawNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE UDPReceiveRawNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~UDPReceiveRawNode( void ) {}
 

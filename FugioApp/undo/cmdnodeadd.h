@@ -35,42 +35,43 @@ public:
 
 	virtual void undo( void )
 	{
-		if( mNode )
+		QSharedPointer<fugio::NodeInterface>	Node = mContext->findNode( mNodeId );
+
+		if( Node )
 		{
-			mContext->unregisterNode( mNode->uuid() );
+			mContext->unregisterNode( Node->uuid() );
 		}
 	}
 
 	virtual void redo( void )
 	{
-		if( mNode.isNull() )
+		mContextWidget->saveRecovery();
+
+		if( mNodeId.isNull() )
 		{
-			mContextWidget->saveRecovery();
-			
-			mNode = mContext->global()->createNode( mName, QUuid::createUuid(), mControlId );
-
-			if( mNode )
-			{
-				if( mNode->control().isNull() )
-				{
-					mNode.clear();
-				}
-			}
-
-			mContextWidget->saveRecovery();
+			mNodeId = QUuid::createUuid();
 		}
 
-		if( mNode )
+		QSharedPointer<fugio::NodeInterface>	Node = mContext->global()->createNode( mName, mNodeId, mControlId );
+
+		if( Node && Node->control().isNull() )
 		{
-			mContext->registerNode( mNode, mControlId );
+			Node.clear();
+		}
+
+		if( Node )
+		{
+			mContextWidget->saveRecovery();
+
+			mContext->registerNode( Node );
 		}
 	}
 
 private:
 	ContextWidgetPrivate					*mContextWidget;
 	QSharedPointer<fugio::ContextInterface>	 mContext;
-	QSharedPointer<fugio::NodeInterface>	 mNode;
 	QString									 mName;
+	QUuid									 mNodeId;
 	QUuid									 mControlId;
 };
 

@@ -76,6 +76,8 @@ protected:
 signals:
     void contextFilenameChanged( const QString &pFileName );
 
+	void groupLinkActivated( const QString pLink );
+
 public slots:
     void userSave( void );
 
@@ -102,6 +104,8 @@ public slots:
 
 	void setWindowTitleFromFileName( const QString &pFileName );
 
+	void setGroupWidgetText( const QString pText );
+
 private slots:
     void on_mButtonPlay_clicked();
 
@@ -114,6 +118,8 @@ private slots:
     //	void onNodeInspection( NodeItem *pNodeItem );
 
     void on_mTimeText_textEdited(const QString &arg1);
+
+	void on_mGroupLinks_linkActivated(const QString &link);
 
 private:
     Ui::ContextWidgetPrivate				*ui;

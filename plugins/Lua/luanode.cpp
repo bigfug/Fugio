@@ -1,6 +1,8 @@
 #include "luanode.h"
 
 #include <QDebug>
+#include <QDir>
+#include <QStandardPaths>
 
 #include <fugio/core/uuid.h>
 
@@ -133,6 +135,34 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 		luaL_openlibs( mL );
 
 		//---------------------------------------------------------------------
+
+		if( true )
+		{
+			QString		 DatDir = QStandardPaths::writableLocation( QStandardPaths::DocumentsLocation );
+
+			QString		 LuaUsr = QDir( DatDir ).absoluteFilePath( "Fugio/share/lua" );
+
+			if( QFileInfo::exists( LuaUsr ) )
+			{
+				luaSetPath( mL, QDir::toNativeSeparators( LuaUsr.append( "/?.lua" ) ).toLatin1().constData() );
+			}
+		}
+
+		if( true )
+		{
+#if defined( QT_DEBUG )
+			QString		LuaInc = QDir::current().absoluteFilePath( "../Fugio/share/lua" );
+#else
+			QString		LuaInc = QDir::current().absoluteFilePath( "share/lua" );
+#endif
+
+			if( QFileInfo::exists( LuaInc ) )
+			{
+				luaSetPath( mL, QDir::toNativeSeparators( LuaInc.append( "/?.lua" ) ).toLatin1().constData() );
+			}
+		}
+
+		//---------------------------------------------------------------------
 		// load the code
 
 		mCompileStatus = luaL_loadstring( mL, LuaSource.toLatin1().data() );
@@ -212,7 +242,7 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 		}
 	}
 
-	if( !mL || mCompileStatus != LUA_OK || mCallStatus != LUA_OK )
+	if( !pTimeStamp || !mL || mCompileStatus != LUA_OK || mCallStatus != LUA_OK )
 	{
 		return;
 	}
@@ -365,6 +395,20 @@ int LuaNode::luaOutputs( lua_State *L )
 	}
 
 	return( 1 );
+}
+
+int LuaNode::luaSetPath( lua_State *L, const char *path )
+{
+	lua_getglobal( L, "package" );
+	lua_getfield( L, -1, "path" ); // get field "path" from table at top of stack (-1)
+	std::string cur_path = lua_tostring( L, -1 ); // grab path string from top of stack
+	cur_path.append( ";" ); // do your path magic here
+	cur_path.append( path );
+	lua_pop( L, 1 ); // get rid of the string on the stack we just pushed on line 5
+	lua_pushstring( L, cur_path.c_str() ); // push the new one
+	lua_setfield( L, -2, "path" ); // set the field "path" in table at -2 with value at top of stack
+	lua_pop( L, 1 ); // get rid of package table from top of stack
+	return 0; // all done!
 }
 
 int LuaNode::luaopen_fugio( lua_State *L )

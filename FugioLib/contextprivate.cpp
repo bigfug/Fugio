@@ -262,9 +262,20 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 
 	for( QSharedPointer<fugio::NodeInterface> N : NodeLst )
 	{
-		registerNode( N, NodeMap.value( N->uuid() ) );
+		const QUuid		NodeUuid = N->uuid();
+		const QUuid		OrigUuid = NodeMap.value( N->uuid() );
 
-		pSettings.beginGroup( fugio::utils::uuid2string( NodeMap.value( N->uuid() ) ) );
+		// do this before we registerNode() to give everyone a chance to record the relabel
+		// and look up data
+
+		if( NodeUuid != OrigUuid )
+		{
+			emit qobject()->nodeRelabled( OrigUuid, NodeUuid );
+		}
+
+		registerNode( N );
+
+		pSettings.beginGroup( fugio::utils::uuid2string( OrigUuid ) );
 
 		N->loadSettings( pSettings, PinsMap, pPartial );
 
@@ -349,6 +360,11 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeList ) const
 {
 	QSettings				 CFG( pFileName, QSettings::IniFormat );
+
+	if( !CFG.isWritable() )
+	{
+		return( false );
+	}
 
 	CFG.clear();
 
@@ -554,7 +570,7 @@ bool ContextPrivate::isPlaying( void ) const
 	return( mState == fugio::ContextInterface::Playing );
 }
 
-void ContextPrivate::registerNode( QSharedPointer<fugio::NodeInterface> pNode, const QUuid &pOrigId )
+void ContextPrivate::registerNode( QSharedPointer<fugio::NodeInterface> pNode )
 {
 	if( mNodeHash.contains( pNode->uuid() ) )
 	{
@@ -581,7 +597,7 @@ void ContextPrivate::registerNode( QSharedPointer<fugio::NodeInterface> pNode, c
 
 	mNodeDeferProcess = true;
 
-	emit nodeAdded( pNode->uuid(), pOrigId );
+	emit nodeAdded( pNode->uuid() );
 }
 
 void ContextPrivate::unregisterNode( const QUuid &pUUID )
@@ -613,10 +629,14 @@ void ContextPrivate::unregisterNode( const QUuid &pUUID )
 
 		Node->setStatus( fugio::NodeInterface::Initialising );
 
-		Node->setContext( nullptr );
-	}
+		NodePrivate		*NP = qobject_cast<NodePrivate *>( Node->qobject() );
 
-	emit nodeRemoved( pUUID );
+		NP->clear();
+
+		Node->setContext( nullptr );
+
+		emit nodeRemoved( pUUID );
+	}
 }
 
 void ContextPrivate::renameNode( const QUuid &pUUID1, const QUuid &pUUID2 )
@@ -717,7 +737,19 @@ void ContextPrivate::unregisterPin( const QUuid &pUUID )
 	{
 		mUpdatePinMapMutex.lock();
 
-		mUpdatePinMap.remove( PinInt );
+		for( int i = 0 ; i < mUpdatePinMap.size() ; )
+		{
+			QSharedPointer<fugio::PinInterface>		DstPin = mUpdatePinMap.at( i ).first;
+
+			if( DstPin && DstPin->globalId() == pUUID )
+			{
+				mUpdatePinMap.removeAt( i );
+			}
+			else
+			{
+				i++;
+			}
+		}
 
 		mUpdatePinMapMutex.unlock();
 	}
@@ -726,6 +758,8 @@ void ContextPrivate::unregisterPin( const QUuid &pUUID )
 	{
 		mPinHash.remove( pUUID );
 	}
+
+	disconnectPin( pUUID );
 }
 
 void ContextPrivate::renamePin( const QUuid &pUUID1, const QUuid &pUUID2 )
@@ -1029,7 +1063,7 @@ void ContextPrivate::nodeNameChanged( QSharedPointer<fugio::NodeInterface> pNode
 	emit nodeUpdated( pNode->uuid() );
 }
 
-void ContextPrivate::onNodeActivationChanged(QSharedPointer<fugio::NodeInterface> pNode)
+void ContextPrivate::onNodeActivationChanged( QSharedPointer<fugio::NodeInterface> pNode )
 {
 	emit nodeActivated( pNode->uuid() );
 }
@@ -1293,18 +1327,30 @@ void ContextPrivate::pinUpdated( QSharedPointer<fugio::PinInterface> pPin, bool 
 
 	QMutexLocker	MutLck( &mUpdatePinMapMutex );
 
-	UpdatePinMap::iterator		it = mUpdatePinMap.find( pPin );
-
-	if( it != mUpdatePinMap.end() && ( it.value() || !pUpdatedConnectedNode ) )
+	for( UpdatePinEntry &PinEnt : mUpdatePinMap )
 	{
-#if defined( LOG_NODE_UPDATES )
-		qDebug() << pPin->name() << "is already updated";
-#endif
+		QSharedPointer<fugio::PinInterface>	DstPin = PinEnt.first;
 
-		return;
+		if( DstPin && DstPin->globalId() == pPin->globalId() )
+		{
+#if defined( LOG_NODE_UPDATES )
+			qDebug() << pPin->name() << "is already updated";
+#endif
+			if( !PinEnt.second && pUpdatedConnectedNode )
+			{
+				PinEnt.second = true;
+			}
+
+			return;
+		}
 	}
 
-	mUpdatePinMap.insert( pPin, pUpdatedConnectedNode );
+	UpdatePinEntry		PE;
+
+	PE.first  = pPin;
+	PE.second = pUpdatedConnectedNode;
+
+	mUpdatePinMap << PE;
 }
 
 void ContextPrivate::performance( QSharedPointer<fugio::NodeInterface> pNode, const QString &pName, qint64 pTimeStart, qint64 pTimeEnd )
@@ -1372,6 +1418,9 @@ void ContextPrivate::processDeferredNodes( QList< QSharedPointer<fugio::NodeInte
 #if defined( LOG_NODE_UPDATES )
 			qDebug() << "Node Initialised:" << N->name();
 #endif
+
+			N->control()->inputsUpdated( 0 );
+
 			InitialisedNodes.append( N );
 		}
 		else if( N->status() == fugio::NodeInterface::Deferred )
@@ -1559,17 +1608,17 @@ void ContextPrivate::processUpdatedPins( qint64 pTimeStamp )
 {
 	mUpdatePinMapMutex.lock();
 
-	UpdatePinMap		PinMap = mUpdatePinMap;
+	QList<UpdatePinEntry>		PinMap = mUpdatePinMap;
 
 	mUpdatePinMap.clear();
 
 	mUpdatePinMapMutex.unlock();
 
-	for( UpdatePinMap::iterator it = PinMap.begin() ; it != PinMap.end() ; it++ )
+	for( UpdatePinEntry &PE : PinMap )
 	{
-		QSharedPointer<PinPrivate>		P = qSharedPointerCast<PinPrivate>( it.key() );
+		QSharedPointer<PinPrivate>		P = qSharedPointerCast<PinPrivate>( PE.first );
 
-		P->update( pTimeStamp, it.value() );
+		P->update( pTimeStamp, PE.second );
 	}
 }
 

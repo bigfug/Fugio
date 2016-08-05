@@ -17,13 +17,13 @@ class AddNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE AddNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE AddNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~AddNode( void ) {}
 
 	// NodeControlInterface interface
 
-	virtual void inputsUpdated(qint64 pTimeStamp);
+	virtual void inputsUpdated( qint64 pTimeStamp );
 
 	virtual QList<QUuid> pinAddTypesInput() const;
 	virtual bool canAcceptPin(fugio::PinInterface *pPin) const;

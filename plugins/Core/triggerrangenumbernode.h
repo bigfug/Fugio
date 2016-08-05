@@ -19,7 +19,7 @@ class TriggerRangeNumberNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE TriggerRangeNumberNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE TriggerRangeNumberNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~TriggerRangeNumberNode( void ) {}
 

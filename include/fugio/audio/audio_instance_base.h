@@ -15,7 +15,7 @@ class AudioInstanceBase
 {
 public:
 	AudioInstanceBase( QSharedPointer<fugio::AudioProducerInterface> pProducer, qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
-		: mProducer( pProducer ), mSampleRate( pSampleRate ), mSampleFormat( pSampleFormat ), mChannels( pChannels )
+		: mProducer( pProducer ), mSampleRate( pSampleRate ), mSampleFormat( pSampleFormat ), mChannels( pChannels ), mEnabled( true )
 	{
 
 	}
@@ -56,11 +56,22 @@ public:
 
 	virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers ) = 0;
 
+	inline bool isEnabled( void ) const
+	{
+		return( mEnabled );
+	}
+
+	inline void setEnabed( bool pEnabled )
+	{
+		mEnabled = pEnabled;
+	}
+
 protected:
 	QWeakPointer<fugio::AudioProducerInterface>			mProducer;
 	const qreal											mSampleRate;
 	const fugio::AudioSampleFormat						mSampleFormat;
 	const int											mChannels;
+	bool												mEnabled;
 };
 
 FUGIO_NAMESPACE_END

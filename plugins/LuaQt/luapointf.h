@@ -93,6 +93,7 @@ private:
 	static int luaManhattanLength( lua_State *L );
 	static int luaSetX( lua_State *L );
 	static int luaSetY( lua_State *L );
+	static int luaToArray( lua_State *L );
 	static int luaX( lua_State *L );
 	static int luaY( lua_State *L );
 

@@ -23,7 +23,8 @@ DEFINES += FILE_LIBRARY
 SOURCES += fileplugin.cpp \
     filewatchernode.cpp \
     filenamepin.cpp \
-    filenamenode.cpp
+    filenamenode.cpp \
+    loadnode.cpp
 
 HEADERS += fileplugin.h\
     ../../include/fugio/nodecontrolbase.h \
@@ -32,7 +33,8 @@ HEADERS += fileplugin.h\
     filenamepin.h \
     filenamenode.h \
     ../../include/fugio/file/uuid.h \
-    ../../include/fugio/file/filename_interface.h
+    ../../include/fugio/file/filename_interface.h \
+    loadnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

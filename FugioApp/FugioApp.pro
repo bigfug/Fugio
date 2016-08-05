@@ -307,8 +307,8 @@ win32 {
 # ffmpeg
 
 win32 {
-    LIBS += -L$$(LIBS)/ffmpeg-3.0.1-32/lib
-    LIBS += -L$$(LIBS)/ffmpeg-3.0.1-32/bin
+	LIBS += -L$$(LIBS)/ffmpeg-20160728-fb91143-win32/lib
+	LIBS += -L$$(LIBS)/ffmpeg-20160728-fb91143-win32/bin
 }
 
 #------------------------------------------------------------------------------
@@ -393,3 +393,33 @@ win64 {
 win32 {
     LIBS += -L$$OPENVR_DIR/bin/win32
 }
+
+#------------------------------------------------------------------------------
+# NDI
+
+win32 {
+	NDI_DIR = "C:/Program Files/NewTek/NewTek NDI SDK/Bin/x86"
+}
+
+win64 {
+	NDI_DIR = "C:/Program Files/NewTek/NewTek NDI SDK/Bin/x64"
+}
+
+windows:exists( $$NDI_DIR ) {
+	LIBS += -L$$NDI_DIR
+}
+
+#------------------------------------------------------------------------------
+# OpenNI
+
+windows:exists( "C:/Program Files (x86)/OpenNI2/Redist" ) {
+	LIBS += -L"C:/Program Files (x86)/OpenNI2/Redist"
+}
+
+#------------------------------------------------------------------------------
+# NiTE2
+
+windows:exists( "C:/Program Files (x86)/PrimeSense/NiTE2/Redist" ) {
+	LIBS += -L"C:/Program Files (x86)/PrimeSense/NiTE2/Redist"
+}
+

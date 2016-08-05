@@ -17,7 +17,7 @@ class MainWindowNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE MainWindowNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE MainWindowNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~MainWindowNode( void ) {}
 

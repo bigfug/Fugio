@@ -17,7 +17,7 @@ class SignalNumberNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE SignalNumberNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE SignalNumberNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~SignalNumberNode( void ) {}
 

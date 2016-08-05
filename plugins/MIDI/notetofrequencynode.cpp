@@ -36,7 +36,7 @@ void NoteToFrequencyNode::inputsUpdated( qint64 pTimeStamp )
 
 	m += ( float( Bend - 8192 ) / 8192.0f ) * ( Range / 100.0f );
 
-	float	fm = 440.0 * std::powf( 2.0f, float( m - 69 ) / 12.0f );
+	float	fm = 440.0 * powf( 2.0f, float( m - 69 ) / 12.0f );
 
 	if( mValOutput->variant().toFloat() != fm )
 	{

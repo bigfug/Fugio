@@ -38,12 +38,12 @@ FrequencyBandsNode::FrequencyBandsNode( QSharedPointer<fugio::NodeInterface> pNo
 
 }
 
-float getBandWidth( float timeSize, float sampleRate )
+float FrequencyBandsNode::getBandWidth( float timeSize, float sampleRate )
 {
 	return( ( 2.0f / timeSize ) * ( sampleRate / 2.0f ) );
 }
 
-int freqToIndex( int timeSize, int sampleRate, int freq)
+int FrequencyBandsNode::freqToIndex( int timeSize, int sampleRate, int freq)
 {
   // special case: freq is lower than the bandwidth of spectrum[0]
   if ( freq < getBandWidth( timeSize, sampleRate )/2 ) return 0;
@@ -119,3 +119,4 @@ void FrequencyBandsNode::inputsUpdated( qint64 pTimeStamp )
 		pinUpdated( mPinOutputBands );
 	}
 }
+

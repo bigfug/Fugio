@@ -20,7 +20,7 @@ class VCFNode : public fugio::NodeControlBase, public fugio::AudioProducerInterf
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE VCFNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE VCFNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~VCFNode( void ) {}
 
@@ -70,7 +70,22 @@ protected:
 
 		}
 
-		virtual ~AudioInstanceData( void ) {}
+		virtual ~AudioInstanceData( void )
+		{
+			if( mCutoffInstance )
+			{
+				delete mCutoffInstance;
+
+				mCutoffInstance = nullptr;
+			}
+
+			if( mResonanceInstance )
+			{
+				delete mResonanceInstance;
+
+				mResonanceInstance = nullptr;
+			}
+		}
 
 		virtual void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers ) Q_DECL_OVERRIDE
 		{
@@ -117,6 +132,5 @@ protected:
 	float										 mCutoff;
 	float										 mResonance;
 };
-
 
 #endif // VCFNODE_H

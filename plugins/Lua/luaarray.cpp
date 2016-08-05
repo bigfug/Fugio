@@ -2,6 +2,7 @@
 
 #include <fugio/core/list_interface.h>
 #include <fugio/core/array_interface.h>
+#include <fugio/core/array_list_interface.h>
 
 #include "luaplugin.h"
 
@@ -57,6 +58,18 @@ int LuaArray::luaGet( lua_State *L )
 
 	int							 LstIdx = luaL_checkinteger( L, 2 );
 
+	fugio::ArrayListInterface	*ArrInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+
+	if( ArrInt )
+	{
+		if( LstIdx < 1 || LstIdx > ArrInt->count() )
+		{
+			return( luaL_error( L, "List index out of bounds (asked for %d, size is %d)", LstIdx, ArrInt->count() ) );
+		}
+
+		return( pusharray( L, dynamic_cast<QObject *>( ArrInt->arrayIndex( LstIdx - 1 ) ), LstDat->mReadOnly ) );
+	}
+
 	fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( LstDat->mObject );
 
 	if( !LstInt )
@@ -72,6 +85,56 @@ int LuaArray::luaGet( lua_State *L )
 	return( LuaPlugin::pushVariant( L, LstInt->listIndex( LstIdx - 1 ) ) );
 }
 
+void LuaArray::pushFloatArray( lua_State *L, float *A, int LstIdx, int LstCnt )
+{
+	if( A )
+	{
+		if( lua_type( L, 3 ) == LUA_TTABLE )
+		{
+			for( int i = 1 ; i <= LstCnt ; i++ )
+			{
+				lua_rawgeti( L, 3, i );
+
+				if( lua_isnil( L, -1 ) )
+				{
+					lua_pop( L, 1 );
+
+					break;
+				}
+
+				A[ ( LstIdx * LstCnt ) + i - 1 ] = lua_tonumber( L, -1 );
+
+				lua_pop( L, 1 );
+			}
+		}
+	}
+}
+
+void LuaArray::pushIntArray( lua_State *L, float *A, int LstIdx, int LstCnt )
+{
+	if( A )
+	{
+		if( lua_type( L, 3 ) == LUA_TTABLE )
+		{
+			for( int i = 1 ; i <= LstCnt ; i++ )
+			{
+				lua_rawgeti( L, 3, i );
+
+				if( lua_isnil( L, -1 ) )
+				{
+					lua_pop( L, 1 );
+
+					break;
+				}
+
+				A[ ( LstIdx * LstCnt ) + i - 1 ] = lua_tointeger( L, -1 );
+
+				lua_pop( L, 1 );
+			}
+		}
+	}
+}
+
 int LuaArray::luaSet( lua_State *L )
 {
 	LuaArrayUserData			*LstDat = checkarray( L );
@@ -83,6 +146,13 @@ int LuaArray::luaSet( lua_State *L )
 	}
 
 	luaL_checkany( L, 3 );
+
+	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+
+	if( ArLInt )
+	{
+		return( luaL_error( L, "Can't set data in array list (yet)" ) );
+	}
 
 	fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
 
@@ -159,31 +229,30 @@ int LuaArray::luaSet( lua_State *L )
 			return( 0 );
 		}
 
+		if( ArrInt->type() == QMetaType::QPointF || ArrInt->type() == QMetaType::QVector2D )
+		{
+			pushFloatArray( L, (float *)ArrInt->array(), LstIdx, 2 );
+
+			return( 0 );
+		}
+
 		if( ArrInt->type() == QMetaType::QVector3D )
 		{
-			float		*A = (float *)ArrInt->array();
+			pushFloatArray( L, (float *)ArrInt->array(), LstIdx, 3 );
 
-			if( A )
-			{
-				if( lua_type( L, 3 ) == LUA_TTABLE )
-				{
-					for( int i = 1 ; i <= 3 ; i++ )
-					{
-						lua_rawgeti( L, 3, i );
+			return( 0 );
+		}
 
-						if( lua_isnil( L, -1 ) )
-						{
-							lua_pop( L, 1 );
+		if( ArrInt->type() == QMetaType::QVector4D || ArrInt->type() == QMetaType::QColor )
+		{
+			pushFloatArray( L, (float *)ArrInt->array(), LstIdx, 4 );
 
-							break;
-						}
+			return( 0 );
+		}
 
-						A[ ( LstIdx * 3 ) + i - 1 ] = lua_tonumber( L, -1 );
-
-						lua_pop( L, 1 );
-					}
-				}
-			}
+		if( ArrInt->type() == QMetaType::QMatrix4x4 )
+		{
+			pushFloatArray( L, (float *)ArrInt->array(), LstIdx, 16 );
 
 			return( 0 );
 		}
@@ -212,6 +281,15 @@ int LuaArray::luaLen( lua_State *L )
 {
 	LuaArrayUserData			*LstDat = checkarray( L );
 
+	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+
+	if( ArLInt )
+	{
+		lua_pushinteger( L, ArLInt->count() );
+
+		return( 1 );
+	}
+
 	fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( LstDat->mObject );
 
 	if( LstInt )
@@ -236,6 +314,13 @@ int LuaArray::luaLen( lua_State *L )
 int LuaArray::luaToArray( lua_State *L )
 {
 	LuaArrayUserData			*ArrDat = checkarray( L );
+
+	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( ArrDat->mObject );
+
+	if( ArLInt )
+	{
+		return( luaL_error( L, "Can't toArray from array list" ) );
+	}
 
 	fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( ArrDat->mObject );
 
@@ -310,6 +395,58 @@ int LuaArray::luaToArray( lua_State *L )
 
 			return( 1 );
 		}
+
+		if( ArrInt->type() == QMetaType::QPoint )
+		{
+			const int	*A = (const int *)ArrInt->array();
+
+			lua_newtable( L );
+
+			if( ArrInt->size() == 1 )
+			{
+				for( int i = 0 ; i < ArrInt->count() ; i++ )
+				{
+					lua_newtable( L );
+
+					for( int j = 0 ; j < 2 ; j++ )
+					{
+						lua_pushinteger( L, A[ ( i * 2 ) + j ] );
+
+						lua_rawseti( L, -2, j + 1 );
+					}
+
+					lua_rawseti( L, -2, i + 1 );
+				}
+			}
+
+			return( 1 );
+		}
+
+		if( ArrInt->type() == QMetaType::QPointF )
+		{
+			const float	*A = (const float *)ArrInt->array();
+
+			lua_newtable( L );
+
+			if( ArrInt->size() == 1 )
+			{
+				for( int i = 0 ; i < ArrInt->count() ; i++ )
+				{
+					lua_newtable( L );
+
+					for( int j = 0 ; j < 2 ; j++ )
+					{
+						lua_pushnumber( L, A[ ( i * 2 ) + j ] );
+
+						lua_rawseti( L, -2, j + 1 );
+					}
+
+					lua_rawseti( L, -2, i + 1 );
+				}
+			}
+
+			return( 1 );
+		}
 	}
 
 	fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( ArrDat->mObject );
@@ -335,6 +472,13 @@ int LuaArray::luaResize( lua_State *L )
 {
 	LuaArrayUserData			*LstDat = checkarray( L );
 	int							 LstSiz = luaL_checkinteger( L, 2 );
+
+	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+
+	if( ArLInt )
+	{
+		return( luaL_error( L, "Can't resize array list (yet)" ) );
+	}
 
 	fugio::ArrayInterface		*LstInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
 
@@ -371,6 +515,13 @@ int LuaArray::luaSetType( lua_State *L )
 	LuaArrayUserData		*LstDat = checkarray( L );
 	const char				*LstTyp = lua_tostring( L, 2 );
 
+	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+
+	if( ArLInt )
+	{
+		return( luaL_error( L, "Can't setType on array list" ) );
+	}
+
 	fugio::ArrayInterface		*LstInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
 
 	if( !LstInt )
@@ -395,23 +546,29 @@ int LuaArray::luaSetType( lua_State *L )
 		LstInt->setStride( sizeof( int ) );
 		LstInt->setSize( 1 );
 	}
+	else if( strcmp( LstTyp, "point" ) == 0 )
+	{
+		LstInt->setType( QMetaType::QPointF );
+		LstInt->setStride( sizeof( float ) * 2 );
+		LstInt->setSize( 1 );
+	}
 	else if( strcmp( LstTyp, "vec3" ) == 0 )
 	{
 		LstInt->setType( QMetaType::QVector3D );
 		LstInt->setStride( sizeof( float ) * 3 );
-		LstInt->setSize( 3 );
+		LstInt->setSize( 1 );
 	}
 	else if( strcmp( LstTyp, "vec4" ) == 0 )
 	{
 		LstInt->setType( QMetaType::QVector4D );
 		LstInt->setStride( sizeof( float ) * 4 );
-		LstInt->setSize( 4 );
+		LstInt->setSize( 1 );
 	}
 	else if( strcmp( LstTyp, "mat4" ) == 0 )
 	{
 		LstInt->setType( QMetaType::QMatrix4x4 );
 		LstInt->setStride( sizeof( float ) * 4 * 4 );
-		LstInt->setSize( 4 * 4 );
+		LstInt->setSize( 1 );
 	}
 	else
 	{

@@ -65,7 +65,10 @@ SOURCES += \
     bytearraylistpin.cpp \
     switchnode.cpp \
     floatthresholdnode.cpp \
-    smoothnode.cpp
+    smoothnode.cpp \
+    autorangenode.cpp \
+    variantlistpin.cpp \
+    arraylistpin.cpp
 
 HEADERS += \
     stringpin.h \
@@ -119,7 +122,12 @@ HEADERS += \
     bytearraylistpin.h \
     switchnode.h \
     floatthresholdnode.h \
-    smoothnode.h
+    smoothnode.h \
+    autorangenode.h \
+    variantlistpin.h \
+    ../../include/fugio/core/array_list_interface.h \
+    arraylistpin.h \
+    arraylistentry.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

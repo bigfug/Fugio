@@ -81,6 +81,30 @@ QSharedPointer<DevicePortAudio> DevicePortAudio::newDevice( PaDeviceIndex pDevId
 	return( NewDev );
 }
 
+QString DevicePortAudio::deviceName( PaDeviceIndex pDevIdx )
+{
+	if( pDevIdx == paNoDevice )
+	{
+		return( QString() );
+	}
+
+	const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( pDevIdx );
+
+	if( !DevInf )
+	{
+		return( QString() );
+	}
+
+	const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
+
+	if( !HstInf )
+	{
+		return( QString() );
+	}
+
+	return( QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name ) );
+}
+
 QStringList DevicePortAudio::deviceOutputNameList()
 {
 	QStringList		DevLst;
@@ -91,12 +115,12 @@ QStringList DevicePortAudio::deviceOutputNameList()
 	{
 		const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( DevIdx );
 
-		const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
-
-		if( DevInf->maxOutputChannels > 0 )
+		if( DevInf->maxOutputChannels <= 0 )
 		{
-			DevLst << QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name );
+			continue;
 		}
+
+		DevLst << deviceName( DevIdx );
 	}
 
 	return( DevLst );
@@ -104,21 +128,10 @@ QStringList DevicePortAudio::deviceOutputNameList()
 
 QString DevicePortAudio::deviceOutputDefaultName()
 {
-	PaDeviceIndex		 DevIdx = Pa_GetDefaultOutputDevice();
-
-	if( DevIdx == paNoDevice )
-	{
-		return( QString() );
-	}
-
-	const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( DevIdx );
-
-	const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
-
-	return( QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name ) );
+	return( deviceName( Pa_GetDefaultOutputDevice() ) );
 }
 
-PaDeviceIndex DevicePortAudio::deviceOutputNameIndex(const QString &pDeviceName)
+PaDeviceIndex DevicePortAudio::deviceOutputNameIndex( const QString &pDeviceName )
 {
 	PaDeviceIndex	DevCnt = Pa_GetDeviceCount();
 
@@ -131,9 +144,7 @@ PaDeviceIndex DevicePortAudio::deviceOutputNameIndex(const QString &pDeviceName)
 			continue;
 		}
 
-		const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
-
-		if( pDeviceName ==  QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name ) )
+		if( pDeviceName == deviceName( DevIdx ) )
 		{
 			return( DevIdx );
 		}
@@ -152,11 +163,9 @@ QStringList DevicePortAudio::deviceInputNameList()
 	{
 		const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( DevIdx );
 
-		const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
-
 		if( DevInf->maxInputChannels > 0 )
 		{
-			DevLst << QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name );
+			DevLst << deviceName( DevIdx );
 		}
 	}
 
@@ -165,18 +174,7 @@ QStringList DevicePortAudio::deviceInputNameList()
 
 QString DevicePortAudio::deviceInputDefaultName()
 {
-	PaDeviceIndex		 DevIdx = Pa_GetDefaultInputDevice();
-
-	if( DevIdx == paNoDevice )
-	{
-		return( QString() );
-	}
-
-	const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( DevIdx );
-
-	const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
-
-	return( QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name ) );
+	return( deviceName( Pa_GetDefaultInputDevice() ) );
 }
 
 PaDeviceIndex DevicePortAudio::deviceInputNameIndex( const QString &pDeviceName )
@@ -192,9 +190,7 @@ PaDeviceIndex DevicePortAudio::deviceInputNameIndex( const QString &pDeviceName 
 			continue;
 		}
 
-		const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
-
-		if( pDeviceName ==  QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name ) )
+		if( pDeviceName == deviceName( DevIdx ) )
 		{
 			return( DevIdx );
 		}
@@ -202,18 +198,6 @@ PaDeviceIndex DevicePortAudio::deviceInputNameIndex( const QString &pDeviceName 
 
 	return( paNoDevice );
 }
-
-//void DevicePortAudio::delDevice( DevicePortAudio *pDelDev )
-//{
-//	if( pDelDev )
-//	{
-//		//gApp->devices().unregisterDevice( pDelDev );
-
-//		mDeviceList.removeAll( pDelDev );
-
-//		delete pDelDev;
-//	}
-//}
 
 #endif
 
@@ -249,12 +233,14 @@ DevicePortAudio::DevicePortAudio( PaDeviceIndex pDeviceIndex )
 		mOutputChannelCount = DevInf->maxOutputChannels;
 		mOutputSampleRate   = AUDIO_DEFAULT_SAMPLE_RATE;
 		mOutputTimeLatency  = DevInf->defaultLowOutputLatency;
-		mOutputAudioOffset  = ( PortAudioPlugin::instance()->fugio()->timestamp() * mOutputSampleRate ) / 1000;
+		mOutputAudioOffset  = 0;
 	}
 }
+#endif
 
 DevicePortAudio::~DevicePortAudio( void )
 {
+#if defined( PORTAUDIO_SUPPORTED )
 	if( mStreamInput )
 	{
 		deviceInputClose();
@@ -264,8 +250,9 @@ DevicePortAudio::~DevicePortAudio( void )
 	{
 		deviceOutputClose();
 	}
-}
 #endif
+}
+
 void DevicePortAudio::setTimeOffset( qreal pTimeOffset )
 {
 	Q_UNUSED( pTimeOffset )
@@ -277,6 +264,7 @@ void DevicePortAudio::setTimeOffset( qreal pTimeOffset )
 
 fugio::AudioInstanceBase *DevicePortAudio::audioAllocInstance( qreal pSampleRate, AudioSampleFormat pSampleFormat, int pChannels )
 {
+#if defined( PORTAUDIO_SUPPORTED )
 	if( !mStreamInput )
 	{
 		const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( mDeviceIndex );
@@ -300,9 +288,15 @@ fugio::AudioInstanceBase *DevicePortAudio::audioAllocInstance( qreal pSampleRate
 		{
 			AudioInstanceData		*AID = new AudioInstanceData( DevAud, pSampleRate, pSampleFormat, pChannels );
 
+			if( AID )
+			{
+				AID->mDeviceIndex = mDeviceIndex;
+			}
+
 			return( AID );
 		}
 	}
+#endif
 
 	return( nullptr );
 }
@@ -417,7 +411,7 @@ void DevicePortAudio::deviceOutputOpen( const PaDeviceInfo *DevInf )
 
 	mOutputSampleRate   = StreamInfo->sampleRate;
 	mOutputTimeLatency  = StreamInfo->outputLatency;
-	mOutputAudioOffset  = ( PortAudioPlugin::instance()->fugio()->timestamp() * mOutputSampleRate ) / 1000;
+	mOutputAudioOffset  = 0;
 
 	//mOutputAudioOffset -= ( mOutputTimeLatency * mOutputSampleRate ) / 1000;
 
@@ -678,6 +672,7 @@ qreal DevicePortAudio::outputSampleRate() const
 
 void DevicePortAudio::addOutput( PortAudioOutputNode *pOutput )
 {
+#if defined( PORTAUDIO_SUPPORTED )
 	if( mProducers.isEmpty() && mOutputChannelCount )
 	{
 		const PaDeviceInfo	*DevInf = Pa_GetDeviceInfo( mDeviceIndex );
@@ -689,6 +684,7 @@ void DevicePortAudio::addOutput( PortAudioOutputNode *pOutput )
 
 		deviceOutputOpen( DevInf );
 	}
+#endif
 
 	mProducerMutex.lock();
 
@@ -705,10 +701,12 @@ void DevicePortAudio::remOutput( PortAudioOutputNode *pOutput )
 
 	mProducerMutex.unlock();
 
+#if defined( PORTAUDIO_SUPPORTED )
 	if( mProducers.isEmpty() )
 	{
 		deviceOutputClose();
 	}
+#endif
 }
 
 int DevicePortAudio::audioChannels() const
@@ -728,5 +726,14 @@ AudioSampleFormat DevicePortAudio::audioSampleFormat() const
 
 qint64 DevicePortAudio::audioLatency() const
 {
+#if defined( PORTAUDIO_SUPPORTED )
 	return( ( mInputSampleRate * mInputTimeLatency ) / 1000.0 );
+#else
+	return( 0 );
+#endif
+}
+
+bool DevicePortAudio::isValid( AudioInstanceBase *pInstance ) const
+{
+	return( pInstance ? pInstance->isValid() : false );
 }

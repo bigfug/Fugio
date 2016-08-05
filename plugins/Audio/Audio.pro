@@ -31,7 +31,8 @@ SOURCES += audioplugin.cpp \
     audiofilternode.cpp \
     audiofilterdisplay.cpp \
     vcfnode.cpp \
-    mononode.cpp
+    mononode.cpp \
+    ringmodulatornode.cpp
 
 HEADERS += audioplugin.h\
     ../../include/fugio/nodecontrolbase.h \
@@ -51,7 +52,8 @@ HEADERS += audioplugin.h\
     audiofilterdisplay.h \
     vcfnode.h \
     mononode.h \
-    ../../include/fugio/audio/audio_instance_base.h
+    ../../include/fugio/audio/audio_instance_base.h \
+    ringmodulatornode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

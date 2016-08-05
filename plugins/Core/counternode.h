@@ -15,14 +15,14 @@ class CounterNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE CounterNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE CounterNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~CounterNode( void ) {}
 
 	// NodeControlInterface interface
 
 public:
-	virtual void inputsUpdated(qint64 pTimeStamp) Q_DECL_OVERRIDE;
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputTrigger;

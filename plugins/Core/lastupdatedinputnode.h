@@ -15,7 +15,7 @@ class LastUpdatedInputNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE LastUpdatedInputNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE LastUpdatedInputNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~LastUpdatedInputNode( void ) {}
 

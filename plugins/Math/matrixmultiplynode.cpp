@@ -7,7 +7,7 @@
 #include <fugio/math/uuid.h>
 #include <fugio/context_interface.h>
 
-MatrixMultiplyNode::MatrixMultiplyNode(QSharedPointer<fugio::NodeInterface> pNode)
+MatrixMultiplyNode::MatrixMultiplyNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
 	mPinMatrix = pinInput( "Matrix" );

@@ -25,11 +25,28 @@ void CompareNumbersNode::inputsUpdated( qint64 pTimeStamp )
 	qreal		v1 = variant( mPinInput1 ).toReal();
 	qreal		v2 = variant( mPinInput2 ).toReal();
 
-	mValEqual->setVariant( bool( v1 == v2 ) );
-	mValFuzzy->setVariant( qFuzzyCompare( v1, v2 ) );
-	mValHigher->setVariant( bool( v1 > v2 ) );
+	bool		Eq = bool( v1 == v2 );
+	bool		Fz = qFuzzyCompare( v1, v2 );
+	bool		Gt = bool( v1 > v2 );
 
-	pinUpdated( mPinEqual );
-	pinUpdated( mPinFuzzy );
-	pinUpdated( mPinHigher );
+	if( !pTimeStamp || Eq != mValEqual->variant().toBool() )
+	{
+		mValEqual->setVariant( Eq );
+
+		pinUpdated( mPinEqual );
+	}
+
+	if( !pTimeStamp || Fz != mValFuzzy->variant().toBool() )
+	{
+		mValFuzzy->setVariant( Fz );
+
+		pinUpdated( mPinFuzzy );
+	}
+
+	if( !pTimeStamp || Gt != mValHigher->variant().toBool() )
+	{
+		mValHigher->setVariant( Gt );
+
+		pinUpdated( mPinHigher );
+	}
 }

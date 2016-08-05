@@ -30,9 +30,10 @@ void ColourMaskNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::ImageInterface	*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
 
-	if( !SrcImg || SrcImg->size().isEmpty() )
+	if( !SrcImg || !SrcImg->isValid() )
 	{
 		mNode->setStatus( fugio::NodeInterface::Warning );
+		mNode->setStatusMessage( "Image is not valid" );
 
 		return;
 	}
@@ -40,8 +41,15 @@ void ColourMaskNode::inputsUpdated( qint64 pTimeStamp )
 	if( SrcImg->format() != fugio::ImageInterface::FORMAT_HSV8 )
 	{
 		mNode->setStatus( fugio::NodeInterface::Warning );
+		mNode->setStatusMessage( "Image must be HSV8" );
 
 		return;
+	}
+
+	if( mNode->status() != fugio::NodeInterface::Initialised )
+	{
+		mNode->setStatus( fugio::NodeInterface::Initialised );
+		mNode->setStatusMessage( QString() );
 	}
 
 	fugio::Performance	Perf( mNode, "inputsUpdated", pTimeStamp );

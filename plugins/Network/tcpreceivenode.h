@@ -19,7 +19,7 @@ class TCPReceiveNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE TCPReceiveNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE TCPReceiveNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~TCPReceiveNode( void ) {}
 

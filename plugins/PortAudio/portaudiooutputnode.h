@@ -40,7 +40,7 @@ public:
 
 	virtual QWidget *gui() Q_DECL_OVERRIDE;
 
-	virtual void inputsUpdated(qint64 pTimeStamp) Q_DECL_OVERRIDE;
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
 	virtual void loadSettings( QSettings &pSettings ) Q_DECL_OVERRIDE;
 	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
@@ -108,6 +108,8 @@ protected slots:
 
 	void clicked( void );
 
+	void rebuildDeviceList( void );
+
 private:
 	QSharedPointer<fugio::PinInterface>	 mPinInputAudio;
 	QSharedPointer<fugio::PinInterface>	 mPinInputVolume;
@@ -117,6 +119,7 @@ private:
 	mutable QMutex						 mProducerMutex;
 	fugio::AudioInstanceBase			*mInstance;
 
+	QStringList							 mDeviceList;
 	QString								 mDeviceName;
 
 	float								 mVolume;

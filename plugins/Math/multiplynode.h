@@ -17,13 +17,13 @@ class MultiplyNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE MultiplyNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE MultiplyNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~MultiplyNode( void ) {}
 
 	// NodeControlInterface interface
 
-	virtual void inputsUpdated(qint64 pTimeStamp);
+	virtual void inputsUpdated( qint64 pTimeStamp );
 
 	virtual QList<QUuid> pinAddTypesInput() const;
 

@@ -44,12 +44,12 @@ signals:
 	void listenState( bool pChecked );
 
 private:
-	static unsigned short CombineBytes(unsigned char First, unsigned char Second)
+	static unsigned short CombineBytes( unsigned char LSB, unsigned char MSB )
 	{
 		unsigned short _14bit;
-		_14bit = (unsigned short)Second;
+		_14bit = (unsigned short)MSB;
 		_14bit <<= 7;
-		_14bit |= (unsigned short)First;
+		_14bit |= (unsigned short)LSB;
 		return(_14bit);
 	}
 
@@ -71,6 +71,15 @@ private:
 	void createMidiPin(MidiPinPair &MPP, const QString &pName, const QUuid &pPinType);
 
 	void pinToMidiEntry( QSharedPointer<fugio::PinInterface> P, MidiPinPair &MPP );
+
+	typedef enum RPNState
+	{
+		NONE,
+		RPN,
+		NRPN
+	} RPNState;
+
+	void setRPNControl( quint16 pValue );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputMidi;
@@ -94,6 +103,11 @@ protected:
 	MidiPinPair									 mNotesActive;
 	MidiPinPair									 mNoteValue;
 	MidiPinPair									 mPitchBend;
+
+	RPNState									 mRPNState;
+	int											 mRPNCount;
+	quint8										 mRPNParamMSB, mRPNParamLSB;
+	quint8										 mRPNValueMSB, mRPNValueLSB;
 };
 
 #endif // CHANNELINPUTNODE_H

@@ -357,3 +357,26 @@ void DeviceMidi::output( const QVector<fugio::MidiEvent> &pEvents )
 		mEvents << PmEvent{ E.message, E.timestamp };
 	}
 }
+
+void DeviceMidi::output( const int32_t *pEvents, int pCount )
+{
+	if( !mStreamOutput )
+	{
+		return;
+	}
+
+	for( int i = 0 ; i < pCount ; i++ )
+	{
+		mEvents << PmEvent{ pEvents[ i ], 0 };
+	}
+}
+
+void DeviceMidi::outputSysEx( const QByteArray pArray )
+{
+	if( !mStreamOutput )
+	{
+		return;
+	}
+
+	mSysExBuffer << pArray;
+}

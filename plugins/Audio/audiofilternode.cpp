@@ -35,12 +35,30 @@ bool AudioFilterNode::initialise()
 
 	connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(onContextFrame(qint64)) );
 
+	mInstanceDataMutex.lock();
+
+	for( AudioInstanceData *AID : mInstanceData )
+	{
+		AID->setEnabed( true );
+	}
+
+	mInstanceDataMutex.unlock();
+
 	return( true );
 }
 
 bool AudioFilterNode::deinitialise()
 {
 	disconnect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(onContextFrame(qint64)) );
+
+	mInstanceDataMutex.lock();
+
+	for( AudioInstanceData *AID : mInstanceData )
+	{
+		AID->setEnabed( false );
+	}
+
+	mInstanceDataMutex.unlock();
 
 	return( true );
 }
@@ -106,34 +124,6 @@ fugio::AudioInstanceBase *AudioFilterNode::audioAllocInstance( qreal pSampleRate
 
 	return( InsDat );
 }
-
-//void AudioFilterNode::audioFreeInstance( void *pInstanceData )
-//{
-//	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
-
-//	if( InsDat )
-//	{
-//		mInstanceDataMutex.lock();
-
-//		mInstanceData.removeAll( InsDat );
-
-//		mInstanceDataMutex.unlock();
-
-//		if( InsDat->mAudIns )
-//		{
-//			fugio::AudioProducerInterface		*IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput );
-
-//			if( IAP )
-//			{
-//				IAP->audioFreeInstance( InsDat->mAudIns );
-//			}
-//		}
-
-//		InsDat->mAudDat.clear();
-
-//		delete InsDat;
-//	}
-//}
 
 void AudioFilterNode::onContextFrame( qint64 pTimeStamp )
 {
@@ -302,12 +292,16 @@ QWidget *AudioFilterNode::gui()
 
 int AudioFilterNode::audioChannels() const
 {
-	return( 0 );
+	fugio::AudioProducerInterface		*IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput );
+
+	return( IAP ? IAP->audioChannels() : 0 );
 }
 
 qreal AudioFilterNode::audioSampleRate() const
 {
-	return( 48000 );
+	fugio::AudioProducerInterface		*IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput );
+
+	return( IAP ? IAP->audioSampleRate() : 0 );
 }
 
 fugio::AudioSampleFormat AudioFilterNode::audioSampleFormat() const
@@ -317,5 +311,7 @@ fugio::AudioSampleFormat AudioFilterNode::audioSampleFormat() const
 
 qint64 AudioFilterNode::audioLatency() const
 {
-	return( 0 );
+	fugio::AudioProducerInterface		*IAP = input<fugio::AudioProducerInterface *>( mPinAudioInput );
+
+	return( IAP ? IAP->audioLatency() : 0 );
 }

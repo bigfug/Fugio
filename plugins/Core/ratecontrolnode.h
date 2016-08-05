@@ -15,7 +15,7 @@ class RateControlNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE RateControlNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE RateControlNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~RateControlNode( void ) {}
 

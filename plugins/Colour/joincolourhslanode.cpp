@@ -90,7 +90,7 @@ void JoinColourHSLANode::inputsUpdated( qint64 pTimeStamp )
 
 	QColor		C = QColor::fromHslF( H, S, L, A );
 
-	if( C == mColour )
+	if( !C.isValid() || C == mColour )
 	{
 		return;
 	}
@@ -101,3 +101,4 @@ void JoinColourHSLANode::inputsUpdated( qint64 pTimeStamp )
 
 	mNode->context()->pinUpdated( mPinOutputColour );
 }
+

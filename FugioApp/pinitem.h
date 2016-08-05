@@ -109,7 +109,7 @@ protected slots:
 
 private:
 	ContextView								*mContextView;
-	QSharedPointer<fugio::PinInterface>			 mPin;
+	QSharedPointer<fugio::PinInterface>		 mPin;
 	QList<LinkItem *>						 mLinks;
 	LinkItem								*mLink;
 	QUuid									 mPinId;

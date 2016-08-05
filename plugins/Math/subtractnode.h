@@ -17,13 +17,13 @@ class SubtractNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE SubtractNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE SubtractNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~SubtractNode( void ) {}
 
 	// NodeControlInterface interface
 
-	virtual void inputsUpdated(qint64 pTimeStamp);
+	virtual void inputsUpdated( qint64 pTimeStamp );
 
 	virtual QList<QUuid> pinAddTypesInput() const;
 

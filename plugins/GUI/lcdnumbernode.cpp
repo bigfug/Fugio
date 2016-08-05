@@ -2,7 +2,7 @@
 
 #include <QLCDNumber>
 
-LcdNumberNode::LcdNumberNode(QSharedPointer<fugio::NodeInterface> pNode)
+LcdNumberNode::LcdNumberNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mValInput( 0 )
 {
 	mPinInput = pinInput( "Number" );

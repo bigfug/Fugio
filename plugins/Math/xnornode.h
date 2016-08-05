@@ -17,13 +17,13 @@ class XnorNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE XnorNode( QSharedPointer<fugio::NodeInterface> pNode);
+	Q_INVOKABLE XnorNode( QSharedPointer<fugio::NodeInterface> pNode );
 
 	virtual ~XnorNode( void ) {}
 
 	// NodeControlInterface interface
 
-	virtual void inputsUpdated(qint64 pTimeStamp);
+	virtual void inputsUpdated( qint64 pTimeStamp );
 
 	virtual QList<QUuid> pinAddTypesInput() const;
 

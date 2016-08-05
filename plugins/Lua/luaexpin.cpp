@@ -12,6 +12,7 @@
 #include <fugio/node_signals.h>
 #include <fugio/core/array_interface.h>
 #include <fugio/core/list_interface.h>
+#include <fugio/core/array_list_interface.h>
 
 #include "luaplugin.h"
 #include "luaarray.h"
@@ -236,6 +237,15 @@ int LuaExPin::luaPinGetValue( lua_State *L )
 		if( PinGetFnc )
 		{
 			return( PinGetFnc( P->localId(), L ) );
+		}
+
+		fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( PinCtl->qobject() );
+
+		if( ArLInt )
+		{
+			LuaArray::pusharray( L, PinCtl->qobject(), P->direction() == PIN_INPUT );
+
+			return( 1 );
 		}
 
 		fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( PinCtl->qobject() );

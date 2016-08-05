@@ -88,6 +88,8 @@ private:
 	static int luaWidth( lua_State *L );
 	static int luaHeight( lua_State *L );
 
+	static int luaToArray( lua_State *L );
+
 private:
 	static const luaL_Reg					mLuaInstance[];
 	static const luaL_Reg					mLuaMethods[];

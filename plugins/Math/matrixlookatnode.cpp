@@ -5,7 +5,7 @@
 #include <fugio/core/uuid.h>
 #include <fugio/math/uuid.h>
 
-MatrixLookAtNode::MatrixLookAtNode(QSharedPointer<fugio::NodeInterface> pNode)
+MatrixLookAtNode::MatrixLookAtNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
 	mOutputMatrix = pinOutput<fugio::VariantInterface *>( "Matrix", mPinOutputMatrix, PID_MATRIX4 );

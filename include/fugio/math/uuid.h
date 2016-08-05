@@ -54,4 +54,6 @@
 
 #define NID_RADIANS_TO_DEGREES	(QUuid("{10dad119-9424-4e41-9a5a-2a6bc6b69348}"))
 
+#define NID_MINMAX				(QUuid("{0e884852-1a9f-44d5-a053-52b09de6c724}"))
+
 #endif // MATH_GLOBAL_H

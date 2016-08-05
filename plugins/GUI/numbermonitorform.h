@@ -21,7 +21,12 @@ public slots:
 	void setNodeName( const QString &pName );
 
 protected:
-	virtual void paintEvent( QPaintEvent *pEvent );
+	virtual void paintEvent( QPaintEvent *pEvent ) Q_DECL_OVERRIDE;
+
+	void contextMenuEvent( QContextMenuEvent *pEvent ) Q_DECL_OVERRIDE;
+
+private slots:
+	void saveImage( void );
 
 private:
 	Ui::NumberMonitorForm *ui;
@@ -30,6 +35,7 @@ private:
 	int										 mIndex;
 	double									 mMin, mMax;
 	QVector<int>							 mY;
+	QString									 mSaveImageDir;
 };
 
 #endif // NUMBERMONITORFORM_H

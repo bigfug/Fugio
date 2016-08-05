@@ -22,15 +22,18 @@ void SplitColourRGBANode::inputsUpdated( qint64 pTimeStamp )
 {
 	Q_UNUSED( pTimeStamp )
 
-	fugio::ColourInterface			*V;
 	QColor							 C;
 
-	if( ( V = input<fugio::ColourInterface *>( mPinInput ) ) == 0 )
-	{
-		return;
-	}
+	fugio::ColourInterface			*ColInt = input<fugio::ColourInterface *>( mPinInput );
 
-	C = V->colour();
+	if( ColInt )
+	{
+		C = ColInt->colour();
+	}
+	else
+	{
+		C = variant( mPinInput ).value<QColor>();
+	}
 
 	if( mOutR->variant().toFloat() != C.redF() )
 	{
