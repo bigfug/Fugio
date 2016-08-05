@@ -38,6 +38,8 @@ bool PortAudioInputNode::initialise()
 
 	return( false );
 #else
+	audioDeviceSelected( mDeviceName );
+
 	return( true );
 #endif
 }
@@ -81,7 +83,7 @@ void PortAudioInputNode::rebuildDeviceList()
 
 void PortAudioInputNode::audioDeviceSelected( const QString &pDeviceName )
 {
-	if( pDeviceName == mDeviceName )
+	if( pDeviceName == mDeviceName && mPortAudio )
 	{
 		return;
 	}
