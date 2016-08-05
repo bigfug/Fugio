@@ -108,6 +108,8 @@ protected slots:
 
 	void clicked( void );
 
+	void rebuildDeviceList( void );
+
 private:
 	QSharedPointer<fugio::PinInterface>	 mPinInputAudio;
 	QSharedPointer<fugio::PinInterface>	 mPinInputVolume;
@@ -117,6 +119,7 @@ private:
 	mutable QMutex						 mProducerMutex;
 	fugio::AudioInstanceBase			*mInstance;
 
+	QStringList							 mDeviceList;
 	QString								 mDeviceName;
 
 	float								 mVolume;
