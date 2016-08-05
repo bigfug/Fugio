@@ -18,6 +18,9 @@ VCFNode::VCFNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinResonance  = pinInput( "Resonance" );
 
 	mAudioOutput = pinOutput<fugio::AudioProducerInterface *>( "Audio", mPinAudioOutput, PID_AUDIO );
+
+	mPinCutoff->setValue( 0.125 );
+	mPinResonance->setValue( 0.5 );
 }
 
 bool VCFNode::initialise()
@@ -284,6 +287,11 @@ void VCFNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOf
 
 	for( int c = pChannelOffset ; c < pChannelCount ; c++ )
 	{
+		if( pInstanceData->mChnDat.size() <= c )
+		{
+			continue;
+		}
+
 		AudioChannelData	&ACD = pInstanceData->mChnDat[ c ];
 
 		float				*AudDst = reinterpret_cast<float **>( pBuffers )[ c ];
