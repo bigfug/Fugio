@@ -38,6 +38,11 @@ bool PortAudioOutputNode::initialise()
 	mNode->context()->registerPlayhead( this );
 
 #if defined( PORTAUDIO_SUPPORTED )
+	if( mDeviceName.isEmpty() )
+	{
+		mDeviceName = mDeviceList.at( 1 );
+	}
+
 	audioDeviceSelected( mDeviceName );
 
 	return( true );

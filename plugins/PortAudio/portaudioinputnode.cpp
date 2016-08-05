@@ -38,6 +38,11 @@ bool PortAudioInputNode::initialise()
 
 	return( false );
 #else
+	if( mDeviceName.isEmpty() )
+	{
+		mDeviceName = mDeviceList.at( 1 );
+	}
+
 	audioDeviceSelected( mDeviceName );
 
 	return( true );
