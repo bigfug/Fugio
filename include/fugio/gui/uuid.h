@@ -14,5 +14,6 @@
 #define NID_CHOICE					(QUuid("{dc9fd5b6-a7e3-43ef-8339-9769c4942318}"))
 #define NID_MAIN_WINDOW				(QUuid("{b05f6fa6-b727-4e93-8fe2-c98b142b34af}"))
 #define NID_STRING					(QUuid("{bafe42f7-0ea9-4809-8131-fdf46aef3be6}"))
+#define NID_GUI_DIAL				(QUuid("{02AFABAE-A99B-43D7-9FCD-252B45F4F989}"))
 
 #endif // GUIUUID_H

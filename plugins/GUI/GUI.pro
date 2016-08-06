@@ -37,7 +37,9 @@ SOURCES += \
     numbermonitorform.cpp \
     numbermonitornode.cpp \
     stringnode.cpp \
-    leditem.cpp
+    leditem.cpp \
+    dialnode.cpp \
+    dialwidget.cpp
 
 HEADERS += \
     floatnode.h \
@@ -60,7 +62,9 @@ HEADERS += \
     slidernode.h \
     mainwindownode.h \
     stringnode.h \
-    leditem.h
+    leditem.h \
+    dialnode.h \
+    dialwidget.h
 
 FORMS += \
     numbermonitorform.ui \
