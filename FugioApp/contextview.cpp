@@ -41,7 +41,8 @@
 bool ContextView::mShownWizard = false;
 
 ContextView::ContextView( QWidget *pParent ) :
-	QGraphicsView( pParent ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 )
+	QGraphicsView( pParent ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 ),
+	mScaleFactor( 1 ), mCurrentFactor( 1 )
 {
 	setScene( &mContextScene );
 
@@ -52,7 +53,8 @@ ContextView::ContextView( QWidget *pParent ) :
 	setAcceptDrops( true );
 
 	grabGesture( Qt::PinchGesture );
-	//grabGesture( Qt::PanGesture );
+	grabGesture( Qt::PanGesture );
+	grabGesture( Qt::SwipeGesture );
 
 	//connect( this, SIGNAL(rubberBandChanged(QRect,QPointF,QPointF)), this, SLOT(rubberBandChanged(QRect,QPointF,QPointF)) );
 
@@ -331,7 +333,7 @@ void ContextView::mouseDoubleClickEvent( QMouseEvent *pEvent )
 		}
 	}
 
-//	emit nodeInspection( 0 );
+	//	emit nodeInspection( 0 );
 
 	if( !itemAt( pEvent->pos() ) )
 	{
@@ -928,7 +930,7 @@ void ContextView::saveContext( QSettings &pSettings ) const
 
 	pSettings.endArray();
 
-/*
+	/*
 	pSettings.beginGroup( "groups" );
 
 	pSettings.setValue( "version", 2 );
@@ -2473,12 +2475,12 @@ void ContextView::ungroupSelected()
 		ungroup( NI );
 	}
 
-//	CmdUngroup	*CMD = new CmdUngroup( this, "", mNodeItemList, mGroupItemList, mNoteItemList );
+	//	CmdUngroup	*CMD = new CmdUngroup( this, "", mNodeItemList, mGroupItemList, mNoteItemList );
 
-//	if( CMD )
-//	{
-//		widget()->undoStack()->push( CMD );
-//	}
+	//	if( CMD )
+	//	{
+	//		widget()->undoStack()->push( CMD );
+	//	}
 
 	clearTempLists();
 }
@@ -2601,17 +2603,41 @@ bool ContextView::gestureEvent(QGestureEvent *pEvent)
 		pinchTriggered( static_cast<QPinchGesture *>( pinch ) );
 	}
 
+	if( QGesture *Swipe = pEvent->gesture( Qt::SwipeGesture ) )
+	{
+		swipeTriggered( static_cast<QSwipeGesture *>( Swipe ) );
+	}
+
 	return( true );
 }
 
 void ContextView::panTriggered( QPanGesture *pGesture )
 {
-	//qDebug() << pGesture->delta();
+	//qDebug() << "Pan:" << pGesture;
 }
 
 void ContextView::pinchTriggered( QPinchGesture *pGesture )
 {
-	zoom( pGesture->scaleFactor(), pGesture->centerPoint() );
+	QPinchGesture::ChangeFlags ChangeFlags = pGesture->changeFlags();
+
+	if( ChangeFlags & QPinchGesture::ScaleFactorChanged )
+	{
+		mCurrentFactor = pGesture->totalScaleFactor();
+	}
+
+	if( pGesture->state() == Qt::GestureFinished )
+	{
+		mScaleFactor *= mCurrentFactor;
+
+		mCurrentFactor = 1;
+	}
+
+	zoom( mCurrentFactor * mScaleFactor, pGesture->centerPoint() );
+}
+
+void ContextView::swipeTriggered(QSwipeGesture *pGesture)
+{
+	//qDebug() << "Swipe:" << pGesture;
 }
 
 void ContextView::wheelEvent( QWheelEvent *pEvent )
