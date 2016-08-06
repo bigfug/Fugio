@@ -196,6 +196,7 @@ private:
 	QGraphicsSimpleTextItem				*mLabelText;
 	QGraphicsRectItem					*mPinsItem;
 	QGraphicsProxyWidget				*mNodeGui;
+	QGraphicsItem						*mNodeItem;
 	QGraphicsEllipseItem				*mStatusItem;
 
 	QList<PinPair>						 mInputs;

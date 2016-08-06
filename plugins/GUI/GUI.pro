@@ -28,7 +28,6 @@ SOURCES += \
     lcdnumbernode.cpp \
     keyboardnode.cpp \
     lednode.cpp \
-    ledwidget.cpp \
     keyboarddialog.cpp \
     guiplugin.cpp \
     slidernode.cpp \
@@ -37,7 +36,8 @@ SOURCES += \
     choicenode.cpp \
     numbermonitorform.cpp \
     numbermonitornode.cpp \
-    stringnode.cpp
+    stringnode.cpp \
+    leditem.cpp
 
 HEADERS += \
     floatnode.h \
@@ -52,7 +52,6 @@ HEADERS += \
     numbermonitornode.h \
     keyboardnode.h \
     lednode.h \
-    ledwidget.h \
     keyboarddialog.h \
     guiplugin.h \
     choicenode.h \
@@ -60,7 +59,8 @@ HEADERS += \
     keyboardpin.h \
     slidernode.h \
     mainwindownode.h \
-    stringnode.h
+    stringnode.h \
+    leditem.h
 
 FORMS += \
     numbermonitorform.ui \

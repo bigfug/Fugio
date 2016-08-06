@@ -89,6 +89,11 @@ public:
 		return( this );
 	}
 
+	virtual QGraphicsItem *guiItem( void ) Q_DECL_OVERRIDE
+	{
+		return( 0 );
+	}
+
 	virtual QWidget *gui( void ) Q_DECL_OVERRIDE
 	{
 		return( 0 );
