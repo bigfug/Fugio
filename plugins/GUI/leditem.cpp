@@ -58,7 +58,7 @@ void LEDItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *pEvent)
 
 	if( C.isValid() && C != mColour )
 	{
-		mColour = C;
+		setColour( C );
 
 		emit colourChanged( mColour );
 	}
