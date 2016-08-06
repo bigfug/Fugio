@@ -655,7 +655,7 @@ void NodeItem::layoutPins()
 	const qreal		GuiWidth    = ( mNodeGui ? mNodeGui->size().width()  : ( mNodeItem ? ItemRect.width() : 0 ) );
 	const qreal		GuiHeight   = ( mNodeGui ? mNodeGui->size().height() : ( mNodeItem ? ItemRect.height() : 0 ) );
 	const qreal		LabelHeight = mLabelText->boundingRect().height();
-	const qreal		MaxWidth    = fugio::utils::roundUp( qMax( InputWidth + 5 + GuiWidth + 5 + OutputWidth, mLabelText->boundingRect().width() + 2 + ( mStatusItem ? LabelHeight + 2 : 0 ) ), 5 );
+	const qreal		MaxWidth    = fugio::utils::roundUp( qMax( ( InputWidth > 0 ? InputWidth + 5 : 0 ) + GuiWidth + ( OutputWidth > 0 ? 5 + OutputWidth : 0 ), mLabelText->boundingRect().width() + 2 + ( mStatusItem ? LabelHeight + 2 : 0 ) ), 5 );
 
 	prepareGeometryChange();
 
@@ -770,7 +770,7 @@ void NodeItem::layoutPins()
 	{
 		mPinsItem->show();
 
-		mPinsItem->setRect( 0, mLabelItem->boundingRect().height() - 1, 5 + MaxWidth + 5, 5 + qMax<qreal>( FM.height() * PinTotalIdx, fugio::utils::roundUp( GuiHeight + 2, 5 ) ) );
+		mPinsItem->setRect( 0, mLabelItem->boundingRect().height() - 1, 5 + MaxWidth + 5, 5 + qMax<qreal>( FM.height() * PinTotalIdx, fugio::utils::roundUp( GuiHeight + 2, 1 ) ) );
 
 		if( mNodeItem )
 		{
