@@ -9,6 +9,8 @@
 
 #include <fugio/midi/midi_input_interface.h>
 
+#include "devicemidi.h"
+
 FUGIO_NAMESPACE_BEGIN
 class VariantInterface;
 class MidiInterface;
@@ -51,17 +53,24 @@ public:
 	virtual void midiProcessInput( const fugio::MidiEvent *pMessages, quint32 pMessageCount ) Q_DECL_OVERRIDE;
 
 signals:
-	void deviceChanged( const QString &pDeviceName );
+	void midiDeviceChanged( const QString &pDeviceName );
 
 private slots:
-	void setDeviceName( const QString &pDeviceName );
+	void midiDeviceSelected( const QString &pDeviceName );
+
+	void rebuildDeviceList( void );
 
 private:
+	QStringList								 mDeviceList;
 	QString									 mDeviceName;
 	QSharedPointer<DeviceMidi>				 mDevice;
 
 	QSharedPointer<fugio::PinInterface>		 mPinMidi;
 	fugio::MidiInterface					*mValMidi;
+
+#if defined( PORTMIDI_SUPPORTED )
+	PmDeviceID								 mDeviceIndex;
+#endif
 };
 
 #endif // PORTMIDIINPUTNODE_H
