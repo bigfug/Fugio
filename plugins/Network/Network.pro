@@ -9,7 +9,7 @@ TEMPLATE = lib
 
 CONFIG += plugin c++11
 
-QT += gui widgets network
+QT += gui widgets network websockets
 
 CONFIG(debug,debug|release) {
 	DESTDIR = $$OUT_PWD/../../../deploy-debug-$$QMAKE_HOST.arch/plugins
@@ -30,7 +30,8 @@ SOURCES += networkplugin.cpp \
     udpsendrawnode.cpp \
     slipencodenode.cpp \
     slipdecodenode.cpp \
-    getnode.cpp
+    getnode.cpp \
+    websocketdataservernode.cpp
 
 HEADERS += networkplugin.h\
     ../../include/fugio/network/uuid.h \
@@ -44,7 +45,8 @@ HEADERS += networkplugin.h\
     udpsendrawnode.h \
     slipencodenode.h \
     slipdecodenode.h \
-    getnode.h
+    getnode.h \
+    websocketdataservernode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

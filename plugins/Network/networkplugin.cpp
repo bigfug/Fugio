@@ -23,6 +23,8 @@
 #include "slipdecodenode.h"
 #include "slipencodenode.h"
 
+#include "websocketdataservernode.h"
+
 QList<QUuid>	NodeControlBase::PID_UUID;
 
 NetworkPlugin *NetworkPlugin::mInstance = 0;
@@ -38,6 +40,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "UDP Send Raw", "Network", NID_UDP_SEND_RAW, &UDPSendRawNode::staticMetaObject ),
 	ClassEntry( "SLIP Encode", "Network", NID_SLIP_ENCODE, &SLIPEncodeNode::staticMetaObject ),
 	ClassEntry( "SLIP Decode", "Network", NID_SLIP_DECODE, &SLIPDecodeNode::staticMetaObject ),
+	ClassEntry( "WebSocket Data Server", "Network", NID_WEBSOCKET_DATA_SERVER, &WebSocketDataServerNode::staticMetaObject ),
 	ClassEntry()
 };
 
