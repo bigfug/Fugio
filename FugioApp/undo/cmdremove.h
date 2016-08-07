@@ -41,7 +41,7 @@ public:
 					{
 						const bool DstInData = pNodeList.contains( PD->node()->uuid() );
 
-						if( SrcInData != DstInData )
+						if( ( !SrcInData && !DstInData ) || SrcInData != DstInData )
 						{
 							mInternalLinkList.insert( Src, Dst );
 						}
