@@ -20,6 +20,8 @@ const luaL_Reg LuaArray::mLuaInstance[] =
 	{ "__len",		LuaArray::luaLen },
 	{ "array",		LuaArray::luaToArray },
 	{ "resize",		LuaArray::luaResize },
+	{ "reserve",	LuaArray::luaReserve },
+	{ "setCount",	LuaArray::luaSetCount },
 	{ "setType",	LuaArray::luaSetType },
 	{ 0, 0 }
 };
@@ -506,6 +508,74 @@ int LuaArray::luaResize( lua_State *L )
 	{
 		LstInt->setCount( LstSiz );
 	}
+
+	return( 0 );
+}
+
+int LuaArray::luaReserve( lua_State *L )
+{
+	LuaArrayUserData			*LstDat = checkarray( L );
+	int							 LstSiz = luaL_checkinteger( L, 2 );
+
+	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+
+	if( ArLInt )
+	{
+		return( luaL_error( L, "Can't reserve array list (yet)" ) );
+	}
+
+	fugio::ArrayInterface		*LstInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
+
+	if( !LstInt )
+	{
+		return( luaL_error( L, "No list" ) );
+	}
+
+	if( LstDat->mReadOnly )
+	{
+		return( luaL_error( L, "Can't reserve input list" ) );
+	}
+
+	if( LstSiz < 0 )
+	{
+		return( luaL_error( L, "Invalid list size: %d", LstSiz ) );
+	}
+
+	if( LstInt->type() == QMetaType::UnknownType )
+	{
+		return( luaL_error( L, "Array has unknown type" ) );
+	}
+
+	LstInt->reserve( LstSiz );
+
+	return( 0 );
+}
+
+int LuaArray::luaSetCount(lua_State *L)
+{
+	LuaArrayUserData		*LstDat = checkarray( L );
+	const int				 LstCnt = lua_tointeger( L, 2 );
+
+	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+
+	if( ArLInt )
+	{
+		return( luaL_error( L, "Can't setType on array list" ) );
+	}
+
+	fugio::ArrayInterface		*LstInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
+
+	if( !LstInt )
+	{
+		return( luaL_error( L, "No array" ) );
+	}
+
+	if( LstDat->mReadOnly )
+	{
+		return( luaL_error( L, "Can't set type on input array" ) );
+	}
+
+	LstInt->setCount( LstCnt );
 
 	return( 0 );
 }

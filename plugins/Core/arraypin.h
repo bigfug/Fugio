@@ -89,6 +89,11 @@ public:
 		return( mSize );
 	}
 
+	virtual void reserve( int pCount ) Q_DECL_OVERRIDE
+	{
+		mReserve = pCount;
+	}
+
 	virtual void setArray( void *pArray ) Q_DECL_OVERRIDE
 	{
 		mData = pArray;
@@ -106,7 +111,7 @@ public:
 			return( mData );
 		}
 
-		mArray.resize( mStride * mCount );
+		mArray.resize( mStride * qMax( mCount, mReserve ) );
 
 		return( mArray.data() );
 	}
@@ -192,6 +197,7 @@ private:
 	int					 mStride;
 	int					 mCount;
 	int					 mSize;
+	int					 mReserve;
 };
 
 #endif // ARRAYPIN_H

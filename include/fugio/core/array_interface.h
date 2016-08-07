@@ -25,6 +25,8 @@ public:
 
 	virtual int count( void ) const = 0;
 
+	virtual void reserve( int pCount ) = 0;
+
 	virtual void setSize( int pSize ) = 0;
 
 	virtual int size( void ) const = 0;

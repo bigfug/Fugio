@@ -140,6 +140,11 @@ void PortMidiOutputNode::onFrameEnd( qint64 pTimeStamp )
 			continue;
 		}
 
+		if( !P->isUpdated( pTimeStamp ) )
+		{
+			continue;
+		}
+
 		fugio::MidiInterface		*M = input<fugio::MidiInterface *>( P );
 
 		if( M )

@@ -3,7 +3,8 @@
 #include <fugio/core/uuid.h>
 
 ArrayPin::ArrayPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mData( nullptr ), mType( QMetaType::UnknownType ), mStride( 0 ), mCount( 0 ), mSize( 0 )
+	: PinControlBase( pPin ), mData( nullptr ),
+	  mType( QMetaType::UnknownType ), mStride( 0 ), mCount( 0 ), mSize( 0 ), mReserve( 0 )
 {
 
 }
