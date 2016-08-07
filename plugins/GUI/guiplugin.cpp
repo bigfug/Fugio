@@ -18,6 +18,7 @@
 #include "mainwindownode.h"
 #include "stringnode.h"
 #include "dialnode.h"
+#include "screennode.h"
 
 #include "keyboardpin.h"
 
@@ -35,6 +36,7 @@ ClassEntry		GuiPlugin::mNodeClasses[] =
 	ClassEntry( "Number (Float)", "GUI", NID_FLOAT, &FloatNode::staticMetaObject ),
 	ClassEntry( "Number (Integer)", "GUI", NID_INTEGER, &IntegerNode::staticMetaObject ),
 	ClassEntry( "Number Monitor", "GUI", NID_NUMBER_MONITOR, &NumberMonitorNode::staticMetaObject ),
+	ClassEntry( "Screen", "GUI", NID_SCREEN, &ScreenNode::staticMetaObject ),
 	ClassEntry( "Slider", "GUI", NID_SLIDER, &SliderNode::staticMetaObject ),
 	ClassEntry( "String", "GUI", NID_STRING, &StringNode::staticMetaObject ),
 	ClassEntry()

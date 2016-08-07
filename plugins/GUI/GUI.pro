@@ -39,7 +39,8 @@ SOURCES += \
     stringnode.cpp \
     leditem.cpp \
     dialnode.cpp \
-    dialwidget.cpp
+    dialwidget.cpp \
+    screennode.cpp
 
 HEADERS += \
     floatnode.h \
@@ -64,7 +65,8 @@ HEADERS += \
     stringnode.h \
     leditem.h \
     dialnode.h \
-    dialwidget.h
+    dialwidget.h \
+    screennode.h
 
 FORMS += \
     numbermonitorform.ui \

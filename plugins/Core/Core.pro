@@ -68,7 +68,8 @@ SOURCES += \
     smoothnode.cpp \
     autorangenode.cpp \
     variantlistpin.cpp \
-    arraylistpin.cpp
+    arraylistpin.cpp \
+    rectpin.cpp
 
 HEADERS += \
     stringpin.h \
@@ -127,7 +128,8 @@ HEADERS += \
     variantlistpin.h \
     ../../include/fugio/core/array_list_interface.h \
     arraylistpin.h \
-    arraylistentry.h
+    arraylistentry.h \
+    rectpin.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
