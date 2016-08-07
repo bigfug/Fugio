@@ -35,6 +35,7 @@ public:
 
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputImage;
+	QSharedPointer<fugio::PinInterface>			 mPinInputGeometry;
 
 	PainterWindow								*mPainterWindow;
 };
