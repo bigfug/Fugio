@@ -1,21 +1,22 @@
-#ifndef SNIPPITSFORM_H
-#define SNIPPITSFORM_H
+#ifndef SNIPPETSFORM_H
+#define SNIPPETSFORM_H
 
 #include <QWidget>
 #include <QFileSystemModel>
 #include <QDebug>
 
 namespace Ui {
-class SnippitsForm;
+class SnippetsForm;
 }
 
-class SnippitsForm : public QWidget
+class SnippetsForm : public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit SnippitsForm(QWidget *parent = 0);
-	~SnippitsForm();
+	explicit SnippetsForm(QWidget *parent = 0);
+
+	~SnippetsForm();
 
 	QString root( void ) const
 	{
@@ -32,7 +33,7 @@ private slots:
 	void userNewFolder( void );
 
 private:
-	Ui::SnippitsForm			*ui;
+	Ui::SnippetsForm			*ui;
 
 	QString						 mUsrRoot;
 
@@ -42,4 +43,4 @@ private:
 	QPoint						 mUserPoint;
 };
 
-#endif // SNIPPITSFORM_H
+#endif // SNIPPETSFORM_H

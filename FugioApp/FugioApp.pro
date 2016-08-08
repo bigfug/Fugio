@@ -47,7 +47,7 @@ SOURCES += main.cpp\
     wizards/firsttimewizard.cpp \
     performanceform.cpp \
     nodelistform.cpp \
-    snippits/snippitsform.cpp \
+	snippets/snippetsform.cpp \
     patchpromptdialog.cpp \
     model/contextmodel.cpp \
     model/nodemodel.cpp \
@@ -97,7 +97,7 @@ HEADERS  += mainwindow.h \
     performanceform.h \
     nodelistform.h \
     ../stable.h \
-    snippits/snippitsform.h \
+	snippets/snippetsform.h \
     undo/cmdgrouprename.h \
     undo/cmdgroup.h \
     undo/cmdungroup.h \
@@ -127,7 +127,7 @@ FORMS    += mainwindow.ui \
     nodenamedialog.ui \
     performanceform.ui \
     nodelistform.ui \
-    snippits/snippitsform.ui \
+	snippets/snippetsform.ui \
     patchpromptdialog.ui
 
 RC_FILE = fugio.rc
@@ -186,11 +186,11 @@ macx {
 
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/include
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/plugins
-        QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/snippits
+		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/snippets
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/examples
 
         QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../examples/* $$INSTALLDIR/data/examples
-        QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../snippits/* $$INSTALLDIR/data/snippits
+		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../snippets/* $$INSTALLDIR/data/snippets
     }
 }
 

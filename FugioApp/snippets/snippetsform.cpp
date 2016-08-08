@@ -1,5 +1,5 @@
-#include "snippitsform.h"
-#include "ui_snippitsform.h"
+#include "snippetsform.h"
+#include "ui_snippetsform.h"
 #include <QStandardPaths>
 #include <QMenu>
 #include <QMessageBox>
@@ -7,24 +7,24 @@
 #include <QFile>
 #include <QInputDialog>
 
-SnippitsForm::SnippitsForm(QWidget *parent) :
+SnippetsForm::SnippetsForm(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::SnippitsForm)
+	ui(new Ui::SnippetsForm)
 {
 	ui->setupUi( this );
 
 	QDir	UsrDir = QDir( QStandardPaths::writableLocation( QStandardPaths::DataLocation ) );
 
-	if( !QDir( UsrDir.absoluteFilePath( "snippits" ) ).exists() )
+	if( !QDir( UsrDir.absoluteFilePath( "snippets" ) ).exists() )
 	{
-		UsrDir.mkdir( "snippits" );
+		UsrDir.mkdir( "snippets" );
 	}
 
-	UsrDir.cd( "snippits" );
+	UsrDir.cd( "snippets" );
 
 	mUsrRoot = UsrDir.absolutePath();
 
-	qInfo() << "Snippits Directory:" << mUsrRoot;
+	qInfo() << "Snippets Directory:" << mUsrRoot;
 
 	mUserSystem.setRootPath( mUsrRoot );
 	mUserSystem.setReadOnly( false );
@@ -67,9 +67,9 @@ SnippitsForm::SnippitsForm(QWidget *parent) :
 
 #endif
 
-	SysDir.cd( "snippits" );
+	SysDir.cd( "snippets" );
 
-	qDebug() << "Fugio Snippits:" << SysDir.absolutePath();
+	qDebug() << "Fugio Snippets:" << SysDir.absolutePath();
 
 	mFileSystem.setRootPath( SysDir.absolutePath() );
 	mFileSystem.setReadOnly( true );
@@ -90,17 +90,17 @@ SnippitsForm::SnippitsForm(QWidget *parent) :
 	ui->mSystem->header()->hide();
 }
 
-SnippitsForm::~SnippitsForm()
+SnippetsForm::~SnippetsForm()
 {
 	delete ui;
 }
 
-void SnippitsForm::on_mSnippetSource_currentIndexChanged( int index )
+void SnippetsForm::on_mSnippetSource_currentIndexChanged( int index )
 {
 	ui->mSnippitStack->setCurrentIndex( index );
 }
 
-void SnippitsForm::on_mUser_customContextMenuRequested( const QPoint &pos )
+void SnippetsForm::on_mUser_customContextMenuRequested( const QPoint &pos )
 {
 	mUserPoint = pos;
 
@@ -120,9 +120,9 @@ void SnippitsForm::on_mUser_customContextMenuRequested( const QPoint &pos )
 	Menu.exec( ui->mUser->mapToGlobal( pos ) );
 }
 
-void SnippitsForm::userDeleteSelected()
+void SnippetsForm::userDeleteSelected()
 {
-	if( QMessageBox::warning( 0, "Delete Snippits?", "Permanently delete these items (no undo)?", QMessageBox::No, QMessageBox::Yes ) == QMessageBox::Yes )
+	if( QMessageBox::warning( 0, "Delete Snippets?", "Permanently delete these items (no undo)?", QMessageBox::No, QMessageBox::Yes ) == QMessageBox::Yes )
 	{
 		QModelIndexList	 ItmLst = ui->mUser->selectionModel()->selectedIndexes();
 
@@ -156,7 +156,7 @@ void SnippitsForm::userDeleteSelected()
 	}
 }
 
-void SnippitsForm::userNewFolder()
+void SnippetsForm::userNewFolder()
 {
 	QString			DirNam = QInputDialog::getText( nullptr, tr( "New Folder" ), tr( "Enter a name for the new folder" ) );
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SnippitsForm</class>
- <widget class="QWidget" name="SnippitsForm">
+ <class>SnippetsForm</class>
+ <widget class="QWidget" name="SnippetsForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,19 +11,19 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Snippits</string>
+   <string>Snippets</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QComboBox" name="mSnippetSource">
      <item>
       <property name="text">
-       <string>Fugio Snippits</string>
+       <string>Fugio Snippets</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>My Snippits</string>
+       <string>My Snippets</string>
       </property>
      </item>
     </widget>

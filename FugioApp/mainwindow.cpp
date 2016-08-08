@@ -197,7 +197,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	linkWindowVisibilitySignal( ui->actionBrowser, ui->mDockWidgetBrowser );
 	linkWindowVisibilitySignal( ui->actionNodes, ui->mNodeDockWidget );
 	linkWindowVisibilitySignal( ui->actionPerformance, ui->mPerformanceDockWidget );
-	linkWindowVisibilitySignal( ui->actionSnippits, ui->mSnippitsDockWidget );
+	linkWindowVisibilitySignal( ui->actionSnippets, ui->mSnippetsDockWidget );
 	linkWindowVisibilitySignal( ui->actionStylesheet, ui->mStyleSheetDockWidget );
 
 	connect( ui->actionTile, SIGNAL(triggered()), ui->mWorkArea, SLOT(tileSubWindows()) );
@@ -929,7 +929,7 @@ void MainWindow::buildWindowMenu()
 	ui->menu_Window->addAction( ui->actionLogger );
 	ui->menu_Window->addAction( ui->actionNodes );
 	ui->menu_Window->addAction( ui->actionPerformance );
-	ui->menu_Window->addAction( ui->actionSnippits );
+	ui->menu_Window->addAction( ui->actionSnippets );
 	ui->menu_Window->addAction( ui->actionStylesheet );
 
 	if( ui->mWorkArea->subWindowList().isEmpty() )
@@ -1141,11 +1141,11 @@ void MainWindow::on_actionSelect_to_snippit_triggered()
 		return;
 	}
 
-	QFileInfo	FileInfo( QDir( ui->mSnippits->root() ), FileName );
+	QFileInfo	FileInfo( QDir( ui->mSnippets->root() ), FileName );
 
 	if( FileInfo.suffix().toLower() != "fug" )
 	{
-		FileInfo.setFile( QDir( ui->mSnippits->root() ), FileName + ".fug" );
+		FileInfo.setFile( QDir( ui->mSnippets->root() ), FileName + ".fug" );
 	}
 
 	if( FileInfo.exists() )
