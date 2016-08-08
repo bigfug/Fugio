@@ -52,6 +52,7 @@ const luaL_Reg LuaQtPlugin::mLuaFunctions[] =
 	{ "fontmetrics", LuaFontMetrics::luaNew },
 	{ "gradient", LuaGradient::luaNew },
 	{ "image", LuaImage::luaNew },
+	{ "matrix4x4", LuaMatrix4x4::luaNew },
 	{ "pen", LuaPen::luaNew },
 	{ "point", LuaPointF::luaNew },
 	{ "rect", LuaRectF::luaNew },
