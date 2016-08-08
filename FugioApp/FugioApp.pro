@@ -217,6 +217,7 @@ windows {
         QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/platforms )
 
         QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../examples/* ) $$shell_path( $$INSTALLDIR/data/examples ) /f /s /y
+		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../snippets/* ) $$shell_path( $$INSTALLDIR/data/snippets ) /f /s /y
 
         QMAKE_POST_LINK += & copy /V /Y $$shell_path( $(QTDIR)/plugins/platforms/qwindows.dll ) $$shell_path( $$INSTALLDIR/data/platforms )
 
