@@ -44,11 +44,9 @@ SnippitsForm::SnippitsForm(QWidget *parent) :
 
 	ui->mUser->header()->hide();
 
-	QDir	SysDir;
+	QDir	SysDir = QDir( qApp->applicationDirPath() );
 
 #if defined( Q_OS_MACX )
-	SysDir = QDir( qApp->applicationDirPath() );
-
 	SysDir.cdUp();
 	SysDir.cdUp();
 	SysDir.cdUp();
@@ -59,8 +57,17 @@ SnippitsForm::SnippitsForm(QWidget *parent) :
 	SysDir.cd( "Fugio" );
 #endif
 
-	SysDir.cd( "snippits" );
+#elif defined( Q_OS_WIN )
+
+#if defined( QT_DEBUG )
+	SysDir.cdUp();
+
+	SysDir.cd( "Fugio" );
 #endif
+
+#endif
+
+	SysDir.cd( "snippits" );
 
 	qDebug() << "Fugio Snippits:" << SysDir.absolutePath();
 
