@@ -11,6 +11,7 @@
 #include "luaqtplugin.h"
 
 #include "luapointf.h"
+#include "luarectf.h"
 
 const char *LuaMatrix4x4::Matrix4x4UserData::TypeName = "qt.matrix4x4";
 
@@ -30,11 +31,12 @@ const luaL_Reg LuaMatrix4x4::mLuaMethods[] =
 //	{ "__sub",				LuaMatrix4x4::luaSub },
 	{ "isAffine",			LuaMatrix4x4::luaIsAffine },
 	{ "isIdentity",			LuaMatrix4x4::luaIsIdentity },
-//	{ "manhattanLength",	LuaMatrix4x4::luaManhattanLength },
-//	{ "setX",				LuaMatrix4x4::luaSetX },
-//	{ "setY",				LuaMatrix4x4::luaSetY },
-//	{ "x",					LuaMatrix4x4::luaX },
-//	{ "y",					LuaMatrix4x4::luaY },
+	{ "ortho",				LuaMatrix4x4::luaOrtho },
+	{ "perspective",		LuaMatrix4x4::luaPerspective },
+	{ "rotate",				LuaMatrix4x4::luaRotate },
+	{ "scale",				LuaMatrix4x4::luaScale },
+	{ "toArray",			LuaMatrix4x4::luaToArray },
+	{ "translate",			LuaMatrix4x4::luaTranslate },
 	{ 0, 0 }
 };
 
@@ -143,6 +145,121 @@ int LuaMatrix4x4::luaMul( lua_State *L )
 	}
 
 	luaL_argerror( L, 2, "Bad argument type" );
+
+	return( 0 );
+}
+
+int LuaMatrix4x4::luaOrtho( lua_State *L )
+{
+	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
+	QMatrix4x4			 Matrix = *MatrixData;
+
+	QRectF				 R;
+	float				 N, F;
+
+	if( LuaRectF::isRectF( L, 2 ) )
+	{
+		R = LuaRectF::checkrectf( L, 2 );
+		N = -1;
+		F = -1;
+	}
+	else
+	{
+		R.setLeft( luaL_checknumber( L, 2 ) );
+		R.setRight( luaL_checknumber( L, 3 ) );
+		R.setBottom( luaL_checknumber( L, 4 ) );
+		R.setTop( luaL_checknumber( L, 5 ) );
+
+		N = luaL_checknumber( L, 6 );
+		F = luaL_checknumber( L, 7 );
+	}
+
+	Matrix.ortho( R.left(), R.right(), R.bottom(), R.top(), N, F );
+
+	MatrixData->fromQMatrix4x4( Matrix );
+
+	return( 0 );
+}
+
+int LuaMatrix4x4::luaPerspective(lua_State *L)
+{
+	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
+	QMatrix4x4			 Matrix = *MatrixData;
+
+	float				 A, R, N, F;
+
+	A = luaL_checknumber( L, 2 );
+	R = luaL_checknumber( L, 3 );
+	N = luaL_checknumber( L, 4 );
+	F = luaL_checknumber( L, 5 );
+
+	Matrix.perspective( A, R, N, F );
+
+	MatrixData->fromQMatrix4x4( Matrix );
+
+	return( 0 );
+}
+
+int LuaMatrix4x4::luaRotate(lua_State *L)
+{
+	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
+	QMatrix4x4			 Matrix = *MatrixData;
+
+	float		Angle = luaL_checknumber( L, 2 );
+
+	QVector3D	Axis;
+
+	if( lua_gettop( L ) >= 3 ) Axis.setX( luaL_checknumber( L, 3 ) );
+	if( lua_gettop( L ) >= 4 ) Axis.setY( luaL_checknumber( L, 4 ) );
+	if( lua_gettop( L ) >= 5 ) Axis.setZ( luaL_checknumber( L, 5 ) );
+
+	Matrix.rotate( Angle, Axis );
+
+	MatrixData->fromQMatrix4x4( Matrix );
+
+	return( 0 );
+}
+
+int LuaMatrix4x4::luaScale(lua_State *L)
+{
+	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
+	QMatrix4x4			 Matrix = *MatrixData;
+
+	float				 F = luaL_checknumber( L, 2 );
+
+	if( lua_gettop( L ) > 2 )
+	{
+		QVector3D	Scale( F, 1, 1 );
+
+		if( lua_gettop( L ) >= 3 ) Scale.setY( luaL_checknumber( L, 3 ) );
+		if( lua_gettop( L ) >= 4 ) Scale.setZ( luaL_checknumber( L, 4 ) );
+
+		Matrix.scale( Scale );
+	}
+	else
+	{
+		Matrix.scale( F );
+	}
+
+	MatrixData->fromQMatrix4x4( Matrix );
+
+	return( 0 );
+}
+
+int LuaMatrix4x4::luaTranslate( lua_State *L )
+{
+	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
+	QMatrix4x4			 Matrix = *MatrixData;
+
+	QVector3D	Translate;
+
+	if( lua_gettop( L ) >= 2 ) Translate.setX( luaL_checknumber( L, 2 ) );
+	if( lua_gettop( L ) >= 3 ) Translate.setY( luaL_checknumber( L, 3 ) );
+	if( lua_gettop( L ) >= 4 ) Translate.setZ( luaL_checknumber( L, 4 ) );
+
+	Matrix.translate( Translate );
+
+	MatrixData->fromQMatrix4x4( Matrix );
 
 	return( 0 );
 }
