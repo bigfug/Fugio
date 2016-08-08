@@ -186,10 +186,11 @@ macx {
 
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/include
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/plugins
-        QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/snippets
+        QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/snippits
         QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/examples
 
         QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../examples/* $$INSTALLDIR/data/examples
+        QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../snippits/* $$INSTALLDIR/data/snippits
     }
 }
 

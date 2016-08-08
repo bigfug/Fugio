@@ -19,18 +19,27 @@ public:
 
 	QString root( void ) const
 	{
-		return( mSnippitRoot );
+		return( mUsrRoot );
 	}
 
 private slots:
-	void on_mSnippits_doubleClicked(const QModelIndex &index);
+	void on_mSnippetSource_currentIndexChanged(int index);
+
+	void on_mUser_customContextMenuRequested(const QPoint &pos);
+
+	void userDeleteSelected( void );
+
+	void userNewFolder( void );
 
 private:
 	Ui::SnippitsForm			*ui;
 
-	QString						 mSnippitRoot;
+	QString						 mUsrRoot;
 
 	QFileSystemModel			 mFileSystem;
+	QFileSystemModel			 mUserSystem;
+
+	QPoint						 mUserPoint;
 };
 
 #endif // SNIPPITSFORM_H
