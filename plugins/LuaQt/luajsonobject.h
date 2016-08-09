@@ -14,17 +14,10 @@ private:
 	{
 		static const char		*TypeName;
 
-		QJsonObject				*mJsonObject;
+		QJsonObject				 mJsonObject;
+		QJsonObject::iterator	 mIterator;
+
 	} JsonObjectUserData;
-
-	typedef struct JsonObjectIteratorUserData
-	{
-		static const char		*TypeName;
-
-		QJsonObject				*mObject;
-		QJsonObject::iterator	*mIterator;
-
-	} JsonObjectIteratorUserData;
 
 public:
 	LuaJsonObject( void ) {}
@@ -48,7 +41,8 @@ public:
 		luaL_getmetatable( L, JsonObjectUserData::TypeName );
 		lua_setmetatable( L, -2 );
 
-		UD->mJsonObject = new QJsonObject( pJsonObject );
+		new( &UD->mJsonObject ) QJsonObject( pJsonObject );
+		new( &UD->mIterator )   QJsonObject::iterator();
 
 		return( 1 );
 	}
@@ -71,7 +65,7 @@ public:
 	{
 		JsonObjectUserData	*FUD = checkjsonobjectdata( L, i );
 
-		return( FUD ? FUD->mJsonObject : nullptr );
+		return( FUD ? &FUD->mJsonObject : nullptr );
 	}
 
 private:

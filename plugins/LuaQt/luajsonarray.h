@@ -14,17 +14,10 @@ private:
 	{
 		static const char		*TypeName;
 
-		QJsonArray				*mJsonArray;
+		QJsonArray				 mJsonArray;
+		QJsonArray::iterator	 mIterator;
+
 	} JsonArrayUserData;
-
-	typedef struct JsonArrayIteratorUserData
-	{
-		static const char		*TypeName;
-
-		QJsonArray				*mArray;
-		QJsonArray::iterator	*mIterator;
-		int						 mIndex;
-	} JsonArrayIteratorUserData;
 
 public:
 	LuaJsonArray( void ) {}
@@ -48,7 +41,10 @@ public:
 		luaL_getmetatable( L, JsonArrayUserData::TypeName );
 		lua_setmetatable( L, -2 );
 
-		UD->mJsonArray = new QJsonArray( pJsonArray );
+		// Is this terribly evil?
+
+		new( &UD->mJsonArray ) QJsonArray( pJsonArray );
+		new( &UD->mIterator )  QJsonArray::iterator();
 
 		return( 1 );
 	}
@@ -71,7 +67,7 @@ public:
 	{
 		JsonArrayUserData	*FUD = checkjsonarraydata( L, i );
 
-		return( FUD ? FUD->mJsonArray : nullptr );
+		return( FUD ? &FUD->mJsonArray : nullptr );
 	}
 
 private:
@@ -79,8 +75,7 @@ private:
 
 	static int luaBegin( lua_State *L );
 
-	static int luaIteratorNext( lua_State *L );
-	static int luaIteratorEnd( lua_State *L );
+	static int luaNext( lua_State *L );
 
 	static int luaIsArray( lua_State *L );
 	static int luaIsObject( lua_State *L );

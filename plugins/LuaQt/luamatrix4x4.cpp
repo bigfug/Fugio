@@ -110,15 +110,13 @@ int LuaMatrix4x4::luaPinGet( const QUuid &pPinLocalId, lua_State *L )
 int LuaMatrix4x4::luaMul( lua_State *L )
 {
 	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
-	QMatrix4x4			 Matrix = *MatrixData;
 
 	luaL_checkany( L, 2 );
 
 	if( isMatrix4x4( L, 2 ) )
 	{
-		Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L, 2 );
-		QMatrix4x4			 Matrix2 = *MatrixData;
-		QMatrix4x4			 Matrix3 = Matrix * Matrix2;
+		Matrix4x4UserData	*Matrix2 = checkMatrix4x4userdata( L, 2 );
+		QMatrix4x4			 Matrix3 = MatrixData->mMatrix * Matrix2->mMatrix;
 
 		pushmatrix4x4( L, Matrix3 );
 
@@ -128,7 +126,7 @@ int LuaMatrix4x4::luaMul( lua_State *L )
 	if( LuaPointF::isPointF( L, 2 ) )
 	{
 		QPointF				 Point1 = LuaPointF::checkpointf( L, 2 );
-		QPointF				 Point2 = Matrix * Point1;
+		QPointF				 Point2 = MatrixData->mMatrix * Point1;
 
 		LuaPointF::pushpointf( L, Point2 );
 
@@ -137,7 +135,7 @@ int LuaMatrix4x4::luaMul( lua_State *L )
 
 	if( lua_type( L, 2 ) == LUA_TNUMBER )
 	{
-		QMatrix4x4			 Matrix2 = Matrix * lua_tonumber( L, 2 );
+		QMatrix4x4			 Matrix2 = MatrixData->mMatrix * lua_tonumber( L, 2 );
 
 		pushmatrix4x4( L, Matrix2 );
 
@@ -152,7 +150,6 @@ int LuaMatrix4x4::luaMul( lua_State *L )
 int LuaMatrix4x4::luaOrtho( lua_State *L )
 {
 	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
-	QMatrix4x4			 Matrix = *MatrixData;
 
 	QRectF				 R;
 	float				 N, F;
@@ -174,9 +171,7 @@ int LuaMatrix4x4::luaOrtho( lua_State *L )
 		F = luaL_checknumber( L, 7 );
 	}
 
-	Matrix.ortho( R.left(), R.right(), R.bottom(), R.top(), N, F );
-
-	MatrixData->fromQMatrix4x4( Matrix );
+	MatrixData->mMatrix.ortho( R.left(), R.right(), R.bottom(), R.top(), N, F );
 
 	return( 0 );
 }
@@ -184,7 +179,6 @@ int LuaMatrix4x4::luaOrtho( lua_State *L )
 int LuaMatrix4x4::luaPerspective(lua_State *L)
 {
 	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
-	QMatrix4x4			 Matrix = *MatrixData;
 
 	float				 A, R, N, F;
 
@@ -193,9 +187,7 @@ int LuaMatrix4x4::luaPerspective(lua_State *L)
 	N = luaL_checknumber( L, 4 );
 	F = luaL_checknumber( L, 5 );
 
-	Matrix.perspective( A, R, N, F );
-
-	MatrixData->fromQMatrix4x4( Matrix );
+	MatrixData->mMatrix.perspective( A, R, N, F );
 
 	return( 0 );
 }
@@ -203,7 +195,6 @@ int LuaMatrix4x4::luaPerspective(lua_State *L)
 int LuaMatrix4x4::luaRotate(lua_State *L)
 {
 	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
-	QMatrix4x4			 Matrix = *MatrixData;
 
 	float		Angle = luaL_checknumber( L, 2 );
 
@@ -213,9 +204,7 @@ int LuaMatrix4x4::luaRotate(lua_State *L)
 	if( lua_gettop( L ) >= 4 ) Axis.setY( luaL_checknumber( L, 4 ) );
 	if( lua_gettop( L ) >= 5 ) Axis.setZ( luaL_checknumber( L, 5 ) );
 
-	Matrix.rotate( Angle, Axis );
-
-	MatrixData->fromQMatrix4x4( Matrix );
+	MatrixData->mMatrix.rotate( Angle, Axis );
 
 	return( 0 );
 }
@@ -223,7 +212,6 @@ int LuaMatrix4x4::luaRotate(lua_State *L)
 int LuaMatrix4x4::luaScale(lua_State *L)
 {
 	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
-	QMatrix4x4			 Matrix = *MatrixData;
 
 	float				 F = luaL_checknumber( L, 2 );
 
@@ -234,14 +222,12 @@ int LuaMatrix4x4::luaScale(lua_State *L)
 		if( lua_gettop( L ) >= 3 ) Scale.setY( luaL_checknumber( L, 3 ) );
 		if( lua_gettop( L ) >= 4 ) Scale.setZ( luaL_checknumber( L, 4 ) );
 
-		Matrix.scale( Scale );
+		MatrixData->mMatrix.scale( Scale );
 	}
 	else
 	{
-		Matrix.scale( F );
+		MatrixData->mMatrix.scale( F );
 	}
-
-	MatrixData->fromQMatrix4x4( Matrix );
 
 	return( 0 );
 }
@@ -249,7 +235,6 @@ int LuaMatrix4x4::luaScale(lua_State *L)
 int LuaMatrix4x4::luaTranslate( lua_State *L )
 {
 	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
-	QMatrix4x4			 Matrix = *MatrixData;
 
 	QVector3D	Translate;
 
@@ -257,9 +242,7 @@ int LuaMatrix4x4::luaTranslate( lua_State *L )
 	if( lua_gettop( L ) >= 3 ) Translate.setY( luaL_checknumber( L, 3 ) );
 	if( lua_gettop( L ) >= 4 ) Translate.setZ( luaL_checknumber( L, 4 ) );
 
-	Matrix.translate( Translate );
-
-	MatrixData->fromQMatrix4x4( Matrix );
+	MatrixData->mMatrix.translate( Translate );
 
 	return( 0 );
 }
@@ -267,9 +250,8 @@ int LuaMatrix4x4::luaTranslate( lua_State *L )
 int LuaMatrix4x4::luaIsAffine(lua_State *L)
 {
 	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
-	QMatrix4x4			 Matrix = *MatrixData;
 
-	lua_pushboolean( L, Matrix.isAffine() );
+	lua_pushboolean( L, MatrixData->mMatrix.isAffine() );
 
 	return( 0 );
 }
@@ -277,22 +259,22 @@ int LuaMatrix4x4::luaIsAffine(lua_State *L)
 int LuaMatrix4x4::luaIsIdentity(lua_State *L)
 {
 	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
-	QMatrix4x4			 Matrix = *MatrixData;
 
-	lua_pushboolean( L, Matrix.isIdentity() );
+	lua_pushboolean( L, MatrixData->mMatrix.isIdentity() );
 
 	return( 0 );
 }
 
 int LuaMatrix4x4::luaToArray( lua_State *L )
 {
-	Matrix4x4UserData *MatrixData = checkMatrix4x4userdata( L );
+	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
+	const float			*MatDat = MatrixData->mMatrix.constData();
 
 	lua_newtable( L );
 
 	for( int i = 0 ; i < 16 ; i++ )
 	{
-		lua_pushnumber( L, MatrixData->mMatDat[ i ] );
+		lua_pushnumber( L, MatDat[ i ] );
 
 		lua_rawseti( L, -2, i + 1 );
 	}

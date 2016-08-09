@@ -5,7 +5,6 @@
 #include "luajsonobject.h"
 
 const char *LuaJsonArray::JsonArrayUserData::TypeName = "qt.jsonarray";
-const char *LuaJsonArray::JsonArrayIteratorUserData::TypeName = "qt.jsonarray.iterator";
 
 #if defined( LUA_SUPPORTED )
 
@@ -25,17 +24,6 @@ const luaL_Reg LuaJsonArray::mLuaMethods[] =
 
 int LuaJsonArray::luaOpen( lua_State *L )
 {
-	luaL_newmetatable( L, JsonArrayIteratorUserData::TypeName );
-
-	lua_pushcfunction( L, LuaJsonArray::luaIteratorEnd );
-	lua_setfield( L, -2, "__gc" );
-
-	luaL_newlib( L, mLuaInstance );
-
-	lua_pop( L, 1 );
-
-	//------------------------------------------------
-
 	luaL_newmetatable( L, JsonArrayUserData::TypeName );
 
 	lua_pushvalue( L, -1 );
@@ -61,12 +49,7 @@ int LuaJsonArray::luaDelete( lua_State *L )
 
 	if( UserData )
 	{
-		if( UserData->mJsonArray )
-		{
-			delete UserData->mJsonArray;
-
-			UserData->mJsonArray = nullptr;
-		}
+		UserData->mJsonArray.~QJsonArray();
 	}
 
 	return( 0 );
@@ -76,29 +59,22 @@ int LuaJsonArray::luaBegin( lua_State *L )
 {
 	JsonArrayUserData			*UserData = checkjsonarraydata( L );
 
-	JsonArrayIteratorUserData	*IteratorData = (JsonArrayIteratorUserData *)lua_newuserdata( L, sizeof( JsonArrayIteratorUserData ) );
+	UserData->mIterator = UserData->mJsonArray.begin();
 
-	luaL_getmetatable( L, JsonArrayIteratorUserData::TypeName );
-	lua_setmetatable( L, -2 );
-
-	IteratorData->mArray    = UserData->mJsonArray;
-	IteratorData->mIterator = new QJsonArray::iterator( UserData->mJsonArray->begin() );
-	IteratorData->mIndex    = 1;
-
-	lua_pushcclosure( L, LuaJsonArray::luaIteratorNext, 1 );
+	lua_pushcclosure( L, LuaJsonArray::luaNext, 1 );
 
 	return( 1 );
 }
 
-int LuaJsonArray::luaIteratorNext( lua_State *L )
+int LuaJsonArray::luaNext( lua_State *L )
 {
-	JsonArrayIteratorUserData	*IteratorData = (JsonArrayIteratorUserData *)lua_touserdata( L, lua_upvalueindex( 1 ) );
+	JsonArrayUserData			*UserData = (JsonArrayUserData *)lua_touserdata( L, lua_upvalueindex( 1 ) );
 
-	if( *IteratorData->mIterator != IteratorData->mArray->end() )
+	if( UserData->mIterator != UserData->mJsonArray.end() )
 	{
-		lua_pushinteger( L, IteratorData->mIndex );
+		lua_pushinteger( L, UserData->mIterator.i + 1 );
 
-		QJsonValueRef	 ValRef = *(*IteratorData->mIterator);
+		QJsonValueRef	 ValRef = *UserData->mIterator;
 
 		switch( ValRef.type() )
 		{
@@ -131,27 +107,9 @@ int LuaJsonArray::luaIteratorNext( lua_State *L )
 				break;
 		}
 
-		IteratorData->mIndex++;
-
-		(*IteratorData->mIterator)++;
+		UserData->mIterator++;
 
 		return( 2 );
-	}
-
-	return( 0 );
-}
-
-int LuaJsonArray::luaIteratorEnd( lua_State *L )
-{
-	JsonArrayIteratorUserData	*IteratorData = (JsonArrayIteratorUserData *)lua_touserdata( L, 1 );
-
-	IteratorData->mArray = 0;
-
-	if( IteratorData->mIterator )
-	{
-		delete IteratorData->mIterator;
-
-		IteratorData->mIterator = 0;
 	}
 
 	return( 0 );

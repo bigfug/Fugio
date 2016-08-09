@@ -14,17 +14,7 @@ private:
 	{
 		static const char *TypeName;
 
-		float		mMatDat[ 16 ];
-
-		operator QMatrix4x4( void ) const
-		{
-			return( QMatrix4x4( mMatDat, 4, 4 ) );
-		}
-
-		void fromQMatrix4x4( const QMatrix4x4 &pMatrix )
-		{
-			memcpy( &mMatDat, pMatrix.constData(), sizeof( mMatDat ) );
-		}
+		QMatrix4x4			mMatrix;
 
 	} QMatrix4x4UserData;
 
@@ -50,7 +40,7 @@ public:
 		luaL_getmetatable( L, Matrix4x4UserData::TypeName );
 		lua_setmetatable( L, -2 );
 
-		UD->fromQMatrix4x4( pMatrix );
+		new( &UD->mMatrix ) QMatrix4x4( pMatrix );
 
 		return( 1 );
 	}
@@ -64,7 +54,7 @@ public:
 	{
 		Matrix4x4UserData *UD = checkMatrix4x4userdata( L, i );
 
-		return( *UD );
+		return( UD->mMatrix );
 	}
 
 	static int luaPinGet( const QUuid &pPinLocalId, lua_State *L );
