@@ -105,7 +105,9 @@ int main(int argc, char *argv[])
 	qDebug() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName() ).arg( QApplication::applicationVersion() ).arg( "started" );
 
 	//-------------------------------------------------------------------------
-	// Initialise CrashRpt
+
+	QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
+	QCoreApplication::setAttribute( Qt::AA_ShareOpenGLContexts );
 
 	//-------------------------------------------------------------------------
 
