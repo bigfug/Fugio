@@ -23,6 +23,9 @@
 #include "slipdecodenode.h"
 #include "slipencodenode.h"
 
+#include "cobsdecodenode.h"
+#include "cobsencodenode.h"
+
 #include "websocketdataservernode.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
@@ -31,6 +34,8 @@ NetworkPlugin *NetworkPlugin::mInstance = 0;
 
 ClassEntry	NodeClasses[] =
 {
+	ClassEntry( "COBS Decode", "Network", NID_COBS_DECODE, &COBSDecodeNode::staticMetaObject ),
+	ClassEntry( "COBS Encode", "Network", NID_COBS_ENCODE, &COBSEncodeNode::staticMetaObject ),
 	ClassEntry( "Get", "Network", NID_NETWORK_GET, &GetNode::staticMetaObject ),
 	ClassEntry( "TCP Send", "Network", NID_TCP_SEND, &TCPSendNode::staticMetaObject ),
 	ClassEntry( "TCP Receive", "Network", NID_TCP_RECEIVE, &TCPReceiveNode::staticMetaObject ),
