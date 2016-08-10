@@ -125,12 +125,22 @@ macx:exists( /usr/local/include/lua.hpp ) {
     DEFINES += LUA_SUPPORTED
 }
 
-unix:!macx:exists( /usr/include/lua5.3/lua.h ) {
-    INCLUDEPATH += /usr/include/lua5.3
+unix:!macx {
+    exists( /usr/include/lua5.3/lua.h ) {
+        INCLUDEPATH += /usr/include/lua5.3
 
-    LIBS += -llua5.3
+        LIBS += -llua5.3
 
-    DEFINES += LUA_SUPPORTED
+        DEFINES += LUA_SUPPORTED
+    }
+
+    exists( /usr/include/lua5.2/lua.h ) {
+        INCLUDEPATH += /usr/include/lua5.2
+
+        LIBS += -llua5.2
+
+        DEFINES += LUA_SUPPORTED
+    }
 }
 
 !contains( DEFINES, LUA_SUPPORTED ) {

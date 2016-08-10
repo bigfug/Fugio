@@ -105,10 +105,12 @@ void NetworkPlugin::menuNetworkInformation()
 			AddLst << "Loopback";
 		}
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 		if( HostAddr.isMulticast() )
 		{
 			AddLst << "Multicast";
 		}
+#endif
 
 		if( !HostAddr.scopeId().isEmpty() )
 		{

@@ -131,6 +131,12 @@ unix:exists( /usr/local/include/portmidi.h ) {
 	DEFINES += PORTMIDI_SUPPORTED
 }
 
+unix:exists( /usr/include/portmidi.h ) {
+        INCLUDEPATH += /usr/include
+        LIBS += -L/usr/lib
+        DEFINES += PORTMIDI_SUPPORTED
+}
+
 contains( DEFINES, PORTMIDI_SUPPORTED ) {
 	LIBS += -lportmidi
 } else {

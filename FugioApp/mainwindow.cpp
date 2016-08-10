@@ -48,6 +48,10 @@
 
 #include "patchpromptdialog.h"
 
+#if QT_VERSION < QT_VERSION_CHECK( 5, 5, 0 )
+#define qInfo qDebug
+#endif
+
 extern void log_file( const QString &pLogDat );
 
 void MainWindow::logger_static( QtMsgType type, const QMessageLogContext &context, const QString &msg )
@@ -1378,7 +1382,7 @@ void MainWindow::loggerContextMenu( const QPoint &pPoint )
 {
 	QMenu		*Menu = ui->mLogger->createStandardContextMenu();
 
-	Menu->addAction( "Clear", ui->mLogger, &QPlainTextEdit::clear );
+	Menu->addAction( "Clear", ui->mLogger, SLOT(clear()) );
 
 	Menu->exec( ui->mLogger->mapToGlobal( pPoint ) );
 

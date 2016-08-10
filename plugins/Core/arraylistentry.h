@@ -21,7 +21,7 @@ public:
 	}
 
 	ArrayListEntry ( const ArrayListEntry &pSrc )
-		: mArray( pSrc.mArray )
+		: QObject(), mArray( pSrc.mArray )
 	{
 		mData    = pSrc.mData;
 		mType    = pSrc.mType;

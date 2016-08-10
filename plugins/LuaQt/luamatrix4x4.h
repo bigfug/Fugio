@@ -82,7 +82,10 @@ private:
 	static int luaScale( lua_State *L );
 	static int luaTranslate( lua_State *L );
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 )
 	static int luaIsAffine( lua_State *L );
+#endif
+
 	static int luaIsIdentity( lua_State *L );
 
 	static int luaToArray( lua_State *L );

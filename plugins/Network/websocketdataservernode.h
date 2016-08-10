@@ -3,8 +3,11 @@
 
 #include <QObject>
 
+#if defined( WEBSOCKET_SUPPORTED )
 #include <QtWebSockets/QtWebSockets>
 #include <QWebSocketServer>
+#endif
+
 #include <fugio/nodecontrolbase.h>
 
 class WebSocketDataServerNode : public fugio::NodeControlBase
@@ -29,6 +32,7 @@ public:
 	virtual bool deinitialise() Q_DECL_OVERRIDE;
 
 protected slots:
+#if defined( WEBSOCKET_SUPPORTED )
 //	void socketConnected( void );
 
 //	void sendData( qint64 pTimeStamp );
@@ -41,11 +45,15 @@ protected slots:
 
 protected:
 	void sendSocketData( QWebSocket *pSocket = nullptr );
+#endif
 
 protected:
 	QSharedPointer<fugio::PinInterface>		 mPinInputData;
+
+#if defined( WEBSOCKET_SUPPORTED )
 	QWebSocketServer						 mServer;
 	QList<QWebSocket *>						 mClients;
+#endif
 };
 
 #endif // WEBSOCKETSENDNODE_H

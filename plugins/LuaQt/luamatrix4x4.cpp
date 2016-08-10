@@ -29,7 +29,9 @@ const luaL_Reg LuaMatrix4x4::mLuaMethods[] =
 //	{ "__eq",				LuaMatrix4x4::luaEq },
 	{ "__mul",				LuaMatrix4x4::luaMul },
 //	{ "__sub",				LuaMatrix4x4::luaSub },
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 )
 	{ "isAffine",			LuaMatrix4x4::luaIsAffine },
+#endif
 	{ "isIdentity",			LuaMatrix4x4::luaIsIdentity },
 	{ "ortho",				LuaMatrix4x4::luaOrtho },
 	{ "perspective",		LuaMatrix4x4::luaPerspective },
@@ -247,6 +249,7 @@ int LuaMatrix4x4::luaTranslate( lua_State *L )
 	return( 0 );
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 )
 int LuaMatrix4x4::luaIsAffine(lua_State *L)
 {
 	Matrix4x4UserData	*MatrixData = checkMatrix4x4userdata( L );
@@ -255,6 +258,7 @@ int LuaMatrix4x4::luaIsAffine(lua_State *L)
 
 	return( 0 );
 }
+#endif
 
 int LuaMatrix4x4::luaIsIdentity(lua_State *L)
 {

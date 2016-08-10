@@ -7,6 +7,10 @@
 #include <QFile>
 #include <QInputDialog>
 
+#if QT_VERSION < QT_VERSION_CHECK( 5, 5, 0 )
+#define qInfo qDebug
+#endif
+
 SnippetsForm::SnippetsForm(QWidget *parent) :
 	QWidget(parent),
 	ui(new Ui::SnippetsForm)

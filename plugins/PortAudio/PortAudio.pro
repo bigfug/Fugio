@@ -131,6 +131,12 @@ unix:!macx:exists( /usr/local/include/portaudio.h ) {
     DEFINES += PORTAUDIO_SUPPORTED
 }
 
+#unix:!macx:exists( /usr/include/portaudio.h ) {
+#    INCLUDEPATH += /usr/include
+#    LIBS += -L/usr/lib -lportaudio
+#    DEFINES += PORTAUDIO_SUPPORTED
+#}
+
 !contains( DEFINES, PORTAUDIO_SUPPORTED ) {
     message( "PortAudio not supported" )
 }

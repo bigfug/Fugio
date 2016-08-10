@@ -76,6 +76,10 @@ void logger_static( QtMsgType type, const QMessageLogContext &context, const QSt
 	}
 }
 
+#if QT_VERSION < QT_VERSION_CHECK( 5, 5, 0 )
+#define qInfo qDebug
+#endif
+
 // Little trick I picked up from StackExchange to add quotes to a DEFINE
 
 #define Q(x) #x
@@ -91,7 +95,12 @@ int main(int argc, char *argv[])
 
 	QApplication::setApplicationName( "Fugio" );
 	QApplication::setOrganizationDomain( "Fugio" );
+
+#if QT_VERSION < QT_VERSION_CHECK( 5, 4, 0 )
+	QApplication::setApplicationVersion( QUOTE( FUGIO_VERSION ) );
+#else
 	QApplication::setApplicationVersion( QString( "%1 (%2/%3)" ).arg( QUOTE( FUGIO_VERSION ) ).arg( QSysInfo::buildCpuArchitecture() ).arg( QSysInfo::currentCpuArchitecture() ) );
+#endif
 
 	const QString	CfgDir = QStandardPaths::writableLocation( QStandardPaths::DataLocation );
 
@@ -107,7 +116,10 @@ int main(int argc, char *argv[])
 	//-------------------------------------------------------------------------
 
 	QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
 	QCoreApplication::setAttribute( Qt::AA_ShareOpenGLContexts );
+#endif
 
 	//-------------------------------------------------------------------------
 

@@ -1,10 +1,15 @@
 #include "websocketdataservernode.h"
 
 WebSocketDataServerNode::WebSocketDataServerNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mServer( QStringLiteral( "Fugio Server" ), QWebSocketServer::NonSecureMode, this )
+	: NodeControlBase( pNode )
+#if defined( WEBSOCKET_SUPPORTED )
+	, mServer( QStringLiteral( "Fugio Server" ), QWebSocketServer::NonSecureMode, this )
+#endif
 {
 	mPinInputData = pinInput( "Data" );
 }
+
+#if defined( WEBSOCKET_SUPPORTED )
 
 void WebSocketDataServerNode::sendSocketData( QWebSocket *pSocket )
 {
@@ -49,13 +54,16 @@ void WebSocketDataServerNode::sendSocketData( QWebSocket *pSocket )
 		}
 	}
 }
+#endif
 
 void WebSocketDataServerNode::inputsUpdated( qint64 pTimeStamp )
 {
+#if defined( WEBSOCKET_SUPPORTED )
 	if( mPinInputData->isUpdated( pTimeStamp ) )
 	{
 		sendSocketData();
 	}
+#endif
 }
 
 bool WebSocketDataServerNode::initialise()
@@ -65,6 +73,7 @@ bool WebSocketDataServerNode::initialise()
 		return( false );
 	}
 
+#if defined( WEBSOCKET_SUPPORTED )
 	if( mServer.listen( QHostAddress::Any, 12345 ) )
 	{
 		connect( &mServer, SIGNAL(newConnection()), this, SLOT(serverNewConnection()) );
@@ -73,14 +82,21 @@ bool WebSocketDataServerNode::initialise()
 	}
 
 	return( true );
+#else
+	return( false );
+#endif
 }
 
 bool WebSocketDataServerNode::deinitialise()
 {
+#if defined( WEBSOCKET_SUPPORTED )
 	mServer.close();
+#endif
 
 	return( NodeControlBase::deinitialise() );
 }
+
+#if defined( WEBSOCKET_SUPPORTED )
 
 void WebSocketDataServerNode::serverNewConnection()
 {
@@ -129,3 +145,5 @@ void WebSocketDataServerNode::socketBinaryMessageReceived(QByteArray pMessage)
 		qDebug() << Socket << pMessage << "(binary)";
 	}
 }
+
+#endif
