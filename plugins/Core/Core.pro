@@ -69,7 +69,8 @@ SOURCES += \
     autorangenode.cpp \
     variantlistpin.cpp \
     arraylistpin.cpp \
-    rectpin.cpp
+    rectpin.cpp \
+    getsizenode.cpp
 
 HEADERS += \
     stringpin.h \
@@ -129,7 +130,9 @@ HEADERS += \
     ../../include/fugio/core/array_list_interface.h \
     arraylistpin.h \
     arraylistentry.h \
-    rectpin.h
+    rectpin.h \
+    ../../include/fugio/core/size_interface.h \
+    getsizenode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

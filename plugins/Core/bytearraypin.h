@@ -7,12 +7,13 @@
 #include <fugio/pin_control_interface.h>
 
 #include <fugio/core/variant_interface.h>
+#include <fugio/core/size_interface.h>
 
 #include <fugio/pincontrolbase.h>
 
 #include <fugio/serialise_interface.h>
 
-class ByteArrayPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::SerialiseInterface
+class ByteArrayPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::SerialiseInterface, public fugio::SizeInterface
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface )
@@ -71,8 +72,21 @@ public:
 		pDataStream >> mValue;
 	}
 
+	//-------------------------------------------------------------------------
+	// fugio::SizeInterface interface
+
+public:
+	virtual int sizeDimensions() const Q_DECL_OVERRIDE;
+	virtual float size(int pDimension) const Q_DECL_OVERRIDE;
+	virtual float sizeWidth() const Q_DECL_OVERRIDE;
+	virtual float sizeHeight() const Q_DECL_OVERRIDE;
+	virtual float sizeDepth() const Q_DECL_OVERRIDE;
+	virtual QSizeF toSizeF() const Q_DECL_OVERRIDE;
+	virtual QVector3D toVector3D() const Q_DECL_OVERRIDE;
+
 private:
 	QByteArray		mValue;
+
 };
 
 #endif // BYTEARRAYPIN_H

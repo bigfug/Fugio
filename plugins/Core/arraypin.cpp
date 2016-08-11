@@ -158,3 +158,39 @@ void ArrayPin::listSetSize( int pSize )
 		mArray.resize( NewSze );
 	}
 }
+
+
+int ArrayPin::sizeDimensions() const
+{
+	return( 1 );
+}
+
+float ArrayPin::size(int pDimension) const
+{
+	return( pDimension == 0 ? mCount : 0 );
+}
+
+float ArrayPin::sizeWidth() const
+{
+	return( mCount );
+}
+
+float ArrayPin::sizeHeight() const
+{
+	return( 0 );
+}
+
+float ArrayPin::sizeDepth() const
+{
+	return( 0 );
+}
+
+QSizeF ArrayPin::toSizeF() const
+{
+	return( QSizeF( mCount, 0 ) );
+}
+
+QVector3D ArrayPin::toVector3D() const
+{
+	return( QVector3D( mCount, 0, 0 ) );
+}

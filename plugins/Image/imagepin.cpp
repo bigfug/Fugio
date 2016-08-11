@@ -310,3 +310,42 @@ bool ImagePin::isValid() const
 {
 	return( !mImageSize.isEmpty() && mImageFormat != fugio::ImageInterface::FORMAT_UNKNOWN );
 }
+
+
+int ImagePin::sizeDimensions() const
+{
+	return( 2 );
+}
+
+float ImagePin::size(int pDimension) const
+{
+	if( pDimension == 0 ) return( mImageSize.width() );
+	if( pDimension == 1 ) return( mImageSize.height() );
+
+	return( 0 );
+}
+
+float ImagePin::sizeWidth() const
+{
+	return( mImageSize.width() );
+}
+
+float ImagePin::sizeHeight() const
+{
+	return( mImageSize.height() );
+}
+
+float ImagePin::sizeDepth() const
+{
+	return( 0 );
+}
+
+QSizeF ImagePin::toSizeF() const
+{
+	return( mImageSize );
+}
+
+QVector3D ImagePin::toVector3D() const
+{
+	return( QVector3D( mImageSize.width(), mImageSize.height(), 0 ) );
+}
