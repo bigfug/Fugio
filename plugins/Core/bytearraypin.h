@@ -16,7 +16,7 @@
 class ByteArrayPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::SerialiseInterface, public fugio::SizeInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface )
+	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface fugio::SizeInterface )
 
 public:
 	Q_INVOKABLE explicit ByteArrayPin( QSharedPointer<fugio::PinInterface> pPin );
@@ -86,7 +86,6 @@ public:
 
 private:
 	QByteArray		mValue;
-
 };
 
 #endif // BYTEARRAYPIN_H
