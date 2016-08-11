@@ -70,14 +70,17 @@ private slots:
 
 	void contextFrameStart( void );
 
+	void dockSetVisible( bool pVisible );
+
 private:
-	QSharedPointer<fugio::PinInterface>			 mPinString;
-	fugio::VariantInterface						*mPinStringInterface;
+	QSharedPointer<fugio::PinInterface>		 mPinString;
+	fugio::VariantInterface					*mPinStringInterface;
 
 	QDockWidget								*mDockWidget;
 	TextEditorForm							*mTextEdit;
 
 	Qt::DockWidgetArea						 mDockArea;
+	bool									 mDockVisible;
 
 	QUuid									 mPinUuid;
 
