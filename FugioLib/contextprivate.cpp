@@ -1682,7 +1682,7 @@ void ContextPrivate::doFrameProcess( qint64 pTimeStamp )
 
 	bool	DoneFinalise = false;
 
-	while( !mUpdatedNodeList.empty() )
+	while( !mUpdatedNodeList.empty() || !DoneFinalise )
 	{
 		processUpdatedNodes( pTimeStamp );
 
