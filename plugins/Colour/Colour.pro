@@ -4,6 +4,8 @@
 #
 #-------------------------------------------------
 
+include( ../../FugioGlobal.pri )
+
 QT += gui widgets
 
 TARGET = $$qtLibraryTarget(fugio-colour)
@@ -11,13 +13,7 @@ TEMPLATE = lib
 CONFIG += plugin
 CONFIG += c++11
 
-CONFIG(debug,debug|release) {
-    DESTDIR = $$OUT_PWD/../../../deploy-debug-$$QMAKE_HOST.arch/plugins
-} else {
-    DESTDIR = $$OUT_PWD/../../../deploy-release-$$QMAKE_HOST.arch/plugins
-}
-
-include( ../../../Fugio/FugioGlobal.pri )
+DESTDIR = $$DESTDIR/plugins
 
 SOURCES += \
     colourbutton.cpp \
@@ -54,7 +50,7 @@ macx {
     CONFIG += lib_bundle
 
     BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
     INSTALLDEST  = $$INSTALLDIR/data/plugins
     INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
@@ -86,7 +82,7 @@ macx {
 }
 
 windows {
-    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
     CONFIG(release,debug|release) {

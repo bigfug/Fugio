@@ -4,6 +4,8 @@
 #
 #-------------------------------------------------
 
+include( ../FugioGlobal.pri )
+
 QT += core gui network opengl
 
 greaterThan( QT_MAJOR_VERSION, 4 ): QT += widgets concurrent
@@ -26,12 +28,6 @@ DEFINES += "FUGIO_VERSION=\"$$FUGIO_VERSION\""
 # It would be great to use this with config.xml and package.xml too, at some point...
 
 #-------------------------------------------------
-
-CONFIG(debug,debug|release) {
-	DESTDIR = $$OUT_PWD/../../deploy-debug-$$QMAKE_HOST.arch
-} else {
-	DESTDIR = $$OUT_PWD/../../deploy-release-$$QMAKE_HOST.arch
-}
 
 SOURCES += main.cpp\
 	mainwindow.cpp \
@@ -161,7 +157,7 @@ macx {
 	APP_DIR      = $$DESTDIR/$$TARGET".app"
 	PLUGIN_DIR   = $$APP_DIR/Contents/PlugIns
 	RESOURCE_DIR = $$APP_DIR/Contents/Resources
-	INSTALLBASE  = $$OUT_PWD/../../deploy-installer-$$QMAKE_HOST.arch
+        INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
@@ -201,7 +197,7 @@ macx {
 }
 
 windows {
-	INSTALLBASE  = $$OUT_PWD/../../deploy-installer-$$QMAKE_HOST.arch
+        INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {

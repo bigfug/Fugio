@@ -4,18 +4,14 @@
 #
 #-------------------------------------------------
 
+include( ../FugioGlobal.pri )
+
 QT -= gui
 QT += widgets concurrent network
 
 TARGET = $$qtLibraryTarget(fugio)
 TEMPLATE = lib
 CONFIG += c++11
-
-CONFIG(debug,debug|release) {
-	DESTDIR = $$OUT_PWD/../../deploy-debug-$$QMAKE_HOST.arch
-} else {
-	DESTDIR = $$OUT_PWD/../../deploy-release-$$QMAKE_HOST.arch
-}
 
 DEFINES += FUGIOLIB_LIBRARY
 
@@ -69,7 +65,7 @@ TRANSLATIONS = fugio_fr.ts
 macx {
     DEFINES += TARGET_OS_MAC
 
-	INSTALLDIR = $$OUT_PWD/../../deploy-installer-$$QMAKE_HOST.arch/packages/com.bigfug.fugio
+	INSTALLDIR = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch/packages/com.bigfug.fugio
 
     CONFIG(release,debug|release) {
         QMAKE_POST_LINK += mkdir -pv $$INSTALLDIR/data
@@ -82,7 +78,7 @@ macx {
 windows {
 	QMAKE_LFLAGS_DEBUG += /INCREMENTAL:NO
 
-	INSTALLDIR = $$OUT_PWD/../../deploy-installer-$$QMAKE_HOST.arch/packages/com.bigfug.fugio
+	INSTALLDIR = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
 		QMAKE_POST_LINK += echo
