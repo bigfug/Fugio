@@ -26,7 +26,8 @@ SOURCES += textplugin.cpp \
 	codeeditor.cpp \
 	regexpnode.cpp \
 	numbertostringnode.cpp \
-	stringjoinnode.cpp
+	stringjoinnode.cpp \
+    linebuffernode.cpp
 
 HEADERS += textplugin.h\
 	../../include/fugio/nodecontrolbase.h \
@@ -39,7 +40,8 @@ HEADERS += textplugin.h\
 	linenumberarea.h \
 	regexpnode.h \
 	numbertostringnode.h \
-	stringjoinnode.h
+	stringjoinnode.h \
+    linebuffernode.h
 	cmdtexteditorupdate.h
 
 FORMS += \
