@@ -48,6 +48,8 @@
 
 #include "patchpromptdialog.h"
 
+#include "settings/settingsdialog.h"
+
 #if QT_VERSION < QT_VERSION_CHECK( 5, 5, 0 )
 #define qInfo qDebug
 #endif
@@ -1145,11 +1147,11 @@ void MainWindow::on_actionSelect_to_snippit_triggered()
 		return;
 	}
 
-	QFileInfo	FileInfo( QDir( ui->mSnippets->root() ), FileName );
+	QFileInfo	FileInfo( QDir( gApp->userSnippetsDirectory() ), FileName );
 
 	if( FileInfo.suffix().toLower() != "fug" )
 	{
-		FileInfo.setFile( QDir( ui->mSnippets->root() ), FileName + ".fug" );
+		FileInfo.setFile( QDir( gApp->userSnippetsDirectory() ), FileName + ".fug" );
 	}
 
 	if( FileInfo.exists() )
@@ -1387,4 +1389,11 @@ void MainWindow::loggerContextMenu( const QPoint &pPoint )
 	Menu->exec( ui->mLogger->mapToGlobal( pPoint ) );
 
 	delete Menu;
+}
+
+void MainWindow::on_actionOptions_triggered()
+{
+	SettingsDialog		Dialog( this );
+
+	Dialog.exec();
 }

@@ -18,11 +18,6 @@ public:
 
 	~SnippetsForm();
 
-	QString root( void ) const
-	{
-		return( mUsrRoot );
-	}
-
 private slots:
 	void on_mSnippetSource_currentIndexChanged(int index);
 
@@ -32,10 +27,10 @@ private slots:
 
 	void userNewFolder( void );
 
+	void userSnippetsDirectoryChanged( const QString &pDirectory );
+
 private:
 	Ui::SnippetsForm			*ui;
-
-	QString						 mUsrRoot;
 
 	QFileSystemModel			 mFileSystem;
 	QFileSystemModel			 mUserSystem;

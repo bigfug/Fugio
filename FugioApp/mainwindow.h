@@ -164,6 +164,8 @@ private slots:
 
 	void loggerContextMenu( const QPoint &pPoint );
 
+	void on_actionOptions_triggered();
+
 private:
 	Ui::MainWindow								*ui;
 

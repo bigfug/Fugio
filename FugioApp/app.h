@@ -48,11 +48,19 @@ public:
 
 	void recordData( const QString &pName, const QString &pValue );
 
+	QString userSnippetsDirectory( void ) const;
+
+	void setUserSnippetsDirectory( const QString &pDirectory );
+
+signals:
+	void userSnippetsDirectoryChanged( const QString &pDirectory );
+
 private:
 	MainWindow				*mMainWindow;
 	GlobalPrivate			*mGlobal;
 	QUndoGroup				 mUndoGroup;
 	QNetworkAccessManager	 mNetworkAccessManager;
+	QString					 mUserSnippetsDirectory;
 };
 
 #define gApp (static_cast<App *>(QCoreApplication::instance()))

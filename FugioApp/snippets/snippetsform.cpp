@@ -7,6 +7,8 @@
 #include <QFile>
 #include <QInputDialog>
 
+#include "app.h"
+
 #if QT_VERSION < QT_VERSION_CHECK( 5, 5, 0 )
 #define qInfo qDebug
 #endif
@@ -17,20 +19,13 @@ SnippetsForm::SnippetsForm(QWidget *parent) :
 {
 	ui->setupUi( this );
 
-	QDir	UsrDir = QDir( QStandardPaths::writableLocation( QStandardPaths::DataLocation ) );
+	QString UsrDir = gApp->userSnippetsDirectory();
 
-	if( !QDir( UsrDir.absoluteFilePath( "snippets" ) ).exists() )
-	{
-		UsrDir.mkdir( "snippets" );
-	}
+	qInfo() << "Snippets Directory:" << UsrDir;
 
-	UsrDir.cd( "snippets" );
+	connect( gApp, SIGNAL(userSnippetsDirectoryChanged(QString)), this, SLOT(userSnippetsDirectoryChanged(QString)) );
 
-	mUsrRoot = UsrDir.absolutePath();
-
-	qInfo() << "Snippets Directory:" << mUsrRoot;
-
-	mUserSystem.setRootPath( mUsrRoot );
+	mUserSystem.setRootPath( UsrDir );
 	mUserSystem.setReadOnly( false );
 	mUserSystem.setNameFilters( { "*.fug" } );
 
@@ -61,7 +56,7 @@ SnippetsForm::SnippetsForm(QWidget *parent) :
 	SysDir.cd( "Fugio" );
 #endif
 
-#elif defined( Q_OS_WIN )
+#elif
 
 #if defined( QT_DEBUG )
 	SysDir.cdUp();
@@ -196,4 +191,11 @@ void SnippetsForm::userNewFolder()
 	{
 		QMessageBox::warning( nullptr, tr( "Folder Error" ), tr( "Can't create the folder" ), QMessageBox::Ok, QMessageBox::NoButton );
 	}
+}
+
+void SnippetsForm::userSnippetsDirectoryChanged( const QString &pDirectory )
+{
+	mUserSystem.setRootPath( pDirectory );
+
+	ui->mUser->setRootIndex( mUserSystem.index( mUserSystem.rootPath() ) );
 }

@@ -58,7 +58,8 @@ SOURCES += main.cpp\
 	model/notemodel.cpp \
 	model/pinmodel.cpp \
 	model/pinlistmodel.cpp \
-	model/baselistmodel.cpp
+	model/baselistmodel.cpp \
+    settings/settingsdialog.cpp
 
 HEADERS  += mainwindow.h \
 	app.h \
@@ -122,7 +123,8 @@ HEADERS  += mainwindow.h \
 	model/notemodel.h \
 	model/pinmodel.h \
 	model/pinlistmodel.h \
-	model/baselistmodel.h
+	model/baselistmodel.h \
+    settings/settingsdialog.h
 
 FORMS    += mainwindow.ui \
 	contextwidgetprivate.ui \
@@ -131,7 +133,8 @@ FORMS    += mainwindow.ui \
 	performanceform.ui \
 	nodelistform.ui \
 	snippets/snippetsform.ui \
-	patchpromptdialog.ui
+	patchpromptdialog.ui \
+    settings/settingsdialog.ui
 
 RC_FILE = fugio.rc
 

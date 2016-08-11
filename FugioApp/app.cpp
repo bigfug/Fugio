@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QNetworkAccessManager>
+#include <QStandardPaths>
 
 #include "app.h"
 #include "mainwindow.h"
@@ -16,6 +17,22 @@
 App::App( int &argc, char **argv ) :
 	QApplication( argc, argv ), mMainWindow( 0 ), mGlobal( 0 )
 {
+	QSettings		Settings;
+
+	QDir			UsrDir = QDir( QStandardPaths::writableLocation( QStandardPaths::DataLocation ) );
+
+	mUserSnippetsDirectory = Settings.value( "snippets-directory", UsrDir.absoluteFilePath( "snippets" ) ).toString();
+
+	if( !QDir( mUserSnippetsDirectory ).exists() )
+	{
+		if( !QDir( UsrDir.absoluteFilePath( "snippets" ) ).exists() )
+		{
+			UsrDir.mkdir( "snippets" );
+		}
+
+		mUserSnippetsDirectory = UsrDir.absoluteFilePath( "snippets" );
+	}
+
 	mGlobal = qobject_cast<GlobalPrivate *>( fugio::fugio()->qobject() );
 }
 
@@ -77,5 +94,22 @@ void App::recordData( const QString &pName, const QString &pValue )
 	if( mNetworkAccessManager.networkAccessible() == QNetworkAccessManager::Accessible )
 	{
 		mNetworkAccessManager.get( QNetworkRequest( Url ) );
+	}
+}
+
+QString App::userSnippetsDirectory() const
+{
+	return( mUserSnippetsDirectory );
+}
+
+void App::setUserSnippetsDirectory( const QString &pDirectory )
+{
+	if( mUserSnippetsDirectory != pDirectory )
+	{
+		QSettings().setValue( "snippets-directory", pDirectory );
+
+		mUserSnippetsDirectory = pDirectory;
+
+		emit userSnippetsDirectoryChanged( mUserSnippetsDirectory );
 	}
 }
