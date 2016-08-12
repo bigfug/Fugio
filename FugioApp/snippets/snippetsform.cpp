@@ -56,7 +56,7 @@ SnippetsForm::SnippetsForm(QWidget *parent) :
 	SysDir.cd( "Fugio" );
 #endif
 
-#elif
+#else
 
 #if defined( QT_DEBUG )
 	SysDir.cdUp();
