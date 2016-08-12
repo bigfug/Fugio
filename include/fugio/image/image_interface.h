@@ -69,10 +69,10 @@ public:
 	virtual quint8 **internalBuffers( void ) = 0;
 	virtual quint8 **internalBuffers( void ) const = 0;
 
-    virtual const quint8 *buffer( int pIndex ) = 0;
+	virtual const quint8 *buffer( int pIndex ) = 0;
 	virtual const quint8 *buffer( int pIndex ) const = 0;
 
-    //virtual const quint8 * const *buffers( void ) = 0;
+	//virtual const quint8 * const *buffers( void ) = 0;
 	virtual const quint8 * const *buffers( void ) const = 0;
 
 	virtual int bufferSize( int pIndex ) const = 0;
@@ -108,7 +108,9 @@ public:
 			case FORMAT_RGB8:	return( QImage::Format_RGB888 );
 			case FORMAT_RGBA8:	return( QImage::Format_ARGB32_Premultiplied );
 			case FORMAT_BGRA8:	return( QImage::Format_ARGB32_Premultiplied );
+#if QT_VERSION > QT_VERSION_CHECK( 5, 4, 0 )
 			case FORMAT_GRAY8:	return( QImage::Format_Grayscale8 );
+#endif
 			default:			break;
 		}
 
@@ -122,7 +124,9 @@ public:
 			case QImage::Format_RGB888:					return( FORMAT_RGB8 );
 			case QImage::Format_ARGB32:					return( FORMAT_RGBA8 );
 			case QImage::Format_ARGB32_Premultiplied:	return( FORMAT_RGBA8 );
+#if QT_VERSION > QT_VERSION_CHECK( 5, 4, 0 )
 			case QImage::Format_Grayscale8:				return( FORMAT_GRAY8 );
+#endif
 			default:									break;
 		}
 

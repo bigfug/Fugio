@@ -26,6 +26,9 @@
 #include "luaimage.h"
 #include "luatransform.h"
 #include "luamatrix4x4.h"
+#include "luajsondocument.h"
+#include "luajsonarray.h"
+#include "luajsonobject.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
@@ -52,6 +55,10 @@ const luaL_Reg LuaQtPlugin::mLuaFunctions[] =
 	{ "fontmetrics", LuaFontMetrics::luaNew },
 	{ "gradient", LuaGradient::luaNew },
 	{ "image", LuaImage::luaNew },
+	{ "jsonarray", LuaJsonArray::luaNew },
+	{ "jsondocument", LuaJsonDocument::luaNew },
+	{ "jsonobject", LuaJsonObject::luaNew },
+	{ "matrix4x4", LuaMatrix4x4::luaNew },
 	{ "pen", LuaPen::luaNew },
 	{ "point", LuaPointF::luaNew },
 	{ "rect", LuaRectF::luaNew },
@@ -95,6 +102,9 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaRegisterExtension( LuaFontMetrics::luaOpen );
 	LUA->luaRegisterExtension( LuaGradient::luaOpen );
 	LUA->luaRegisterExtension( LuaImage::luaOpen );
+	LUA->luaRegisterExtension( LuaJsonArray::luaOpen );
+	LUA->luaRegisterExtension( LuaJsonDocument::luaOpen );
+	LUA->luaRegisterExtension( LuaJsonObject::luaOpen );
 	LUA->luaRegisterExtension( LuaPainter::luaOpen );
 	LUA->luaRegisterExtension( LuaPen::luaOpen );
 	LUA->luaRegisterExtension( LuaPointF::luaOpen );

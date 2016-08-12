@@ -101,6 +101,8 @@
     <addaction name="menuRecent"/>
     <addaction name="menuExamples"/>
     <addaction name="separator"/>
+    <addaction name="actionOptions"/>
+    <addaction name="separator"/>
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
     <addaction name="actionSave_all"/>
@@ -115,7 +117,7 @@
     <addaction name="actionLogger"/>
     <addaction name="actionNodes"/>
     <addaction name="actionPerformance"/>
-    <addaction name="actionSnippits"/>
+    <addaction name="actionSnippets"/>
     <addaction name="actionStylesheet"/>
    </widget>
    <widget class="QMenu" name="menu_Edit">
@@ -292,14 +294,14 @@
    </attribute>
    <widget class="PerformanceForm" name="mPerformance"/>
   </widget>
-  <widget class="QDockWidget" name="mSnippitsDockWidget">
+  <widget class="QDockWidget" name="mSnippetsDockWidget">
    <property name="windowTitle">
-    <string>Snippits</string>
+    <string>Snippets</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="SnippitsForm" name="mSnippits"/>
+   <widget class="SnippetsForm" name="mSnippets"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -366,6 +368,9 @@
   <action name="actionExit">
    <property name="text">
     <string>E&amp;xit</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::QuitRole</enum>
    </property>
   </action>
   <action name="actionCursorToStart">
@@ -623,7 +628,7 @@
     <string>Ctrl+P</string>
    </property>
   </action>
-  <action name="actionSnippits">
+  <action name="actionSnippets">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -631,7 +636,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Snippits</string>
+    <string>Snippets</string>
    </property>
   </action>
   <action name="actionSelect_to_snippit">
@@ -672,6 +677,14 @@
     <string>Save All</string>
    </property>
   </action>
+  <action name="actionOptions">
+   <property name="text">
+    <string>Options...</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::PreferencesRole</enum>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -694,9 +707,9 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>SnippitsForm</class>
+   <class>SnippetsForm</class>
    <extends>QWidget</extends>
-   <header>snippits/snippitsform.h</header>
+   <header>snippets/snippetsform.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

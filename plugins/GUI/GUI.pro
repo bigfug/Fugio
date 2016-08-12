@@ -4,6 +4,8 @@
 #
 #-------------------------------------------------
 
+include( ../../FugioGlobal.pri )
+
 QT += gui widgets
 
 TARGET = $$qtLibraryTarget(fugio-gui)
@@ -11,13 +13,7 @@ TEMPLATE = lib
 CONFIG += plugin
 CONFIG += c++11
 
-CONFIG(debug,debug|release) {
-	DESTDIR = $$OUT_PWD/../../../deploy-debug-$$QMAKE_HOST.arch/plugins
-} else {
-	DESTDIR = $$OUT_PWD/../../../deploy-release-$$QMAKE_HOST.arch/plugins
-}
-
-include( ../../../Fugio/FugioGlobal.pri )
+DESTDIR = $$DESTDIR/plugins
 
 DEFINES += BASENODES_LIBRARY
 
@@ -28,7 +24,6 @@ SOURCES += \
     lcdnumbernode.cpp \
     keyboardnode.cpp \
     lednode.cpp \
-    ledwidget.cpp \
     keyboarddialog.cpp \
     guiplugin.cpp \
     slidernode.cpp \
@@ -37,7 +32,11 @@ SOURCES += \
     choicenode.cpp \
     numbermonitorform.cpp \
     numbermonitornode.cpp \
-    stringnode.cpp
+    stringnode.cpp \
+    leditem.cpp \
+    dialnode.cpp \
+    dialwidget.cpp \
+    screennode.cpp
 
 HEADERS += \
     floatnode.h \
@@ -52,7 +51,6 @@ HEADERS += \
     numbermonitornode.h \
     keyboardnode.h \
     lednode.h \
-    ledwidget.h \
     keyboarddialog.h \
     guiplugin.h \
     choicenode.h \
@@ -60,7 +58,11 @@ HEADERS += \
     keyboardpin.h \
     slidernode.h \
     mainwindownode.h \
-    stringnode.h
+    stringnode.h \
+    leditem.h \
+    dialnode.h \
+    dialwidget.h \
+    screennode.h
 
 FORMS += \
     numbermonitorform.ui \
@@ -75,7 +77,7 @@ macx {
     CONFIG += lib_bundle
 
     BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
     INSTALLDEST  = $$INSTALLDIR/data/plugins
     INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
@@ -109,7 +111,7 @@ macx {
 }
 
 windows {
-	INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+        INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {

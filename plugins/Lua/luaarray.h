@@ -70,7 +70,9 @@ private:
 	static int luaSet( lua_State *L );
 	static int luaLen( lua_State *L );
 	static int luaToArray( lua_State *L );
+	static int luaReserve( lua_State *L );
 	static int luaResize( lua_State *L );
+	static int luaSetCount( lua_State *L );
 	static int luaSetType( lua_State *L );
 
 private:

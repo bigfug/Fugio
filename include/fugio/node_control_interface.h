@@ -10,6 +10,7 @@
 
 class QWidget;
 class QSettings;
+class QGraphicsItem;
 
 FUGIO_NAMESPACE_BEGIN
 class NodeInterface;
@@ -21,6 +22,8 @@ public:
 	virtual ~NodeControlInterface( void ) { }
 
 	virtual QObject *qobject( void ) = 0;
+
+	virtual QGraphicsItem *guiItem( void ) = 0;
 
 	virtual QWidget *gui( void ) = 0;
 

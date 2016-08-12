@@ -14,19 +14,21 @@ class ArrayListEntry : public QObject, public fugio::ArrayInterface
 
 public:
 	ArrayListEntry( void )
-		: mData( nullptr ), mType( QMetaType::UnknownType ), mStride( 0 ), mCount( 0 ), mSize( 0 )
+		: mData( nullptr ), mType( QMetaType::UnknownType ), mStride( 0 ),
+		  mCount( 0 ), mSize( 0 ), mReserve( 0 )
 	{
 
 	}
 
 	ArrayListEntry ( const ArrayListEntry &pSrc )
-		: mArray( pSrc.mArray )
+		: QObject(), mArray( pSrc.mArray )
 	{
-		mData   = pSrc.mData;
-		mType   = pSrc.mType;
-		mStride = pSrc.mStride;
-		mCount  = pSrc.mCount;
-		mSize   = pSrc.mSize;
+		mData    = pSrc.mData;
+		mType    = pSrc.mType;
+		mStride  = pSrc.mStride;
+		mCount   = pSrc.mCount;
+		mSize    = pSrc.mSize;
+		mReserve = pSrc.mReserve;
 	}
 
 	virtual ~ArrayListEntry( void ) {}
@@ -58,6 +60,11 @@ public:
 		return( mSize );
 	}
 
+	virtual void reserve( int pCount ) Q_DECL_OVERRIDE
+	{
+		mReserve = pCount;
+	}
+
 	virtual void setArray( void *pArray ) Q_DECL_OVERRIDE
 	{
 		mData = pArray;
@@ -75,7 +82,7 @@ public:
 			return( mData );
 		}
 
-		mArray.resize( ( ( mStride * mCount ) / sizeof( qlonglong ) ) + 1 );
+		mArray.resize( ( ( mStride * qMax( mCount, mReserve ) ) / sizeof( qlonglong ) ) + 1 );
 
 		return( mArray.data() );
 	}
@@ -102,6 +109,7 @@ private:
 	int					 mStride;
 	int					 mCount;
 	int					 mSize;
+	int					 mReserve;
 };
 
 #endif // ARRAYENTRY_H

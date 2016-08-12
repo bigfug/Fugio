@@ -14,8 +14,7 @@
 #include <fugio/core/variant_interface.h>
 #include <fugio/core/uuid.h>
 
-DeviceMidi::DeviceMap			 DeviceMidi::mMidiInputDevices;
-DeviceMidi::DeviceMap			 DeviceMidi::mMidiOutputDevices;
+QList<QWeakPointer<DeviceMidi>>	 DeviceMidi::mDeviceList;
 
 bool DeviceMidi::deviceInitialise( void )
 {
@@ -28,47 +27,49 @@ bool DeviceMidi::deviceInitialise( void )
 		return( false );
 	}
 
-	updateDeviceList();
-
 	return( true );
 }
 
-void DeviceMidi::updateDeviceList()
+QString DeviceMidi::deviceOutputDefaultName()
 {
-	for( int i = 0 ; i < Pm_CountDevices() ; i++ )
+	return( deviceName( Pm_GetDefaultOutputDeviceID() ) );
+}
+
+QString DeviceMidi::deviceInputDefaultName()
+{
+	return( deviceName( Pm_GetDefaultInputDeviceID() ) );
+}
+
+QSharedPointer<DeviceMidi> DeviceMidi::newDevice( PmDeviceID pDevIdx )
+{
+	for( QSharedPointer<DeviceMidi> DevIns : mDeviceList )
 	{
-		const PmDeviceInfo	*DevInf = Pm_GetDeviceInfo( i );
-
-		if( !DevInf )
+		if( DevIns && DevIns->mDeviceId == pDevIdx )
 		{
-			continue;
-		}
-
-		const QString		 DevNam = nameFromDeviceInfo( DevInf );
-
-		if( DevInf->input && mMidiInputDevices.find( DevNam ) == mMidiInputDevices.end() )
-		{
-			mMidiInputDevices.insert( DevNam, QWeakPointer<DeviceMidi>() );
-		}
-
-		if( DevInf->output && mMidiOutputDevices.find( DevNam ) == mMidiOutputDevices.end() )
-		{
-			mMidiOutputDevices.insert( DevNam, QWeakPointer<DeviceMidi>() );
+			return( DevIns );
 		}
 	}
+
+	QSharedPointer<DeviceMidi> NewDev = QSharedPointer<DeviceMidi>( new DeviceMidi( pDevIdx ) );
+
+	if( NewDev )
+	{
+		mDeviceList.append( NewDev );
+	}
+
+	return( NewDev );
 }
 
 void DeviceMidi::deviceDeinitialise( void )
 {
-	mMidiInputDevices.clear();
-	mMidiOutputDevices.clear();
+	mDeviceList.clear();
 
 	Pm_Terminate();
 }
 
 void DeviceMidi::devicePacketStart( void )
 {
-	for( QSharedPointer<DeviceMidi> DM : mMidiInputDevices.values() )
+	for( QSharedPointer<DeviceMidi> DM : mDeviceList )
 	{
 		if( !DM || !DM->mStreamInput )
 		{
@@ -81,7 +82,7 @@ void DeviceMidi::devicePacketStart( void )
 
 void DeviceMidi::devicePacketEnd()
 {
-	for( QSharedPointer<DeviceMidi> DM : mMidiOutputDevices.values() )
+	for( QSharedPointer<DeviceMidi> DM : mDeviceList )
 	{
 		if( !DM )
 		{
@@ -92,66 +93,92 @@ void DeviceMidi::devicePacketEnd()
 	}
 }
 
-QSharedPointer<DeviceMidi> DeviceMidi::findDeviceInput( const QString &pName )
+QStringList DeviceMidi::deviceInputNames()
 {
-	QSharedPointer<DeviceMidi>		DevPtr;
+	QStringList			DevLst;
 
-	DeviceMap::iterator				it = mMidiInputDevices.find( pName );
-
-	if( it == mMidiInputDevices.end() && !pName.startsWith( '<' ) )
+	for( int i = 0 ; i < Pm_CountDevices() ; i++ )
 	{
-		mMidiInputDevices.insert( pName, QWeakPointer<DeviceMidi>() );
+		const PmDeviceInfo	*DevInf = Pm_GetDeviceInfo( i );
 
-		it = mMidiInputDevices.find( pName );
-	}
-
-	if( it == mMidiOutputDevices.end() )
-	{
-		return( DevPtr );
-	}
-
-	DevPtr = it.value().toStrongRef();
-
-	if( !DevPtr )
-	{
-		if( ( DevPtr = QSharedPointer<DeviceMidi>( new DeviceMidi( pName, MidiDirection::INPUT ) ) ) != nullptr )
+		if( !DevInf )
 		{
-			it.value() = DevPtr;
+			continue;
+		}
+
+		if( DevInf->input )
+		{
+			DevLst << nameFromDeviceInfo( DevInf );
 		}
 	}
 
-	return( DevPtr );
+	return( DevLst );
 }
 
-QSharedPointer<DeviceMidi> DeviceMidi::findDeviceOutput( const QString &pName )
+QStringList DeviceMidi::deviceOutputNames()
 {
-	QSharedPointer<DeviceMidi>		DevPtr;
+	QStringList			DevLst;
 
-	DeviceMap::iterator				it = mMidiOutputDevices.find( pName );
-
-	if( it == mMidiOutputDevices.end() && !pName.startsWith( '<' ) )
+	for( int i = 0 ; i < Pm_CountDevices() ; i++ )
 	{
-		mMidiOutputDevices.insert( pName, QWeakPointer<DeviceMidi>() );
+		const PmDeviceInfo	*DevInf = Pm_GetDeviceInfo( i );
 
-		it = mMidiOutputDevices.find( pName );
-	}
-
-	if( it == mMidiOutputDevices.end() )
-	{
-		return( DevPtr );
-	}
-
-	DevPtr = it.value().toStrongRef();
-
-	if( !DevPtr )
-	{
-		if( ( DevPtr = QSharedPointer<DeviceMidi>( new DeviceMidi( pName, MidiDirection::OUTPUT ) ) ) != nullptr )
+		if( !DevInf )
 		{
-			it.value() = DevPtr;
+			continue;
+		}
+
+		if( DevInf->output )
+		{
+			DevLst << nameFromDeviceInfo( DevInf );
 		}
 	}
 
-	return( DevPtr );
+	return( DevLst );
+}
+
+PmDeviceID DeviceMidi::deviceOutputNameIndex(const QString &pDeviceName)
+{
+	PmDeviceID	DevCnt = Pm_CountDevices();
+
+	for( PmDeviceID DevIdx = 0 ; DevIdx < DevCnt ; DevIdx++ )
+	{
+		const PmDeviceInfo	*DevInf = Pm_GetDeviceInfo( DevIdx );
+
+		if( DevInf->output <= 0 )
+		{
+			continue;
+		}
+
+		if( pDeviceName == deviceName( DevIdx ) )
+		{
+			return( DevIdx );
+		}
+	}
+
+	return( pmNoDevice );
+}
+
+PmDeviceID DeviceMidi::deviceInputNameIndex(const QString &pDeviceName)
+{
+	PmDeviceID	DevCnt = Pm_CountDevices();
+
+	for( PmDeviceID DevIdx = 0 ; DevIdx < DevCnt ; DevIdx++ )
+	{
+		const PmDeviceInfo	*DevInf = Pm_GetDeviceInfo( DevIdx );
+
+		if( DevInf->input <= 0 )
+		{
+			continue;
+		}
+
+		if( pDeviceName == deviceName( DevIdx ) )
+		{
+			return( DevIdx );
+		}
+	}
+
+	return( pmNoDevice );
 }
 
 QString DeviceMidi::nameFromDeviceInfo( const PmDeviceInfo *pDevInf )
@@ -209,18 +236,36 @@ PmDeviceID DeviceMidi::findDeviceOutputId( const QString &pName )
 	return( pmNoDevice );
 }
 
+
+QString DeviceMidi::deviceName( PmDeviceID pDevIdx )
+{
+	if( pDevIdx == pmNoDevice )
+	{
+		return( QString() );
+	}
+
+	const PmDeviceInfo	*DevInf = Pm_GetDeviceInfo( pDevIdx );
+
+	if( !DevInf )
+	{
+		return( QString() );
+	}
+
+	return( nameFromDeviceInfo( DevInf ) );
+}
+
 //-----------------------------------------------------------------------------
 // Class instance
 
-DeviceMidi::DeviceMidi( const QString &pDeviceName, MidiDirection pDirection )
-	: mDeviceName( pDeviceName ), mStreamInput( nullptr ), mStreamOutput( nullptr )
+DeviceMidi::DeviceMidi( PmDeviceID pDevIdx )
+	: mDeviceName( deviceName( pDevIdx ) ), mDeviceId( pDevIdx ), mStreamInput( nullptr ), mStreamOutput( nullptr )
 {
 	PmError		ER;
 
-	if( pDirection == MidiDirection::INPUT )
-	{
-		mDeviceId = findDeviceInputId( mDeviceName );
+	const PmDeviceInfo	*DevInf = Pm_GetDeviceInfo( pDevIdx );
 
+	if( DevInf->input )
+	{
 		if( mDeviceId == pmNoDevice )
 		{
 			qWarning() << "PortMidi input device not available:" << mDeviceName;
@@ -234,10 +279,8 @@ DeviceMidi::DeviceMidi( const QString &pDeviceName, MidiDirection pDirection )
 			Pm_SetFilter( mStreamInput, PM_FILT_ACTIVE );
 		}
 	}
-	else
+	else if( DevInf->output )
 	{
-		mDeviceId = findDeviceOutputId( mDeviceName );
-
 		if( mDeviceId == pmNoDevice )
 		{
 			qWarning() << "PortMidi output device not available:" << mDeviceName;

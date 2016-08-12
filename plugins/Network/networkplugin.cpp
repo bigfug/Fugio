@@ -23,12 +23,19 @@
 #include "slipdecodenode.h"
 #include "slipencodenode.h"
 
+#include "cobsdecodenode.h"
+#include "cobsencodenode.h"
+
+#include "websocketdataservernode.h"
+
 QList<QUuid>	NodeControlBase::PID_UUID;
 
 NetworkPlugin *NetworkPlugin::mInstance = 0;
 
 ClassEntry	NodeClasses[] =
 {
+	ClassEntry( "COBS Decode", "Network", NID_COBS_DECODE, &COBSDecodeNode::staticMetaObject ),
+	ClassEntry( "COBS Encode", "Network", NID_COBS_ENCODE, &COBSEncodeNode::staticMetaObject ),
 	ClassEntry( "Get", "Network", NID_NETWORK_GET, &GetNode::staticMetaObject ),
 	ClassEntry( "TCP Send", "Network", NID_TCP_SEND, &TCPSendNode::staticMetaObject ),
 	ClassEntry( "TCP Receive", "Network", NID_TCP_RECEIVE, &TCPReceiveNode::staticMetaObject ),
@@ -38,6 +45,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "UDP Send Raw", "Network", NID_UDP_SEND_RAW, &UDPSendRawNode::staticMetaObject ),
 	ClassEntry( "SLIP Encode", "Network", NID_SLIP_ENCODE, &SLIPEncodeNode::staticMetaObject ),
 	ClassEntry( "SLIP Decode", "Network", NID_SLIP_DECODE, &SLIPDecodeNode::staticMetaObject ),
+	ClassEntry( "WebSocket Data Server", "Network", NID_WEBSOCKET_DATA_SERVER, &WebSocketDataServerNode::staticMetaObject ),
 	ClassEntry()
 };
 
@@ -102,10 +110,12 @@ void NetworkPlugin::menuNetworkInformation()
 			AddLst << "Loopback";
 		}
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 		if( HostAddr.isMulticast() )
 		{
 			AddLst << "Multicast";
 		}
+#endif
 
 		if( !HostAddr.scopeId().isEmpty() )
 		{

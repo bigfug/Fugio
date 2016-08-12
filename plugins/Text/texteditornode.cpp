@@ -19,7 +19,7 @@
 #include "textplugin.h"
 
 TextEditorNode::TextEditorNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mDockWidget( 0 ), mTextEdit( 0 ), mDockArea( Qt::BottomDockWidgetArea ), mHighlighter( 0 )
+	: NodeControlBase( pNode ), mDockWidget( 0 ), mTextEdit( 0 ), mDockArea( Qt::BottomDockWidgetArea ), mDockVisible( true ), mHighlighter( 0 )
 {
 	mPinStringInterface = pinOutput<fugio::VariantInterface *>( "Text", mPinString, PID_STRING );
 
@@ -138,7 +138,9 @@ bool TextEditorNode::initialise( void )
 		return( false );
 	}
 
-	mDockWidget->setObjectName( mNode->name() );
+	mDockWidget->setObjectName( mNode->uuid().toString() );
+
+	connect( mDockWidget, SIGNAL(visibilityChanged(bool)), this, SLOT(dockSetVisible(bool)) );
 
 	if( ( mTextEdit = new TextEditorForm( mDockWidget ) ) == 0 )
 	{
@@ -158,6 +160,11 @@ bool TextEditorNode::initialise( void )
 	mTextEdit->updateNodeName( mNode->name() );
 
 	checkHighlighter();
+
+	if( !mDockVisible )
+	{
+		mDockWidget->hide();
+	}
 
 	return( true );
 }
@@ -181,6 +188,8 @@ void TextEditorNode::loadSettings( QSettings &pSettings )
 	mPinStringInterface->setVariant( QString::fromUtf8( pSettings.value( "value" ).toByteArray() ) );
 
 	mDockArea = (Qt::DockWidgetArea)pSettings.value( "dockarea", int( mDockArea ) ).toInt();
+
+	mDockVisible = pSettings.value( "visible", mDockVisible ).toBool();
 }
 
 void TextEditorNode::saveSettings( QSettings &pSettings ) const
@@ -188,6 +197,8 @@ void TextEditorNode::saveSettings( QSettings &pSettings ) const
 	pSettings.setValue( "value", mPinStringInterface->variant() );
 
 	pSettings.setValue( "dockarea", int( mDockArea ) );
+
+	pSettings.setValue( "visible", mDockVisible );
 }
 
 void TextEditorNode::setupTextEditor( QPlainTextEdit *pTextEdit )
@@ -213,7 +224,7 @@ void TextEditorNode::setupTextEditor( QPlainTextEdit *pTextEdit )
 
 void TextEditorNode::onEditClicked( void )
 {
-	if( mTextEdit == 0 )
+	if( !mTextEdit )
 	{
 		return;
 	}
@@ -291,5 +302,10 @@ void TextEditorNode::contextFrameStart()
 	// disconnect the frame start again
 
 	disconnect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
+}
+
+void TextEditorNode::dockSetVisible( bool pVisible )
+{
+	mDockVisible = pVisible;
 }
 

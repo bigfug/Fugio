@@ -27,6 +27,7 @@
 #define NID_TYPE_SIZE				(QUuid("{9bf765fa-6bde-4766-82be-03751e75348f}"))
 #define NID_FLOAT_THRESHOLD			(QUuid("{EB3D3721-A8B1-46D3-906D-EED2368E925B}"))
 #define NID_AUTO_NUMBER_RANGE		(QUuid("{4023e1f6-e46a-45d0-93e4-9d0247f8b888}"))
+#define NID_GET_SIZE				(QUuid("{2365991D-F0F6-4486-8E80-82BFCC671B93}"))
 
 #define NID_FADE					(QUuid("{420e29aa-b990-4a05-b643-78e6a53e6404}"))
 #define NID_INDEX					(QUuid("{1DA6D451-561E-4E03-93A3-B723046F43EB}"))
@@ -41,6 +42,7 @@
 #define PID_CHOICE					(QUuid("{C90A7F2B-7A6D-4919-8710-9BFB4CE5CD26}"))
 #define PID_FLOAT					(QUuid("{7de7061f-c1fa-4cd8-b5ed-612618df3d3f}"))
 #define PID_INTEGER					(QUuid("{9beb963d-dec9-46ec-a975-24928065eab7}"))
+#define PID_RECT					(QUuid("{d233238e-060f-4871-a26c-ecbab6ee3bcb}"))
 #define PID_SIZE					(QUuid("{bb86d541-f9e7-44ba-b2f7-5784b03e4243}"))
 #define PID_SIZE_3D					(QUuid("{5c3b286d-497c-4f89-bf70-bd8806efb5e2}"))
 #define PID_STRING					(QUuid("{73d477f8-54b1-43c2-a8d7-6cff03c293ff}"))

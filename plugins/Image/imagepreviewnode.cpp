@@ -77,7 +77,7 @@ bool ImagePreviewNode::initialise( void )
 			return( false );
 		}
 
-		mDockWidget->setObjectName( mNode->name() );
+		mDockWidget->setObjectName( mNode->uuid().toString() );
 
 		if( ( mGUI = new ImagePreview( mDockWidget ) ) == 0 )
 		{

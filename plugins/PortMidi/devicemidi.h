@@ -25,38 +25,22 @@ class DeviceMidi : public QObject
 	Q_OBJECT
 
 public:
-	typedef enum MidiDirection
-	{
-		INPUT, OUTPUT
-	} MidiDirection;
-
 	static bool deviceInitialise( void );
 	static void deviceDeinitialise( void );
 	static void devicePacketStart( void );
 	static void devicePacketEnd( void );
 
-	static void updateDeviceList( void );
+	static QStringList deviceInputNames( void );
 
-	static QStringList deviceInputNames( void )
-	{
-		QStringList		DevLst = mMidiInputDevices.keys();
+	static QStringList deviceOutputNames( void );
 
-		std::sort( DevLst.begin(), DevLst.end() );
+	static QString deviceOutputDefaultName( void );
+	static QString deviceInputDefaultName( void );
 
-		return( DevLst );
-	}
+	static QSharedPointer<DeviceMidi> newDevice( PmDeviceID pDevIdx );
 
-	static QStringList deviceOutputNames( void )
-	{
-		QStringList		DevLst = mMidiOutputDevices.keys();
-
-		std::sort( DevLst.begin(), DevLst.end() );
-
-		return( DevLst );
-	}
-
-	static QSharedPointer<DeviceMidi> findDeviceInput( const QString &pName );
-	static QSharedPointer<DeviceMidi> findDeviceOutput( const QString &pName );
+	static PmDeviceID deviceOutputNameIndex( const QString &pDeviceName );
+	static PmDeviceID deviceInputNameIndex( const QString &pDeviceName );
 
 private:
 	static QString nameFromDeviceInfo( const PmDeviceInfo *pDevInf );
@@ -64,8 +48,10 @@ private:
 	static PmDeviceID findDeviceInputId( const QString &pName );
 	static PmDeviceID findDeviceOutputId( const QString &pName );
 
+	static QString deviceName( PmDeviceID pDevIdx );
+
 private:
-	explicit DeviceMidi( const QString &pDeviceName, MidiDirection pDirection );
+	explicit DeviceMidi( PmDeviceID pDevIdx );
 
 	void packetStart( void );
 	void packetEnd( void );
@@ -110,10 +96,7 @@ public:
 	}
 
 private:
-	typedef QMap<QString,QWeakPointer<DeviceMidi>>	DeviceMap;
-
-	static DeviceMap					 mMidiInputDevices;
-	static DeviceMap					 mMidiOutputDevices;
+	static QList<QWeakPointer<DeviceMidi>>			 mDeviceList;
 
 	const QString						 mDeviceName;
 	PmDeviceID							 mDeviceId;

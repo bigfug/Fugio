@@ -14,17 +14,7 @@ private:
 	{
 		static const char *TypeName;
 
-		float		mMatDat[ 16 ];
-
-		operator QMatrix4x4( void ) const
-		{
-			return( QMatrix4x4( mMatDat, 4, 4 ) );
-		}
-
-		void fromQMatrix4x4( const QMatrix4x4 &pMatrix )
-		{
-			memcpy( &mMatDat, pMatrix.constData(), sizeof( mMatDat ) );
-		}
+		QMatrix4x4			mMatrix;
 
 	} QMatrix4x4UserData;
 
@@ -50,7 +40,7 @@ public:
 		luaL_getmetatable( L, Matrix4x4UserData::TypeName );
 		lua_setmetatable( L, -2 );
 
-		UD->fromQMatrix4x4( pMatrix );
+		new( &UD->mMatrix ) QMatrix4x4( pMatrix );
 
 		return( 1 );
 	}
@@ -64,7 +54,7 @@ public:
 	{
 		Matrix4x4UserData *UD = checkMatrix4x4userdata( L, i );
 
-		return( *UD );
+		return( UD->mMatrix );
 	}
 
 	static int luaPinGet( const QUuid &pPinLocalId, lua_State *L );
@@ -79,22 +69,23 @@ private:
 		return( UD );
 	}
 
-//	static int luaDotProduct( lua_State *L );
-
 //	static int luaAdd( lua_State *L );
 //	static int luaDiv( lua_State *L );
 //	static int luaEq( lua_State *L );
 	static int luaMul( lua_State *L );
 //	static int luaSub( lua_State *L );
 
-//	static int luaIsNull( lua_State *L );
-//	static int luaManhattanLength( lua_State *L );
-//	static int luaSetX( lua_State *L );
-//	static int luaSetY( lua_State *L );
-//	static int luaX( lua_State *L );
-//	static int luaY( lua_State *L );
+	static int luaOrtho( lua_State *L );
+	static int luaPerspective( lua_State *L );
 
+	static int luaRotate( lua_State *L );
+	static int luaScale( lua_State *L );
+	static int luaTranslate( lua_State *L );
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 )
 	static int luaIsAffine( lua_State *L );
+#endif
+
 	static int luaIsIdentity( lua_State *L );
 
 	static int luaToArray( lua_State *L );

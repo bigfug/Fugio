@@ -8,37 +8,15 @@
 
 #include <fugio/context_interface.h>
 #include <fugio/core/variant_interface.h>
-//#include <fugio/colour/colour_interface.h>
 #include <fugio/context_signals.h>
-//#include <fugio/contextwidget.h>
+
+#include "leditem.h"
 
 LedNode::LedNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mLedVal( 0 ), mLastTime( -1 ), mLedColour( Qt::red ),
 	  mLedMode( BOOLEAN )
 {
-	mPinInput = pinInput( "Input" );
-//	mPinColour = pinInput( "Colour" );
-}
-
-QWidget *LedNode::gui()
-{
-	LedWidget				*GUI;
-
-	if( !( GUI = new LedWidget() ) )
-	{
-		return( 0 );
-	}
-
-	GUI->setColour( mLedColour );
-	GUI->setBrightness( mLedVal );
-
-	connect( this, SIGNAL(brightnessChanged(double)), GUI, SLOT(setBrightness(double)) );
-
-	connect( this, SIGNAL(colourChanged(QColor)), GUI, SLOT(setColour(QColor)) );
-
-	connect( GUI, SIGNAL(colourChanged(QColor)), this, SLOT(onColourChanged(QColor)) );
-
-	return( GUI );
+	mPinInput = pinInput( "" );
 }
 
 bool LedNode::initialise()
@@ -114,16 +92,6 @@ void LedNode::inputsUpdated( qint64 pTimeStamp )
 
 		emit brightnessChanged( mLedVal );
 	}
-
-//	InterfaceColour			*C = input<InterfaceColour *>( mPinColour );
-
-//	if( C )
-//	{
-//		mLedColour = C->colour();
-
-//	emit colourChanged( mLedColour );
-
-//	}
 }
 
 void LedNode::onFrameStart( qint64 pTimeStamp )
@@ -181,4 +149,24 @@ void LedNode::loadSettings( QSettings &pSettings )
 void LedNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "colour", mLedColour );
+}
+
+QGraphicsItem *LedNode::guiItem()
+{
+	LEDItem			*GUI = new LEDItem();
+
+	if( GUI )
+	{
+		GUI->setColour( mLedColour );
+
+		GUI->setBrightness( mLedVal );
+
+		connect( this, SIGNAL(brightnessChanged(double)), GUI, SLOT(setBrightness(double)) );
+
+		connect( this, SIGNAL(colourChanged(QColor)), GUI, SLOT(setColour(QColor)) );
+
+		connect( GUI, SIGNAL(colourChanged(QColor)), this, SLOT(onColourChanged(QColor)) );
+	}
+
+	return( GUI );
 }

@@ -4,6 +4,7 @@
 #include <fugio/context_interface.h>
 
 #include <QSizeF>
+#include <QRectF>
 
 SplitSizeNode::SplitSizeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -21,18 +22,42 @@ void SplitSizeNode::inputsUpdated( qint64 pTimeStamp )
 {
 	if( mPinInput->isUpdated( pTimeStamp ) )
 	{
-		QSizeF				 CurSze = variant( mPinInput ).toSizeF();
+		fugio::VariantInterface		*V = input<fugio::VariantInterface *>( mPinInput );
 
-		if( mWidth->variant().toReal() != CurSze.width() )
+		QSizeF						 S;
+
+		if( V )
 		{
-			mWidth->setVariant( CurSze.width() );
+			switch( QMetaType::Type( V->variant().type() ) )
+			{
+				case QMetaType::QSize:
+					S = V->variant().toSize();
+					break;
+
+				case QMetaType::QSizeF:
+					S = V->variant().toSizeF();
+					break;
+
+				case QMetaType::QRect:
+					S = V->variant().toRect().size();
+					break;
+
+				case QMetaType::QRectF:
+					S = V->variant().toRectF().size();
+					break;
+			}
+		}
+
+		if( mWidth->variant().toReal() != S.width() )
+		{
+			mWidth->setVariant( S.width() );
 
 			pinUpdated( mPinWidth );
 		}
 
-		if( mHeight->variant().toReal() != CurSze.height() )
+		if( mHeight->variant().toReal() != S.height() )
 		{
-			mHeight->setVariant( CurSze.height() );
+			mHeight->setVariant( S.height() );
 
 			pinUpdated( mPinHeight );
 		}

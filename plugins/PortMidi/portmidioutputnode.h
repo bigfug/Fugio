@@ -39,16 +39,20 @@ public:
 	virtual bool canAcceptPin(fugio::PinInterface *pPin) const Q_DECL_OVERRIDE;
 
 signals:
-	void deviceChanged( const QString &pDeviceName );
+	void midiDeviceChanged( const QString &pDeviceName );
 
 protected slots:
 	void onFrameStart();
 	void onFrameEnd( qint64 pTimeStamp );
 
-	void setDeviceName( const QString &pDeviceName );
+	void midiDeviceSelected( const QString &pDeviceName );
+
+	void rebuildDeviceList( void );
 
 private:
+	QStringList								 mDeviceList;
 	QString									 mDeviceName;
+
 	QSharedPointer<DeviceMidi>				 mDevice;
 
 	QSharedPointer<fugio::PinInterface>		 mPinClock;

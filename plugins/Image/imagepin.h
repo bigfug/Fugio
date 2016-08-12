@@ -9,13 +9,14 @@
 
 #include <fugio/image/image_interface.h>
 #include <fugio/image/uuid.h>
+#include <fugio/core/size_interface.h>
 
 #include <fugio/pincontrolbase.h>
 
-class ImagePin : public fugio::PinControlBase, public fugio::ImageInterface
+class ImagePin : public fugio::PinControlBase, public fugio::ImageInterface, public fugio::SizeInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::ImageInterface )
+	Q_INTERFACES( fugio::ImageInterface fugio::SizeInterface )
 
 public:
 	Q_INVOKABLE explicit ImagePin( QSharedPointer<fugio::PinInterface> pPin );
@@ -114,6 +115,17 @@ public:
 	virtual QImage image( void ) const Q_DECL_OVERRIDE;
 
 	virtual bool isValid( void ) const Q_DECL_OVERRIDE;
+
+	// SizeInterface interface
+public:
+	virtual int sizeDimensions() const Q_DECL_OVERRIDE;
+	virtual float size(int pDimension) const Q_DECL_OVERRIDE;
+	virtual float sizeWidth() const Q_DECL_OVERRIDE;
+	virtual float sizeHeight() const Q_DECL_OVERRIDE;
+	virtual float sizeDepth() const Q_DECL_OVERRIDE;
+	virtual QSizeF toSizeF() const Q_DECL_OVERRIDE;
+	virtual QVector3D toVector3D() const Q_DECL_OVERRIDE;
+
 private:
 	mutable quint8					*mImageBuffer[ 8 ];
 	mutable int						 mBufferSizes[ 8 ];
@@ -122,6 +134,7 @@ private:
 	int								 mLineWidth[ 8 ];
 	fugio::ImageInterface::Format	 mImageFormat;
 	int								 mImageInternalFormat;
+
 };
 
 #endif // IMAGEBUFFER_H

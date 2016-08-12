@@ -374,7 +374,9 @@ QVariant LuaPlugin::popVariant( lua_State *L, int idx )
 
 	if( lua_type( L, idx ) == LUA_TSTRING )
 	{
-		return( QString( lua_tostring( L, idx ) ) );
+		size_t		RawLen = lua_rawlen( L, idx );
+
+		return( QString::fromLatin1( lua_tostring( L, idx ), RawLen ) );
 	}
 
 	if( lua_type( L, idx ) == LUA_TNUMBER )

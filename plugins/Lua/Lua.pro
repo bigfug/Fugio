@@ -4,6 +4,8 @@
 #
 #-------------------------------------------------
 
+include( ../../FugioGlobal.pri )
+
 TARGET = $$qtLibraryTarget(fugio-lua)
 TEMPLATE = lib
 
@@ -11,13 +13,7 @@ CONFIG += plugin c++11
 
 QT += gui widgets
 
-CONFIG(debug,debug|release) {
-    DESTDIR = $$OUT_PWD/../../../deploy-debug-$$QMAKE_HOST.arch/plugins
-} else {
-    DESTDIR = $$OUT_PWD/../../../deploy-release-$$QMAKE_HOST.arch/plugins
-}
-
-include( ../../../Fugio/FugioGlobal.pri )
+DESTDIR = $$DESTDIR/plugins
 
 DEFINES += LUA_LIBRARY
 
@@ -50,7 +46,7 @@ macx {
     CONFIG += lib_bundle
 
     BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
     INSTALLDEST  = $$INSTALLDIR/data/plugins
     INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
@@ -90,7 +86,7 @@ macx {
 }
 
 windows {
-    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
     CONFIG(release,debug|release) {
@@ -125,12 +121,22 @@ macx:exists( /usr/local/include/lua.hpp ) {
     DEFINES += LUA_SUPPORTED
 }
 
-unix:!macx:exists( /usr/include/lua5.3/lua.h ) {
-    INCLUDEPATH += /usr/include/lua5.3
+unix:!macx {
+    exists( /usr/include/lua5.3/lua.h ) {
+        INCLUDEPATH += /usr/include/lua5.3
 
-    LIBS += -llua5.3
+        LIBS += -llua5.3
 
-    DEFINES += LUA_SUPPORTED
+        DEFINES += LUA_SUPPORTED
+    }
+
+    exists( /usr/include/lua5.2/lua.h ) {
+        INCLUDEPATH += /usr/include/lua5.2
+
+        LIBS += -llua5.2
+
+        DEFINES += LUA_SUPPORTED
+    }
 }
 
 !contains( DEFINES, LUA_SUPPORTED ) {

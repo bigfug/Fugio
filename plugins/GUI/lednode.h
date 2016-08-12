@@ -2,10 +2,9 @@
 #define LEDNODE_H
 
 #include <QObject>
+#include <QColor>
 
 #include <fugio/nodecontrolbase.h>
-
-#include "ledwidget.h"
 
 class LedNode : public fugio::NodeControlBase
 {
@@ -23,7 +22,7 @@ public:
 
 	// NodeControlInterface interface
 
-	virtual QWidget *gui( void ) Q_DECL_OVERRIDE;
+	virtual QGraphicsItem *guiItem() Q_DECL_OVERRIDE;
 
 	virtual bool initialise( void ) Q_DECL_OVERRIDE;
 
@@ -51,12 +50,11 @@ protected:
 	} LedMode;
 
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
-//	QSharedPointer<fugio::PinInterface>			 mPinColour;
-	double									 mLedVal;
-	double									 mLedTgt;
-	qint64									 mLastTime;
-	QColor									 mLedColour;
-	LedMode									 mLedMode;
+	double										 mLedVal;
+	double										 mLedTgt;
+	qint64										 mLastTime;
+	QColor										 mLedColour;
+	LedMode										 mLedMode;
 };
 
 #endif // LEDNODE_H

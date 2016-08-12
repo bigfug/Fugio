@@ -28,6 +28,8 @@ PortMidiInputNode::PortMidiInputNode( QSharedPointer<fugio::NodeInterface> pNode
 	FUGID( PIN_OUTPUT_MIDI, "b2987601-db44-4fa8-a90d-ffc37864a2e3" );
 
 	mValMidi = pinOutput<fugio::MidiInterface *>( "MIDI", mPinMidi, PID_MIDI_OUTPUT, PIN_OUTPUT_MIDI );
+
+	rebuildDeviceList();
 }
 
 bool PortMidiInputNode::initialise( void )
@@ -37,6 +39,13 @@ bool PortMidiInputNode::initialise( void )
 		return( false );
 	}
 
+	if( mDeviceName.isEmpty() )
+	{
+		mDeviceName = mDeviceList.at( 1 );
+	}
+
+	midiDeviceSelected( mDeviceName );
+
 	return( true );
 }
 
@@ -45,28 +54,80 @@ bool PortMidiInputNode::deinitialise()
 	if( mDevice )
 	{
 		mDevice->unregisterMidiInputNode( this );
+
+		mDevice.clear();
 	}
 
 	return( NodeControlBase::deinitialise() );
 }
 
-void PortMidiInputNode::setDeviceName( const QString &pDeviceName )
+void PortMidiInputNode::midiDeviceSelected( const QString &pDeviceName )
 {
+	if( pDeviceName == mDeviceName && mDevice )
+	{
+		return;
+	}
+
 	if( mDevice )
 	{
 		mDevice->unregisterMidiInputNode( this );
-	}
 
-	mDevice = DeviceMidi::findDeviceInput( pDeviceName );
-
-	if( mDevice )
-	{
-		mDevice->registerMidiInputNode( this );
+		mDevice.clear();
 	}
 
 	mDeviceName = pDeviceName;
 
+	emit midiDeviceChanged( mDeviceName );
+
+#if defined( PORTMIDI_SUPPORTED )
+	const int	DevNamIdx = mDeviceList.indexOf( mDeviceName );
+
+	if( DevNamIdx == 0 )
+	{
+		mNode->setStatus( fugio::NodeInterface::Initialised );
+	}
+	else
+	{
+		PmDeviceID		DevIdx;
+
+		if( DevNamIdx == 1 )
+		{
+			DevIdx = Pm_GetDefaultInputDeviceID();
+		}
+		else
+		{
+			DevIdx = DeviceMidi::deviceInputNameIndex( mDeviceName );
+		}
+
+		if( DevIdx == pmNoDevice )
+		{
+			mNode->setStatus( fugio::NodeInterface::Warning );
+		}
+
+		if( ( mDevice = DeviceMidi::newDevice( DevIdx ) ) )
+		{
+			mDevice->registerMidiInputNode( this );
+
+			mNode->setStatus( fugio::NodeInterface::Initialised );
+		}
+	}
+
 	mNode->setStatus( mDevice && mDevice->isActive() ? fugio::NodeInterface::Initialised : fugio::NodeInterface::Warning );
+#endif
+
+	pinUpdated( mPinMidi );
+}
+
+void PortMidiInputNode::rebuildDeviceList()
+{
+	mDeviceList.clear();
+
+	mDeviceList << tr( "None" );
+	mDeviceList << tr( "Default Midi Input" );
+
+#if defined( PORTMIDI_SUPPORTED )
+	mDeviceList << DeviceMidi::deviceInputNames();
+#endif
 }
 
 QWidget *PortMidiInputNode::gui( void )
@@ -75,30 +136,13 @@ QWidget *PortMidiInputNode::gui( void )
 
 	if( GUI )
 	{
-		QStringList			DevLst = DeviceMidi::deviceInputNames();
+		GUI->addItems( mDeviceList );
 
-		if( !mDeviceName.isEmpty() && !DevLst.contains( mDeviceName ) )
-		{
-			DevLst << mDeviceName;
+		GUI->setCurrentText( mDeviceName );
 
-			std::sort( DevLst.begin(), DevLst.end() );
-		}
+		connect( GUI, SIGNAL(currentIndexChanged(QString)), this, SLOT(midiDeviceSelected(QString)) );
 
-		DevLst.prepend( tr( "<None>" ) );
-
-		for( int i = 0 ; i < DevLst.size() ; i++ )
-		{
-			GUI->addItem( DevLst[ i ] );
-
-			if( !mDeviceName.isEmpty() && mDeviceName == DevLst[ i ] )
-			{
-				GUI->setCurrentIndex( i );
-			}
-		}
-
-		connect( GUI, SIGNAL(currentIndexChanged(QString)), this, SLOT(setDeviceName(QString)) );
-
-		connect( this, SIGNAL(deviceChanged(QString)), GUI, SLOT(setCurrentText(QString)) );
+		connect( this, SIGNAL(midiDeviceChanged(QString)), GUI, SLOT(setCurrentText(QString)) );
 	}
 
 	return( GUI );
@@ -106,21 +150,24 @@ QWidget *PortMidiInputNode::gui( void )
 
 void PortMidiInputNode::loadSettings( QSettings &pSettings )
 {
-	QString		NewDevNam = pSettings.value( "device-name", mDeviceName ).toString();
+	rebuildDeviceList();
 
-	if( NewDevNam != mDeviceName )
+	int		Index = pSettings.value( "index", 1 ).toInt();
+
+	QString	DeviceName = pSettings.value( "device", mDeviceName ).toString();
+
+	if( Index >= 0 && Index <= 1 )
 	{
-		setDeviceName( NewDevNam );
-
-		emit deviceChanged( mDeviceName );
+		DeviceName = mDeviceList[ Index ];
 	}
 
-	mNode->setStatus( mDevice && mDevice->isActive() ? fugio::NodeInterface::Initialised : fugio::NodeInterface::Warning );
+	midiDeviceSelected( DeviceName );
 }
 
 void PortMidiInputNode::saveSettings( QSettings &pSettings ) const
 {
-	pSettings.setValue( "device-name", mDeviceName );
+	pSettings.setValue( "device", mDeviceName );
+	pSettings.setValue( "index", mDeviceList.indexOf( mDeviceName ) );
 }
 
 void PortMidiInputNode::midiProcessInput( const fugio::MidiEvent *pMessages, quint32 pMessageCount )

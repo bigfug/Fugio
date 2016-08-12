@@ -4,6 +4,8 @@
 #
 #-------------------------------------------------
 
+include( ../../FugioGlobal.pri )
+
 QT       += widgets
 
 TARGET = $$qtLibraryTarget(fugio-portmidi)
@@ -11,13 +13,7 @@ TEMPLATE = lib
 CONFIG += plugin
 CONFIG += c++11
 
-CONFIG(debug,debug|release) {
-    DESTDIR = $$OUT_PWD/../../../deploy-debug-$$QMAKE_HOST.arch/plugins
-} else {
-    DESTDIR = $$OUT_PWD/../../../deploy-release-$$QMAKE_HOST.arch/plugins
-}
-
-include( ../../../Fugio/FugioGlobal.pri )
+DESTDIR = $$DESTDIR/plugins
 
 SOURCES += \
     devicemidi.cpp \
@@ -34,8 +30,6 @@ HEADERS += \
     portmidiinputnode.h \
     portmidioutputnode.h
 
-FORMS +=
-
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
@@ -45,7 +39,7 @@ macx {
     CONFIG += lib_bundle
 
     BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-    INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+    INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
     INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
     INSTALLDEST  = $$INSTALLDIR/data/plugins
     INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
@@ -86,7 +80,7 @@ macx {
 }
 
 windows {
-	INSTALLBASE  = $$OUT_PWD/../../../deploy-installer-$$QMAKE_HOST.arch
+        INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 	INSTALLDEST  = $$INSTALLDIR/data/plugins/portmidi
 
@@ -110,31 +104,40 @@ windows {
 #------------------------------------------------------------------------------
 # portmidi
 
-windows {
-	LIBS += -L$$(LIBS)/portmidi.32.2013/Release
+windows:exists( $$(LIBS)/portmidi ) {
 	INCLUDEPATH += $$(LIBS)/portmidi/pm_common
 	INCLUDEPATH += $$(LIBS)/portmidi/porttime
 }
 
-win64 {
+win64:exists( $$(LIBS)/portmidi.64.2013 ) {
 	LIBS += -L$$(LIBS)/portmidi.64.2013/Release
+
+	DEFINES += PORTMIDI_SUPPORTED
 }
 
-win32 {
+win32:exists( $$(LIBS)/portmidi.32.2013 )  {
 	LIBS += -L$$(LIBS)/portmidi.32.2013/Release
+
+	DEFINES += PORTMIDI_SUPPORTED
 }
 
-macx {
-    INCLUDEPATH += /usr/local/include
-    LIBS += -L/usr/local/lib
-}
-
-unix:!macx:exists( /usr/local/include/portmidi.h ) {
+unix:exists( /usr/local/include/portmidi.h ) {
 	INCLUDEPATH += /usr/local/include
 	LIBS += -L/usr/local/lib
+	DEFINES += PORTMIDI_SUPPORTED
 }
 
-LIBS += -lportmidi
+unix:exists( /usr/include/portmidi.h ) {
+        INCLUDEPATH += /usr/include
+        LIBS += -L/usr/lib
+        DEFINES += PORTMIDI_SUPPORTED
+}
+
+contains( DEFINES, PORTMIDI_SUPPORTED ) {
+	LIBS += -lportmidi
+} else {
+	message( "PortMidi not supported" )
+}
 
 #------------------------------------------------------------------------------
 # API

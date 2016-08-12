@@ -37,7 +37,9 @@ void SplitPin::oscPath( QStringList &pPath ) const
 {
 	QStringList	PinNam = mPin->name().split( '/', QString::SkipEmptyParts );
 
-	for( QStringList::reverse_iterator it = PinNam.rbegin() ; it != PinNam.rend() ; it++ )
+	std::reverse( PinNam.begin(), PinNam.end() );
+
+	for( QStringList::iterator it = PinNam.begin() ; it != PinNam.end() ; it++ )
 	{
 		pPath.prepend( *it );
 	}

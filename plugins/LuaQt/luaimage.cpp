@@ -132,7 +132,11 @@ int LuaImage::luaPixelColor( lua_State *L )
 		P = QPoint( x, y );
 	}
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 	LuaColor::pushcolor( L, IUD->mImage->pixelColor( P ) );
+#else
+	LuaColor::pushcolor( L, QColor( IUD->mImage->pixel( P ) ) );
+#endif
 
 	return( 1 );
 }
@@ -173,8 +177,11 @@ int LuaImage::luaSetPixelColor( lua_State *L )
 		C = LuaColor::checkcolor( L, 4 );
 	}
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 	IUD->mImage->setPixelColor( P, C );
-
+#else
+	IUD->mImage->setPixel( P, C.rgba() );
+#endif
 	return( 0 );
 }
 

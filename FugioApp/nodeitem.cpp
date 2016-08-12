@@ -53,7 +53,7 @@
 //static const int		PIN_HEIGHT = 10;
 
 NodeItem::NodeItem( ContextView *pContextView )
-	: mContextView( pContextView ), mNodeGui( 0 ), mStatusItem( 0 ), mBackgroundColour( QColor( Qt::cyan ).lighter( 180 ) ), mUndoId( 1 ),
+	: mContextView( pContextView ), mNodeGui( 0 ), mNodeItem( 0 ), mStatusItem( 0 ), mBackgroundColour( QColor( Qt::cyan ).lighter( 180 ) ), mUndoId( 1 ),
 	  mIsGroup( false )
 {
 	pContextView->scene()->addItem( this );
@@ -62,7 +62,7 @@ NodeItem::NodeItem( ContextView *pContextView )
 }
 
 NodeItem::NodeItem( ContextView *pContextView, QUuid pNodeId, const QPointF &pPosition )
-	: mContextView( pContextView ), mNodeGui( 0 ), mStatusItem( 0 ), mNodeId( pNodeId ), mBackgroundColour( QColor( Qt::cyan ).lighter( 180 ) ), mUndoId( 1 ),
+	: mContextView( pContextView ), mNodeGui( 0 ), mNodeItem( 0 ), mStatusItem( 0 ), mNodeId( pNodeId ), mBackgroundColour( QColor( Qt::cyan ).lighter( 180 ) ), mUndoId( 1 ),
 	  mIsGroup( false )
 {
 	pContextView->scene()->addItem( this );
@@ -649,12 +649,13 @@ void NodeItem::layoutPins()
 {
 	const QFontMetrics		FM( mContextView->pinFont() );
 
+	const QRectF	ItemRect    = ( mNodeItem ? mNodeItem->boundingRect() : QRectF() );
 	const qreal		InputWidth  = pinLabelWidth( mInputs );
 	const qreal		OutputWidth = pinLabelWidth( mOutputs );
-	const qreal		GuiWidth    = ( mNodeGui ? mNodeGui->size().width()  : 0 );
-	const qreal		GuiHeight   = ( mNodeGui ? mNodeGui->size().height() : 0 );
+	const qreal		GuiWidth    = ( mNodeGui ? mNodeGui->size().width()  : ( mNodeItem ? ItemRect.width() : 0 ) );
+	const qreal		GuiHeight   = ( mNodeGui ? mNodeGui->size().height() : ( mNodeItem ? ItemRect.height() : 0 ) );
 	const qreal		LabelHeight = mLabelText->boundingRect().height();
-	const qreal		MaxWidth    = fugio::utils::roundUp( qMax( InputWidth + 5 + GuiWidth + 5 + OutputWidth, mLabelText->boundingRect().width() + 2 + ( mStatusItem ? LabelHeight + 2 : 0 ) ), 5 );
+	const qreal		MaxWidth    = fugio::utils::roundUp( qMax( ( InputWidth > 0 ? InputWidth + 5 : 0 ) + GuiWidth + ( OutputWidth > 0 ? 5 + OutputWidth : 0 ), mLabelText->boundingRect().width() + 2 + ( mStatusItem ? LabelHeight + 2 : 0 ) ), 5 );
 
 	prepareGeometryChange();
 
@@ -769,7 +770,12 @@ void NodeItem::layoutPins()
 	{
 		mPinsItem->show();
 
-		mPinsItem->setRect( 0, mLabelItem->boundingRect().height() - 1, 5 + MaxWidth + 5, 5 + qMax<qreal>( FM.height() * PinTotalIdx, fugio::utils::roundUp( GuiHeight + 2, 5 ) ) );
+		mPinsItem->setRect( 0, mLabelItem->boundingRect().height() - 1, 5 + MaxWidth + 5, 5 + qMax<qreal>( FM.height() * PinTotalIdx, fugio::utils::roundUp( GuiHeight + 2, 1 ) ) );
+
+		if( mNodeItem )
+		{
+			mNodeItem->setPos( 5 + InputWidth, mPinsItem->rect().top() + 5 );
+		}
 
 		if( mNodeGui )
 		{
@@ -786,6 +792,13 @@ void NodeItem::layoutPins()
 
 void NodeItem::updateGui()
 {
+	if( mNodeItem )
+	{
+		delete mNodeItem;
+
+		mNodeItem = nullptr;
+	}
+
 	if( mNodeGui )
 	{
 		mNodeGui->deleteLater();
@@ -806,21 +819,30 @@ void NodeItem::updateGui()
 
 		if( NODE->control() )
 		{
-			QWidget		*NodeGui = NODE->control()->gui();
-
-			if( NodeGui )
+			if( ( mNodeItem = NODE->control()->guiItem() ) != nullptr )
 			{
-				NodeGui->setObjectName( "NodeWidget" );
+				scene()->addItem( mNodeItem );
 
-				if( ( mNodeGui = scene()->addWidget( NodeGui ) ) != 0 )
-				{
-					mNodeGui->setFlag( QGraphicsItem::ItemIgnoresTransformations );
+				mNodeItem->setParentItem( this );
+			}
+			else
+			{
+				QWidget		*NodeGui = NODE->control()->gui();
 
-					mNodeGui->setParentItem( this );
-				}
-				else
+				if( NodeGui )
 				{
-					NodeGui->deleteLater();
+					NodeGui->setObjectName( "NodeWidget" );
+
+					if( ( mNodeGui = scene()->addWidget( NodeGui ) ) != 0 )
+					{
+						//mNodeGui->setFlag( QGraphicsItem::ItemIgnoresTransformations );
+
+						mNodeGui->setParentItem( this );
+					}
+					else
+					{
+						NodeGui->deleteLater();
+					}
 				}
 			}
 		}

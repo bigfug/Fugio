@@ -12,15 +12,16 @@
 #include <fugio/core/variant_interface.h>
 #include <fugio/core/array_interface.h>
 #include <fugio/core/list_interface.h>
+#include <fugio/core/size_interface.h>
 
 #include <fugio/pincontrolbase.h>
 
 #include <fugio/serialise_interface.h>
 
-class ArrayPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::ArrayInterface, public fugio::SerialiseInterface, public fugio::ListInterface
+class ArrayPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::ArrayInterface, public fugio::SerialiseInterface, public fugio::ListInterface, public fugio::SizeInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::VariantInterface fugio::ArrayInterface fugio::SerialiseInterface fugio::ListInterface )
+	Q_INTERFACES( fugio::VariantInterface fugio::ArrayInterface fugio::SerialiseInterface fugio::ListInterface fugio::SizeInterface )
 
 public:
 	Q_INVOKABLE explicit ArrayPin( QSharedPointer<fugio::PinInterface> pPin );
@@ -79,7 +80,7 @@ public:
 		return( mStride );
 	}
 
-	virtual int count( void ) const Q_DECL_OVERRIDE
+	virtual int count( void ) const Q_DECL_OVERRIDE	// also works for fugio::CountInterface
 	{
 		return( mCount );
 	}
@@ -87,6 +88,11 @@ public:
 	virtual int size( void ) const Q_DECL_OVERRIDE
 	{
 		return( mSize );
+	}
+
+	virtual void reserve( int pCount ) Q_DECL_OVERRIDE
+	{
+		mReserve = pCount;
 	}
 
 	virtual void setArray( void *pArray ) Q_DECL_OVERRIDE
@@ -106,7 +112,7 @@ public:
 			return( mData );
 		}
 
-		mArray.resize( mStride * mCount );
+		mArray.resize( mStride * qMax( mCount, mReserve ) );
 
 		return( mArray.data() );
 	}
@@ -185,6 +191,16 @@ public:
 		return( mCount == 0 );
 	}
 
+	// SizeInterface interface
+public:
+	virtual int sizeDimensions() const Q_DECL_OVERRIDE;
+	virtual float size(int pDimension) const Q_DECL_OVERRIDE;
+	virtual float sizeWidth() const Q_DECL_OVERRIDE;
+	virtual float sizeHeight() const Q_DECL_OVERRIDE;
+	virtual float sizeDepth() const Q_DECL_OVERRIDE;
+	virtual QSizeF toSizeF() const Q_DECL_OVERRIDE;
+	virtual QVector3D toVector3D() const Q_DECL_OVERRIDE;
+
 private:
 	void				*mData;
 	QByteArray			 mArray;
@@ -192,6 +208,7 @@ private:
 	int					 mStride;
 	int					 mCount;
 	int					 mSize;
+	int					 mReserve;
 };
 
 #endif // ARRAYPIN_H

@@ -6,6 +6,7 @@
 #include "regexpnode.h"
 #include "numbertostringnode.h"
 #include "stringjoinnode.h"
+#include "linebuffernode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -18,6 +19,7 @@ ClassEntry		mNodeClasses[] =
 	ClassEntry( "Number To String",	"String", NID_NUMBER_TO_STRING, &NumberToStringNode::staticMetaObject ),
 	ClassEntry( "RegExp",			"String", NID_REGEXP, &RegExpNode::staticMetaObject ),
 	ClassEntry( "Join",				"String", NID_STRING_JOIN, &StringJoinNode::staticMetaObject ),
+	ClassEntry( "Line Buffer",		"String", NID_LINE_BUFFER, &LineBufferNode::staticMetaObject ),
 	ClassEntry( "Text Editor",		"GUI", NID_TEXT_EDIT, &TextEditorNode::staticMetaObject ),
 	ClassEntry()
 };

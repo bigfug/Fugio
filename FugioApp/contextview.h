@@ -8,6 +8,7 @@
 #include <QList>
 #include <QMap>
 #include <QSharedPointer>
+#include <QSwipeGesture>
 
 #include <fugio/node_interface.h>
 #include <fugio/edit_interface.h>
@@ -332,6 +333,7 @@ protected:
 
 	void panTriggered( QPanGesture *pGesture );
 	void pinchTriggered( QPinchGesture *pGesture );
+	void swipeTriggered( QSwipeGesture *pGesture );
 
 	bool isGroupEmpty( const QUuid &pGroupId ) const;
 
@@ -471,6 +473,9 @@ private:
 	QPointF									 m_PastePoint;
 
 	QUuid									 m_GroupId;
+
+	qreal									 mScaleFactor;
+	qreal									 mCurrentFactor;
 };
 
 #endif // CONTEXTVIEW_H

@@ -17,6 +17,8 @@
 #include "choicenode.h"
 #include "mainwindownode.h"
 #include "stringnode.h"
+#include "dialnode.h"
+#include "screennode.h"
 
 #include "keyboardpin.h"
 
@@ -26,6 +28,7 @@ ClassEntry		GuiPlugin::mNodeClasses[] =
 {
 	ClassEntry( "Button", "GUI", NID_BUTTON, &ButtonNode::staticMetaObject ),
 	ClassEntry( "Choice", "GUI", NID_CHOICE, &ChoiceNode::staticMetaObject ),
+	ClassEntry( "Dial", "GUI", NID_GUI_DIAL, &DialNode::staticMetaObject ),
 	ClassEntry( "Keyboard", "GUI", NID_KEYBOARD, &KeyboardNode::staticMetaObject ),
 	ClassEntry( "LCD Number", "GUI", NID_LCD_NUMBER, &LcdNumberNode::staticMetaObject ),
 	ClassEntry( "LED", "GUI", NID_LED, &LedNode::staticMetaObject ),
@@ -33,6 +36,7 @@ ClassEntry		GuiPlugin::mNodeClasses[] =
 	ClassEntry( "Number (Float)", "GUI", NID_FLOAT, &FloatNode::staticMetaObject ),
 	ClassEntry( "Number (Integer)", "GUI", NID_INTEGER, &IntegerNode::staticMetaObject ),
 	ClassEntry( "Number Monitor", "GUI", NID_NUMBER_MONITOR, &NumberMonitorNode::staticMetaObject ),
+	ClassEntry( "Screen", "GUI", NID_SCREEN, &ScreenNode::staticMetaObject ),
 	ClassEntry( "Slider", "GUI", NID_SLIDER, &SliderNode::staticMetaObject ),
 	ClassEntry( "String", "GUI", NID_STRING, &StringNode::staticMetaObject ),
 	ClassEntry()
