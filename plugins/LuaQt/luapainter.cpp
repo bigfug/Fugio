@@ -759,7 +759,7 @@ LuaPainter::LuaPainterData *LuaPainter::checkactivepainter( lua_State *L, int i 
 {
 	LuaPainterData		*PainterData = checkpainter( L, i );
 
-	if( !PainterData->mPainter->isActive() )
+	if( !PainterData->mPainter || !PainterData->mPainter->isActive() )
 	{
 		luaL_error( L, "Painter not active" );
 	}
