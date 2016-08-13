@@ -1,5 +1,16 @@
 #include "luasizef.h"
 
+#include <fugio/lua/lua_interface.h>
+
+#include <fugio/node_interface.h>
+#include <fugio/node_control_interface.h>
+#include <fugio/pin_interface.h>
+#include <fugio/pin_control_interface.h>
+#include <fugio/core/variant_interface.h>
+#include <fugio/context_interface.h>
+
+#include "luaqtplugin.h"
+
 const char *LuaSizeF::SizeFUserData::TypeName = "qt.sizef";
 
 #if defined( LUA_SUPPORTED )
@@ -12,6 +23,7 @@ const luaL_Reg LuaSizeF::mLuaInstance[] =
 const luaL_Reg LuaSizeF::mLuaMethods[] =
 {
 	{ "__tostring",			LuaSizeF::luaToString },
+	{ "__eq",				LuaSizeF::luaEq },
 	{ "setWidth",			LuaSizeF::luaSetWidth },
 	{ "setHeight",			LuaSizeF::luaSetHeight },
 	{ "toArray",			LuaSizeF::luaToArray },
@@ -49,6 +61,42 @@ int LuaSizeF::luaNew( lua_State *L )
 	}
 
 	return( 1 );
+}
+
+int LuaSizeF::luaPinGet( const QUuid &pPinLocalId, lua_State *L )
+{
+	fugio::LuaInterface						*Lua  = LuaQtPlugin::lua();
+	NodeInterface							*Node = Lua->node( L );
+	QSharedPointer<fugio::PinInterface>		 Pin = Node->findPinByLocalId( pPinLocalId );
+	QSharedPointer<fugio::PinInterface>		 PinSrc;
+
+	if( !Pin )
+	{
+		return( luaL_error( L, "No source pin" ) );
+	}
+
+	if( Pin->direction() == PIN_OUTPUT )
+	{
+		PinSrc = Pin;
+	}
+	else
+	{
+		PinSrc = Pin->connectedPin();
+	}
+
+	if( !PinSrc || !PinSrc->hasControl() )
+	{
+		return( luaL_error( L, "No size pin" ) );
+	}
+
+	fugio::VariantInterface			*SrcVar = qobject_cast<fugio::VariantInterface *>( PinSrc->control()->qobject() );
+
+	if( !SrcVar )
+	{
+		return( luaL_error( L, "Can't access size" ) );
+	}
+
+	return( pushsizef( L, SrcVar->variant().toSizeF()) );
 }
 
 int LuaSizeF::luaToString( lua_State *L )
@@ -106,6 +154,16 @@ int LuaSizeF::luaToArray( lua_State *L )
 
 	lua_pushnumber( L, SUD->w );	lua_rawseti( L, -2, 1 );
 	lua_pushnumber( L, SUD->h );	lua_rawseti( L, -2, 2 );
+
+	return( 1 );
+}
+
+int LuaSizeF::luaEq( lua_State *L )
+{
+	QSizeF		S1 = checksizef( L, 1 );
+	QSizeF		S2 = checksizef( L, 2 );
+
+	lua_pushboolean( L, S1 == S2 );
 
 	return( 1 );
 }

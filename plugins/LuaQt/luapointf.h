@@ -5,6 +5,7 @@
 #include <lua.hpp>
 #endif
 
+#include <QUuid>
 #include <QPointF>
 
 class LuaPointF
@@ -40,6 +41,8 @@ public:
 	static int luaOpen( lua_State *L );
 
 	static int luaNew( lua_State *L );
+
+	static int luaPinGet( const QUuid &pPinLocalId, lua_State *L );
 
 	static int pushpointf( lua_State *L, const QPointF &pPoint )
 	{

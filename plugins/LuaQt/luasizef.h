@@ -5,6 +5,8 @@
 #include <lua.hpp>
 #endif
 
+#include <QUuid>
+
 #include <QSizeF>
 
 class LuaSizeF
@@ -40,6 +42,8 @@ public:
 	static int luaOpen( lua_State *L );
 
 	static int luaNew( lua_State *L );
+
+	static int luaPinGet( const QUuid &pPinLocalId, lua_State *L );
 
 	static int pushsizef( lua_State *L, const QSizeF &pSize )
 	{
@@ -89,6 +93,8 @@ private:
 	static int luaHeight( lua_State *L );
 
 	static int luaToArray( lua_State *L );
+
+	static int luaEq( lua_State *L );
 
 private:
 	static const luaL_Reg					mLuaInstance[];

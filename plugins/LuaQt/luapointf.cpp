@@ -1,5 +1,16 @@
 #include "luapointf.h"
 
+#include <fugio/lua/lua_interface.h>
+
+#include <fugio/node_interface.h>
+#include <fugio/node_control_interface.h>
+#include <fugio/pin_interface.h>
+#include <fugio/pin_control_interface.h>
+#include <fugio/core/variant_interface.h>
+#include <fugio/context_interface.h>
+
+#include "luaqtplugin.h"
+
 const char *LuaPointF::PointFUserData::TypeName = "qt.pointf";
 
 #if defined( LUA_SUPPORTED )
@@ -76,6 +87,42 @@ int LuaPointF::luaNew( lua_State *L )
 	pushpointf( L, P );
 
 	return( 1 );
+}
+
+int LuaPointF::luaPinGet( const QUuid &pPinLocalId, lua_State *L )
+{
+	fugio::LuaInterface						*Lua  = LuaQtPlugin::lua();
+	NodeInterface							*Node = Lua->node( L );
+	QSharedPointer<fugio::PinInterface>		 Pin = Node->findPinByLocalId( pPinLocalId );
+	QSharedPointer<fugio::PinInterface>		 PinSrc;
+
+	if( !Pin )
+	{
+		return( luaL_error( L, "No source pin" ) );
+	}
+
+	if( Pin->direction() == PIN_OUTPUT )
+	{
+		PinSrc = Pin;
+	}
+	else
+	{
+		PinSrc = Pin->connectedPin();
+	}
+
+	if( !PinSrc || !PinSrc->hasControl() )
+	{
+		return( luaL_error( L, "No point pin" ) );
+	}
+
+	fugio::VariantInterface			*SrcVar = qobject_cast<fugio::VariantInterface *>( PinSrc->control()->qobject() );
+
+	if( !SrcVar )
+	{
+		return( luaL_error( L, "Can't access point" ) );
+	}
+
+	return( pushpointf( L, SrcVar->variant().toPointF()) );
 }
 
 int LuaPointF::luaDotProduct( lua_State *L )
