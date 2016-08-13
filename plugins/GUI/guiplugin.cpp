@@ -19,8 +19,12 @@
 #include "stringnode.h"
 #include "dialnode.h"
 #include "screennode.h"
+#include "mousenode.h"
 
 #include "keyboardpin.h"
+#include "inputeventspin.h"
+
+#include <fugio/gui/input_events_interface.h>
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -33,6 +37,7 @@ ClassEntry		GuiPlugin::mNodeClasses[] =
 	ClassEntry( "LCD Number", "GUI", NID_LCD_NUMBER, &LcdNumberNode::staticMetaObject ),
 	ClassEntry( "LED", "GUI", NID_LED, &LedNode::staticMetaObject ),
 	ClassEntry( "Main Window", "GUI", NID_MAIN_WINDOW, &MainWindowNode::staticMetaObject ),
+	ClassEntry( "Mouse", "GUI", NID_MOUSE, &MouseNode::staticMetaObject ),
 	ClassEntry( "Number (Float)", "GUI", NID_FLOAT, &FloatNode::staticMetaObject ),
 	ClassEntry( "Number (Integer)", "GUI", NID_INTEGER, &IntegerNode::staticMetaObject ),
 	ClassEntry( "Number Monitor", "GUI", NID_NUMBER_MONITOR, &NumberMonitorNode::staticMetaObject ),
@@ -45,6 +50,7 @@ ClassEntry		GuiPlugin::mNodeClasses[] =
 ClassEntry		GuiPlugin::mPinClasses[] =
 {
 	ClassEntry( "Keyboard", PID_KEYBOARD, &KeyboardPin::staticMetaObject ),
+	ClassEntry( "Input Events", PID_INPUT_EVENTS, &InputEventsPin::staticMetaObject ),
 	ClassEntry()
 };
 

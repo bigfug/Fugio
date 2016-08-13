@@ -36,7 +36,9 @@ SOURCES += \
     leditem.cpp \
     dialnode.cpp \
     dialwidget.cpp \
-    screennode.cpp
+    screennode.cpp \
+    inputeventspin.cpp \
+    mousenode.cpp
 
 HEADERS += \
     floatnode.h \
@@ -62,7 +64,10 @@ HEADERS += \
     leditem.h \
     dialnode.h \
     dialwidget.h \
-    screennode.h
+    screennode.h \
+    inputeventspin.h \
+    ../../include/fugio/gui/input_events_interface.h \
+    mousenode.h
 
 FORMS += \
     numbermonitorform.ui \
