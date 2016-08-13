@@ -45,6 +45,9 @@ void SplitSizeNode::inputsUpdated( qint64 pTimeStamp )
 				case QMetaType::QRectF:
 					S = V->variant().toRectF().size();
 					break;
+
+				default:
+					break;
 			}
 		}
 
