@@ -78,7 +78,7 @@ LuaInterface *LuaQtPlugin::lua()
 	return( qobject_cast<LuaInterface *>( mApp->findInterface( IID_LUA ) ) );
 }
 
-PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
 	mApp = pApp;
 

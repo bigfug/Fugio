@@ -37,8 +37,10 @@ ClassEntry PinClasses[] =
 	ClassEntry()
 };
 
-PluginInterface::InitResult TimePlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult TimePlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mApp = pApp;
 
 	mApp->registerNodeClasses( NodeClasses );

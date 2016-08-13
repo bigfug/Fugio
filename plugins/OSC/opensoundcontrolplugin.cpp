@@ -53,8 +53,10 @@ OpenSoundControlPlugin *OpenSoundControlPlugin::instance()
 	return( mInstance );
 }
 
-PluginInterface::InitResult OpenSoundControlPlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult OpenSoundControlPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mApp = pApp;
 
 	mApp->registerNodeClasses( mNodeClasses );

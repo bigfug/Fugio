@@ -40,7 +40,7 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
 
-	virtual InitResult initialise( fugio::GlobalInterface *pApp ) Q_DECL_OVERRIDE;
+	virtual InitResult initialise( fugio::GlobalInterface *pApp, bool pLastChance ) Q_DECL_OVERRIDE;
 
 	virtual void deinitialise( void ) Q_DECL_OVERRIDE;
 

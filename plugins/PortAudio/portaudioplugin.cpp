@@ -38,8 +38,10 @@ PortAudioPlugin::~PortAudioPlugin()
 	mInstance = 0;
 }
 
-PluginInterface::InitResult PortAudioPlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult PortAudioPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mApp = pApp;
 
 #if defined( PORTAUDIO_SUPPORTED )

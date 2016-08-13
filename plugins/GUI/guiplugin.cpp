@@ -57,22 +57,15 @@ GuiPlugin::~GuiPlugin( void )
 {
 }
 
-PluginInterface::InitResult GuiPlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult GuiPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
-	mApp = pApp;
+	Q_UNUSED( pLastChance )
 
-	//mApp->registerVideoOutputFactory( this );
+	mApp = pApp;
 
 	mApp->registerNodeClasses( mNodeClasses );
 
 	mApp->registerPinClasses( mPinClasses );
-
-	mApp->registerPinSplitter( PID_SIZE, NID_SPLIT_SIZE );
-	//mApp->registerPinSplitter( PID_SIZE_3D, NID_SPLIT_SIZE );
-	mApp->registerPinSplitter( PID_LIST, NID_SPLIT_LIST );
-
-	mApp->registerPinJoiner( PID_SIZE, NID_JOIN_SIZE );
-	//mApp->registerPinJoiner( PID_SIZE_3D, NID_JOIN_SIZE );
 
 	return( INIT_OK );
 }

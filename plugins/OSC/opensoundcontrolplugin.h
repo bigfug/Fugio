@@ -30,7 +30,7 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
 
-	virtual InitResult initialise( fugio::GlobalInterface *pApp );
+	virtual InitResult initialise( fugio::GlobalInterface *pApp, bool pLastChance );
 
 	virtual void deinitialise( void );
 

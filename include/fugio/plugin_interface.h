@@ -20,7 +20,7 @@ public:
         INIT_DEFER
     } InitResult;
 
-	virtual InitResult initialise( fugio::GlobalInterface *pApp ) = 0;
+	virtual InitResult initialise( fugio::GlobalInterface *pApp, bool pLastChance ) = 0;
 
     virtual void deinitialise( void ) = 0;
 };

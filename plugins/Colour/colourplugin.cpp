@@ -41,8 +41,10 @@ ColourPlugin::~ColourPlugin( void )
 {
 }
 
-PluginInterface::InitResult ColourPlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult ColourPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mApp = pApp;
 
 	mApp->registerNodeClasses( mNodeClasses );

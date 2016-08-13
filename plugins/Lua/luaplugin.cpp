@@ -51,8 +51,10 @@ void LuaPlugin::registerNodeToState( NodeInterface *N, lua_State *L ) const
 }
 #endif
 
-PluginInterface::InitResult LuaPlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult LuaPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mApp = pApp;
 
 	mApp->registerNodeClasses( NodeClasses );

@@ -105,8 +105,10 @@ ClassEntry PinClasses[] =
 	ClassEntry()
 };
 
-PluginInterface::InitResult MathPlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult MathPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mApp = pApp;
 
 	mApp->registerInterface( IID_MATH, this );
