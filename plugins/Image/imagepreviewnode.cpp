@@ -10,29 +10,24 @@
 #include "fugio/context_interface.h"
 #include <fugio/core/uuid.h>
 #include <fugio/context_signals.h>
-//#include <fugio/mouse_interface.h>
 #include <fugio/performance.h>
 
 #include "imagepreview.h"
 
+#define MAX_SIZE (480)
+
 ImagePreviewNode::ImagePreviewNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mDockWidget( 0 ), mGUI( 0 ), mDockArea( Qt::BottomDockWidgetArea )
 {
-	mPinImage = pinInput( "Image" );
-}
+	FUGID( PIN_INPUT_IMAGE,				"9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_OUTPUT_EVENTS,			"1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+	FUGID( PIN_OUTPUT_IMAGE_SIZE,		"9C02B1DD-DAE9-4011-858C-C050FA3D9E7C" );
 
-ImagePreviewNode::~ImagePreviewNode( void )
-{
-	QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
+	mPinImage = pinInput( "Image", PIN_INPUT_IMAGE );
 
-	if( mDockWidget != 0 )
-	{
-		MainWindow->removeDockWidget( mDockWidget );
+	mValOutputEvents = pinOutput<fugio::InputEventsInterface *>( "Events", mPinOutputEvents, PID_INPUT_EVENTS, PIN_OUTPUT_EVENTS );
 
-		delete mDockWidget;
-
-		mDockWidget = 0;
-	}
+	mValOutputSize = pinOutput<fugio::VariantInterface *>( "Image Size", mPinOutputSize, PID_SIZE, PIN_OUTPUT_IMAGE_SIZE );
 }
 
 QWidget *ImagePreviewNode::gui()
@@ -54,9 +49,28 @@ void ImagePreviewNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		fugio::ImageInterface		*SrcImg = input<fugio::ImageInterface *>( mPinImage );
 
-		if( SrcImg && !SrcImg->size().isEmpty() )
+		if( SrcImg && SrcImg->isValid() )
 		{
-			mGUI->setPixmap( QPixmap::fromImage( SrcImg->image() ).scaled( 512, 512, Qt::KeepAspectRatio ) );
+			const QImage		Image = SrcImg->image();
+			QPixmap				Pixmap;
+
+			if( Image.width() > MAX_SIZE || Image.height() > MAX_SIZE )
+			{
+				Pixmap = QPixmap::fromImage( SrcImg->image() ).scaled( MAX_SIZE, MAX_SIZE, Qt::KeepAspectRatio );
+			}
+			else
+			{
+				Pixmap = QPixmap::fromImage( SrcImg->image() );
+			}
+
+			mGUI->setPixmap( Pixmap );
+
+			if( Pixmap.size() != mValOutputSize->variant().toSize() )
+			{
+				mValOutputSize->setVariant( Pixmap.size() );
+
+				pinUpdated( mPinOutputSize );
+			}
 		}
 	}
 }
@@ -70,7 +84,7 @@ bool ImagePreviewNode::initialise( void )
 
 	QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
 
-	if( MainWindow != 0 )
+	if( MainWindow )
 	{
 		if( ( mDockWidget = new QDockWidget( QString( "Image Preview: %1" ).arg( mNode->name() ), MainWindow ) ) == 0 )
 		{
@@ -84,11 +98,13 @@ bool ImagePreviewNode::initialise( void )
 			return( false );
 		}
 
+		mGUI->setInputEventsInterface( mValOutputEvents );
+
 		mDockWidget->setWidget( mGUI );
 
 		MainWindow->addDockWidget( mDockArea, mDockWidget );
 
-		connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(onContextFrame()) );
+		connect( mNode->context()->qobject(), SIGNAL(frameInitialise()), this, SLOT(contextFrameInitialise()) );
 	}
 
 	return( true );
@@ -96,7 +112,12 @@ bool ImagePreviewNode::initialise( void )
 
 bool ImagePreviewNode::deinitialise( void )
 {
-	if( mDockWidget != 0 )
+	if( mNode->context() )
+	{
+		mNode->context()->qobject()->disconnect( this );
+	}
+
+	if( mDockWidget )
 	{
 		mDockWidget->deleteLater();
 
@@ -120,7 +141,7 @@ void ImagePreviewNode::saveSettings( QSettings &pSettings ) const
 
 void ImagePreviewNode::onShowClicked( void )
 {
-	if( mGUI == 0 )
+	if( !mGUI )
 	{
 		return;
 	}
@@ -131,24 +152,10 @@ void ImagePreviewNode::onShowClicked( void )
 	}
 }
 
-void ImagePreviewNode::onContextFrame()
+void ImagePreviewNode::contextFrameInitialise()
 {
-	if( !mGUI || !mGUI->isVisible() )
+	if( mValOutputEvents )
 	{
-		return;
+		mValOutputEvents->inputFrameInitialise();
 	}
-
-//	if( mGUI->mousePosition() != mValMousePosition->variant().toPointF() )
-//	{
-//		mValMousePosition->setVariant( mGUI->mousePosition() );
-
-//		pinUpdated( mPinMousePosition );
-//	}
-
-//	if( mGUI->mouseLeft() != mValMouseLeft->variant().toBool() )
-//	{
-//		mValMouseLeft->setVariant( mGUI->mouseLeft() );
-
-//		pinUpdated( mPinMouseLeft );
-//	}
 }
