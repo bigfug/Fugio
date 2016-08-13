@@ -27,6 +27,17 @@ bool DeviceMidi::deviceInitialise( void )
 		return( false );
 	}
 
+	PmDeviceID	DevCnt = Pm_CountDevices();
+
+	for( PmDeviceID DevIdx = 0 ; DevIdx < DevCnt ; DevIdx++ )
+	{
+		const PmDeviceInfo	*DevInf = Pm_GetDeviceInfo( DevIdx );
+
+		qDebug() << DevIdx << QString( DevInf->interf ) << QString( DevInf->name ) << DevInf->input << DevInf->output;
+	}
+
+	qDebug() << "Default Input:" << Pm_GetDefaultInputDeviceID() << "Default Output:" << Pm_GetDefaultOutputDeviceID();
+
 	return( true );
 }
 
