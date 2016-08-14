@@ -55,7 +55,7 @@ SOURCES += main.cpp\
 	model/pinmodel.cpp \
 	model/pinlistmodel.cpp \
 	model/baselistmodel.cpp \
-    settings/settingsdialog.cpp
+	settings/settingsdialog.cpp
 
 HEADERS  += mainwindow.h \
 	app.h \
@@ -120,7 +120,7 @@ HEADERS  += mainwindow.h \
 	model/pinmodel.h \
 	model/pinlistmodel.h \
 	model/baselistmodel.h \
-    settings/settingsdialog.h
+	settings/settingsdialog.h
 
 FORMS    += mainwindow.ui \
 	contextwidgetprivate.ui \
@@ -130,7 +130,7 @@ FORMS    += mainwindow.ui \
 	nodelistform.ui \
 	snippets/snippetsform.ui \
 	patchpromptdialog.ui \
-    settings/settingsdialog.ui
+	settings/settingsdialog.ui
 
 RC_FILE = fugio.rc
 
@@ -157,7 +157,7 @@ macx {
 	APP_DIR      = $$DESTDIR/$$TARGET".app"
 	PLUGIN_DIR   = $$APP_DIR/Contents/PlugIns
 	RESOURCE_DIR = $$APP_DIR/Contents/Resources
-        INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
+		INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
@@ -197,7 +197,7 @@ macx {
 }
 
 windows {
-        INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
+	INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
@@ -225,6 +225,12 @@ windows {
 
 		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/icu*.dll ) $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) $$shell_path( $(QTDIR)/bin/Qt5Core.dll ) $$shell_path( $(QTDIR)/bin/Qt5Gui.dll ) $$shell_path( $(QTDIR)/bin/Qt5Widgets.dll ) $$shell_path( $(QTDIR)/bin/Qt5Network.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
 	}
+}
+
+unix:!macx {
+	DOLLAR = $
+
+	QMAKE_LFLAGS += "-Wl,-rpath '-Wl,$${DOLLAR}$${DOLLAR}ORIGIN'"
 }
 
 #------------------------------------------------------------------------------
