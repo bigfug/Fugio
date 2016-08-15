@@ -1647,9 +1647,9 @@ void ContextPrivate::doFrameStart( qint64 pTimeStamp )
 	{
 		if( mNodeDeferProcess )
 		{
-			processDeferredNodes();
-
 			mNodeDeferProcess = false;
+
+			processDeferredNodes();
 		}
 
 		if( mInitDeferNodeList.isEmpty() )
