@@ -26,7 +26,8 @@ SOURCES += timeplugin.cpp \
     playheadnode.cpp \
     beattapnode.cpp \
     playheadcontrolnode.cpp \
-    timenode.cpp
+    timenode.cpp \
+    datenode.cpp
 
 HEADERS += timeplugin.h \
     ../../include/fugio/time/uuid.h \
@@ -40,7 +41,8 @@ HEADERS += timeplugin.h \
     playheadnode.h \
     beattapnode.h \
     playheadcontrolnode.h \
-    timenode.h
+    timenode.h \
+    datenode.h
 
 FORMS += \
     cronform.ui

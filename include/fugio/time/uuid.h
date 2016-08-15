@@ -12,5 +12,6 @@
 #define NID_TIME_DELAY			(QUuid("{3ab6a5d3-99f1-403c-a938-2b3acd569404}"))
 #define NID_PLAYHEAD_CONTROL	(QUuid("{91a0a99f-7110-4b87-bcec-834df16617da}"))
 #define NID_TIME				(QUuid("{CE2F3AFD-DF3C-49E5-9B14-0BA8035CDAA5}"))
+#define NID_DATE				(QUuid("{0de6dbf7-3639-4cf9-aec2-0a265d51e1ef}"))
 
 #endif // FUGIO_TIME_H

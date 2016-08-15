@@ -15,6 +15,7 @@
 #include "playheadnode.h"
 #include "playheadcontrolnode.h"
 #include "timenode.h"
+#include "datenode.h"
 
 #include "inertianode.h"
 
@@ -25,6 +26,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Beat Tap",			"Time", NID_BEAT_TAP, &BeatTapNode::staticMetaObject ),
 	ClassEntry( "Clock",			"Time", NID_CLOCK, &ClockNode::staticMetaObject ),
 	ClassEntry( "Cron",				"Time", NID_CRON, &CronNode::staticMetaObject ),
+	ClassEntry( "Date",				"Time", NID_DATE, &DateNode::staticMetaObject ),
 	ClassEntry( "Delay",			"Time", NID_TIME_DELAY, &DelayNode::staticMetaObject ),
 	ClassEntry( "Every",			"Time", NID_EVERY, &EveryNode::staticMetaObject ),
 	ClassEntry( "Inertia",			"Time", NID_INERTIA, &InertiaNode::staticMetaObject ),
