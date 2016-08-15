@@ -27,14 +27,16 @@ TransformFeedbackNode::TransformFeedbackNode( QSharedPointer<fugio::NodeInterfac
 		INSERT_MODE( GL_LINE_STRIP );
 		INSERT_MODE( GL_LINE_LOOP );
 		INSERT_MODE( GL_LINES );
-		INSERT_MODE( GL_LINE_STRIP_ADJACENCY );
-		INSERT_MODE( GL_LINES_ADJACENCY );
 		INSERT_MODE( GL_TRIANGLE_STRIP );
 		INSERT_MODE( GL_TRIANGLE_FAN );
 		INSERT_MODE( GL_TRIANGLES );
+#if !defined( GL_ES_VERSION_2_0 )
+		INSERT_MODE( GL_LINE_STRIP_ADJACENCY );
+		INSERT_MODE( GL_LINES_ADJACENCY );
 		INSERT_MODE( GL_TRIANGLE_STRIP_ADJACENCY );
 		INSERT_MODE( GL_TRIANGLES_ADJACENCY );
 		INSERT_MODE( GL_PATCHES );
+#endif
 	}
 
 	mValInputType = pinInput<fugio::ChoiceInterface *>( "Type", mPinInputType, PID_CHOICE, PID_INPUT_TYPE );
@@ -88,11 +90,13 @@ bool TransformFeedbackNode::initialise()
 		return( false );
 	}
 
+#if !defined( GL_ES_VERSION_2_0 )
 	if( GLEW_ARB_transform_feedback2 )
 	{
 		glGenTransformFeedbacks( 2, mTrnFbkId );
 	}
 	else
+#endif
 	{
 		return( false );
 	}
@@ -102,10 +106,12 @@ bool TransformFeedbackNode::initialise()
 
 bool TransformFeedbackNode::deinitialise()
 {
+#if !defined( GL_ES_VERSION_2_0 )
 	if( GLEW_ARB_transform_feedback2 )
 	{
 		glDeleteTransformFeedbacks( 2, mTrnFbkId );
 	}
+#endif
 
 	return( NodeControlBase::deinitialise() );
 }
@@ -122,15 +128,19 @@ void TransformFeedbackNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		case GL_LINE_LOOP:
 		case GL_LINE_STRIP:
+#if !defined( GL_ES_VERSION_2_0 )
 		case GL_LINES_ADJACENCY:
 		case GL_LINE_STRIP_ADJACENCY:
+#endif
 			mTransformMode = GL_LINES;
 			break;
 
 		case GL_TRIANGLE_STRIP:
 		case GL_TRIANGLE_FAN:
+#if !defined( GL_ES_VERSION_2_0 )
 		case GL_TRIANGLES_ADJACENCY:
 		case GL_TRIANGLE_STRIP_ADJACENCY:
+#endif
 			mTransformMode = GL_TRIANGLES;
 			break;
 
@@ -188,6 +198,7 @@ void TransformFeedbackNode::inputsUpdated( qint64 pTimeStamp )
 				return;
 			}
 
+#if !defined( GL_ES_VERSION_2_0 )
 			if( GLEW_ARB_transform_feedback2 )
 			{
 				// Set up the first TF destination buffer
@@ -206,6 +217,7 @@ void TransformFeedbackNode::inputsUpdated( qint64 pTimeStamp )
 
 				glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
 			}
+#endif
 
 			// We'll use the first TF buffer, with dstBuf() as our target
 
@@ -251,6 +263,7 @@ void TransformFeedbackNode::render1( qint64 pTimeStamp )
 {
 	Q_UNUSED( pTimeStamp )
 
+#if !defined( GL_ES_VERSION_2_0 )
 	glEnable( GL_RASTERIZER_DISCARD );
 
 #if defined( TF_QUERY )
@@ -305,6 +318,7 @@ void TransformFeedbackNode::render1( qint64 pTimeStamp )
 #endif
 
 	glDisable( GL_RASTERIZER_DISCARD );
+#endif
 
 	// Increment the TF buffer index so we'll use the next one for the next call
 
@@ -342,6 +356,7 @@ void TransformFeedbackNode::render2( qint64 pTimeStamp )
 {
 	Q_UNUSED( pTimeStamp )
 
+#if !defined( GL_ES_VERSION_2_0 )
 	if( GLEW_ARB_transform_feedback2 )
 	{
 		if( !mFirstTransform )
@@ -351,6 +366,7 @@ void TransformFeedbackNode::render2( qint64 pTimeStamp )
 	}
 
 	OPENGL_DEBUG( mNode->name() );
+#endif
 }
 
 QList<QUuid> TransformFeedbackNode::pinAddTypesInput() const

@@ -72,6 +72,7 @@ void BufferToArrayNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+#if !defined( Q_OS_RASPBERRY_PI )
 	if( GLEW_VERSION_4_5 )
 	{
 		glGetNamedBufferSubData( BufInt->buffer(), 0, ArrLen, ArrPtr );
@@ -82,6 +83,7 @@ void BufferToArrayNode::inputsUpdated( qint64 pTimeStamp )
 
 		BufInt->release();
 	}
+#endif
 
 	GLfloat		feedback[ 16 ];
 

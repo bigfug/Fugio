@@ -186,6 +186,7 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 	OPENGL_DEBUG( mNode->name() );
 
+#if !defined( GL_ES_VERSION_2_0 )
 	//-------------------------------------------------------------------------
 	// Bind our Vertex Array Object (if supported)
 
@@ -195,6 +196,7 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		glBindVertexArray( VAO->vao() );
 	}
+#endif
 
 	//-------------------------------------------------------------------------
 
@@ -367,10 +369,12 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 	//-------------------------------------------------------------------------
 
+#if !defined( GL_ES_VERSION_2_0 )
 	if( GLEW_ARB_vertex_array_object )
 	{
 		glBindVertexArray( 0 );
 	}
+#endif
 
 	OPENGL_DEBUG( mNode->name() );
 
@@ -607,6 +611,7 @@ void ShaderInstanceNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	QList< QSharedPointer<fugio::PinInterface> >	InpPinLst = mNode->enumInputPins();
 
+#if !defined( GL_ES_VERSION_2_0 )
 	//-------------------------------------------------------------------------
 	// Bind our Vertex Array Object (if supported)
 
@@ -616,6 +621,7 @@ void ShaderInstanceNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 	{
 		glBindVertexArray( VAO->vao() );
 	}
+#endif
 
 	//-------------------------------------------------------------------------
 
@@ -696,10 +702,12 @@ void ShaderInstanceNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	releaseInputTextures( Bindings );
 
+#if !defined( GL_ES_VERSION_2_0 )
 	if( GLEW_ARB_vertex_array_object )
 	{
 		glBindVertexArray( 0 );
 	}
+#endif
 
 	OPENGL_DEBUG( mNode->name() );
 }

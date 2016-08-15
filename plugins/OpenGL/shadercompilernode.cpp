@@ -261,6 +261,7 @@ void ShaderCompilerNode::loadShader()
 		return;
 	}
 
+#if !defined( GL_ES_VERSION_2_0 )
 	//-------------------------------------------------------------------------
 	// Varyings
 
@@ -308,6 +309,7 @@ void ShaderCompilerNode::loadShader()
 			OPENGL_PLUGIN_DEBUG;
 		}
 	}
+#endif
 
 	//-------------------------------------------------------------------------
 	// Link
@@ -339,6 +341,7 @@ void ShaderCompilerNode::loadShader()
 
 		if( LinkLogLength <= 0 )
 		{
+#if !defined( GL_ES_VERSION_2_0 )
 			if( !VaryingList.isEmpty() )
 			{
 				// NVIDIA cards fail to link but don't report anything!
@@ -346,6 +349,7 @@ void ShaderCompilerNode::loadShader()
 				mNode->setStatusMessage( "Shader Linking Failed - Check Varyings" );
 			}
 			else
+#endif
 			{
 				mNode->setStatusMessage( "Shader Linking Failed" );
 			}

@@ -19,23 +19,29 @@ void BufferEntryPin::setType( GLenum pType )
 
 		case GL_SHORT:
 		case GL_UNSIGNED_SHORT:
+#if !defined( Q_OS_RASPBERRY_PI )
 		case GL_HALF_FLOAT:
+#endif
 			mTypeSize = 2;
 			break;
 
 		case GL_INT:
 		case GL_UNSIGNED_INT:
 		case GL_FLOAT:
+	case GL_FIXED:
+#if !defined( Q_OS_RASPBERRY_PI )
 		case GL_INT_2_10_10_10_REV:
 		case GL_UNSIGNED_INT_2_10_10_10_REV:
 		case GL_UNSIGNED_INT_10F_11F_11F_REV:
-		case GL_FIXED:
+#endif
 			mTypeSize = 4;
 			break;
 
+#if !defined( Q_OS_RASPBERRY_PI )
 		case GL_DOUBLE:
 			mTypeSize = 8;
 			break;
+#endif
 
 		default:
 			mTypeSize = 0;
@@ -59,6 +65,7 @@ const GLvoid *BufferEntryPin::bind( GLuint pIndex, GLsizei pStride, const GLvoid
 
 	glEnableVertexAttribArray( pIndex );
 
+#if !defined( Q_OS_RASPBERRY_PI )
 	if( GLEW_ARB_vertex_attrib_64bit )
 	{
 		switch( mType )
@@ -83,6 +90,7 @@ const GLvoid *BufferEntryPin::bind( GLuint pIndex, GLsizei pStride, const GLvoid
 				return( NextBuff );
 		}
 	}
+#endif
 
 	glVertexAttribPointer( pIndex, mSize, mType, mNormalised, pStride, pPointer );
 

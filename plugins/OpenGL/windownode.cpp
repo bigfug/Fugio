@@ -93,10 +93,12 @@ bool WindowNode::initialise()
 		return( false );
 	}
 
+#if !defined( GL_ES_VERSION_2_0 )
 	if( !mOutput->isValid() )
 	{
 		return( false );
 	}
+#endif
 
 	mNode->context()->nodeInitialised();
 
@@ -108,7 +110,11 @@ bool WindowNode::initialise()
 	mTexture->setFilter( GL_LINEAR, GL_LINEAR );
 	mTexture->setFormat( GL_RGBA );
 	mTexture->setGenMipMaps( false );
+#if !defined( GL_ES_VERSION_2_0 )
 	mTexture->setInternalFormat( GL_RGBA8 );
+#else
+	mTexture->setInternalFormat( GL_RGBA );
+#endif
 	mTexture->setTarget( GL_TEXTURE_2D );
 	mTexture->setType( GL_UNSIGNED_BYTE );
 	mTexture->setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
@@ -243,14 +249,17 @@ void WindowNode::render( qint64 pTimeStamp )
 		mTexture->update( 0, 0 );
 	}
 
-	int			Samples = mOutput->format().samples();
 	GLuint		FBOId   = 0;
+
+#if !defined( GL_ES_VERSION_2_0 )
+	int			Samples = mOutput->format().samples();
 
 	if( Samples > 1 )
 	{
 		FBOId = mTexture->fboMultiSample( Samples, true );
 	}
 	else
+#endif
 	{
 		FBOId = mTexture->fbo( true );
 	}
@@ -297,6 +306,7 @@ void WindowNode::render( qint64 pTimeStamp )
 	{
 		if( CaptureWindow )
 		{
+#if !defined( GL_ES_VERSION_2_0 )
 			if( Samples > 1 )
 			{
 				glBindFramebuffer( GL_DRAW_FRAMEBUFFER, mTexture->fbo() );
@@ -307,6 +317,7 @@ void WindowNode::render( qint64 pTimeStamp )
 				glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 				glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
 			}
+#endif
 
 			pinUpdated( mPinTexture );
 
@@ -314,6 +325,7 @@ void WindowNode::render( qint64 pTimeStamp )
 
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
+#if !defined( GL_ES_VERSION_2_0 )
 			glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 			glBindFramebuffer( GL_READ_FRAMEBUFFER, mTexture->fbo() );
 
@@ -324,6 +336,7 @@ void WindowNode::render( qint64 pTimeStamp )
 			glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
 
 			OPENGL_DEBUG( mNode->name() );
+#endif
 		}
 		else
 		{
@@ -331,6 +344,7 @@ void WindowNode::render( qint64 pTimeStamp )
 
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
+#if !defined( GL_ES_VERSION_2_0 )
 			glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 			glBindFramebuffer( GL_READ_FRAMEBUFFER, FBOId );
 
@@ -339,6 +353,7 @@ void WindowNode::render( qint64 pTimeStamp )
 			glBlitFramebuffer( 0, 0, RenderSize.width(), RenderSize.height(), 0, 0, RenderSize.width(), RenderSize.height(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
 
 			glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
+#endif
 
 			OPENGL_DEBUG( mNode->name() );
 		}
@@ -362,7 +377,11 @@ void WindowNode::render( qint64 pTimeStamp )
 			mBufferImage = QImage( RenderSize, QImage::Format_ARGB32 );
 		}
 
+#if !defined( GL_ES_VERSION_2_0 )
 		glReadPixels( 0, 0, RenderSize.width(), RenderSize.height(), GL_BGRA, GL_UNSIGNED_BYTE, mBufferImage.bits() );
+#else
+		glReadPixels( 0, 0, RenderSize.width(), RenderSize.height(), GL_RGBA, GL_UNSIGNED_BYTE, mBufferImage.bits() );
+#endif
 
 		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 

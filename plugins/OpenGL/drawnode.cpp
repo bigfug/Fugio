@@ -28,14 +28,16 @@ DrawNode::DrawNode( QSharedPointer<fugio::NodeInterface> pNode )
 		INSERT_MODE( GL_LINE_STRIP );
 		INSERT_MODE( GL_LINE_LOOP );
 		INSERT_MODE( GL_LINES );
-		INSERT_MODE( GL_LINE_STRIP_ADJACENCY );
-		INSERT_MODE( GL_LINES_ADJACENCY );
 		INSERT_MODE( GL_TRIANGLE_STRIP );
 		INSERT_MODE( GL_TRIANGLE_FAN );
 		INSERT_MODE( GL_TRIANGLES );
+#if !defined( GL_ES_VERSION_2_0 )
+		INSERT_MODE( GL_LINE_STRIP_ADJACENCY );
+		INSERT_MODE( GL_LINES_ADJACENCY );
 		INSERT_MODE( GL_TRIANGLE_STRIP_ADJACENCY );
 		INSERT_MODE( GL_TRIANGLES_ADJACENCY );
 		INSERT_MODE( GL_PATCHES );
+#endif
 	}
 
 	FUGID( PIN_MODE,			"A06B6399-6A5F-421E-8EBB-8A0E9A3EC861" );
@@ -75,10 +77,12 @@ bool DrawNode::initialise()
 		return( false );
 	}
 
+#if !defined( GL_ES_VERSION_2_0 )
 	if( !GLEW_VERSION_2_0 )
 	{
 		return( false );
 	}
+#endif
 
 	return( true );
 }

@@ -21,7 +21,11 @@
 
 #include "texturenodeform.h"
 
+#if defined( Q_OS_RASPBERRY_PI )
+#include "deviceopengloutputrpi.h"
+#else
 #include "deviceopengloutput.h"
+#endif
 
 ImageToTextureNode::ImageToTextureNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )

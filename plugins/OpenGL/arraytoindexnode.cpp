@@ -113,6 +113,7 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 		else
 #endif
 		{
+#if !defined( Q_OS_RASPBERRY_PI )
 			GLfloat	*P = (GLfloat *)glMapBuffer( BufO->target(), GL_WRITE_ONLY );
 
 			if( P )
@@ -123,6 +124,7 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 
 				Update = true;
 			}
+#endif
 		}
 
 		BufO->release();

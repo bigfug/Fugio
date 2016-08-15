@@ -379,10 +379,12 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pCubeFac
 		glTexParameteri( mTarget, GL_TEXTURE_WRAP_S, mTextureWrapX );
 		glTexParameteri( mTarget, GL_TEXTURE_WRAP_T, mTextureWrapY );
 
+#if !defined( GL_ES_VERSION_2_0 )
 		if( GLEW_VERSION_1_2 )
 		{
 			glTexParameteri( mTarget, GL_TEXTURE_WRAP_R, mTextureWrapZ );
 		}
+#endif
 
 		OPENGL_DEBUG( mPin->node()->name() );
 
@@ -557,7 +559,11 @@ quint32 TexturePin::fbo( bool pUseDepth )
 
 	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
 
+#if defined( GL_ES_VERSION_2_0 )
+	if( !mFBOId && mDstTexId && !mTextureSize.isNull() )
+#else
 	if( !mFBOId && mDstTexId && !mTextureSize.isNull() && GLEW_ARB_framebuffer_object )
+#endif
 	{
 		glGenFramebuffers( 1, &mFBOId );
 		glBindFramebuffer( GL_FRAMEBUFFER, mFBOId );
@@ -566,13 +572,22 @@ quint32 TexturePin::fbo( bool pUseDepth )
 		{
 			glGenRenderbuffers( 1, &mFBODepthRBId );
 			glBindRenderbuffer( GL_RENDERBUFFER, mFBODepthRBId );
+
+#if defined( GL_ES_VERSION_2_0 )
+			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, mTextureSize.x(), mTextureSize.y() );
+#else
 			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mTextureSize.x(), mTextureSize.y() );
+#endif
 
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mFBODepthRBId );
 		}
 	}
 
+#if defined( GL_ES_VERSION_2_0 )
+	if( mFBOId && mDstTexId && !mTextureSize.isNull() )
+#else
 	if( mFBOId && mDstTexId && !mTextureSize.isNull() && GLEW_ARB_framebuffer_object )
+#endif
 	{
 		glBindFramebuffer( GL_FRAMEBUFFER, mFBOId );
 
@@ -645,6 +660,7 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 {
 	checkDefinition();
 
+#if !defined( GL_ES_VERSION_2_0 )
 	if( !mFBOMSId && !mTextureSize.isNull() && GLEW_ARB_framebuffer_object )
 	{
 		GLint		FBOCur, RBCur;
@@ -682,6 +698,7 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 			freeFbo();
 		}
 	}
+#endif
 
 	return( mFBOMSId );
 }
@@ -698,18 +715,20 @@ int TexturePin::sizeDimensions() const
 {
 	switch( mTarget )
 	{
+#if !defined( GL_ES_VERSION_2_0 )
 		case GL_TEXTURE_1D:
 			return( 1 );
 			break;
+
+	case GL_TEXTURE_3D:
+		return( 3 );
+		break;
+#endif
 
 		case GL_TEXTURE_2D:
 		case GL_TEXTURE_RECTANGLE:
 		case GL_TEXTURE_CUBE_MAP:
 			return( 2 );
-			break;
-
-		case GL_TEXTURE_3D:
-			return( 3 );
 			break;
 	}
 

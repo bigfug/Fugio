@@ -37,12 +37,6 @@ PluginInterface::InitResult RasperryPiPlugin::initialise( fugio::GlobalInterface
 
 	//-------------------------------------------------------------------------
 
-#if defined( Q_OS_RASPBERRY_PI )
-	qDebug() << "Initialising Raspberry Pi: bcm_host_init()";
-
-	bcm_host_init();
-#endif
-
 	return( INIT_OK );
 }
 

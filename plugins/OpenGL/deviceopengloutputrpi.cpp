@@ -1,47 +1,45 @@
 #include "deviceopengloutputrpi.h"
 
+#include <QApplication>
+
 #include "openglplugin.h"
 
-QSize DeviceOpenGLOutputRPi::size() const
+void DeviceOpenGLOutput::deviceInitialise()
 {
-	return( QSize( DstRct.width, DstRct.height ) );
 }
 
-bool DeviceOpenGLOutputRPi::hasDebugContext() const
+void DeviceOpenGLOutput::deviceDeinitialise()
 {
-	return( false );
 }
 
-void DeviceOpenGLOutputRPi::renderStart()
+void DeviceOpenGLOutput::devicePacketStart( qint64 pTimeStamp )
 {
-	glViewport( 0, 0, DstRct.width, DstRct.height );
-
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	Q_UNUSED( pTimeStamp )
 }
 
-void DeviceOpenGLOutputRPi::renderEnd()
+void DeviceOpenGLOutput::devicePacketEnd()
 {
-	if( mDisplay && mSurface )
-	{
-		glFlush();
-
-		eglSwapBuffers( mDisplay, mSurface );
-	}
 }
 
-void DeviceOpenGLOutputRPi::processEvents()
+QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( bool pContextOnly )
 {
+	Q_UNUSED( pContextOnly )
 
+	QSharedPointer<DeviceOpenGLOutput>	NewDev;
+
+	NewDev = QSharedPointer<DeviceOpenGLOutput>( new DeviceOpenGLOutput() );
+
+	return( NewDev );
 }
 
-void DeviceOpenGLOutputRPi::setGeometry(QRect pRect)
-{
-	Q_UNUSED( pRect )
-}
+//-----------------------------------------------------------------------------
+// Instance
 
-DeviceOpenGLOutputRPi::DeviceOpenGLOutputRPi( bool pContextOnly )
-	: DeviceOpenGLOutput( pContextOnly ), mDisplay( 0 ), mConfig( 0 ), mNumConfig( 0 ), mContext( 0 ), mSurface( 0 )
+DeviceOpenGLOutput::DeviceOpenGLOutput( void )
+	: mInputEvents( nullptr ), mUpdatePending( false ), mDisplay( 0 ), mConfig( 0 ), mNumConfig( 0 ), mContext( 0 ), mSurface( 0 )
 {
+	bcm_host_init();
+
 	mDisplay = eglGetDisplay( EGL_DEFAULT_DISPLAY );
 
 	if( mDisplay == EGL_NO_DISPLAY )
@@ -63,16 +61,60 @@ DeviceOpenGLOutputRPi::DeviceOpenGLOutputRPi( bool pContextOnly )
 		EGL_RED_SIZE,		8,
 		EGL_GREEN_SIZE,		8,
 		EGL_BLUE_SIZE,		8,
-		EGL_ALPHA_SIZE,		8,
-		EGL_DEPTH_SIZE,		16,
+		EGL_DEPTH_SIZE,		24,
 		EGL_SURFACE_TYPE,	EGL_WINDOW_BIT,
 		EGL_NONE
 	};
 
-	if( eglSaneChooseConfigBRCM( mDisplay, AttribList, &mConfig, 1, &mNumConfig ) != EGL_TRUE )
+	QVector<EGLConfig>		Configs;
+
+	if( eglChooseConfig( mDisplay, AttribList, 0, 0, &mNumConfig ) != EGL_TRUE )
 	{
 		return;
 	}
+
+	if( mNumConfig <= 0 )
+	{
+		return;
+	}
+
+	Configs.resize( mNumConfig );
+
+	if( eglChooseConfig( mDisplay, AttribList, Configs.data(), Configs.size(), &mNumConfig ) != EGL_TRUE )
+	{
+		return;
+	}
+
+	for( int i = 0 ; i < mNumConfig ; i++ )
+	{
+		EGLBoolean		Success;
+		EGLint			Red, Green, Blue, Alpha, Depth, SurfaceType, Conformant;
+
+		Success = eglGetConfigAttrib( mDisplay, Configs[ i ], EGL_RED_SIZE, &Red );
+		Success = eglGetConfigAttrib( mDisplay, Configs[ i ], EGL_GREEN_SIZE, &Green );
+		Success = eglGetConfigAttrib( mDisplay, Configs[ i ], EGL_BLUE_SIZE, &Blue );
+		Success = eglGetConfigAttrib( mDisplay, Configs[ i ], EGL_ALPHA_SIZE, &Alpha );
+		Success = eglGetConfigAttrib( mDisplay, Configs[ i ], EGL_DEPTH_SIZE, &Depth );
+		Success = eglGetConfigAttrib( mDisplay, Configs[ i ], EGL_SURFACE_TYPE, &SurfaceType );
+		Success = eglGetConfigAttrib( mDisplay, Configs[ i ], EGL_CONFORMANT, &Conformant );
+
+		qDebug() << i << Red << Green << Blue << Alpha << Depth;
+
+		if( ( Conformant & EGL_OPENGL_BIT ) != 0 ) qDebug() << "EGL_OPENGL_BIT";
+		if( ( Conformant & EGL_OPENGL_ES_BIT ) != 0 ) qDebug() << "EGL_OPENGL_ES_BIT";
+		if( ( Conformant & EGL_OPENGL_ES2_BIT ) != 0 ) qDebug() << "EGL_OPENGL_ES2_BIT";
+		if( ( Conformant & EGL_OPENVG_BIT ) != 0 ) qDebug() << "EGL_OPENVG_BIT";
+
+		if( ( SurfaceType & EGL_MULTISAMPLE_RESOLVE_BOX_BIT ) != 0 ) qDebug() << "EGL_MULTISAMPLE_RESOLVE_BOX_BIT";
+		if( ( SurfaceType & EGL_PBUFFER_BIT ) != 0 ) qDebug() << "EGL_PBUFFER_BIT";
+		if( ( SurfaceType & EGL_PIXMAP_BIT ) != 0 ) qDebug() << "EGL_PIXMAP_BIT";
+		if( ( SurfaceType & EGL_SWAP_BEHAVIOR_PRESERVED_BIT ) != 0 ) qDebug() << "EGL_SWAP_BEHAVIOR_PRESERVED_BIT";
+		if( ( SurfaceType & EGL_VG_ALPHA_FORMAT_PRE_BIT ) != 0 ) qDebug() << "EGL_VG_ALPHA_FORMAT_PRE_BIT";
+		if( ( SurfaceType & EGL_VG_COLORSPACE_LINEAR_BIT ) != 0 ) qDebug() << "EGL_VG_COLORSPACE_LINEAR_BIT";
+		if( ( SurfaceType & EGL_WINDOW_BIT ) != 0 ) qDebug() << "EGL_WINDOW_BIT";
+	}
+
+	mConfig = Configs[ 0 ];
 
 	if( eglBindAPI( EGL_OPENGL_ES_API ) != EGL_TRUE )
 	{
@@ -97,37 +139,53 @@ DeviceOpenGLOutputRPi::DeviceOpenGLOutputRPi( bool pContextOnly )
 		return;
 	}
 
-	ScreenWidth /= 4;
-	ScreenHeight /= 4;
+//	ScreenWidth /= 4;
+//	ScreenHeight /= 4;
 
-	DstRct.x = 200;
-	DstRct.y = 200;
-	DstRct.width = ScreenWidth;
-	DstRct.height = ScreenHeight;
+	mDstRct.x = 0;
+	mDstRct.y = 0;
+	mDstRct.width = ScreenWidth;
+	mDstRct.height = ScreenHeight;
 
-	SrcRct.x = 200;
-	SrcRct.y = 200;
-	SrcRct.width = ScreenWidth << 16;
-	SrcRct.height = ScreenHeight << 16;
+	mSrcRct.x = 0;
+	mSrcRct.y = 0;
+	mSrcRct.width = ScreenWidth << 16;
+	mSrcRct.height = ScreenHeight << 16;
 
-	DispManDisplay = vc_dispmanx_display_open( 0 );
-	DispManUpdate  = vc_dispmanx_update_start( 0 );
+	mDispManDisplay = vc_dispmanx_display_open( 0 );
+	mDispManUpdate  = vc_dispmanx_update_start( 0 );
 
-	DispManElement = vc_dispmanx_element_add( DispManUpdate, DispManDisplay,
+	mDispManElement = vc_dispmanx_element_add( mDispManUpdate, mDispManDisplay,
 											  0, // layer
-											  &DstRct,
+											  &mDstRct,
 											  0, // src
-											  &SrcRct,
+											  &mSrcRct,
 											  DISPMANX_PROTECTION_NONE, 0, 0, DISPMANX_NO_ROTATE );
 
-	NativeWindow.element = DispManElement;
-	NativeWindow.width   = ScreenWidth;
-	NativeWindow.height  = ScreenHeight;
+	mNativeWindow.element = mDispManElement;
+	mNativeWindow.width   = ScreenWidth;
+	mNativeWindow.height  = ScreenHeight;
 
-	vc_dispmanx_update_submit_sync( DispManUpdate );
+	vc_dispmanx_update_submit_sync( mDispManUpdate );
 
-	if( ( mSurface = eglCreateWindowSurface( mDisplay, mConfig, &NativeWindow, 0 ) ) == EGL_NO_SURFACE )
+	if( ( mSurface = eglCreateWindowSurface( mDisplay, mConfig, &mNativeWindow, 0 ) ) == EGL_NO_SURFACE )
 	{
+		EGLint Error;
+
+		while( ( Error = eglGetError() ) != EGL_SUCCESS )
+		{
+			switch( Error )
+			{
+				case EGL_BAD_DISPLAY:	qWarning() << "EGL_BAD_DISPLAY"; break;
+				case EGL_NOT_INITIALIZED:	qWarning() << "EGL_NOT_INITIALIZED"; break;
+				case EGL_BAD_CONFIG:	qWarning() << "EGL_BAD_CONFIG"; break;
+				case EGL_BAD_NATIVE_WINDOW:	qWarning() << "EGL_BAD_NATIVE_WINDOW"; break;
+				case EGL_BAD_ALLOC:	qWarning() << "EGL_BAD_ALLOC"; break;
+				case EGL_BAD_MATCH:	qWarning() << "EGL_BAD_MATCH"; break;
+				default:	qWarning() << QString::number( Error ); break;
+			}
+		}
+
 		return;
 	}
 
@@ -148,12 +206,7 @@ DeviceOpenGLOutputRPi::DeviceOpenGLOutputRPi( bool pContextOnly )
 	glClear( GL_COLOR_BUFFER_BIT );
 }
 
-DeviceOpenGLOutputRPi::~DeviceOpenGLOutputRPi()
-{
-	closeOutput();
-}
-
-void DeviceOpenGLOutputRPi::closeOutput()
+DeviceOpenGLOutput::~DeviceOpenGLOutput( void )
 {
 	if( mDisplay != EGL_NO_DISPLAY )
 	{
@@ -178,3 +231,60 @@ void DeviceOpenGLOutputRPi::closeOutput()
 	mSurface = EGL_NO_SURFACE;
 	mContext = EGL_NO_CONTEXT;
 }
+
+void DeviceOpenGLOutput::setCurrentNode( QSharedPointer<fugio::NodeInterface> pNode )
+{
+	mNode = pNode;
+}
+
+void DeviceOpenGLOutput::unsetCurrentNode( QSharedPointer<fugio::NodeInterface> pNode )
+{
+	QSharedPointer<fugio::NodeInterface>	CurNod = mNode.toStrongRef();
+
+	if( CurNod && CurNod != pNode )
+	{
+		return;
+	}
+
+	mNode.clear();
+
+	mInputEvents = nullptr;
+}
+
+void DeviceOpenGLOutput::renderLater( void )
+{
+	mUpdatePending = true;
+}
+
+bool DeviceOpenGLOutput::renderInit( void )
+{
+	return( true );
+}
+
+void DeviceOpenGLOutput::renderStart( void )
+{
+	glViewport( 0, 0, mDstRct.width, mDstRct.height );
+
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+}
+
+void DeviceOpenGLOutput::renderEnd( void )
+{
+	if( mDisplay && mSurface )
+	{
+		glFlush();
+
+		eglSwapBuffers( mDisplay, mSurface );
+	}
+}
+
+QSize DeviceOpenGLOutput::windowSize( void ) const
+{
+	return( QSize( mDstRct.width, mDstRct.height ) );
+}
+
+QSize DeviceOpenGLOutput::framebufferSize( void ) const
+{
+	return( QSize( mDstRct.width, mDstRct.height ) );
+}
+

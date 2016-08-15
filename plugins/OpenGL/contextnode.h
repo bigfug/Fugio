@@ -4,7 +4,12 @@
 #include "opengl_includes.h"
 
 #include <fugio/nodecontrolbase.h>
+
+#if defined( Q_OS_RASPBERRY_PI )
+#include "deviceopengloutputrpi.h"
+#else
 #include "deviceopengloutput.h"
+#endif
 
 class ContextNode : public fugio::NodeControlBase
 {

@@ -46,7 +46,11 @@ void TextureToImageNode::inputsUpdated( qint64 pTimeStamp )
 
 	glBindFramebuffer( GL_FRAMEBUFFER, TexInf->fbo() );
 
+#if defined( GL_ES_VERSION_2_0 )
+	glReadPixels( 0, 0, TexSze.x(), TexSze.y(), GL_RGBA, GL_UNSIGNED_BYTE, mValOutputImage->internalBuffer( 0 ) );
+#else
 	glReadPixels( 0, 0, TexSze.x(), TexSze.y(), GL_BGRA, GL_UNSIGNED_BYTE, mValOutputImage->internalBuffer( 0 ) );
+#endif
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 

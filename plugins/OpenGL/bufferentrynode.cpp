@@ -33,13 +33,15 @@ BufferEntryNode::BufferEntryNode( QSharedPointer<fugio::NodeInterface> pNode )
 		mTypeMap.insert( "GL_UNSIGNED_SHORT", TypeData( GL_UNSIGNED_SHORT, 2 ) );
 		mTypeMap.insert( "GL_INT", TypeData( GL_INT, 4 ) );
 		mTypeMap.insert( "GL_UNSIGNED_INT", TypeData( GL_UNSIGNED_INT, 4 ) );
-		mTypeMap.insert( "GL_HALF_FLOAT", TypeData( GL_HALF_FLOAT, 2 ) );
 		mTypeMap.insert( "GL_FLOAT", TypeData( GL_FLOAT, 4 ) );
-		mTypeMap.insert( "GL_DOUBLE", TypeData( GL_DOUBLE, 8 ) );
 		mTypeMap.insert( "GL_FIXED", TypeData( GL_FIXED, 4 ) );
+#if !defined( GL_ES_VERSION_2_0 )
+		mTypeMap.insert( "GL_HALF_FLOAT", TypeData( GL_HALF_FLOAT, 2 ) );
+		mTypeMap.insert( "GL_DOUBLE", TypeData( GL_DOUBLE, 8 ) );
 		mTypeMap.insert( "GL_INT_2_10_10_10_REV", TypeData( GL_INT_2_10_10_10_REV, 4 ) );
 		mTypeMap.insert( "GL_UNSIGNED_INT_2_10_10_10_REV", TypeData( GL_UNSIGNED_INT_2_10_10_10_REV, 4 ) );
 		mTypeMap.insert( "GL_UNSIGNED_INT_10F_11F_11F_REV", TypeData( GL_UNSIGNED_INT_10F_11F_11F_REV, 4 ) );
+#endif
 	}
 
 	mValInputType->setChoices( mTypeMap.keys() );
