@@ -91,3 +91,15 @@ contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 	LIBS += -L/opt/vc/lib -lbcm_host
 }
 
+#------------------------------------------------------------------------------
+# Wiring
+
+unix:exists( /usr/local/include/wiringPi.h ) {
+	INCLUDEPATH += /usr/local/include
+	LIBS += -L/usr/local/lib -lwiringPi
+	DEFINES += WIRINGPI_SUPPORTED
+}
+
+!contains( DEFINES, WIRINGPI_SUPPORTED ) {
+	message( "Wiring Pi not supported" )
+}
