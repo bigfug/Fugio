@@ -13,6 +13,7 @@ SUBDIRS += \
     LuaQt \
     Math \
     MIDI \
+	OpenGL \
 	OSC \
 	PortAudio \
     PortMidi \
