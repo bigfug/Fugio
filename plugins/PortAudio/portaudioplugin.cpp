@@ -6,6 +6,10 @@
 #include <portaudio.h>
 #endif
 
+#if QT_VERSION < QT_VERSION_CHECK( 5, 5, 0 )
+#define qInfo qDebug
+#endif
+
 #include "portaudiooutputnode.h"
 #include "portaudioinputnode.h"
 
