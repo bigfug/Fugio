@@ -161,7 +161,7 @@ void TexturePin::setSize( const QVector3D &pSize )
 
 		bool		TextureNPOT = false;
 
-#if !defined( Q_OS_RASPERRY_PI )
+#if !defined( Q_OS_RASPBERRY_PI )
 		if( GLEW_ARB_texture_non_power_of_two || GLEW_ARB_texture_storage || GLEW_VERSION_2_0 )
 		{
 			TextureNPOT = true;
@@ -262,7 +262,7 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pCubeFac
 		bool		TextureNPOT      = false;
 		bool		TextureAllocated = false;
 
-#if !defined( Q_OS_RASPERRY_PI )
+#if !defined( Q_OS_RASPBERRY_PI )
 		if( GLEW_ARB_texture_non_power_of_two || GLEW_ARB_texture_storage || GLEW_VERSION_2_0 )
 		{
 			TextureNPOT = true;
@@ -280,7 +280,7 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pCubeFac
 
 		OPENGL_DEBUG( mPin->node()->name() );
 
-#if !defined( Q_OS_RASPERRY_PI )
+#if !defined( Q_OS_RASPBERRY_PI )
 		if( TextureNPOT && !isCompressedFormat( mTextureInternalFormat ) && GLEW_VERSION_4_2 )
 		{
 			switch( mTarget )

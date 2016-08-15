@@ -3,7 +3,7 @@
 
 #include "deviceopengloutput.h"
 
-#if defined( Q_OS_RASPERRY_PI )
+#if defined( Q_OS_RASPBERRY_PI )
 #include "bcm_host.h"
 #endif
 

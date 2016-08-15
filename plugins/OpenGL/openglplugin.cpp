@@ -178,7 +178,7 @@ void OpenGLPlugin::checkErrors( void )
 		return;
 	}
 
-#if defined( Q_OS_RASPERRY_PI )
+#if defined( Q_OS_RASPBERRY_PI )
 	for( GLenum e = eglGetError() ; e != EGL_SUCCESS ; e = eglGetError() )
 	{
 		qDebug() << "EGL" << QString::number( e, 16 );
@@ -212,7 +212,7 @@ void OpenGLPlugin::checkErrors( const char *file, int line )
 		return;
 	}
 
-#if defined( Q_OS_RASPERRY_PI )
+#if defined( Q_OS_RASPBERRY_PI )
 	for( GLenum e = eglGetError() ; e != EGL_SUCCESS ; e = eglGetError() )
 	{
 		qDebug() << "EGL" << file << line << ":" << QString::number( e, 16 );
@@ -246,7 +246,7 @@ void OpenGLPlugin::checkErrors(const QString &pContext, const char *file, int li
 		return;
 	}
 
-#if defined( Q_OS_RASPERRY_PI )
+#if defined( Q_OS_RASPBERRY_PI )
 	for( GLenum e = eglGetError() ; e != EGL_SUCCESS ; e = eglGetError() )
 	{
 		qDebug() << "EGL" << file << line << ":" << QString::number( e, 16 );

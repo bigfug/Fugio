@@ -10,6 +10,10 @@ include( ../../FugioGlobal.pri )
 
 QT += gui widgets concurrent
 
+contains( DEFINES, Q_OS_RASPBERRY_PI ) {
+	QT -= opengl
+}
+
 TARGET = $$qtLibraryTarget(fugio-opengl)
 TEMPLATE = lib
 CONFIG += plugin c++11
@@ -22,7 +26,6 @@ SOURCES += openglplugin.cpp \
     texturenode.cpp \
     texturepin.cpp \
     syntaxhighlighterglsl.cpp \
-    deviceopengloutput.cpp \
     texturecopynode.cpp \
     texturenodeform.cpp \
     shaderinstancenode.cpp \
@@ -65,7 +68,6 @@ HEADERS +=\
 	../../include/fugio/nodecontrolbase.h \
 	../../include/fugio/pincontrolbase.h \
     syntaxhighlighterglsl.h \
-    deviceopengloutput.h \
     texturecopynode.h \
     texturenodeform.h \
     shaderinstancenode.h \
@@ -117,14 +119,13 @@ FORMS += \
     texturenodeform.ui \
     openglstateform.ui
 
-contains( DEFINES, Q_OS_RASPERRY_PI ) {
+contains( DEFINES, Q_OS_RASPBERRY_PI ) {
     SOURCES += deviceopengloutputrpi.cpp
     HEADERS += deviceopengloutputrpi.h
 } else {
-    SOURCES +=
-    HEADERS +=
+	SOURCES += deviceopengloutput.cpp
+	HEADERS += deviceopengloutput.h
 }
-
 
 windows {
     QMAKE_LFLAGS_DEBUG += /INCREMENTAL:NO

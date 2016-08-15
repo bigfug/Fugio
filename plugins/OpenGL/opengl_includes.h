@@ -1,7 +1,7 @@
 #ifndef OPENGL_INCLUDES_H
 #define OPENGL_INCLUDES_H
 
-#if defined( Q_OS_RASPERRY_PI )
+#if defined( Q_OS_RASPBERRY_PI )
 #include <QObject>
 #include <QDataStream>
 #include <QTextStream>
