@@ -2,6 +2,7 @@
 
 #include <QVector2D>
 #include <QVector3D>
+#include <QVector4D>
 
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
@@ -320,6 +321,27 @@ int LuaPlugin::pushVariant( lua_State *L, const QVariant &V )
 
 				lua_pushnumber( L, Data.z() );
 				lua_rawseti( L, -2, 3 );
+
+				return( 1 );
+			}
+
+		case QMetaType::QVector4D:
+			{
+				lua_newtable( L );
+
+				const QVector4D			Data = V.value<QVector4D>();
+
+				lua_pushnumber( L, Data.x() );
+				lua_rawseti( L, -2, 1 );
+
+				lua_pushnumber( L, Data.y() );
+				lua_rawseti( L, -2, 2 );
+
+				lua_pushnumber( L, Data.z() );
+				lua_rawseti( L, -2, 3 );
+
+				lua_pushnumber( L, Data.w() );
+				lua_rawseti( L, -2, 4 );
 
 				return( 1 );
 			}
