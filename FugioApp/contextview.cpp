@@ -764,7 +764,7 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 	//-------------------------------------------------------------------------
 
-#if !defined( Q_OS_RASPERRY_PI )
+#if !defined( Q_OS_RASPBERRY_PI )
 	if( !pPartial )
 	{
 		gApp->mainWindow()->restoreGeometry( pSettings.value( "mainwindow/geometry", gApp->mainWindow()->saveGeometry() ).toByteArray() );

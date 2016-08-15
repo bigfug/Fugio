@@ -7,7 +7,7 @@
 
 #include <fugio/raspberrypi/uuid.h>
 
-#if defined( Q_OS_RASPERRY_PI )
+#if defined( Q_OS_RASPBERRY_PI )
 #include <bcm_host.h>
 #endif
 
@@ -37,7 +37,7 @@ PluginInterface::InitResult RasperryPiPlugin::initialise( fugio::GlobalInterface
 
 	//-------------------------------------------------------------------------
 
-#if defined( Q_OS_RASPERRY_PI )
+#if defined( Q_OS_RASPBERRY_PI )
 	qDebug() << "Initialising Raspberry Pi: bcm_host_init()";
 
 	bcm_host_init();
