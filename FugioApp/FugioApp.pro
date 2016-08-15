@@ -247,10 +247,8 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 #------------------------------------------------------------------------------
 # Raspberry Pi
 
-linux:!mac:exists( /opt/vc/include/bcm_host.h ) {
-	DEFINES += Q_OS_RASPERRY_PI
-
-	LIBS += -L/opt/vc/lib -lGLESv2 -lEGL
+contains( DEFINES, Q_OS_RASPBERRY_PI ) {
+    LIBS += -L/opt/vc/lib -lGLESv2 -lEGL
 }
 
 #------------------------------------------------------------------------------

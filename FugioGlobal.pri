@@ -19,3 +19,10 @@ CONFIG(debug,debug|release) {
 } else {
     DESTDIR = $$FUGIO_ROOT/deploy-release-$$QMAKE_HOST.arch
 }
+
+#------------------------------------------------------------------------------
+# Raspberry Pi
+
+linux:!mac:exists( /opt/vc/include/bcm_host.h ) {
+    DEFINES += Q_OS_RASPERRY_PI
+}
