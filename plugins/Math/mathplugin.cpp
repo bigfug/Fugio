@@ -9,6 +9,7 @@
 
 #include "matrix4pin.h"
 #include "vector3pin.h"
+#include "vector4pin.h"
 
 #include "addnode.h"
 #include "subtractnode.h"
@@ -21,6 +22,8 @@
 
 #include "splitvector3.h"
 #include "joinvector3.h"
+#include "splitvector4node.h"
+#include "joinvector4node.h"
 
 #include "dotproductnode.h"
 #include "crossproducenode.h"
@@ -74,6 +77,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Dot Product", "Vector3", NID_DOT_PRODUCT, &DotProductNode::staticMetaObject ),
 	ClassEntry( "Divide", "Math", NID_DIVIDE, &DivideNode::staticMetaObject ),
 	ClassEntry( "Join", "Vector3", NID_JOIN_VECTOR3, &JoinVector3Node::staticMetaObject ),
+	ClassEntry( "Join", "Vector4", NID_JOIN_VECTOR4, &JoinVector4Node::staticMetaObject ),
 	ClassEntry( "Look At", "Matrix", NID_MATRIX_LOOKAT, &MatrixLookAtNode::staticMetaObject ),
 	ClassEntry( "MinMax", "Math", NID_MINMAX, &MinMaxNode::staticMetaObject ),
 	ClassEntry( "Multiply", "Math", NID_MULTIPLY, &MultiplyNode::staticMetaObject ),
@@ -89,7 +93,8 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Scale", "Matrix", NID_MATRIX_SCALE, &MatrixScaleNode::staticMetaObject ),
 	ClassEntry( "Sine (Degrees)", NID_SIN_DEGREES, &SinDegreeNode::staticMetaObject ),
 	ClassEntry( "Sine (Radians)", NID_SIN_RADIANS, &SinRadianNode::staticMetaObject ),
-	ClassEntry( "Split", "Vector3", NID_SPLIT_VECTOR3, &SplitVector3::staticMetaObject ),
+	ClassEntry( "Split", "Vector3", NID_SPLIT_VECTOR3, &SplitVector3Node::staticMetaObject ),
+	ClassEntry( "Split", "Vector4", NID_SPLIT_VECTOR4, &SplitVector4Node::staticMetaObject ),
 	ClassEntry( "Subtract", "Math", NID_SUBTRACT, &SubtractNode::staticMetaObject ),
 	ClassEntry( "Translate", "Matrix", NID_MATRIX_TRANSLATE, &MatrixTranslateNode::staticMetaObject ),
 	ClassEntry( "Vector3", "GUI", NID_VECTOR3, &Vector3Node::staticMetaObject ),
@@ -102,6 +107,7 @@ ClassEntry PinClasses[] =
 {
 	ClassEntry( "Matrix4", PID_MATRIX4, &Matrix4Pin::staticMetaObject ),
 	ClassEntry( "Vector3", PID_VECTOR3, &Vector3Pin::staticMetaObject ),
+	ClassEntry( "Vector4", PID_VECTOR4, &Vector4Pin::staticMetaObject ),
 	ClassEntry()
 };
 
@@ -118,8 +124,10 @@ PluginInterface::InitResult MathPlugin::initialise( fugio::GlobalInterface *pApp
 	mApp->registerPinClasses( PinClasses );
 
 	mApp->registerPinSplitter( PID_VECTOR3, NID_SPLIT_VECTOR3 );
+	mApp->registerPinSplitter( PID_VECTOR4, NID_SPLIT_VECTOR4 );
 
 	mApp->registerPinJoiner( PID_VECTOR3, NID_JOIN_VECTOR3 );
+	mApp->registerPinJoiner( PID_VECTOR4, NID_JOIN_VECTOR4 );
 
 	return( INIT_OK );
 }

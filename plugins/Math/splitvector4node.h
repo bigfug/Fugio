@@ -1,5 +1,5 @@
-#ifndef SPLITVECTOR3_H
-#define SPLITVECTOR3_H
+#ifndef SPLITVECTOR4NODE_H
+#define SPLITVECTOR4NODE_H
 
 #include <QObject>
 
@@ -14,14 +14,14 @@
 
 #include <fugio/nodecontrolbase.h>
 
-class SplitVector3Node : public fugio::NodeControlBase
+class SplitVector4Node : public fugio::NodeControlBase
 {
 	Q_OBJECT
 
 public:
-	Q_INVOKABLE explicit SplitVector3Node( QSharedPointer<fugio::NodeInterface> pNode );
+	Q_INVOKABLE explicit SplitVector4Node( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~SplitVector3Node( void ) {}
+	virtual ~SplitVector4Node( void ) {}
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
@@ -39,7 +39,9 @@ private:
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutZ;
 	fugio::VariantInterface						*mOutZ;
+
+	QSharedPointer<fugio::PinInterface>			 mPinOutW;
+	fugio::VariantInterface						*mOutW;
 };
 
-
-#endif // SPLITVECTOR3_H
+#endif // SPLITVECTOR4NODE_H
