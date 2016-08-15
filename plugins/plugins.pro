@@ -13,9 +13,10 @@ SUBDIRS += \
     LuaQt \
     Math \
     MIDI \
-    PortAudio \
+	OSC \
+	PortAudio \
     PortMidi \
-    OSC \
+	RaspberryPi \
     Network \
     Text \
     Time
