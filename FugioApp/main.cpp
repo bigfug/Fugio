@@ -17,6 +17,10 @@
 #include <fugio/plugin_interface.h>
 #include <fugio/node_control_interface.h>
 
+#if defined( Q_OS_RASPBERRY_PI )
+#include <bcm_host.h>
+#endif
+
 QString LogNam;
 
 void log_file( const QString &pLogDat )
@@ -87,6 +91,10 @@ void logger_static( QtMsgType type, const QMessageLogContext &context, const QSt
 
 int main(int argc, char *argv[])
 {
+#if defined( Q_OS_RASPBERRY_PI )
+	bcm_host_init();
+#endif
+
 #if defined( QT_DEBUG )
 	//QLocale::setDefault( QLocale( QLocale::French, QLocale::France ) );
 #endif

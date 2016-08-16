@@ -6,9 +6,7 @@
 
 include( ../../FugioGlobal.pri )
 
-#QT       += opengl # uitools
-
-QT += gui widgets concurrent
+QT += widgets concurrent
 
 contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 	QT -= opengl
@@ -139,7 +137,7 @@ windows {
 contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 	INCLUDEPATH += /opt/vc/include /opt/vc/include/interface/vcos/pthreads /opt/vc/include/interface/vmcs_host/linux
 
-	LIBS += -L/opt/vc/lib -lbcm_host -lGLESv2 -lEGL -lGLESv2 -lEGL -lopenmaxil -lbcm_host -lvcos -lvchiq_arm -lpthread -lrt -lm
+	LIBS += -L/opt/vc/lib -lbcm_host -lGLESv2 -lEGL
 }
 
 #------------------------------------------------------------------------------

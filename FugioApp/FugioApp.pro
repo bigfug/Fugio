@@ -6,7 +6,7 @@
 
 include( ../FugioGlobal.pri )
 
-QT += core gui network opengl
+QT += network
 
 greaterThan( QT_MAJOR_VERSION, 4 ): QT += widgets concurrent
 
@@ -248,7 +248,9 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 # Raspberry Pi
 
 contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-    LIBS += -L/opt/vc/lib -lGLESv2 -lEGL
+	INCLUDEPATH += /opt/vc/include /opt/vc/include/interface/vcos/pthreads /opt/vc/include/interface/vmcs_host/linux
+
+	LIBS += -L/opt/vc/lib -lbcm_host
 }
 
 #------------------------------------------------------------------------------

@@ -38,7 +38,55 @@ QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( bool pContextO
 DeviceOpenGLOutput::DeviceOpenGLOutput( void )
 	: mInputEvents( nullptr ), mUpdatePending( false ), mDisplay( 0 ), mConfig( 0 ), mNumConfig( 0 ), mContext( 0 ), mSurface( 0 )
 {
-	bcm_host_init();
+	quint32		ScreenWidth, ScreenHeight;
+
+	if( graphics_get_display_size( 0, &ScreenWidth, &ScreenHeight ) < 0 )
+	{
+		return;
+	}
+
+//	ScreenWidth /= 4;
+//	ScreenHeight /= 4;
+
+	mDstRct.x = 256;
+	mDstRct.y = 256;
+	mDstRct.width = ScreenWidth / 4;
+	mDstRct.height = ScreenHeight / 4;
+
+	mSrcRct.x = 0;
+	mSrcRct.y = 0;
+	mSrcRct.width = ScreenWidth << 16;
+	mSrcRct.height = ScreenHeight << 16;
+
+	mDispManDisplay = vc_dispmanx_display_open( 0 );
+	mDispManUpdate  = vc_dispmanx_update_start( 0 );
+
+	if( !mDispManDisplay || !mDispManUpdate )
+	{
+		qWarning() << "vc_dispmanx_display_open or vc_dispmanx_update_start failed";
+
+		return;
+	}
+
+	mDispManElement = vc_dispmanx_element_add( mDispManUpdate, mDispManDisplay,
+											  0, // layer
+											  &mDstRct,
+											  0, // src
+											  &mSrcRct,
+											  DISPMANX_PROTECTION_NONE, 0, 0, DISPMANX_NO_ROTATE );
+
+	if( !mDispManElement )
+	{
+		qWarning() << "vc_dispmanx_element_add failed";
+
+		return;
+	}
+
+	mNativeWindow.element = mDispManElement;
+	mNativeWindow.width   = ScreenWidth;
+	mNativeWindow.height  = ScreenHeight;
+
+	vc_dispmanx_update_submit_sync( mDispManUpdate );
 
 	mDisplay = eglGetDisplay( EGL_DEFAULT_DISPLAY );
 
@@ -56,11 +104,17 @@ DeviceOpenGLOutput::DeviceOpenGLOutput( void )
 
 	qDebug() << "EGL VERSION" << VerMaj << VerMin;
 
+	qDebug() << "EGL_CLIENT_APIS" << QString::fromLatin1( eglQueryString( mDisplay, EGL_CLIENT_APIS ) );
+	qDebug() << "EGL_VENDOR" << QString::fromLatin1( eglQueryString( mDisplay, EGL_VENDOR ) );
+	qDebug() << "EGL_VERSION" << QString::fromLatin1( eglQueryString( mDisplay, EGL_VERSION ) );
+	qDebug() << "EGL_EXTENSIONS" << QString::fromLatin1( eglQueryString( mDisplay, EGL_EXTENSIONS ) );
+
 	static const EGLint AttribList[] =
 	{
 		EGL_RED_SIZE,		8,
 		EGL_GREEN_SIZE,		8,
 		EGL_BLUE_SIZE,		8,
+		EGL_ALPHA_SIZE,		8,
 		EGL_DEPTH_SIZE,		24,
 		EGL_SURFACE_TYPE,	EGL_WINDOW_BIT,
 		EGL_NONE
@@ -118,55 +172,10 @@ DeviceOpenGLOutput::DeviceOpenGLOutput( void )
 
 	if( eglBindAPI( EGL_OPENGL_ES_API ) != EGL_TRUE )
 	{
+		qWarning() << "eglBindAPI";
+
 		return;
 	}
-
-	static const EGLint ContextAttrib[] =
-	{
-		EGL_CONTEXT_CLIENT_VERSION,	2,
-		EGL_NONE
-	};
-
-	if( ( mContext = eglCreateContext( mDisplay, mConfig, EGL_NO_CONTEXT, ContextAttrib ) ) == EGL_NO_CONTEXT )
-	{
-		return;
-	}
-
-	quint32		ScreenWidth, ScreenHeight;
-
-	if( graphics_get_display_size( 0, &ScreenWidth, &ScreenHeight ) < 0 )
-	{
-		return;
-	}
-
-//	ScreenWidth /= 4;
-//	ScreenHeight /= 4;
-
-	mDstRct.x = 0;
-	mDstRct.y = 0;
-	mDstRct.width = ScreenWidth;
-	mDstRct.height = ScreenHeight;
-
-	mSrcRct.x = 0;
-	mSrcRct.y = 0;
-	mSrcRct.width = ScreenWidth << 16;
-	mSrcRct.height = ScreenHeight << 16;
-
-	mDispManDisplay = vc_dispmanx_display_open( 0 );
-	mDispManUpdate  = vc_dispmanx_update_start( 0 );
-
-	mDispManElement = vc_dispmanx_element_add( mDispManUpdate, mDispManDisplay,
-											  0, // layer
-											  &mDstRct,
-											  0, // src
-											  &mSrcRct,
-											  DISPMANX_PROTECTION_NONE, 0, 0, DISPMANX_NO_ROTATE );
-
-	mNativeWindow.element = mDispManElement;
-	mNativeWindow.width   = ScreenWidth;
-	mNativeWindow.height  = ScreenHeight;
-
-	vc_dispmanx_update_submit_sync( mDispManUpdate );
 
 	if( ( mSurface = eglCreateWindowSurface( mDisplay, mConfig, &mNativeWindow, 0 ) ) == EGL_NO_SURFACE )
 	{
@@ -189,8 +198,23 @@ DeviceOpenGLOutput::DeviceOpenGLOutput( void )
 		return;
 	}
 
+	static const EGLint ContextAttrib[] =
+	{
+		EGL_CONTEXT_CLIENT_VERSION,	2,
+		EGL_NONE
+	};
+
+	if( ( mContext = eglCreateContext( mDisplay, mConfig, EGL_NO_CONTEXT, ContextAttrib ) ) == EGL_NO_CONTEXT )
+	{
+		qWarning() << "eglCreateContext";
+
+		return;
+	}
+
 	if( eglMakeCurrent( mDisplay, mSurface, mSurface, mContext ) == EGL_FALSE )
 	{
+		qWarning() << "eglMakeCurrent";
+
 		return;
 	}
 
@@ -204,6 +228,10 @@ DeviceOpenGLOutput::DeviceOpenGLOutput( void )
 	glClearColor( 0.15f, 0.25f, 0.35f, 1.0f );
 
 	glClear( GL_COLOR_BUFFER_BIT );
+
+	eglSwapBuffers( mDisplay, mSurface );
+
+	qDebug() << "EGL Initialised";
 }
 
 DeviceOpenGLOutput::~DeviceOpenGLOutput( void )
