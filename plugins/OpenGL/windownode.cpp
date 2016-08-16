@@ -429,8 +429,10 @@ void WindowNode::contextFrameEnd()
 	}
 }
 
-void WindowNode::outputResized( const QSize &Size )
+void WindowNode::outputResized( QSize Size )
 {
+	Size = mOutput->framebufferSize();
+
 	if( Size != mValWindowSize->variant().toSize() )
 	{
 		mValWindowSize->setVariant( Size );

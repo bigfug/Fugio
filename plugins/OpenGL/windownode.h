@@ -83,7 +83,7 @@ private slots:
 
 	void contextFrameEnd( void );
 
-	void outputResized( const QSize &pSize );
+	void outputResized(QSize pSize );
 
 private:
 	QSharedPointer<fugio::PinInterface>	 mPinState;
