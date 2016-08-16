@@ -173,11 +173,6 @@ void OpenGLPlugin::checkErrors( void )
 		return;
 	}
 
-	if( !DeviceOpenGLOutput::devices().isEmpty() && DeviceOpenGLOutput::devices().first()->hasDebugContext() )
-	{
-		return;
-	}
-
 #if defined( Q_OS_RASPBERRY_PI )
 	for( GLenum e = eglGetError() ; e != EGL_SUCCESS ; e = eglGetError() )
 	{
@@ -207,11 +202,6 @@ void OpenGLPlugin::checkErrors( const char *file, int line )
 		return;
 	}
 
-	if( !DeviceOpenGLOutput::devices().isEmpty() && DeviceOpenGLOutput::devices().first()->hasDebugContext() )
-	{
-		return;
-	}
-
 #if defined( Q_OS_RASPBERRY_PI )
 	for( GLenum e = eglGetError() ; e != EGL_SUCCESS ; e = eglGetError() )
 	{
@@ -237,11 +227,6 @@ void OpenGLPlugin::checkErrors(const QString &pContext, const char *file, int li
 #endif
 
 	if( !hasContext() )
-	{
-		return;
-	}
-
-	if( !DeviceOpenGLOutput::devices().isEmpty() && DeviceOpenGLOutput::devices().first()->hasDebugContext() )
 	{
 		return;
 	}

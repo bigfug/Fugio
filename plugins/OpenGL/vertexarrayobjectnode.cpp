@@ -75,13 +75,13 @@ void VertexArrayObjectNode::inputsUpdated( qint64 pTimeStamp )
 	{
 #if !defined( Q_OS_RASPBERRY_PI )
 		glGenVertexArrays( 1, &mVAO );
-#endif
 		mValOutputVAO->setVAO( mVAO );
 
 		if( !mVAO )
 		{
 			return;
 		}
+#endif
 
 		UpdateAll = true;
 	}
@@ -178,9 +178,17 @@ void VertexArrayObjectNode::inputsUpdated( qint64 pTimeStamp )
 					if( Buffer->bind() )
 					{
 #if !defined( Q_OS_RASPBERRY_PI )
-						glVertexAttribIPointer( UniformData.mLocation, 1, GL_INT, 0, BUFFER_OFFSET( 0 ) );
+						if( GLEW_ARB_vertex_array_object )
+						{
+							glVertexAttribIPointer( UniformData.mLocation, 1, GL_INT, 0, BUFFER_OFFSET( 0 ) );
+
+							glEnableVertexAttribArray( UniformData.mLocation );
+						}
+						else
 #endif
-						glEnableVertexAttribArray( UniformData.mLocation );
+						{
+
+						}
 
 #if defined( glVertexAttribDivisor )
 						if( Buffer->instanced() && GLEW_ARB_instanced_arrays )
@@ -194,9 +202,18 @@ void VertexArrayObjectNode::inputsUpdated( qint64 pTimeStamp )
 				case QMetaType::Float:
 					if( Buffer->bind() )
 					{
-						glVertexAttribPointer( UniformData.mLocation, 1, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+#if !defined( Q_OS_RASPBERRY_PI )
+						if( GLEW_ARB_vertex_array_object )
+						{
+							glVertexAttribPointer( UniformData.mLocation, 1, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
 
-						glEnableVertexAttribArray( UniformData.mLocation );
+							glEnableVertexAttribArray( UniformData.mLocation );
+						}
+						else
+#endif
+						{
+
+						}
 
 #if defined( glVertexAttribDivisor )
 						if( Buffer->instanced() && GLEW_ARB_instanced_arrays )

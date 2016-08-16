@@ -169,6 +169,10 @@ void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, G
 						if( H )
 						{
 							H->setErrors( QString( Log.data() ) );
+
+#if defined( OPENGL_DEBUG_ENABLE )
+							qWarning() << QString( Log.data() );
+#endif
 						}
 						else
 						{

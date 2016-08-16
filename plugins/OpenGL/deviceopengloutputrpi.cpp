@@ -2,6 +2,10 @@
 
 #include <QApplication>
 
+#include <fugio/render_interface.h>
+#include <fugio/node_control_interface.h>
+#include <fugio/context_interface.h>
+
 #include "openglplugin.h"
 
 void DeviceOpenGLOutput::deviceInitialise()
@@ -282,6 +286,20 @@ void DeviceOpenGLOutput::unsetCurrentNode( QSharedPointer<fugio::NodeInterface> 
 void DeviceOpenGLOutput::renderLater( void )
 {
 	mUpdatePending = true;
+
+	QSharedPointer<fugio::NodeInterface>	CurNod = mNode.toStrongRef();
+
+	if( CurNod )
+	{
+		fugio::RenderInterface	*N = qobject_cast<fugio::RenderInterface *>( CurNod->control()->qobject() );
+
+		if( N )
+		{
+			N->render( CurNod->context()->global()->timestamp() );
+		}
+	}
+
+	mUpdatePending = false;
 }
 
 bool DeviceOpenGLOutput::renderInit( void )
