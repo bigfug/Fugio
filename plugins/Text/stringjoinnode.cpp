@@ -43,8 +43,6 @@ void StringJoinNode::inputsUpdated( qint64 pTimeStamp )
 
 	QString		StrRes = StrLst.join( StrSep );
 
-	//qDebug() << StrRes;
-
 	mValOutput->setVariant( StrRes );
 
 	pinUpdated( mPinOutput );
