@@ -30,7 +30,7 @@ TextEditorNode::~TextEditorNode( void )
 {
 	QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
 
-	if( mDockWidget != 0 )
+	if( mDockWidget )
 	{
 		MainWindow->removeDockWidget( mDockWidget );
 
@@ -39,7 +39,7 @@ TextEditorNode::~TextEditorNode( void )
 		mDockWidget = 0;
 	}
 
-	if( mHighlighter != 0 )
+	if( mHighlighter )
 	{
 		delete mHighlighter;
 
@@ -62,7 +62,7 @@ void TextEditorNode::checkHighlighter()
 	{
 		if( mPinString->connectedPin()->globalId() != mPinUuid )
 		{
-			if( mHighlighter != 0 )
+			if( mHighlighter )
 			{
 				if( mTextEdit )
 				{
@@ -74,11 +74,11 @@ void TextEditorNode::checkHighlighter()
 				mHighlighter = 0;
 			}
 
-			if( mTextEdit != 0 )
+			if( mTextEdit )
 			{
 				fugio::SyntaxHighlighterInterface	*H = qobject_cast<fugio::SyntaxHighlighterInterface *>( mPinString->connectedPin()->findInterface( IID_SYNTAX_HIGHLIGHTER ) );
 
-				if( H != 0 )
+				if( H )
 				{
 					mHighlighter = H->highlighter( mTextEdit->textEdit()->document() );
 
@@ -99,7 +99,7 @@ void TextEditorNode::checkHighlighter()
 	}
 	else
 	{
-		if( mHighlighter != 0 )
+		if( mHighlighter )
 		{
 			delete mHighlighter;
 

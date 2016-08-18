@@ -24,14 +24,9 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::InterfaceSyntaxHighlighter
 
-	virtual QObject *object( void )
-	{
-		return( this );
-	}
+	virtual QSyntaxHighlighter *highlighter( QTextDocument *pDocument ) Q_DECL_OVERRIDE;
 
-	virtual QSyntaxHighlighter *highlighter( QTextDocument *pDocument );
-
-	virtual QStringList errorList( int pLineNumber ) const
+	virtual QStringList errorList( int pLineNumber ) const Q_DECL_OVERRIDE
 	{
 		return( mHighlighter ? mHighlighter->errorList( pLineNumber ) : QStringList() );
 	}

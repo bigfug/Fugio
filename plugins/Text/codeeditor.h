@@ -34,7 +34,7 @@ private slots:
 	void updateLineNumberArea(const QRect &, int);
 
 private:
-	QWidget							*lineNumberArea;
+	QWidget									*lineNumberArea;
 	fugio::SyntaxHighlighterInterface		*mHighlighter;
 };
 

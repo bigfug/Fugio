@@ -7,7 +7,7 @@ StringJoinNode::StringJoinNode( QSharedPointer<fugio::NodeInterface> pNode )
 {
 	mPinInputJoinChar = pinInput( "Seperator" );
 
-	mPinOutputValue = pinOutput<fugio::VariantInterface *>( "String", mPinOutput, PID_STRING );
+	mValOutput = pinOutput<fugio::VariantInterface *>( "String", mPinOutput, PID_STRING );
 }
 
 void StringJoinNode::inputsUpdated( qint64 pTimeStamp )
@@ -45,7 +45,7 @@ void StringJoinNode::inputsUpdated( qint64 pTimeStamp )
 
 	//qDebug() << StrRes;
 
-	mPinOutputValue->setVariant( StrRes );
+	mValOutput->setVariant( StrRes );
 
 	pinUpdated( mPinOutput );
 }
@@ -66,12 +66,12 @@ QList<QUuid> StringJoinNode::pinAddTypesInput() const
 	return( PinLst );
 }
 
-bool StringJoinNode::canAcceptPin(fugio::PinInterface *pPin) const
+bool StringJoinNode::canAcceptPin( fugio::PinInterface *pPin ) const
 {
 	return( pPin->direction() == PIN_OUTPUT );
 }
 
-bool StringJoinNode::pinShouldAutoRename(fugio::PinInterface *pPin) const
+bool StringJoinNode::pinShouldAutoRename( fugio::PinInterface *pPin ) const
 {
 	return( pPin->direction() == PIN_INPUT );
 }

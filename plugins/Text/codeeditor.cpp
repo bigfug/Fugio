@@ -89,8 +89,6 @@ void CodeEditor::highlightCurrentLine()
 	setExtraSelections(extraSelections);
 }
 
-
-
 void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
 	QPainter painter(lineNumberArea);
