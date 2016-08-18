@@ -81,7 +81,7 @@ SyntaxHighlighterLua::SyntaxHighlighterLua( QTextDocument *pDocument )
 	rule.format = singleLineCommentFormat;
 	highlightingRules.append(rule);
 
-	errorFormat.setBackground( QBrush( Qt::red ) );
+	errorFormat.setBackground( QBrush( QColor( Qt::red ).lighter( 160 ) ) );
 	errorFormat.setProperty( QTextFormat::FullWidthSelection, true );
 
 	//	defineFormat.setForeground(Qt::darkMagenta);
@@ -104,6 +104,8 @@ void SyntaxHighlighterLua::clearErrors()
 	mErrorData.clear();
 
 	emit errorsUpdated();
+
+	rehighlight();
 }
 
 void SyntaxHighlighterLua::setErrors( const QString &pErrorText)
@@ -128,35 +130,34 @@ void SyntaxHighlighterLua::setErrors( const QString &pErrorText)
 	{
 		S = S.trimmed();
 
-//		if( S.startsWith( "ERROR: " ) )
-//		{
-//			S.remove( 0, 7 );
+		QStringList		Parts = S.split( ':', QString::KeepEmptyParts );
+		int				Line  = 0;
 
-//			QRegExp		RE( ":(\\d+):" );
+		if( Parts.size() >= 3 )
+		{
+			if( Parts.value( 0 ).startsWith( QStringLiteral( "[string " ) ) )
+			{
+				Line = Parts.value( 1 ).toInt();
 
-//			int			LN = 0;
+				if( Line > 0 )
+				{
+					Parts.takeFirst();
+					Parts.takeFirst();
 
-//			if( RE.indexIn( S ) )
-//			{
-//				LN = RE.cap( 1 ).toInt();
-//			}
+					mErrorData.insert( Line, Parts.join( ':' ).trimmed() );
+				}
+			}
+		}
 
-//			if( LN > 0 )
-//			{
-//				QStringList		SL2 = S.split( ": " );
-
-//				SL2.removeFirst();
-
-//				mErrorData.insert( LN, SL2.join( ": " ) );
-//			}
-//			else
-//			{
-				mErrorData.insert( 0, S );
-//			}
-//		}
+		if( !Line )
+		{
+			mErrorData.insert( 0, S );
+		}
 	}
 
 	emit errorsUpdated();
+
+	rehighlight();
 }
 
 QStringList SyntaxHighlighterLua::errorList( int pLineNumber ) const
