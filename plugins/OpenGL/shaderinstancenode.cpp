@@ -280,8 +280,6 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 				glGetIntegerv( GL_VIEWPORT, VP );
 
 				glViewport( 0, 0, W, H );
-
-				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 			}
 
 			for( QSharedPointer<fugio::PinInterface> &InpPin : InpPinLst )
