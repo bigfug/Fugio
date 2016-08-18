@@ -85,14 +85,17 @@ void PortAudioOutputNode::audio( qint64 pSamplePosition, qint64 pSampleCount, in
 
 	const float		InputVolume = mVolume;
 
-	mProducerMutex.lock();
-
 	if( mInstance )
 	{
-		mInstance->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers );
-	}
+		mProducerMutex.lock();
 
-	mProducerMutex.unlock();
+		if( mInstance )
+		{
+			mInstance->audio( pSamplePosition, pSampleCount, pChannelOffset, pChannelCount, pBuffers );
+		}
+
+		mProducerMutex.unlock();
+	}
 
 	// if volume is 1 (the default) then we don't need to do any further processing
 
