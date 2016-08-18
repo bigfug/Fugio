@@ -45,7 +45,7 @@ QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( bool pContextO
 	SurfaceFormat.setVersion( 4, 5 );
 	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
 	SurfaceFormat.setSamples( 8 );
-	SurfaceFormat.setSwapInterval( 0 );
+	//SurfaceFormat.setSwapInterval( 0 );
 
 	NewDev = QSharedPointer<DeviceOpenGLOutput>( new DeviceOpenGLOutput() );
 
