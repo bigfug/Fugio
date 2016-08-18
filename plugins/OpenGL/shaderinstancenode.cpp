@@ -97,6 +97,7 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 	if( !Shader || !Shader->isLinked() )
 	{
 		mNode->setStatus( fugio::NodeInterface::Error );
+		mNode->setStatusMessage( tr( "No shader or not linked" ) );
 
 		return;
 	}
@@ -104,6 +105,7 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 	if( mPinShader->isUpdated( pTimeStamp ) )
 	{
 		mNode->setStatus( fugio::NodeInterface::Initialised );
+		mNode->setStatusMessage( QString() );
 	}
 
 	if( mNode->status() == fugio::NodeInterface::Error )
@@ -262,6 +264,7 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 					}
 
 					mNode->setStatus( fugio::NodeInterface::Error );
+					mNode->setStatusMessage( QString( "glCheckFramebufferStatus( GL_FRAMEBUFFER ) = %1" ).arg( OpenGLPlugin::framebufferError( GLerr ) ) );
 
 					break;
 				}
@@ -605,6 +608,12 @@ void ShaderInstanceNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 	if( !Shader || !Shader->isLinked() )
 	{
 		return;
+	}
+
+	if( mNode->status() != fugio::NodeInterface::Initialised )
+	{
+		mNode->setStatus( fugio::NodeInterface::Initialised );
+		mNode->setStatusMessage( QString() );
 	}
 
 	QList< QSharedPointer<fugio::PinInterface> >	InpPinLst = mNode->enumInputPins();
