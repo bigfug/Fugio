@@ -31,7 +31,7 @@ macx {
 	CONFIG += lib_bundle
 
 	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLBASE  = $$FUGIO_ROOT/deploy-installer
+	INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 	INSTALLDEST  = $$INSTALLDIR/data/plugins
 	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
@@ -51,13 +51,15 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR
+		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
 		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
 
 		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
+
+		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
 	}
 }
 

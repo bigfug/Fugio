@@ -190,9 +190,11 @@ macx {
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/plugins
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/snippets
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/examples
+		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/share
 
 		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../examples/* $$INSTALLDIR/data/examples
 		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../snippets/* $$INSTALLDIR/data/snippets
+		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../share/* $$INSTALLDIR/data/share
 	}
 }
 
@@ -217,9 +219,11 @@ windows {
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/snippets )
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/examples )
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/platforms )
+		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/share )
 
 		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../examples/* ) $$shell_path( $$INSTALLDIR/data/examples ) /f /s /y
 		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../snippets/* ) $$shell_path( $$INSTALLDIR/data/snippets ) /f /s /y
+		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../share/* ) $$shell_path( $$INSTALLDIR/data/share ) /f /s /y
 
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $(QTDIR)/plugins/platforms/qwindows.dll ) $$shell_path( $$INSTALLDIR/data/platforms )
 
