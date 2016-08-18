@@ -171,7 +171,7 @@ SyntaxHighlighterGLSL::SyntaxHighlighterGLSL( QTextDocument *pDocument )
 	rule.format = singleLineCommentFormat;
 	highlightingRules.append(rule);
 
-	errorFormat.setBackground( QBrush( Qt::red ) );
+	errorFormat.setBackground( QBrush( QColor( Qt::red ).lighter( 160 ) ) );
 	errorFormat.setProperty( QTextFormat::FullWidthSelection, true );
 
 	//	defineFormat.setForeground(Qt::darkMagenta);
