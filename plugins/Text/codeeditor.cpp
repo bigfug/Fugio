@@ -76,7 +76,7 @@ void CodeEditor::highlightCurrentLine()
 
 		if( mHighlighter && !mHighlighter->errorList( textCursor().blockNumber() + 1 ).isEmpty() )
 		{
-			lineColor = QColor( Qt::red );
+			lineColor = QColor( Qt::red ).lighter(160);
 		}
 
 		selection.format.setBackground(lineColor);
