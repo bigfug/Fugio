@@ -31,6 +31,8 @@ bool ContextNode::initialise()
 		return( false );
 	}
 
+	mOutput->hide();
+
 	return( true );
 }
 
