@@ -43,6 +43,8 @@ TexturePin::TexturePin( QSharedPointer<fugio::PinInterface> pPin )
 
 	mFBOId = 0;
 	mFBODepthRBId = 0;
+	mFBOBoundTexId = 0;
+
 	mFBOMSId = 0;
 	mFBOMSColourRBId = 0;
 	mFBOMSDepthRBId = 0;
@@ -581,12 +583,14 @@ quint32 TexturePin::fbo( bool pUseDepth )
 
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mFBODepthRBId );
 		}
+
+		glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
 	}
 
 #if defined( GL_ES_VERSION_2_0 )
 	if( mFBOId && mDstTexId && !mTextureSize.isNull() )
 #else
-	if( mFBOId && mDstTexId && !mTextureSize.isNull() && GLEW_ARB_framebuffer_object )
+	if( mFBOId && mDstTexId && mDstTexId != mFBOBoundTexId && !mTextureSize.isNull() && GLEW_ARB_framebuffer_object )
 #endif
 	{
 		glBindFramebuffer( GL_FRAMEBUFFER, mFBOId );
@@ -601,15 +605,21 @@ quint32 TexturePin::fbo( bool pUseDepth )
 
 			freeFbo();
 		}
-	}
+		else
+		{
+			mFBOBoundTexId = mDstTexId;
+		}
 
-	glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
+		glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
+	}
 
 	return( mFBOId );
 }
 
 void TexturePin::freeFbo()
 {
+	mFBOBoundTexId = 0;
+
 	if( mFBOId )
 	{
 		glDeleteFramebuffers( 1, &mFBOId );
@@ -660,6 +670,10 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 {
 	checkDefinition();
 
+	GLint		FBOCur;
+
+	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
+
 #if !defined( GL_ES_VERSION_2_0 )
 	if( !mFBOMSId && !mTextureSize.isNull() && GLEW_ARB_framebuffer_object )
 	{
@@ -686,7 +700,7 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mFBOMSDepthRBId );
 		}
 
-		GLenum	FBOStatus = glCheckFramebufferStatusEXT( GL_FRAMEBUFFER_EXT );
+		GLenum	FBOStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER_EXT );
 
 		glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
 		glBindRenderbuffer( GL_RENDERBUFFER, RBCur );
@@ -697,6 +711,8 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 
 			freeFbo();
 		}
+
+		glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
 	}
 #endif
 
