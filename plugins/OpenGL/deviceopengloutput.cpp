@@ -288,6 +288,8 @@ void DeviceOpenGLOutput::keyReleaseEvent( QKeyEvent *pEvent )
 	{
 		screengrab();
 
+		renderLater();
+
 		pEvent->accept();
 	}
 	else
