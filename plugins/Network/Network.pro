@@ -108,6 +108,8 @@ windows {
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
 
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
+
+		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/Qt5WebSockets.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
 	}
 }
 
