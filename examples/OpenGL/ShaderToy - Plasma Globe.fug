@@ -33,13 +33,6 @@ outputs\1\356c4a20-17e5-4924-ae9b-8bce1aeb6dd2=fc5472cd-03b2-42e1-8e65-6ada5c860
 outputs\size=1
 version=2
 
-[08340920-0eca-4c21-9527-e75c0b04645c]
-direction=1
-name=Geometry
-order=3
-uuid=249f2932-f483-422f-b811-ab679f006381
-version=2
-
 [0b2e410d-c401-476c-b66f-b85bcd45be74]
 direction=1
 name=Tess Eval
@@ -142,13 +135,6 @@ direction=2
 name=Output1
 order=1
 uuid=249f2932-f483-422f-b811-ab679f006381
-version=2
-
-[2dd3fbb9-c692-4acc-8b9e-eb26e09e1c02]
-direction=2
-name=Events
-order=2
-uuid=524e9f30-7094-4f87-b5ab-ead2da04256b
 version=2
 
 [2f05108d-dca7-471a-b25e-defc48e46f48]
@@ -265,11 +251,11 @@ order=0
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
 version=2
 
-[4bb6479c-225b-4d49-9fb5-97343d567b04]
+[4d127d27-4cc1-4d78-867c-7b84acd29159]
 direction=2
-name=Window Size
+name=Events
 order=1
-uuid=e6bf944e-5f46-4994-bd51-13c2aa6415b7
+uuid=524e9f30-7094-4f87-b5ab-ead2da04256b
 version=2
 
 [4e0e81aa-bb8e-40bc-9abb-c08067a6def9]
@@ -290,19 +276,23 @@ order=0
 uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
 version=2
 
+[55013340-29b0-4cc8-81ed-f5048faee4b1]
+inputs\1\f6c440b8-3bcf-4fd0-85eb-4a885ac47a4d=00000000-0000-0000-0000-000000000000
+inputs\2\9e5228bf-408a-4420-94ba-4fc0af1b73bd=00000000-0000-0000-0000-000000000000
+inputs\3\a890c2c6-3f96-4f34-8868-e8f482c8b045=00000000-0000-0000-0000-000000000000
+inputs\size=3
+name=Window
+outputs\1\8deaf06e-e3b8-4222-b61c-a0e7c40f40e6=bb86d541-f9e7-44ba-b2f7-5784b03e4243
+outputs\2\4d127d27-4cc1-4d78-867c-7b84acd29159=6e22a4d3-d8e9-4e22-a0d4-d93182ca019c
+outputs\size=2
+version=2
+
 [55cb3260-1d45-455b-8319-2d233c200c11]
 direction=1
 name=Render
 order=5
 updatable=false
 uuid=6272595e-bb59-407c-9a80-64dc8c99ba22
-version=2
-
-[597af5bd-52ba-4e0d-b010-146c453d8582]
-direction=1
-name=Render Size
-order=0
-uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
 version=2
 
 [597d7f61-724a-4260-89f9-cd752f2dcbc7]
@@ -540,6 +530,13 @@ outputs\1\f26a1784-0232-4a34-8106-1b2e9adbb68a=e92e8e7b-f6a4-4691-8eb5-dea5dbefb
 outputs\size=1
 version=2
 
+[8deaf06e-e3b8-4222-b61c-a0e7c40f40e6]
+direction=2
+name=Window Size
+order=0
+uuid=e6bf944e-5f46-4994-bd51-13c2aa6415b7
+version=2
+
 [8fe71969-b3b1-4524-87c3-f21e96d60227]
 direction=1
 name=iMouse
@@ -566,25 +563,11 @@ paired=da4453c5-c72d-4c40-aff6-453380d0cf13
 uuid=d68e830c-cc15-430f-a444-02590043006f
 version=2
 
-[91990ad8-5101-487e-9429-7e010a6ee53e]
-direction=2
-name=Texture
-order=0
-uuid=ce8d578e-c5a4-422f-b3c4-a1bdf40facdb
-version=2
-
 [94191852-2838-4cc1-953c-22112b6289fc]
 direction=1
 name=Geometry
 order=3
 uuid=249f2932-f483-422f-b811-ab679f006381
-version=2
-
-[94463dd5-b0af-459a-adc2-2a7a381959d1]
-direction=1
-name=Hide Cursor
-order=1
-uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
 version=2
 
 [9531af16-f266-4946-84f9-73b6e8926b34]
@@ -616,17 +599,11 @@ order=3
 uuid=249f2932-f483-422f-b811-ab679f006381
 version=2
 
-[a0dd8ee8-228b-400e-9025-ebaa3f090067]
-inputs\1\597af5bd-52ba-4e0d-b010-146c453d8582=00000000-0000-0000-0000-000000000000
-inputs\2\94463dd5-b0af-459a-adc2-2a7a381959d1=00000000-0000-0000-0000-000000000000
-inputs\3\ed9bb014-64b2-4168-8922-999c31cf149e=00000000-0000-0000-0000-000000000000
-inputs\4\08340920-0eca-4c21-9527-e75c0b04645c=00000000-0000-0000-0000-000000000000
-inputs\size=4
-name=Window
-outputs\1\91990ad8-5101-487e-9429-7e010a6ee53e=1dbaa75d-81bd-478a-94a8-ae1a5c1b7f12
-outputs\2\4bb6479c-225b-4d49-9fb5-97343d567b04=bb86d541-f9e7-44ba-b2f7-5784b03e4243
-outputs\3\2dd3fbb9-c692-4acc-8b9e-eb26e09e1c02=6e22a4d3-d8e9-4e22-a0d4-d93182ca019c
-outputs\size=3
+[9e5228bf-408a-4420-94ba-4fc0af1b73bd]
+direction=1
+name=Hide Cursor
+order=1
+uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
 version=2
 
 [a31741a2-0fc5-4307-bed8-23cdc9607972]
@@ -669,6 +646,13 @@ direction=2
 name=Texture Size
 order=1
 uuid=b98dfce9-2107-4ff2-bc7d-91d67a890a5d
+version=2
+
+[a890c2c6-3f96-4f34-8868-e8f482c8b045]
+direction=1
+name=State
+order=2
+uuid=261cc653-d7fa-4c34-a08b-3603e8ae71d5
 version=2
 
 [aca20436-908d-42ba-a741-f16110ff8a0e]
@@ -896,6 +880,9 @@ version=2
 455e45a0-f01f-43d6-92d3-3b0cb20c7c34\6dce90f7-120e-4da3-9200-38a470878125=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 4e0e81aa-bb8e-40bc-9abb-c08067a6def9=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 4e0e81aa-bb8e-40bc-9abb-c08067a6def9\6165c807-718e-4237-904b-735d279f1e48=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
+55013340-29b0-4cc8-81ed-f5048faee4b1=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
+55013340-29b0-4cc8-81ed-f5048faee4b1\4d127d27-4cc1-4d78-867c-7b84acd29159=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
+55013340-29b0-4cc8-81ed-f5048faee4b1\8deaf06e-e3b8-4222-b61c-a0e7c40f40e6=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 5ec1838b-2d77-4cf1-a891-9e91a5ba0fef=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 5ec1838b-2d77-4cf1-a891-9e91a5ba0fef\e4b39b7c-8afd-46e4-97eb-b3d0f89153b3=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 5ec1838b-2d77-4cf1-a891-9e91a5ba0fef\f4917ac8-ebd7-4082-8dd3-ca37229748e9=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
@@ -924,10 +911,6 @@ version=2
 8d045fbe-4454-4383-9cb9-d2037495552d\f26a1784-0232-4a34-8106-1b2e9adbb68a=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 97106cdc-89e6-4ab6-be69-62d3adb38c87=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 97106cdc-89e6-4ab6-be69-62d3adb38c87\9117470f-aaec-42ef-a17f-fac8f3e1c680=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
-a0dd8ee8-228b-400e-9025-ebaa3f090067=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
-a0dd8ee8-228b-400e-9025-ebaa3f090067\2dd3fbb9-c692-4acc-8b9e-eb26e09e1c02=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
-a0dd8ee8-228b-400e-9025-ebaa3f090067\4bb6479c-225b-4d49-9fb5-97343d567b04=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
-a0dd8ee8-228b-400e-9025-ebaa3f090067\91990ad8-5101-487e-9429-7e010a6ee53e=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 a7b08c9c-1962-4059-81e4-2cd873beea7e=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 a7b08c9c-1962-4059-81e4-2cd873beea7e\53a514ec-7520-4540-8cd7-7b1055eb7cd8=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 a7b08c9c-1962-4059-81e4-2cd873beea7e\a870bf04-a55c-4fec-8471-5bec94614002=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
@@ -947,7 +930,6 @@ fda2b381-af15-4366-af9e-6830f09f1b83\7a328da3-de5c-4f72-b376-106742060db2=@Varia
 version=2
 
 [connections]
-08340920-0eca-4c21-9527-e75c0b04645c=8704358f-4d21-4eb1-bd89-010d7f38683d
 1c30db00-b1a6-471e-b1f0-a683ec5054a6=5bc12f3e-ebab-4a9b-9a90-6505a352c489
 1d7452b5-aa16-4591-ad75-2fa7d9d85ea5=f4917ac8-ebd7-4082-8dd3-ca37229748e9
 27bc16e7-d0e2-47d8-b568-d5b00565530b=a870bf04-a55c-4fec-8471-5bec94614002
@@ -955,11 +937,11 @@ version=2
 3bb9dc4b-d80c-4c70-97fe-2ed4606c4cbc=8018571a-fa48-487a-a555-d6fd93e6085e
 486a1630-74d8-487a-8bec-350d21c5a17e=6165c807-718e-4237-904b-735d279f1e48
 49ce6c73-77a4-455d-8d41-ee80496c83ca=53a514ec-7520-4540-8cd7-7b1055eb7cd8
-4b3a5422-b766-4299-b761-b4f45c670e90=4bb6479c-225b-4d49-9fb5-97343d567b04
+4b3a5422-b766-4299-b761-b4f45c670e90=8deaf06e-e3b8-4222-b61c-a0e7c40f40e6
 55cb3260-1d45-455b-8319-2d233c200c11=356c4a20-17e5-4924-ae9b-8bce1aeb6dd2
 597d7f61-724a-4260-89f9-cd752f2dcbc7=e95d1001-f896-427e-823f-8a0363963b04
 5a675829-9a1e-458e-afba-3d0de770d080=e4b39b7c-8afd-46e4-97eb-b3d0f89153b3
-5ed5925a-d09e-4d33-96f2-34a19a7c3ef1=2dd3fbb9-c692-4acc-8b9e-eb26e09e1c02
+5ed5925a-d09e-4d33-96f2-34a19a7c3ef1=4d127d27-4cc1-4d78-867c-7b84acd29159
 6092b641-0108-4de3-a28f-6f334b67b534=c3cb9b5f-c267-4f29-9112-4d2c0a3cc1ae
 64a70607-3149-4db9-8101-5ce60c4a2f82=facf8911-5fe6-428c-9a28-e229d50a965f
 70958169-fe9a-419c-ae15-a0f85889e196=5a0e0cb7-5572-4dd8-b76c-1c225ad5c804
@@ -984,6 +966,7 @@ e2fd5bc5-3a87-4fd7-b3c2-2e0ef728adb2=295f52f2-9ef7-4fb9-99f3-1f9cce7478b3
 ec1ce991-d94b-4db9-9b7e-5f39c260c08d=b85dea1b-4026-4936-a6fc-b3c7964ff45b
 f0bbf091-a470-4bb5-be05-6dada788c8e9=8018571a-fa48-487a-a555-d6fd93e6085e
 f1281b65-0a63-4577-b170-7054130ab93d=e1ffc69b-839b-40ce-8ff0-762cd107fead
+f6c440b8-3bcf-4fd0-85eb-4a885ac47a4d=8704358f-4d21-4eb1-bd89-010d7f38683d
 
 [d23e93d3-7c3c-4b5b-99b0-331d4b008503]
 direction=1
@@ -1070,13 +1053,6 @@ order=0
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
 version=2
 
-[ed9bb014-64b2-4168-8922-999c31cf149e]
-direction=1
-name=State
-order=2
-uuid=261cc653-d7fa-4c34-a08b-3603e8ae71d5
-version=2
-
 [f088b7d0-efc0-41f3-a8fb-dda3c5452761]
 direction=2
 name=Second
@@ -1111,6 +1087,13 @@ direction=2
 name=Position
 order=0
 uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
+version=2
+
+[f6c440b8-3bcf-4fd0-85eb-4a885ac47a4d]
+direction=1
+name=Render
+order=0
+uuid=249f2932-f483-422f-b811-ab679f006381
 version=2
 
 [f6e1d05e-ea07-4d8a-b8b0-04fde225a4d9]
@@ -1206,6 +1189,7 @@ version=2
 447d5f9a-80b3-4281-8f01-7dd0becbf836=0de6dbf7-3639-4cf9-aec2-0a265d51e1ef
 455e45a0-f01f-43d6-92d3-3b0cb20c7c34=327cfef0-537c-42d8-a8b6-29fa4416f1b4
 4e0e81aa-bb8e-40bc-9abb-c08067a6def9=91bf0624-1d28-43ea-b391-963cc92c6c26
+55013340-29b0-4cc8-81ed-f5048faee4b1=3f4cda9b-a97f-4020-8f4f-63e2a4ab4b09
 5ec1838b-2d77-4cf1-a891-9e91a5ba0fef=519a6753-28b8-4628-be40-63bd6c31fdc5
 63a90ea0-7af6-4a40-a2f0-3604a7c6eb45=7fe84dd4-cabb-49f9-9013-5dfea3a483c6
 6949b4bf-9d7d-4baf-b7cd-7cbd798baccf=327cfef0-537c-42d8-a8b6-29fa4416f1b4
@@ -1215,7 +1199,6 @@ version=2
 8cb0b44c-dcc0-4a24-9194-b062769c64fe=431ac4fa-20f2-4fee-98a4-1ec2ff1fcc4f
 8d045fbe-4454-4383-9cb9-d2037495552d=958d1735-8f96-4f80-80de-904acd847cac
 97106cdc-89e6-4ab6-be69-62d3adb38c87=e28b66d0-2e4a-41ba-be21-51c00d251607
-a0dd8ee8-228b-400e-9025-ebaa3f090067=3f4cda9b-a97f-4020-8f4f-63e2a4ab4b09
 a7b08c9c-1962-4059-81e4-2cd873beea7e=44aa8911-9e96-4e83-9793-42b7b81c84c2
 b008b088-94f3-4225-9374-88ff9039114d=607d94a3-2630-40af-a3d5-149690144403
 b3474647-8917-4c05-8769-9079dae31be0=91bf0624-1d28-43ea-b391-963cc92c6c26
@@ -1239,6 +1222,7 @@ version=2
 447d5f9a-80b3-4281-8f01-7dd0becbf836="-260,440"
 455e45a0-f01f-43d6-92d3-3b0cb20c7c34="-320,-120"
 4e0e81aa-bb8e-40bc-9abb-c08067a6def9="160,460"
+55013340-29b0-4cc8-81ed-f5048faee4b1="720,-180"
 5ec1838b-2d77-4cf1-a891-9e91a5ba0fef="380,240"
 63a90ea0-7af6-4a40-a2f0-3604a7c6eb45="560,220"
 6949b4bf-9d7d-4baf-b7cd-7cbd798baccf="-320,-40"
@@ -1248,7 +1232,6 @@ version=2
 8cb0b44c-dcc0-4a24-9194-b062769c64fe="-300,300"
 8d045fbe-4454-4383-9cb9-d2037495552d="-120,300"
 97106cdc-89e6-4ab6-be69-62d3adb38c87="20,220"
-a0dd8ee8-228b-400e-9025-ebaa3f090067="700,-180"
 a7b08c9c-1962-4059-81e4-2cd873beea7e="100,300"
 b008b088-94f3-4225-9374-88ff9039114d="440,-180"
 b3474647-8917-4c05-8769-9079dae31be0="700,240"
