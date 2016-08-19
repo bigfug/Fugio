@@ -326,16 +326,18 @@ void ShaderCompilerNode::loadShader()
 
 	GLint			LinkLogLength = 0;
 
-	glGetShaderiv( mProgramId, GL_INFO_LOG_LENGTH, &LinkLogLength );
+	glGetProgramiv( mProgramId, GL_INFO_LOG_LENGTH, &LinkLogLength );
 
 	if( LinkLogLength > 0 )
 	{
 		QVector<GLchar>	Log( LinkLogLength + 1 );
 
-		glGetShaderInfoLog( mProgramId, LinkLogLength, &LinkLogLength, Log.data() );
+		glGetProgramInfoLog( mProgramId, LinkLogLength, &LinkLogLength, Log.data() );
 
 		mNode->setStatusMessage( QString( Log.constData() ) );
 	}
+
+	OPENGL_PLUGIN_DEBUG;
 
 	GLint			LinkStatus = GL_FALSE;
 
