@@ -45,7 +45,7 @@ QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( bool pContextO
 	//SurfaceFormat.setAlphaBufferSize( 8 );	// sets the actual window transparent on OSX!
 	SurfaceFormat.setDepthBufferSize( 24 );
 	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
-	SurfaceFormat.setSamples( 1 );
+	SurfaceFormat.setSamples( 4 );
 	//SurfaceFormat.setSwapInterval( 0 );
 	SurfaceFormat.setVersion( 4, 5 );
 
