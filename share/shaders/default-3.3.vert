@@ -1,6 +1,6 @@
 #version 330
 
-layout ( location = 0 ) in vec3 VertexPosition;
+in vec3 VertexPosition;
 
 out vec2 vsTextureCoord0;
 
