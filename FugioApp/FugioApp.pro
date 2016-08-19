@@ -8,10 +8,14 @@ include( ../FugioGlobal.pri )
 
 QT += network
 
-greaterThan( QT_MAJOR_VERSION, 4 ): QT += widgets concurrent
+greaterThan( QT_MAJOR_VERSION, 4 ): QT += widgets concurrent opengl
 
 qtHaveModule( qml ) {
 	QT += quickwidgets quick qml serialport
+}
+
+qtHaveModule( websockets ) {
+	QT += websockets
 }
 
 TARGET = Fugio
