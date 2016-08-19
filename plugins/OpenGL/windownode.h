@@ -90,13 +90,8 @@ private:
 
 	QSharedPointer<fugio::PinInterface>	 mPinMouseShowCursor;
 
-	QSharedPointer<fugio::PinInterface>	 mPinRenderSize;
-
 	QSharedPointer<fugio::PinInterface>	 mPinWindowSize;
 	fugio::VariantInterface				*mValWindowSize;
-
-	QSharedPointer<fugio::PinInterface>	 mPinTexture;
-	fugio::OpenGLTextureInterface		*mTexture;
 
 	QSharedPointer<fugio::PinInterface>	 mPinOutputEvents;
 	fugio::InputEventsInterface			*mValOutputEvents;

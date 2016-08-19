@@ -42,10 +42,12 @@ QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( bool pContextO
 
 	QSurfaceFormat	SurfaceFormat;
 
-	SurfaceFormat.setVersion( 4, 5 );
+	//SurfaceFormat.setAlphaBufferSize( 8 );	// sets the actual window transparent on OSX!
+	SurfaceFormat.setDepthBufferSize( 24 );
 	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
-	SurfaceFormat.setSamples( 8 );
+	SurfaceFormat.setSamples( 4 );
 	//SurfaceFormat.setSwapInterval( 0 );
+	SurfaceFormat.setVersion( 4, 5 );
 
 	NewDev = QSharedPointer<DeviceOpenGLOutput>( new DeviceOpenGLOutput() );
 
@@ -168,11 +170,6 @@ bool DeviceOpenGLOutput::renderInit()
 
 void DeviceOpenGLOutput::renderStart()
 {
-	glViewport( 0, 0, width(), height() );
-
-	glClearColor( 0.0, 0.0, 0.0, 0.0 );
-
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 }
 
 void DeviceOpenGLOutput::renderEnd()
@@ -291,6 +288,8 @@ void DeviceOpenGLOutput::keyReleaseEvent( QKeyEvent *pEvent )
 	{
 		screengrab();
 
+		renderLater();
+
 		pEvent->accept();
 	}
 	else
@@ -341,22 +340,40 @@ void DeviceOpenGLOutput::exposeEvent( QExposeEvent * )
 		{
 			glewExperimental = GL_TRUE;
 
-			if( glewInit() == GLEW_OK )
-			{
-				qDebug() << "GL_VENDOR" << QString( (const char *)glGetString( GL_VENDOR ) );
-
-				qDebug() << "GL_RENDERER" << QString( (const char *)glGetString( GL_RENDERER ) );
-
-				qDebug() << "GL_VERSION" << QString( (const char *)glGetString( GL_VERSION ) );
-
-				qDebug() << context()->extensions();
-			}
-			else
+			if( glewInit() != GLEW_OK )
 			{
 				qWarning() << "GLEW did not initialise";
 
 				return;
 			}
+
+			qDebug() << "GL_VENDOR" << QString( (const char *)glGetString( GL_VENDOR ) );
+
+			qDebug() << "GL_RENDERER" << QString( (const char *)glGetString( GL_RENDERER ) );
+
+			qDebug() << "GL_VERSION" << QString( (const char *)glGetString( GL_VERSION ) );
+
+			//qDebug() << context()->extensions();
+
+			switch( context()->format().profile() )
+			{
+				case QSurfaceFormat::NoProfile:
+					qInfo() << "Profile: None";
+					break;
+
+				case QSurfaceFormat::CoreProfile:
+					qInfo() << "Profile: Core";
+					break;
+
+				case QSurfaceFormat::CompatibilityProfile:
+					qInfo() << "Profile: Compatibility";
+					break;
+			}
+
+			qInfo() << "Samples:" << context()->format().samples();
+			qInfo() << "Alpha:" << context()->format().alphaBufferSize();
+			qInfo() << "Depth:" << context()->format().depthBufferSize();
+			qInfo() << "RGB:" << context()->format().redBufferSize() << context()->format().greenBufferSize() << context()->format().blueBufferSize();
 		}
 
 		raise();
