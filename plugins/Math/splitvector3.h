@@ -14,14 +14,14 @@
 
 #include <fugio/nodecontrolbase.h>
 
-class SplitVector3 : public fugio::NodeControlBase
+class SplitVector3Node : public fugio::NodeControlBase
 {
 	Q_OBJECT
 
 public:
-	Q_INVOKABLE explicit SplitVector3( QSharedPointer<fugio::NodeInterface> pNode );
+	Q_INVOKABLE explicit SplitVector3Node( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~SplitVector3( void ) {}
+	virtual ~SplitVector3Node( void ) {}
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface

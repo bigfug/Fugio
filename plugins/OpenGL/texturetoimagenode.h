@@ -1,0 +1,35 @@
+#ifndef TEXTURETOIMAGENODE_H
+#define TEXTURETOIMAGENODE_H
+
+#include <QObject>
+
+#include <fugio/nodecontrolbase.h>
+
+#include <fugio/image/image_interface.h>
+
+class TextureToImageNode : public fugio::NodeControlBase
+{
+	Q_OBJECT
+	Q_CLASSINFO( "Author", "Alex May" )
+	Q_CLASSINFO( "Version", "1.0" )
+	Q_CLASSINFO( "Description", "Converts an OpenGL texture to an image" )
+	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/OpenGL_Texture_To_Image" )
+	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
+
+public:
+	Q_INVOKABLE TextureToImageNode( QSharedPointer<fugio::NodeInterface> pNode );
+
+	virtual ~TextureToImageNode( void ) {}
+
+	// NodeControlInterface interface
+
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
+
+protected:
+	QSharedPointer<fugio::PinInterface>			 mPinInputTexture;
+	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
+	fugio::ImageInterface								*mValOutputImage;
+};
+
+
+#endif // TEXTURETOIMAGENODE_H

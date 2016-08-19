@@ -51,8 +51,10 @@ AudioPlugin::~AudioPlugin( void )
 {
 }
 
-PluginInterface::InitResult AudioPlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult AudioPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mApp = pApp;
 
 	mApp->registerNodeClasses( mNodeClasses );

@@ -61,7 +61,7 @@ QPlainTextEdit *TextEditorForm::textEdit( void )
 	return( ui->mTextEdit );
 }
 
-void TextEditorForm::setHighlighter(fugio::SyntaxHighlighterInterface *pHighlighter)
+void TextEditorForm::setHighlighter( fugio::SyntaxHighlighterInterface *pHighlighter )
 {
 	mHighlighter = pHighlighter;
 

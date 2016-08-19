@@ -375,7 +375,7 @@ void DevicePortAudio::deviceInputOpen( const PaDeviceInfo *DevInf )
 	qDebug() << "INPUT:" << DevInf->name << StreamInfo->sampleRate << StreamInfo->inputLatency << mInputChannelCount;
 
 	mInputSampleRate   = StreamInfo->sampleRate;
-	mInputTimeLatency  = StreamInfo->inputLatency;
+	mInputTimeLatency  = 0;//StreamInfo->inputLatency;
 	mInputAudioOffset  = 0; //QDateTime::currentMSecsSinceEpoch() * qint64( mSampleRate / 1000.0 );
 	mInputSampleFormat = fugio::AudioSampleFormat::Format32FS;
 

@@ -15,7 +15,10 @@ RateControlNode::RateControlNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void RateControlNode::inputsUpdated( qint64 pTimeStamp )
 {
-	Q_UNUSED( pTimeStamp )
+	if( !pTimeStamp )
+	{
+		return;
+	}
 
 	if( mPinInput->isConnected() && mPinOutput->control().isNull() )
 	{

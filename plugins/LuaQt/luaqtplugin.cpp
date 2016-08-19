@@ -10,6 +10,7 @@
 #include <fugio/luaqt/uuid.h>
 #include <fugio/colour/uuid.h>
 #include <fugio/math/uuid.h>
+#include <fugio/core/uuid.h>
 
 #include <fugio/image/image_interface.h>
 
@@ -78,7 +79,7 @@ LuaInterface *LuaQtPlugin::lua()
 	return( qobject_cast<LuaInterface *>( mApp->findInterface( IID_LUA ) ) );
 }
 
-PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
 	mApp = pApp;
 
@@ -86,7 +87,7 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 
 	if( !LUA )
 	{
-		return( INIT_DEFER );
+		return( pLastChance ? INIT_FAILED : INIT_DEFER );
 	}
 
 	mApp->registerNodeClasses( NodeClasses );
@@ -116,6 +117,8 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaAddPinGet( PID_COLOUR, LuaColor::luaPinGet );
 	LUA->luaAddPinGet( PID_IMAGE, LuaImage::luaPinGet );
 	LUA->luaAddPinGet( PID_MATRIX4, LuaMatrix4x4::luaPinGet );
+	LUA->luaAddPinGet( PID_POINT, LuaPointF::luaPinGet );
+	LUA->luaAddPinGet( PID_SIZE, LuaSizeF::luaPinGet );
 #endif
 
 	return( INIT_OK );

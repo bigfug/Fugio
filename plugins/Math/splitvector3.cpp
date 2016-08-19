@@ -5,21 +5,21 @@
 #include <fugio/context_interface.h>
 #include <fugio/math/uuid.h>
 
-SplitVector3::SplitVector3( QSharedPointer<fugio::NodeInterface> pNode )
+SplitVector3Node::SplitVector3Node( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
 	mPinInput = pinInput( "Vector3" );
 
 	mPinInput->registerPinInputType( PID_VECTOR3 );
 
-	mOutX = pinOutput<fugio::VariantInterface *>( "x", mPinOutX, PID_FLOAT );
+	mOutX = pinOutput<fugio::VariantInterface *>( "X", mPinOutX, PID_FLOAT );
 
-	mOutY = pinOutput<fugio::VariantInterface *>( "y", mPinOutY, PID_FLOAT );
+	mOutY = pinOutput<fugio::VariantInterface *>( "Y", mPinOutY, PID_FLOAT );
 
-	mOutZ = pinOutput<fugio::VariantInterface *>( "z", mPinOutZ, PID_FLOAT );
+	mOutZ = pinOutput<fugio::VariantInterface *>( "Z", mPinOutZ, PID_FLOAT );
 }
 
-void SplitVector3::inputsUpdated( qint64 pTimeStamp )
+void SplitVector3Node::inputsUpdated( qint64 pTimeStamp )
 {
 	Q_UNUSED( pTimeStamp )
 

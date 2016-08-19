@@ -7,7 +7,7 @@
 #include <QDebug>
 
 ImagePreview::ImagePreview( QWidget * parent, Qt::WindowFlags f )
-	: QLabel( parent, f ), mMouseLeft( false )
+	: QLabel( parent, f ), mInputEvents( nullptr )
 {
 	setMouseTracking( true );
 }
@@ -16,49 +16,15 @@ ImagePreview::~ImagePreview( void )
 {
 }
 
-void ImagePreview::mousePressEvent( QMouseEvent *pEvent )
+bool ImagePreview::event( QEvent *pEvent )
 {
-	updateMousePosition( pEvent->pos() );
+	if( QInputEvent *InputEvent = dynamic_cast<QInputEvent *>( pEvent ) )
+	{
+		if( mInputEvents )
+		{
+			mInputEvents->inputProcessEvent( InputEvent );
+		}
+	}
 
-//	if( mMouse )
-//	{
-//		mMouse->updateMouseButtons( pEvent->buttons() );
-//	}
-
-	mMouseLeft = pEvent->buttons() & Qt::LeftButton;
-}
-
-void ImagePreview::mouseReleaseEvent( QMouseEvent *pEvent )
-{
-	updateMousePosition( pEvent->pos() );
-
-//	if( mMouse )
-//	{
-//		mMouse->updateMouseButtons( pEvent->buttons() );
-//	}
-
-	mMouseLeft = pEvent->buttons() & Qt::LeftButton;
-}
-
-void ImagePreview::mouseMoveEvent( QMouseEvent *pEvent )
-{
-	updateMousePosition( pEvent->pos() );
-
-//	if( mMouse )
-//	{
-//		mMouse->updateMouseButtons( pEvent->buttons() );
-//	}
-
-	mMouseLeft = pEvent->buttons() & Qt::LeftButton;
-}
-
-void ImagePreview::updateMousePosition( const QPoint &pMP )
-{
-	mMousePosition.setX( pMP.x() );
-	mMousePosition.setY( pMP.y() );
-
-//	if( mMouse )
-//	{
-//		mMouse->updateMousePosition( pMP );
-//	}
+	return( QLabel::event( pEvent ) );
 }

@@ -504,12 +504,25 @@ int LuaPainter::luaDrawLine( lua_State *L )
 {
 	LuaPainterData		*PainterData = checkactivepainter( L );
 
-	int			x1 = luaL_checknumber( L, 2 );
-	int			y1 = luaL_checknumber( L, 3 );
-	int			x2 = luaL_checknumber( L, 4 );
-	int			y2 = luaL_checknumber( L, 5 );
+	QPointF				 P1, P2;
 
-	PainterData->mPainter->drawLine( x1, y1, x2, y2 );
+	if( LuaPointF::isPointF( L, 2 ) )
+	{
+		P1 = LuaPointF::checkpointf( L, 2 );
+		P2 = LuaPointF::checkpointf( L, 3 );
+	}
+	else
+	{
+		qreal		x1 = luaL_checknumber( L, 2 );
+		qreal		y1 = luaL_checknumber( L, 3 );
+		qreal		x2 = luaL_checknumber( L, 4 );
+		qreal		y2 = luaL_checknumber( L, 5 );
+
+		P1 = QPointF( x1, y1 );
+		P2 = QPointF( x2, y2 );
+	}
+
+	PainterData->mPainter->drawLine( P1, P2 );
 
 	return( 0 );
 }
@@ -746,7 +759,7 @@ LuaPainter::LuaPainterData *LuaPainter::checkactivepainter( lua_State *L, int i 
 {
 	LuaPainterData		*PainterData = checkpainter( L, i );
 
-	if( !PainterData->mPainter->isActive() )
+	if( !PainterData->mPainter || !PainterData->mPainter->isActive() )
 	{
 		luaL_error( L, "Painter not active" );
 	}

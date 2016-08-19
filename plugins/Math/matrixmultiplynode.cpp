@@ -25,9 +25,25 @@ void MatrixMultiplyNode::inputsUpdated( qint64 pTimeStamp )
 	Q_UNUSED( pTimeStamp )
 
 	QMatrix4x4		Mat = variant( mPinMatrix ).value<QMatrix4x4>();
-	QVector3D		Vec = variant( mPinVector ).value<QVector3D>();
+	QVector4D		Vec;
 
-	QVector4D		Out = Mat * QVector4D( Vec, 1 );
+	QVariant		Src = variant( mPinVector );
+
+	switch( QMetaType::Type( Src.type() ) )
+	{
+		case QMetaType::QVector3D:
+			Vec = QVector4D( Src.value<QVector3D>(), 1 );
+			break;
+
+		case QMetaType::QVector4D:
+			Vec = Src.value<QVector4D>();
+			break;
+
+		default:
+			break;
+	}
+
+	QVector4D		Out = Mat * Vec;
 
 	mOutput->setVariant( QVector3D( Out ) );
 

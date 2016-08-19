@@ -8,6 +8,7 @@
 
 #include <fugio/core/variant_interface.h>
 #include <fugio/image/image_interface.h>
+#include <fugio/gui/input_events_interface.h>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -26,7 +27,7 @@ class ImagePreviewNode : public fugio::NodeControlBase
 public:
 	Q_INVOKABLE explicit ImagePreviewNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~ImagePreviewNode( void );
+	virtual ~ImagePreviewNode( void ) {}
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
@@ -46,15 +47,21 @@ public:
 protected slots:
 	void onShowClicked();
 
-	void onContextFrame( void );
+	void contextFrameInitialise( void );
 
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinImage;
 
-	QDockWidget								*mDockWidget;
-	ImagePreview							*mGUI;
+	QSharedPointer<fugio::PinInterface>			 mPinOutputEvents;
+	fugio::InputEventsInterface					*mValOutputEvents;
 
-	Qt::DockWidgetArea						 mDockArea;
+	QSharedPointer<fugio::PinInterface>			 mPinOutputSize;
+	fugio::VariantInterface						*mValOutputSize;
+
+	QDockWidget									*mDockWidget;
+	ImagePreview								*mGUI;
+
+	Qt::DockWidgetArea							 mDockArea;
 };
 
 #endif // IMAGEPREVIEWNODE_H

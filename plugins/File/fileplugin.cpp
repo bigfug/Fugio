@@ -30,7 +30,7 @@ FilePlugin::FilePlugin()
 
 }
 
-PluginInterface::InitResult FilePlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult FilePlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
 	mApp = pApp;
 

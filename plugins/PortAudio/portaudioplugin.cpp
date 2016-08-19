@@ -6,6 +6,10 @@
 #include <portaudio.h>
 #endif
 
+#if QT_VERSION < QT_VERSION_CHECK( 5, 5, 0 )
+#define qInfo qDebug
+#endif
+
 #include "portaudiooutputnode.h"
 #include "portaudioinputnode.h"
 
@@ -38,8 +42,10 @@ PortAudioPlugin::~PortAudioPlugin()
 	mInstance = 0;
 }
 
-PluginInterface::InitResult PortAudioPlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult PortAudioPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mApp = pApp;
 
 #if defined( PORTAUDIO_SUPPORTED )

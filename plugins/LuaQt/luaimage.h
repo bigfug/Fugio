@@ -47,6 +47,8 @@ private:
 				if( ImgFmt != QImage::Format_Invalid )
 				{
 					mImage = new QImage( mImgInf->internalBuffer( 0 ), mImgInf->width(), mImgInf->height(), mImgInf->lineSize( 0 ), ImgFmt );
+
+					memset( mImgInf->internalBuffer( 0 ), 0, mImgInf->lineSize( 0 ) * mImgInf->height() );
 				}
 			}
 		}

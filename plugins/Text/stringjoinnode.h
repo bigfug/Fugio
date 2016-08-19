@@ -37,7 +37,7 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputJoinChar;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::VariantInterface						*mPinOutputValue;
+	fugio::VariantInterface						*mValOutput;
 };
 
 #endif // STRINGJOINNODE_H

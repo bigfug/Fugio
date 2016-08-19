@@ -108,8 +108,6 @@ INCLUDEPATH += $$PWD/../include
 #------------------------------------------------------------------------------
 # Raspberry Pi
 
-linux:!mac:exists( /opt/vc/include/bcm_host.h ) {
-    DEFINES += Q_OS_RASPERRY_PI
-
+contains( DEFINES, Q_OS_RASPBERRY_PI ) {
     LIBS += -L/opt/vc/lib -lGLESv2 -lEGL
 }

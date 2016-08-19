@@ -6,12 +6,16 @@
 
 include( ../FugioGlobal.pri )
 
-QT += core gui network opengl
+QT += network
 
-greaterThan( QT_MAJOR_VERSION, 4 ): QT += widgets concurrent
+greaterThan( QT_MAJOR_VERSION, 4 ): QT += widgets concurrent opengl
 
 qtHaveModule( qml ) {
 	QT += quickwidgets quick qml serialport
+}
+
+qtHaveModule( websockets ) {
+	QT += websockets
 }
 
 TARGET = Fugio
@@ -55,7 +59,7 @@ SOURCES += main.cpp\
 	model/pinmodel.cpp \
 	model/pinlistmodel.cpp \
 	model/baselistmodel.cpp \
-    settings/settingsdialog.cpp
+	settings/settingsdialog.cpp
 
 HEADERS  += mainwindow.h \
 	app.h \
@@ -120,7 +124,7 @@ HEADERS  += mainwindow.h \
 	model/pinmodel.h \
 	model/pinlistmodel.h \
 	model/baselistmodel.h \
-    settings/settingsdialog.h
+	settings/settingsdialog.h
 
 FORMS    += mainwindow.ui \
 	contextwidgetprivate.ui \
@@ -130,7 +134,7 @@ FORMS    += mainwindow.ui \
 	nodelistform.ui \
 	snippets/snippetsform.ui \
 	patchpromptdialog.ui \
-    settings/settingsdialog.ui
+	settings/settingsdialog.ui
 
 RC_FILE = fugio.rc
 
@@ -157,7 +161,7 @@ macx {
 	APP_DIR      = $$DESTDIR/$$TARGET".app"
 	PLUGIN_DIR   = $$APP_DIR/Contents/PlugIns
 	RESOURCE_DIR = $$APP_DIR/Contents/Resources
-        INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
+		INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
@@ -190,14 +194,16 @@ macx {
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/plugins
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/snippets
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/examples
+		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/share
 
 		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../examples/* $$INSTALLDIR/data/examples
 		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../snippets/* $$INSTALLDIR/data/snippets
+		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../share/* $$INSTALLDIR/data/share
 	}
 }
 
 windows {
-        INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
+	INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
@@ -217,14 +223,22 @@ windows {
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/snippets )
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/examples )
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/platforms )
+		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/share )
 
 		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../examples/* ) $$shell_path( $$INSTALLDIR/data/examples ) /f /s /y
 		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../snippets/* ) $$shell_path( $$INSTALLDIR/data/snippets ) /f /s /y
+		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../share/* ) $$shell_path( $$INSTALLDIR/data/share ) /f /s /y
 
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $(QTDIR)/plugins/platforms/qwindows.dll ) $$shell_path( $$INSTALLDIR/data/platforms )
 
 		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/icu*.dll ) $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) $$shell_path( $(QTDIR)/bin/Qt5Core.dll ) $$shell_path( $(QTDIR)/bin/Qt5Gui.dll ) $$shell_path( $(QTDIR)/bin/Qt5Widgets.dll ) $$shell_path( $(QTDIR)/bin/Qt5Network.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
 	}
+}
+
+unix:!macx {
+	DOLLAR = $
+
+	QMAKE_LFLAGS += "-Wl,-rpath '-Wl,$${DOLLAR}$${DOLLAR}ORIGIN'"
 }
 
 #------------------------------------------------------------------------------
@@ -241,10 +255,10 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 #------------------------------------------------------------------------------
 # Raspberry Pi
 
-linux:!mac:exists( /opt/vc/include/bcm_host.h ) {
-	DEFINES += Q_OS_RASPERRY_PI
+contains( DEFINES, Q_OS_RASPBERRY_PI ) {
+	INCLUDEPATH += /opt/vc/include /opt/vc/include/interface/vcos/pthreads /opt/vc/include/interface/vmcs_host/linux
 
-	LIBS += -L/opt/vc/lib -lGLESv2 -lEGL
+	LIBS += -L/opt/vc/lib -lbcm_host
 }
 
 #------------------------------------------------------------------------------

@@ -14,6 +14,18 @@
    <string>Snippets</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QComboBox" name="mSnippetSource">
      <item>
@@ -55,8 +67,6 @@
         </widget>
        </item>
       </layout>
-      <zorder>mSystem</zorder>
-      <zorder>mSystem</zorder>
      </widget>
      <widget class="QWidget" name="User">
       <layout class="QVBoxLayout" name="verticalLayout_3">

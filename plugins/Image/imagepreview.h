@@ -5,47 +5,34 @@
 
 #include <fugio/global.h>
 
+#include <fugio/gui/input_events_interface.h>
+
 //#include <fugio/mouse_source_interface.h>
 
 FUGIO_NAMESPACE_BEGIN
 class MouseInterface;
 FUGIO_NAMESPACE_END
 
-class ImagePreview : public QLabel //, public fugio::MouseSourceInterface
+class ImagePreview : public QLabel
 {
 	Q_OBJECT
-	//Q_INTERFACES( fugio::MouseSourceInterface )
 
 public:
 	explicit ImagePreview( QWidget * parent = 0, Qt::WindowFlags f = 0 );
 
 	virtual ~ImagePreview( void );
 
-	QPointF mousePosition( void ) const
+	void setInputEventsInterface( fugio::InputEventsInterface *pInputEvents )
 	{
-		return( mMousePosition );
+		mInputEvents = pInputEvents;
 	}
 
-	bool mouseLeft( void ) const
-	{
-		return( mMouseLeft );
-	}
-
-	//-------------------------------------------------------------------------
-	// InterfaceMouseSource
-
-	// QWidget interface
-protected:
-	virtual void mousePressEvent(QMouseEvent *);
-	virtual void mouseReleaseEvent(QMouseEvent *);
-	virtual void mouseMoveEvent(QMouseEvent *);
-
-	void updateMousePosition( const QPoint &pMP );
+	// QObject interface
+public:
+	virtual bool event( QEvent *pEvent ) Q_DECL_OVERRIDE;
 
 private:
-//	fugio::MouseInterface		*mMouse;
-	QPoint						 mMousePosition;
-	bool						 mMouseLeft;
+	fugio::InputEventsInterface		*mInputEvents;
 };
 
 #endif // IMAGEPREVIEW_H

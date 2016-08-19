@@ -29,18 +29,20 @@ PortMidiPlugin::PortMidiPlugin( void )
 	mInstance = this;
 }
 
-PluginInterface::InitResult PortMidiPlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult PortMidiPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mApp = pApp;
-
-	mApp->registerNodeClasses( NodeClasses );
-
-	mApp->registerPinClasses( PinClasses );
 
 	if( !DeviceMidi::deviceInitialise() )
 	{
 		return( INIT_FAILED );
 	}
+
+	mApp->registerNodeClasses( NodeClasses );
+
+	mApp->registerPinClasses( PinClasses );
 
 	connect( mApp->qobject(), SIGNAL(frameInitialise()), this, SLOT(onGlobalFrameInitialise()) );
 	connect( mApp->qobject(), SIGNAL(frameEnd()), this, SLOT(onGlobalFrameEnd()) );

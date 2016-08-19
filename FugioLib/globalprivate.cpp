@@ -59,6 +59,7 @@ void GlobalPrivate::registerPlugin( QObject *pPluginInstance )
 
 void GlobalPrivate::initialisePlugins()
 {
+	bool	LastChance = false;
 	int		ResCnt = mPluginInitList.size();
 
 	while( ResCnt > 0 )
@@ -74,7 +75,7 @@ void GlobalPrivate::initialisePlugins()
 
 			qApp->processEvents();
 
-			fugio::PluginInterface::InitResult		 PlgRes = PlgInt->initialise( this );
+			fugio::PluginInterface::InitResult		 PlgRes = PlgInt->initialise( this, LastChance );
 
 			if( PlgRes == fugio::PluginInterface::INIT_OK )
 			{
@@ -83,6 +84,8 @@ void GlobalPrivate::initialisePlugins()
 				mPluginInitList.removeAt( i );
 
 				ResCnt++;
+
+				LastChance = false;
 
 				continue;
 			}
@@ -101,6 +104,13 @@ void GlobalPrivate::initialisePlugins()
 			}
 
 			i++;
+		}
+
+		if( !LastChance )
+		{
+			ResCnt++;
+
+			LastChance = true;
 		}
 	}
 

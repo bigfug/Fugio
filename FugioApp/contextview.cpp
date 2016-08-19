@@ -764,7 +764,7 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 	//-------------------------------------------------------------------------
 
-#if !defined( Q_OS_RASPERRY_PI )
+#if !defined( Q_OS_RASPBERRY_PI )
 	if( !pPartial )
 	{
 		gApp->mainWindow()->restoreGeometry( pSettings.value( "mainwindow/geometry", gApp->mainWindow()->saveGeometry() ).toByteArray() );
@@ -2655,11 +2655,18 @@ void ContextView::wheelEvent( QWheelEvent *pEvent )
 	{
 		if( pEvent->modifiers().testFlag( Qt::ControlModifier ) )
 		{
-			int numSteps = pEvent->delta() / 15 / 8;
+			QPoint numSteps = numDegrees / 15;
 
-			qreal sc = pow( 1.25, numSteps );
+			if( numSteps.y() > 0 )
+			{
+				mScaleFactor += qMax( 0.1, qreal( numSteps.y() ) * 0.1 );
+			}
+			else
+			{
+				mScaleFactor -= qMax( 0.1, qreal( -numSteps.y() ) * 0.1 );
+			}
 
-			zoom( sc, mapToScene( pEvent->pos() ) );
+			zoom( mScaleFactor, mapToScene( pEvent->pos() ) );
 		}
 		else
 		{

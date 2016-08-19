@@ -60,8 +60,10 @@ NetworkPlugin::NetworkPlugin()
 	mInstance = this;
 }
 
-PluginInterface::InitResult NetworkPlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult NetworkPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mNetworkAccessManager = new QNetworkAccessManager();
 
 	mApp = pApp;

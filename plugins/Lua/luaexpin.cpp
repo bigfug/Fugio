@@ -1,8 +1,5 @@
 #include "luaexpin.h"
 
-#include <QVector2D>
-#include <QVector3D>
-
 #include <fugio/global_interface.h>
 #include <fugio/core/variant_interface.h>
 #include <fugio/lua/lua_interface.h>

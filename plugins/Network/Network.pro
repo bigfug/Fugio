@@ -33,8 +33,8 @@ SOURCES += networkplugin.cpp \
 	slipdecodenode.cpp \
 	getnode.cpp \
 	websocketdataservernode.cpp \
-    cobsdecodenode.cpp \
-    cobsencodenode.cpp
+	cobsdecodenode.cpp \
+	cobsencodenode.cpp
 
 HEADERS += networkplugin.h\
 	../../include/fugio/network/uuid.h \
@@ -50,8 +50,8 @@ HEADERS += networkplugin.h\
 	slipdecodenode.h \
 	getnode.h \
 	websocketdataservernode.h \
-    cobsdecodenode.h \
-    cobsencodenode.h
+	cobsdecodenode.h \
+	cobsencodenode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -62,7 +62,7 @@ macx {
 	CONFIG += lib_bundle
 
 	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-        INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
+		INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 	INSTALLDEST  = $$INSTALLDIR/data/plugins
 	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
@@ -79,6 +79,7 @@ macx {
 		QMAKE_POST_LINK += $$qtLibChange( QtNetwork )
 		QMAKE_POST_LINK += $$qtLibChange( QtGui )
 		QMAKE_POST_LINK += $$qtLibChange( QtCore )
+		QMAKE_POST_LINK += $$qtLibChange( QtWebSockets )
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
@@ -98,7 +99,7 @@ macx {
 # Windows Install
 
 windows {
-        INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
+	INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
@@ -107,6 +108,8 @@ windows {
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
 
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
+
+		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/Qt5WebSockets.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
 	}
 }
 

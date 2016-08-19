@@ -52,7 +52,10 @@ SOURCES += mathplugin.cpp \
     radianstodegreesnode.cpp \
     crossproducenode.cpp \
     normalisenode.cpp \
-    minmaxnode.cpp
+    minmaxnode.cpp \
+    vector4pin.cpp \
+    joinvector4node.cpp \
+    splitvector4node.cpp
 
 HEADERS += mathplugin.h \
     ../../include/fugio/math/uuid.h \
@@ -93,7 +96,10 @@ HEADERS += mathplugin.h \
     radianstodegreesnode.h \
     crossproducenode.h \
     normalisenode.h \
-    minmaxnode.h
+    minmaxnode.h \
+    vector4pin.h \
+    joinvector4node.h \
+    splitvector4node.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

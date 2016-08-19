@@ -125,8 +125,10 @@ CorePlugin::~CorePlugin( void )
 {
 }
 
-PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp )
+PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mApp = pApp;
 
 	//mApp->registerVideoOutputFactory( this );
