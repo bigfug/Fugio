@@ -32,7 +32,8 @@ SOURCES += \
     luamatrix4x4.cpp \
     luajsondocument.cpp \
     luajsonarray.cpp \
-    luajsonobject.cpp
+    luajsonobject.cpp \
+    luavector3.cpp
 
 HEADERS +=\
     ../../include/fugio/luaqt/uuid.h \
@@ -54,7 +55,8 @@ HEADERS +=\
     luamatrix4x4.h \
     luajsondocument.h \
     luajsonarray.h \
-    luajsonobject.h
+    luajsonobject.h \
+    luavector3.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

@@ -30,6 +30,7 @@
 #include "luajsondocument.h"
 #include "luajsonarray.h"
 #include "luajsonobject.h"
+#include "luavector3.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
@@ -65,6 +66,7 @@ const luaL_Reg LuaQtPlugin::mLuaFunctions[] =
 	{ "rect", LuaRectF::luaNew },
 	{ "size", LuaSizeF::luaNew },
 	{ "transform", LuaTransform::luaNew },
+	{ "vector3d", LuaVector3D::luaNew },
 #endif
 	{ 0, 0 }
 };
@@ -113,12 +115,14 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaRegisterExtension( LuaTransform::luaOpen );
 	LUA->luaRegisterExtension( LuaRectF::luaOpen );
 	LUA->luaRegisterExtension( LuaMatrix4x4::luaOpen );
+	LUA->luaRegisterExtension( LuaVector3D::luaOpen );
 
 	LUA->luaAddPinGet( PID_COLOUR, LuaColor::luaPinGet );
 	LUA->luaAddPinGet( PID_IMAGE, LuaImage::luaPinGet );
 	LUA->luaAddPinGet( PID_MATRIX4, LuaMatrix4x4::luaPinGet );
 	LUA->luaAddPinGet( PID_POINT, LuaPointF::luaPinGet );
 	LUA->luaAddPinGet( PID_SIZE, LuaSizeF::luaPinGet );
+	LUA->luaAddPinGet( PID_VECTOR3, LuaVector3D::luaPinGet );
 #endif
 
 	return( INIT_OK );
