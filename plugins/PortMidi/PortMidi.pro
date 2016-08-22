@@ -121,16 +121,23 @@ win32:exists( $$(LIBS)/portmidi.32.2013 )  {
 	DEFINES += PORTMIDI_SUPPORTED
 }
 
-unix:exists( /usr/local/include/portmidi.h ) {
+unix:!macx:exists( /usr/local/include/portmidi.h ) {
 	INCLUDEPATH += /usr/local/include
 	LIBS += -L/usr/local/lib
 	DEFINES += PORTMIDI_SUPPORTED
 }
 
-unix:exists( /usr/include/portmidi.h ) {
+unix:!macx {
+    exists( $$[QT_SYSROOT]/usr/include/portmidi.h ) {
+        INCLUDEPATH += $$[QT_SYSROOT]/usr/include
+        LIBS += -L$$[QT_SYSROOT]/usr/lib
+        DEFINES += PORTMIDI_SUPPORTED
+
+    } else:exists( /usr/include/portmidi.h ) {
         INCLUDEPATH += /usr/include
         LIBS += -L/usr/lib
         DEFINES += PORTMIDI_SUPPORTED
+    }
 }
 
 contains( DEFINES, PORTMIDI_SUPPORTED ) {

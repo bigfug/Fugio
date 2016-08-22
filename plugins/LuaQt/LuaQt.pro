@@ -141,15 +141,21 @@ macx:exists( /usr/local/include/lua.hpp ) {
 }
 
 unix:!macx {
-    exists( /usr/include/lua5.3/lua.h ) {
+    exists( $$[QT_SYSROOT]/usr/include/lua5.2/lua.h ) {
+        INCLUDEPATH += $$[QT_SYSROOT]/usr/include/lua5.2
+
+        LIBS += -llua5.2
+
+        DEFINES += LUA_SUPPORTED
+
+    } else:exists( /usr/include/lua5.3/lua.h ) {
         INCLUDEPATH += /usr/include/lua5.3
 
         LIBS += -llua5.3
 
         DEFINES += LUA_SUPPORTED
-    }
 
-    exists( /usr/include/lua5.2/lua.h ) {
+    } else:exists( /usr/include/lua5.2/lua.h ) {
         INCLUDEPATH += /usr/include/lua5.2
 
         LIBS += -llua5.2

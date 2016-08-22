@@ -122,9 +122,18 @@ macx:exists( /usr/local/include/portaudio.h ) {
     DEFINES += PORTAUDIO_SUPPORTED
 }
 
-unix:!macx:exists( /usr/local/include/portaudio.h ) {
-    LIBS += -lportaudio
-    DEFINES += PORTAUDIO_SUPPORTED
+unix:!macx {
+    exists( $$[QT_SYSROOT]/usr/include/portaudio.h ) {
+#        INCLUDEPATH += $$[QT_SYSROOT]/usr/include
+
+#        LIBS += -lportaudio
+
+#        DEFINES += PORTAUDIO_SUPPORTED
+
+    } else:exists( /usr/local/include/portaudio.h ) {
+        LIBS += -lportaudio
+        DEFINES += PORTAUDIO_SUPPORTED
+    }
 }
 
 #unix:!macx:exists( /usr/include/portaudio.h ) {

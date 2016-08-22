@@ -118,12 +118,21 @@ macx:exists( /usr/local/include/fftw3.h ) {
     DEFINES += FFTW_PLUGIN_SUPPORTED
 }
 
-unix:!macx:exists( /usr/include/fftw3.h ) {
-    INCLUDEPATH += /usr/include
+unix:!macx {
+    exists( $$[QT_SYSROOT]/usr/include/fftw3.h ) {
+        INCLUDEPATH += $$[QT_SYSROOT]/usr/include
 
-    LIBS += -lfftw3f
+        LIBS += -lfftw3f
 
-    DEFINES += FFTW_PLUGIN_SUPPORTED
+        DEFINES += FFTW_PLUGIN_SUPPORTED
+
+    } else:exists( /usr/include/fftw3.h ) {
+        INCLUDEPATH += /usr/include
+
+        LIBS += -lfftw3f
+
+        DEFINES += FFTW_PLUGIN_SUPPORTED
+    }
 }
 
 !contains( DEFINES, FFTW_PLUGIN_SUPPORTED ) {
