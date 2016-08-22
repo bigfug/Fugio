@@ -158,6 +158,7 @@ private:
 
 	GLuint			mFBOId;
 	GLuint			mFBODepthRBId;
+	GLuint			mFBOBoundTexId;
 
 	GLuint			mFBOMSId;
 	GLuint			mFBOMSColourRBId;

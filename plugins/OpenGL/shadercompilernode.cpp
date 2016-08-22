@@ -136,62 +136,66 @@ void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, G
 
 			if( DstVar )
 			{
-				if( ( pShaderId = glCreateShader( pShaderType ) ) != 0 )
+				QByteArray		 Source    = DstVar->variant().toByteArray();
+				const GLchar	*SourcePtr = Source.data();
+
+				if( !Source.isEmpty() )
 				{
-					QByteArray		 Source    = DstVar->variant().toByteArray();
-					const GLchar	*SourcePtr = Source.data();
-					GLint			 Result;
+					if( ( pShaderId = glCreateShader( pShaderType ) ) != 0 )
+					{
+						GLint			 Result;
 
-					QObject				*O = pPin->findInterface( IID_SYNTAX_HIGHLIGHTER );
-					ShaderHighlighter	*H = qobject_cast<ShaderHighlighter *>( O );
+						QObject				*O = pPin->findInterface( IID_SYNTAX_HIGHLIGHTER );
+						ShaderHighlighter	*H = qobject_cast<ShaderHighlighter *>( O );
 
-					glShaderSource( pShaderId, 1, &SourcePtr, 0 );
+						glShaderSource( pShaderId, 1, &SourcePtr, 0 );
 
 #if !defined( GL_ES_VERSION_2_0 )
-					if( GLEW_ARB_shading_language_include )
-					{
-						glCompileShaderIncludeARB( pShaderId, 0, NULL, NULL );
-					}
-					else
-#endif
-					{
-						glCompileShader( pShaderId );
-					}
-
-					glGetShaderiv( pShaderId, GL_INFO_LOG_LENGTH, &Result );
-
-					QVector<GLchar>	Log( Result + 1 );
-
-					if( Result > 0 )
-					{
-						glGetShaderInfoLog( pShaderId, Result, &Result, Log.data() );
-
-						if( H )
+						if( GLEW_ARB_shading_language_include )
 						{
-							H->setErrors( QString( Log.data() ) );
-
-#if defined( OPENGL_DEBUG_ENABLE )
-							qWarning() << QString( Log.data() );
-#endif
+							glCompileShaderIncludeARB( pShaderId, 0, NULL, NULL );
 						}
 						else
+#endif
 						{
-							qWarning() << QString( Log.data() );
+							glCompileShader( pShaderId );
 						}
-					}
 
-					glGetShaderiv( pShaderId, GL_COMPILE_STATUS, &Result );
+						glGetShaderiv( pShaderId, GL_INFO_LOG_LENGTH, &Result );
 
-					if( Result == GL_TRUE )
-					{
-						glAttachShader( mProgramId, pShaderId );
+						QVector<GLchar>	Log( Result + 1 );
 
-						H->clearErrors();
+						if( Result > 0 )
+						{
+							glGetShaderInfoLog( pShaderId, Result, &Result, Log.data() );
 
-						pCompiled++;
-					}
-					else
-					{
+							if( H )
+							{
+								H->setErrors( QString( Log.data() ) );
+
+#if defined( OPENGL_DEBUG_ENABLE )
+								qWarning() << QString( Log.data() );
+#endif
+							}
+							else
+							{
+								qWarning() << QString( Log.data() );
+							}
+						}
+
+						glGetShaderiv( pShaderId, GL_COMPILE_STATUS, &Result );
+
+						if( Result == GL_TRUE )
+						{
+							glAttachShader( mProgramId, pShaderId );
+
+							H->clearErrors();
+
+							pCompiled++;
+
+							return;
+						}
+
 						//if( !QOpenGLContext::currentContext()->format().testOption( QSurfaceFormat::DebugContext ) )
 						{
 							qWarning() << mNode->name() << QString( Log.data() );
@@ -202,8 +206,6 @@ void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, G
 						pShaderId = 0;
 
 						pFailed++;
-
-						Result = GL_FALSE;
 					}
 				}
 			}
@@ -324,16 +326,18 @@ void ShaderCompilerNode::loadShader()
 
 	GLint			LinkLogLength = 0;
 
-	glGetShaderiv( mProgramId, GL_INFO_LOG_LENGTH, &LinkLogLength );
+	glGetProgramiv( mProgramId, GL_INFO_LOG_LENGTH, &LinkLogLength );
 
 	if( LinkLogLength > 0 )
 	{
 		QVector<GLchar>	Log( LinkLogLength + 1 );
 
-		glGetShaderInfoLog( mProgramId, LinkLogLength, &LinkLogLength, Log.data() );
+		glGetProgramInfoLog( mProgramId, LinkLogLength, &LinkLogLength, Log.data() );
 
 		mNode->setStatusMessage( QString( Log.constData() ) );
 	}
+
+	OPENGL_PLUGIN_DEBUG;
 
 	GLint			LinkStatus = GL_FALSE;
 
@@ -471,7 +475,7 @@ void ShaderCompilerNode::processShader( GLuint pProgramId )
 			}
 
 #if defined( QT_DEBUG )
-			qDebug() << mNode->name() << i << ":" << UniformName << "size =" << UniformData.mSize << "type =" << UniformData.mType << "bind =" << UniformData.mTextureBinding << "loc =" << UniformData.mLocation;
+			//qDebug() << mNode->name() << i << ":" << UniformName << "size =" << UniformData.mSize << "type =" << UniformData.mType << "bind =" << UniformData.mTextureBinding << "loc =" << UniformData.mLocation;
 #endif
 
 			mUniformNames.append( UniformName );
@@ -591,7 +595,7 @@ void ShaderCompilerNode::processShader( GLuint pProgramId )
 				continue;
 			}
 
-			qDebug() << mNode->name() << i << ":" << AttributeName << "(ATTRIBUTE) size =" << UniformData.mSize << "type =" << UniformData.mType << "loc =" << UniformData.mLocation;
+			//qDebug() << mNode->name() << i << ":" << AttributeName << "(ATTRIBUTE) size =" << UniformData.mSize << "type =" << UniformData.mType << "loc =" << UniformData.mLocation;
 
 			mAttributeNames.append( AttributeName );
 

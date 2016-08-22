@@ -658,6 +658,12 @@ int LuaArray::luaSetType( lua_State *L )
 		LstInt->setStride( sizeof( float ) * 2 );
 		LstInt->setSize( 1 );
 	}
+	else if( strcmp( LstTyp, "vec2" ) == 0 )
+	{
+		LstInt->setType( QMetaType::QVector2D );
+		LstInt->setStride( sizeof( float ) * 2 );
+		LstInt->setSize( 1 );
+	}
 	else if( strcmp( LstTyp, "vec3" ) == 0 )
 	{
 		LstInt->setType( QMetaType::QVector3D );

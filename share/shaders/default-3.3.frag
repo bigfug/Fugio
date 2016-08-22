@@ -2,7 +2,7 @@
 
 in vec2 vsTextureCoord0;
 
-layout ( location = 0 ) out vec4 FragmentColour;
+out vec4 FragmentColour;
 
 void main( void )
 {

@@ -169,7 +169,7 @@ macx {
 	CONFIG += lib_bundle
 
 	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLBASE  = $$FUGIO_ROOT/deploy-installer
+	INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 	INSTALLDEST  = $$INSTALLDIR/data/plugins
 	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
@@ -194,10 +194,11 @@ macx {
 		QMAKE_POST_LINK += $$qtLibChange( QtWidgets )
 		QMAKE_POST_LINK += $$qtLibChange( QtGui )
 		QMAKE_POST_LINK += $$qtLibChange( QtCore )
+		QMAKE_POST_LINK += $$qtLibChange( QtConcurrent )
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR
+		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
 		QMAKE_POST_LINK += $$libChange( libGLEW.2.0.0.dylib )
 
