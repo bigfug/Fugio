@@ -1,10 +1,15 @@
 #------------------------------------------------------------------------------
 # Raspberry Pi
 
-contains( QMAKE_CXXFLAGS, -marm ) {
+contains( QMAKE_CXXFLAGS, -march=armv8-a ) {
 	DEFINES += Q_OS_RASPBERRY_PI
-
-	QMAKE_TARGET.arch = "arm"
+	QMAKE_TARGET.arch = "rpi3"
+} else:contains( QMAKE_CXXFLAGS, -march=armv7-a ) {
+	DEFINES += Q_OS_RASPBERRY_PI
+	QMAKE_TARGET.arch = "rpi2"
+} else:contains( QMAKE_CXXFLAGS, -march=armv6zk ) {
+	DEFINES += Q_OS_RASPBERRY_PI
+	QMAKE_TARGET.arch = "rpi1"
 } else {
 	QMAKE_TARGET.arch = $$QMAKE_HOST.arch
 }
