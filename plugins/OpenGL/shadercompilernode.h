@@ -4,8 +4,6 @@
 #include "opengl_includes.h"
 
 #include <QObject>
-#include <QOpenGLShaderProgram>
-#include <QOpenGLFramebufferObject>
 #include <QPointer>
 
 #include <fugio/nodecontrolbase.h>
