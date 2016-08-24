@@ -511,7 +511,6 @@ void ShaderCompilerNode::processShader( GLuint pProgramId )
 #if !defined( GL_ES_VERSION_2_0 )
 				case GL_SAMPLER_CUBE_SHADOW:
 				case GL_INT_SAMPLER_1D:
-				case GL_INT_SAMPLER_2D:
 				case GL_INT_SAMPLER_3D:
 				case GL_INT_SAMPLER_CUBE:
 				case GL_INT_SAMPLER_1D_ARRAY:
@@ -535,8 +534,8 @@ void ShaderCompilerNode::processShader( GLuint pProgramId )
 				case GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
 				case GL_INT_SAMPLER_CUBE_MAP_ARRAY:
 				case GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY:
-#endif
 				case GL_SAMPLER:
+#endif
 					UniformData.mSampler = true;
 					UniformData.mTextureBinding = ++TextureBinding;
 
