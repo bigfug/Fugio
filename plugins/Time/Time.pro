@@ -18,78 +18,76 @@ DESTDIR = $$DESTDIR/plugins
 DEFINES += TIME_LIBRARY
 
 SOURCES += timeplugin.cpp \
-    clocknode.cpp \
-    cronnode.cpp \
-    everynode.cpp \
-    delaynode.cpp \
-    inertianode.cpp \
-    playheadnode.cpp \
-    beattapnode.cpp \
-    playheadcontrolnode.cpp \
-    timenode.cpp \
-    datenode.cpp
+	clocknode.cpp \
+	cronnode.cpp \
+	everynode.cpp \
+	delaynode.cpp \
+	inertianode.cpp \
+	playheadnode.cpp \
+	beattapnode.cpp \
+	playheadcontrolnode.cpp \
+	timenode.cpp \
+	datenode.cpp
 
 HEADERS += timeplugin.h \
-    ../../include/fugio/time/uuid.h \
-    ../../include/fugio/nodecontrolbase.h \
-    ../../include/fugio/pincontrolbase.h \
-    clocknode.h \
-    cronnode.h \
-    everynode.h \
-    delaynode.h \
-    inertianode.h \
-    playheadnode.h \
-    beattapnode.h \
-    playheadcontrolnode.h \
-    timenode.h \
-    datenode.h
+	../../include/fugio/time/uuid.h \
+	../../include/fugio/nodecontrolbase.h \
+	../../include/fugio/pincontrolbase.h \
+	clocknode.h \
+	cronnode.h \
+	everynode.h \
+	delaynode.h \
+	inertianode.h \
+	playheadnode.h \
+	beattapnode.h \
+	playheadcontrolnode.h \
+	timenode.h \
+	datenode.h
 
 FORMS += \
-    cronform.ui
+	cronform.ui
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
 macx {
-    DEFINES += TARGET_OS_MAC
-    CONFIG -= x86
-    CONFIG += lib_bundle
+	DEFINES += TARGET_OS_MAC
+	CONFIG -= x86
+	CONFIG += lib_bundle
 
-    BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-        INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
-    INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-    INSTALLDEST  = $$INSTALLDIR/data/plugins
-    INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
+	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
+	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	INSTALLDEST  = $$INSTALLDIR/data/plugins
+	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
 
-    DESTDIR = $$BUNDLEDIR/Contents/MacOS
-    DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
+	DESTDIR = $$BUNDLEDIR/Contents/MacOS
+	DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
 
-    CONFIG(release,debug|release) {
-        QMAKE_POST_LINK += echo
+	CONFIG(release,debug|release) {
+		QMAKE_POST_LINK += echo
 
-        LIBCHANGEDEST = $$DESTLIB
+		LIBCHANGEDEST = $$DESTLIB
 
-        QMAKE_POST_LINK += $$qtLibChange( QtWidgets )
-        QMAKE_POST_LINK += $$qtLibChange( QtGui )
-        QMAKE_POST_LINK += $$qtLibChange( QtCore )
+		QMAKE_POST_LINK += $$qtLibChange( QtWidgets )
+		QMAKE_POST_LINK += $$qtLibChange( QtGui )
+		QMAKE_POST_LINK += $$qtLibChange( QtCore )
 
-        QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
+		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-        QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
-        QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
-        QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
-        QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
+		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
+		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
+		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
 
-        QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
+		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
-        QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
-    }
+		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
+	}
 }
 
 
 windows {
-        INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {

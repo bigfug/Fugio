@@ -161,7 +161,6 @@ macx {
 	APP_DIR      = $$DESTDIR/$$TARGET".app"
 	PLUGIN_DIR   = $$APP_DIR/Contents/PlugIns
 	RESOURCE_DIR = $$APP_DIR/Contents/Resources
-		INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
@@ -203,8 +202,7 @@ macx {
 }
 
 windows {
-	INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
 		QMAKE_POST_LINK += echo

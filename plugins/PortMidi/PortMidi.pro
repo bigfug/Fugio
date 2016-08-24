@@ -16,71 +16,69 @@ CONFIG += c++11
 DESTDIR = $$DESTDIR/plugins
 
 SOURCES += \
-    devicemidi.cpp \
-    portmidiplugin.cpp \
-    portmidiinputnode.cpp \
-    portmidioutputnode.cpp
+	devicemidi.cpp \
+	portmidiplugin.cpp \
+	portmidiinputnode.cpp \
+	portmidioutputnode.cpp
 
 HEADERS += \
-    ../../include/fugio/nodecontrolbase.h \
-    ../../include/fugio/pincontrolbase.h \
-    ../../include/fugio/portmidi/uuid.h \
-    devicemidi.h \
-    portmidiplugin.h \
-    portmidiinputnode.h \
-    portmidioutputnode.h
+	../../include/fugio/nodecontrolbase.h \
+	../../include/fugio/pincontrolbase.h \
+	../../include/fugio/portmidi/uuid.h \
+	devicemidi.h \
+	portmidiplugin.h \
+	portmidiinputnode.h \
+	portmidioutputnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
 macx {
-    DEFINES += TARGET_OS_MAC
-    CONFIG -= x86
-    CONFIG += lib_bundle
+	DEFINES += TARGET_OS_MAC
+	CONFIG -= x86
+	CONFIG += lib_bundle
 
-    BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-    INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
-    INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-    INSTALLDEST  = $$INSTALLDIR/data/plugins
-    INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
-    FRAMEWORKDIR = $$BUNDLEDIR/Contents/Frameworks
+	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
+	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	INSTALLDEST  = $$INSTALLDIR/data/plugins
+	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
+	FRAMEWORKDIR = $$BUNDLEDIR/Contents/Frameworks
 
-    DESTDIR = $$BUNDLEDIR/Contents/MacOS
-    DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
+	DESTDIR = $$BUNDLEDIR/Contents/MacOS
+	DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
 
-    CONFIG(release,debug|release) {
-        QMAKE_POST_LINK += echo
+	CONFIG(release,debug|release) {
+		QMAKE_POST_LINK += echo
 
-        LIBCHANGEDEST = $$DESTLIB
+		LIBCHANGEDEST = $$DESTLIB
 
-        QMAKE_POST_LINK += $$qtLibChange( QtWidgets )
-        QMAKE_POST_LINK += $$qtLibChange( QtGui )
-        QMAKE_POST_LINK += $$qtLibChange( QtCore )
+		QMAKE_POST_LINK += $$qtLibChange( QtWidgets )
+		QMAKE_POST_LINK += $$qtLibChange( QtGui )
+		QMAKE_POST_LINK += $$qtLibChange( QtCore )
 
-        QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
+		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-        # we don't want to copy the Lua library into the bundle, so change its name
+		# we don't want to copy the Lua library into the bundle, so change its name
 
-        QMAKE_POST_LINK += && install_name_tool -change /usr/local/opt/portmidi/lib/libportmidi.dylib libportmidi.dylib $$LIBCHANGEDEST
+		QMAKE_POST_LINK += && install_name_tool -change /usr/local/opt/portmidi/lib/libportmidi.dylib libportmidi.dylib $$LIBCHANGEDEST
 
-        QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
-        # now change it back
+		# now change it back
 
-        QMAKE_POST_LINK += && install_name_tool -change libportmidi.dylib /usr/local/lib/libportmidi.dylib $$LIBCHANGEDEST
+		QMAKE_POST_LINK += && install_name_tool -change libportmidi.dylib /usr/local/lib/libportmidi.dylib $$LIBCHANGEDEST
 
-        QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
-        QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
-        QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
+		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
+		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
+		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
 
-        QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
+		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
-        QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
-    }
+		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
+	}
 }
 
 windows {
-	INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 	INSTALLDEST  = $$INSTALLDIR/data/plugins/portmidi
 
@@ -128,16 +126,16 @@ unix:!macx:exists( /usr/local/include/portmidi.h ) {
 }
 
 unix:!macx {
-    exists( $$[QT_SYSROOT]/usr/include/portmidi.h ) {
-        INCLUDEPATH += $$[QT_SYSROOT]/usr/include
-        LIBS += -L$$[QT_SYSROOT]/usr/lib
-        DEFINES += PORTMIDI_SUPPORTED
+	exists( $$[QT_SYSROOT]/usr/include/portmidi.h ) {
+		INCLUDEPATH += $$[QT_SYSROOT]/usr/include
+		LIBS += -L$$[QT_SYSROOT]/usr/lib
+		DEFINES += PORTMIDI_SUPPORTED
 
-    } else:exists( /usr/include/portmidi.h ) {
-        INCLUDEPATH += /usr/include
-        LIBS += -L/usr/lib
-        DEFINES += PORTMIDI_SUPPORTED
-    }
+	} else:exists( /usr/include/portmidi.h ) {
+		INCLUDEPATH += /usr/include
+		LIBS += -L/usr/lib
+		DEFINES += PORTMIDI_SUPPORTED
+	}
 }
 
 contains( DEFINES, PORTMIDI_SUPPORTED ) {
