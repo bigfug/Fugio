@@ -11,8 +11,7 @@
 #include "openglplugin.h"
 
 ShaderCompilerNode::ShaderCompilerNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mProgramId( 0 ), mProgramLinked( false ), mLastShaderLoad( 0 ), mShaderVertId( 0 ), mShaderGeomId( 0 ), mShaderTessCtrlId( 0 ),
-	  mShaderTessEvalId( 0 ), mShaderFragId( 0 )
+	: NodeControlBase( pNode ), mLastShaderLoad( 0 )
 {
 	FUGID( PIN_VARYINGS,	"de12f397-d3ba-4d2e-9f53-5da4ed4bff37" );
 	FUGID( PIN_BUFFER_MODE,	"0A134F4F-4A33-4E74-98AF-F89AFC4FB19D" );
@@ -57,7 +56,7 @@ ShaderCompilerNode::ShaderCompilerNode( QSharedPointer<fugio::NodeInterface> pNo
 
 ShaderCompilerNode::~ShaderCompilerNode( void )
 {
-	clearShader();
+	mShaderCompilerData.clear();
 }
 
 bool ShaderCompilerNode::initialise()
@@ -122,7 +121,7 @@ void ShaderCompilerNode::inputsUpdated( qint64 pTimeStamp )
 //	return( pPin->direction() == PIN_OUTPUT );
 //}
 
-void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, GLuint &pShaderId, GLenum pShaderType, int &pCompiled, int &pFailed )
+void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, GLuint pProgramId, GLuint &pShaderId, GLenum pShaderType, int &pCompiled, int &pFailed )
 {
 	QSharedPointer<fugio::PinInterface>	DstPin = pPin->connectedPin();
 
@@ -187,7 +186,7 @@ void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, G
 
 						if( Result == GL_TRUE )
 						{
-							glAttachShader( mProgramId, pShaderId );
+							glAttachShader( pProgramId, pShaderId );
 
 							H->clearErrors();
 
@@ -198,7 +197,7 @@ void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, G
 
 						//if( !QOpenGLContext::currentContext()->format().testOption( QSurfaceFormat::DebugContext ) )
 						{
-							qWarning() << mNode->name() << QString( Log.data() );
+							//qWarning() << pPin->node()->name() << QString( Log.data() );
 						}
 
 						glDeleteShader( pShaderId );
@@ -215,41 +214,43 @@ void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, G
 
 void ShaderCompilerNode::loadShader()
 {
-	GLint			Compiled = 0;
-	GLint			Failed   = 0;
+	ShaderCompilerData		CompilerData;
 
-	clearShader();
+	GLint					Compiled = 0;
+	GLint					Failed   = 0;
 
-	if( ( mProgramId = glCreateProgram() ) == 0 )
+	//clearShader();
+
+	if( ( CompilerData.mProgramId = glCreateProgram() ) == 0 )
 	{
 		return;
 	}
 
 	OPENGL_PLUGIN_DEBUG;
 
-	loadShader( mPinShaderVertex, mShaderVertId, GL_VERTEX_SHADER, Compiled, Failed );
+	loadShader( mPinShaderVertex, CompilerData.mProgramId, CompilerData.mShaderVertId, GL_VERTEX_SHADER, Compiled, Failed );
 
 	OPENGL_PLUGIN_DEBUG;
 
 #if defined( GL_TESS_CONTROL_SHADER )
-	loadShader( mPinShaderTessCtrl, mShaderTessCtrlId, GL_TESS_CONTROL_SHADER, Compiled, Failed );
+	loadShader( mPinShaderTessCtrl, CompilerData.mProgramId, CompilerData.mShaderTessCtrlId, GL_TESS_CONTROL_SHADER, Compiled, Failed );
 
 	OPENGL_PLUGIN_DEBUG;
 #endif
 
 #if defined( GL_TESS_EVALUATION_SHADER )
-	loadShader( mPinShaderTessEval, mShaderTessEvalId, GL_TESS_EVALUATION_SHADER, Compiled, Failed );
+	loadShader( mPinShaderTessEval, CompilerData.mProgramId, CompilerData.mShaderTessEvalId, GL_TESS_EVALUATION_SHADER, Compiled, Failed );
 
 	OPENGL_PLUGIN_DEBUG;
 #endif
 
 #if defined( GL_GEOMETRY_SHADER )
-	loadShader( mPinShaderGeometry, mShaderGeomId, GL_GEOMETRY_SHADER, Compiled, Failed );
+	loadShader( mPinShaderGeometry, CompilerData.mProgramId, CompilerData.mShaderGeomId, GL_GEOMETRY_SHADER, Compiled, Failed );
 #endif
 
 	OPENGL_PLUGIN_DEBUG;
 
-	loadShader( mPinShaderFragment, mShaderFragId, GL_FRAGMENT_SHADER, Compiled, Failed );
+	loadShader( mPinShaderFragment, CompilerData.mProgramId, CompilerData.mShaderFragId, GL_FRAGMENT_SHADER, Compiled, Failed );
 
 	OPENGL_PLUGIN_DEBUG;
 
@@ -310,7 +311,7 @@ void ShaderCompilerNode::loadShader()
 
 		if( GLEW_VERSION_3_0 )
 		{
-			glTransformFeedbackVaryings( mProgramId, VarLst.size(), VarLst.constData(), BufMod );
+			glTransformFeedbackVaryings( CompilerData.mProgramId, VarLst.size(), VarLst.constData(), BufMod );
 
 			OPENGL_PLUGIN_DEBUG;
 		}
@@ -320,19 +321,19 @@ void ShaderCompilerNode::loadShader()
 	//-------------------------------------------------------------------------
 	// Link
 
-	glLinkProgram( mProgramId );
+	glLinkProgram( CompilerData.mProgramId );
 
 	OPENGL_PLUGIN_DEBUG;
 
 	GLint			LinkLogLength = 0;
 
-	glGetProgramiv( mProgramId, GL_INFO_LOG_LENGTH, &LinkLogLength );
+	glGetProgramiv( CompilerData.mProgramId, GL_INFO_LOG_LENGTH, &LinkLogLength );
 
 	if( LinkLogLength > 0 )
 	{
 		QVector<GLchar>	Log( LinkLogLength + 1 );
 
-		glGetProgramInfoLog( mProgramId, LinkLogLength, &LinkLogLength, Log.data() );
+		glGetProgramInfoLog( CompilerData.mProgramId, LinkLogLength, &LinkLogLength, Log.data() );
 
 		mNode->setStatusMessage( QString( Log.constData() ) );
 	}
@@ -341,7 +342,7 @@ void ShaderCompilerNode::loadShader()
 
 	GLint			LinkStatus = GL_FALSE;
 
-	glGetProgramiv( mProgramId, GL_LINK_STATUS, &LinkStatus );
+	glGetProgramiv( CompilerData.mProgramId, GL_LINK_STATUS, &LinkStatus );
 
 	if( LinkStatus != GL_TRUE )
 	{
@@ -373,67 +374,50 @@ void ShaderCompilerNode::loadShader()
 		mNode->setStatusMessage( "Shader Linked" );
 	}
 
-	mProgramLinked = true;
+	CompilerData.mProgramLinked = true;
 
 	//-------------------------------------------------------------------------
 
 	OPENGL_PLUGIN_DEBUG;
 
-	processShader( mProgramId );
+	CompilerData.process();
 
 	OPENGL_PLUGIN_DEBUG;
+
+	std::swap( mShaderCompilerData, CompilerData );
+
+	CompilerData.clear();
 
 	pinUpdated( mOutputPinShader );
 }
 
-void ShaderCompilerNode::clearShader()
+QSyntaxHighlighter *ShaderHighlighter::highlighter( QTextDocument *pDocument )
 {
-	if( mShaderFragId )
+	if( !mHighlighter )
 	{
-		glDeleteShader( mShaderFragId );
-
-		mShaderFragId = 0;
+		mHighlighter = new SyntaxHighlighterGLSL( pDocument );
 	}
 
-	if( mShaderGeomId )
-	{
-		glDeleteShader( mShaderGeomId );
-
-		mShaderGeomId = 0;
-	}
-
-	if( mShaderTessEvalId )
-	{
-		glDeleteShader( mShaderTessEvalId );
-
-		mShaderTessEvalId = 0;
-	}
-
-	if( mShaderTessCtrlId )
-	{
-		glDeleteShader( mShaderTessCtrlId );
-
-		mShaderTessCtrlId = 0;
-	}
-
-	if( mShaderVertId )
-	{
-		glDeleteShader( mShaderVertId );
-
-		mShaderVertId = 0;
-	}
-
-	if( mProgramId )
-	{
-		glDeleteProgram( mProgramId );
-
-		mProgramId = 0;
-	}
-
-	mProgramLinked = false;
+	return( mHighlighter );
 }
 
-void ShaderCompilerNode::processShader( GLuint pProgramId )
+void ShaderHighlighter::clearErrors()
+{
+	if( mHighlighter )
+	{
+		mHighlighter->clearErrors();
+	}
+}
+
+void ShaderHighlighter::setErrors( const QString &pErrorText )
+{
+	if( mHighlighter )
+	{
+		mHighlighter->setErrors( pErrorText );
+	}
+}
+
+void ShaderCompilerNode::ShaderCompilerData::process()
 {
 	ShaderUniformData	UniformData;
 
@@ -449,13 +433,13 @@ void ShaderCompilerNode::processShader( GLuint pProgramId )
 
 	GLint		ActiveUniforms = 0;
 
-	glGetProgramiv( pProgramId, GL_ACTIVE_UNIFORMS, &ActiveUniforms );
+	glGetProgramiv( mProgramId, GL_ACTIVE_UNIFORMS, &ActiveUniforms );
 
 	if( ActiveUniforms > 0 )
 	{
 		GLint		ActiveUniformsMaxLength;
 
-		glGetProgramiv( pProgramId, GL_ACTIVE_UNIFORM_MAX_LENGTH, &ActiveUniformsMaxLength );
+		glGetProgramiv( mProgramId, GL_ACTIVE_UNIFORM_MAX_LENGTH, &ActiveUniformsMaxLength );
 
 		std::vector<GLchar>		Name( ActiveUniformsMaxLength );
 
@@ -463,11 +447,11 @@ void ShaderCompilerNode::processShader( GLuint pProgramId )
 		{
 			GLsizei		NameLength;
 
-			glGetActiveUniform( pProgramId, i, Name.size(), &NameLength, &UniformData.mSize, &UniformData.mType, &Name[ 0 ] );
+			glGetActiveUniform( mProgramId, i, Name.size(), &NameLength, &UniformData.mSize, &UniformData.mType, &Name[ 0 ] );
 
 			QString		UniformName = QString::fromLocal8Bit( &Name[ 0 ] );
 
-			UniformData.mLocation = glGetUniformLocation( pProgramId, Name.data() );
+			UniformData.mLocation = glGetUniformLocation( mProgramId, Name.data() );
 
 			if( UniformData.mLocation == -1 )
 			{
@@ -569,13 +553,13 @@ void ShaderCompilerNode::processShader( GLuint pProgramId )
 
 	GLint		ActiveAtrributes = 0;
 
-	glGetProgramiv( pProgramId, GL_ACTIVE_ATTRIBUTES, &ActiveAtrributes );
+	glGetProgramiv( mProgramId, GL_ACTIVE_ATTRIBUTES, &ActiveAtrributes );
 
 	if( ActiveAtrributes > 0 )
 	{
 		GLint		ActiveUniformsMaxLength;
 
-		glGetProgramiv( pProgramId, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &ActiveUniformsMaxLength );
+		glGetProgramiv( mProgramId, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &ActiveUniformsMaxLength );
 
 		std::vector<GLchar>		Name( ActiveUniformsMaxLength );
 
@@ -583,11 +567,11 @@ void ShaderCompilerNode::processShader( GLuint pProgramId )
 		{
 			GLsizei		NameLength;
 
-			glGetActiveAttrib( pProgramId, i, Name.size(), &NameLength, &UniformData.mSize, &UniformData.mType, &Name[ 0 ] );
+			glGetActiveAttrib( mProgramId, i, Name.size(), &NameLength, &UniformData.mSize, &UniformData.mType, &Name[ 0 ] );
 
 			QString		AttributeName = QString::fromLocal8Bit( &Name[ 0 ] );
 
-			UniformData.mLocation = glGetAttribLocation( pProgramId, Name.data() );
+			UniformData.mLocation = glGetAttribLocation( mProgramId, Name.data() );
 
 			if( UniformData.mLocation == -1 )
 			{
@@ -605,29 +589,55 @@ void ShaderCompilerNode::processShader( GLuint pProgramId )
 	//emit updateUniformList( mUniformNames );
 }
 
-
-QSyntaxHighlighter *ShaderHighlighter::highlighter( QTextDocument *pDocument )
+void ShaderCompilerNode::ShaderCompilerData::clear()
 {
-	if( !mHighlighter )
+	if( mShaderFragId )
 	{
-		mHighlighter = new SyntaxHighlighterGLSL( pDocument );
+		glDeleteShader( mShaderFragId );
+
+		mShaderFragId = 0;
 	}
 
-	return( mHighlighter );
-}
-
-void ShaderHighlighter::clearErrors()
-{
-	if( mHighlighter )
+	if( mShaderGeomId )
 	{
-		mHighlighter->clearErrors();
-	}
-}
+		glDeleteShader( mShaderGeomId );
 
-void ShaderHighlighter::setErrors( const QString &pErrorText )
-{
-	if( mHighlighter )
-	{
-		mHighlighter->setErrors( pErrorText );
+		mShaderGeomId = 0;
 	}
+
+	if( mShaderTessEvalId )
+	{
+		glDeleteShader( mShaderTessEvalId );
+
+		mShaderTessEvalId = 0;
+	}
+
+	if( mShaderTessCtrlId )
+	{
+		glDeleteShader( mShaderTessCtrlId );
+
+		mShaderTessCtrlId = 0;
+	}
+
+	if( mShaderVertId )
+	{
+		glDeleteShader( mShaderVertId );
+
+		mShaderVertId = 0;
+	}
+
+	if( mProgramId )
+	{
+		glDeleteProgram( mProgramId );
+
+		mProgramId = 0;
+	}
+
+	mShaderAttributeTypes.clear();
+	mShaderUniformTypes.clear();
+
+	mUniformNames.clear();
+	mAttributeNames.clear();
+
+	mProgramLinked = false;
 }
