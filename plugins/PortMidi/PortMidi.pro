@@ -119,7 +119,7 @@ win32:exists( $$(LIBS)/portmidi.32.2013 )  {
 	DEFINES += PORTMIDI_SUPPORTED
 }
 
-unix:!macx:exists( /usr/local/include/portmidi.h ) {
+unix:exists( /usr/local/include/portmidi.h ) {
 	INCLUDEPATH += /usr/local/include
 	LIBS += -L/usr/local/lib
 	DEFINES += PORTMIDI_SUPPORTED
