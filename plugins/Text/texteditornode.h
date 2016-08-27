@@ -59,6 +59,8 @@ signals:
 protected:
 	void checkHighlighter();
 
+	bool isBuffered( void ) const;
+
 private slots:
 	void onEditClicked( void );
 
@@ -67,8 +69,6 @@ private slots:
 	void onTextUpdate( void );
 
 	void onTextPinUpdated( void );
-
-	void contextFrameStart( void );
 
 	void dockSetVisible( bool pVisible );
 

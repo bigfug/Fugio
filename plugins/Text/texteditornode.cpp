@@ -32,7 +32,7 @@ TextEditorNode::TextEditorNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mValOutputString = pinOutput<fugio::VariantInterface *>( "Text", mPinOutputString, PID_STRING, PIN_OUTPUT_STRING );
 
-	connect( mPinOutputString->qobject(), SIGNAL(updated()), this, SLOT(onTextPinUpdated()) );
+	//connect( mPinOutputString->qobject(), SIGNAL(updated()), this, SLOT(onTextPinUpdated()) );
 }
 
 TextEditorNode::~TextEditorNode( void )
@@ -122,6 +122,11 @@ void TextEditorNode::checkHighlighter()
 
 		mPinUuid = QUuid();
 	}
+}
+
+bool TextEditorNode::isBuffered() const
+{
+	return( variant( mPinInputBuffer ).toBool() );
 }
 
 void TextEditorNode::inputsUpdated( qint64 pTimeStamp )
@@ -227,6 +232,7 @@ void TextEditorNode::setupTextEditor( QPlainTextEdit *pTextEdit )
 	pTextEdit->document()->setModified( false );
 
 	connect( pTextEdit, SIGNAL(modificationChanged(bool)), this, SLOT(onTextModified(bool)) );
+
 	connect( pTextEdit, SIGNAL(textChanged()), this, SLOT(textChanged()) );
 
 	connect( this, SIGNAL(modified(bool)), pTextEdit->document(), SLOT(setModified(bool)) );
@@ -251,7 +257,7 @@ void TextEditorNode::onTextModified( bool pModified )
 {
 	if( mDockWidget )
 	{
-		if( pModified )
+		if( pModified && !isBuffered() )
 		{
 			mDockWidget->setWindowTitle( QString( "TextEditor: %1*" ).arg( mNode->name() ) );
 		}
@@ -264,10 +270,26 @@ void TextEditorNode::onTextModified( bool pModified )
 
 void TextEditorNode::onTextUpdate()
 {
-	// We need to trigger the update within the context of the frame start so
-	// pin processing takes place...
+	if( isBuffered() )
+	{
+		if( mTextEdit->textEdit()->document()->isModified() )
+		{
+			fugio::ContextWidgetInterface	*ICW = qobject_cast<fugio::ContextWidgetInterface *>( mNode->context()->findInterface( IID_CONTEXT_WIDGET ) );
 
-	connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
+			if( ICW )
+			{
+				CmdTextEditorUpdate		*CMD = new CmdTextEditorUpdate( mPinOutputString, mTextEdit->textEdit()->document()->toPlainText() );
+
+				ICW->undoStack()->push( CMD );
+			}
+
+			emit modified( false );
+		}
+		else
+		{
+			pinUpdated( mPinOutputString );
+		}
+	}
 }
 
 void TextEditorNode::onTextPinUpdated()
@@ -289,31 +311,6 @@ void TextEditorNode::onTextPinUpdated()
 	}
 }
 
-void TextEditorNode::contextFrameStart()
-{
-	if( mTextEdit->textEdit()->document()->isModified() )
-	{
-		fugio::ContextWidgetInterface	*ICW = qobject_cast<fugio::ContextWidgetInterface *>( mNode->context()->findInterface( IID_CONTEXT_WIDGET ) );
-
-		if( ICW )
-		{
-			CmdTextEditorUpdate		*CMD = new CmdTextEditorUpdate( mPinOutputString, mTextEdit->textEdit()->document()->toPlainText() );
-
-			ICW->undoStack()->push( CMD );
-		}
-
-		emit modified( false );
-	}
-	else
-	{
-		pinUpdated( mPinOutputString );
-	}
-
-	// disconnect the frame start again
-
-	disconnect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
-}
-
 void TextEditorNode::dockSetVisible( bool pVisible )
 {
 	mDockVisible = pVisible;
@@ -321,11 +318,23 @@ void TextEditorNode::dockSetVisible( bool pVisible )
 
 void TextEditorNode::textChanged()
 {
-	if( variant( mPinInputBuffer ).toBool() == false )
-	{
-		mValOutputString->setVariant( mTextEdit->textEdit()->document()->toPlainText() );
+	QPlainTextEdit		*TextEdit = qobject_cast<QPlainTextEdit *>( sender() );
 
-		pinUpdated( mPinOutputString );
+	if( TextEdit )
+	{
+		if( !isBuffered() )
+		{
+			const QString	TextData = TextEdit->document()->toPlainText();
+
+			if( TextData != mValOutputString->variant().toString() )
+			{
+				mValOutputString->setVariant( TextData );
+
+				pinUpdated( mPinOutputString );
+			}
+
+			TextEdit->document()->setModified( false );
+		}
 	}
 }
 
