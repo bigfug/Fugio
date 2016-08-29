@@ -1,23 +1,24 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    Example \
-    Audio \
-    Colour \
-    Core \
-    FFTW \
-    File \
-    GUI \
-    Image \
-    Lua \
-    LuaQt \
-    Math \
-    MIDI \
+	Example \
+	Audio \
+	Colour \
+	Core \
+	FFTW \
+	File \
+	GUI \
+	Image \
+	Lua \
+	LuaQt \
+	Math \
+	MIDI \
 	OpenGL \
 	OSC \
 	PortAudio \
-    PortMidi \
+	PortMidi \
 	RaspberryPi \
-    Network \
-    Text \
-    Time
+	Network \
+	Syphon \
+	Text \
+	Time
