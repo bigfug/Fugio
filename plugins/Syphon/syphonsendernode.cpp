@@ -38,6 +38,16 @@ bool SyphonSenderNode::initialise()
 		return( false );
 	}
 
+#if !defined( SYPHON_SUPPORTED )
+	if( true )
+	{
+		mNode->setStatus( fugio::NodeInterface::Error );
+		mNode->setStatusMessage( tr( "Syphon not supported on this platform" ) );
+
+		return( false );
+	}
+#endif
+
 	if( !SyphonPlugin::instance()->hasOpenGLContext() )
 	{
 		return( false );

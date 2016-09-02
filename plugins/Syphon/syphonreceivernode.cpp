@@ -33,6 +33,16 @@ bool SyphonReceiverNode::initialise()
 		return( false );
 	}
 
+#if !defined( SYPHON_SUPPORTED )
+	if( true )
+	{
+		mNode->setStatus( fugio::NodeInterface::Error );
+		mNode->setStatusMessage( tr( "Syphon not supported on this platform" ) );
+
+		return( false );
+	}
+#endif
+
 	if( !SyphonPlugin::instance()->hasOpenGLContext() )
 	{
 		mNode->setStatusMessage( tr( "No active OpenGL context" ) );
@@ -92,6 +102,7 @@ void SyphonReceiverNode::onContextFrame()
 
 void SyphonReceiverNode::selectServer()
 {
+#if defined( SYPHON_SUPPORTED )
 	std::map<std::string,std::string>	ServerMap = SyphonReceiver::serverList();
 	QStringList							ServerIds;
 	QStringList							ServerNames;
@@ -115,14 +126,13 @@ void SyphonReceiverNode::selectServer()
 	{
 		mPinOutputName->setValue( Selection );
 
-#if defined( SYPHON_SUPPORTED )
 		mValOutputTexture->receiver().setServerName( Selection.toStdString() );
-#endif
 
 		mValOutputName->setVariant( Selection );
 
 		pinUpdated( mPinOutputName );
 	}
+#endif
 }
 
 QWidget *SyphonReceiverNode::gui()
