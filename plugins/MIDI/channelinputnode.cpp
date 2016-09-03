@@ -233,7 +233,7 @@ void ChannelInputNode::midiProcessInput( const fugio::MidiEvent *pMessages, quin
 
 					if( PinItr != mNotePins.end() && PinItr->mVal )
 					{
-						PinItr->mVal->setVariant( MsgData1 );
+						PinItr->mVal->setVariant( MsgData2 );
 
 						pinUpdated( PinItr->mPin );
 					}
@@ -486,6 +486,11 @@ void ChannelInputNode::setListenState( bool pChecked )
 
 void ChannelInputNode::createMidiPin( MidiPinPair &MPP, const QString &pName, const QUuid &pPinType )
 {
+	if( !MPP.mPin.isNull() )
+	{
+		return;
+	}
+
 	MPP.mVal = qobject_cast<fugio::VariantInterface *>( mNode->createPin( pName, PIN_OUTPUT, QUuid::createUuid(), QUuid::createUuid(), MPP.mPin, pPinType ) );
 
 	if( MPP.mPin )
