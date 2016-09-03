@@ -15,7 +15,7 @@
 ImageLoaderNode::ImageLoaderNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
-	mPinFileName = pinInput( "FileName" );
+	mPinFileName = pinInput( "Filename" );
 
 	mImage = pinOutput<fugio::ImageInterface *>( "Image", mPinImage, PID_IMAGE );
 }
@@ -31,6 +31,11 @@ QWidget *ImageLoaderNode::gui( void )
 	GUI->setFixedSize( 80, 80 );
 
 	connect( this, SIGNAL(pixmapUpdated(QPixmap)), GUI, SLOT(setPixmap(QPixmap)) );
+
+	if( !mImageData.isNull() )
+	{
+		GUI->setPixmap( QPixmap::fromImage( mImageData.scaledToWidth( 80 ) ) );
+	}
 
 	return( GUI );
 }
@@ -82,7 +87,8 @@ void ImageLoaderNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		qWarning() << ImageUrl.toLocalFile() << ImageReader.errorString();
 
-		qDebug() << QImageReader::supportedImageFormats();
+		//qDebug() << QImageReader::supportedImageFormats();
+
 		return;
 	}
 
