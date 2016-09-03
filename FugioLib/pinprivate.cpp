@@ -231,12 +231,7 @@ void PinPrivate::update( qint64 pTimeStamp, bool pUpdatedConnectedNode )
 				continue;
 			}
 
-			if( DstPin->mUpdated >= pTimeStamp )
-			{
-				//continue;
-			}
-
-			DstPin->mUpdated = qMax( pTimeStamp, DstPin->mUpdated );
+			DstPin->mUpdated = std::numeric_limits<qint64>::max();
 
 			if( pUpdatedConnectedNode && mContext )
 			{
