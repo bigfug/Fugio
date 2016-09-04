@@ -79,11 +79,22 @@ void SyphonRenderNode::inputsUpdated( qint64 pTimeStamp )
 		{
 			fugio::RenderInterface *Render = input<fugio::RenderInterface *>( mPinInputRender );
 
-			if( mSender.bindToDrawFrameOfSize( S.width(), S.height() ) )
+			if( Render )
 			{
-				Render->render( pTimeStamp );
+				if( mSender.bindToDrawFrameOfSize( S.width(), S.height() ) )
+				{
+					GLint		VP[ 4 ];
 
-				mSender.unbindAndPublish();
+					glGetIntegerv( GL_VIEWPORT, VP );
+
+					glViewport( 0, 0, S.width(), S.height() );
+
+					Render->render( pTimeStamp );
+
+					glViewport( VP[ 0 ], VP[ 1 ], VP[ 2 ], VP[ 3 ] );
+
+					mSender.unbindAndPublish();
+				}
 			}
 		}
 	}
