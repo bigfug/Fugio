@@ -21,9 +21,18 @@
 TextEditorNode::TextEditorNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mDockWidget( 0 ), mTextEdit( 0 ), mDockArea( Qt::BottomDockWidgetArea ), mDockVisible( true ), mHighlighter( 0 )
 {
-	mPinStringInterface = pinOutput<fugio::VariantInterface *>( "Text", mPinString, PID_STRING );
+	FUGID( PIN_INPUT_BUFFER, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+	FUGID( PIN_OUTPUT_STRING, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 
-	connect( mPinString->qobject(), SIGNAL(updated()), this, SLOT(onTextPinUpdated()) );
+	pinInput( "Trigger", PID_FUGIO_NODE_TRIGGER );
+
+	mPinInputBuffer = pinInput( "Buffer", PIN_INPUT_BUFFER );
+
+	mPinInputBuffer->setValue( true );
+
+	mValOutputString = pinOutput<fugio::VariantInterface *>( "Text", mPinOutputString, PID_STRING, PIN_OUTPUT_STRING );
+
+	//connect( mPinOutputString->qobject(), SIGNAL(updated()), this, SLOT(onTextPinUpdated()) );
 }
 
 TextEditorNode::~TextEditorNode( void )
@@ -58,9 +67,9 @@ QWidget *TextEditorNode::gui()
 
 void TextEditorNode::checkHighlighter()
 {
-	if( mPinString->isConnected() )
+	if( mPinOutputString->isConnected() )
 	{
-		if( mPinString->connectedPin()->globalId() != mPinUuid )
+		if( mPinOutputString->connectedPin()->globalId() != mPinUuid )
 		{
 			if( mHighlighter )
 			{
@@ -76,7 +85,7 @@ void TextEditorNode::checkHighlighter()
 
 			if( mTextEdit )
 			{
-				fugio::SyntaxHighlighterInterface	*H = qobject_cast<fugio::SyntaxHighlighterInterface *>( mPinString->connectedPin()->findInterface( IID_SYNTAX_HIGHLIGHTER ) );
+				fugio::SyntaxHighlighterInterface	*H = qobject_cast<fugio::SyntaxHighlighterInterface *>( mPinOutputString->connectedPin()->findInterface( IID_SYNTAX_HIGHLIGHTER ) );
 
 				if( H )
 				{
@@ -115,13 +124,18 @@ void TextEditorNode::checkHighlighter()
 	}
 }
 
+bool TextEditorNode::isBuffered() const
+{
+	return( variant( mPinInputBuffer ).toBool() );
+}
+
 void TextEditorNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
 	checkHighlighter();
 
-	mNode->context()->pinUpdated( mPinString );
+	pinUpdated( mPinOutputString );
 }
 
 bool TextEditorNode::initialise( void )
@@ -185,7 +199,7 @@ bool TextEditorNode::deinitialise( void )
 
 void TextEditorNode::loadSettings( QSettings &pSettings )
 {
-	mPinStringInterface->setVariant( QString::fromUtf8( pSettings.value( "value" ).toByteArray() ) );
+	mValOutputString->setVariant( QString::fromUtf8( pSettings.value( "value" ).toByteArray() ) );
 
 	mDockArea = (Qt::DockWidgetArea)pSettings.value( "dockarea", int( mDockArea ) ).toInt();
 
@@ -194,7 +208,7 @@ void TextEditorNode::loadSettings( QSettings &pSettings )
 
 void TextEditorNode::saveSettings( QSettings &pSettings ) const
 {
-	pSettings.setValue( "value", mPinStringInterface->variant() );
+	pSettings.setValue( "value", mValOutputString->variant() );
 
 	pSettings.setValue( "dockarea", int( mDockArea ) );
 
@@ -213,11 +227,13 @@ void TextEditorNode::setupTextEditor( QPlainTextEdit *pTextEdit )
 	pTextEdit->setTabStopWidth( pTextEdit->fontMetrics().width( QLatin1Char( ' ' ) ) * 4 );
 	pTextEdit->setLineWrapMode( QPlainTextEdit::NoWrap );
 
-	pTextEdit->document()->setPlainText( mPinStringInterface->variant().toString() );
+	pTextEdit->document()->setPlainText( mValOutputString->variant().toString() );
 
 	pTextEdit->document()->setModified( false );
 
 	connect( pTextEdit, SIGNAL(modificationChanged(bool)), this, SLOT(onTextModified(bool)) );
+
+	connect( pTextEdit, SIGNAL(textChanged()), this, SLOT(textChanged()) );
 
 	connect( this, SIGNAL(modified(bool)), pTextEdit->document(), SLOT(setModified(bool)) );
 }
@@ -241,7 +257,7 @@ void TextEditorNode::onTextModified( bool pModified )
 {
 	if( mDockWidget )
 	{
-		if( pModified )
+		if( pModified && !isBuffered() )
 		{
 			mDockWidget->setWindowTitle( QString( "TextEditor: %1*" ).arg( mNode->name() ) );
 		}
@@ -254,10 +270,26 @@ void TextEditorNode::onTextModified( bool pModified )
 
 void TextEditorNode::onTextUpdate()
 {
-	// We need to trigger the update within the context of the frame start so
-	// pin processing takes place...
+	if( isBuffered() )
+	{
+		if( mTextEdit->textEdit()->document()->isModified() )
+		{
+			fugio::ContextWidgetInterface	*ICW = qobject_cast<fugio::ContextWidgetInterface *>( mNode->context()->findInterface( IID_CONTEXT_WIDGET ) );
 
-	connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
+			if( ICW )
+			{
+				CmdTextEditorUpdate		*CMD = new CmdTextEditorUpdate( mPinOutputString, mTextEdit->textEdit()->document()->toPlainText() );
+
+				ICW->undoStack()->push( CMD );
+			}
+
+			emit modified( false );
+		}
+		else
+		{
+			pinUpdated( mPinOutputString );
+		}
+	}
 }
 
 void TextEditorNode::onTextPinUpdated()
@@ -269,7 +301,7 @@ void TextEditorNode::onTextPinUpdated()
 
 	checkHighlighter();
 
-	const QString	NewTxt = mPinStringInterface->variant().toString();
+	const QString	NewTxt = mValOutputString->variant().toString();
 
 	if( NewTxt != mTextEdit->textEdit()->document()->toPlainText() && !NewTxt.isEmpty() )
 	{
@@ -279,33 +311,30 @@ void TextEditorNode::onTextPinUpdated()
 	}
 }
 
-void TextEditorNode::contextFrameStart()
-{
-	if( mTextEdit->textEdit()->document()->isModified() )
-	{
-		fugio::ContextWidgetInterface	*ICW = qobject_cast<fugio::ContextWidgetInterface *>( mNode->context()->findInterface( IID_CONTEXT_WIDGET ) );
-
-		if( ICW )
-		{
-			CmdTextEditorUpdate		*CMD = new CmdTextEditorUpdate( mPinString, mTextEdit->textEdit()->document()->toPlainText() );
-
-			ICW->undoStack()->push( CMD );
-		}
-
-		emit modified( false );
-	}
-	else
-	{
-		pinUpdated( mPinString );
-	}
-
-	// disconnect the frame start again
-
-	disconnect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
-}
-
 void TextEditorNode::dockSetVisible( bool pVisible )
 {
 	mDockVisible = pVisible;
+}
+
+void TextEditorNode::textChanged()
+{
+	QPlainTextEdit		*TextEdit = qobject_cast<QPlainTextEdit *>( sender() );
+
+	if( TextEdit )
+	{
+		if( !isBuffered() )
+		{
+			const QString	TextData = TextEdit->document()->toPlainText();
+
+			if( TextData != mValOutputString->variant().toString() )
+			{
+				mValOutputString->setVariant( TextData );
+
+				pinUpdated( mPinOutputString );
+			}
+
+			TextEdit->document()->setModified( false );
+		}
+	}
 }
 

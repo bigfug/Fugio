@@ -59,6 +59,8 @@ signals:
 protected:
 	void checkHighlighter();
 
+	bool isBuffered( void ) const;
+
 private slots:
 	void onEditClicked( void );
 
@@ -68,13 +70,15 @@ private slots:
 
 	void onTextPinUpdated( void );
 
-	void contextFrameStart( void );
-
 	void dockSetVisible( bool pVisible );
 
+	void textChanged( void );
+
 private:
-	QSharedPointer<fugio::PinInterface>		 mPinString;
-	fugio::VariantInterface					*mPinStringInterface;
+	QSharedPointer<fugio::PinInterface>		 mPinInputBuffer;
+
+	QSharedPointer<fugio::PinInterface>		 mPinOutputString;
+	fugio::VariantInterface					*mValOutputString;
 
 	QDockWidget								*mDockWidget;
 	TextEditorForm							*mTextEdit;

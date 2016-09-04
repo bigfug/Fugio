@@ -31,7 +31,6 @@ macx {
 	CONFIG += lib_bundle
 
 	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 	INSTALLDEST  = $$INSTALLDIR/data/plugins
 	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
@@ -67,7 +66,6 @@ macx {
 # Windows Install
 
 windows {
-	INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
@@ -88,17 +86,17 @@ INCLUDEPATH += $$PWD/../../include
 # Raspberry Pi
 
 contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-	INCLUDEPATH += /opt/vc/include /opt/vc/include/interface/vcos/pthreads /opt/vc/include/interface/vmcs_host/linux
+	INCLUDEPATH += $$[QT_SYSROOT]/opt/vc/include $$[QT_SYSROOT]/opt/vc/include/interface/vcos/pthreads $$[QT_SYSROOT]/opt/vc/include/interface/vmcs_host/linux
 
-	LIBS += -L/opt/vc/lib -lbcm_host
+	LIBS += -L$$[QT_SYSROOT]/opt/vc/lib -lbcm_host
 }
 
 #------------------------------------------------------------------------------
 # Wiring
 
-unix:exists( /usr/local/include/wiringPi.h ) {
-	INCLUDEPATH += /usr/local/include
-	LIBS += -L/usr/local/lib -lwiringPi
+unix:exists( $$[QT_SYSROOT]/usr/local/include/wiringPi.h ) {
+	INCLUDEPATH += $$[QT_SYSROOT]/usr/local/include
+	LIBS += -L$$[QT_SYSROOT]/usr/local/lib -lwiringPi
 	DEFINES += WIRINGPI_SUPPORTED
 }
 

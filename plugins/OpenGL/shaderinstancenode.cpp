@@ -117,14 +117,9 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 	//-------------------------------------------------------------------------
 
-	if( mPinOutputGeometry->isConnected() )
+	if( mPinOutputGeometry->isConnected() && mPinOutputGeometry->isConnectedToActiveNode() )
 	{
-		if( mPinOutputGeometry->isConnectedToActiveNode() )
-		{
-			pinUpdated( mPinOutputGeometry );
-		}
-
-		return;
+		pinUpdated( mPinOutputGeometry );
 	}
 
 	//-------------------------------------------------------------------------
@@ -143,10 +138,10 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 	QList< QSharedPointer<fugio::PinInterface> >	InpPinLst = mNode->enumInputPins();
 	QList< QSharedPointer<fugio::PinInterface> >	OutPinLst = mNode->enumOutputPins();
 
-//	if( !activeBufferCount( OutPinLst ) )
-//	{
-//		return;
-//	}
+	if( !activeBufferCount( OutPinLst ) )
+	{
+		return;
+	}
 
 	//-------------------------------------------------------------------------
 

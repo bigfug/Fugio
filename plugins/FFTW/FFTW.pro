@@ -17,78 +17,76 @@ DESTDIR = $$DESTDIR/plugins
 DEFINES += FFTW_LIBRARY
 
 SOURCES += fftwplugin.cpp \
-    fftnode.cpp
+	fftnode.cpp
 
 HEADERS += fftwplugin.h\
-    ../../include/fugio/nodecontrolbase.h \
-    ../../include/fugio/fftw/uuid.h \
-    fftnode.h
+	../../include/fugio/nodecontrolbase.h \
+	../../include/fugio/fftw/uuid.h \
+	fftnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
 macx {
-    DEFINES += TARGET_OS_MAC
-    CONFIG -= x86
-    CONFIG += lib_bundle
+	DEFINES += TARGET_OS_MAC
+	CONFIG -= x86
+	CONFIG += lib_bundle
 
-    BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-    INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
-    INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-    INSTALLDEST  = $$INSTALLDIR/data/plugins
-    INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
+	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
+	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	INSTALLDEST  = $$INSTALLDIR/data/plugins
+	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
 
-    DESTDIR = $$BUNDLEDIR/Contents/MacOS
-    DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
+	DESTDIR = $$BUNDLEDIR/Contents/MacOS
+	DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
 
-    CONFIG(release,debug|release) {
-        QMAKE_POST_LINK += echo
+	CONFIG(release,debug|release) {
+		QMAKE_POST_LINK += echo
 
-        LIBCHANGEDEST = $$DESTLIB
+		LIBCHANGEDEST = $$DESTLIB
 
-        QMAKE_POST_LINK += $$qtLibChange( QtWidgets )
-        QMAKE_POST_LINK += $$qtLibChange( QtGui )
-        QMAKE_POST_LINK += $$qtLibChange( QtCore )
+		QMAKE_POST_LINK += $$qtLibChange( QtWidgets )
+		QMAKE_POST_LINK += $$qtLibChange( QtGui )
+		QMAKE_POST_LINK += $$qtLibChange( QtCore )
 
-        QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
+		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-        QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
-        QMAKE_POST_LINK += $$libChange( libfftw3f.3.dylib )
+		QMAKE_POST_LINK += $$libChange( libfftw3f.3.dylib )
 
-        QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
-        QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
-        QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
+		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
+		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
+		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
 
-        QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
+		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
-        QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
-    }
+		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
+	}
 }
 
 #------------------------------------------------------------------------------
 # Windows
 
 windows {
-    INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
-    INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-    INSTALLDEST  = $$INSTALLDIR/data/plugins/fftw
+	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	INSTALLDEST  = $$INSTALLDIR/data/plugins/fftw
 
-    CONFIG(release,debug|release) {
-        QMAKE_POST_LINK += echo
+	CONFIG(release,debug|release) {
+		QMAKE_POST_LINK += echo
 
-        QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDEST )
+		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDEST )
 
-        QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
+		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
 
-        win32 {
+		win32 {
 			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/fftw-3.3.4/libfftw3f-3.dll ) $$shell_path( $$INSTALLDEST )
-        }
+		}
 
-        win64 {
+		win64 {
 			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/fftw-3.3.4/libfftw3f-3.dll ) $$shell_path( $$INSTALLDEST )
-        }
-    }
+		}
+	}
 }
 
 #------------------------------------------------------------------------------
@@ -99,31 +97,40 @@ INCLUDEPATH += $$PWD/../../include
 #------------------------------------------------------------------------------
 
 win32 {
-    contains(QMAKE_CC, cl) {
-        exists( $$(LIBS)/fftw-3.3.4 ) {
-            INCLUDEPATH += $$(LIBS)/fftw-3.3.4
+	contains(QMAKE_CC, cl) {
+		exists( $$(LIBS)/fftw-3.3.4 ) {
+			INCLUDEPATH += $$(LIBS)/fftw-3.3.4
 
-            LIBS += -L$$(LIBS)/fftw-3.3.4 -llibfftw3f-3
+			LIBS += -L$$(LIBS)/fftw-3.3.4 -llibfftw3f-3
 
-            DEFINES += FFTW_PLUGIN_SUPPORTED
-        }
-    }
+			DEFINES += FFTW_PLUGIN_SUPPORTED
+		}
+	}
 }
 
 macx:exists( /usr/local/include/fftw3.h ) {
-    INCLUDEPATH += /usr/local/include
+	INCLUDEPATH += /usr/local/include
 
-    LIBS += -L/usr/local/lib -lfftw3f
+	LIBS += -L/usr/local/lib -lfftw3f
 
-    DEFINES += FFTW_PLUGIN_SUPPORTED
+	DEFINES += FFTW_PLUGIN_SUPPORTED
 }
 
-unix:!macx:exists( /usr/include/fftw3.h ) {
-    INCLUDEPATH += /usr/include
+unix:!macx {
+	exists( $$[QT_SYSROOT]/usr/include/fftw3.h ) {
+		INCLUDEPATH += $$[QT_SYSROOT]/usr/include
 
-    LIBS += -lfftw3f
+		LIBS += -lfftw3f
 
-    DEFINES += FFTW_PLUGIN_SUPPORTED
+		DEFINES += FFTW_PLUGIN_SUPPORTED
+
+	} else:exists( /usr/include/fftw3.h ) {
+		INCLUDEPATH += /usr/include
+
+		LIBS += -lfftw3f
+
+		DEFINES += FFTW_PLUGIN_SUPPORTED
+	}
 }
 
 !contains( DEFINES, FFTW_PLUGIN_SUPPORTED ) {

@@ -148,7 +148,8 @@ DISTFILES += \
 	../config.osx.xml \
 	../config.win.xml \
 	about.html \
-	version.txt
+	version.txt \
+	../installer/brew_install_update
 
 RESOURCES += \
 	fugio.qrc
@@ -161,7 +162,6 @@ macx {
 	APP_DIR      = $$DESTDIR/$$TARGET".app"
 	PLUGIN_DIR   = $$APP_DIR/Contents/PlugIns
 	RESOURCE_DIR = $$APP_DIR/Contents/Resources
-		INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
@@ -188,6 +188,9 @@ macx {
 		QMAKE_POST_LINK += && rm -rf $$INSTALLDIR/data/$$TARGET".app"
 
 		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/package.xml $$INSTALLDIR/meta
+
+		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../installer/brew_install_update $$INSTALLDIR/data
+
 		QMAKE_POST_LINK += && cp -R $$APP_DIR $$INSTALLDIR/data
 
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/include
@@ -203,8 +206,7 @@ macx {
 }
 
 windows {
-	INSTALLBASE  = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
 		QMAKE_POST_LINK += echo

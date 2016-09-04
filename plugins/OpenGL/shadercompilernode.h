@@ -4,8 +4,6 @@
 #include "opengl_includes.h"
 
 #include <QObject>
-#include <QOpenGLShaderProgram>
-#include <QOpenGLFramebufferObject>
 #include <QPointer>
 
 #include <fugio/nodecontrolbase.h>
@@ -80,29 +78,28 @@ public:
 
 	virtual bool isLinked( void ) const
 	{
-		return( mProgramLinked );
+		return( mShaderCompilerData.mProgramLinked );
 	}
 
 	virtual const fugio::ShaderUniformMap &uniformMap( void ) const
 	{
-		return( mShaderUniformTypes );
+		return( mShaderCompilerData.mShaderUniformTypes );
 	}
 
 	virtual const fugio::ShaderUniformMap &attributeMap( void ) const
 	{
-		return( mShaderAttributeTypes );
+		return( mShaderCompilerData.mShaderAttributeTypes );
 	}
 
 	virtual GLuint programId( void ) const
 	{
-		return( mProgramId );
+		return( mShaderCompilerData.mProgramId );
 	}
 
 private:
-	void loadShader( QSharedPointer<fugio::PinInterface> pPin, GLuint &pShaderId, GLenum pShaderType, int &pCompiled, int &pFailed );
+	static void loadShader( QSharedPointer<fugio::PinInterface> pPin, GLuint pProgramId, GLuint &pShaderId, GLenum pShaderType, int &pCompiled, int &pFailed );
+
 	void loadShader();
-	void clearShader();
-	void processShader(GLuint pProgramId);
 
 protected:
 	QSharedPointer<fugio::PinInterface>		 mPinInputVaryings;
@@ -118,20 +115,43 @@ protected:
 	QSharedPointer<fugio::PinInterface>		 mOutputPinShader;
 	OpenGLShaderInterface					*mOutputShader;
 
-	ShaderUniformMap						 mShaderUniformTypes;
-	ShaderUniformMap						 mShaderAttributeTypes;
-
-	QStringList								 mUniformNames;
-	QStringList								 mAttributeNames;
-
-	GLuint									 mProgramId;
-	GLboolean								 mProgramLinked;
 	qint64									 mLastShaderLoad;
-	GLuint									 mShaderVertId;
-	GLuint									 mShaderGeomId;
-	GLuint									 mShaderTessCtrlId;
-	GLuint									 mShaderTessEvalId;
-	GLuint									 mShaderFragId;
+
+	typedef struct ShaderCompilerData
+	{
+		ShaderUniformMap						 mShaderUniformTypes;
+		ShaderUniformMap						 mShaderAttributeTypes;
+
+		QStringList								 mUniformNames;
+		QStringList								 mAttributeNames;
+
+		GLuint									 mProgramId;
+		GLboolean								 mProgramLinked;
+		GLuint									 mShaderVertId;
+		GLuint									 mShaderGeomId;
+		GLuint									 mShaderTessCtrlId;
+		GLuint									 mShaderTessEvalId;
+		GLuint									 mShaderFragId;
+
+		ShaderCompilerData( void )
+			: mProgramId( 0 ), mProgramLinked( false ), mShaderVertId( 0 ), mShaderGeomId( 0 ), mShaderTessCtrlId( 0 ),
+			  mShaderTessEvalId( 0 ), mShaderFragId( 0 )
+		{
+
+		}
+
+		~ShaderCompilerData( void )
+		{
+			clear();
+		}
+
+		void process( void );
+
+		void clear( void );
+
+	} ShaderCompilerData;
+
+	ShaderCompilerData						 mShaderCompilerData;
 };
 
 #endif // SHADERCOMPILER_H

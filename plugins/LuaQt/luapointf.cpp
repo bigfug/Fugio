@@ -60,7 +60,7 @@ int LuaPointF::luaNew( lua_State *L )
 	{
 		if( lua_type( L, 1 ) == LUA_TTABLE )
 		{
-			for( int i = 1 ; i < 2 ; i++ )
+			for( int i = 1 ; i <= 2 ; i++ )
 			{
 				lua_rawgeti( L, 1, i );
 
