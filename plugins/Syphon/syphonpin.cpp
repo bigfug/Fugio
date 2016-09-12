@@ -57,17 +57,29 @@ quint32 SyphonPin::dstTexId() const
 
 quint32 SyphonPin::target()
 {
+#if defined( SYPHON_SUPPORTED )
 	return( GL_TEXTURE_RECTANGLE );
+#else
+	return( 0 );
+#endif
 }
 
 quint32 SyphonPin::format()
 {
+#if defined( SYPHON_SUPPORTED )
 	return( GL_BGRA );
+#else
+	return( 0 );
+#endif
 }
 
 quint32 SyphonPin::internalFormat()
 {
+#if defined( SYPHON_SUPPORTED )
 	return( GL_RGBA8 );
+#else
+	return( 0 );
+#endif
 }
 
 quint32 SyphonPin::type()
@@ -87,17 +99,29 @@ int SyphonPin::filterMag( void ) const
 
 int SyphonPin::wrapS( void ) const
 {
+#if defined( SYPHON_SUPPORTED )
 	return( GL_CLAMP );
+#else
+	return( 0 );
+#endif
 }
 
 int SyphonPin::wrapT( void ) const
 {
+#if defined( SYPHON_SUPPORTED )
 	return( GL_CLAMP );
+#else
+	return( 0 );
+#endif
 }
 
 int SyphonPin::wrapR( void ) const
 {
+#if defined( SYPHON_SUPPORTED )
 	return( GL_CLAMP );
+#else
+	return( 0 );
+#endif
 }
 
 bool SyphonPin::genMipMaps( void ) const
