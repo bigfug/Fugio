@@ -89,13 +89,19 @@ windows {
 	}
 }
 
+#------------------------------------------------------------------------------
+# Linux
+
 unix:!macx {
 	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += mkdir -pv $$INSTALLDIR/data
-		QMAKE_POST_LINK += && cp -R $$DESTDIR/libfugio* $$INSTALLDIR/data
+	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
+		target.path = Desktop/Fugio
+	} else {
+		target.path = $$shell_path( $$INSTALLDIR/data )
 	}
+
+	INSTALLS += target
 }
 
 #------------------------------------------------------------------------------

@@ -242,30 +242,51 @@ unix:!macx {
 
 	QMAKE_LFLAGS += "-Wl,-rpath '-Wl,$${DOLLAR}$${DOLLAR}ORIGIN'"
 
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
+		target.path = Desktop/Fugio
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
+		INSTALLS += target
 
-		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLBASE/config )
+		examples.path  = Desktop/Fugio/examples
+		examples.files = $$_PRO_FILE_PWD_/../examples/*
 
-		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/meta )
-		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data )
+		INSTALLS += examples
 
-		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/include )
-		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/plugins )
-		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/snippets )
-		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/examples )
-		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/platforms )
-		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/share )
+		snippets.path  = Desktop/Fugio/snippets
+		snippets.files = $$_PRO_FILE_PWD_/../snippets/*
 
-		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/package.xml $$INSTALLDIR/meta
-		QMAKE_POST_LINK += && cp -R $$shell_path( $$DESTDIR/$$TARGET ) $$INSTALLDIR/data
+		INSTALLS += snippets
 
-		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../examples/* $$INSTALLDIR/data/examples
-		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../snippets/* $$INSTALLDIR/data/snippets
-		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../share/* $$INSTALLDIR/data/share
+		share.path  = Desktop/Fugio/share
+		share.files = $$_PRO_FILE_PWD_/../share/*
+
+		INSTALLS += share
 	}
+
+#	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+
+#	CONFIG(release,debug|release) {
+#		QMAKE_POST_LINK += echo
+
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLBASE/config )
+
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/meta )
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data )
+
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/include )
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/plugins )
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/snippets )
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/examples )
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/platforms )
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/share )
+
+#		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/package.xml $$INSTALLDIR/meta
+#		QMAKE_POST_LINK += && cp -R $$shell_path( $$DESTDIR/$$TARGET ) $$INSTALLDIR/data
+
+#		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../examples/* $$INSTALLDIR/data/examples
+#		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../snippets/* $$INSTALLDIR/data/snippets
+#		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../share/* $$INSTALLDIR/data/share
+#	}
 }
 
 #------------------------------------------------------------------------------
