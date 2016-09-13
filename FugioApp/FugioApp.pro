@@ -241,6 +241,31 @@ unix:!macx {
 	DOLLAR = $
 
 	QMAKE_LFLAGS += "-Wl,-rpath '-Wl,$${DOLLAR}$${DOLLAR}ORIGIN'"
+
+	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+
+	CONFIG(release,debug|release) {
+		QMAKE_POST_LINK += echo
+
+		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLBASE/config )
+
+		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/meta )
+		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data )
+
+		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/include )
+		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/plugins )
+		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/snippets )
+		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/examples )
+		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/platforms )
+		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/share )
+
+		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/package.xml $$INSTALLDIR/meta
+		QMAKE_POST_LINK += && cp -R $$shell_path( $$DESTDIR/$$TARGET ) $$INSTALLDIR/data
+
+		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../examples/* $$INSTALLDIR/data/examples
+		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../snippets/* $$INSTALLDIR/data/snippets
+		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../share/* $$INSTALLDIR/data/share
+	}
 }
 
 #------------------------------------------------------------------------------

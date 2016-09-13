@@ -65,7 +65,7 @@ TRANSLATIONS = fugio_fr.ts
 macx {
     DEFINES += TARGET_OS_MAC
 
-	INSTALLDIR = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch/packages/com.bigfug.fugio
+	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
 
     CONFIG(release,debug|release) {
         QMAKE_POST_LINK += mkdir -pv $$INSTALLDIR/data
@@ -78,7 +78,7 @@ macx {
 windows {
 	QMAKE_LFLAGS_DEBUG += /INCREMENTAL:NO
 
-	INSTALLDIR = $$FUGIO_ROOT/deploy-installer-$$QMAKE_HOST.arch/packages/com.bigfug.fugio
+	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
 		QMAKE_POST_LINK += echo
@@ -86,6 +86,15 @@ windows {
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data )
 
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/ )
+	}
+}
+
+unix:!macx {
+	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+
+	CONFIG(release,debug|release) {
+		QMAKE_POST_LINK += mkdir -pv $$INSTALLDIR/data
+		QMAKE_POST_LINK += && cp -R $$DESTDIR/libfugio* $$INSTALLDIR/data
 	}
 }
 
