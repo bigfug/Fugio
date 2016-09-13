@@ -107,14 +107,14 @@ contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 }
 
 #------------------------------------------------------------------------------
-# Wiring
+# pigpio
 
-unix:exists( $$[QT_SYSROOT]/usr/local/include/wiringPi.h ) {
+unix:exists( $$[QT_SYSROOT]/usr/local/include/pigpio.h ) {
 	INCLUDEPATH += $$[QT_SYSROOT]/usr/local/include
-	LIBS += -L$$[QT_SYSROOT]/usr/local/lib -lwiringPi
-	DEFINES += WIRINGPI_SUPPORTED
+	LIBS += -L$$[QT_SYSROOT]/usr/local/lib -lpigpiod_if2
+	DEFINES += PIGPIO_SUPPORTED
 }
 
-!contains( DEFINES, WIRINGPI_SUPPORTED ) {
-	message( "Wiring Pi not supported" )
+!contains( DEFINES, PIGPIO_SUPPORTED ) {
+	message( "pigpio not supported" )
 }
