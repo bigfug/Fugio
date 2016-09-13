@@ -135,9 +135,9 @@ windows {
 # Raspberry Pi
 
 contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-	INCLUDEPATH += /opt/vc/include /opt/vc/include/interface/vcos/pthreads /opt/vc/include/interface/vmcs_host/linux
+	INCLUDEPATH += $$[QT_SYSROOT]/opt/vc/include $$[QT_SYSROOT]/opt/vc/include/interface/vcos/pthreads $$[QT_SYSROOT]/opt/vc/include/interface/vmcs_host/linux
 
-	LIBS += -L/opt/vc/lib -lbcm_host -lGLESv2 -lEGL
+	LIBS += -L$$[QT_SYSROOT]/opt/vc/lib -lbcm_host -lGLESv2 -lEGL
 }
 
 #------------------------------------------------------------------------------
