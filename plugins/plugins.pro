@@ -19,6 +19,7 @@ SUBDIRS += \
 	PortMidi \
 	RaspberryPi \
 	Network \
+	Serial \
 	Spout \
 	Syphon \
 	Text \
