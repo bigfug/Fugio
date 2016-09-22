@@ -7,6 +7,7 @@ SUBDIRS += \
 	Core \
 	FFTW \
 	File \
+	Firmata \
 	GUI \
 	Image \
 	Lua \
