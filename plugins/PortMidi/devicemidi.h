@@ -8,7 +8,9 @@
 #include <QUuid>
 #include <QMutex>
 
+#if defined( PORTMIDI_SUPPORTED )
 #include <portmidi.h>
+#endif
 
 #include <fugio/node_control_interface.h>
 #include <fugio/midi/midi_interface.h>
@@ -37,21 +39,28 @@ public:
 	static QString deviceOutputDefaultName( void );
 	static QString deviceInputDefaultName( void );
 
+#if defined( PORTMIDI_SUPPORTED )
 	static QSharedPointer<DeviceMidi> newDevice( PmDeviceID pDevIdx );
 
 	static PmDeviceID deviceOutputNameIndex( const QString &pDeviceName );
 	static PmDeviceID deviceInputNameIndex( const QString &pDeviceName );
+#endif
 
 private:
+#if defined( PORTMIDI_SUPPORTED )
+
 	static QString nameFromDeviceInfo( const PmDeviceInfo *pDevInf );
 
 	static PmDeviceID findDeviceInputId( const QString &pName );
 	static PmDeviceID findDeviceOutputId( const QString &pName );
 
 	static QString deviceName( PmDeviceID pDevIdx );
+#endif
 
 private:
+#if defined( PORTMIDI_SUPPORTED )
 	explicit DeviceMidi( PmDeviceID pDevIdx );
+#endif
 
 	void packetStart( void );
 	void packetEnd( void );
@@ -66,12 +75,18 @@ public:
 
 	bool isActive( void ) const
 	{
+#if defined( PORTMIDI_SUPPORTED )
 		return( mStreamInput || mStreamOutput );
+#else
+		return( false );
+#endif
 	}
 
+#if defined( PORTMIDI_SUPPORTED )
 	void output( PmEvent pEvent );
 
 	void output( const QVector<PmEvent> &pEvents );
+#endif
 
 	void output( const QVector<fugio::MidiEvent> &pEvents );
 
@@ -99,12 +114,16 @@ private:
 	static QList<QWeakPointer<DeviceMidi>>			 mDeviceList;
 
 	const QString						 mDeviceName;
+
+#if defined( PORTMIDI_SUPPORTED )
 	PmDeviceID							 mDeviceId;
 
 	PortMidiStream						*mStreamInput;
 	PortMidiStream						*mStreamOutput;
 
 	QVector<PmEvent>					 mEvents;
+#endif
+
 	QList<QByteArray>					 mSysExBuffer;
 	QByteArray							 mSysExCurrent;
 

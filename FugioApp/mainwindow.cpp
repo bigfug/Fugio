@@ -270,12 +270,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	//-------------------------------------------------------------------------
 
-#if !defined( Q_OS_RASPBERRY_PI )
 	QSettings		Settings;
 
 	restoreGeometry( Settings.value( "geometry", saveGeometry() ).toByteArray() );
 	restoreState( Settings.value( "state", saveState() ).toByteArray() );
-#endif
 
 	//-------------------------------------------------------------------------
 

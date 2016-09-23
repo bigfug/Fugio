@@ -9,6 +9,11 @@
 
 #if defined( Q_OS_RASPBERRY_PI )
 #include <bcm_host.h>
+#include <unistd.h>
+#endif
+
+#if defined( PIGPIO_SUPPORTED )
+#include <pigpiod_if2.h>
 #endif
 
 QList<QUuid>	NodeControlBase::PID_UUID;
@@ -37,11 +42,31 @@ PluginInterface::InitResult RasperryPiPlugin::initialise( fugio::GlobalInterface
 
 	//-------------------------------------------------------------------------
 
+#if defined( QT_DEBUG ) && defined( PIGPIO_SUPPORTED )
+	int		PiId = pigpio_start( NULL, NULL );
+
+	if( PiId < 0 )
+	{
+		return( INIT_FAILED );
+	}
+
+	for( unsigned p = 0 ; p <= 53 ; p++ )
+	{
+		qDebug() << p << get_mode( PiId, p );
+	}
+
+	pigpio_stop( PiId );
+
+#endif
+
 	return( INIT_OK );
 }
 
 void RasperryPiPlugin::deinitialise( void )
 {
+#if defined( PIGPIO_SUPPORTED )
+#endif
+
 	mApp->unregisterPinClasses( PinClasses );
 
 	mApp->unregisterNodeClasses( NodeClasses );

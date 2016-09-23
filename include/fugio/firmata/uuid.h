@@ -1,0 +1,8 @@
+#ifndef EXAMPLE_GLOBAL_H
+#define EXAMPLE_GLOBAL_H
+
+#include <QUuid>
+
+#define NID_FIRMATA					(QUuid("{193929C7-CDFF-4E58-8613-37B9AB16EBE4}"))
+
+#endif // EXAMPLE_GLOBAL_H

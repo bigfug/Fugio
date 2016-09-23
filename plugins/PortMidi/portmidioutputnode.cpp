@@ -74,6 +74,7 @@ void PortMidiOutputNode::onFrameStart()
 		return;
 	}
 
+#if defined( PORTMIDI_SUPPORTED )
 	PmEvent	E;
 
 	E.timestamp = 0;
@@ -106,6 +107,7 @@ void PortMidiOutputNode::onFrameStart()
 			mDevice->output( E );
 		}
 	}
+#endif
 
 	mPlayState = mNode->context()->isPlaying();
 }
@@ -123,6 +125,7 @@ void PortMidiOutputNode::onFrameEnd( qint64 pTimeStamp )
 
 		if( V )
 		{
+#if defined( PORTMIDI_SUPPORTED )
 			PmEvent	E;
 			qreal	C = V->variant().toDouble();
 			qreal	I = 1./24.;
@@ -148,6 +151,7 @@ void PortMidiOutputNode::onFrameEnd( qint64 pTimeStamp )
 					mClockValue += 1;
 				}
 			}
+#endif
 		}
 	}
 

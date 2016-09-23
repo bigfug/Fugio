@@ -7,6 +7,7 @@ SUBDIRS += \
 	Core \
 	FFTW \
 	File \
+	Firmata \
 	GUI \
 	Image \
 	Lua \
@@ -19,6 +20,7 @@ SUBDIRS += \
 	PortMidi \
 	RaspberryPi \
 	Network \
+	Serial \
 	Spout \
 	Syphon \
 	Text \

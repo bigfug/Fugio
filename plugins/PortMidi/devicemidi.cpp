@@ -1,7 +1,5 @@
 #include "devicemidi.h"
 
-#include <portmidi.h>
-
 #include <QSettings>
 #include <QHash>
 
@@ -18,6 +16,7 @@ QList<QWeakPointer<DeviceMidi>>	 DeviceMidi::mDeviceList;
 
 bool DeviceMidi::deviceInitialise( void )
 {
+#if defined( PORTMIDI_SUPPORTED )
 	PmError			Error;
 
 	if( ( Error = Pm_Initialize() ) != pmNoError )
@@ -37,20 +36,30 @@ bool DeviceMidi::deviceInitialise( void )
 	}
 
 	qDebug() << "Default Input:" << Pm_GetDefaultInputDeviceID() << "Default Output:" << Pm_GetDefaultOutputDeviceID();
+#endif
 
 	return( true );
 }
 
 QString DeviceMidi::deviceOutputDefaultName()
 {
+#if defined( PORTMIDI_SUPPORTED )
 	return( deviceName( Pm_GetDefaultOutputDeviceID() ) );
+#else
+	return( QString() );
+#endif
 }
 
 QString DeviceMidi::deviceInputDefaultName()
 {
+#if defined( PORTMIDI_SUPPORTED )
 	return( deviceName( Pm_GetDefaultInputDeviceID() ) );
+#else
+	return( QString() );
+#endif
 }
 
+#if defined( PORTMIDI_SUPPORTED )
 QSharedPointer<DeviceMidi> DeviceMidi::newDevice( PmDeviceID pDevIdx )
 {
 	for( QSharedPointer<DeviceMidi> DevIns : mDeviceList )
@@ -70,24 +79,29 @@ QSharedPointer<DeviceMidi> DeviceMidi::newDevice( PmDeviceID pDevIdx )
 
 	return( NewDev );
 }
+#endif
 
 void DeviceMidi::deviceDeinitialise( void )
 {
 	mDeviceList.clear();
 
+#if defined( PORTMIDI_SUPPORTED )
 	Pm_Terminate();
+#endif
 }
 
 void DeviceMidi::devicePacketStart( void )
 {
 	for( QSharedPointer<DeviceMidi> DM : mDeviceList )
 	{
+#if defined( PORTMIDI_SUPPORTED )
 		if( !DM || !DM->mStreamInput )
 		{
 			continue;
 		}
 
 		DM->packetStart();
+#endif
 	}
 }
 
@@ -108,6 +122,7 @@ QStringList DeviceMidi::deviceInputNames()
 {
 	QStringList			DevLst;
 
+#if defined( PORTMIDI_SUPPORTED )
 	for( int i = 0 ; i < Pm_CountDevices() ; i++ )
 	{
 		const PmDeviceInfo	*DevInf = Pm_GetDeviceInfo( i );
@@ -122,6 +137,7 @@ QStringList DeviceMidi::deviceInputNames()
 			DevLst << nameFromDeviceInfo( DevInf );
 		}
 	}
+#endif
 
 	return( DevLst );
 }
@@ -130,6 +146,7 @@ QStringList DeviceMidi::deviceOutputNames()
 {
 	QStringList			DevLst;
 
+#if defined( PORTMIDI_SUPPORTED )
 	for( int i = 0 ; i < Pm_CountDevices() ; i++ )
 	{
 		const PmDeviceInfo	*DevInf = Pm_GetDeviceInfo( i );
@@ -144,10 +161,12 @@ QStringList DeviceMidi::deviceOutputNames()
 			DevLst << nameFromDeviceInfo( DevInf );
 		}
 	}
+#endif
 
 	return( DevLst );
 }
 
+#if defined( PORTMIDI_SUPPORTED )
 PmDeviceID DeviceMidi::deviceOutputNameIndex(const QString &pDeviceName)
 {
 	PmDeviceID	DevCnt = Pm_CountDevices();
@@ -264,10 +283,12 @@ QString DeviceMidi::deviceName( PmDeviceID pDevIdx )
 
 	return( nameFromDeviceInfo( DevInf ) );
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // Class instance
 
+#if defined( PORTMIDI_SUPPORTED )
 DeviceMidi::DeviceMidi( PmDeviceID pDevIdx )
 	: mDeviceName( deviceName( pDevIdx ) ), mDeviceId( pDevIdx ), mStreamInput( nullptr ), mStreamOutput( nullptr )
 {
@@ -302,9 +323,11 @@ DeviceMidi::DeviceMidi( PmDeviceID pDevIdx )
 		}
 	}
 }
+#endif
 
 DeviceMidi::~DeviceMidi( void )
 {
+#if defined( PORTMIDI_SUPPORTED )
 	if( mStreamInput )
 	{
 		Pm_Close( mStreamInput );
@@ -318,10 +341,12 @@ DeviceMidi::~DeviceMidi( void )
 
 		mStreamOutput = nullptr;
 	}
+#endif
 }
 
 void DeviceMidi::packetStart()
 {
+#if defined( PORTMIDI_SUPPORTED )
 	const static int	EVT_BUF_CNT = 128;
 
 	PmEvent		EvtBuf[ EVT_BUF_CNT ];
@@ -350,10 +375,12 @@ void DeviceMidi::packetStart()
 			}
 		}
 	}
+#endif
 }
 
 void DeviceMidi::packetEnd()
 {
+#if defined( PORTMIDI_SUPPORTED )
 	if( mStreamOutput )
 	{
 		if( !mSysExBuffer.isEmpty() )
@@ -377,8 +404,10 @@ void DeviceMidi::packetEnd()
 
 		mEvents.clear();
 	}
+#endif
 }
 
+#if defined( PORTMIDI_SUPPORTED )
 void DeviceMidi::output( PmEvent pEvent )
 {
 	if( !mStreamOutput )
@@ -398,9 +427,11 @@ void DeviceMidi::output( const QVector<PmEvent> &pEvents )
 
 	mEvents << pEvents;
 }
+#endif
 
 void DeviceMidi::output( const QVector<fugio::MidiEvent> &pEvents )
 {
+#if defined( PORTMIDI_SUPPORTED )
 	if( !mStreamOutput )
 	{
 		return;
@@ -410,10 +441,12 @@ void DeviceMidi::output( const QVector<fugio::MidiEvent> &pEvents )
 	{
 		mEvents << PmEvent{ E.message, E.timestamp };
 	}
+#endif
 }
 
 void DeviceMidi::output( const int32_t *pEvents, int pCount )
 {
+#if defined( PORTMIDI_SUPPORTED )
 	if( !mStreamOutput )
 	{
 		return;
@@ -423,14 +456,17 @@ void DeviceMidi::output( const int32_t *pEvents, int pCount )
 	{
 		mEvents << PmEvent{ pEvents[ i ], 0 };
 	}
+#endif
 }
 
 void DeviceMidi::outputSysEx( const QByteArray pArray )
 {
+#if defined( PORTMIDI_SUPPORTED )
 	if( !mStreamOutput )
 	{
 		return;
 	}
 
 	mSysExBuffer << pArray;
+#endif
 }

@@ -1,26 +1,36 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2015-12-30T13:25:41
+# Project created by QtCreator 2014-07-30T08:45:54
 #
 #-------------------------------------------------
 
 include( ../../FugioGlobal.pri )
 
-QT       -= gui
+QT       += widgets serialport
 
-TARGET = $$qtLibraryTarget(fugio-raspberrypi)
+TARGET = $$qtLibraryTarget(fugio-serial)
 TEMPLATE = lib
-
 CONFIG += plugin c++11
-
 DESTDIR = $$DESTDIR/plugins
 
-SOURCES += raspberrypiplugin.cpp
+SOURCES += \
+	deviceserial.cpp \
+	serialinputnode.cpp \
+	deviceserialconfiguration.cpp \
+	serialoutputnode.cpp \
+	serialplugin.cpp
 
-HEADERS += raspberrypiplugin.h \
-	../../include/fugio/raspberrypi/uuid.h \
+HEADERS += \
+	../../include/fugio/serial/uuid.h \
 	../../include/fugio/nodecontrolbase.h \
-	../../include/fugio/pincontrolbase.h
+	deviceserial.h \
+	serialinputnode.h \
+	deviceserialconfiguration.h \
+	serialoutputnode.h \
+	serialplugin.h
+
+FORMS += \
+	deviceserialconfiguration.ui
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -47,6 +57,7 @@ macx {
 		QMAKE_POST_LINK += $$qtLibChange( QtWidgets )
 		QMAKE_POST_LINK += $$qtLibChange( QtGui )
 		QMAKE_POST_LINK += $$qtLibChange( QtCore )
+		QMAKE_POST_LINK += $$qtLibChange( QtSerialPort )
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
@@ -62,14 +73,14 @@ macx {
 	}
 }
 
-#------------------------------------------------------------------------------
-# Windows Install
 
 windows {
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
 		QMAKE_POST_LINK += echo
+
+		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/Qt5SerialPort.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
 
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
 
@@ -78,43 +89,7 @@ windows {
 }
 
 #------------------------------------------------------------------------------
-# Linux
-
-unix:!macx {
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
-
-	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-		target.path = Desktop/Fugio/plugins
-	} else {
-		target.path = $$shell_path( $$INSTALLDIR/data/plugins )
-	}
-
-	INSTALLS += target
-}
-
-#------------------------------------------------------------------------------
 # API
 
 INCLUDEPATH += $$PWD/../../include
 
-#------------------------------------------------------------------------------
-# Raspberry Pi
-
-contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-	INCLUDEPATH += $$[QT_SYSROOT]/opt/vc/include $$[QT_SYSROOT]/opt/vc/include/interface/vcos/pthreads $$[QT_SYSROOT]/opt/vc/include/interface/vmcs_host/linux
-
-	LIBS += -L$$[QT_SYSROOT]/opt/vc/lib -lbcm_host
-}
-
-#------------------------------------------------------------------------------
-# pigpio
-
-unix:exists( $$[QT_SYSROOT]/usr/local/include/pigpio.h ) {
-	INCLUDEPATH += $$[QT_SYSROOT]/usr/local/include
-	LIBS += -L$$[QT_SYSROOT]/usr/local/lib -lpigpiod_if2
-	DEFINES += PIGPIO_SUPPORTED
-}
-
-!contains( DEFINES, PIGPIO_SUPPORTED ) {
-	message( "pigpio not supported" )
-}

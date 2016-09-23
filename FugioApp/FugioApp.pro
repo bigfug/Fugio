@@ -241,6 +241,52 @@ unix:!macx {
 	DOLLAR = $
 
 	QMAKE_LFLAGS += "-Wl,-rpath '-Wl,$${DOLLAR}$${DOLLAR}ORIGIN'"
+
+	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
+		target.path = Desktop/Fugio
+
+		INSTALLS += target
+
+		examples.path  = Desktop/Fugio/examples
+		examples.files = $$_PRO_FILE_PWD_/../examples/*
+
+		INSTALLS += examples
+
+		snippets.path  = Desktop/Fugio/snippets
+		snippets.files = $$_PRO_FILE_PWD_/../snippets/*
+
+		INSTALLS += snippets
+
+		share.path  = Desktop/Fugio/share
+		share.files = $$_PRO_FILE_PWD_/../share/*
+
+		INSTALLS += share
+	}
+
+#	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+
+#	CONFIG(release,debug|release) {
+#		QMAKE_POST_LINK += echo
+
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLBASE/config )
+
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/meta )
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data )
+
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/include )
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/plugins )
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/snippets )
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/examples )
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/platforms )
+#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/share )
+
+#		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/package.xml $$INSTALLDIR/meta
+#		QMAKE_POST_LINK += && cp -R $$shell_path( $$DESTDIR/$$TARGET ) $$INSTALLDIR/data
+
+#		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../examples/* $$INSTALLDIR/data/examples
+#		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../snippets/* $$INSTALLDIR/data/snippets
+#		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../share/* $$INSTALLDIR/data/share
+#	}
 }
 
 #------------------------------------------------------------------------------
@@ -258,9 +304,9 @@ precompile_header:!isEmpty(PRECOMPILED_HEADER) {
 # Raspberry Pi
 
 contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-	INCLUDEPATH += /opt/vc/include /opt/vc/include/interface/vcos/pthreads /opt/vc/include/interface/vmcs_host/linux
+	INCLUDEPATH += $$[QT_SYSROOT]/opt/vc/include $$[QT_SYSROOT]/opt/vc/include/interface/vcos/pthreads $$[QT_SYSROOT]/opt/vc/include/interface/vmcs_host/linux
 
-	LIBS += -L/opt/vc/lib -lbcm_host
+	LIBS += -L$$[QT_SYSROOT]/opt/vc/lib -lbcm_host
 }
 
 #------------------------------------------------------------------------------

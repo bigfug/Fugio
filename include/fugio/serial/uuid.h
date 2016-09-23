@@ -1,0 +1,9 @@
+#ifndef FUGIO_SERIAL_H
+#define FUGIO_SERIAL_H
+
+#include <QtCore/qglobal.h>
+
+#define NID_SERIAL_INPUT			(QUuid("{15770D0D-586C-4EE3-B842-D59AB0706500}"))
+#define NID_SERIAL_OUTPUT			(QUuid("{575411B2-8A85-4DC2-ABF6-CB034F72EAB0}"))
+
+#endif // FUGIO_SERIAL_H

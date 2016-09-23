@@ -72,12 +72,20 @@ quint32 SpoutPin::target()
 
 quint32 SpoutPin::format()
 {
+#if defined( SPOUT_SUPPORTED )
 	return( GL_BGRA );
+#else
+	return( 0 );
+#endif
 }
 
 quint32 SpoutPin::internalFormat()
 {
+#if defined( SPOUT_SUPPORTED )
 	return( GL_RGBA8 );
+#else
+	return( 0 );
+#endif
 }
 
 quint32 SpoutPin::type()
@@ -92,22 +100,38 @@ int SpoutPin::filterMin( void ) const
 
 int SpoutPin::filterMag( void ) const
 {
+#if defined( SPOUT_SUPPORTED )
 	return( GL_LINEAR );
+#else
+	return( 0 );
+#endif
 }
 
 int SpoutPin::wrapS( void ) const
 {
+#if defined( SPOUT_SUPPORTED )
 	return( GL_CLAMP );
+#else
+	return( 0 );
+#endif
 }
 
 int SpoutPin::wrapT( void ) const
 {
+#if defined( SPOUT_SUPPORTED )
 	return( GL_CLAMP );
+#else
+	return( 0 );
+#endif
 }
 
 int SpoutPin::wrapR( void ) const
 {
+#if defined( SPOUT_SUPPORTED )
 	return( GL_CLAMP );
+#else
+	return( 0 );
+#endif
 }
 
 bool SpoutPin::genMipMaps( void ) const
