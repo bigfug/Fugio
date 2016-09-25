@@ -160,7 +160,9 @@ DeviceSerial *DeviceSerial::findDevice(const QUuid &pUuid)
 }
 
 DeviceSerial::DeviceSerial( QObject *pParent ) :
-	QObject( pParent ), mDeviceUuid( QUuid::createUuid() ), mBaudRate( QSerialPort::Baud9600 ), mSerialPort( 0 )
+	QObject( pParent ), mDeviceUuid( QUuid::createUuid() ), mBaudRate( QSerialPort::Baud9600 ), mDataBits( QSerialPort::Data8 ),
+	mStopBits( QSerialPort::OneStop ), mParity( QSerialPort::NoParity ), mFlowControl( QSerialPort::NoFlowControl ),
+	mSerialPort( 0 )
 {
 	mLastInit = 0;
 }
@@ -187,10 +189,10 @@ void DeviceSerial::portOpen( void )
 	}
 
 	mSerialPort.setBaudRate( mBaudRate );
-	mSerialPort.setDataBits( QSerialPort::Data8 );
-	mSerialPort.setFlowControl( QSerialPort::NoFlowControl );
-	mSerialPort.setParity( QSerialPort::NoParity );
-	mSerialPort.setStopBits( QSerialPort::OneStop );
+	mSerialPort.setDataBits( mDataBits );
+	mSerialPort.setFlowControl( mFlowControl );
+	mSerialPort.setParity( mParity );
+	mSerialPort.setStopBits( mStopBits );
 	//mSerialPort.setBreakEnabled( true );
 }
 
@@ -237,12 +239,21 @@ void DeviceSerial::cfgSave( QSettings &pDataStream ) const
 {
 	pDataStream.setValue( "portname", mPortName );
 	pDataStream.setValue( "baudrate", mBaudRate );
+	pDataStream.setValue( "databits", int( mDataBits ) );
+	pDataStream.setValue( "stopbits", int( mStopBits ) );
+	pDataStream.setValue( "parity", int( mParity ) );
+	pDataStream.setValue( "flowcontrol", int( mFlowControl ) );
 }
 
 void DeviceSerial::cfgLoad( QSettings &pDataStream )
 {
 	mPortName = pDataStream.value( "portname", mPortName ).toString();
 	mBaudRate = pDataStream.value( "baudrate", mBaudRate ).toInt();
+
+	mDataBits    = static_cast<QSerialPort::DataBits>( pDataStream.value( "databits", int( mDataBits ) ).toInt() );
+	mStopBits    = static_cast<QSerialPort::StopBits>( pDataStream.value( "stopbits", int( mStopBits ) ).toInt() );
+	mParity      = static_cast<QSerialPort::Parity>( pDataStream.value( "parity", int( mParity ) ).toInt() );
+	mFlowControl = static_cast<QSerialPort::FlowControl>( pDataStream.value( "flowcontrol", int( mFlowControl ) ).toInt() );
 }
 
 bool DeviceSerial::isEnabled() const
@@ -295,4 +306,44 @@ void DeviceSerial::setName( const QString &pName )
 	}
 
 	mDeviceName = pName;
+}
+
+void DeviceSerial::setDataBits( QSerialPort::DataBits pDataBits )
+{
+	if( mDataBits == pDataBits )
+	{
+		return;
+	}
+
+	mDataBits = pDataBits;
+}
+
+void DeviceSerial::setStopBits( QSerialPort::StopBits pStopBits )
+{
+	if( mStopBits == pStopBits )
+	{
+		return;
+	}
+
+	mStopBits = pStopBits;
+}
+
+void DeviceSerial::setParity( QSerialPort::Parity pParity )
+{
+	if( mParity == pParity )
+	{
+		return;
+	}
+
+	mParity = pParity;
+}
+
+void DeviceSerial::setFlowControl( QSerialPort::FlowControl pFlowControl )
+{
+	if( mFlowControl == pFlowControl )
+	{
+		return;
+	}
+
+	mFlowControl = pFlowControl;
 }

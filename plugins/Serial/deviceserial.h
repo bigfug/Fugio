@@ -60,6 +60,11 @@ public:
 		return( mBaudRate );
 	}
 
+	inline qint32 dataBits( void ) const
+	{
+		return( mDataBits );
+	}
+
 	const QByteArray &buffer( void ) const
 	{
 		return( mBufferInput );
@@ -87,12 +92,31 @@ public:
 		return( mDeviceName );
 	}
 
+	inline QSerialPort::StopBits stopBits( void ) const
+	{
+		return( mStopBits );
+	}
+
+	inline QSerialPort::Parity parity( void ) const
+	{
+		return( mParity );
+	}
+
+	inline QSerialPort::FlowControl flowControl( void ) const
+	{
+		return( mFlowControl );
+	}
+
 signals:
 
 public slots:
 	void setPortName( const QString &pPortName );
 	void setBaudRate( qint32 pBaudRate );
 	void setName( const QString &pName );
+	void setDataBits( QSerialPort::DataBits pDataBits );
+	void setStopBits( QSerialPort::StopBits pStopBits );
+	void setParity( QSerialPort::Parity pParity );
+	void setFlowControl( QSerialPort::FlowControl pFlowControl );
 
 private slots:
 	void portOpen( void );
@@ -104,18 +128,22 @@ private slots:
 	}
 
 private:
-	QUuid				 mDeviceUuid;
-	QString				 mDeviceName;
-	QString				 mPortName;
-	qint32				 mBaudRate;
+	QUuid						 mDeviceUuid;
+	QString						 mDeviceName;
+	QString						 mPortName;
+	qint32						 mBaudRate;
+	QSerialPort::DataBits		 mDataBits;
+	QSerialPort::StopBits		 mStopBits;
+	QSerialPort::Parity			 mParity;
+	QSerialPort::FlowControl	 mFlowControl;
 
-	QSerialPort			 mSerialPort;
+	QSerialPort					 mSerialPort;
 
-	QByteArray			 mBufferInput;
-	QByteArray			 mBufferOutput;
-	QByteArray			 mCommandBuffer;
+	QByteArray					 mBufferInput;
+	QByteArray					 mBufferOutput;
+	QByteArray					 mCommandBuffer;
 
-	qreal				 mLastInit;
+	qreal						 mLastInit;
 
 	static QList<DeviceSerial *>		 mDeviceList;
 };
