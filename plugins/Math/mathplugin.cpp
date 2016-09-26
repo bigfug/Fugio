@@ -31,12 +31,14 @@
 
 #include "matrixlookatnode.h"
 #include "matrixperspectivenode.h"
+#include "matrixorthographicnode.h"
 
 #include "matrixrotatenode.h"
 #include "matrixtranslatenode.h"
 #include "matrixscalenode.h"
 
 #include "matrixmultiplynode.h"
+#include "matrixinversenode.h"
 
 #include "sindegreenode.h"
 #include "sinradiannode.h"
@@ -76,6 +78,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Radians to Degrees", "Number", NID_RADIANS_TO_DEGREES, &RadiansToDegreesNode::staticMetaObject ),
 	ClassEntry( "Dot Product", "Vector3", NID_DOT_PRODUCT, &DotProductNode::staticMetaObject ),
 	ClassEntry( "Divide", "Math", NID_DIVIDE, &DivideNode::staticMetaObject ),
+	ClassEntry( "Inverse", "Matrix", NID_MATRIX_INVERSE, &MatrixInverseNode::staticMetaObject ),
 	ClassEntry( "Join", "Vector3", NID_JOIN_VECTOR3, &JoinVector3Node::staticMetaObject ),
 	ClassEntry( "Join", "Vector4", NID_JOIN_VECTOR4, &JoinVector4Node::staticMetaObject ),
 	ClassEntry( "Look At", "Matrix", NID_MATRIX_LOOKAT, &MatrixLookAtNode::staticMetaObject ),
@@ -86,6 +89,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "NOR", "Logic", NID_NOR, &NorNode::staticMetaObject ),
 	ClassEntry( "Normalise", "Vector3", NID_NORMALISE, &NormaliseNode::staticMetaObject ),
 	ClassEntry( "OR", "Logic", NID_OR, &OrNode::staticMetaObject ),
+	ClassEntry( "Orthographic", "Matrix", NID_MATRIX_ORTHOGRAPHIC, &MatrixOrthographicNode::staticMetaObject ),
 	ClassEntry( "Perspective", "Matrix", NID_MATRIX_PERSPECTIVE, &MatrixPerspectiveNode::staticMetaObject ),
 	ClassEntry( "Pi", "Number", NID_PI, &PiNode::staticMetaObject ),
 	ClassEntry( "Rotate", "Matrix", NID_MATRIX_ROTATE, &MatrixRotateNode::staticMetaObject ),
