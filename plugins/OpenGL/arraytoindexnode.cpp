@@ -103,6 +103,8 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
+		BufO->setIndex( true );
+
 #if defined( glBufferSubData )
 		if( GLEW_VERSION_1_5 )
 		{
