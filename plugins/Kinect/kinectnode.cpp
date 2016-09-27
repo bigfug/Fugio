@@ -784,9 +784,11 @@ void KinectNode::editConfig()
 		mSkeletonNearMode = Dialog.skeletonNearMode();
 		mSkeletonSeatedMode = Dialog.skeletonSeatedMode();
 
+#ifdef KINECT_SUPPORTED
 		deviceClose();
 
 		deviceOpen( variant( mPinInputIndex ).toInt() );
+#endif
 	}
 }
 
