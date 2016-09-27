@@ -10,6 +10,7 @@ SUBDIRS += \
 	Firmata \
 	GUI \
 	Image \
+	Kinect \
 	Lua \
 	LuaQt \
 	Math \

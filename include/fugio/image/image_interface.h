@@ -106,8 +106,8 @@ public:
 		switch( pFormat )
 		{
 			case FORMAT_RGB8:	return( QImage::Format_RGB888 );
-			case FORMAT_RGBA8:	return( QImage::Format_ARGB32_Premultiplied );
-			case FORMAT_BGRA8:	return( QImage::Format_ARGB32_Premultiplied );
+			case FORMAT_RGBA8:	return( QImage::Format_ARGB32 );
+			case FORMAT_BGRA8:	return( QImage::Format_ARGB32 );
 #if QT_VERSION > QT_VERSION_CHECK( 5, 4, 0 )
 			case FORMAT_GRAY8:	return( QImage::Format_Grayscale8 );
 #endif
