@@ -239,9 +239,20 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 			}
 			else
 			{
+				//bool		HasDepth = Buffers.contains( GL_DEPTH_ATTACHMENT );
+
+				Buffers.removeAll( GL_DEPTH_ATTACHMENT );
+
 				glBindFramebuffer( GL_FRAMEBUFFER, mFrameBufferId );
 
-				glDrawBuffers( Buffers.size(), Buffers.data() );
+				if( Buffers.isEmpty() )
+				{
+					glDrawBuffer( GL_NONE );
+				}
+				else
+				{
+					glDrawBuffers( Buffers.size(), Buffers.data() );
+				}
 
 				OPENGL_DEBUG( mNode->name() );
 
@@ -362,6 +373,8 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 	//-------------------------------------------------------------------------
 
 	glUseProgram( 0 );
+
+	glDrawBuffer( GL_BACK );
 
 	//-------------------------------------------------------------------------
 
@@ -555,6 +568,8 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 			case GL_TEXTURE_1D:
 				{
 					glFramebufferTexture1D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
+
+					Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
 				}
 				break;
 #endif
@@ -563,7 +578,18 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 #if !defined( GL_ES_VERSION_2_0 )
 			case GL_TEXTURE_RECTANGLE:
 #endif
-				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
+				if( !OutTex->isDepthTexture() )
+				{
+					glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
+
+					Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
+				}
+				else
+				{
+					glFramebufferTexture( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, OutTex->dstTexId(), 0 );
+
+					Buffers.append( GL_DEPTH_ATTACHMENT );
+				}
 				break;
 
 #if !defined( GL_ES_VERSION_2_0 )
@@ -577,13 +603,13 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 				{
 					glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->dstTexId(), 0 );
 				}
+
+				Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
 				break;
 #endif
 		}
 
 		OPENGL_DEBUG( mNode->name() );
-
-		Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
 	}
 }
 
