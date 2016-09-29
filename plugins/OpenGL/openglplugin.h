@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QThread>
+#include <QCommandLineOption>
 
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
@@ -111,6 +112,8 @@ public:
 		return( instance()->mApp );
 	}
 
+	bool openWindowFullScreen( void ) const;
+
 signals:
 	void windowHook( QWindow *pWindow );
 
@@ -133,6 +136,8 @@ private:
 	static OpenGLPlugin		*mInstance;
 
 	GlobalInterface			*mApp;
+
+	QCommandLineOption		 mOpenGLFullScreenOption;
 
 	int						 mTriangleCount;
 };

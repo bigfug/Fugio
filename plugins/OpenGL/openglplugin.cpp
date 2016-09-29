@@ -110,7 +110,8 @@ OpenGLPlugin		*OpenGLPlugin::mInstance = 0;
 #include <QCoreApplication>
 
 OpenGLPlugin::OpenGLPlugin( void )
-	: mApp( 0 ), mTriangleCount( 0 )
+	: mApp( 0 ), mTriangleCount( 0 ),
+	   mOpenGLFullScreenOption( "opengl-full-screen", "Open all OpenGL windows as full screen" )
 {
 	mInstance = this;
 
@@ -128,7 +129,7 @@ PluginInterface::InitResult OpenGLPlugin::initialise( fugio::GlobalInterface *pA
 
 	mApp = pApp;
 
-	mApp->commandLineParser().addOption( QCommandLineOption( "opengl-full-screen", "Open all OpenGL windows as full screen" ) );
+	mApp->commandLineParser().addOption( mOpenGLFullScreenOption );
 
 	mApp->registerInterface( IID_OPENGL, this );
 
@@ -292,6 +293,11 @@ bool OpenGLPlugin::hasContextStatic()
 #else
 	return( QOpenGLContext::currentContext() && glewExperimental == GL_TRUE );
 #endif
+}
+
+bool OpenGLPlugin::openWindowFullScreen() const
+{
+	return( mApp->commandLineParser().isSet( mOpenGLFullScreenOption ) );
 }
 
 void OpenGLPlugin::onWindowCreate( QWindow *pWindow )

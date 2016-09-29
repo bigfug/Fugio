@@ -374,6 +374,11 @@ void DeviceOpenGLOutput::exposeEvent( QExposeEvent * )
 			qInfo() << "Alpha:" << context()->format().alphaBufferSize();
 			qInfo() << "Depth:" << context()->format().depthBufferSize();
 			qInfo() << "RGB:" << context()->format().redBufferSize() << context()->format().greenBufferSize() << context()->format().blueBufferSize();
+
+			if( OpenGLPlugin::instance()->openWindowFullScreen() )
+			{
+				showFullScreen();
+			}
 		}
 
 		raise();
