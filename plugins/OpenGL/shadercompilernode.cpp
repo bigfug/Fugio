@@ -495,6 +495,7 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 #if !defined( GL_ES_VERSION_2_0 )
 				case GL_SAMPLER_CUBE_SHADOW:
 				case GL_INT_SAMPLER_1D:
+				case GL_INT_SAMPLER_2D:
 				case GL_INT_SAMPLER_3D:
 				case GL_INT_SAMPLER_CUBE:
 				case GL_INT_SAMPLER_1D_ARRAY:
