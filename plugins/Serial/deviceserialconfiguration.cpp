@@ -5,6 +5,7 @@
 #include <QListWidgetItem>
 #include <QSerialPortInfo>
 #include <QMessageBox>
+#include <QDebug>
 
 DeviceSerialConfiguration::DeviceSerialConfiguration(QWidget *parent) :
 	QDialog(parent),
@@ -98,6 +99,74 @@ void DeviceSerialConfiguration::widgetsUpdate()
 		ui->mPort->setCurrentText( mDevice->portname() );
 		ui->mBaud->setCurrentText( QString::number( mDevice->baudrate() ) );
 
+		switch( mDevice->dataBits() )
+		{
+			case QSerialPort::Data5:
+				ui->mDataBits->setCurrentText( "5" );
+				break;
+
+			case QSerialPort::Data6:
+				ui->mDataBits->setCurrentText( "6" );
+				break;
+
+			case QSerialPort::Data7:
+				ui->mDataBits->setCurrentText( "7" );
+				break;
+
+			case QSerialPort::Data8:
+			case QSerialPort::UnknownDataBits:
+				ui->mDataBits->setCurrentText( "8" );
+				break;
+		}
+
+		switch( mDevice->stopBits() )
+		{
+			case QSerialPort::UnknownStopBits:
+			case QSerialPort::OneStop:
+				ui->mStopBits->setCurrentIndex( 0 );
+				break;
+
+			case QSerialPort::OneAndHalfStop:
+				ui->mStopBits->setCurrentIndex( 1 );
+				break;
+
+			case QSerialPort::TwoStop:
+				ui->mStopBits->setCurrentIndex( 2 );
+				break;
+		}
+
+		switch( mDevice->parity() )
+		{
+			//case QSerialPort::NoParity:
+			default:
+				ui->mParity->setCurrentIndex( 0 );
+				break;
+
+			case QSerialPort::EvenParity:
+				ui->mParity->setCurrentIndex( 1 );
+				break;
+
+			case QSerialPort::OddParity:
+				ui->mParity->setCurrentIndex( 2 );
+				break;
+		}
+
+		switch( mDevice->flowControl() )
+		{
+			case QSerialPort::NoFlowControl:
+			case QSerialPort::UnknownFlowControl:
+				ui->mFlowControl->setCurrentIndex( 0 );
+				break;
+
+			case QSerialPort::HardwareControl:
+				ui->mFlowControl->setCurrentIndex( 1 );
+				break;
+
+			case QSerialPort::SoftwareControl:
+				ui->mFlowControl->setCurrentIndex( 2 );
+				break;
+		}
+
 		ui->mButtonEnable->setEnabled( true );
 
 		ui->mButtonEnable->setChecked( mDevice->isEnabled() );
@@ -107,6 +176,10 @@ void DeviceSerialConfiguration::widgetsUpdate()
 			ui->mName->setEnabled( true );
 			ui->mPort->setEnabled( true );
 			ui->mBaud->setEnabled( true );
+			ui->mDataBits->setEnabled( true );
+			ui->mStopBits->setEnabled( true );
+			ui->mFlowControl->setEnabled( true );
+			ui->mParity->setEnabled( true );
 
 			ui->mButtonRemove->setEnabled( true );
 			ui->mButtonEnable->setEnabled( true );
@@ -118,6 +191,10 @@ void DeviceSerialConfiguration::widgetsUpdate()
 		ui->mName->setEnabled( false );
 		ui->mPort->setEnabled( false );
 		ui->mBaud->setEnabled( false );
+		ui->mDataBits->setEnabled( false );
+		ui->mStopBits->setEnabled( false );
+		ui->mFlowControl->setEnabled( false );
+		ui->mParity->setEnabled( false );
 
 		ui->mButtonRemove->setEnabled( false );
 		ui->mButtonEnable->setEnabled( true );
@@ -205,7 +282,7 @@ void DeviceSerialConfiguration::on_mPort_currentTextChanged( const QString &arg1
 	}
 }
 
-void DeviceSerialConfiguration::on_mBaud_currentIndexChanged(const QString &arg1)
+void DeviceSerialConfiguration::on_mBaud_currentTextChanged(const QString &arg1)
 {
 	if( mDevice )
 	{
@@ -249,5 +326,93 @@ void DeviceSerialConfiguration::on_mButtonEnable_toggled( bool checked )
 		}
 
 		widgetsUpdate();
+	}
+}
+
+void DeviceSerialConfiguration::on_mDataBits_currentIndexChanged(int index)
+{
+	if( !mDevice )
+	{
+		return;
+	}
+
+	switch( index )
+	{
+		case 0:
+			mDevice->setDataBits( QSerialPort::Data7 );
+			break;
+
+		default:
+			mDevice->setDataBits( QSerialPort::Data8 );
+			break;
+	}
+}
+
+void DeviceSerialConfiguration::on_mStopBits_currentIndexChanged(int index)
+{
+	if( !mDevice )
+	{
+		return;
+	}
+
+	switch( index )
+	{
+		case 0:
+			mDevice->setStopBits( QSerialPort::OneStop );
+			break;
+
+		case 1:
+			mDevice->setStopBits( QSerialPort::OneAndHalfStop );
+			break;
+
+		case 2:
+			mDevice->setStopBits( QSerialPort::TwoStop );
+			break;
+	}
+}
+
+void DeviceSerialConfiguration::on_mParity_currentIndexChanged(int index)
+{
+	if( !mDevice )
+	{
+		return;
+	}
+
+	switch( index )
+	{
+		case 0:
+			mDevice->setParity( QSerialPort::NoParity );
+			break;
+
+		case 1:
+			mDevice->setParity( QSerialPort::EvenParity );
+			break;
+
+		case 2:
+			mDevice->setParity( QSerialPort::OddParity );
+			break;
+	}
+}
+
+void DeviceSerialConfiguration::on_mFlowControl_currentIndexChanged(int index)
+{
+	if( !mDevice )
+	{
+		return;
+	}
+
+	switch( index )
+	{
+		case 0:
+			mDevice->setFlowControl( QSerialPort::NoFlowControl );
+			break;
+
+		case 1:
+			mDevice->setFlowControl( QSerialPort::HardwareControl );
+			break;
+
+		case 2:
+			mDevice->setFlowControl( QSerialPort::SoftwareControl );
+			break;
 	}
 }

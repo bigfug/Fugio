@@ -114,6 +114,11 @@ public:
 		return( mDoubleBuffered );
 	}
 
+	virtual bool isIndex( void ) const Q_DECL_OVERRIDE
+	{
+		return( mIndex );
+	}
+
 	virtual void swapBuffers( void ) Q_DECL_OVERRIDE;
 
 	virtual GLuint srcBuf( void ) const Q_DECL_OVERRIDE

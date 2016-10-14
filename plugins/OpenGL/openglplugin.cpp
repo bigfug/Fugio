@@ -110,7 +110,8 @@ OpenGLPlugin		*OpenGLPlugin::mInstance = 0;
 #include <QCoreApplication>
 
 OpenGLPlugin::OpenGLPlugin( void )
-	: mApp( 0 ), mTriangleCount( 0 )
+	: mApp( 0 ), mTriangleCount( 0 ),
+	   mOpenGLFullScreenOption( "opengl-full-screen", "Open all OpenGL windows as full screen" )
 {
 	mInstance = this;
 
@@ -128,7 +129,7 @@ PluginInterface::InitResult OpenGLPlugin::initialise( fugio::GlobalInterface *pA
 
 	mApp = pApp;
 
-	mApp->commandLineParser().addOption( QCommandLineOption( "opengl-full-screen", "Open all OpenGL windows as full screen" ) );
+	mApp->commandLineParser().addOption( mOpenGLFullScreenOption );
 
 	mApp->registerInterface( IID_OPENGL, this );
 
@@ -294,6 +295,11 @@ bool OpenGLPlugin::hasContextStatic()
 #endif
 }
 
+bool OpenGLPlugin::openWindowFullScreen() const
+{
+	return( mApp->commandLineParser().isSet( mOpenGLFullScreenOption ) );
+}
+
 void OpenGLPlugin::onWindowCreate( QWindow *pWindow )
 {
 	emit windowHook( pWindow );
@@ -364,6 +370,10 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_INTERNAL( GL_LUMINANCE );
 
 		INSERT_INTERNAL( GL_DEPTH_COMPONENT );
+		INSERT_INTERNAL( GL_DEPTH_COMPONENT16 );
+		INSERT_INTERNAL( GL_DEPTH_COMPONENT24 );
+		INSERT_INTERNAL( GL_DEPTH_COMPONENT32 );
+		INSERT_INTERNAL( GL_DEPTH_COMPONENT32F );
 		INSERT_INTERNAL( GL_RGB );
 		INSERT_INTERNAL( GL_RGBA );
 		INSERT_INTERNAL( GL_RGBA4 );

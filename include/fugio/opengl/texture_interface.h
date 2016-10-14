@@ -26,6 +26,8 @@ public:
 
 	virtual bool isDoubleBuffered( void ) const = 0;
 
+	virtual bool isDepthTexture( void ) const = 0;
+
 	virtual void swapTexture( void ) = 0;
 
 	virtual quint32 srcTexId( void ) const = 0;

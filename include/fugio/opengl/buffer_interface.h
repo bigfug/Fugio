@@ -42,6 +42,8 @@ public:
 
 	virtual bool isDoubleBuffered( void ) const = 0;
 
+	virtual bool isIndex( void ) const = 0;
+
 	virtual void swapBuffers( void ) = 0;
 
 	virtual GLuint srcBuf( void ) const = 0;

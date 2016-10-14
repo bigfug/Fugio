@@ -127,6 +127,11 @@ public:
 		return( false );
 	}
 
+	virtual bool isDepthTexture( void ) const Q_DECL_OVERRIDE
+	{
+		return( false );
+	}
+
 	//-------------------------------------------------------------------------
 
 private:

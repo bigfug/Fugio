@@ -10,6 +10,8 @@ SUBDIRS += \
 	Firmata \
 	GUI \
 	Image \
+	Kinect \
+	LeapMotion \
 	Lua \
 	LuaQt \
 	Math \
@@ -24,4 +26,5 @@ SUBDIRS += \
 	Spout \
 	Syphon \
 	Text \
-	Time
+	Time \
+	XInput

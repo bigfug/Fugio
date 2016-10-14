@@ -58,6 +58,21 @@ public:
 		return( mDoubleBuffered );
 	}
 
+	virtual bool isDepthTexture( void ) const Q_DECL_OVERRIDE
+	{
+		switch( mTextureInternalFormat )
+		{
+			case GL_DEPTH_COMPONENT:
+			case GL_DEPTH_COMPONENT16:
+			case GL_DEPTH_COMPONENT24:
+			case GL_DEPTH_COMPONENT32:
+			case GL_DEPTH_COMPONENT32F:
+				return( true );
+		}
+
+		return( false );
+	}
+
 	virtual quint32 srcTexId( void ) const Q_DECL_OVERRIDE;
 	virtual quint32 dstTexId( void ) const Q_DECL_OVERRIDE;
 

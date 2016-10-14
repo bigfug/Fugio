@@ -55,7 +55,9 @@ SOURCES += mathplugin.cpp \
 	minmaxnode.cpp \
 	vector4pin.cpp \
 	joinvector4node.cpp \
-	splitvector4node.cpp
+	splitvector4node.cpp \
+    matrixinversenode.cpp \
+    matrixorthographicnode.cpp
 
 HEADERS += mathplugin.h \
 	../../include/fugio/math/uuid.h \
@@ -99,7 +101,9 @@ HEADERS += mathplugin.h \
 	minmaxnode.h \
 	vector4pin.h \
 	joinvector4node.h \
-	splitvector4node.h
+	splitvector4node.h \
+    matrixinversenode.h \
+    matrixorthographicnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

@@ -41,13 +41,21 @@ private slots:
 
 	void on_mPort_currentTextChanged(const QString &arg1);
 
-	void on_mBaud_currentIndexChanged(const QString &arg1);
-
 	void on_mDeviceList_itemClicked(QListWidgetItem *item);
 
 	void on_mButtonRemove_clicked();
 
 	void on_mButtonEnable_toggled(bool checked);
+
+	void on_mDataBits_currentIndexChanged(int index);
+
+	void on_mStopBits_currentIndexChanged(int index);
+
+	void on_mParity_currentIndexChanged(int index);
+
+	void on_mFlowControl_currentIndexChanged(int index);
+
+	void on_mBaud_currentTextChanged(const QString &arg1);
 
 private:
 	Ui::DeviceSerialConfiguration *ui;
