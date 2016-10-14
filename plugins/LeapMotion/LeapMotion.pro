@@ -62,15 +62,19 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		QMAKE_POST_LINK += && install_name_tool -change @loader_path/libLeap.dylib $$(LIBS)/LeapSDK/lib/libLeap.dylib $$DESTDIR/libfugio-leap.dylib
+		QMAKE_POST_LINK += && install_name_tool -change @loader_path/libLeap.dylib $$(LIBS)/LeapSDK/lib/libLeap.dylib $$DESTDIR/libfugio-leapmotion.dylib
 
 		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+
+		QMAKE_POST_LINK += && install_name_tool -change $$(LIBS)/LeapSDK/lib/libLeap.dylib @loader_path/../Frameworks/libLeap.dylib $$DESTDIR/libfugio-leapmotion.dylib
 
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
 		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
 
 		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
+
+		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
 	}
 }
 
@@ -125,7 +129,7 @@ macx:exists( $$(LIBS)/LeapSDK ) {
 	DEFINES += LEAP_PLUGIN_SUPPORTED
 
 	CONFIG(debug,debug|release) {
-		QMAKE_POST_LINK += install_name_tool -change @loader_path/libLeap.dylib $$(LIBS)/LeapSDK/lib/libLeap.dylib $$DESTDIR/libfugio-leap_debug.dylib
+		QMAKE_POST_LINK += install_name_tool -change @loader_path/libLeap.dylib $$(LIBS)/LeapSDK/lib/libLeap.dylib $$DESTDIR/libfugio-leapmotion_debug.dylib
 	} else {
 #        QMAKE_POST_LINK += && install_name_tool -change @loader_path/libLeap.dylib $$(LIBS)/LeapSDK/lib/libLeap.dylib $$DESTDIR/libfugio-leap.dylib
 	}
