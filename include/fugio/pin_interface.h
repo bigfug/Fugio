@@ -93,6 +93,8 @@ public:
 
 	virtual void setSetting( const QString &pKey, const QVariant &pValue ) = 0;
 
+	virtual void clearSetting( const QString &pKey ) = 0;
+
 	virtual QVariant setting( const QString &pKey, const QVariant &pDefault ) const = 0;
 
 	virtual void registerInterface( const QUuid &pUuid, QObject *pObject ) = 0;

@@ -104,6 +104,8 @@ public:
 
 	virtual void setSetting( const QString &pKey, const QVariant &pValue ) Q_DECL_OVERRIDE;
 
+	virtual void clearSetting( const QString &pKey ) Q_DECL_OVERRIDE;
+
 	virtual QVariant setting( const QString &pKey, const QVariant &pDefault = QVariant() ) const Q_DECL_OVERRIDE;
 
 	virtual void registerInterface( const QUuid &pUuid, QObject *pObject ) Q_DECL_OVERRIDE;

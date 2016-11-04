@@ -124,7 +124,11 @@ HEADERS  += mainwindow.h \
 	model/pinmodel.h \
 	model/pinlistmodel.h \
 	model/baselistmodel.h \
-	settings/settingsdialog.h
+	settings/settingsdialog.h \
+    undo/cmdpinmakeglobal.h \
+    undo/cmdpinremoveglobal.h \
+    undo/cmdpinconnectglobal.h \
+    undo/cmdpindisconnectglobal.h
 
 FORMS    += mainwindow.ui \
 	contextwidgetprivate.ui \

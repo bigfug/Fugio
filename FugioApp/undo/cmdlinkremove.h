@@ -5,8 +5,6 @@
 
 #include <fugio/global_interface.h>
 
-#include <fugiolib_global.h>
-
 #include "app.h"
 
 class CmdLinkRemove : public QUndoCommand

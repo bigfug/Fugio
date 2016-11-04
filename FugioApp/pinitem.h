@@ -21,7 +21,7 @@ public:
 	explicit PinItem( ContextView *pContextView, const QUuid &pId, NodeItem *pParent );
 
 	virtual ~PinItem( void );
-	
+
 	QSharedPointer<fugio::PinInterface> pin( void )
 	{
 		return( mPin );
@@ -60,6 +60,11 @@ public:
 		return( mPinColour );
 	}
 
+	bool isGlobal( void ) const
+	{
+		return( mPin->setting( "global", false ).toBool() );
+	}
+
 public slots:
 	void setColour( const QColor &pColur );
 
@@ -91,6 +96,8 @@ private:
 signals:
 	void colourUpdated( const QColor &pColor );
 
+	void globalUpdated( bool pGlobal );
+
 protected slots:
 	void menuRename( void );
 	void menuEditDefault( void );
@@ -106,6 +113,10 @@ protected slots:
 	void menuRemGroupInput( void );
 	void menuAddGroupOutput( void );
 	void menuRemGroupOutput( void );
+	void menuMakeGlobal( void );
+	void menuRemoveGlobal( void );
+	void menuConnectGlobal( void );
+	void menuDisconnectGlobal( void );
 
 private:
 	ContextView								*mContextView;

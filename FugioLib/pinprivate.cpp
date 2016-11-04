@@ -128,6 +128,11 @@ void PinPrivate::setSetting( const QString &pKey, const QVariant &pValue )
 	mSettings.insert( pKey, pValue );
 }
 
+void PinPrivate::clearSetting( const QString &pKey )
+{
+	mSettings.remove( pKey );
+}
+
 QVariant PinPrivate::setting( const QString &pKey, const QVariant &pDefault ) const
 {
 	return( mSettings.value( pKey, pDefault ) );

@@ -182,6 +182,11 @@ public:
 
 	bool hasNoteItem( const QUuid pNoteId ) const;
 
+	QList<QUuid> globalPins( void ) const
+	{
+		return( mGlobalPins );
+	}
+
 signals:
 //	void nodeInspection( NodeItem *pNodeItem );
 
@@ -255,6 +260,9 @@ public slots:
 	void ungroup( NodeItem *pGroup );
 
 	void processGroupLinks( const QUuid &pGroupId );
+
+	void addGlobalPin( QUuid pPinGlobalId );
+	void remGlobalPin( QUuid pPinGlobalId );
 
 protected:
 	void processSelection( bool pSaveToClipboard, bool pDeleteData );
@@ -340,7 +348,7 @@ protected:
 	void clearTempLists( void );
 
 	QString groupRichText( NodeItem *NI ) const;
-        
+
 public slots:
 	void updateItemVisibility();
 
@@ -476,6 +484,8 @@ private:
 
 	qreal									 mScaleFactor;
 	qreal									 mCurrentFactor;
+
+	QList<QUuid>							 mGlobalPins;
 };
 
 #endif // CONTEXTVIEW_H
