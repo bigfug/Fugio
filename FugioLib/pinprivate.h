@@ -194,23 +194,23 @@ signals:
 	void valueChanged( const QVariant &pValue );
 
 private:
-	fugio::ContextInterface					*mContext;
-	fugio::NodeInterface					*mNode;
-	QUuid								 mGlobalId;		// Context PinMap - Globally unique
-	QUuid								 mLocalId;		// Node
-	QUuid								 mControlId;		// PinControl PID_*
-	QUuid								 mPairedId;			// PinPair input <-> output
-	QString								 mName;
-	PinDirection						 mDirection;
+	fugio::ContextInterface						*mContext;
+	fugio::NodeInterface						*mNode;
+	QUuid										 mGlobalId;		// Context PinMap - Globally unique
+	QUuid										 mLocalId;		// Node
+	QUuid										 mControlId;		// PinControl PID_*
+	QUuid										 mPairedId;			// PinPair input <-> output
+	QString										 mName;
+	PinDirection								 mDirection;
 	QSharedPointer<fugio::PinControlInterface>	 mControl;
-	qint64								 mUpdated;
-	QVariant							 mDefaultValue;
-	QVariantHash						 mSettings;
-	int									 mOrder;
-	Options								 mFlags;
-	QMap<QUuid,QObject *>				 mInterfaces;
-	QList<QUuid>						 mInputTypeList;
-	QString								 mDescription;
+	qint64										 mUpdated;
+	QVariant									 mDefaultValue;
+	QVariantHash								 mSettings;
+	int											 mOrder;
+	Options										 mFlags;
+	QMap<QUuid,QObject *>						 mInterfaces;
+	QList<QUuid>								 mInputTypeList;
+	QString										 mDescription;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( PinPrivate::Options )
