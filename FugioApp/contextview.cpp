@@ -791,6 +791,21 @@ void ContextView::loadEnded( QSettings &pSettings, bool pPartial )
 
 			NI->labelDrag( QPointF() );
 		}
+
+		QSharedPointer<fugio::NodeInterface> FNI = mContext->findNode( NI->id() );
+
+		if( FNI )
+		{
+			for( auto OP : FNI->enumOutputPins() )
+			{
+				if( OP->setting( "global", false ).toBool() )
+				{
+					mGlobalPins.removeAll( OP->globalId() );
+
+					mGlobalPins.append( OP->globalId() );
+				}
+			}
+		}
 	}
 
 	updateItemVisibility();
@@ -1330,6 +1345,11 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 		return;
 	}
 
+	if( PinItem2->isGlobal() )
+	{
+		return;
+	}
+
 	LinkItem *RealLink = new LinkItem();
 
 	if( RealLink )
@@ -1601,7 +1621,7 @@ void ContextView::cut()
 }
 
 void ContextView::copy()
-{	
+{
 	processSelection( true, false );
 }
 
@@ -2362,6 +2382,18 @@ void ContextView::processGroupLinks(const QUuid &pGroupId)
 	{
 		processGroupLinks( NI );
 	}
+}
+
+void ContextView::addGlobalPin( QUuid pPinGlobalId)
+{
+	mGlobalPins.removeAll( pPinGlobalId );
+
+	mGlobalPins.append( pPinGlobalId );
+}
+
+void ContextView::remGlobalPin( QUuid pPinGlobalId )
+{
+	mGlobalPins.removeAll( pPinGlobalId );
 }
 
 void ContextView::processSelection( bool pSaveToClipboard, bool pDeleteData )

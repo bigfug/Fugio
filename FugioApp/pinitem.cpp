@@ -14,6 +14,7 @@
 #include <QStyleOptionGraphicsItem>
 #include <QColorDialog>
 #include <QSignalMapper>
+#include <QMessageBox>
 
 #include <QDebug>
 
@@ -44,6 +45,11 @@
 #include "undo/cmdgroupaddinput.h"
 #include "undo/cmdgroupreminput.h"
 #include "undo/cmdgroupremoutput.h"
+
+#include "undo/cmdpinmakeglobal.h"
+#include "undo/cmdpinremoveglobal.h"
+#include "undo/cmdpinconnectglobal.h"
+#include "undo/cmdpindisconnectglobal.h"
 
 PinItem::PinItem( ContextView *pContextView, QSharedPointer<fugio::PinInterface> pPin, NodeItem *pParent ) :
 	QGraphicsObject( pParent ), mContextView( pContextView ), mPin( pPin ), mLink( 0 ), mPinId( pPin->globalId() )
@@ -110,59 +116,90 @@ void PinItem::paint( QPainter *pPainter, const QStyleOptionGraphicsItem *pOption
 	Q_UNUSED( pOption )
 	Q_UNUSED( pWidget )
 
-	pPainter->setPen( Qt::black );
-	pPainter->setBrush( mPinColour );
-	pPainter->drawRect( boundingRect() );
+	QColor		PinColour = mPinColour;
+
+	if( mPin->direction() == PIN_INPUT && mPin->isConnected() )
+	{
+		NodeItem		*SrcNod = mContextView->findNodeItem( mPin->connectedPin()->node()->uuid() ).data();
+		PinItem			*SrcPin = SrcNod->findPinOutput( mPin->connectedPin()->globalId() );
+
+		PinColour = SrcPin->colour();
+	}
 
 	NodeItem			*Node  = qobject_cast<NodeItem *>( parentObject() );
 	NodeItem			*Group = mContextView->findNodeItem( Node->groupId() ).data();
 
 	if( mPin->direction() == PIN_INPUT )
 	{
-		// Are we in a group?  Do we want to add/remove this pin from the group's pins?
-
-		if( Group )
+		if( mPin->isConnected() && mPin->connectedPin()->setting( "global", false ).toBool() )
 		{
-			if( Group->findPinInput( mPin->globalId() ) )
-			{
-				QRectF				R( -50, 2, 50, 6 );
+			QRectF				R( -20, 2, 20, 6 );
 
-				QLinearGradient		Gradient( 0, 0, 1, 0 );
+			pPainter->setPen( Qt::transparent );
+			pPainter->setBrush( PinColour );
 
-				Gradient.setColorAt( 0, Qt::transparent );
-				Gradient.setColorAt( 1, mPinColour );
+			pPainter->drawRect( R );
 
-				Gradient.setCoordinateMode( QGradient::ObjectBoundingMode );
+			pPainter->setPen( QPen( Qt::black ) );
 
-				pPainter->setPen( Qt::transparent );
-				pPainter->setBrush( Gradient );
+			pPainter->drawEllipse( QPointF( -20, 5 ), 5.0f, 5.0f );
+		}
+		else if( Group && Group->findPinInput( mPin->globalId() ) )
+		{
+			// Are we in a group?  Do we want to add/remove this pin from the group's pins?
 
-				pPainter->drawRect( R );
-			}
+			QRectF				R( -50, 2, 50, 6 );
+
+			QLinearGradient		Gradient( 0, 0, 1, 0 );
+
+			Gradient.setColorAt( 0, Qt::transparent );
+			Gradient.setColorAt( 1, PinColour );
+
+			Gradient.setCoordinateMode( QGradient::ObjectBoundingMode );
+
+			pPainter->setPen( Qt::transparent );
+			pPainter->setBrush( Gradient );
+
+			pPainter->drawRect( R );
 		}
 	}
 	else
 	{
-		if( Group )
+		if( isGlobal() )
 		{
-			if( Group->findPinOutput( mPin->globalId() ) )
-			{
-				QRectF				R( 11, 2, 50, 6 );
+			QRectF				R( 10, 2, 20, 6 );
 
-				QLinearGradient		Gradient( 0, 0, 1, 0 );
+			pPainter->setPen( Qt::transparent );
+			pPainter->setBrush( mPinColour );
 
-				Gradient.setColorAt( 0, mPinColour );
-				Gradient.setColorAt( 1, Qt::transparent );
+			pPainter->drawRect( R );
 
-				Gradient.setCoordinateMode( QGradient::ObjectBoundingMode );
+			pPainter->setPen( QPen( Qt::black ) );
 
-				pPainter->setPen( Qt::transparent );
-				pPainter->setBrush( Gradient );
+			pPainter->drawEllipse( QPointF( 30, 5 ), 5.0f, 5.0f );
+		}
+		else if( Group && Group->findPinOutput( mPin->globalId() ) )
+		{
+			QRectF				R( 11, 2, 50, 6 );
 
-				pPainter->drawRect( R );
-			}
+			QLinearGradient		Gradient( 0, 0, 1, 0 );
+
+			Gradient.setColorAt( 0, mPinColour );
+			Gradient.setColorAt( 1, Qt::transparent );
+
+			Gradient.setCoordinateMode( QGradient::ObjectBoundingMode );
+
+			pPainter->setPen( Qt::transparent );
+			pPainter->setBrush( Gradient );
+
+			pPainter->drawRect( R );
 		}
 	}
+
+	pPainter->setPen( Qt::black );
+	pPainter->setBrush( PinColour );
+
+	pPainter->drawRect( boundingRect() );
 }
 
 void PinItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
@@ -205,102 +242,132 @@ void PinItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 
 	if( mPin->direction() == PIN_INPUT )
 	{
-		// Are we in a group?  Do we want to add/remove this pin from the group's pins?
-
-		if( Group )
+		if( mPin->isConnected() && mPin->connectedPin()->setting( "global", false ).toBool() )
 		{
-			if( Group->findPinInput( mPin->globalId() ) )
+			Menu.addAction( tr( "Disconnect Global" ), this, SLOT(menuDisconnectGlobal()) );
+		}
+		else
+		{
+			if( !mPin->isConnected() )
 			{
-				if( QAction *A = Menu.addAction( tr( "Remove Group Input" ), this, SLOT(menuRemGroupInput()) ) )
+				Menu.addAction( tr( "Connect Global..." ), this, SLOT(menuConnectGlobal()) );
+			}
+
+			// Are we in a group?  Do we want to add/remove this pin from the group's pins?
+
+			if( Group )
+			{
+				if( Group->findPinInput( mPin->globalId() ) )
 				{
-					if( mPin->isConnected() && mContextView->findNodeItem( mPin->connectedNode()->uuid() )->groupId() != Group->id() )
+					if( QAction *A = Menu.addAction( tr( "Remove Group Input" ), this, SLOT(menuRemGroupInput()) ) )
 					{
-						A->setEnabled( false );
+						if( mPin->isConnected() && mContextView->findNodeItem( mPin->connectedNode()->uuid() )->groupId() != Group->id() )
+						{
+							A->setEnabled( false );
+						}
 					}
 				}
-			}
-			else
-			{
-				Menu.addAction( tr( "Add Group Input" ), this, SLOT(menuAddGroupInput()) );
-			}
-		}
-
-		// Lets see if we have any nodes that are available to create the datatype for this pin
-
-		QList<QUuid>	TypeList;
-
-		for( const QUuid &ID : mPin->inputTypes() )
-		{
-			TypeList.append( gApp->global().pinJoiners( ID ) );
-		}
-
-		if( !TypeList.empty() )
-		{
-			Menu.addSection( tr( "Joiners" ) );
-
-			for( const QUuid &ID : TypeList )
-			{
-				if( QAction *A = Menu.addAction( gApp->global().nodeName( ID ), &SigMap, SLOT(map()) ) )
+				else
 				{
-					SigMap.setMapping( A, ID.toString() );
-
-					A->setData( ID );
+					Menu.addAction( tr( "Add Group Input" ), this, SLOT(menuAddGroupInput()) );
 				}
 			}
 
-			connect( &SigMap, SIGNAL(mapped(QString)), this, SLOT(menuJoin(QString)) );
+			if( !mPin->isConnected() )
+			{
+				// Lets see if we have any nodes that are available to create the datatype for this pin
+
+				QList<QUuid>	TypeList;
+
+				for( const QUuid &ID : mPin->inputTypes() )
+				{
+					TypeList.append( gApp->global().pinJoiners( ID ) );
+				}
+
+				if( !TypeList.empty() )
+				{
+					Menu.addSection( tr( "Joiners" ) );
+
+					for( const QUuid &ID : TypeList )
+					{
+						if( QAction *A = Menu.addAction( gApp->global().nodeName( ID ), &SigMap, SLOT(map()) ) )
+						{
+							SigMap.setMapping( A, ID.toString() );
+
+							A->setData( ID );
+						}
+					}
+
+					connect( &SigMap, SIGNAL(mapped(QString)), this, SLOT(menuJoin(QString)) );
+				}
+			}
 		}
 	}
 	else
 	{
 		Menu.addAction( tr( "Set Colour..." ), this, SLOT(menuSetColour()) );
 
-		// Are we in a group?  Do we want to add/remove this pin from the group's pins?
-
-		if( Group )
+		if( isGlobal() )
 		{
-			if( Group->findPinOutput( mPin->globalId() ) )
+			Menu.addAction( tr( "Remove Global" ), this, SLOT(menuRemoveGlobal()) );
+		}
+		else
+		{
+			if( !mPin->isConnected() )
 			{
-				if( QAction *A = Menu.addAction( tr( "Remove Group Output" ), this, SLOT(menuRemGroupOutput()) ) )
+				Menu.addAction( tr( "Make Global" ), this, SLOT(menuMakeGlobal()) );
+			}
+
+			// Are we in a group?  Do we want to add/remove this pin from the group's pins?
+
+			if( Group )
+			{
+				if( Group->findPinOutput( mPin->globalId() ) )
 				{
-					// We don't want to remove the pin if it's connected to pins outside the group
-
-					for( QSharedPointer<fugio::PinInterface> P : mPin->connectedPins() )
+					if( QAction *A = Menu.addAction( tr( "Remove Group Output" ), this, SLOT(menuRemGroupOutput()) ) )
 					{
-						if( mContextView->findNodeItem( P->node()->uuid() )->groupId() != Group->id() )
-						{
-							A->setEnabled( false );
+						// We don't want to remove the pin if it's connected to pins outside the group
 
-							break;
+						for( QSharedPointer<fugio::PinInterface> P : mPin->connectedPins() )
+						{
+							if( mContextView->findNodeItem( P->node()->uuid() )->groupId() != Group->id() )
+							{
+								A->setEnabled( false );
+
+								break;
+							}
 						}
 					}
 				}
-			}
-			else
-			{
-				Menu.addAction( tr( "Add Group Output" ), this, SLOT(menuAddGroupOutput()) );
-			}
-		}
-
-		// Lets see if we have any nodes that are available to create the datatype for this pin
-
-		QList<QUuid>	TypeList = gApp->global().pinSplitters( mPin->controlUuid() );
-
-		if( !TypeList.empty() )
-		{
-			Menu.addSection( tr( "Splitters" ) );
-
-			for( const QUuid &ID : TypeList )
-			{
-				if( QAction *A = Menu.addAction( gApp->global().nodeName( ID ), &SigMap, SLOT(map())) )
+				else
 				{
-					SigMap.setMapping( A, ID.toString() );
-
-					A->setData( ID );
+					Menu.addAction( tr( "Add Group Output" ), this, SLOT(menuAddGroupOutput()) );
 				}
 			}
 
-			connect( &SigMap, SIGNAL(mapped(QString)), this, SLOT(menuSplit(QString)) );
+			if( !mPin->isConnected() )
+			{
+				// Lets see if we have any nodes that are available to create the datatype for this pin
+
+				QList<QUuid>	TypeList = gApp->global().pinSplitters( mPin->controlUuid() );
+
+				if( !TypeList.empty() )
+				{
+					Menu.addSection( tr( "Splitters" ) );
+
+					for( const QUuid &ID : TypeList )
+					{
+						if( QAction *A = Menu.addAction( gApp->global().nodeName( ID ), &SigMap, SLOT(map())) )
+						{
+							SigMap.setMapping( A, ID.toString() );
+
+							A->setData( ID );
+						}
+					}
+
+					connect( &SigMap, SIGNAL(mapped(QString)), this, SLOT(menuSplit(QString)) );
+				}
+			}
 		}
 	}
 
@@ -858,6 +925,64 @@ void PinItem::menuRemGroupOutput()
 	Q_ASSERT( Node );
 
 	if( CmdGroupRemOutput *Cmd = new CmdGroupRemOutput( mContextView, Node->groupId(), mPin ) )
+	{
+		mContextView->widget()->undoStack()->push( Cmd );
+	}
+}
+
+void PinItem::menuMakeGlobal()
+{
+	if( CmdPinMakeGlobal *Cmd = new CmdPinMakeGlobal( mContextView, mPin ) )
+	{
+		mContextView->widget()->undoStack()->push( Cmd );
+	}
+}
+
+void PinItem::menuRemoveGlobal()
+{
+	if( CmdPinRemoveGlobal *Cmd = new CmdPinRemoveGlobal( mContextView, mPin ) )
+	{
+		mContextView->widget()->undoStack()->push( Cmd );
+	}
+}
+
+void PinItem::menuConnectGlobal()
+{
+	const QList<QUuid>		PidLst = mContextView->globalPins();
+
+	if( PidLst.isEmpty() )
+	{
+		QMessageBox::information( nullptr, tr( "No Global Pins" ), tr( "There are no global pins defined" ) );
+
+		return;
+	}
+
+	QMap<QString,QUuid>		PinLst;
+
+	for( const QUuid Pid : PidLst )
+	{
+		QSharedPointer<fugio::PinInterface> PI = mContextView->context()->findPin( Pid );
+
+		if( PI )
+		{
+			PinLst.insert( PI->name(), Pid );
+		}
+	}
+
+	QString	PinNam = QInputDialog::getItem( nullptr, tr( "Choose Global" ), tr( "Choose Global" ), PinLst.keys(), 0, false );
+
+	if( !PinNam.isEmpty() )
+	{
+		if( CmdPinConnectGlobal *Cmd = new CmdPinConnectGlobal( mContextView, mPin, PinLst.value( PinNam ) ) )
+		{
+			mContextView->widget()->undoStack()->push( Cmd );
+		}
+	}
+}
+
+void PinItem::menuDisconnectGlobal()
+{
+	if( CmdPinDisconnectGlobal *Cmd = new CmdPinDisconnectGlobal( mContextView, mPin, mPin->connectedPin()->globalId() ) )
 	{
 		mContextView->widget()->undoStack()->push( Cmd );
 	}
