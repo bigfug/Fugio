@@ -71,7 +71,14 @@ void GlobalPrivate::initialisePlugins()
 			QObject							*PlgObj = mPluginInitList.at( i );
 			fugio::PluginInterface			*PlgInt = qobject_cast<fugio::PluginInterface *>( PlgObj );
 
-			qDebug() << "Initialising plugin" << PlgObj->metaObject()->className();
+			if( !LastChance )
+			{
+				qDebug() << "Initialising plugin" << PlgObj->metaObject()->className();
+			}
+			else
+			{
+				qDebug() << "Initialising plugin" << PlgObj->metaObject()->className() << "(Last Chance)";
+			}
 
 			qApp->processEvents();
 
