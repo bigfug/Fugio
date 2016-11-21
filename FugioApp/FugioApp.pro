@@ -125,10 +125,10 @@ HEADERS  += mainwindow.h \
 	model/pinlistmodel.h \
 	model/baselistmodel.h \
 	settings/settingsdialog.h \
-    undo/cmdpinmakeglobal.h \
-    undo/cmdpinremoveglobal.h \
-    undo/cmdpinconnectglobal.h \
-    undo/cmdpindisconnectglobal.h
+	undo/cmdpinmakeglobal.h \
+	undo/cmdpinremoveglobal.h \
+	undo/cmdpinconnectglobal.h \
+	undo/cmdpindisconnectglobal.h
 
 FORMS    += mainwindow.ui \
 	contextwidgetprivate.ui \
@@ -175,6 +175,8 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$APP_DIR ) CFBundleVersion \"$$FUGIO_VERSION\"
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$APP_DIR ) CFBundleGetInfoString \"$$FUGIO_VERSION\"
+
+		QMAKE_POST_LINK += && install_name_tool -add_rpath @loader_path/../../../libs $$APP_DIR/Contents/MacOS/Fugio
 
 		QMAKE_POST_LINK += && mkdir -pv $$PLUGIN_DIR/platforms
 
