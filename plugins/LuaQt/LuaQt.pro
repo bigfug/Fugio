@@ -87,17 +87,32 @@ macx {
 
 		# we don't want to copy the Lua library into the bundle, so change its name
 
-		QMAKE_POST_LINK += && install_name_tool -change /usr/local/opt/lua/lib/liblua.5.2.dylib liblua.5.2.dylib $$LIBCHANGEDEST
+#		QMAKE_POST_LINK += && install_name_tool -change /usr/local/opt/lua/lib/liblua.5.2.dylib liblua.5.2.dylib $$LIBCHANGEDEST
 
-		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+#		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
-		# now change it back
+		#QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
 
-		QMAKE_POST_LINK += && install_name_tool -change liblua.5.2.dylib /usr/local/lib/liblua.5.2.dylib $$LIBCHANGEDEST
+#		# now change it back
+
+#		QMAKE_POST_LINK += && install_name_tool -change liblua.5.2.dylib /usr/local/lib/liblua.5.2.dylib $$LIBCHANGEDEST
+
+		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
 
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
 		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
+
+		exists( /usr/local/opt/lua ) {
+			QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
+
+			QMAKE_POST_LINK += && cp -a /usr/local/opt/lua/lib/*.dylib $$INSTALLDIR/data/libs/
+
+		} else:exists( $$(LIBS)/lua-5.3.3/src ) {
+			QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
+
+			QMAKE_POST_LINK += && cp $$(LIBS)/lua-5.3.3/src/liblua5.3.3.dylib $$INSTALLDIR/data/libs/
+		}
 
 		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
@@ -147,12 +162,21 @@ win32:exists( $$(LIBS)/Lua-5.3.2 ) {
 	DEFINES += LUA_SUPPORTED
 }
 
-macx:exists( /usr/local/include/lua.hpp ) {
-	INCLUDEPATH += /usr/local/include
+macx {
+	exists( /usr/local/opt/lua ) {
+		INCLUDEPATH += /usr/local/opt/lua/include
 
-	LIBS += -L/usr/local/lib -llua
+		LIBS += -L/usr/local/opt/lua/lib -llua
 
-	DEFINES += LUA_SUPPORTED
+		DEFINES += LUA_SUPPORTED
+
+	} else:exists( $$(LIBS)/lua-5.3.3/src ) {
+		INCLUDEPATH += $$(LIBS)/lua-5.3.3/src
+
+		LIBS += -L$$(LIBS)/lua-5.3.3/src -llua5.3.3
+
+		DEFINES += LUA_SUPPORTED
+	}
 }
 
 unix:!macx {

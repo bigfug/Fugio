@@ -123,10 +123,17 @@ win32 {
 	}
 }
 
-macx:exists( /usr/local/include/fftw3.h ) {
+macx:exists( /usr/local/opt/fftw ) {
 	INCLUDEPATH += /usr/local/include
 
 	LIBS += -L/usr/local/lib -lfftw3f
+
+	DEFINES += FFTW_PLUGIN_SUPPORTED
+
+} else:macx:exists( $$(LIBS)/fftw-3.3.4 ) {
+	INCLUDEPATH += $$(LIBS)/fftw-3.3.4/api
+
+	LIBS += $$(LIBS)/fftw-3.3.4/.libs/libfftw3f.a
 
 	DEFINES += FFTW_PLUGIN_SUPPORTED
 }

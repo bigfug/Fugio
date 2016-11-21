@@ -125,10 +125,18 @@ win32 {
 		LIBS += -lopengl32
 }
 
-macx {
+macx:exists( /usr/local/opt/glew ) {
 	INCLUDEPATH += /usr/local/include
 
 	LIBS += -L/usr/local/lib -lGLEW
+}
+
+mac:exists( $$(LIBS)/glew-2.0.0 ) {
+	INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
+
+	LIBS += $$(LIBS)/glew-2.0.0/lib/libGLEW.a
+
+	DEFINES += GLEW_STATIC
 }
 
 #------------------------------------------------------------------------------
