@@ -209,6 +209,12 @@ macx {
 		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
 		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
+
+		exists( /usr/local/opt/glew ) {
+			QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
+
+			QMAKE_POST_LINK += && cp -a /usr/local/opt/glew/lib/*.dylib $$INSTALLDIR/data/libs/
+		}
 	}
 }
 
