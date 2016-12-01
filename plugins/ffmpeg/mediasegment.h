@@ -1,0 +1,353 @@
+#ifndef MEDIASEGMENT_H
+#define MEDIASEGMENT_H
+
+#include <QString>
+#include <QVector>
+#include <QPair>
+#include <QMap>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QSharedPointer>
+#include <QThread>
+#include <QDateTime>
+#include <QDebug>
+
+#include "segmentinterface.h"
+#include "audiobuffer.h"
+
+#include <hap.h>
+
+#ifndef INT64_C
+#define INT64_C(c) (c ## LL)
+#define UINT64_C(c) (c ## ULL)
+#endif
+
+extern "C"
+{
+#include <libavutil/rational.h>
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libavutil/opt.h>
+#include <libswscale/swscale.h>
+#include <libavutil/pixdesc.h>
+#include <libavutil/imgutils.h>
+#if defined( TL_USE_LIB_AV )
+#include <libavutil/samplefmt.h>
+#include <libavutil/audioconvert.h>
+#else
+#include <libswresample/swresample.h>
+#endif
+}
+
+class QImage;
+class MediaAudioProcessor;
+
+class MediaSegment : public QObject, public fugio::SegmentInterface
+{
+	Q_OBJECT
+	Q_INTERFACES( fugio::SegmentInterface )
+
+public:
+	MediaSegment( void );
+
+	virtual ~MediaSegment( void );
+
+	virtual bool loadMedia( const QString &pFileName, bool pProcess ) Q_DECL_OVERRIDE;
+
+	virtual void setPlayhead( qreal pTimeStamp ) Q_DECL_OVERRIDE;
+
+	virtual void mixAudio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, float pVol ) const Q_DECL_OVERRIDE;
+
+	virtual qreal videoFrameTimeStamp( void ) const Q_DECL_OVERRIDE
+	{
+		return( mVideo.mPTS );
+	}
+
+	virtual qreal duration( void ) const Q_DECL_OVERRIDE
+	{
+		return( mDuration );
+	}
+
+	virtual qreal wavL( qreal pTimeStamp ) const Q_DECL_OVERRIDE;
+	virtual qreal wavR( qreal pTimeStamp ) const Q_DECL_OVERRIDE;
+
+	virtual QString filename( void ) const Q_DECL_OVERRIDE
+	{
+		return( mFileName );
+	}
+
+	virtual bool hasVideo( void ) const Q_DECL_OVERRIDE
+	{
+		return( mVideo.mStreamId != -1 );
+	}
+
+	virtual bool hasAudio( void ) const Q_DECL_OVERRIDE
+	{
+		return( mAudio.mStreamId != -1 );
+	}
+
+	virtual QSize imageSize( void ) const Q_DECL_OVERRIDE;
+
+	virtual void setPreload( bool pPreload ) Q_DECL_OVERRIDE;
+
+	virtual bool preload( void ) const Q_DECL_OVERRIDE;
+
+	virtual const VidDat *viddat( void ) const Q_DECL_OVERRIDE;
+
+	virtual int imageFormat( void ) const Q_DECL_OVERRIDE;
+
+	virtual bool imageIsHap( void ) const Q_DECL_OVERRIDE;
+
+	virtual qreal videoFrameRate( void ) const Q_DECL_OVERRIDE;
+
+	virtual void readNext( void ) Q_DECL_OVERRIDE;
+
+	virtual int audioChannels( void ) const Q_DECL_OVERRIDE
+	{
+		return( mChannels );
+	}
+
+	virtual qreal sampleRate( void ) const Q_DECL_OVERRIDE
+	{
+		return( mSampleRate );
+	}
+
+private:
+	bool readVideoFrame( qreal TargetPTS, bool pForce );
+
+	bool readAudioFrame(qreal TargetPTS , bool pForce );
+
+	static int is_realtime( AVFormatContext *s )
+	{
+		if( !strcmp(s->iformat->name, "rtp")
+				|| !strcmp(s->iformat->name, "rtsp")
+				|| !strcmp(s->iformat->name, "sdp")
+				)
+			return 1;
+
+		if(s->pb && (   !strncmp(s->filename, "rtp:", 4)
+						|| !strncmp(s->filename, "udp:", 4)
+						|| !strncmp(s->filename, "http:", 5)
+						|| !strncmp(s->filename, "https:", 6)
+						)
+				)
+			return 1;
+		return 0;
+	}
+
+	void updateVideoFrames( qreal pPTS );
+
+	bool haveVideoFrames( void ) const;
+
+signals:
+	void durationUpdated( qreal pDuration );
+
+	void operate( const QString & );
+
+protected:
+	void clearSegment();
+
+private:
+	void unloadMedia( void );
+
+	void processAudio();
+
+	void decodeIFrames( bool pDecode );
+	void decodeBFrames( bool pDecode );
+
+	void clearVideo( void );
+
+	void clearAudio( void );
+
+	void processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pForce );
+
+	void processAudioFrame( qreal TargetPTS, qreal PacketTS, bool pForce );
+
+	void removeVideoFrames( void );
+
+	void removeAudioFrames( void );
+
+	static QString av_err( const QString &pHeader, int pErrorCode );
+
+	bool hapProcess( qreal TargetPTS, qreal PacketTS , bool pForce );
+
+	static void hapStaticDecodeCallback( HapDecodeWorkFunction function, void *p, unsigned int count, void *info );
+
+	void hapDecodeCallback( HapDecodeWorkFunction function, void *p, unsigned int count );
+
+	int findFrameIndex(qreal pTimeStamp) const;
+
+	bool isVideoPicture() const;
+
+	bool hasVideoFrame( qreal pPTS ) const;
+
+	bool ptsInRange( qreal pPTS, qreal pTarget, qreal Min, qreal Max) const;
+
+private:
+	class timeout_handler
+	{
+	public:
+		timeout_handler(unsigned int t = 10 ) : timeout_ms_(t){}
+
+		void reset(unsigned int TimeoutMs )
+		{
+			timeout_ms_ = TimeoutMs;
+			lastTime_ = QDateTime::currentMSecsSinceEpoch();
+		}
+
+		bool is_timeout(){
+			const qint64 actualDelay = QDateTime::currentMSecsSinceEpoch() - lastTime_;
+			return actualDelay > timeout_ms_;
+		}
+
+		static int check_interrupt(void * t) {
+			return t && static_cast<timeout_handler *>(t)->is_timeout();
+		}
+
+	public:
+		unsigned int timeout_ms_;
+		qint64 lastTime_;
+	};
+
+private:
+	QString				 mFileName;
+	AVFormatContext		*mFormatContext;
+
+	typedef struct Stream
+	{
+		int				 mStreamId;
+		AVCodecContext	*mCodecContext;
+		AVCodec			*mCodec;
+		double 			 mPTS;
+		double			 mMaxPTS, mMaxDur;
+		AVRational		 mFrameRate;
+
+		Stream( void )
+			: mStreamId( -1 ), mCodecContext( nullptr ), mCodec( nullptr ), mPTS( -1 ),
+			  mMaxPTS( 0 ), mMaxDur( 0 )
+		{
+
+		}
+
+		bool open( AVStream *pStream, AVDictionary **pOpts )
+		{
+			mCodec = avcodec_find_decoder( pStream->codecpar->codec_id );
+
+			if( !mCodec )
+			{
+				qWarning() << "Couldn't avcodec_find_decoder for stream";
+
+				close();
+
+				return( true );
+			}
+
+			mCodecContext = avcodec_alloc_context3( NULL );
+
+			if( !mCodecContext )
+			{
+				return( false );
+			}
+
+			avcodec_parameters_to_context( mCodecContext, pStream->codecpar );
+
+			av_codec_set_pkt_timebase( mCodecContext, pStream->time_base );
+
+			mCodecContext->framerate = pStream->avg_frame_rate;
+
+			mFrameRate = mCodecContext->framerate;
+
+			if( avcodec_open2( mCodecContext, mCodec, pOpts ) < 0 )
+			{
+				qWarning() << "Couldn't avcodec_open2 for stream";
+
+				close();
+
+				return( true );
+			}
+
+			return( true );
+		}
+
+		void close( void )
+		{
+			avcodec_free_context( &mCodecContext );
+
+			mStreamId = -1;
+
+			mCodec = nullptr;
+
+			mPTS = -1;
+
+			mMaxPTS = mMaxDur = 0;
+		}
+	} Stream;
+
+	typedef struct VideoStream : public Stream
+	{
+		int			mPrevIdx;
+		int			mCurrIdx;
+		int			mNxt1Idx;
+		int			mNxt2Idx;
+
+		VideoStream( void )
+			: mPrevIdx( -1 ), mCurrIdx( -1 ), mNxt1Idx( -1 ), mNxt2Idx( -1 )
+		{
+
+		}
+
+	} VideoStream;
+
+	typedef struct AudioStream : public Stream
+	{
+		qreal				 mSamplePTS;
+
+		AudioStream( void )
+			: mSamplePTS( -1 )
+		{
+
+		}
+
+	} AudioStream;
+
+	qreal				 mPlayHead;
+	VideoStream			 mVideo;
+	AudioStream			 mAudio;
+
+	AVFrame				*mFrameSrc;
+	AVPacket			 mPacket;
+
+	int					 mVideoSendResult;
+	int					 mVideoRecvResult;
+	int					 mAudioSendResult;
+	int					 mAudioRecvResult;
+
+	timeout_handler		 mTimeoutHandler;
+
+#if defined( TL_USE_LIB_AV )
+#else
+	SwrContext			*mSwrContext;
+#endif
+
+	QList<VidDat>		 mVidDat;
+
+	bool				 mErrorState;
+
+	qreal				 mDuration;
+
+	mutable QMutex		 mAudDatLck;
+
+	QList<AudioBuffer>	 mAudDat;
+
+	bool				 mDecodeI;
+	bool				 mDecodeB;
+
+	uint64_t			mChannelLayout;
+	int					mChannels;
+	int					mSampleRate;
+	enum AVSampleFormat	mSampleFmt;
+
+	MediaAudioProcessor					*mAudioProcessor;
+};
+
+#endif // MEDIASEGMENT_H
