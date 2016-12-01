@@ -92,9 +92,9 @@ bool XInputNode::initialise()
 
 void XInputNode::frameStart( void )
 {
+#if defined( XINPUT_SUPPORTED )
 	int		CtlIdx = variant( mPinInputIndex ).toInt();
 
-#if defined( XINPUT_SUPPORTED )
 	XINPUT_STATE		State;
 
 	if( XInputGetState( CtlIdx, &State ) != ERROR_SUCCESS )

@@ -58,15 +58,10 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		# we don't want to copy the Lua library into the bundle, so change its name
-
-		QMAKE_POST_LINK += && install_name_tool -change /usr/local/opt/portmidi/lib/libportmidi.dylib libportmidi.dylib $$LIBCHANGEDEST
-
 		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
-		# now change it back
-
-		QMAKE_POST_LINK += && install_name_tool -change libportmidi.dylib /usr/local/lib/libportmidi.dylib $$LIBCHANGEDEST
+		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/Frameworks
+		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
 
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
@@ -123,39 +118,44 @@ windows:exists( $$(LIBS)/portmidi ) {
 }
 
 win64:exists( $$(LIBS)/portmidi.64.2013 ) {
-	LIBS += -L$$(LIBS)/portmidi.64.2013/Release
+	LIBS += -L$$(LIBS)/portmidi.64.2013/Release -lportmidi
 
 	DEFINES += PORTMIDI_SUPPORTED
 }
 
 win32:exists( $$(LIBS)/portmidi.32.2013 )  {
-	LIBS += -L$$(LIBS)/portmidi.32.2013/Release
+	LIBS += -L$$(LIBS)/portmidi.32.2013/Release -lportmidi
 
 	DEFINES += PORTMIDI_SUPPORTED
 }
 
-unix:exists( /usr/local/include/portmidi.h ) {
-	INCLUDEPATH += /usr/local/include
-	LIBS += -L/usr/local/lib
-	DEFINES += PORTMIDI_SUPPORTED
+macx {
+	exists( /usr/local/opt/portmidi ) {
+		INCLUDEPATH += /usr/local/opt/portmidi/include
+		LIBS += -L/usr/local/opt/portmidi/lib -lportmidi
+		DEFINES += PORTMIDI_SUPPORTED
+	} else:exists( $$(LIBS)/portmidi ) {
+		INCLUDEPATH += $$(LIBS)/portmidi/pm_common
+		LIBS += $$(LIBS)/portmidi/libportmidi_s.a
+		LIBS += -framework Carbon -framework AudioUnit -framework AudioToolbox -framework CoreAudio -framework CoreMIDI
+		DEFINES += PORTMIDI_SUPPORTED
+	}
 }
 
 unix:!macx {
 	exists( $$[QT_SYSROOT]/usr/include/portmidi.h ) {
 		INCLUDEPATH += $$[QT_SYSROOT]/usr/include
-		LIBS += -L$$[QT_SYSROOT]/usr/lib
+		LIBS += -L$$[QT_SYSROOT]/usr/lib -lportmidi
 		DEFINES += PORTMIDI_SUPPORTED
 
 	} else:exists( /usr/include/portmidi.h ) {
 		INCLUDEPATH += /usr/include
-		LIBS += -L/usr/lib
+		LIBS += -L/usr/lib -lportmidi
 		DEFINES += PORTMIDI_SUPPORTED
 	}
 }
 
-contains( DEFINES, PORTMIDI_SUPPORTED ) {
-	LIBS += -lportmidi
-} else {
+!contains( DEFINES, PORTMIDI_SUPPORTED ) {
 	message( "PortMidi not supported" )
 }
 

@@ -5,6 +5,7 @@ SUBDIRS += \
 	Audio \
 	Colour \
 	Core \
+	ffmpeg \
 	FFTW \
 	File \
 	Firmata \

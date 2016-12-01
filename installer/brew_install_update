@@ -1,11 +1,55 @@
 #!/bin/sh
 
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+echo "Fugio Homebrew Installer"
 
-brew tap homebrew/science
-brew tap homebrew/versions
+if [ ! -x /usr/local/bin/brew ]; then
+  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+fi
 
-brew install lua fftw portaudio portmidi
+taps=$(/usr/local/bin/brew tap)
+
+echo $taps
+
+if ! echo "$taps" | grep -q 'homebrew/science' &> /dev/null; then
+  echo "Adding tap homebrew/science..."
+  brew tap homebrew/science
+fi
+
+if ! echo "$taps" | grep -q 'homebrew/versions' &> /dev/null; then
+  echo "Adding tap homebrew/versions..."
+  brew tap homebrew/versions
+fi
+
+if [ ! -e /usr/local/opt/portaudio ]; then
+  brew install portaudio --HEAD
+else
+  echo "portaudio is already installed..."
+fi
+
+if [ ! -e /usr/local/opt/lua ]; then
+  brew install lua
+else
+  echo "lua is already installed..."
+fi
+
+if [ ! -e /usr/local/opt/portmidi ]; then
+  brew install portmidi
+else
+  echo "portmidi is already installed..."
+fi
+
+if [ ! -e /usr/local/opt/fftw ]; then
+  brew install fftw
+else
+  echo "fftw is already installed..."
+fi
+
+if [ ! -e /usr/local/opt/ffmpeg ]; then
+  brew install ffmpeg --with-fdk-aac --with-libass --with-x265 --with-freetype --with-libvorbis --with-libvpx --with-opus
+else
+  echo "ffmpeg is already installed..."
+fi
 
 brew update
 brew upgrade
+

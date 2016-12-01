@@ -125,10 +125,10 @@ HEADERS  += mainwindow.h \
 	model/pinlistmodel.h \
 	model/baselistmodel.h \
 	settings/settingsdialog.h \
-    undo/cmdpinmakeglobal.h \
-    undo/cmdpinremoveglobal.h \
-    undo/cmdpinconnectglobal.h \
-    undo/cmdpindisconnectglobal.h
+	undo/cmdpinmakeglobal.h \
+	undo/cmdpinremoveglobal.h \
+	undo/cmdpinconnectglobal.h \
+	undo/cmdpindisconnectglobal.h
 
 FORMS    += mainwindow.ui \
 	contextwidgetprivate.ui \
@@ -176,6 +176,8 @@ macx {
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$APP_DIR ) CFBundleVersion \"$$FUGIO_VERSION\"
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$APP_DIR ) CFBundleGetInfoString \"$$FUGIO_VERSION\"
 
+		QMAKE_POST_LINK += && install_name_tool -add_rpath @loader_path/../../../libs $$APP_DIR/Contents/MacOS/Fugio
+
 		QMAKE_POST_LINK += && mkdir -pv $$PLUGIN_DIR/platforms
 
 		QMAKE_POST_LINK += && cp $$(QTDIR)/plugins/platforms/libqcocoa.dylib $$PLUGIN_DIR/platforms
@@ -192,8 +194,6 @@ macx {
 		QMAKE_POST_LINK += && rm -rf $$INSTALLDIR/data/$$TARGET".app"
 
 		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/package.xml $$INSTALLDIR/meta
-
-		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../installer/brew_install_update $$INSTALLDIR/data
 
 		QMAKE_POST_LINK += && cp -R $$APP_DIR $$INSTALLDIR/data
 

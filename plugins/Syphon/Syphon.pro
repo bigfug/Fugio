@@ -73,9 +73,9 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
 
-		QMAKE_POST_LINK += $$libChange( libGLEW.2.0.0.dylib )
+		QMAKE_POST_LINK += && mkdir -pv $$FRAMEWORKDIR
 
 		QMAKE_POST_LINK += && rm -rf $$FRAMEWORKDIR/Syphon.framework
 
@@ -139,9 +139,17 @@ win32 {
 }
 
 macx {
-	INCLUDEPATH += /usr/local/include
+	exists( /usr/local/opt/glew ) {
+		INCLUDEPATH += /usr/local/include
 
-	LIBS += -L/usr/local/lib -lGLEW
+		LIBS += -L/usr/local/lib -lGLEW
+	} else:exists( $$(LIBS)/glew-2.0.0 ) {
+		INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
+
+		LIBS += $$(LIBS)/glew-2.0.0/lib/libGLEW.a
+
+		DEFINES += GLEW_STATIC
+	}
 }
 
 #------------------------------------------------------------------------------

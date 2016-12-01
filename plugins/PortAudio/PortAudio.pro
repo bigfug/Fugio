@@ -58,9 +58,10 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite
+		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
-		QMAKE_POST_LINK += $$libChange( libportaudio.2.dylib )
+		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/Frameworks
+		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
 
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
@@ -128,11 +129,18 @@ windows {
 	}
 }
 
-macx:exists( /usr/local/include/portaudio.h ) {
-	INCLUDEPATH += /usr/local/include
-	LIBS += /usr/local/lib/libportaudio.a
-	LIBS += -framework Carbon -framework AudioUnit -framework AudioToolbox -framework CoreAudio
-	DEFINES += PORTAUDIO_SUPPORTED
+macx {
+	exists( /usr/local/opt/portaudio ) {
+		INCLUDEPATH += /usr/local/opt/portaudio/include
+		LIBS += -L/usr/local/opt/portaudio/lib -lportaudio
+		LIBS += -framework Carbon -framework AudioUnit -framework AudioToolbox -framework CoreAudio
+		DEFINES += PORTAUDIO_SUPPORTED
+	} else:exists( $$(LIBS)/portaudio/include/portaudio.h ) {
+		INCLUDEPATH += $$(LIBS)/portaudio/include
+		LIBS += $$(LIBS)/portaudio/lib/.libs/libportaudio.a
+		LIBS += -framework Carbon -framework AudioUnit -framework AudioToolbox -framework CoreAudio
+		DEFINES += PORTAUDIO_SUPPORTED
+	}
 }
 
 unix:!macx {

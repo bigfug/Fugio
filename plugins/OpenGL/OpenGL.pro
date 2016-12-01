@@ -154,11 +154,24 @@ win32 {
 }
 
 macx {
-	INCLUDEPATH += /usr/local/include
+	QMAKE_POST_LINK += echo
 
-	LIBS += -L/usr/local/lib -lGLEW
+	exists( /usr/local/opt/glew ) {
+		QMAKE_POST_LINK += && mkdir -pv $$DESTDIR/../libs
+
+		QMAKE_POST_LINK += && cp -a /usr/local/opt/glew/lib/*.dylib $$DESTDIR/../libs/
+
+		INCLUDEPATH += /usr/local/include
+
+		LIBS += -L/usr/local/lib -lGLEW
+	} else:exists( $$(LIBS)/glew-2.0.0 ) {
+		INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
+
+		LIBS += $$(LIBS)/glew-2.0.0/lib/libGLEW.a
+
+		DEFINES += GLEW_STATIC
+	}
 }
-
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -177,17 +190,7 @@ macx {
 	DESTDIR = $$BUNDLEDIR/Contents/MacOS
 	DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
 
-	CONFIG(debug,debug|release) {
-		QMAKE_POST_LINK += echo
-
-		LIBCHANGEDEST = $$DESTLIB
-
-		QMAKE_POST_LINK += && install_name_tool -change lib/libglfw.3.dylib /opt/local/lib/libglfw.3.dylib $$LIBCHANGEDEST
-	}
-
 	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
-
 		LIBCHANGEDEST = $$DESTLIB
 
 		QMAKE_POST_LINK += $$qtLibChange( QtWidgets )
@@ -197,9 +200,7 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
-
-		QMAKE_POST_LINK += $$libChange( libGLEW.2.0.0.dylib )
+		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
 
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
@@ -208,6 +209,12 @@ macx {
 		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
 		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
+
+		exists( /usr/local/opt/glew ) {
+			QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
+
+			QMAKE_POST_LINK += && cp -a /usr/local/opt/glew/lib/*.dylib $$INSTALLDIR/data/libs/
+		}
 	}
 }
 
