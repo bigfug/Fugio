@@ -36,6 +36,7 @@
 #include "floatthresholdnode.h"
 #include "autorangenode.h"
 #include "getsizenode.h"
+#include "triggerarraynode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -84,6 +85,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Rate Control", NID_RATE_CONTROL, &RateControlNode::staticMetaObject ),
 	ClassEntry( "Signal", "Number", NID_SIGNAL_NUMBER, &SignalNumberNode::staticMetaObject ),
 	ClassEntry( "Toggle", NID_TOGGLE, &ToggleNode::staticMetaObject ),
+	ClassEntry( "Trigger Array", NID_TRIGGER_ARRAY, &TriggerArrayNode::staticMetaObject ),
 	ClassEntry( "Trigger Range Number", NID_TRIGGER_RANGE_NUMBER, &TriggerRangeNumberNode::staticMetaObject ),
 	ClassEntry( "Type Size", NID_TYPE_SIZE, &TypeSizeNode::staticMetaObject ),
 	ClassEntry( "Split List", NID_SPLIT_LIST, &SplitListNode::staticMetaObject ),
