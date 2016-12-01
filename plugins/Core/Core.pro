@@ -67,7 +67,8 @@ SOURCES += \
 	arraylistpin.cpp \
 	rectpin.cpp \
 	getsizenode.cpp \
-    triggerarraynode.cpp
+    triggerarraynode.cpp \
+    triggerbooleannode.cpp
 
 HEADERS += \
 	stringpin.h \
@@ -130,7 +131,8 @@ HEADERS += \
 	rectpin.h \
 	../../include/fugio/core/size_interface.h \
 	getsizenode.h \
-    triggerarraynode.h
+    triggerarraynode.h \
+    triggerbooleannode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
