@@ -60,7 +60,6 @@ macx {
 
 		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
-		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/Frameworks
 		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
 
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
@@ -132,12 +131,7 @@ windows {
 macx {
 	exists( /usr/local/opt/portaudio ) {
 		INCLUDEPATH += /usr/local/opt/portaudio/include
-		LIBS += -L/usr/local/opt/portaudio/lib -lportaudio
-		LIBS += -framework Carbon -framework AudioUnit -framework AudioToolbox -framework CoreAudio
-		DEFINES += PORTAUDIO_SUPPORTED
-	} else:exists( $$(LIBS)/portaudio/include/portaudio.h ) {
-		INCLUDEPATH += $$(LIBS)/portaudio/include
-		LIBS += $$(LIBS)/portaudio/lib/.libs/libportaudio.a
+		LIBS += /usr/local/opt/portaudio/lib/libportaudio.a
 		LIBS += -framework Carbon -framework AudioUnit -framework AudioToolbox -framework CoreAudio
 		DEFINES += PORTAUDIO_SUPPORTED
 	}
