@@ -224,20 +224,19 @@ windows {
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$_PRO_FILE_PWD_/package.xml ) $$shell_path( $$INSTALLDIR/meta/ )
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".exe" ) $$shell_path( $$INSTALLDIR/data/ )
 
+		QMAKE_POST_LINK += & windeployqt --force --no-angle --no-opengl-sw $$shell_path( $$INSTALLDIR/data )
+
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/include )
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/snippets )
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/examples )
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/platforms )
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/share )
 
 		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../examples/* ) $$shell_path( $$INSTALLDIR/data/examples ) /f /s /y
 		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../snippets/* ) $$shell_path( $$INSTALLDIR/data/snippets ) /f /s /y
 		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../share/* ) $$shell_path( $$INSTALLDIR/data/share ) /f /s /y
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $(QTDIR)/plugins/platforms/qwindows.dll ) $$shell_path( $$INSTALLDIR/data/platforms )
-
-		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/icu*.dll ) $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) $$shell_path( $(QTDIR)/bin/Qt5Core.dll ) $$shell_path( $(QTDIR)/bin/Qt5Gui.dll ) $$shell_path( $(QTDIR)/bin/Qt5Widgets.dll ) $$shell_path( $(QTDIR)/bin/Qt5Network.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
+		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
 	}
 }
 
