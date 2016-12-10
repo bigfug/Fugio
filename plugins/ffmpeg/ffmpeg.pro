@@ -84,6 +84,14 @@ macx {
 # Windows
 
 windows {
+	win32 {
+		FFMPEGDIR    = $$(LIBS)/ffmpeg-3.2-win32
+	}
+
+	win64 {
+		FFMPEGDIR    = $$(LIBS)/ffmpeg-3.2-win64
+	}
+
 	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 	INSTALLDEST  = $$INSTALLDIR/data/plugins/ffmpeg
 
@@ -94,13 +102,7 @@ windows {
 
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
 
-		win32 {
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/ffmpeg-3.0.1-32/bin/*.dll ) $$shell_path( $$INSTALLDEST )
-		}
-
-		win64 {
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/ffmpeg-3.0.1-64/bin/*.dll ) $$shell_path( $$INSTALLDEST )
-		}
+		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$FFMPEGDIR/bin/*.dll ) $$shell_path( $$INSTALLDEST )
 	}
 }
 
@@ -116,17 +118,10 @@ linux {
 	LIBS += -L/usr/local/lib
 }
 
-win32 {
-	LIBS += -L$$(LIBS)/ffmpeg-20160728-fb91143-win32/lib
-	LIBS += -L$$(LIBS)/ffmpeg-20160728-fb91143-win32/bin
-	INCLUDEPATH += $$(LIBS)/ffmpeg-20160728-fb91143-win32/include
-	QMAKE_LFLAGS += /OPT:NOREF
-}
-
-win64 {
-	LIBS += -L$$(LIBS)/ffmpeg-2.8.3-64/lib
-	LIBS += -L$$(LIBS)/ffmpeg-2.8.3-64/bin
-	INCLUDEPATH += $$(LIBS)/ffmpeg-2.8.3-64/include
+windows {
+	LIBS += -L$$FFMPEGDIR/lib
+	LIBS += -L$$FFMPEGDIR/bin
+	INCLUDEPATH += $$FFMPEGDIR/include
 	QMAKE_LFLAGS += /OPT:NOREF
 }
 
