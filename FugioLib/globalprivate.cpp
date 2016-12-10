@@ -22,6 +22,10 @@
 #include <fugio/global_signals.h>
 #include <fugio/menu_control_interface.h>
 
+#if defined( Q_OS_WIN )
+#include <Windows.h>
+#endif
+
 GlobalPrivate *GlobalPrivate::mInstance = 0;
 
 GlobalPrivate::GlobalPrivate( QObject * ) :
@@ -159,14 +163,23 @@ void GlobalPrivate::loadPlugins( QDir pDir )
 
 		if( File.isDir() )
 		{
-			QString		CurDir = QDir::currentPath();
 			QString		NxtDir = pDir.absoluteFilePath( fileName );
+
+#if defined( Q_OS_WIN )
+			SetDllDirectory( (LPCTSTR)NxtDir.utf16() );
+
+			loadPlugins( QDir( NxtDir ) );
+
+			SetDllDirectory( NULL );
+#else
+			QString		CurDir = QDir::currentPath();
 
 			QDir::setCurrent( NxtDir );
 
 			loadPlugins( QDir::current() );
 
 			QDir::setCurrent( CurDir );
+#endif
 
 			continue;
 		}
