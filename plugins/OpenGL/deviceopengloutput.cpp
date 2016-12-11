@@ -62,6 +62,11 @@ QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( bool pContextO
 
 		NewDev->show();
 
+		if( !OpenGLPlugin::hasContextStatic() )
+		{
+			QCoreApplication::processEvents();
+		}
+
 		if( pContextOnly )
 		{
 			NewDev->hide();
