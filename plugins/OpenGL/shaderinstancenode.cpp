@@ -592,6 +592,21 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 				}
 				break;
 
+			case GL_TEXTURE_CUBE_MAP:
+				if( !OutTex->isDepthTexture() )
+				{
+					glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->dstTexId(), 0 );
+
+					Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
+				}
+				else
+				{
+					glFramebufferTexture( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, OutTex->dstTexId(), 0 );
+
+					Buffers.append( GL_DEPTH_ATTACHMENT );
+				}
+				break;
+
 #if !defined( GL_ES_VERSION_2_0 )
 			case GL_TEXTURE_3D:
 				if( true )

@@ -293,7 +293,7 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pCubeFac
 
 						TextureAllocated = true;
 					}
-				break;
+					break;
 
 				case GL_TEXTURE_2D:
 				case GL_TEXTURE_RECTANGLE:
