@@ -57,7 +57,8 @@ SOURCES += openglplugin.cpp \
 	windownode.cpp \
 	shadercompilernode.cpp \
 	viewportmatrixnode.cpp \
-	renderpin.cpp
+	renderpin.cpp \
+    cubemaprendernode.cpp
 
 HEADERS +=\
 	texturenode.h \
@@ -111,7 +112,8 @@ HEADERS +=\
 	shadercompilernode.h \
 	viewportmatrixnode.h \
 	renderpin.h \
-	../../include/fugio/output_interface.h
+	../../include/fugio/output_interface.h \
+    cubemaprendernode.h
 
 FORMS += \
 	texturenodeform.ui \

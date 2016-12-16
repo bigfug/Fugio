@@ -34,6 +34,7 @@
 #include "arraytoindexnode.h"
 #include "instancebuffernode.h"
 #include "viewportmatrixnode.h"
+#include "cubemaprendernode.h"
 
 #include "texturepin.h"
 #include "renderpin.h"
@@ -74,6 +75,7 @@ ClassEntry		OpenGLPlugin::mNodeClasses[] =
 	ClassEntry( "Buffer To Array", "OpenGL", NID_OPENGL_BUFFER_TO_ARRAY, &BufferToArrayNode::staticMetaObject ),
 	ClassEntry( "Clear", "OpenGL", NID_OPENGL_CLEAR, &ClearNode::staticMetaObject ),
 	ClassEntry( "Context", "OpenGL", NID_OPENGL_CONTEXT, &ContextNode::staticMetaObject ),
+	ClassEntry( "CubeMap Render", "OpenGL", NID_OPENGL_CUBEMAP_RENDER, &CubeMapRenderNode::staticMetaObject ),
 	ClassEntry( "Draw", "OpenGL", NID_OPENGL_DRAW, &DrawNode::staticMetaObject ),
 	ClassEntry( "Image to Texture", "OpenGL", NID_OPENGL_IMAGE_TO_TEXTURE, &ImageToTextureNode::staticMetaObject ),
 	ClassEntry( "Instance Buffer", "OpenGL", NID_OPENGL_INSTANCE_BUFFER, &InstanceBufferNode::staticMetaObject ),
