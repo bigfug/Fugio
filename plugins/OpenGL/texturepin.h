@@ -130,6 +130,9 @@ public:
 
 	virtual void swapTexture( void ) Q_DECL_OVERRIDE;
 
+	virtual quint32 compare() const Q_DECL_OVERRIDE;
+	virtual void setCompare(quint32 pCompare) Q_DECL_OVERRIDE;
+
 	//-------------------------------------------------------------------------
 
 	// SizeInterface interface
@@ -180,6 +183,8 @@ private:
 	GLuint			mFBOMSDepthRBId;
 
 	bool			mDoubleBuffered;
+
+	GLint			mCompare;
 };
 
 #endif // TEXTURE_H

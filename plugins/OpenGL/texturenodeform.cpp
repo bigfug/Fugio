@@ -29,6 +29,8 @@ TextureNodeForm::TextureNodeForm( OpenGLTextureInterface *pTexPin, bool pIsImage
 	ui->mWrapT->addItems( OpenGLPlugin::mMapWrap.keys() );
 	ui->mWrapR->addItems( OpenGLPlugin::mMapWrap.keys() );
 
+	ui->mCompare->addItems( OpenGLPlugin::mMapCompare.keys() );
+
 	ui->mComboTarget->setCurrentText( OpenGLPlugin::mMapTargets.key( mTexPin->target() ) );
 	ui->mComboFormat->setCurrentText( OpenGLPlugin::mMapFormat.key( mTexPin->format() ) );
 	ui->mComboInternalFormat->setCurrentText( OpenGLPlugin::mMapInternal.key( mTexPin->internalFormat() ) );
@@ -38,6 +40,7 @@ TextureNodeForm::TextureNodeForm( OpenGLTextureInterface *pTexPin, bool pIsImage
 	ui->mWrapS->setCurrentText( OpenGLPlugin::mMapWrap.key( mTexPin->wrapS() ) );
 	ui->mWrapT->setCurrentText( OpenGLPlugin::mMapWrap.key( mTexPin->wrapT() ) );
 	ui->mWrapR->setCurrentText( OpenGLPlugin::mMapWrap.key( mTexPin->wrapR() ) );
+	ui->mCompare->setCurrentText( OpenGLPlugin::mMapCompare.key( mTexPin->compare() ) );
 
 	ui->mMipMaps->setChecked( mTexPin->genMipMaps() );
 
@@ -115,6 +118,11 @@ bool TextureNodeForm::genMipMaps() const
 bool TextureNodeForm::doubleBuffer() const
 {
 	return( ui->mDoubleBuffer->isChecked() );
+}
+
+int TextureNodeForm::compare() const
+{
+	return( OpenGLPlugin::mMapCompare.value( ui->mCompare->currentText() ) );
 }
 
 void TextureNodeForm::updateInternalFormat()
@@ -278,6 +286,15 @@ void TextureNodeForm::updateInternalFormat()
 #endif
 	}
 
+	if( OpenGLPlugin::mMapFormat.value( ui->mComboFormat->currentText() ) == GL_DEPTH_COMPONENT )
+	{
+		ui->mCompare->setEnabled( true );
+	}
+	else
+	{
+		ui->mCompare->setEnabled( true );
+	}
+
 	ui->mComboInternalFormat->blockSignals( true );
 
 	ui->mComboInternalFormat->clear();
@@ -345,6 +362,17 @@ void TextureNodeForm::on_mComboTarget_currentIndexChanged(const QString &arg1)
 #if !defined( GL_ES_VERSION_2_0 )
 				INSERT_FORMAT( GL_DEPTH_STENCIL );
 #endif
+			}
+			break;
+
+		case GL_TEXTURE_CUBE_MAP:
+			ui->mWrapS->setEnabled( true );
+			ui->mWrapT->setEnabled( true );
+			ui->mWrapR->setEnabled( true );
+
+			if( !mIsImage )
+			{
+				INSERT_FORMAT( GL_DEPTH_COMPONENT );
 			}
 			break;
 

@@ -132,6 +132,16 @@ public:
 		return( false );
 	}
 
+	virtual quint32 compare() const Q_DECL_OVERRIDE
+	{
+		return( GL_NONE );
+	}
+
+	virtual void setCompare(quint32 pCompare) Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pCompare )
+	}
+
 	//-------------------------------------------------------------------------
 
 private:

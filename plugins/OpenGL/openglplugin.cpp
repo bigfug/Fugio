@@ -51,6 +51,7 @@
 #define INSERT_FILTER_MIN(x)	mMapFilterMin.insert(#x,x)
 #define INSERT_FILTER_MAG(x)	mMapFilterMag.insert(#x,x)
 #define INSERT_WRAP(x)			mMapWrap.insert(#x,x)
+#define INSERT_COMPARE(x)		mMapCompare.insert(#x,x)
 
 QMap<QString,int>				 OpenGLPlugin::mMapTargets;
 QMap<QString,int>				 OpenGLPlugin::mMapFormat;
@@ -59,6 +60,7 @@ QMap<QString,int>				 OpenGLPlugin::mMapType;
 QMap<QString,int>				 OpenGLPlugin::mMapFilterMin;
 QMap<QString,int>				 OpenGLPlugin::mMapFilterMag;
 QMap<QString,int>				 OpenGLPlugin::mMapWrap;
+QMap<QString,int>				 OpenGLPlugin::mMapCompare;
 
 QList<QUuid>					 NodeControlBase::PID_UUID;
 
@@ -500,5 +502,18 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_WRAP( GL_CLAMP );
 		INSERT_WRAP( GL_MIRROR_CLAMP_TO_EDGE );
 #endif
+	}
+
+	if( mMapCompare.isEmpty() )
+	{
+		INSERT_COMPARE( GL_NONE );
+		INSERT_COMPARE( GL_LEQUAL );
+		INSERT_COMPARE( GL_GEQUAL );
+		INSERT_COMPARE( GL_LESS );
+		INSERT_COMPARE( GL_GREATER );
+		INSERT_COMPARE( GL_EQUAL );
+		INSERT_COMPARE( GL_NOTEQUAL );
+		INSERT_COMPARE( GL_ALWAYS );
+		INSERT_COMPARE( GL_NEVER );
 	}
 }

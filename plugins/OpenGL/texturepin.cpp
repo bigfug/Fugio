@@ -50,6 +50,8 @@ TexturePin::TexturePin( QSharedPointer<fugio::PinInterface> pPin )
 	mFBOMSDepthRBId = 0;
 
 	mDoubleBuffered = false;
+
+	mCompare = GL_NONE;
 }
 
 TexturePin::~TexturePin( void )
@@ -380,6 +382,19 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pCubeFac
 
 		glTexParameteri( mTarget, GL_TEXTURE_WRAP_S, mTextureWrapX );
 		glTexParameteri( mTarget, GL_TEXTURE_WRAP_T, mTextureWrapY );
+
+		if( mTextureFormat == GL_DEPTH_COMPONENT )
+		{
+			if( mCompare == GL_NONE )
+			{
+				glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE, GL_NONE );
+			}
+			else
+			{
+				glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE );
+				glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC, mCompare );
+			}
+		}
 
 #if !defined( GL_ES_VERSION_2_0 )
 		if( GLEW_VERSION_1_2 )
@@ -783,4 +798,14 @@ QSizeF TexturePin::toSizeF() const
 QVector3D TexturePin::toVector3D() const
 {
 	return( mTextureSize );
+}
+
+quint32 TexturePin::compare() const
+{
+	return( mCompare );
+}
+
+void TexturePin::setCompare(quint32 pCompare)
+{
+	mCompare = pCompare;
 }

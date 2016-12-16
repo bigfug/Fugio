@@ -30,6 +30,7 @@ public:
 	int wrapR( void ) const;
 	bool genMipMaps( void ) const;
 	bool doubleBuffer( void ) const;
+	int compare( void ) const;
 
 private slots:
 
