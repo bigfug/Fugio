@@ -21,6 +21,7 @@ ImageSaveNode::ImageSaveNode( QSharedPointer<fugio::NodeInterface> pNode )
 	FUGID( PIN_INPUT_OVERWRITE, "ce8d578e-c5a4-422f-b3c4-a1bdf40facdb" );
 	FUGID( PIN_OUTPUT_FILENAME, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
 	FUGID( PIN_INPUT_RESET,		"51297977-7b4b-4e08-9dea-89a8add4abe0" );
+	FUGID( PIN_INPUT_NUMBER,	"5bd10861-774e-4775-9269-ca1d0513408e" );
 
 	mPinInputImage = pinInput( "Image", PIN_INPUT_IMAGE );
 
@@ -38,6 +39,8 @@ ImageSaveNode::ImageSaveNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInputOverwrite->setValue( false );
 
 	mPinInputReset = pinInput( "Reset", PIN_INPUT_RESET );
+
+	mPinInputNumber = pinInput( "Number", PIN_INPUT_NUMBER );
 
 	mValInputFormat = pinInput<fugio::ChoiceInterface *>( "Format", mPinInputFormat, PID_CHOICE, PIN_INPUT_FORMAT );
 
@@ -66,6 +69,11 @@ void ImageSaveNode::inputsUpdated( qint64 pTimeStamp )
 	if( mPinInputReset->isUpdated( pTimeStamp ) )
 	{
 		mFileNumber = 0;
+	}
+
+	if( mPinInputNumber->isConnected() )
+	{
+		mFileNumber = variant( mPinInputNumber ).toInt();
 	}
 
 	if( mPinInputImage->isUpdated( pTimeStamp ) )
