@@ -131,7 +131,7 @@ windows {
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
 
 		win32 {
-			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/Lua-5.3.2/lua53.dll ) $$shell_path( $$INSTALLDIR/data )
+			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/Lua-5.3.3/lua53.dll ) $$shell_path( $$INSTALLDIR/data )
 		}
 	}
 }
