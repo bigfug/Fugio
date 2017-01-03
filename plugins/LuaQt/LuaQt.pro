@@ -154,10 +154,10 @@ unix:!macx {
 #------------------------------------------------------------------------------
 # Lua
 
-win32:exists( $$(LIBS)/Lua-5.3.2 ) {
-	INCLUDEPATH += $$(LIBS)/Lua-5.3.2/include
+win32:exists( $$(LIBS)/Lua-5.3.3 ) {
+	INCLUDEPATH += $$(LIBS)/Lua-5.3.3/include
 
-	LIBS += -L$$(LIBS)/Lua-5.3.2 -llua53
+	LIBS += -L$$(LIBS)/Lua-5.3.3 -llua53
 
 	DEFINES += LUA_SUPPORTED
 }
