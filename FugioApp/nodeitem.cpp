@@ -643,6 +643,10 @@ void NodeItem::create( const QPointF &pPosition )
 	updateToolTip();
 
 	setFlags( flags() | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges );
+
+	// QTBUG-55070
+
+	setOpacity( 0.999 );
 }
 
 void NodeItem::layoutPins()
@@ -838,6 +842,10 @@ void NodeItem::updateGui()
 						//mNodeGui->setFlag( QGraphicsItem::ItemIgnoresTransformations );
 
 						mNodeGui->setParentItem( this );
+
+						// QTBUG-55070
+
+						mNodeGui->setOpacity( 0.999 );
 					}
 					else
 					{
