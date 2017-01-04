@@ -357,13 +357,13 @@ void DecoderNode::processDatagram( const QByteArray &pDatagram )
 
 	if( OscLst.size() == 1 )
 	{
-		QHash<QString,QVariantList>::iterator	it = mDataInput.find( OscAdr );
+//		QHash<QString,QVariantList>::iterator	it = mDataInput.find( OscAdr );
 
-		if( it != mDataInput.end() )
-		{
-			it.value().append( OscLst.first() );
-		}
-		else
+//		if( it != mDataInput.end() )
+//		{
+//			it.value().append( OscLst.first() );
+//		}
+//		else
 		{
 			QVariantList		VarLst;
 
@@ -374,13 +374,13 @@ void DecoderNode::processDatagram( const QByteArray &pDatagram )
 	}
 	else if( OscLst.size() > 1 )
 	{
-		QHash<QString,QVariantList>::iterator	it = mDataInput.find( OscAdr );
+//		QHash<QString,QVariantList>::iterator	it = mDataInput.find( OscAdr );
 
-		if( it != mDataInput.end() )
-		{
-			it.value().append( QVariant( OscLst ) );
-		}
-		else
+//		if( it != mDataInput.end() )
+//		{
+//			it.value().append( QVariant( OscLst ) );
+//		}
+//		else
 		{
 			QVariantList		VarLst;
 
