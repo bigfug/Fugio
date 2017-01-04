@@ -74,7 +74,7 @@ QSharedPointer<fugio::PinInterface> NodePrivate::createPin( const QString &pName
 
 QObject *NodePrivate::createPin( const QString &pName, PinDirection pDirection, const QUuid &pGlobalId, const QUuid &pLocalId, QSharedPointer<fugio::PinInterface> &pPinInterface, const QUuid &pControlUUID )
 {
-	pPinInterface = fugio::fugio()->createPin( pName, pGlobalId, pLocalId, pDirection, pControlUUID );
+	pPinInterface = context()->createPin( pName, pGlobalId, pLocalId, pDirection, pControlUUID );
 
 	if( !pPinInterface )
 	{
@@ -277,7 +277,7 @@ void NodePrivate::loadPins( QSettings &pSettings, const QString &pArrayName, Pin
 
 			pPinMap.insert( PinOrigGlobalId, PinGlobalId );
 
-			PIN = fugio::fugio()->createPin( PinName, PinGlobalId, PinLocalId, pDirection, fugio::utils::string2uuid( PinCtl ), PinData );
+			PIN = context()->createPin( PinName, PinGlobalId, PinLocalId, pDirection, fugio::utils::string2uuid( PinCtl ), PinData );
 
 			if( PIN )
 			{

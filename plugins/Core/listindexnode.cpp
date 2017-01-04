@@ -41,7 +41,7 @@ void ListIndexNode::inputsUpdated( qint64 pTimeStamp )
 
 		if( mPinOutputValue->controlUuid() != PID_ARRAY )
 		{
-			mNode->context()->global()->updatePinControl( mPinOutputValue, PID_ARRAY );
+			mNode->context()->updatePinControl( mPinOutputValue, PID_ARRAY );
 
 			DstInf = qobject_cast<fugio::ArrayInterface *>( mPinOutputValue->control()->qobject() );
 		}
@@ -80,7 +80,7 @@ void ListIndexNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		if( mPinOutputValue->controlUuid() != LstInf->listPinControl() )
 		{
-			mNode->context()->global()->updatePinControl( mPinOutputValue, LstInf->listPinControl() );
+			mNode->context()->updatePinControl( mPinOutputValue, LstInf->listPinControl() );
 
 			VarInf = qobject_cast<fugio::VariantInterface *>( mPinOutputValue->control()->qobject() );
 		}

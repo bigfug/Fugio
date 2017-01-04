@@ -36,7 +36,7 @@ public:
 	{
 		if( !mNode )
 		{
-			mNode = mContext->global()->createNode( QObject::tr( "Join" ), QUuid::createUuid(), mControlId );
+			mNode = mContext->createNode( QObject::tr( "Join" ), QUuid::createUuid(), mControlId );
 
 			if( mNode )
 			{

@@ -51,7 +51,7 @@ void GetSizeNode::inputsUpdated( qint64 pTimeStamp )
 
 				if( PinO->controlUuid() != PID_FLOAT )
 				{
-					QSharedPointer<fugio::PinControlInterface> PCI = mNode->context()->global()->createPinControl( PID_FLOAT, PinO );
+					QSharedPointer<fugio::PinControlInterface> PCI = mNode->context()->createPinControl( PID_FLOAT, PinO );
 
 					if( PCI )
 					{
@@ -67,7 +67,7 @@ void GetSizeNode::inputsUpdated( qint64 pTimeStamp )
 
 				if( PinO->controlUuid() != PID_SIZE )
 				{
-					QSharedPointer<fugio::PinControlInterface> PCI = mNode->context()->global()->createPinControl( PID_SIZE, PinO );
+					QSharedPointer<fugio::PinControlInterface> PCI = mNode->context()->createPinControl( PID_SIZE, PinO );
 
 					if( PCI )
 					{
@@ -83,7 +83,7 @@ void GetSizeNode::inputsUpdated( qint64 pTimeStamp )
 
 				if( PinO->controlUuid() != PID_SIZE_3D )
 				{
-					QSharedPointer<fugio::PinControlInterface> PCI = mNode->context()->global()->createPinControl( PID_SIZE_3D, PinO );
+					QSharedPointer<fugio::PinControlInterface> PCI = mNode->context()->createPinControl( PID_SIZE_3D, PinO );
 
 					if( PCI )
 					{

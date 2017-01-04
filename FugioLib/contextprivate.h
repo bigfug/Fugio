@@ -42,7 +42,7 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::ContextInterface
 
-	virtual fugio::ContextSignals *qobject( void )
+	virtual fugio::ContextSignals *qobject( void ) Q_DECL_OVERRIDE
 	{
 		return( this );
 	}
@@ -87,11 +87,20 @@ public:
 
 	virtual void updateNode( QSharedPointer<fugio::NodeInterface> pNode );
 
+	virtual QSharedPointer<fugio::NodeInterface> createNode( const QString &pName, const QUuid &pGlobalId, const QUuid &pControlId, const QVariantHash &pSettings ) Q_DECL_OVERRIDE;
+
+	virtual QSharedPointer<fugio::PinInterface> createPin( const QString &pName, const QUuid &pGlobalId, const QUuid &pLocalId, PinDirection pDirection, const QUuid &pControlUUID, const QVariantHash &pSettings ) Q_DECL_OVERRIDE;
+
+	virtual QSharedPointer<fugio::PinControlInterface> createPinControl( const QUuid &pUUID, QSharedPointer<fugio::PinInterface> pPin ) Q_DECL_OVERRIDE;
+
+	virtual bool updatePinControl( QSharedPointer<fugio::PinInterface> pPin, const QUuid &pPinControlUuid ) Q_DECL_OVERRIDE;
+
+
 	virtual void registerNode( QSharedPointer<fugio::NodeInterface> pNode );
 	virtual void unregisterNode( const QUuid &pUUID );
 	virtual void renameNode( const QUuid &pUUID1, const QUuid &pUUID2 );
-	virtual QSharedPointer<fugio::NodeInterface> findNode( const QUuid &pUUID );
-	virtual QSharedPointer<fugio::NodeInterface> findNode( const QString &pName );
+	virtual QSharedPointer<fugio::NodeInterface> findNode( const QUuid &pUUID ) const;
+	virtual QSharedPointer<fugio::NodeInterface> findNode( const QString &pName ) const;
 
 	virtual void registerPin( QSharedPointer<fugio::PinInterface> pPin );
 	virtual void unregisterPin( const QUuid &pUUID );
@@ -107,7 +116,7 @@ public:
 	virtual void disconnectPins( const QUuid &pUUID1, const QUuid &pUUID2 );
 	virtual void disconnectPin( const QUuid &pUUID );
 
-	virtual QList<QUuid> nodeList( void );
+	virtual QList<QUuid> nodeList( void ) const;
 
 	virtual void nodeInitialised( void );
 

@@ -52,7 +52,7 @@ public:
 			mNodeId = QUuid::createUuid();
 		}
 
-		QSharedPointer<fugio::NodeInterface>	Node = mContext->global()->createNode( mName, mNodeId, mControlId );
+		QSharedPointer<fugio::NodeInterface>	Node = mContext->createNode( mName, mNodeId, mControlId );
 
 		if( Node && Node->control().isNull() )
 		{

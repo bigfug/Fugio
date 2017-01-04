@@ -209,7 +209,6 @@ void NodeItem::mousePressEvent( QGraphicsSceneMouseEvent *pEvent )
 	mContextView->nodeMoveStarted();
 }
 
-
 void NodeItem::mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent )
 {
 	mContextView->nodeMoveFinished();
@@ -1140,7 +1139,7 @@ void NodeItem::menuAddInputPin()
 
 	if( OK )
 	{
-		QSharedPointer<fugio::PinInterface>	PIN = mContextView->context()->global()->createPin( PIN_NAME, QUuid::createUuid(), QUuid::createUuid(), PIN_INPUT );
+		QSharedPointer<fugio::PinInterface>	PIN = mContextView->context()->createPin( PIN_NAME, QUuid::createUuid(), QUuid::createUuid(), PIN_INPUT );
 
 		if( PIN )
 		{
@@ -1223,7 +1222,7 @@ void NodeItem::menuAddOutputPin()
 
 	if( OK )
 	{
-		QSharedPointer<fugio::PinInterface>	PIN = mContextView->context()->global()->createPin( PIN_NAME, QUuid::createUuid(), QUuid::createUuid(), PIN_OUTPUT, PIN_UUID );
+		QSharedPointer<fugio::PinInterface>	PIN = mContextView->context()->createPin( PIN_NAME, QUuid::createUuid(), QUuid::createUuid(), PIN_OUTPUT, PIN_UUID );
 
 		if( PIN )
 		{

@@ -242,7 +242,7 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 			CFG.endGroup();
 		}
 
-		QSharedPointer<fugio::NodeInterface>	N = mApp->createNode( NodeName, NodeUuid, ControlUuid, NodeData );
+		QSharedPointer<fugio::NodeInterface>	N = createNode( NodeName, NodeUuid, ControlUuid, NodeData );
 
 		if( !N )
 		{
@@ -694,9 +694,9 @@ void ContextPrivate::renameNode( const QUuid &pUUID1, const QUuid &pUUID2 )
 	emit nodeRenamed( pUUID1, pUUID2 );
 }
 
-QSharedPointer<fugio::NodeInterface> ContextPrivate::findNode( const QUuid &pUUID )
+QSharedPointer<fugio::NodeInterface> ContextPrivate::findNode( const QUuid &pUUID ) const
 {
-	NodeHash::iterator it = mNodeHash.find( pUUID );
+	NodeHash::const_iterator it = mNodeHash.find( pUUID );
 
 	if( it == mNodeHash.end() )
 	{
@@ -706,9 +706,9 @@ QSharedPointer<fugio::NodeInterface> ContextPrivate::findNode( const QUuid &pUUI
 	return( it.value() );
 }
 
-QSharedPointer<fugio::NodeInterface> ContextPrivate::findNode( const QString &pName )
+QSharedPointer<fugio::NodeInterface> ContextPrivate::findNode( const QString &pName ) const
 {
-	for( NodeHash::iterator it = mNodeHash.begin() ; it != mNodeHash.end() ; it++ )
+	for( NodeHash::const_iterator it = mNodeHash.begin() ; it != mNodeHash.end() ; it++ )
 	{
 		if( it.value()->name() != pName )
 		{
@@ -972,7 +972,7 @@ void ContextPrivate::disconnectPin( const QUuid &pUUID )
 	mConnectOI.remove( pUUID );
 }
 
-QList<QUuid> ContextPrivate::nodeList()
+QList<QUuid> ContextPrivate::nodeList() const
 {
 	return( mNodeHash.keys() );
 }
@@ -1783,3 +1783,132 @@ QString ContextPrivate::externalAsset(const QUuid &pUuid) const
 {
 	return( mAssetMap.value( pUuid ) );
 }
+
+QSharedPointer<fugio::NodeInterface> ContextPrivate::createNode( const QString &pName, const QUuid &pGlobalId, const QUuid &pControlId, const QVariantHash &pSettings )
+{
+	NodePrivate	*NODE = new NodePrivate();
+
+	if( !NODE )
+	{
+		return( QSharedPointer<fugio::NodeInterface>() );
+	}
+
+	NODE->moveToThread( thread() );
+
+	NODE->setName( pName );
+	NODE->setUuid( pGlobalId );
+	NODE->setControlUuid( pControlId );
+	NODE->setSettings( pSettings );
+	NODE->setContext( this );
+
+	QSharedPointer<fugio::NodeInterface>		NODE_PTR = QSharedPointer<fugio::NodeInterface>( NODE );
+
+	fugio::ClassEntry	CE = mApp->findNodeClassEntry( pControlId );
+
+	if( CE.mMetaObject )
+	{
+		QObject		*ClassInstance = CE.mMetaObject->newInstance( Q_ARG( QSharedPointer<fugio::NodeInterface>, NODE_PTR ) );
+
+		if( ClassInstance )
+		{
+			ClassInstance->moveToThread( thread() );
+
+			fugio::NodeControlInterface	*NodeControl = qobject_cast<fugio::NodeControlInterface *>( ClassInstance );
+
+			if( NodeControl )
+			{
+				NODE->setControl( QSharedPointer<fugio::NodeControlInterface>( NodeControl ) );
+			}
+		}
+	}
+	else
+	{
+		qWarning() << "Unknown NodeControlInterface" << pControlId;
+	}
+
+	return( NODE_PTR );
+}
+
+QSharedPointer<fugio::PinInterface> ContextPrivate::createPin( const QString &pName, const QUuid &pGlobalId, const QUuid &pLocalId, PinDirection pDirection, const QUuid &pControlUUID, const QVariantHash &pSettings )
+{
+	Q_ASSERT( !pLocalId.isNull() );
+
+	PinPrivate						*P = new PinPrivate();
+
+	if( !P )
+	{
+		return( QSharedPointer<fugio::PinInterface>() );
+	}
+
+	QSharedPointer<fugio::PinInterface>	PinPtr = QSharedPointer<fugio::PinInterface>( P );
+
+	P->moveToThread( thread() );
+
+	P->setGlobalId( pGlobalId );
+	P->setLocalId( pLocalId );
+	P->setName( pName );
+	P->setDirection( pDirection );
+	P->setSettings( pSettings );
+	P->setControlUuid( pControlUUID );
+
+	if( !pControlUUID.isNull() )
+	{
+		QSharedPointer<fugio::PinControlInterface>		PinControl = createPinControl( pControlUUID, PinPtr );
+
+		if( PinControl )
+		{
+			P->setControl( PinControl );
+		}
+	}
+
+	return( PinPtr );
+}
+
+QSharedPointer<fugio::PinControlInterface> ContextPrivate::createPinControl( const QUuid &pUUID, QSharedPointer<fugio::PinInterface> pPin )
+{
+	const QMetaObject	*SMO = mApp->findPinMetaObject( pUUID );
+
+	if( !SMO )
+	{
+		qWarning() << "Unknown fugio::PinControlInterface" << pUUID << pPin->name();
+
+		return( QSharedPointer<fugio::PinControlInterface>() );
+	}
+
+	QObject		*ClassInstance = SMO->newInstance( Q_ARG( QSharedPointer<fugio::PinInterface>, pPin ) );
+
+	if( ClassInstance )
+	{
+		ClassInstance->moveToThread( thread() );
+
+		fugio::PinControlInterface		*PinControl = qobject_cast<fugio::PinControlInterface *>( ClassInstance );
+
+		if( PinControl )
+		{
+			return( QSharedPointer<fugio::PinControlInterface>( PinControl ) );
+		}
+
+		delete ClassInstance;
+	}
+	else
+	{
+		qWarning() << "Can't create Pin ClassInstance of" << mApp->findPinMetaObject( pUUID )->className();
+	}
+
+	return( QSharedPointer<fugio::PinControlInterface>() );
+}
+
+bool ContextPrivate::updatePinControl( QSharedPointer<fugio::PinInterface> pPin, const QUuid &pPinControlUuid )
+{
+	QSharedPointer<fugio::PinControlInterface>		PinControl = createPinControl( pPinControlUuid, pPin );
+
+	if( PinControl )
+	{
+		pPin->setControl( PinControl );
+
+		return( true );
+	}
+
+	return( false );
+}
+

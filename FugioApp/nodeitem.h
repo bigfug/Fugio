@@ -112,6 +112,8 @@ public:
 
 	QList<PinItem *> outputs( void );
 
+	virtual void paint( QPainter *pPainter, const QStyleOptionGraphicsItem *pOption, QWidget *pWidget = 0 ) Q_DECL_OVERRIDE;
+
 public slots:
 	void labelDrag( const QPointF &pMovement );
 
@@ -148,8 +150,6 @@ protected:
 	PinPair *findPinPairOutput( const QUuid &pId );
 	int findPinPairInputIndex( const QUuid &pId ) const;
 	int findPinPairOutputIndex( const QUuid &pId ) const;
-
-	virtual void paint( QPainter *pPainter, const QStyleOptionGraphicsItem *pOption, QWidget *pWidget = 0 );
 
 	virtual QVariant itemChange( GraphicsItemChange pChange, const QVariant &pValue );
 
