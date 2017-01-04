@@ -226,6 +226,7 @@ void DecoderNode::processDatagram( const QByteArray &pDatagram )
 				break;
 
 			case 's':	// OSC-string
+			case 'S':	// Alternate type represented as an OSC-string (for example, for systems that differentiate "symbols" from "strings")
 				{
 					QByteArray		OscVar;
 
@@ -238,6 +239,19 @@ void DecoderNode::processDatagram( const QByteArray &pDatagram )
 				break;
 
 			case 'b':	// OSC-blob
+				{
+					qint32		l = qFromBigEndian<qint32>( pDatagram.data() + OscStr );
+
+					OscStr += sizeof( qint32 );
+
+					QByteArray		OscVar;
+
+					OscEnd = OscStr + l;
+					OscVar = pDatagram.mid( OscStr, l );
+					OscStr = OscEnd + ( 4 - ( OscEnd % 4 ) );
+
+					OscLst.append( OscVar );
+				}
 				break;
 
 			case 'h':	// 64 bit big-endian two's complement integer
@@ -255,6 +269,9 @@ void DecoderNode::processDatagram( const QByteArray &pDatagram )
 				break;
 
 			case 't':	// OSC-timetag
+				{
+					OscInc = sizeof( qint64 );
+				}
 				break;
 
 			case 'd':	// 64 bit ("double") IEEE 754 floating point number
@@ -271,9 +288,6 @@ void DecoderNode::processDatagram( const QByteArray &pDatagram )
 
 					OscInc = sizeof( v );
 				}
-				break;
-
-			case 'S':	// Alternate type represented as an OSC-string (for example, for systems that differentiate "symbols" from "strings")
 				break;
 
 			case 'c':	// an ascii character, sent as 32 bits
@@ -307,6 +321,9 @@ void DecoderNode::processDatagram( const QByteArray &pDatagram )
 				break;
 
 			case 'm':	// 4 byte MIDI message. Bytes from MSB to LSB are: port id, status byte, data1, data2
+				{
+					OscInc = 4;
+				}
 				break;
 
 			case 'T':	// True. No bytes are allocated in the argument data.
@@ -318,6 +335,7 @@ void DecoderNode::processDatagram( const QByteArray &pDatagram )
 				break;
 
 			case 'N':	// Nil. No bytes are allocated in the argument data.
+				OscLst.append( QVariant() );
 				break;
 
 			case 'I':	// Infinitum. No bytes are allocated in the argument data.
