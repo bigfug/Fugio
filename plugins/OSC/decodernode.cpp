@@ -44,7 +44,16 @@ void DecoderNode::inputsUpdated( qint64 pTimeStamp )
 
 	for( QString OscNam : mDataInput.keys() )
 	{
-		mValOutputNamespace->insert( OscNam, mDataInput.value( OscNam ).first() );
+		QVariantList	VarLst = mDataInput.value( OscNam );
+
+		if( VarLst.size() == 1 )
+		{
+			mValOutputNamespace->insert( OscNam, VarLst.first() );
+		}
+		else
+		{
+			mValOutputNamespace->insert( OscNam, VarLst );
+		}
 
 		QSharedPointer<fugio::PinInterface>		CurPin;
 
@@ -62,8 +71,6 @@ void DecoderNode::inputsUpdated( qint64 pTimeStamp )
 				NewLst.push_front( CurLst.takeLast() );
 			}
 		}
-
-		const QVariantList	VarLst = mDataInput.value( OscNam );
 
 		if( !CurPin )
 		{

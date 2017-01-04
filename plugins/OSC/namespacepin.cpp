@@ -125,6 +125,10 @@ QList<fugio::NodeControlInterface::AvailablePinEntry> NamespacePin::oscPins( con
 						PinUid = PID_STRING;
 						break;
 
+					case QMetaType::QVariantList:
+						PinUid = PID_LIST;
+						break;
+
 					default:
 						break;
 				}
