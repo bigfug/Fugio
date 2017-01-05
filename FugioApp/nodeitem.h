@@ -43,7 +43,7 @@ public:
 		return( mContextView );
 	}
 
-	int type( void ) const
+	int type( void ) const Q_DECL_OVERRIDE
 	{
 		// Enable the use of qgraphicsitem_cast with this item.
 		return Type;
@@ -95,7 +95,7 @@ public:
 
 	PinItem *findPinOutput( QSharedPointer<fugio::PinInterface> pPin );
 
-	virtual QRectF boundingRect( void ) const;
+	virtual QRectF boundingRect( void ) const Q_DECL_OVERRIDE;
 
 	void updateToolTip( void );
 
@@ -151,13 +151,13 @@ protected:
 	int findPinPairInputIndex( const QUuid &pId ) const;
 	int findPinPairOutputIndex( const QUuid &pId ) const;
 
-	virtual QVariant itemChange( GraphicsItemChange pChange, const QVariant &pValue );
+	virtual QVariant itemChange( GraphicsItemChange pChange, const QVariant &pValue ) Q_DECL_OVERRIDE;
 
-	virtual void contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent );
+	virtual void contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent ) Q_DECL_OVERRIDE;
 
-	virtual void mousePressEvent( QGraphicsSceneMouseEvent *pEvent );
+	virtual void mousePressEvent( QGraphicsSceneMouseEvent *pEvent ) Q_DECL_OVERRIDE;
 
-	virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent );
+	virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent ) Q_DECL_OVERRIDE;
 
 	void pinLinkMove( const QList<NodeItem::PinPair> &pPinPairs, const QPointF &pMovement );
 

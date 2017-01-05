@@ -47,45 +47,45 @@ public:
 		return( this );
 	}
 
-	virtual fugio::GlobalInterface *global( void )
+	virtual fugio::GlobalInterface *global( void ) Q_DECL_OVERRIDE
 	{
 		return( mApp );
 	}
 
-	virtual void setActive( bool pActive );
+	virtual void setActive( bool pActive ) Q_DECL_OVERRIDE;
 
-	virtual bool active( void ) const
+	virtual bool active( void ) const Q_DECL_OVERRIDE
 	{
 		return( mActive );
 	}
 
-	virtual void futureSync( const QFuture<void> &pFuture )
+	virtual void futureSync( const QFuture<void> &pFuture ) Q_DECL_OVERRIDE
 	{
 		mFutureSync.addFuture( pFuture );
 	}
 
-	virtual QString metaInfo( MetaInfo pType ) const;
+	virtual QString metaInfo( MetaInfo pType ) const Q_DECL_OVERRIDE;
 
-	virtual void setMetaInfo( MetaInfo pType, const QString &pMetaData );
+	virtual void setMetaInfo( MetaInfo pType, const QString &pMetaData ) Q_DECL_OVERRIDE;
 
-	virtual bool load( const QString &pFileName, bool pPartial = false );
+	virtual bool load( const QString &pFileName, bool pPartial = false ) Q_DECL_OVERRIDE;
 
-	virtual bool unload( const QString &pFileName );
+	virtual bool unload( const QString &pFileName ) Q_DECL_OVERRIDE;
 
-	virtual bool save( const QString &pFileName, const QList<QUuid> *pNodeList = 0 ) const;
+	virtual bool save( const QString &pFileName, const QList<QUuid> *pNodeList = 0 ) const Q_DECL_OVERRIDE;
 
-	virtual void registerInterface( const QUuid &pUuid, QObject *pInterface );
+	virtual void registerInterface( const QUuid &pUuid, QObject *pInterface ) Q_DECL_OVERRIDE;
 
-	virtual void unregisterInterface( const QUuid &pUuid );
+	virtual void unregisterInterface( const QUuid &pUuid ) Q_DECL_OVERRIDE;
 
-	virtual QObject *findInterface( const QUuid &pUuid );
+	virtual QObject *findInterface( const QUuid &pUuid ) Q_DECL_OVERRIDE;
 
 	virtual void doFrameInitialise( qint64 pTimeStamp );
-	virtual void doFrameStart( qint64 pTimeStamp );
-	virtual void doFrameProcess( qint64 pTimeStamp );
-	virtual void doFrameEnd( qint64 pTimeStamp );
+	virtual void doFrameStart( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
+	virtual void doFrameProcess( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
+	virtual void doFrameEnd( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
-	virtual void updateNode( QSharedPointer<fugio::NodeInterface> pNode );
+	virtual void updateNode( QSharedPointer<fugio::NodeInterface> pNode ) Q_DECL_OVERRIDE;
 
 	virtual QSharedPointer<fugio::NodeInterface> createNode( const QString &pName, const QUuid &pGlobalId, const QUuid &pControlId, const QVariantHash &pSettings ) Q_DECL_OVERRIDE;
 
@@ -95,36 +95,35 @@ public:
 
 	virtual bool updatePinControl( QSharedPointer<fugio::PinInterface> pPin, const QUuid &pPinControlUuid ) Q_DECL_OVERRIDE;
 
+	virtual void registerNode( QSharedPointer<fugio::NodeInterface> pNode ) Q_DECL_OVERRIDE;
+	virtual void unregisterNode( const QUuid &pUUID ) Q_DECL_OVERRIDE;
+	virtual void renameNode( const QUuid &pUUID1, const QUuid &pUUID2 ) Q_DECL_OVERRIDE;
+	virtual QSharedPointer<fugio::NodeInterface> findNode( const QUuid &pUUID ) const Q_DECL_OVERRIDE;
+	virtual QSharedPointer<fugio::NodeInterface> findNode( const QString &pName ) const Q_DECL_OVERRIDE;
 
-	virtual void registerNode( QSharedPointer<fugio::NodeInterface> pNode );
-	virtual void unregisterNode( const QUuid &pUUID );
-	virtual void renameNode( const QUuid &pUUID1, const QUuid &pUUID2 );
-	virtual QSharedPointer<fugio::NodeInterface> findNode( const QUuid &pUUID ) const;
-	virtual QSharedPointer<fugio::NodeInterface> findNode( const QString &pName ) const;
+	virtual void registerPin( QSharedPointer<fugio::PinInterface> pPin ) Q_DECL_OVERRIDE;
+	virtual void unregisterPin( const QUuid &pUUID ) Q_DECL_OVERRIDE;
+	virtual void renamePin( const QUuid &pUUID1, const QUuid &pUUID2 ) Q_DECL_OVERRIDE;
+	virtual QSharedPointer<fugio::PinInterface> findPin( const QUuid &pUUID ) Q_DECL_OVERRIDE;
 
-	virtual void registerPin( QSharedPointer<fugio::PinInterface> pPin );
-	virtual void unregisterPin( const QUuid &pUUID );
-	virtual void renamePin( const QUuid &pUUID1, const QUuid &pUUID2 );
-	virtual QSharedPointer<fugio::PinInterface> findPin( const QUuid &pUUID );
+	virtual QList< QSharedPointer<fugio::PinInterface> > connections( const QUuid &pUUID ) Q_DECL_OVERRIDE;
 
-	virtual QList< QSharedPointer<fugio::PinInterface> > connections( const QUuid &pUUID );
+	virtual bool isConnected( const QUuid &pUUID ) Q_DECL_OVERRIDE;
+	virtual bool isConnectedTo( const QUuid &pUUID1, const QUuid &pUUID2 ) Q_DECL_OVERRIDE;
 
-	virtual bool isConnected( const QUuid &pUUID );
-	virtual bool isConnectedTo( const QUuid &pUUID1, const QUuid &pUUID2 );
+	virtual void connectPins( const QUuid &pUUID1, const QUuid &pUUID2 ) Q_DECL_OVERRIDE;
+	virtual void disconnectPins( const QUuid &pUUID1, const QUuid &pUUID2 ) Q_DECL_OVERRIDE;
+	virtual void disconnectPin( const QUuid &pUUID ) Q_DECL_OVERRIDE;
 
-	virtual void connectPins( const QUuid &pUUID1, const QUuid &pUUID2 );
-	virtual void disconnectPins( const QUuid &pUUID1, const QUuid &pUUID2 );
-	virtual void disconnectPin( const QUuid &pUUID );
+	virtual QList<QUuid> nodeList( void ) const Q_DECL_OVERRIDE;
 
-	virtual QList<QUuid> nodeList( void ) const;
+	virtual void nodeInitialised( void ) Q_DECL_OVERRIDE;
 
-	virtual void nodeInitialised( void );
+	virtual void pinUpdated( QSharedPointer<fugio::PinInterface> pPin, bool pUpdatedConnectedNode = true ) Q_DECL_OVERRIDE;
 
-	virtual void pinUpdated( QSharedPointer<fugio::PinInterface> pPin, bool pUpdatedConnectedNode = true );
+	virtual void performance( QSharedPointer<fugio::NodeInterface> pNode, const QString &pName, qint64 pTimeStart, qint64 pTimeEnd ) Q_DECL_OVERRIDE;
 
-	virtual void performance( QSharedPointer<fugio::NodeInterface> pNode, const QString &pName, qint64 pTimeStart, qint64 pTimeEnd );
-
-	virtual QList<fugio::PerfData> perfdata( void );
+	virtual QList<fugio::PerfData> perfdata( void ) Q_DECL_OVERRIDE;
 
 	virtual void addDeferredNode( QSharedPointer<fugio::NodeInterface> pNode )
 	{
@@ -134,49 +133,49 @@ public:
 	//-------------------------------------------------------------------------
 	// Context Playhead
 
-	virtual void registerPlayhead( fugio::PlayheadInterface *pPlayHead );
-	virtual void unregisterPlayhead( fugio::PlayheadInterface *pPlayHead );
+	virtual void registerPlayhead( fugio::PlayheadInterface *pPlayHead ) Q_DECL_OVERRIDE;
+	virtual void unregisterPlayhead( fugio::PlayheadInterface *pPlayHead ) Q_DECL_OVERRIDE;
 
-	virtual bool isPlaying( void ) const;
+	virtual bool isPlaying( void ) const Q_DECL_OVERRIDE;
 
-	virtual void setPlayheadTimerEnabled( bool pEnabled )
+	virtual void setPlayheadTimerEnabled( bool pEnabled ) Q_DECL_OVERRIDE
 	{
 		mPlayheadTimerEnabled = pEnabled;
 	}
 
-	virtual void playheadMove( qreal pTimeStamp );
-	virtual void playheadPlay( qreal pTimePrev, qreal pTimeCurr );
+	virtual void playheadMove( qreal pTimeStamp ) Q_DECL_OVERRIDE;
+	virtual void playheadPlay( qreal pTimePrev, qreal pTimeCurr ) Q_DECL_OVERRIDE;
 
-	virtual void setPlayheadPosition( qreal pTimeStamp, bool pRefresh = true );
+	virtual void setPlayheadPosition( qreal pTimeStamp, bool pRefresh = true ) Q_DECL_OVERRIDE;
 
-	virtual TimeState state( void ) const
+	virtual TimeState state( void ) const Q_DECL_OVERRIDE
 	{
 		return( mState );
 	}
 
-	virtual qreal duration( void ) const
+	virtual qreal duration( void ) const Q_DECL_OVERRIDE
 	{
 		return( mDuration );
 	}
 
-	virtual qreal position( void ) const
+	virtual qreal position( void ) const Q_DECL_OVERRIDE
 	{
 		return( qMax( mPlayheadLocalLast, 0.0 ) );
 	}
 
-	virtual void notifyAboutToPlay( void );
+	virtual void notifyAboutToPlay( void ) Q_DECL_OVERRIDE;
 
-	virtual void setDuration( qreal pDuration );
+	virtual void setDuration( qreal pDuration ) Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// External assets
 
-	virtual QUuid registerExternalAsset( const QString &pFileName );
+	virtual QUuid registerExternalAsset( const QString &pFileName ) Q_DECL_OVERRIDE;
 
-	virtual void unregisterExternalAsset( const QString &pFileName );
-	virtual void unregisterExternalAsset( const QUuid &pUuid );
+	virtual void unregisterExternalAsset( const QString &pFileName ) Q_DECL_OVERRIDE;
+	virtual void unregisterExternalAsset( const QUuid &pUuid ) Q_DECL_OVERRIDE;
 
-	virtual QString externalAsset( const QUuid &pUuid ) const;
+	virtual QString externalAsset( const QUuid &pUuid ) const Q_DECL_OVERRIDE;
 
 public slots:
 	//void processContext( qint64 pTimeStamp );
@@ -188,16 +187,16 @@ public slots:
 	void onPinAdded( QSharedPointer<fugio::NodeInterface> pNode, QSharedPointer<fugio::PinInterface> pPin );
 	void onPinRemoved( QSharedPointer<fugio::NodeInterface> pNode, QSharedPointer<fugio::PinInterface> pPin );
 
-	virtual void play();
-	virtual void stop();
-	virtual void pause();
-	virtual void resume();
+	virtual void play() Q_DECL_OVERRIDE;
+	virtual void stop() Q_DECL_OVERRIDE;
+	virtual void pause() Q_DECL_OVERRIDE;
+	virtual void resume() Q_DECL_OVERRIDE;
 
 	void playFrom( qreal pTimeStamp );
 
 protected:
 	void processDeferredNodes( QList< QSharedPointer<fugio::NodeInterface> > WaitingNodes, QList< QSharedPointer<fugio::NodeInterface> > &InitialisedNodes );
-        
+
 private:
 	void processUpdatedNodes( qint64 pTimeStamp );
 
