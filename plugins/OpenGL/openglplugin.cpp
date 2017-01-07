@@ -34,6 +34,7 @@
 #include "arraytoindexnode.h"
 #include "instancebuffernode.h"
 #include "viewportmatrixnode.h"
+#include "cubemaprendernode.h"
 
 #include "texturepin.h"
 #include "renderpin.h"
@@ -51,6 +52,7 @@
 #define INSERT_FILTER_MIN(x)	mMapFilterMin.insert(#x,x)
 #define INSERT_FILTER_MAG(x)	mMapFilterMag.insert(#x,x)
 #define INSERT_WRAP(x)			mMapWrap.insert(#x,x)
+#define INSERT_COMPARE(x)		mMapCompare.insert(#x,x)
 
 QMap<QString,int>				 OpenGLPlugin::mMapTargets;
 QMap<QString,int>				 OpenGLPlugin::mMapFormat;
@@ -59,6 +61,7 @@ QMap<QString,int>				 OpenGLPlugin::mMapType;
 QMap<QString,int>				 OpenGLPlugin::mMapFilterMin;
 QMap<QString,int>				 OpenGLPlugin::mMapFilterMag;
 QMap<QString,int>				 OpenGLPlugin::mMapWrap;
+QMap<QString,int>				 OpenGLPlugin::mMapCompare;
 
 QList<QUuid>					 NodeControlBase::PID_UUID;
 
@@ -72,6 +75,7 @@ ClassEntry		OpenGLPlugin::mNodeClasses[] =
 	ClassEntry( "Buffer To Array", "OpenGL", NID_OPENGL_BUFFER_TO_ARRAY, &BufferToArrayNode::staticMetaObject ),
 	ClassEntry( "Clear", "OpenGL", NID_OPENGL_CLEAR, &ClearNode::staticMetaObject ),
 	ClassEntry( "Context", "OpenGL", NID_OPENGL_CONTEXT, &ContextNode::staticMetaObject ),
+	ClassEntry( "CubeMap Render", "OpenGL", NID_OPENGL_CUBEMAP_RENDER, &CubeMapRenderNode::staticMetaObject ),
 	ClassEntry( "Draw", "OpenGL", NID_OPENGL_DRAW, &DrawNode::staticMetaObject ),
 	ClassEntry( "Image to Texture", "OpenGL", NID_OPENGL_IMAGE_TO_TEXTURE, &ImageToTextureNode::staticMetaObject ),
 	ClassEntry( "Instance Buffer", "OpenGL", NID_OPENGL_INSTANCE_BUFFER, &InstanceBufferNode::staticMetaObject ),
@@ -338,6 +342,7 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_TARGET( GL_TEXTURE_1D );
 		INSERT_TARGET( GL_TEXTURE_3D );
 		INSERT_TARGET( GL_TEXTURE_RECTANGLE );
+		INSERT_TARGET( GL_TEXTURE_CUBE_MAP );
 #endif
 	}
 
@@ -499,5 +504,18 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_WRAP( GL_CLAMP );
 		INSERT_WRAP( GL_MIRROR_CLAMP_TO_EDGE );
 #endif
+	}
+
+	if( mMapCompare.isEmpty() )
+	{
+		INSERT_COMPARE( GL_NONE );
+		INSERT_COMPARE( GL_LEQUAL );
+		INSERT_COMPARE( GL_GEQUAL );
+		INSERT_COMPARE( GL_LESS );
+		INSERT_COMPARE( GL_GREATER );
+		INSERT_COMPARE( GL_EQUAL );
+		INSERT_COMPARE( GL_NOTEQUAL );
+		INSERT_COMPARE( GL_ALWAYS );
+		INSERT_COMPARE( GL_NEVER );
 	}
 }

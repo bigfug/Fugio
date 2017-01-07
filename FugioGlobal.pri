@@ -15,6 +15,13 @@ contains( QMAKE_CXXFLAGS, -march=armv8-a ) {
 }
 
 #------------------------------------------------------------------------------
+# macOS/OS X
+
+macx {
+	QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.9
+}
+
+#------------------------------------------------------------------------------
 # Global build options
 
 defineReplace( libChangeGlobal ) {

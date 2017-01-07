@@ -3,17 +3,20 @@
 
 #include <QObject>
 
+#include <fugio/core/uuid.h>
+
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
 #include <fugio/core/variant_interface.h>
+#include <fugio/core/list_interface.h>
 
 #include <fugio/pincontrolbase.h>
 
-class ListPin : public fugio::PinControlBase, public fugio::VariantInterface
+class ListPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::ListInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::VariantInterface )
+	Q_INTERFACES( fugio::VariantInterface fugio::ListInterface )
 
 public:
 	Q_INVOKABLE explicit ListPin( QSharedPointer<fugio::PinInterface> pPin );
@@ -54,6 +57,49 @@ public:
 	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE
 	{
 		return( variant() );
+	}
+
+	//-------------------------------------------------------------------------
+	// ListInterface interface
+
+	virtual int listSize() const Q_DECL_OVERRIDE
+	{
+		return( mValue.size() );
+	}
+
+	virtual QUuid listPinControl() const Q_DECL_OVERRIDE
+	{
+		return( PID_VARIANT );
+	}
+
+	virtual QVariant listIndex(int pIndex) const Q_DECL_OVERRIDE
+	{
+		return( pIndex >= 0 && pIndex < mValue.size() ? mValue.at( pIndex ) : QVariant() );
+	}
+
+	virtual void listSetIndex( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
+	{
+		mValue.insert( pIndex, pValue );
+	}
+
+	virtual void listSetSize( int pSize ) Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pSize )
+	}
+
+	virtual void listClear() Q_DECL_OVERRIDE
+	{
+		mValue.clear();
+	}
+
+	virtual void listAppend( const QVariant &pValue ) Q_DECL_OVERRIDE
+	{
+		mValue.append( pValue );
+	}
+
+	virtual bool listIsEmpty() const Q_DECL_OVERRIDE
+	{
+		return( mValue.isEmpty() );
 	}
 
 private:

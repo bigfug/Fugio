@@ -131,7 +131,7 @@ windows {
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
 
 		win32 {
-			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/Lua-5.3.2/lua53.dll ) $$shell_path( $$INSTALLDIR/data )
+			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/Lua-5.3.3/lua53.dll ) $$shell_path( $$INSTALLDIR/data )
 		}
 	}
 }
@@ -154,10 +154,10 @@ unix:!macx {
 #------------------------------------------------------------------------------
 # Lua
 
-win32:exists( $$(LIBS)/Lua-5.3.2 ) {
-	INCLUDEPATH += $$(LIBS)/Lua-5.3.2/include
+win32:exists( $$(LIBS)/Lua-5.3.3 ) {
+	INCLUDEPATH += $$(LIBS)/Lua-5.3.3/include
 
-	LIBS += -L$$(LIBS)/Lua-5.3.2 -llua53
+	LIBS += -L$$(LIBS)/Lua-5.3.3 -llua53
 
 	DEFINES += LUA_SUPPORTED
 }

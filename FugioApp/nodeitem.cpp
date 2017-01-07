@@ -209,7 +209,6 @@ void NodeItem::mousePressEvent( QGraphicsSceneMouseEvent *pEvent )
 	mContextView->nodeMoveStarted();
 }
 
-
 void NodeItem::mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent )
 {
 	mContextView->nodeMoveFinished();
@@ -643,6 +642,10 @@ void NodeItem::create( const QPointF &pPosition )
 	updateToolTip();
 
 	setFlags( flags() | QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable | QGraphicsItem::ItemSendsGeometryChanges );
+
+	// QTBUG-55070
+
+	setOpacity( 0.999 );
 }
 
 void NodeItem::layoutPins()
@@ -838,6 +841,10 @@ void NodeItem::updateGui()
 						//mNodeGui->setFlag( QGraphicsItem::ItemIgnoresTransformations );
 
 						mNodeGui->setParentItem( this );
+
+						// QTBUG-55070
+
+						mNodeGui->setOpacity( 0.999 );
 					}
 					else
 					{
@@ -1132,7 +1139,7 @@ void NodeItem::menuAddInputPin()
 
 	if( OK )
 	{
-		QSharedPointer<fugio::PinInterface>	PIN = mContextView->context()->global()->createPin( PIN_NAME, QUuid::createUuid(), QUuid::createUuid(), PIN_INPUT );
+		QSharedPointer<fugio::PinInterface>	PIN = mContextView->context()->createPin( PIN_NAME, QUuid::createUuid(), QUuid::createUuid(), PIN_INPUT );
 
 		if( PIN )
 		{
@@ -1215,7 +1222,7 @@ void NodeItem::menuAddOutputPin()
 
 	if( OK )
 	{
-		QSharedPointer<fugio::PinInterface>	PIN = mContextView->context()->global()->createPin( PIN_NAME, QUuid::createUuid(), QUuid::createUuid(), PIN_OUTPUT, PIN_UUID );
+		QSharedPointer<fugio::PinInterface>	PIN = mContextView->context()->createPin( PIN_NAME, QUuid::createUuid(), QUuid::createUuid(), PIN_OUTPUT, PIN_UUID );
 
 		if( PIN )
 		{

@@ -22,6 +22,10 @@
 #include <fugio/global_signals.h>
 #include <fugio/menu_control_interface.h>
 
+#if defined( Q_OS_WIN )
+#include <Windows.h>
+#endif
+
 GlobalPrivate *GlobalPrivate::mInstance = 0;
 
 GlobalPrivate::GlobalPrivate( QObject * ) :
@@ -159,14 +163,23 @@ void GlobalPrivate::loadPlugins( QDir pDir )
 
 		if( File.isDir() )
 		{
-			QString		CurDir = QDir::currentPath();
 			QString		NxtDir = pDir.absoluteFilePath( fileName );
+
+#if defined( Q_OS_WIN )
+			SetDllDirectory( (LPCTSTR)NxtDir.utf16() );
+
+			loadPlugins( QDir( NxtDir ) );
+
+			SetDllDirectory( NULL );
+#else
+			QString		CurDir = QDir::currentPath();
 
 			QDir::setCurrent( NxtDir );
 
 			loadPlugins( QDir::current() );
 
 			QDir::setCurrent( CurDir );
+#endif
 
 			continue;
 		}
@@ -397,122 +410,6 @@ void GlobalPrivate::unregisterPinClass( const QUuid &pUUID )
 	mPinNameMap.remove( pUUID );
 }
 
-QSharedPointer<fugio::NodeInterface> GlobalPrivate::createNode( const QString &pName, const QUuid &pGlobalId, const QUuid &pControlId, const QVariantHash &pSettings )
-{
-	NodePrivate	*NODE = new NodePrivate();
-
-	if( !NODE )
-	{
-		return( QSharedPointer<fugio::NodeInterface>() );
-	}
-
-	NODE->moveToThread( thread() );
-
-	NODE->setName( pName );
-	NODE->setUuid( pGlobalId );
-	NODE->setControlUuid( pControlId );
-	NODE->setSettings( pSettings );
-
-	QSharedPointer<fugio::NodeInterface>		NODE_PTR = QSharedPointer<fugio::NodeInterface>( NODE );
-
-	if( mNodeMap.contains( pControlId ) )
-	{
-		QObject		*ClassInstance = mNodeMap.value( pControlId ).mMetaObject->newInstance( Q_ARG( QSharedPointer<fugio::NodeInterface>, NODE_PTR ) );
-
-		if( ClassInstance )
-		{
-			ClassInstance->moveToThread( thread() );
-
-			fugio::NodeControlInterface	*NodeControl = qobject_cast<fugio::NodeControlInterface *>( ClassInstance );
-
-			if( NodeControl )
-			{
-				NODE->setControl( QSharedPointer<fugio::NodeControlInterface>( NodeControl ) );
-			}
-		}
-	}
-	else
-	{
-		qWarning() << "Unknown NodeControlInterface" << pControlId;
-	}
-
-	return( NODE_PTR );
-}
-
-QSharedPointer<fugio::PinInterface> GlobalPrivate::createPin( const QString &pName, const QUuid &pGlobalId, const QUuid &pLocalId, PinDirection pDirection, const QUuid &pControlUUID, const QVariantHash &pSettings )
-{
-	Q_ASSERT( !pLocalId.isNull() );
-
-	PinPrivate						*P = new PinPrivate();
-
-	if( !P )
-	{
-		return( QSharedPointer<fugio::PinInterface>() );
-	}
-
-	QSharedPointer<fugio::PinInterface>	PinPtr = QSharedPointer<fugio::PinInterface>( P );
-
-	P->moveToThread( thread() );
-
-	P->setGlobalId( pGlobalId );
-	P->setLocalId( pLocalId );
-	P->setName( pName );
-	P->setDirection( pDirection );
-	P->setSettings( pSettings );
-	P->setControlUuid( pControlUUID );
-
-	if( !pControlUUID.isNull() )
-	{
-		QSharedPointer<fugio::PinControlInterface>		PinControl = createPinControl( pControlUUID, PinPtr );
-
-		if( PinControl )
-		{
-			P->setControl( PinControl );
-		}
-	}
-
-	return( PinPtr );
-}
-
-QSharedPointer<fugio::PinControlInterface> GlobalPrivate::createPinControl( const QUuid &pUUID, QSharedPointer<fugio::PinInterface> pPin )
-{
-	if( !mPinClassMap.contains( pUUID ) )
-	{
-		qWarning() << "Unknown fugio::PinControlInterface" << pUUID << pPin->name();
-
-		return( QSharedPointer<fugio::PinControlInterface>() );
-	}
-
-	if( mPinClassMap.contains( pUUID ) )
-	{
-		const QMetaObject *SMO = mPinClassMap.value( pUUID, nullptr );
-
-		if( SMO )
-		{
-			QObject		*ClassInstance = SMO->newInstance( Q_ARG( QSharedPointer<fugio::PinInterface>, pPin ) );
-
-			if( ClassInstance )
-			{
-				ClassInstance->moveToThread( thread() );
-
-				fugio::PinControlInterface		*PinControl = qobject_cast<fugio::PinControlInterface *>( ClassInstance );
-
-				if( PinControl )
-				{
-					return( QSharedPointer<fugio::PinControlInterface>( PinControl ) );
-				}
-
-				delete ClassInstance;
-			}
-			else
-			{
-				qWarning() << "Can't create Pin ClassInstance of" << mPinClassMap.value( pUUID )->className();
-			}
-		}
-	}
-
-	return( QSharedPointer<fugio::PinControlInterface>() );
-}
 
 const QMetaObject *GlobalPrivate::findNodeMetaObject( const QString &pClassName ) const
 {
@@ -664,20 +561,6 @@ QUuid GlobalPrivate::findPinByClass(const QString &pClassName) const
 QStringList GlobalPrivate::pinNames() const
 {
 	return( mPinNameMap.values() );
-}
-
-bool GlobalPrivate::updatePinControl( QSharedPointer<fugio::PinInterface> pPin, const QUuid &pPinControlUuid )
-{
-	QSharedPointer<fugio::PinControlInterface>		PinControl = createPinControl( pPinControlUuid, pPin );
-
-	if( PinControl )
-	{
-		pPin->setControl( PinControl );
-
-		return( true );
-	}
-
-	return( false );
 }
 
 void GlobalPrivate::clear()

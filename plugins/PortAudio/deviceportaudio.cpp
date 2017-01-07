@@ -13,6 +13,10 @@
 
 QList<QWeakPointer<DevicePortAudio>>	 DevicePortAudio::mDeviceList;
 
+#if defined( Q_OS_WIN )
+#include <windows.h>
+#endif
+
 void DevicePortAudio::deviceInitialise()
 {
 //	PaHostApiIndex	HostApiCount   = Pa_GetHostApiCount();
@@ -29,7 +33,19 @@ void DevicePortAudio::deviceInitialise()
 
 		const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
 
-		qDebug() << HstInf->name << DevInf->name << DevInf->maxInputChannels << DevInf->maxOutputChannels;
+		QString				 DevNam;
+
+#if defined( Q_OS_WIN )
+		wchar_t wideName[ MAX_PATH ];
+
+		MultiByteToWideChar( CP_UTF8, 0, DevInf->name, -1, wideName, MAX_PATH - 1 );
+
+		DevNam = QString::fromWCharArray( wideName );
+#else
+		DevNam = QString::fromLocal8Bit( DevInf->name );
+#endif
+
+		qDebug() << HstInf->name << DevNam << DevInf->maxInputChannels << DevInf->maxOutputChannels;
 	}
 #endif
 }
@@ -95,6 +111,19 @@ QString DevicePortAudio::deviceName( PaDeviceIndex pDevIdx )
 		return( QString() );
 	}
 
+	QString				 DevNam;
+
+#if defined( Q_OS_WIN )
+	wchar_t wideName[ MAX_PATH ];
+
+	MultiByteToWideChar( CP_UTF8, 0, DevInf->name, -1, wideName, MAX_PATH - 1 );
+
+	DevNam = QString::fromWCharArray( wideName );
+#else
+	DevNam = QString::fromLocal8Bit( DevInf->name );
+#endif
+
+
 	const PaHostApiInfo *HstInf = Pa_GetHostApiInfo( DevInf->hostApi );
 
 	if( !HstInf )
@@ -102,7 +131,7 @@ QString DevicePortAudio::deviceName( PaDeviceIndex pDevIdx )
 		return( QString() );
 	}
 
-	return( QString( "%1: %2" ).arg( HstInf->name ).arg( DevInf->name ) );
+	return( QString( "%1: %2" ).arg( HstInf->name ).arg( DevNam ) );
 }
 
 QStringList DevicePortAudio::deviceOutputNameList()
@@ -372,7 +401,7 @@ void DevicePortAudio::deviceInputOpen( const PaDeviceInfo *DevInf )
 
 	const PaStreamInfo	*StreamInfo = Pa_GetStreamInfo( mStreamInput );
 
-	qDebug() << "INPUT:" << DevInf->name << StreamInfo->sampleRate << StreamInfo->inputLatency << mInputChannelCount;
+	qDebug() << "INPUT:" << deviceName( mDeviceIndex ) << StreamInfo->sampleRate << StreamInfo->inputLatency << mInputChannelCount;
 
 	mInputSampleRate   = StreamInfo->sampleRate;
 	mInputTimeLatency  = 0;//StreamInfo->inputLatency;
@@ -407,7 +436,7 @@ void DevicePortAudio::deviceOutputOpen( const PaDeviceInfo *DevInf )
 
 	const PaStreamInfo	*StreamInfo = Pa_GetStreamInfo( mStreamOutput );
 
-	qDebug() << "OUTPUT:" << DevInf->name << StreamInfo->sampleRate << StreamInfo->outputLatency << mOutputChannelCount;
+	qDebug() << "OUTPUT:" << deviceName( mDeviceIndex ) << StreamInfo->sampleRate << StreamInfo->outputLatency << mOutputChannelCount;
 
 	mOutputSampleRate   = StreamInfo->sampleRate;
 	mOutputTimeLatency  = StreamInfo->outputLatency;

@@ -37,6 +37,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputDirectory;
 	QSharedPointer<fugio::PinInterface>			 mPinInputOverwrite;
 	QSharedPointer<fugio::PinInterface>			 mPinInputReset;
+	QSharedPointer<fugio::PinInterface>			 mPinInputNumber;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputFilename;
 	fugio::VariantInterface						*mValOutputFilename;

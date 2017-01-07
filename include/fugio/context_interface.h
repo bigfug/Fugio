@@ -79,22 +79,29 @@ public:
 	//-------------------------------------------------------------------------
 	// Nodes
 
+	virtual QSharedPointer<fugio::NodeInterface> createNode( const QString &pName, const QUuid &pGlobalId, const QUuid &pControlId, const QVariantHash &pSettings = QVariantHash() ) = 0;
+
+	virtual QSharedPointer<fugio::PinInterface> createPin( const QString &pName, const QUuid &pGlobalId, const QUuid &pLocalId, PinDirection pDirection, const QUuid &pControlId = QUuid(), const QVariantHash &pSettings = QVariantHash() ) = 0;
+
+	virtual QSharedPointer<fugio::PinControlInterface> createPinControl( const QUuid &pUUID, QSharedPointer<fugio::PinInterface> pPin ) = 0;
+
+	virtual bool updatePinControl( QSharedPointer<fugio::PinInterface> pPin, const QUuid &pPinControlUuid ) = 0;
+
+
 	virtual void registerNode( QSharedPointer<fugio::NodeInterface> pNode ) = 0;
 
 	virtual void unregisterNode( const QUuid &pUUID ) = 0;
 
 	virtual void renameNode( const QUuid &pUUID1, const QUuid &pUUID2 ) = 0;
 
-	virtual QSharedPointer<fugio::NodeInterface> findNode( const QUuid &pUUID ) = 0;
-	virtual QSharedPointer<fugio::NodeInterface> findNode( const QString &pName ) = 0;
+	virtual QSharedPointer<fugio::NodeInterface> findNode( const QUuid &pUUID ) const  = 0;
+	virtual QSharedPointer<fugio::NodeInterface> findNode( const QString &pName ) const  = 0;
 
-	virtual QList<QUuid> nodeList( void ) = 0;
+	virtual QList<QUuid> nodeList( void ) const = 0;
 
 	virtual void nodeInitialised( void ) = 0;
 
 	virtual void updateNode( QSharedPointer<fugio::NodeInterface> pNode ) = 0;
-
-	//virtual void addDeferredNode( QSharedPointer<fugio::NodeInterface> pNode ) = 0;
 
 	//-------------------------------------------------------------------------
 	// Pins - id's are globalId() not localId()

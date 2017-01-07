@@ -136,6 +136,10 @@ void TextureNode::loadSettings( QSettings &pSettings )
 
 	mTexture->setWrap( CurWPS, CurWPT, CurWPR );
 
+	CurVal = OpenGLPlugin::mMapCompare.key( mTexture->compare() );
+	CurVal = pSettings.value( "Compare", CurVal ).toString();
+	CurInt = OpenGLPlugin::mMapCompare.value( CurVal, mTexture->compare() );
+
 	mTexture->setGenMipMaps( pSettings.value( "MipMaps", mTexture->genMipMaps() ).toBool() );
 
 	mTexture->setDoubleBuffered( pSettings.value( "DoubleBuffer", mTexture->isDoubleBuffered() ).toBool() );
@@ -154,6 +158,7 @@ void TextureNode::saveSettings( QSettings &pSettings ) const
 	pSettings.setValue( "WrapR", OpenGLPlugin::mMapWrap.key( mTexture->wrapR() ) );
 	pSettings.setValue( "MipMaps", mTexture->genMipMaps() );
 	pSettings.setValue( "DoubleBuffer", mTexture->isDoubleBuffered() );
+	pSettings.setValue( "Compare", OpenGLPlugin::mMapCompare.key( mTexture->compare() ) );
 }
 
 void TextureNode::onEditClicked()
@@ -183,6 +188,7 @@ void TextureNode::onEditClicked()
 			mTexture->setGenMipMaps( Form->genMipMaps() );
 			mTexture->setDoubleBuffered( Form->doubleBuffer() );
 			mTexture->setWrap( Form->wrapS(), Form->wrapT(), Form->wrapR() );
+			mTexture->setCompare( Form->compare() );
 
 			mNode->context()->updateNode( mNode );
 		}

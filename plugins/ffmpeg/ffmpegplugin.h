@@ -13,7 +13,7 @@ class ffmpegPlugin : public QObject, public fugio::PluginInterface
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::PluginInterface )
-	Q_PLUGIN_METADATA( IID "com.bigfug.fugio.ffmpegPlugin" )
+	Q_PLUGIN_METADATA( IID "com.bigfug.fugio.ffmpeg.plugin" )
 
 public:
 	explicit ffmpegPlugin( void );

@@ -97,6 +97,7 @@ public:
 	static QMap<QString,int>				 mMapFilterMin;
 	static QMap<QString,int>				 mMapFilterMag;
 	static QMap<QString,int>				 mMapWrap;
+	static QMap<QString,int>				 mMapCompare;
 
 	//-------------------------------------------------------------------------
 

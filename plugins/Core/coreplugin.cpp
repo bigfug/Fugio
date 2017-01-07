@@ -38,6 +38,7 @@
 #include "getsizenode.h"
 #include "triggerarraynode.h"
 #include "triggerbooleannode.h"
+#include "makearraynode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -78,6 +79,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Index", NID_INDEX, &IndexNode::staticMetaObject ),
 	ClassEntry( "List Size", NID_LIST_SIZE, &ListSizeNode::staticMetaObject ),
 	ClassEntry( "List Index", NID_LIST_INDEX, &ListIndexNode::staticMetaObject ),
+	ClassEntry( "Make Array", NID_MAKE_ARRAY, &MakeArrayNode::staticMetaObject ),
 	ClassEntry( "Number Range Limit", NID_NUMBER_RANGE_LIMIT, &NumberRangeLimitNode::staticMetaObject ),
 	ClassEntry( "Number Range Map", NID_NUMBER_RANGE, &NumberRangeNode::staticMetaObject ),
 	ClassEntry( "Number Spread", NID_NUMBER_SPREAD, &NumberSpreadNode::staticMetaObject ),
