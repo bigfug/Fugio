@@ -348,9 +348,9 @@ win32 {
 
 win32 {
 	CONFIG(debug,debug|release) {
-		LIBS += -L$$(LIBS)/assimp-32/code/Debug
+		LIBS += -L$$(LIBS)/assimp-3.3.1.32.2015/code/Debug
 	} else {
-		LIBS += -L$$(LIBS)/assimp-32/code/Release
+		LIBS += -L$$(LIBS)/assimp-3.3.1.32.2015/code/Release
 	}
 }
 
@@ -358,7 +358,7 @@ win32 {
 # portaudio
 
 win32 {
-	LIBS += -L$$(LIBS)/portaudio.32.2013/bin/Win32/Release
+	LIBS += -L$$(LIBS)/portaudio.32.2015/bin/Win32/Release
 }
 
 #------------------------------------------------------------------------------
@@ -366,9 +366,9 @@ win32 {
 
 win32 {
 	CONFIG(debug,debug|release) {
-			LIBS += -L$$(LIBS)/opencv-3.1.0/build/bin/Debug
+		LIBS += -L$$(LIBS)/opencv-3.1.0/build/bin/Debug
 	} else {
-			LIBS += -L$$(LIBS)/opencv-3.1.0/build/bin/Release
+		LIBS += -L$$(LIBS)/opencv-3.1.0/build/bin/Release
 	}
 }
 
@@ -376,15 +376,15 @@ win32 {
 # ffmpeg
 
 win32 {
-	LIBS += -L$$(LIBS)/ffmpeg-20160728-fb91143-win32/lib
-	LIBS += -L$$(LIBS)/ffmpeg-20160728-fb91143-win32/bin
+	LIBS += -L$$(LIBS)/ffmpeg-3.2-win32/lib
+	LIBS += -L$$(LIBS)/ffmpeg-3.2-win32/bin
 }
 
 #------------------------------------------------------------------------------
 # portmidi
 
 windows {
-	LIBS += -L$$(LIBS)/portmidi.32.2013/Release
+	LIBS += -L$$(LIBS)/portmidi.32.2015/Release
 }
 
 #------------------------------------------------------------------------------
@@ -409,7 +409,7 @@ win32 {
 # fugStream
 
 win32 {
-	LIBS += -L$$(LIBS)/fftw-3.3.4
+	LIBS += -L$$(LIBS)/fftw-3.3.5
 }
 
 #------------------------------------------------------------------------------

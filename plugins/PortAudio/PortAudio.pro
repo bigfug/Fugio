@@ -83,11 +83,11 @@ windows {
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins/portaudio )
 
 		win32 {
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/portaudio.32.2013/bin/Win32/Release/portaudio_x86.dll ) $$shell_path( $$INSTALLDIR/data/plugins/portaudio )
+			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/portaudio.32.2015/Release/portaudio_x86.dll ) $$shell_path( $$INSTALLDIR/data/plugins/portaudio )
 		}
 
 		win64 {
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/portaudio.64.2013/bin/x64/Release/portaudio_x64.dll ) $$shell_path( $$INSTALLDIR/data/plugins/portaudio )
+			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/portaudio.64.2015/Release/portaudio_x64.dll ) $$shell_path( $$INSTALLDIR/data/plugins/portaudio )
 		}
 	}
 }
@@ -113,14 +113,14 @@ unix:!macx {
 windows {
 	contains( QMAKE_HOST.arch, x86_64 ) {
 		exists( $$(LIBS)/portaudio/include/portaudio.h ) {
-			LIBS += -L$$(LIBS)/portaudio.64.2013/bin/x64/Release
+			LIBS += -L$$(LIBS)/portaudio.64.2015/Release
 			INCLUDEPATH += $$(LIBS)/portaudio/include
 			LIBS += -lportaudio_x64
 			DEFINES += PORTAUDIO_SUPPORTED
 		}
 	} else {
 		exists( $$(LIBS)/portaudio/include/portaudio.h ) {
-			LIBS += -L$$(LIBS)/portaudio.32.2013/bin/Win32/Release
+			LIBS += -L$$(LIBS)/portaudio.32.2015/Release
 			INCLUDEPATH += $$(LIBS)/portaudio/include
 			LIBS += -lportaudio_x86
 			DEFINES += PORTAUDIO_SUPPORTED

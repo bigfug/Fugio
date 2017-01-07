@@ -85,11 +85,11 @@ windows {
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
 
 		win32 {
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/portmidi.32.2013/Release/portmidi.dll ) $$shell_path( $$INSTALLDEST )
+			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/portmidi.32.2015/Release/portmidi.dll ) $$shell_path( $$INSTALLDEST )
 		}
 
 		win64 {
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/portmidi.64.2013/Release/portmidi.dll ) $$shell_path( $$INSTALLDEST )
+			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/portmidi.64.2015/Release/portmidi.dll ) $$shell_path( $$INSTALLDEST )
 		}
 	}
 }
@@ -117,14 +117,14 @@ windows:exists( $$(LIBS)/portmidi ) {
 	INCLUDEPATH += $$(LIBS)/portmidi/porttime
 }
 
-win64:exists( $$(LIBS)/portmidi.64.2013 ) {
-	LIBS += -L$$(LIBS)/portmidi.64.2013/Release -lportmidi
+win64:exists( $$(LIBS)/portmidi.64.2015 ) {
+	LIBS += -L$$(LIBS)/portmidi.64.2015/Release -lportmidi
 
 	DEFINES += PORTMIDI_SUPPORTED
 }
 
-win32:exists( $$(LIBS)/portmidi.32.2013 )  {
-	LIBS += -L$$(LIBS)/portmidi.32.2013/Release -lportmidi
+win32:exists( $$(LIBS)/portmidi.32.2015 )  {
+	LIBS += -L$$(LIBS)/portmidi.32.2015/Release -lportmidi
 
 	DEFINES += PORTMIDI_SUPPORTED
 }
