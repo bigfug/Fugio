@@ -358,7 +358,7 @@ win32 {
 # portaudio
 
 win32 {
-	LIBS += -L$$(LIBS)/portaudio.32.2015/bin/Win32/Release
+	LIBS += -L$$(LIBS)/portaudio.32.2015/Release
 }
 
 #------------------------------------------------------------------------------
