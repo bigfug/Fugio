@@ -34,7 +34,8 @@ SOURCES += networkplugin.cpp \
 	getnode.cpp \
 	websocketdataservernode.cpp \
 	cobsdecodenode.cpp \
-	cobsencodenode.cpp
+	cobsencodenode.cpp \
+    websocketclientnode.cpp
 
 HEADERS += networkplugin.h\
 	../../include/fugio/network/uuid.h \
@@ -51,7 +52,8 @@ HEADERS += networkplugin.h\
 	getnode.h \
 	websocketdataservernode.h \
 	cobsdecodenode.h \
-	cobsencodenode.h
+	cobsencodenode.h \
+    websocketclientnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

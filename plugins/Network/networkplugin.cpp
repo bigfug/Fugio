@@ -27,6 +27,7 @@
 #include "cobsencodenode.h"
 
 #include "websocketdataservernode.h"
+#include "websocketclientnode.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
@@ -46,6 +47,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "SLIP Encode", "Network", NID_SLIP_ENCODE, &SLIPEncodeNode::staticMetaObject ),
 	ClassEntry( "SLIP Decode", "Network", NID_SLIP_DECODE, &SLIPDecodeNode::staticMetaObject ),
 	ClassEntry( "WebSocket Data Server", "Network", NID_WEBSOCKET_DATA_SERVER, &WebSocketDataServerNode::staticMetaObject ),
+	ClassEntry( "WebSocket Client", "Network", NID_WEBSOCKET_CLIENT, &WebSocketClientNode::staticMetaObject ),
 	ClassEntry()
 };
 
