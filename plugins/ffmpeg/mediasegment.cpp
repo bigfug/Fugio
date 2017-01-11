@@ -518,6 +518,7 @@ void MediaSegment::processAudioFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 
 void MediaSegment::removeVideoFrames( void )
 {
+#if defined( FFMPEG_SUPPORTED )
 	int		DelCnt = 0;
 
 	for( int i = 0 ; i < mVidDat.size() ; )
@@ -545,10 +546,12 @@ void MediaSegment::removeVideoFrames( void )
 	{
 		updateVideoFrames( mPlayHead );
 	}
+#endif
 }
 
 void MediaSegment::removeAudioFrames()
 {
+#if defined( FFMPEG_SUPPORTED )
 	QMutexLocker	MutLck( &mAudDatLck );
 
 	for( int i = 0 ; i < mAudDat.size() ; )
@@ -568,19 +571,25 @@ void MediaSegment::removeAudioFrames()
 			i++;
 		}
 	}
+#endif
 }
 
 QString MediaSegment::av_err( const QString &pHeader, int pErrorCode )
 {
+#if defined( FFMPEG_SUPPORTED )
 	char	errbuf[ AV_ERROR_MAX_STRING_SIZE ];
 
 	av_make_error_string( errbuf, AV_ERROR_MAX_STRING_SIZE, pErrorCode );
 
 	return( QString( "%1: %2" ).arg( pHeader ).arg( QString::fromLatin1( errbuf ) ) );
+#else
+	return( "" );
+#endif
 }
 
 bool MediaSegment::hasVideoFrame( qreal pPTS ) const
 {
+#if defined( FFMPEG_SUPPORTED )
 	for( int i = 0 ; i < mVidDat.size() ; i++ )
 	{
 		if( mVidDat.at( i ).mPTS == pPTS )
@@ -588,12 +597,13 @@ bool MediaSegment::hasVideoFrame( qreal pPTS ) const
 			return( true );
 		}
 	}
-
+#endif
 	return( false );
 }
 
 bool MediaSegment::hapProcess( qreal TargetPTS, qreal PacketTS, bool pForce )
 {
+#if defined( FFMPEG_SUPPORTED )
 	if( mVideo.mCodec->id != AV_CODEC_ID_HAP )
 	{
 		return( false );
@@ -701,10 +711,14 @@ bool MediaSegment::hapProcess( qreal TargetPTS, qreal PacketTS, bool pForce )
 	mFrameSrc->key_frame     = 1;
 
 	return( true );
+#else
+	return( false );
+#endif
 }
 
 bool MediaSegment::readVideoFrame( qreal TargetPTS, bool pForce )
 {
+#if defined( FFMPEG_SUPPORTED )
 	while( true )
 	{
 		if( hapProcess( TargetPTS, TargetPTS, pForce ) )
@@ -741,12 +755,13 @@ bool MediaSegment::readVideoFrame( qreal TargetPTS, bool pForce )
 
 		break;
 	}
-
+#endif
 	return( false );
 }
 
 bool MediaSegment::readAudioFrame( qreal TargetPTS, bool pForce )
 {
+#if defined( FFMPEG_SUPPORTED )
 	int	RcvErr;
 
 	while( ( RcvErr = avcodec_receive_frame( mAudio.mCodecContext, mFrameSrc ) ) == 0 )
@@ -767,10 +782,14 @@ bool MediaSegment::readAudioFrame( qreal TargetPTS, bool pForce )
 	}
 
 	return( true );
+#else
+	return( false );
+#endif
 }
 
 int MediaSegment::findFrameIndex( qreal pTimeStamp ) const
 {
+#if defined( FFMPEG_SUPPORTED )
 	int			CurIdx = -1;
 	qreal		CurDif = 10000.0;
 
@@ -798,10 +817,14 @@ int MediaSegment::findFrameIndex( qreal pTimeStamp ) const
 	}
 
 	return( CurDif < 0.05 ? CurIdx : -1 );
+#else
+	return( -1 );
+#endif
 }
 
 void MediaSegment::updateVideoFrames( qreal pPTS )
 {
+#if defined( FFMPEG_SUPPORTED )
 	// Reset the current indexes
 
 	mVideo.mPrevIdx = -1;
@@ -889,15 +912,21 @@ void MediaSegment::updateVideoFrames( qreal pPTS )
 	{
 		mVideo.mPTS = mVidDat[ mVideo.mCurrIdx ].mPTS;
 	}
+#endif
 }
 
 bool MediaSegment::haveVideoFrames( void ) const
 {
+#if defined( FFMPEG_SUPPORTED )
 	return( mVideo.mPrevIdx != -1 && mVideo.mCurrIdx != -1 && mVideo.mNxt1Idx != -1 && mVideo.mNxt2Idx != -1 );
+#else
+	return( false );
+#endif
 }
 
 void MediaSegment::setPlayhead( qreal pTimeStamp )
 {
+#if defined( FFMPEG_SUPPORTED )
 	AVStream		*VideoStream   = ( mVideo.mStreamId != -1 ? mFormatContext->streams[ mVideo.mStreamId ] : 0 );
 	AVStream		*AudioStream   = ( mAudio.mStreamId != -1 ? mFormatContext->streams[ mAudio.mStreamId ] : 0 );
 
@@ -1119,10 +1148,13 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 		qDebug() << "!haveFramesFor()" << mPlayHead << mVideo.mPrevIdx << mVideo.mCurrIdx << mVideo.mNxt1Idx << mVideo.mNxt2Idx;
 	}
 #endif
+
+#endif // FFMPEG_SUPPORTED
 }
 
 void MediaSegment::mixAudio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, float pVol ) const
 {
+#if defined( FFMPEG_SUPPORTED )
 	if( mAudio.mStreamId == -1 )
 	{
 		return;
@@ -1202,17 +1234,22 @@ void MediaSegment::mixAudio( qint64 pSamplePosition, qint64 pSampleCount, int pC
 		qDebug() << "SegmentVideo::mixAudio:" << pSamplePosition << "-" << SmpCpy << "!=" << pSampleCount;
 	}
 #endif
+
+#endif // FFMPEG_SUPPORTED
 }
 
 void MediaSegment::clearAudio()
 {
+#if defined( FFMPEG_SUPPORTED )
 	QMutexLocker		Lock( &mAudDatLck );
 
 	mAudDat.clear();
+#endif
 }
 
 void MediaSegment::clearVideo()
 {
+#if defined( FFMPEG_SUPPORTED )
 	for( int i = 0 ; i < mVidDat.size() ; i++ )
 	{
 		av_freep( &mVidDat[ i ].mData[ 0 ] );
@@ -1221,30 +1258,44 @@ void MediaSegment::clearVideo()
 	mVidDat.clear();
 
 	mVideo.mPrevIdx = mVideo.mCurrIdx = mVideo.mNxt1Idx = mVideo.mNxt2Idx = -1;
+#endif
 }
 
 void MediaSegment::decodeIFrames( bool pDecode )
 {
+#if defined( FFMPEG_SUPPORTED )
 	mDecodeI = pDecode;
+#endif
 }
 
 void MediaSegment::decodeBFrames( bool pDecode )
 {
+#if defined( FFMPEG_SUPPORTED )
 	mDecodeB = pDecode;
+#endif
 }
 
 qreal MediaSegment::wavL( qreal pTimeStamp ) const
 {
+#if defined( FFMPEG_SUPPORTED )
 	return( mAudioProcessor->wavL( pTimeStamp ) );
+#else
+	return( 0 );
+#endif
 }
 
 qreal MediaSegment::wavR( qreal pTimeStamp ) const
 {
+#if defined( FFMPEG_SUPPORTED )
 	return( mAudioProcessor->wavR( pTimeStamp ) );
+#else
+	return( 0 );
+#endif
 }
 
 QSize MediaSegment::imageSize() const
 {
+#if defined( FFMPEG_SUPPORTED )
 	if( !hasVideo() )
 	{
 		return( QSize() );
@@ -1253,10 +1304,14 @@ QSize MediaSegment::imageSize() const
 	AVCodecParameters		*CodPar = mFormatContext->streams[ mVideo.mStreamId ]->codecpar;
 
 	return( QSize( CodPar->width, CodPar->height ) );
+#else
+	return( QSize() );
+#endif
 }
 
 void MediaSegment::setPreload( bool pPreload )
 {
+#if defined( FFMPEG_SUPPORTED )
 	if( pPreload )
 	{
 		if( !mAudioProcessor->options().testFlag( MediaAudioProcessor::Preload ) )
@@ -1275,15 +1330,21 @@ void MediaSegment::setPreload( bool pPreload )
 
 		mAudioProcessor->clearAudio();
 	}
+#endif
 }
 
 bool MediaSegment::preload() const
 {
+#if defined( FFMPEG_SUPPORTED )
 	return( mAudioProcessor->options().testFlag( MediaAudioProcessor::Preload ) );
+#else
+	return( false );
+#endif
 }
 
 const fugio::SegmentInterface::VidDat *MediaSegment::viddat() const
 {
+#if defined( FFMPEG_SUPPORTED )
 	if( !hasVideo() )
 	{
 		return( nullptr );
@@ -1300,10 +1361,14 @@ const fugio::SegmentInterface::VidDat *MediaSegment::viddat() const
 	}
 
 	return( &mVidDat[ mVideo.mCurrIdx ] );
+#else
+	return( nullptr );
+#endif
 }
 
 int MediaSegment::imageFormat() const
 {
+#if defined( FFMPEG_SUPPORTED )
 	if( !hasVideo() )
 	{
 		return( AV_PIX_FMT_NONE );
@@ -1312,11 +1377,14 @@ int MediaSegment::imageFormat() const
 	AVCodecParameters		*CodPar = mFormatContext->streams[ mVideo.mStreamId ]->codecpar;
 
 	return( CodPar->format );
+#else
+	return( -1 );
+#endif
 }
 
 bool MediaSegment::imageIsHap() const
 {
-#if 1 // defined( AV_CODEC_ID_HAP )
+#if defined( FFMPEG_SUPPORTED )
 	return( mVideo.mCodec && mVideo.mCodec->id == AV_CODEC_ID_HAP );
 #else
 	return( false );
@@ -1325,11 +1393,16 @@ bool MediaSegment::imageIsHap() const
 
 qreal MediaSegment::videoFrameRate() const
 {
+#if defined( FFMPEG_SUPPORTED )
 	return( mVideo.mCodecContext && mVideo.mFrameRate.den ? av_q2d( mVideo.mFrameRate ) : 0.0 );
+#else
+	return( 0.0 );
+#endif
 }
 
 void MediaSegment::readNext()
 {
+#if defined( FFMPEG_SUPPORTED )
 	AVStream		*VideoStream   = ( mVideo.mStreamId != -1 ? mFormatContext->streams[ mVideo.mStreamId ] : 0 );
 	AVStream		*AudioStream   = ( mAudio.mStreamId != -1 ? mFormatContext->streams[ mAudio.mStreamId ] : 0 );
 
@@ -1448,4 +1521,5 @@ void MediaSegment::readNext()
 
 		mPlayHead = 0;
 	}
+#endif
 }
