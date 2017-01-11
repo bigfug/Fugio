@@ -15,13 +15,16 @@
 #include "segmentinterface.h"
 #include "audiobuffer.h"
 
+#if defined( FFMPEG_SUPPORTED )
 #include <hap.h>
+#endif
 
 #ifndef INT64_C
 #define INT64_C(c) (c ## LL)
 #define UINT64_C(c) (c ## ULL)
 #endif
 
+#if defined( FFMPEG_SUPPORTED )
 extern "C"
 {
 #include <libavutil/rational.h>
@@ -38,6 +41,7 @@ extern "C"
 #include <libswresample/swresample.h>
 #endif
 }
+#endif
 
 class QImage;
 class MediaAudioProcessor;
@@ -60,12 +64,20 @@ public:
 
 	virtual qreal videoFrameTimeStamp( void ) const Q_DECL_OVERRIDE
 	{
+#if defined( FFMPEG_SUPPORTED )
 		return( mVideo.mPTS );
+#else
+		return( 0 );
+#endif
 	}
 
 	virtual qreal duration( void ) const Q_DECL_OVERRIDE
 	{
+#if defined( FFMPEG_SUPPORTED )
 		return( mDuration );
+#else
+		return( 0 );
+#endif
 	}
 
 	virtual qreal wavL( qreal pTimeStamp ) const Q_DECL_OVERRIDE;
@@ -78,12 +90,20 @@ public:
 
 	virtual bool hasVideo( void ) const Q_DECL_OVERRIDE
 	{
+#if defined( FFMPEG_SUPPORTED )
 		return( mVideo.mStreamId != -1 );
+#else
+		return( false );
+#endif
 	}
 
 	virtual bool hasAudio( void ) const Q_DECL_OVERRIDE
 	{
+#if defined( FFMPEG_SUPPORTED )
 		return( mAudio.mStreamId != -1 );
+#else
+		return( false );
+#endif
 	}
 
 	virtual QSize imageSize( void ) const Q_DECL_OVERRIDE;
@@ -104,12 +124,20 @@ public:
 
 	virtual int audioChannels( void ) const Q_DECL_OVERRIDE
 	{
+#if defined( FFMPEG_SUPPORTED )
 		return( mChannels );
+#else
+		return( 0 );
+#endif
 	}
 
 	virtual qreal sampleRate( void ) const Q_DECL_OVERRIDE
 	{
+#if defined( FFMPEG_SUPPORTED )
 		return( mSampleRate );
+#else
+		return( 0 );
+#endif
 	}
 
 private:
@@ -117,6 +145,7 @@ private:
 
 	bool readAudioFrame(qreal TargetPTS , bool pForce );
 
+#if defined( FFMPEG_SUPPORTED )
 	static int is_realtime( AVFormatContext *s )
 	{
 		if( !strcmp(s->iformat->name, "rtp")
@@ -134,6 +163,7 @@ private:
 			return 1;
 		return 0;
 	}
+#endif
 
 	void updateVideoFrames( qreal pPTS );
 
@@ -171,9 +201,11 @@ private:
 
 	bool hapProcess( qreal TargetPTS, qreal PacketTS , bool pForce );
 
+#if defined( FFMPEG_SUPPORTED )
 	static void hapStaticDecodeCallback( HapDecodeWorkFunction function, void *p, unsigned int count, void *info );
 
 	void hapDecodeCallback( HapDecodeWorkFunction function, void *p, unsigned int count );
+#endif
 
 	int findFrameIndex(qreal pTimeStamp) const;
 
@@ -211,6 +243,8 @@ private:
 
 private:
 	QString				 mFileName;
+
+#if defined( FFMPEG_SUPPORTED )
 	AVFormatContext		*mFormatContext;
 
 	typedef struct Stream
@@ -348,6 +382,7 @@ private:
 	enum AVSampleFormat	mSampleFmt;
 
 	MediaAudioProcessor					*mAudioProcessor;
+#endif
 };
 
 #endif // MEDIASEGMENT_H

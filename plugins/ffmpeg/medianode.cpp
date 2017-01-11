@@ -30,7 +30,9 @@
 #include "mediasegment.h"
 #include "mediaaudioprocessor.h"
 
+#if defined( FFMPEG_SUPPORTED )
 #include <hap.h>
+#endif
 
 MediaNode::MediaNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mSegment( 0 ), mAudioMute( false ), mAudioVolume( 1 ),
@@ -466,6 +468,7 @@ void MediaNode::unloadMedia( void )
 
 void MediaNode::updateVideo( qreal pTimeCurr )
 {
+#if defined( FFMPEG_SUPPORTED )
 	qreal	ImgPts = mSegment->videoFrameTimeStamp();
 
 	mSegment->setPlayhead( pTimeCurr );
@@ -561,6 +564,7 @@ void MediaNode::updateVideo( qreal pTimeCurr )
 	{
 		mValImage->unsetBuffers();
 	}
+#endif
 }
 
 void MediaNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const

@@ -9,11 +9,13 @@
 #define UINT64_C(c) (c ## ULL)
 #endif
 
+#if defined( FFMPEG_SUPPORTED )
 extern "C"
 {
 	#include <libavformat/avformat.h>
 	#include <libavdevice/avdevice.h>
 }
+#endif
 
 #include <fugio/ffmpeg/uuid.h>
 
@@ -46,6 +48,7 @@ PluginInterface::InitResult ffmpegPlugin::initialise( fugio::GlobalInterface *pA
 
 	qInfo() << "Initialising ffmpeg";
 
+#if defined( FFMPEG_SUPPORTED )
 	av_log_set_flags( AV_LOG_SKIP_REPEATED );
 
 	avcodec_register_all();
@@ -55,6 +58,7 @@ PluginInterface::InitResult ffmpegPlugin::initialise( fugio::GlobalInterface *pA
 	av_register_all();
 
 	avformat_network_init();
+#endif
 
 	//-------------------------------------------------------------------------
 
@@ -71,5 +75,7 @@ void ffmpegPlugin::deinitialise()
 
 	mApp->unregisterPinClasses( mPinEntries );
 
+#if defined( FFMPEG_SUPPORTED )
 	avformat_network_deinit();
+#endif
 }

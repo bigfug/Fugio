@@ -9,6 +9,7 @@ MediaAudioProcessor::MediaAudioProcessor( void )
 {
 	mOptions = Calculate;
 
+#if defined( FFMPEG_SUPPORTED )
 	mFormatContext = 0;
 	mAudioCodecContext = 0;
 	mAudioCodec = 0;
@@ -38,6 +39,7 @@ MediaAudioProcessor::MediaAudioProcessor( void )
 
 	mAudPts = 0;
 	mAudNxt = AUD_INC;
+#endif
 }
 
 MediaAudioProcessor::~MediaAudioProcessor()
@@ -47,6 +49,7 @@ MediaAudioProcessor::~MediaAudioProcessor()
 
 void MediaAudioProcessor::processAudioFrame()
 {
+#if defined( FFMPEG_SUPPORTED )
 	QMutexLocker		Lock( &mAudDatLck );
 
 #if defined( TL_USE_LIB_AV )
@@ -138,29 +141,36 @@ void MediaAudioProcessor::processAudioFrame()
 		}
 	}
 #endif
-
+#endif
 }
 
 QString MediaAudioProcessor::av_err(const QString &pHeader, int pErrorCode)
 {
+#if defined( FFMPEG_SUPPORTED )
 	char	errbuf[ AV_ERROR_MAX_STRING_SIZE ];
 
 	av_make_error_string( errbuf, AV_ERROR_MAX_STRING_SIZE, pErrorCode );
 
 	return( QString( "%1: %2" ).arg( pHeader ).arg( QString::fromLatin1( errbuf ) ) );
+#else
+	return( "" );
+#endif
 }
 
 void MediaAudioProcessor::clearAudio()
 {
+#if defined( FFMPEG_SUPPORTED )
 	QMutexLocker		Lock( &mAudDatLck );
 
 	mAudDat.clear();
 
 	mPreloaded = false;
+#endif
 }
 
 bool MediaAudioProcessor::loadMedia( const QString &pFileName )
 {
+#if defined( FFMPEG_SUPPORTED )
 	mFileName = pFileName;
 
 	if( avformat_open_input( &mFormatContext, mFileName.toLatin1().constData(), NULL, NULL ) != 0 )
@@ -325,6 +335,9 @@ bool MediaAudioProcessor::loadMedia( const QString &pFileName )
 	}
 
 	return( true );
+#else
+	return( false );
+#endif
 }
 
 qreal MediaAudioProcessor::timeToWaveformIdx( qreal pTimeStamp ) const
@@ -334,6 +347,7 @@ qreal MediaAudioProcessor::timeToWaveformIdx( qreal pTimeStamp ) const
 
 qreal MediaAudioProcessor::wavL( qreal pTimeStamp ) const
 {
+#if defined( FFMPEG_SUPPORTED )
 	Q_ASSERT( pTimeStamp >= 0 );
 
 	QMutexLocker		Lock( &mAudDatLck );
@@ -365,10 +379,14 @@ qreal MediaAudioProcessor::wavL( qreal pTimeStamp ) const
 	}
 
 	return( AP.mAudWav.at( WavIdx ) );
+#else
+	return( 0 );
+#endif
 }
 
 qreal MediaAudioProcessor::wavR( qreal pTimeStamp ) const
 {
+#if defined( FFMPEG_SUPPORTED )
 	Q_ASSERT( pTimeStamp >= 0 );
 
 	QMutexLocker		Lock( &mAudDatLck );
@@ -426,10 +444,14 @@ qreal MediaAudioProcessor::wavR( qreal pTimeStamp ) const
 	}
 
 	return( AP.mAudWav.at( WavIdx ) );
+#else
+	return( 0 );
+#endif
 }
 
 void MediaAudioProcessor::mixAudio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, float pVol ) const
 {
+#if defined( FFMPEG_SUPPORTED )
 	if( !mAudDatLck.tryLock() )
 	{
 		return;
@@ -500,15 +522,21 @@ void MediaAudioProcessor::mixAudio( qint64 pSamplePosition, qint64 pSampleCount,
 //	}
 
 	mAudDatLck.unlock();
+#endif
 }
 
 bool MediaAudioProcessor::preloaded() const
 {
+#if defined( FFMPEG_SUPPORTED )
 	return( mPreloaded );
+#else
+	return( false );
+#endif
 }
 
 void MediaAudioProcessor::process( void )
 {
+#if defined( FFMPEG_SUPPORTED )
 	mProcessAborted = false;
 
 	qreal	FileSize = QFileInfo( mFileName ).size();
@@ -672,11 +700,14 @@ void MediaAudioProcessor::process( void )
 	//qDebug() << "Audio Process Time:" << TimeE - TimeS;
 
 	qDebug() << "Finished Processing:" << mFileName;
+#endif
 }
 
 void MediaAudioProcessor::abort()
 {
+#if defined( FFMPEG_SUPPORTED )
 	mProcessAborted = true;
+#endif
 }
 
 /*

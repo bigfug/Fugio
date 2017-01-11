@@ -10,6 +10,7 @@
 #define UINT64_C(c) (c ## ULL)
 #endif
 
+#if defined( FFMPEG_SUPPORTED )
 extern "C"
 {
 	#include <libavutil/rational.h>
@@ -24,6 +25,7 @@ extern "C"
 	#include <libswresample/swresample.h>
 #endif
 }
+#endif
 
 #include "audiobuffer.h"
 
@@ -84,6 +86,7 @@ private:
 private:
 	Options				mOptions;
 
+#if defined( FFMPEG_SUPPORTED )
 	QString				 mFileName;
 	AVFormatContext		*mFormatContext;
 	int					 mAudioStream;
@@ -164,6 +167,7 @@ private:
 
 	qreal					mAudPts;
 	qreal					mAudNxt;
+#endif // FFMPEG_SUPPORTED
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( MediaAudioProcessor::Options )

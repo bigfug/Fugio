@@ -28,9 +28,11 @@ MediaSegment::MediaSegment( void )
 {
 	clearSegment();
 
+#if defined( FFMPEG_SUPPORTED )
 	if( ( mAudioProcessor = new MediaAudioProcessor() ) != 0 )
 	{
 	}
+#endif
 }
 
 MediaSegment::~MediaSegment( void )
@@ -40,6 +42,7 @@ MediaSegment::~MediaSegment( void )
 
 void MediaSegment::clearSegment()
 {
+#if defined( FFMPEG_SUPPORTED )
 	mVideo = VideoStream();
 	mAudio = AudioStream();
 
@@ -51,6 +54,7 @@ void MediaSegment::clearSegment()
 	mDuration = 0;
 	mDecodeI = true;
 	mDecodeB = true;
+#endif
 }
 
 bool MediaSegment::loadMedia( const QString &pFileName, bool pProcess )
@@ -61,6 +65,7 @@ bool MediaSegment::loadMedia( const QString &pFileName, bool pProcess )
 
 	qDebug() << "FFMPEG Loading" << mFileName;
 
+#if defined( FFMPEG_SUPPORTED )
 	mFormatContext = avformat_alloc_context();
 
 	mFormatContext->interrupt_callback.opaque   = &mTimeoutHandler;
@@ -285,17 +290,23 @@ bool MediaSegment::loadMedia( const QString &pFileName, bool pProcess )
 	}
 
 	return( true );
+#else
+	return( false );
+#endif
 }
 
 void MediaSegment::unloadMedia( void )
 {
+#if defined( FFMPEG_SUPPORTED )
 	mAudioProcessor->clearAudio();
+#endif
 
 	clearAudio();
 
 	clearVideo();
 }
 
+#if defined( FFMPEG_SUPPORTED )
 void MediaSegment::hapStaticDecodeCallback( HapDecodeWorkFunction function, void *p, unsigned int count, void *info)
 {
 	reinterpret_cast<MediaSegment *>( info )->hapDecodeCallback( function, p, count );
@@ -311,23 +322,33 @@ void MediaSegment::hapDecodeCallback( HapDecodeWorkFunction function, void *p, u
 		function( p, i );
 	}
 }
+#endif
 
 bool MediaSegment::isVideoPicture( void ) const
 {
+#if defined( FFMPEG_SUPPORTED )
 	return( mVideo.mStreamId != -1 && ( mFormatContext->streams[ mVideo.mStreamId ]->disposition & AV_DISPOSITION_ATTACHED_PIC ) != 0 );
+#else
+	return( false );
+#endif
 }
 
 
 bool MediaSegment::ptsInRange(qreal pPTS, qreal pTarget, qreal Min, qreal Max) const
 {
+#if defined( FFMPEG_SUPPORTED )
 	const qreal		L = pTarget - Min;
 	const qreal		H = pTarget + Max;
 
 	return( ( pPTS >= L && pPTS <= H ) || ( pPTS >= ( L - mDuration ) && pPTS <= ( H - mDuration ) ) || ( pPTS >= ( L + mDuration ) && pPTS <= ( H + mDuration ) ) );
+#else
+	return( false );
+#endif
 }
 
 void MediaSegment::processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pForce )
 {
+#if defined( FFMPEG_SUPPORTED )
 	double			TimeBase = av_q2d( mFormatContext->streams[ mVideo.mStreamId ]->time_base );
 	VidDat			VD;
 
@@ -403,10 +424,12 @@ void MediaSegment::processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 	{
 		av_frame_unref( mFrameSrc );
 	}
+#endif
 }
 
 void MediaSegment::processAudioFrame( qreal TargetPTS, qreal PacketTS, bool pForce )
 {
+#if defined( FFMPEG_SUPPORTED )
 	double		TimeBase = av_q2d( mFormatContext->streams[ mAudio.mStreamId ]->time_base );
 	qreal		FrameTS = av_frame_get_best_effort_timestamp( mFrameSrc );
 
@@ -486,6 +509,7 @@ void MediaSegment::processAudioFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 		}
 	}
 #endif
+#endif // FFMPEG_SUPPORTED
 }
 
 //-----------------------------------------------------------------------------
