@@ -51,12 +51,14 @@ void WebSocketClientNode::inputsUpdated( qint64 pTimeStamp )
 		QString		UrlSrc = variant( mPinInputUrl ).toString();
 		QUrl		Url( UrlSrc );
 
-		if( Url.isValid() )
+		if( Url.isValid() && mUrl != Url )
 		{
+			mUrl = Url;
+
 			mNode->setStatus( fugio::NodeInterface::Initialising );
 			mNode->setStatusMessage( "Connecting" );
 
-			mSocket.open( Url );
+			mSocket.open( mUrl );
 		}
 	}
 
@@ -137,12 +139,22 @@ void WebSocketClientNode::disconnected()
 {
 	mNode->setStatus( fugio::NodeInterface::Initialising );
 	mNode->setStatusMessage( "Disconnected" );
+
+	if( mUrl.isValid() )
+	{
+		mSocket.open( mUrl );
+	}
 }
 
 void WebSocketClientNode::error( QAbstractSocket::SocketError pError )
 {
 	mNode->setStatus( fugio::NodeInterface::Error );
 	mNode->setStatusMessage( mSocket.errorString() );
+
+	if( mUrl.isValid() )
+	{
+		mSocket.open( mUrl );
+	}
 }
 
 bool WebSocketClientNode::deinitialise()

@@ -52,6 +52,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinOutputBinary;
 	fugio::VariantInterface						*mValOutputBinary;
 
+	QUrl										 mUrl;
 	QWebSocket									 mSocket;
 
 	QString										 mReceivedText;
