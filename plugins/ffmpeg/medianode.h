@@ -36,7 +36,7 @@ class MediaNode : public fugio::NodeControlBase, public fugio::AudioProducerInte
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "FFMPEG audio/video player" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Media_Player" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Media_Player_(FFMPEG)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

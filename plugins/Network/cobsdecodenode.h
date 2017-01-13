@@ -9,7 +9,7 @@ class COBSDecodeNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Decodes arrays of data into a decodable single stream" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/COBS_Decode" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Cobs_Decode" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

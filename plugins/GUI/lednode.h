@@ -12,7 +12,7 @@ class LedNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "GUI light for displaying boolean/trigger values." )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/LED" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "LED_(GUI)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

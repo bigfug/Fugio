@@ -16,7 +16,7 @@ class VCFNode : public fugio::NodeControlBase, public fugio::AudioProducerInterf
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "VCF" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/VCF" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "VCF_(Audio)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

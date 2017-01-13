@@ -16,7 +16,7 @@ class MonoNode : public fugio::NodeControlBase, public fugio::AudioProducerInter
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Mixes audio channels to mono (single channel)" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Mono_(Audio)" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Mono_(Audio)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

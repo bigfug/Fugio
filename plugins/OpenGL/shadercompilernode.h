@@ -56,7 +56,7 @@ class ShaderCompilerNode : public fugio::NodeControlBase, public fugio::OpenGLSh
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Compiles OpenGL shader code into a reusable shader" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/OpenGL_Shader_Compiler" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Shader_Compiler_(OpenGL)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

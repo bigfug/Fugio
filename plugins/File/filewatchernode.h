@@ -25,7 +25,7 @@ class FileWatcherNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Loads the contents of a file, reloading if changes are detected" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/File_Watcher" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "File_Watcher" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

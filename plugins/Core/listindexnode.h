@@ -11,7 +11,7 @@ class ListIndexNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Extracts a single item from a list" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/List_Index" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Index_(List)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

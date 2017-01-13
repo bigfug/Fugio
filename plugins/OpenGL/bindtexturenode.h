@@ -18,7 +18,7 @@ class BindTextureNode : public fugio::NodeControlBase, public fugio::NodeRenderI
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Binds OpenGL textures" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Bind_Texture_OpenGL" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Bind_Texture_(OpenGL)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

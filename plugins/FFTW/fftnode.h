@@ -24,7 +24,7 @@ class FFTNode : public fugio::NodeControlBase, public fugio::FftInterface
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Fast Fourier Transform." )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/FFT" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "FFT_(FFTW)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

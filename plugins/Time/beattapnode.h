@@ -13,7 +13,7 @@ class BeatTapNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Calculates the beats per minute (BPM) tempo from a series of input triggers" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Beat_Tap" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Beat_Tap" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

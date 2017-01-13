@@ -22,7 +22,7 @@ class ArrayToBufferNode : public fugio::NodeControlBase, public fugio::PairedPin
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Copies an array of data to the graphics card for processing with OpenGL shaders" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Array_To_Buffer_OpenGL" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Array_To_Buffer_(OpenGL)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

@@ -23,7 +23,7 @@ class TransformFeedbackNode : public fugio::NodeControlBase, public fugio::NodeR
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/OpenGL_Transform_Feedback" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Transform_Feedback_(OpenGL)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

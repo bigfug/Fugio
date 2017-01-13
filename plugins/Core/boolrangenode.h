@@ -11,7 +11,7 @@ class BoolRangeNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Takes an input number between 0.0 and 1.0 and triggers one of its bool outputs." )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Bool_Range" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Bool_Range" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

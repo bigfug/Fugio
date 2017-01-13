@@ -18,10 +18,11 @@ class PlayheadNode : public fugio::NodeControlBase, public fugio::PlayheadInterf
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::PlayheadInterface )
+
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Outputs the current patch time in seconds." )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Playhead" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Playhead" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

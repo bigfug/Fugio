@@ -7,6 +7,8 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
+#define WIKI_PIN_URL(x)		"http://wiki.bigfug.com/view/Pins:" ## x
+
 FUGIO_NAMESPACE_BEGIN
 
 class PinControlBase : public QObject, public fugio::PinControlInterface

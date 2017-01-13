@@ -24,7 +24,7 @@ class PreviewNode : public fugio::NodeControlBase, public fugio::RenderInterface
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "OpenGL Preview window" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/OpenGL_Preview" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Preview_(OpenGL)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

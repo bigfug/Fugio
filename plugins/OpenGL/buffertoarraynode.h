@@ -16,7 +16,7 @@ class BufferToArrayNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Copies an OpenGL buffer to an array" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Buffer_To_Array" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Buffer_To_Array_(OpenGL)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

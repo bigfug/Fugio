@@ -11,7 +11,7 @@ class IndexNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Takes any number of input pins and outputs the index and value of the most recently active." )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Index" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Index" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

@@ -24,7 +24,7 @@ class ImageToTextureNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Creates an OpenGL texture from an image" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Image_To_Texture_OpenGL" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Image_To_Texture_(OpenGL)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

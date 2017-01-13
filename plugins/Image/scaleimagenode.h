@@ -16,7 +16,7 @@ class ScaleImageNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Scales an image" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Scale_Image" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Scale_(Image)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
@@ -34,7 +34,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinHeight;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface							*mValOutputImage;
+	fugio::ImageInterface						*mValOutputImage;
 };
 
 #endif // SCALEIMAGENODE_H

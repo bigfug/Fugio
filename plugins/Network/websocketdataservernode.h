@@ -16,7 +16,7 @@ class WebSocketDataServerNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "WebSocketSendNode" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/WebSocket_Send" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Websocket_Data_Server" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

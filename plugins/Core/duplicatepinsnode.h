@@ -13,7 +13,7 @@ class DuplicatePinsNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Duplicates an input pin to multiple outputs" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Duplicate_Pins" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Duplicate_Pins" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

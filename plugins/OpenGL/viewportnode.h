@@ -19,7 +19,7 @@ class ViewportNode : public fugio::NodeControlBase, public fugio::NodeRenderInte
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Limit OpenGL to drawing in part of the output window" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Viewport_OpenGL" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Viewport_(OpenGL)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

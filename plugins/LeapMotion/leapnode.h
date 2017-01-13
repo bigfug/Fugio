@@ -17,7 +17,7 @@ class LeapNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Gets data from the Leap Motion sensor." )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Leap" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Leap" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
