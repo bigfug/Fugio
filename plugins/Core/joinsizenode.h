@@ -12,7 +12,7 @@ class JoinSizeNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Makes a Size node from raw values." )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Join_Size" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Join_(Size)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

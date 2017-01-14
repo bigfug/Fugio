@@ -16,6 +16,10 @@
 #include <fugio/fugio.h>
 #include <fugio/core/variant_interface.h>
 
+// Default wiki node link
+
+#define WIKI_NODE_URL(x)	"http://wiki.bigfug.com/view/Nodes:" ## x
+
 #define FUGID(x,y) 	static const QUuid x = QUuid( "{" y "}" );
 
 // A section of copy and paste id's for updating legacy code based on PID_UUID

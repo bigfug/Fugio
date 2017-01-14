@@ -16,7 +16,7 @@ class PortMidiOutputNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Sends MIDI messages and timing information to an external destination." )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/PortMidiOutput" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Midi_Output_(PortMidi)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

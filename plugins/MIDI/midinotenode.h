@@ -21,7 +21,7 @@ class MidiNoteNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Input is MIDI note number (0-127), output is raw MIDI message" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Midi_Input" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Midi_Note" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

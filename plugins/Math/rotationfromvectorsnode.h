@@ -12,8 +12,8 @@ class RotationFromVectorsNode : public fugio::NodeControlBase
 	Q_OBJECT
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
-	Q_CLASSINFO( "Description", "Adds all the input numbers together." )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Add_Number" )
+	Q_CLASSINFO( "Description", "" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Rotation_From_Vectors_(Matrix4)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

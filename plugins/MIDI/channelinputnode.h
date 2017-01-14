@@ -16,7 +16,7 @@ class ChannelInputNode : public fugio::NodeControlBase, public fugio::MidiInputI
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Midi_Channel" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Midi_Channel_Input" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

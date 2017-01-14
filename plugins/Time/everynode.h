@@ -13,7 +13,7 @@ class EveryNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Triggers its output pin every X number of milliseconds. X = input number" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Every" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Every" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

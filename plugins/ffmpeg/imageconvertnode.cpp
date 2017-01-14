@@ -16,20 +16,26 @@
 #define UINT64_C(c) (c ## ULL)
 #endif
 
+#if defined( FFMPEG_SUPPORTED )
 extern "C"
 {
 	#include <libavutil/pixfmt.h>
 	#include <libavutil/imgutils.h>
 }
+#endif
 
 using namespace fugio;
 
 QMap<ImageInterface::Format,QString>	 ImageConvertNode::mImageFormatMap;
 
 ImageConvertNode::ImageConvertNode( QSharedPointer<NodeInterface> pNode )
-	: NodeControlBase( pNode ), mCurrImageFormat( ImageInterface::FORMAT_BGRA8 ), mLastImageFormat( ImageInterface::FORMAT_UNKNOWN ), mScaleContext( 0 ),
-	  mSrcPixFmt( AV_PIX_FMT_NONE )
+	: NodeControlBase( pNode ), mCurrImageFormat( ImageInterface::FORMAT_BGRA8 ), mLastImageFormat( ImageInterface::FORMAT_UNKNOWN )
 {
+#if defined( FFMPEG_SUPPORTED )
+	mSrcPixFmt = AV_PIX_FMT_NONE;
+	mScaleContext = 0;
+#endif
+
 	mPinInput = pinInput( "Image" );
 
 	mOutput = pinOutput<ImageInterface *>( "Image", mPinOutput, PID_IMAGE );
@@ -41,12 +47,15 @@ ImageConvertNode::ImageConvertNode( QSharedPointer<NodeInterface> pNode )
 		mImageFormatMap.insert( ImageInterface::FORMAT_BGRA8, "BGRA8" );
 	}
 
+#if defined( FFMPEG_SUPPORTED )
 	memset( &mDstDat, 0, sizeof( mDstDat ) );
 	memset( &mDstLen, 0, sizeof( mDstLen ) );
+#endif
 }
 
 void ImageConvertNode::clearImage()
 {
+#if defined( FFMPEG_SUPPORTED )
 	av_freep( &mDstDat[ 0 ] );
 
 	for( int i = 0 ; i < AV_NUM_DATA_POINTERS ; i++ )
@@ -56,6 +65,7 @@ void ImageConvertNode::clearImage()
 	}
 
 	mOutput->setBuffers( mDstDat );
+#endif
 }
 
 void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
@@ -69,6 +79,7 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+#if defined( FFMPEG_SUPPORTED )
 	if( mCurrImageFormat != mLastImageFormat )
 	{
 		if( mScaleContext )
@@ -226,6 +237,7 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 	sws_scale( mScaleContext, SrcImg->buffers(), SrcImg->lineSizes(), 0, SrcImg->height(), mDstDat, mDstLen );
 
 	pinUpdated( mPinOutput );
+#endif
 }
 
 QWidget *ImageConvertNode::gui()

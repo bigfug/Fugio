@@ -13,7 +13,7 @@ class TextureToImageNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Converts an OpenGL texture to an image" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/OpenGL_Texture_To_Image" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Texture_To_Image_(OpenGL)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

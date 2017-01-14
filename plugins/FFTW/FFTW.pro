@@ -80,11 +80,11 @@ windows {
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
 
 		win32 {
-			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/fftw-3.3.4/libfftw3f-3.dll ) $$shell_path( $$INSTALLDEST )
+			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/fftw-3.3.5/libfftw3f-3.dll ) $$shell_path( $$INSTALLDEST )
 		}
 
 		win64 {
-			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/fftw-3.3.4/libfftw3f-3.dll ) $$shell_path( $$INSTALLDEST )
+			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/fftw-3.3.5/libfftw3f-3.dll ) $$shell_path( $$INSTALLDEST )
 		}
 	}
 }
@@ -113,10 +113,10 @@ INCLUDEPATH += $$PWD/../../include
 
 win32 {
 	contains(QMAKE_CC, cl) {
-		exists( $$(LIBS)/fftw-3.3.4 ) {
-			INCLUDEPATH += $$(LIBS)/fftw-3.3.4
+		exists( $$(LIBS)/fftw-3.3.5 ) {
+			INCLUDEPATH += $$(LIBS)/fftw-3.3.5
 
-			LIBS += -L$$(LIBS)/fftw-3.3.4 -llibfftw3f-3
+			LIBS += -L$$(LIBS)/fftw-3.3.5 -llibfftw3f-3
 
 			DEFINES += FFTW_PLUGIN_SUPPORTED
 		}
@@ -130,10 +130,10 @@ macx:exists( /usr/local/opt/fftw ) {
 
 	DEFINES += FFTW_PLUGIN_SUPPORTED
 
-} else:macx:exists( $$(LIBS)/fftw-3.3.4 ) {
-	INCLUDEPATH += $$(LIBS)/fftw-3.3.4/api
+} else:macx:exists( $$(LIBS)/fftw-3.3.5 ) {
+	INCLUDEPATH += $$(LIBS)/fftw-3.3.5/api
 
-	LIBS += $$(LIBS)/fftw-3.3.4/.libs/libfftw3f.a
+	LIBS += $$(LIBS)/fftw-3.3.5/.libs/libfftw3f.a
 
 	DEFINES += FFTW_PLUGIN_SUPPORTED
 }

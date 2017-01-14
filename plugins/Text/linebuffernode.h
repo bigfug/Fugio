@@ -20,7 +20,7 @@ class LineBufferNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Breaks up input into strings" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Line_Buffer" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Line_Buffer" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

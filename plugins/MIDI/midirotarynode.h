@@ -12,7 +12,7 @@ class MidiRotaryNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Processes input from a rotary MIDI control." )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Midi_Rotary_Control" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Midi_Rotary_Control" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

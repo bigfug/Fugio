@@ -20,7 +20,7 @@ class ClockNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Breaks down the current (or specified) time into various outputs." )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Clock" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Clock" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

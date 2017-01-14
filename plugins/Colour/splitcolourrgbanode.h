@@ -21,7 +21,7 @@ class SplitColourRGBANode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Split an input colour into red, green, blue, and alpha" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Colour_Split_RGBA" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Split_RGBA_(Colour)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

@@ -16,7 +16,7 @@ class ScaleNode : public fugio::NodeControlBase, public fugio::PairedPinsHelperI
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Midi_Note_To_Frequency" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Midi_Scale" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

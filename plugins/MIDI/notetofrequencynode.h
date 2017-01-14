@@ -12,7 +12,7 @@ class NoteToFrequencyNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Converts a MIDI note value to audio frequency value" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Midi_Note_To_Frequency" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Midi_Note_To_Frequency" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

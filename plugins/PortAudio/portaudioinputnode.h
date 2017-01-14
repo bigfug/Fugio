@@ -25,7 +25,7 @@ class PortAudioInputNode : public fugio::NodeControlBase, public fugio::AudioPro
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Inputs audio data from PortAudio" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/PortAudio_Input" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Audio_Input_(PortAudio)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

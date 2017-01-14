@@ -24,7 +24,7 @@ class PortAudioOutputNode : public fugio::NodeControlBase, public fugio::Playhea
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Outputs audio data to speakers/headphones via PortAudio" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/PortAudio_Output" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Audio_Output_(PortAudio)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

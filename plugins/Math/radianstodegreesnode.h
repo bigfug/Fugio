@@ -13,7 +13,7 @@ class RadiansToDegreesNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/RadiansToDegrees" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Radians_To_Degrees_(Number)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

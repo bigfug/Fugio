@@ -33,6 +33,11 @@
 class KinectNode : public fugio::NodeControlBase
 {
 	Q_OBJECT
+	Q_CLASSINFO( "Author", "Alex May" )
+	Q_CLASSINFO( "Version", "1.0" )
+	Q_CLASSINFO( "Description", "Kinect v1 Node" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Kinect" ) )
+	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
 	Q_INVOKABLE explicit KinectNode( QSharedPointer<fugio::NodeInterface> pNode );

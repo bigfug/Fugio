@@ -116,13 +116,13 @@ contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 }
 
 win32 {
-		INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
+	INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
 
-		LIBS += -L$$(LIBS)/glew-2.0.0/lib/Release/Win32 -lglew32s
+	LIBS += -L$$(LIBS)/glew-2.0.0/lib/Release/Win32 -lglew32s
 
-		DEFINES += GLEW_STATIC
+	DEFINES += GLEW_STATIC
 
-		LIBS += -lopengl32
+	LIBS += -lopengl32
 }
 
 macx:exists( /usr/local/opt/glew ) {

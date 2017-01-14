@@ -17,7 +17,7 @@ class TCPReceiveRawNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "TCP Server" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/TCP_Server" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "TCP_Receive_Raw" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

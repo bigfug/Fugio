@@ -18,7 +18,7 @@ class RenderNode : public fugio::NodeControlBase, public fugio::NodeRenderInterf
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "OpenGL Render" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Render_OpenGL" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Render_(OpenGL)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

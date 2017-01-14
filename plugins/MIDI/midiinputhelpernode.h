@@ -15,7 +15,7 @@ class MidiInputHelperNode : public fugio::NodeControlBase, public fugio::PairedP
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Converts MIDI values (0-127) into floating point outputs (0.0-1.0)" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Midi_Input_Helper" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Midi_Input_Helper" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

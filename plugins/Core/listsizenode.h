@@ -11,7 +11,7 @@ class ListSizeNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Gets the count of items in a list" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/ListSize" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Size_(List)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

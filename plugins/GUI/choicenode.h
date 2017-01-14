@@ -18,6 +18,11 @@
 class ChoiceNode : public fugio::NodeControlBase
 {
 	Q_OBJECT
+	Q_CLASSINFO( "Author", "Alex May" )
+	Q_CLASSINFO( "Version", "1.0" )
+	Q_CLASSINFO( "Description", "Provides a simple GUI button that can be clicked on to generate a trigger, boolean, and toggle." )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Choice_(GUI)" ) )
+	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
 	Q_INVOKABLE explicit ChoiceNode( QSharedPointer<fugio::NodeInterface> pNode );

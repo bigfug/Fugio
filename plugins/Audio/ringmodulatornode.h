@@ -16,7 +16,7 @@ class RingModulatorNode : public fugio::NodeControlBase, public fugio::AudioProd
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Ring Modulator" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Ring_Modulator" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Ring_Modulator_(Audio)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

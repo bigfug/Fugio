@@ -14,7 +14,7 @@ class SplitNode : public fugio::NodeControlBase, public fugio::osc::SplitInterfa
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/OSC_Split" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "OSC_Split" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

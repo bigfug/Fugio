@@ -15,7 +15,7 @@ class Vector3Node : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Vector3" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Vector3_(GUI)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

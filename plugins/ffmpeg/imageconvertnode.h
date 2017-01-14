@@ -12,11 +12,13 @@
 #define UINT64_C(c) (c ## ULL)
 #endif
 
+#if defined( FFMPEG_SUPPORTED )
 extern "C"
 {
 	#include <libswscale/swscale.h>
 	#include <libavutil/frame.h>
 }
+#endif
 
 class ImageConvertNode : public fugio::NodeControlBase
 {
@@ -24,7 +26,7 @@ class ImageConvertNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Image_Convert" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Image_Convert_(FFMPEG)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 	void clearImage();
@@ -54,12 +56,14 @@ protected:
 	fugio::ImageInterface::Format				 mCurrImageFormat;
 	fugio::ImageInterface::Format				 mLastImageFormat;
 
+#if defined( FFMPEG_SUPPORTED )
 	SwsContext									*mScaleContext;
 
 	AVPixelFormat								 mSrcPixFmt;
 
 	uint8_t										*mDstDat[ AV_NUM_DATA_POINTERS ];
 	int											 mDstLen[ AV_NUM_DATA_POINTERS ];
+#endif
 
 	static QMap<fugio::ImageInterface::Format,QString>	 mImageFormatMap;
 };

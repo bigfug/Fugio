@@ -11,7 +11,7 @@ class PiNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "The mathematical constant Pi" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Pi" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Pi_(Number)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

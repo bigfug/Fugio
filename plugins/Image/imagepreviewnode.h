@@ -21,7 +21,7 @@ class ImagePreviewNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Displays an image" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Image_Preview" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Preview_(Image)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

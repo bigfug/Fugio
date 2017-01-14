@@ -14,7 +14,7 @@ class VertexArrayObjectNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Vertex Array Object" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Vertex_Array_Object_OpenGL" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Vertex_Array_Object_(OpenGL)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 	void freeVAO();

@@ -14,8 +14,8 @@ class CubeMapRenderNode : public fugio::NodeControlBase
 	Q_OBJECT
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
-	Q_CLASSINFO( "Description", "" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/CubeMap_Render" )
+	Q_CLASSINFO( "Description", "Renders to all six textures in an OpenGL cubemap texture" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Cubemap_Render_(OpenGL)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

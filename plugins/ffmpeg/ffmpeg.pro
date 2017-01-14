@@ -92,17 +92,21 @@ windows {
 		FFMPEGDIR    = $$(LIBS)/ffmpeg-3.2-win64
 	}
 
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-	INSTALLDEST  = $$INSTALLDIR/data/plugins/ffmpeg
+	exists( $$FFMPEGDIR ) {
+		INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+		INSTALLDEST  = $$INSTALLDIR/data/plugins/ffmpeg
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
+		CONFIG(release,debug|release) {
+			QMAKE_POST_LINK += echo
 
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDEST )
+			QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDEST )
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
+			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$FFMPEGDIR/bin/*.dll ) $$shell_path( $$INSTALLDEST )
+			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$FFMPEGDIR/bin/*.dll ) $$shell_path( $$INSTALLDEST )
+		}
+
+		DEFINES += FFMPEG_SUPPORTED
 	}
 }
 
@@ -118,72 +122,84 @@ linux {
 	LIBS += -L/usr/local/lib
 }
 
-windows {
+windows:contains( DEFINES, FFMPEG_SUPPORTED ) {
 	LIBS += -L$$FFMPEGDIR/lib
 	LIBS += -L$$FFMPEGDIR/bin
 	INCLUDEPATH += $$FFMPEGDIR/include
 	QMAKE_LFLAGS += /OPT:NOREF
 }
 
-macx {
+macx:exists( /usr/local/opt/ffmpeg ) {
 	INCLUDEPATH += /usr/local/opt/ffmpeg/include
+
 	LIBS += -L/usr/local/opt/ffmpeg/lib
+
+	DEFINES += FFMPEG_SUPPORTED
 }
 
-LIBS += -lavcodec -lavdevice -lavformat -lavutil -lswscale
+contains( DEFINES, FFMPEG_SUPPORTED ) {
+	LIBS += -lavcodec -lavdevice -lavformat -lavutil -lswscale
 
-linux:!exists( /usr/include/libswresample/swresample.h ) {
-	DEFINES += TL_USE_LIB_AV
-}
+	linux:!exists( /usr/include/libswresample/swresample.h ) {
+		DEFINES += TL_USE_LIB_AV
+	}
 
-!contains( DEFINES, TL_USE_LIB_AV ) {
-	LIBS += -lswresample -lavfilter
+	!contains( DEFINES, TL_USE_LIB_AV ) {
+		LIBS += -lswresample -lavfilter
+	}
 }
 
 #------------------------------------------------------------------------------
 # hap
 
-exists( $$(LIBS)/hap/source ) {
-	INCLUDEPATH += $$(LIBS)/hap/source
+contains( DEFINES, FFMPEG_SUPPORTED ) {
+	exists( $$(LIBS)/hap/source ) {
+		INCLUDEPATH += $$(LIBS)/hap/source
 
-	SOURCES += $$(LIBS)/hap/source/hap.c
-	HEADERS += $$(LIBS)/hap/source/hap.h
+		SOURCES += $$(LIBS)/hap/source/hap.c
+		HEADERS += $$(LIBS)/hap/source/hap.h
+	}
 }
 
 #------------------------------------------------------------------------------
 # snappy
 
-macx {
-	INCLUDEPATH += /usr/local/opt/snappy/include
-	LIBS += -L/usr/local/opt/snappy/lib
+contains( DEFINES, FFMPEG_SUPPORTED ) {
+	macx {
+		INCLUDEPATH += /usr/local/opt/snappy/include
+		LIBS += -L/usr/local/opt/snappy/lib
+	}
+
+	unix {
+	#    INCLUDEPATH += $$(LIBS)/snappy
+
+	#    SOURCES += $$(LIBS)/snappy/snappy-c.cc \
+	#        $$(LIBS)/snappy/snappy.cc
+	#    HEADERS += $$(LIBS)/snappy/snappy.h \
+	#        $$(LIBS)/snappy/snappy-c.h
+
+		LIBS += -lsnappy
+	}
+
+	DEFINES += SNAPPY_STATIC
+
+	windows {
+		INCLUDEPATH += $$(LIBS)/snappy-1.1.1.8
+
+		SOURCES += $$(LIBS)/snappy-1.1.1.8/snappy.cc \
+			$$(LIBS)/snappy-1.1.1.8/snappy-c.cc \
+			$$(LIBS)/snappy-1.1.1.8/snappy-sinksource.cc \
+			$$(LIBS)/snappy-1.1.1.8/snappy-stubs-internal.cc
+
+		HEADERS += $$(LIBS)/snappy-1.1.1.8/snappy.h \
+			$$(LIBS)/snappy-1.1.1.8/snappy-c.h \
+			$$(LIBS)/snappy-1.1.1.8/snappy-internal.h \
+			$$(LIBS)/snappy-1.1.1.8/snappy-sinksource.h \
+			$$(LIBS)/snappy-1.1.1.8/snappy-stubs-internal.h \
+			$$(LIBS)/snappy-1.1.1.8/snappy-stubs-public.h
+	}
 }
 
-unix {
-#    INCLUDEPATH += $$(LIBS)/snappy
-
-#    SOURCES += $$(LIBS)/snappy/snappy-c.cc \
-#        $$(LIBS)/snappy/snappy.cc
-#    HEADERS += $$(LIBS)/snappy/snappy.h \
-#        $$(LIBS)/snappy/snappy-c.h
-
-	LIBS += -lsnappy
+!contains( DEFINES, FFMPEG_SUPPORTED ) {
+	warning( "FFMPEG not supported" )
 }
-
-DEFINES += SNAPPY_STATIC
-
-windows {
-	INCLUDEPATH += $$(LIBS)/snappy-1.1.1.8
-
-	SOURCES += $$(LIBS)/snappy-1.1.1.8/snappy.cc \
-		$$(LIBS)/snappy-1.1.1.8/snappy-c.cc \
-		$$(LIBS)/snappy-1.1.1.8/snappy-sinksource.cc \
-		$$(LIBS)/snappy-1.1.1.8/snappy-stubs-internal.cc
-
-	HEADERS += $$(LIBS)/snappy-1.1.1.8/snappy.h \
-		$$(LIBS)/snappy-1.1.1.8/snappy-c.h \
-		$$(LIBS)/snappy-1.1.1.8/snappy-internal.h \
-		$$(LIBS)/snappy-1.1.1.8/snappy-sinksource.h \
-		$$(LIBS)/snappy-1.1.1.8/snappy-stubs-internal.h \
-		$$(LIBS)/snappy-1.1.1.8/snappy-stubs-public.h
-}
-
