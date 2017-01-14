@@ -93,6 +93,7 @@ protected:
 private:
 	PinItem *findDest( const QPointF &pPoint );
 
+	QString helpUrl( void );
 signals:
 	void colourUpdated( const QColor &pColor );
 
@@ -117,6 +118,7 @@ protected slots:
 	void menuRemoveGlobal( void );
 	void menuConnectGlobal( void );
 	void menuDisconnectGlobal( void );
+	void menuHelp();
 
 private:
 	ContextView								*mContextView;
