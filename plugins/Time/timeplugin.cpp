@@ -16,6 +16,7 @@
 #include "playheadcontrolnode.h"
 #include "timenode.h"
 #include "datenode.h"
+#include "playheadframesnode.h"
 
 #include "inertianode.h"
 
@@ -32,6 +33,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Inertia",			"Time", NID_INERTIA, &InertiaNode::staticMetaObject ),
 	ClassEntry( "Playhead",			"Time", NID_PLAYHEAD, &PlayheadNode::staticMetaObject ),
 	ClassEntry( "Playhead Control",	"Time", NID_PLAYHEAD_CONTROL, &PlayheadControlNode::staticMetaObject ),
+	ClassEntry( "Playhead Frames",	"Time", NID_PLAYHEAD_FRAMES, &PlayheadFramesNode::staticMetaObject ),
 	ClassEntry( "Time",				"Time", NID_TIME, &TimeNode::staticMetaObject ),
 	ClassEntry()
 };
