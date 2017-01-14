@@ -17,6 +17,12 @@ class VariantListPin : public fugio::PinControlBase, public fugio::VariantInterf
 	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface fugio::ListInterface )
 	//Q_PROPERTY( QVariantList value READ value WRITE setValue NOTIFY valueChanged )
 
+	Q_CLASSINFO( "Author", "Alex May" )
+	Q_CLASSINFO( "Version", "1.0" )
+	Q_CLASSINFO( "Description", "" )
+	Q_CLASSINFO( "URL", WIKI_PIN_URL( "Variant_List" ) )
+	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
+
 public:
 	Q_INVOKABLE explicit VariantListPin( QSharedPointer<fugio::PinInterface> pPin );
 
