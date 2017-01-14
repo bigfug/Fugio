@@ -19,7 +19,7 @@ class BufferNode : public fugio::NodeControlBase, public fugio::PairedPinsHelper
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Buffer_OpenGL" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Buffer_(OpenGL)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

@@ -13,7 +13,7 @@ class CompareNumbersNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Compares two numbers" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Compare_Number" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Compare_(Number)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

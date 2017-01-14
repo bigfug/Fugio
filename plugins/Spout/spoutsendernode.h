@@ -17,7 +17,7 @@ class SpoutSenderNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Spout_Sender" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Spout_Sender" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

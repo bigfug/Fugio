@@ -18,7 +18,7 @@ class ClearNode : public fugio::NodeControlBase, public fugio::NodeRenderInterfa
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "OpenGL Clear" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Clear_OpenGL" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Clear_(OpenGL)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

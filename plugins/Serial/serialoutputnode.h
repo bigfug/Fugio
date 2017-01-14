@@ -15,6 +15,11 @@ class QComboBox;
 class SerialOutputNode : public fugio::NodeControlBase
 {
 	Q_OBJECT
+	Q_CLASSINFO( "Author", "Alex May" )
+	Q_CLASSINFO( "Version", "1.0" )
+	Q_CLASSINFO( "Description", "Write data to a serial port" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Serial_Output" ) )
+	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
 	Q_INVOKABLE explicit SerialOutputNode( QSharedPointer<fugio::NodeInterface> pNode );

@@ -12,8 +12,8 @@ class NormaliseNode : public fugio::NodeControlBase
 	Q_OBJECT
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
-	Q_CLASSINFO( "Description", "Normalise a vector" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Normalise_Vector" )
+	Q_CLASSINFO( "Description", "Normalise a Vector3" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Normalise_(Vector3)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

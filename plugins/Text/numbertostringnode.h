@@ -16,7 +16,7 @@ class NumberToStringNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Converts a number to a string with control over width, base, and padding" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Number_To_String" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Number_To_String" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

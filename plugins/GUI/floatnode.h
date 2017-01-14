@@ -20,7 +20,7 @@ class FloatNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "A floating point number in a GUI." )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Float" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Float_(GUI)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

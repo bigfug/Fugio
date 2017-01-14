@@ -15,7 +15,7 @@ class ColourMaskNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Creates a mask for a specfic colour" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Colour_Mask" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Colour_Mask_(Image)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
@@ -33,7 +33,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinHueMatch;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface								*mValOutputImage;
+	fugio::ImageInterface						*mValOutputImage;
 };
 
 

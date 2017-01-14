@@ -16,7 +16,7 @@ class ImageFilterNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Combines images with filters" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Image_Filter" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Filter_(Image)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
@@ -36,7 +36,7 @@ protected:
 	fugio::ChoiceInterface						*mValFilter;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface								*mValOutputImage;
+	fugio::ImageInterface						*mValOutputImage;
 };
 
 #endif // IMAGEFILTERNODE_H

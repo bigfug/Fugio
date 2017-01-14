@@ -16,7 +16,7 @@ class InertiaNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Takes input triggers and generates a forward or backwards inertia speed" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Inertia" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Inertia" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

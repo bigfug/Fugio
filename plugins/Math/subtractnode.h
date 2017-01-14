@@ -12,8 +12,8 @@ class SubtractNode : public fugio::NodeControlBase
 	Q_OBJECT
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
-	Q_CLASSINFO( "Description", "Subtracts numbers from each other" )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Subtract_Number" )
+	Q_CLASSINFO( "Description", "Subtract" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Subtract" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

@@ -12,7 +12,7 @@ class NumberRangeNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "Maps a number from an input range to an output range." )
-	Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Number_Range" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Range_Map_(Number)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:

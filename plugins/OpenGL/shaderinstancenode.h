@@ -21,8 +21,8 @@ class ShaderInstanceNode : public fugio::NodeControlBase, public fugio::NodeRend
     Q_CLASSINFO( "Author", "Alex May" )
     Q_CLASSINFO( "Version", "1.0" )
     Q_CLASSINFO( "Description", "Uses a compiled OpenGL shader to draw geometry" )
-    Q_CLASSINFO( "URL", "http://wiki.bigfug.com/Shader_Instance_OpenGL" )
-    Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Shader_Instance_(OpenGL)" ) )
+	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
 	Q_INVOKABLE ShaderInstanceNode( QSharedPointer<fugio::NodeInterface> pNode );
