@@ -249,6 +249,8 @@ QWidget *ImageConvertNode::gui()
 		GUI->addItems( mImageFormatMap.values() );
 
 		GUI->setCurrentText( mImageFormatMap.value( mCurrImageFormat ) );
+
+		connect( GUI, SIGNAL(currentIndexChanged(QString)), this, SLOT(formatChanged(QString)) );
 	}
 
 	return( GUI );
@@ -264,4 +266,11 @@ void ImageConvertNode::loadSettings(QSettings &pSettings)
 void ImageConvertNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "format", mImageFormatMap.value( mCurrImageFormat ) );
+}
+
+void ImageConvertNode::formatChanged(const QString &pFormat)
+{
+	mCurrImageFormat = mImageFormatMap.key( pFormat );
+
+	mNode->context()->updateNode( mNode );
 }
