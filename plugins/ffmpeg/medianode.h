@@ -99,6 +99,7 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinRewind;
 	QSharedPointer<fugio::PinInterface>			 mPinLoopCount;
 	QSharedPointer<fugio::PinInterface>			 mPinInputFrameNumber;
+	QSharedPointer<fugio::PinInterface>			 mPinInputTime;
 
 	QSharedPointer<fugio::PinInterface>			 mPinImage;
 	fugio::ImageInterface						*mValImage;
@@ -132,6 +133,7 @@ private:
 	qint64										 mTimeLast;
 
 	int											 mTargetFrameNumber;
+	qreal										 mTargetTime;
 
 	typedef enum MediaState
 	{
