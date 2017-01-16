@@ -39,6 +39,8 @@ ffmpegPlugin::~ffmpegPlugin( void )
 
 PluginInterface::InitResult ffmpegPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mInstance = this;
 
 	mApp = pApp;
