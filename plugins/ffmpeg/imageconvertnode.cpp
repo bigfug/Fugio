@@ -209,7 +209,7 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( !mScaleContext )
 	{
-		if( av_image_alloc( mDstDat, mDstLen, SrcImg->width(), SrcImg->height(), DstFmt, 32 ) < 0 )
+		if( av_image_alloc( mDstDat, mDstLen, SrcImg->width(), SrcImg->height(), DstFmt, 4 ) < 0 )
 		{
 			return;
 		}
