@@ -248,7 +248,7 @@ void TextureNode::inputsUpdated( qint64 pTimeStamp )
 
 	mTexture->setSize( NewSze );
 
-	mTexture->update( 0, 0 );
+	mTexture->update();
 
 	if( mTexture->dstTexId() )
 	{

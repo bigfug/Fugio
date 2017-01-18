@@ -216,7 +216,7 @@ void PreviewNode::render( qint64 pTimeStamp )
 			mTexture->setType( GL_UNSIGNED_BYTE );
 //			mTexture->setWrap( GL_CLAMP, GL_CLAMP, GL_CLAMP );
 
-			mTexture->update( 0, 0 );
+			mTexture->update();
 		}
 
 		if( mTexture->dstTexId() )

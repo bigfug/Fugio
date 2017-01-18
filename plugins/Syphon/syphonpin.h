@@ -84,7 +84,9 @@ public:
 
 	virtual void setInternalFormat( quint32 pInternalFormat ) Q_DECL_OVERRIDE;
 
-	virtual void update( const unsigned char *pData, int pDataSize, int pCubeFaceIndex = 0 ) Q_DECL_OVERRIDE;
+	virtual void update( void ) Q_DECL_OVERRIDE;
+
+	virtual void update( const unsigned char *pData, int pDataSize, int pLineSize, int pCubeFaceIndex = 0 ) Q_DECL_OVERRIDE;
 
 	virtual void setFilter( quint32 pMin, quint32 pMag ) Q_DECL_OVERRIDE;
 
