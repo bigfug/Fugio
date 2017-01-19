@@ -18,7 +18,7 @@
 #include <fugio/core/uuid.h>
 #include <fugio/file/uuid.h>
 
-#include "mediapreset/interfacemediapreset.h"
+#include "mediapreset/mediapresetinterface.h"
 
 #include "mediarecorderform.h"
 

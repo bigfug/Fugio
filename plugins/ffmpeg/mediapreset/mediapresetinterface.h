@@ -1,5 +1,5 @@
-#ifndef INTERFACEMEDIAPRESET_H
-#define INTERFACEMEDIAPRESET_H
+#ifndef MEDIAPRESETINTERFACE_H
+#define MEDIAPRESETINTERFACE_H
 
 #include <QString>
 #include <QSize>
@@ -33,4 +33,4 @@ public:
 	virtual QSize videoFrameSize( void ) const = 0;
 };
 
-#endif // INTERFACEMEDIAPRESET_H
+#endif // MEDIAPRESETINTERFACE_H

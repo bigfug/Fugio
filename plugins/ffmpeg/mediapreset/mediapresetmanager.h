@@ -5,7 +5,7 @@
 #include <QStringList>
 #include <QMap>
 
-#include "interfacemediapreset.h"
+#include "mediapresetinterface.h"
 
 class MediaPresetManager : public QObject
 {

@@ -1,7 +1,7 @@
 #ifndef INTERFACEMEDIAPRESETMP4_H
 #define INTERFACEMEDIAPRESETMP4_H
 
-#include "interfacemediapreset.h"
+#include "mediapresetinterface.h"
 #include "mediapresetmanager.h"
 
 #ifndef INT64_C

@@ -38,7 +38,6 @@ HEADERS += \
     segmentinterface.h \
     mediarecorderform.h \
     mediarecordernode.h \
-    mediapreset/interfacemediapreset.h \
     mediapreset/mediadvdpal.h \
     mediapreset/mediapresetmanager.h \
     mediapreset/mediapresetmp4.h \
@@ -51,7 +50,8 @@ HEADERS += \
     mediapreset/mediaYouTube720pWide.h \
     mediapreset/mediaYouTube1080pWide.h \
     mediaprocessornode.h \
-    processoraudiobuffer.h
+    processoraudiobuffer.h \
+    mediapreset/mediapresetinterface.h
 
 windows {
 	QMAKE_LFLAGS_DEBUG += /INCREMENTAL:NO

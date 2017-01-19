@@ -1,7 +1,7 @@
 #ifndef MEDIAWAV44_H
 #define MEDIAWAV44_H
 
-#include "interfacemediapreset.h"
+#include "mediapresetinterface.h"
 #include "mediapresetmanager.h"
 
 #ifndef INT64_C
