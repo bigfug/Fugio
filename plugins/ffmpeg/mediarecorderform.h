@@ -29,6 +29,8 @@ private slots:
 
 	void updatePreset( void );
 
+	void recordingStarted( void );
+
 	void recordingStopped( void );
 
 	void recording( qreal pTimeStamp );

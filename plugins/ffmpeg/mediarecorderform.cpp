@@ -62,11 +62,17 @@ MediaRecorderForm::MediaRecorderForm( MediaRecorderNode &pRecorder, QWidget *par
 	connect( ui->mTimeDuration, SIGNAL(textEdited(QString)), this, SLOT(timeDurationEdited(QString)) );
 
 	connect( ui->mTimeEnd, SIGNAL(textEdited(QString)), this, SLOT(timeEndEdited(QString)) );
+
+	connect( &VR, SIGNAL(recordingStarted()), this, SLOT(recordingStarted()) );
+	connect( &VR, SIGNAL(recordingStopped()), this, SLOT(recordingStopped()) );
+	connect( &VR, SIGNAL(recording(qreal)), this, SLOT(recording(qreal)) );
 }
 
 MediaRecorderForm::~MediaRecorderForm()
 {
-	if( mMediaPreset != 0 )
+	VR.setMediaPreset( nullptr );
+
+	if( mMediaPreset )
 	{
 		delete mMediaPreset;
 
@@ -131,32 +137,7 @@ void MediaRecorderForm::on_mButtonRecord_clicked()
 
 	Settings.setValue( "media-recorder-directory", QFileInfo( FileName ).path() );
 
-	ui->mSelectVideo->setEnabled( false );
-	ui->mMediaPreset->setEnabled( false );
-
-	ui->mVideoFit->setEnabled( false );
-
-	ui->mTimeStart->setEnabled( false );
-	ui->mTimeEnd->setEnabled( false );
-	ui->mTimeDuration->setEnabled( false );
-
-	ui->mButtonRecord->setEnabled( false );
-
 	VR.setMediaPreset( mMediaPreset );
-
-	QMainWindow			*MainWindow = VR.node()->context()->global()->mainWindow();
-
-	if( ( mProgressDialog = new QProgressDialog( tr( "Recording" ), tr( "Cancel" ), 0, TimeDuration * 10, MainWindow ) ) != 0 )
-	{
-		mProgressDialog->setWindowModality( Qt::WindowModal );
-
-		mProgressDialog->setMinimumDuration( 0 );
-
-		connect( mProgressDialog, SIGNAL(canceled()), &VR, SLOT(cancel()) );
-	}
-
-	connect( &VR, SIGNAL(recordingStopped()), this, SLOT(recordingStopped()) );
-	connect( &VR, SIGNAL(recording(qreal)), this, SLOT(recording(qreal)) );
 
 	VR.record( FileName );
 }
@@ -166,10 +147,28 @@ void MediaRecorderForm::mediaPresetChanged( int index )
 	Q_UNUSED( index )
 
 	updatePreset();
+
+	if( mMediaPreset )
+	{
+		if( !mMediaPreset->hasVideo() )
+		{
+			ui->mVideoFit->setEnabled( false );
+			ui->mSliderQuality->setEnabled( false );
+			ui->mSliderSpeed->setEnabled( false );
+		}
+		else
+		{
+			ui->mVideoFit->setEnabled( true );
+			ui->mSliderQuality->setEnabled( true );
+			ui->mSliderSpeed->setEnabled( true );
+		}
+	}
 }
 
 void MediaRecorderForm::updatePreset()
 {
+	VR.setMediaPreset( nullptr );
+
 	if( mMediaPreset )
 	{
 		delete mMediaPreset;
@@ -183,14 +182,46 @@ void MediaRecorderForm::updatePreset()
 	}
 
 	VR.setMediaPresetName( ui->mMediaPreset->currentText() );
+
+	VR.setMediaPreset( mMediaPreset );
+}
+
+void MediaRecorderForm::recordingStarted()
+{
+	ui->mSelectVideo->setEnabled( false );
+	ui->mMediaPreset->setEnabled( false );
+
+	ui->mVideoFit->setEnabled( false );
+
+	ui->mTimeStart->setEnabled( false );
+	ui->mTimeEnd->setEnabled( false );
+	ui->mTimeDuration->setEnabled( false );
+
+	ui->mButtonRecord->setEnabled( false );
+
+	qreal		TimeStart    = VR.timeStart();
+	qreal		TimeDuration = VR.timeDuration();
+	qreal		TimeEnd      = VR.timeEnd();
+
+	if( TimeDuration <= 0 )
+	{
+		TimeDuration = TimeEnd - TimeStart;
+	}
+
+	QMainWindow			*MainWindow = VR.node()->context()->global()->mainWindow();
+
+	if( ( mProgressDialog = new QProgressDialog( tr( "Recording" ), tr( "Cancel" ), 0, TimeDuration * 10, MainWindow ) ) != 0 )
+	{
+		mProgressDialog->setWindowModality( Qt::WindowModal );
+
+		mProgressDialog->setMinimumDuration( 0 );
+
+		connect( mProgressDialog, SIGNAL(canceled()), &VR, SLOT(cancel()) );
+	}
 }
 
 void MediaRecorderForm::recordingStopped()
 {
-	disconnect( &VR );
-
-	VR.setMediaPreset( 0 );
-
 	if( mProgressDialog )
 	{
 		mProgressDialog->deleteLater();

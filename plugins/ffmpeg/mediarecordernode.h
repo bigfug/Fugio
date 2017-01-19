@@ -29,6 +29,7 @@ extern "C"
 #include <fugio/node_control_interface.h>
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
+#include <fugio/file/filename_interface.h>
 
 #include <fugio/ffmpeg/uuid.h>
 
@@ -70,6 +71,8 @@ public:
 
 	virtual bool initialise() Q_DECL_OVERRIDE;
 	virtual bool deinitialise() Q_DECL_OVERRIDE;
+
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 
@@ -141,6 +144,7 @@ public:
 	}
 
 signals:
+	void recordingStarted( void );
 	void recording( qreal pTimeRecorded );
 	void recordingStopped( void );
 
@@ -177,15 +181,27 @@ private:
 	bool imageToFrame( void );
 
 private:
-	QSharedPointer<fugio::PinInterface>		 mImagePin;
+	QSharedPointer<fugio::PinInterface>		 mPinInputFilename;
+	QSharedPointer<fugio::PinInterface>		 mPinInputImage;
+	QSharedPointer<fugio::PinInterface>		 mPinInputAudio;
+	QSharedPointer<fugio::PinInterface>		 mPinInputStartTime;
+	QSharedPointer<fugio::PinInterface>		 mPinInputDuration;
+	QSharedPointer<fugio::PinInterface>		 mPinInputRecord;
 
-	QSharedPointer<fugio::PinInterface>		 mPinAudio;
+	QSharedPointer<fugio::PinInterface>		 mPinOutputFilename;
+	QSharedPointer<fugio::PinInterface>		 mPinOutputImageSize;
+	QSharedPointer<fugio::PinInterface>		 mPinOutputStarted;
+	QSharedPointer<fugio::PinInterface>		 mPinOutputFinished;
+
+	fugio::FilenameInterface				*mValOutputFilename;
+	fugio::VariantInterface					*mValOutputImageSize;
 
 	QDockWidget					*mDockWidget;
 	MediaRecorderForm			*mDockForm;
 
 	Qt::DockWidgetArea			 mDockArea;
 
+	QString						 mFilename;
 	//IOInputImage				*mInputImage;
 	qreal						 mTimePrev;
 	qreal						 mTimeCurr;

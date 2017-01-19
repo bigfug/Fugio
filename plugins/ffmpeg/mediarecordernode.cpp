@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QPainter>
 #include <QFile>
+#include <QFileInfo>
 
 #include <fugio/global_interface.h>
 #include <fugio/context_interface.h>
@@ -14,6 +15,8 @@
 #include <fugio/audio/audio_producer_interface.h>
 #include <fugio/context_signals.h>
 #include <fugio/audio/audio_instance_base.h>
+#include <fugio/core/uuid.h>
+#include <fugio/file/uuid.h>
 
 #include "mediapreset/interfacemediapreset.h"
 
@@ -26,6 +29,41 @@
 MediaRecorderNode::MediaRecorderNode( QSharedPointer<fugio::NodeInterface> pNode ) :
 	NodeControlBase( pNode ), mDockWidget( 0 ), mDockForm( 0 ), mDockArea( Qt::RightDockWidgetArea )
 {
+	FUGID( PIN_INPUT_FILENAME, "c997473a-2016-466b-9128-beacb99870a2" );
+	FUGID( PIN_INPUT_IMAGE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_INPUT_AUDIO, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+	FUGID( PIN_INPUT_START, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
+	FUGID( PIN_INPUT_DURATION, "249f2932-f483-422f-b811-ab679f006381" );
+	FUGID( PIN_INPUT_RECORD, "51297977-7b4b-4e08-9dea-89a8add4abe0" );
+
+	FUGID( PIN_OUTPUT_FILENAME, "5064e449-8b0b-4447-9009-c81997f754ef" );
+	FUGID( PIN_OUTPUT_IMAGE_SIZE, "ce8d578e-c5a4-422f-b3c4-a1bdf40facdb" );
+	FUGID( PIN_OUTPUT_STARTED, "e6bf944e-5f46-4994-bd51-13c2aa6415b7" );
+	FUGID( PIN_OUTPUT_FINISHED, "a2bbf374-0dc8-42cb-b85a-6a43b58a348f" );
+
+	mPinInputFilename = pinInput( "Filename", PIN_INPUT_FILENAME );
+
+	mPinInputImage = pinInput( "Image", PIN_INPUT_IMAGE );
+
+	mPinInputAudio = pinInput( "Audio", PIN_INPUT_AUDIO );
+
+	mPinInputStartTime = pinInput( "Start Time", PIN_INPUT_START );
+
+	mPinInputDuration = pinInput( "Duration", PIN_INPUT_DURATION );
+
+	mPinInputRecord = pinInput( "Record", PIN_INPUT_RECORD );
+
+	mValOutputFilename = pinOutput<fugio::FilenameInterface *>( "Filename", mPinOutputFilename, PID_FILENAME, PIN_OUTPUT_FILENAME );
+
+	mValOutputImageSize = pinOutput<fugio::VariantInterface *>( "Image Size", mPinOutputImageSize, PID_SIZE, PIN_OUTPUT_IMAGE_SIZE );
+
+	pinOutput<fugio::PinControlInterface *>( "Started", mPinOutputStarted, PID_TRIGGER, PIN_OUTPUT_STARTED );
+	pinOutput<fugio::PinControlInterface *>( "Finished", mPinOutputFinished, PID_TRIGGER, PIN_OUTPUT_FINISHED );
+
+	mPinInputImage->setDescription( tr( "The input image to record" ) );
+
+	mPinInputAudio->setDescription( tr( "The input audio to record" ) );
+
 	mOutputFormat		= 0;
 	mFormatContext		= 0;
 	mStreamVideo		= 0;
@@ -60,13 +98,6 @@ MediaRecorderNode::MediaRecorderNode( QSharedPointer<fugio::NodeInterface> pNode
 
 	mFrameScale = FRAME_STRETCH;
 
-	mImagePin = pinInput( "Image" );
-
-	mPinAudio = pinInput( "Audio" );
-
-	mImagePin->setDescription( tr( "The input image to record" ) );
-
-	mPinAudio->setDescription( tr( "The input audio to record" ) );
 }
 
 bool MediaRecorderNode::initialise()
@@ -158,6 +189,69 @@ QWidget *MediaRecorderNode::gui()
 	return( GUI );
 }
 
+void MediaRecorderNode::inputsUpdated( qint64 pTimeStamp )
+{
+	if( !pTimeStamp )
+	{
+		return;
+	}
+
+	if( mPinInputFilename->isUpdated( pTimeStamp ) )
+	{
+		QFileInfo		FileInfo;
+
+		if( fugio::FilenameInterface *F = input<fugio::FilenameInterface *>( mPinInputFilename ) )
+		{
+			FileInfo = QFileInfo( F->filename() );
+		}
+		else
+		{
+			FileInfo = QFileInfo( variant( mPinInputFilename ).toString() );
+		}
+
+		if( mMediaPreset )
+		{
+			if( FileInfo.suffix().toLower() != mMediaPreset->fileExt() )
+			{
+				FileInfo = QFileInfo( FileInfo.filePath().append( '.' ).append( mMediaPreset->fileExt() ) );
+			}
+		}
+
+		mFilename = FileInfo.filePath();
+	}
+
+	if( mPinInputStartTime->isUpdated( pTimeStamp ) )
+	{
+		mTimeStart = qMax( variant( mPinInputStartTime ).toReal(), 0.0 );
+	}
+
+	if( mPinInputDuration->isUpdated( pTimeStamp ) )
+	{
+		mTimeDuration = qMax( variant( mPinInputStartTime ).toReal(), 0.0 );
+	}
+
+	if( mPinInputRecord->isUpdated( pTimeStamp ) )
+	{
+		fugio::VariantInterface		*V = input<fugio::VariantInterface *>( mPinInputRecord );
+
+		if( V )
+		{
+			if( V->variant().toBool() )
+			{
+				record( mFilename );
+			}
+			else
+			{
+				mCancel = true;
+			}
+		}
+		else
+		{
+			record( mFilename );
+		}
+	}
+}
+
 void MediaRecorderNode::onFormClicked( void )
 {
 	if( mDockWidget && mDockWidget->isHidden() )
@@ -172,6 +266,8 @@ void MediaRecorderNode::record( const QString &pFileName )
 	{
 		return;
 	}
+
+	mFilename = pFileName;
 
 	mTimePrev = mTimeCurr = mTimeStart;
 
@@ -201,7 +297,7 @@ void MediaRecorderNode::record( const QString &pFileName )
 
 	if( mOutputFormat->video_codec != AV_CODEC_ID_NONE )
 	{
-		fugio::ImageInterface			*Image = input<fugio::ImageInterface *>( mImagePin );
+		fugio::ImageInterface			*Image = input<fugio::ImageInterface *>( mPinInputImage );
 
 		if( !Image )
 		{
@@ -412,7 +508,7 @@ void MediaRecorderNode::record( const QString &pFileName )
 
 	if( mStreamAudio )
 	{
-		fugio::AudioProducerInterface	*A = input<fugio::AudioProducerInterface *>( mPinAudio );
+		fugio::AudioProducerInterface	*A = input<fugio::AudioProducerInterface *>( mPinInputAudio );
 
 		if( A )
 		{
@@ -468,6 +564,32 @@ void MediaRecorderNode::cancel()
 
 void MediaRecorderNode::frameStart( qint64 )
 {
+	if( mTimeCurr == mTimeStart )
+	{
+		emit recordingStarted();
+
+		pinUpdated( mPinOutputStarted );
+
+		if( mStreamVideo )
+		{
+			QSize		ImageSize = QSize( mStreamVideo->codecpar->width, mStreamVideo->codecpar->height );
+
+			if( mValOutputImageSize->variant().toSize() != ImageSize )
+			{
+				mValOutputImageSize->setVariant( ImageSize );
+
+				pinUpdated( mPinOutputImageSize );
+			}
+		}
+
+		if( mValOutputFilename->filename() != mFilename )
+		{
+			mValOutputFilename->setFilename( mFilename );
+
+			pinUpdated( mPinOutputFilename );
+		}
+	}
+
 	emit recording( mTimeCurr - mTimeStart );
 
 	mNode->context()->playheadPlay( mTimePrev, mTimeCurr );
@@ -814,6 +936,8 @@ void MediaRecorderNode::recordEntry()
 		disconnect( mNode->context()->qobject(), SIGNAL(frameEnd(qint64)), this, SLOT(frameEnd(qint64)) );
 
 		emit recordingStopped();
+
+		pinUpdated( mPinOutputFinished );
 	}
 }
 
@@ -876,7 +1000,7 @@ QImage MediaRecorderNode::cropImage( const QImage &pImage, const QSize &pSize )
 
 bool MediaRecorderNode::imageToFrame( void )
 {
-	fugio::ImageInterface		*SrcInt = input<fugio::ImageInterface *>( mImagePin );
+	fugio::ImageInterface		*SrcInt = input<fugio::ImageInterface *>( mPinInputImage );
 
 	QImage				 SrcImg = SrcInt ? SrcInt->image() : QImage();
 
@@ -1012,4 +1136,3 @@ bool MediaRecorderNode::imageToFrame( void )
 
 	return( true );
 }
-
