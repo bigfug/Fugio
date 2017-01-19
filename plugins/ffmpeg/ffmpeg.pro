@@ -20,7 +20,11 @@ SOURCES += \
 	medianode.cpp \
 	imageconvertnode.cpp \
 	ffmpegplugin.cpp \
-	mediasegment.cpp
+	mediasegment.cpp \
+    mediarecorderform.cpp \
+    mediarecordernode.cpp \
+    mediapreset/mediapresetmanager.cpp \
+    mediaprocessornode.cpp
 
 HEADERS += \
 	../../include/fugio/ffmpeg/uuid.h \
@@ -31,7 +35,23 @@ HEADERS += \
 	imageconvertnode.h \
 	ffmpegplugin.h \
 	mediasegment.h \
-    segmentinterface.h
+    segmentinterface.h \
+    mediarecorderform.h \
+    mediarecordernode.h \
+    mediapreset/interfacemediapreset.h \
+    mediapreset/mediadvdpal.h \
+    mediapreset/mediapresetmanager.h \
+    mediapreset/mediapresetmp4.h \
+    mediapreset/mediaProxy.h \
+    mediapreset/mediaWav44.h \
+    mediapreset/mediaYouTube240p.h \
+    mediapreset/mediaYouTube240pWide.h \
+    mediapreset/mediaYouTube360pWide.h \
+    mediapreset/mediaYouTube480pWide.h \
+    mediapreset/mediaYouTube720pWide.h \
+    mediapreset/mediaYouTube1080pWide.h \
+    mediaprocessornode.h \
+    processoraudiobuffer.h
 
 windows {
 	QMAKE_LFLAGS_DEBUG += /INCREMENTAL:NO
@@ -203,3 +223,6 @@ contains( DEFINES, FFMPEG_SUPPORTED ) {
 !contains( DEFINES, FFMPEG_SUPPORTED ) {
 	warning( "FFMPEG not supported" )
 }
+
+FORMS += \
+    mediarecorderform.ui
