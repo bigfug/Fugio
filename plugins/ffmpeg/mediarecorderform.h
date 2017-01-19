@@ -7,7 +7,7 @@ namespace Ui {
 	class MediaRecorderForm;
 }
 
-class InterfaceMediaPreset;
+class MediaPresetInterface;
 class QProgressDialog;
 class MediaRecorderNode;
 
@@ -49,7 +49,7 @@ private slots:
 
 private:
 	Ui::MediaRecorderForm		*ui;
-	InterfaceMediaPreset		*mMediaPreset;
+	MediaPresetInterface		*mMediaPreset;
 	QProgressDialog				*mProgressDialog;
 	MediaRecorderNode			&VR;
 };

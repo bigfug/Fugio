@@ -18,7 +18,7 @@ extern "C"
 	#include <libavutil/imgutils.h>
 }
 
-class MediaWav44 : public InterfaceMediaPreset
+class MediaWav44 : public MediaPresetInterface
 {
 public:
 	virtual ~MediaWav44( void ) {}
@@ -28,7 +28,12 @@ public:
 		pManager.registerPreset( "Audio: WAV 44khz", &MediaWav44::instance );
 	}
 
-	static InterfaceMediaPreset *instance( void )
+	virtual QSize videoFrameSize( void ) const
+	{
+		return( QSize() );
+	}
+
+	static MediaPresetInterface *instance( void )
 	{
 		return( new MediaWav44() );
 	}

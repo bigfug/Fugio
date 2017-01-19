@@ -13,9 +13,14 @@ public:
 		pManager.registerPreset( "Video: YouTube 360p 16:9", &MediaYouTube360pWide::instance );
 	}
 
-	static InterfaceMediaPreset *instance( void )
+	static MediaPresetInterface *instance( void )
 	{
 		return( new MediaYouTube360pWide() );
+	}
+
+	virtual QSize videoFrameSize( void ) const
+	{
+		return( QSize( 640, 360 ) );
 	}
 
 	virtual qreal videoFramesPerSecond( void ) const

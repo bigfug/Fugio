@@ -252,6 +252,23 @@ void MediaRecorderNode::inputsUpdated( qint64 pTimeStamp )
 	}
 }
 
+void MediaRecorderNode::setMediaPreset( MediaPresetInterface *pMediaPreset )
+{
+	mMediaPreset = pMediaPreset;
+
+	if( mMediaPreset )
+	{
+		QSize		ImageSize = QSize( mMediaPreset->videoFrameSize() );
+
+		if( mValOutputImageSize->variant().toSize() != ImageSize )
+		{
+			mValOutputImageSize->setVariant( ImageSize );
+
+			pinUpdated( mPinOutputImageSize );
+		}
+	}
+}
+
 void MediaRecorderNode::onFormClicked( void )
 {
 	if( mDockWidget && mDockWidget->isHidden() )

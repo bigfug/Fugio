@@ -13,9 +13,14 @@ public:
 		pManager.registerPreset( "Video: YouTube 240p 16:9", &MediaYouTube240pWide::instance );
 	}
 
-	static InterfaceMediaPreset *instance( void )
+	static MediaPresetInterface *instance( void )
 	{
 		return( new MediaYouTube240pWide() );
+	}
+
+	virtual QSize videoFrameSize( void ) const
+	{
+		return( QSize( 426, 240 ) );
 	}
 
 	virtual qreal videoFramesPerSecond( void ) const

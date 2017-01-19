@@ -19,11 +19,11 @@ public:
 		return( mPresetNames );
 	}
 
-	typedef InterfaceMediaPreset *(*PresetFunction)( void );
+	typedef MediaPresetInterface *(*PresetFunction)( void );
 
 	void registerPreset( const QString &pPresetName, PresetFunction pPresetFunction );
 
-	InterfaceMediaPreset *preset( const QString &pPresetName ) const;
+	MediaPresetInterface *preset( const QString &pPresetName ) const;
 
 	static MediaPresetManager *instance( void );
 

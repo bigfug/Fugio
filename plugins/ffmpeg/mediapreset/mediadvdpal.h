@@ -13,7 +13,12 @@ public:
 		pManager.registerPreset( "Video: DVD PAL", &MediaDvdPal::instance );
 	}
 
-	static InterfaceMediaPreset *instance( void )
+	virtual QSize videoFrameSize( void ) const
+	{
+		return( QSize( 720, 576 ) );
+	}
+
+	static MediaPresetInterface *instance( void )
 	{
 		return( new MediaDvdPal() );
 	}

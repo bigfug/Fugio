@@ -13,9 +13,14 @@ public:
 		pManager.registerPreset( "Video: YouTube 480p 16:9", &MediaYouTube480pWide::instance );
 	}
 
-	static InterfaceMediaPreset *instance( void )
+	static MediaPresetInterface *instance( void )
 	{
 		return( new MediaYouTube480pWide() );
+	}
+
+	virtual QSize videoFrameSize( void ) const
+	{
+		return( QSize( 854, 480 ) );
 	}
 
 	virtual qreal videoFramesPerSecond( void ) const

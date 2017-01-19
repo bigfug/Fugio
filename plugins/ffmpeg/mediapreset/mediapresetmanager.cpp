@@ -35,7 +35,7 @@ void MediaPresetManager::registerPreset( const QString &pPresetName, MediaPreset
 	mPresetFunctions.insert( pPresetName, pPresetFunction );
 }
 
-InterfaceMediaPreset *MediaPresetManager::preset( const QString &pPresetName ) const
+MediaPresetInterface *MediaPresetManager::preset( const QString &pPresetName ) const
 {
 	QMap<QString,PresetFunction>::const_iterator	it = mPresetFunctions.find( pPresetName );
 

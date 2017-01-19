@@ -22,7 +22,7 @@ extern "C"
 #endif
 }
 
-class MediaPresetMp4 : public InterfaceMediaPreset
+class MediaPresetMp4 : public MediaPresetInterface
 {
 public:
 	virtual ~MediaPresetMp4( void ) {}

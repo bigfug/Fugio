@@ -13,7 +13,7 @@ public:
 		pManager.registerPreset( "media-proxy", &MediaProxy::instance );
 	}
 
-	static InterfaceMediaPreset *instance( void )
+	static MediaPresetInterface *instance( void )
 	{
 		return( new MediaProxy() );
 	}

@@ -41,7 +41,7 @@ FUGIO_NAMESPACE_END
 
 class MediaRecorderForm;
 class QDockWidget;
-class InterfaceMediaPreset;
+class MediaPresetInterface;
 
 class MediaRecorderNode : public fugio::NodeControlBase
 {
@@ -76,10 +76,7 @@ public:
 
 	//-------------------------------------------------------------------------
 
-	void setMediaPreset( InterfaceMediaPreset *pMediaPreset )
-	{
-		mMediaPreset = pMediaPreset;
-	}
+	void setMediaPreset( MediaPresetInterface *pMediaPreset );
 
 	void setTimeStart( qreal pTimeStamp )
 	{
@@ -240,7 +237,7 @@ private:
 	QVector<QVector<float>>		 mBufferAudio;
 	QVector<QByteArray>			 mBufferAudioOutput;
 
-	InterfaceMediaPreset		*mMediaPreset;
+	MediaPresetInterface		*mMediaPreset;
 
 	qreal						 mTimeStart;
 	qreal						 mTimeDuration;

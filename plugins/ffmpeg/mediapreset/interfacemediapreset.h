@@ -2,14 +2,15 @@
 #define INTERFACEMEDIAPRESET_H
 
 #include <QString>
+#include <QSize>
 
 struct AVCodecContext;
 struct AVStream;
 
-class InterfaceMediaPreset
+class MediaPresetInterface
 {
 public:
-	virtual ~InterfaceMediaPreset( void ) {}
+	virtual ~MediaPresetInterface( void ) {}
 
 	virtual QString fileExt( void ) const = 0;
 
@@ -28,6 +29,8 @@ public:
 
 	virtual void setQuality( AVCodecContext *pContext, AVStream *pVideoStream, qreal pQuality ) const = 0;
 	virtual void setSpeed( AVCodecContext *pContext, AVStream *pVideoStream, qreal pSpeed ) const = 0;
+
+	virtual QSize videoFrameSize( void ) const = 0;
 };
 
 #endif // INTERFACEMEDIAPRESET_H
