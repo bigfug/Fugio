@@ -639,6 +639,8 @@ void MediaRecorderNode::recordEntry()
 				{
 					if( ( out_samples = swr_convert( mSwrContext, output, out_samples, input, mFrameAudio->nb_samples ) ) >= 0 )
 					{
+						av_samples_get_buffer_size( &outlinesize, mFrameAudio->channels, out_samples, AVSampleFormat( mFrameAudio->format ), 1 );
+
 						for( int i = 0 ; i < mBufferAudioOutput.size() ; i++ )
 						{
 							if( output[ i ] )
