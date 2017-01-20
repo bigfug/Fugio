@@ -36,7 +36,7 @@
 
 MediaNode::MediaNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mSegment( 0 ), mAudioMute( false ), mAudioVolume( 1 ),
-	  mTimeOffset( 0 ), mTimePause( 0 ), mTimeLast( -1 ), mTargetFrameNumber( -1 ),
+	  mTimeOffset( 0 ), mTimePause( 0 ), mTimeLast( -1 ), mTargetFrameNumber( -1 ), mTargetTime( -1 ),
 	  mCurrMediaState( STOP ), mNextMediaState( STOP )
 {
 	const static QUuid	PIN_FILENAME	= QUuid( "{43d2824f-7967-4b22-8b0f-c51358b65d17}" );
@@ -47,6 +47,7 @@ MediaNode::MediaNode( QSharedPointer<fugio::NodeInterface> pNode )
 	const static QUuid	PIN_REWIND		= QUuid( "{03b392df-1847-4d36-a261-618f72e2eb17}" );
 	const static QUuid	PIN_LOOP_COUNT	= QUuid( "{476c9cec-3d4e-4c89-b60d-6cff6e0ab575}" );
 	const static QUuid	PIN_FRAME_NUM	= QUuid( "{7A794317-06F5-4B26-A9D3-095F85EB8DA1}" );
+	const static QUuid	PIN_FRAME_TIME	= QUuid( "{F02BA11D-EFE9-41D7-9F6D-4236971C7A5D}" );
 
 	const static QUuid	PIN_IMAGE		= QUuid( "{e0a3e13b-6669-4793-8eb0-e9a12afb0f6b}" );
 	const static QUuid	PIN_AUDIO		= QUuid( "{864cae6d-87a4-4f26-8f64-fd0185dad2cf}" );
@@ -71,6 +72,8 @@ MediaNode::MediaNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinLoopCount = pinInput( "Loop Count",	PIN_LOOP_COUNT );
 
 	mPinInputFrameNumber = pinInput( "Frame #", PIN_FRAME_NUM );
+
+	mPinInputTime = pinInput( "Time", PIN_FRAME_TIME );
 
 	mValImage = pinOutput<fugio::ImageInterface *>( "Image", mPinImage, PID_IMAGE, PIN_IMAGE );
 
@@ -192,6 +195,11 @@ void MediaNode::inputsUpdated( qint64 pTimeStamp )
 	if( mPinInputFrameNumber->isUpdated( pTimeStamp ) )
 	{
 		mTargetFrameNumber = variant( mPinInputFrameNumber ).toInt();
+	}
+
+	if( mPinInputTime->isUpdated( pTimeStamp ) )
+	{
+		mTargetTime = variant( mPinInputTime ).toReal();
 	}
 
 	if( !pTimeStamp )
@@ -328,6 +336,14 @@ void MediaNode::onContextFrame( qint64 pTimeStamp )
 		mTimePause  = qint64( mSegment->videoFrameRate() * qreal( mTargetFrameNumber ) );
 
 		mTargetFrameNumber = -1;
+	}
+
+	if( mTargetTime >= 0 )
+	{
+		mTimeOffset = pTimeStamp;
+		mTimePause  = mTargetTime * 1000.0;
+
+		mTargetTime = -1;
 	}
 
 	TimCur = ( pTimeStamp - mTimeOffset ) + mTimePause;

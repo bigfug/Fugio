@@ -178,7 +178,7 @@ void ImageToTextureNode::onEditClicked()
 			mTexture->setGenMipMaps( Form->genMipMaps() );
 			mTexture->setWrap( Form->wrapS(), Form->wrapT(), Form->wrapR() );
 
-			mNode->context()->updateNode( mNode->context()->findNode( mNode->uuid() ) );
+			mNode->context()->updateNode( mNode );
 		}
 	}
 }
@@ -189,7 +189,7 @@ void ImageToTextureNode::transferTexture( qint64 pTimeStamp )
 
 	fugio::ImageInterface	*I = input<fugio::ImageInterface *>( mPinInputImage );
 
-	mTexture->update( I->buffer( 0 ), I->bufferSize( 0 ) );
+	mTexture->update( I->buffer( 0 ), I->bufferSize( 0 ), I->lineSize( 0 ) );
 
 	OPENGL_DEBUG( mNode->name() );
 

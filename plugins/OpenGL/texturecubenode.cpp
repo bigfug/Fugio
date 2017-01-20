@@ -130,7 +130,7 @@ void TextureCubeNode::processTexture( QSharedPointer<fugio::PinInterface> pPin, 
 
 	OPENGL_PLUGIN_DEBUG
 
-	mTexDst->update( I->buffer( 0 ), I->bufferSize( 0 ), pCubeMapIndex );
+	mTexDst->update( I->buffer( 0 ), I->bufferSize( 0 ), I->lineSize( 0 ), pCubeMapIndex );
 
 	OPENGL_PLUGIN_DEBUG
 }

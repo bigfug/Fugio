@@ -21,7 +21,8 @@ extern "C"
 
 #include "medianode.h"
 #include "imageconvertnode.h"
-
+#include "mediarecordernode.h"
+#include "mediaprocessornode.h"
 QList<QUuid>				 NodeControlBase::PID_UUID;
 
 ffmpegPlugin				*ffmpegPlugin::mInstance = 0;
@@ -31,6 +32,8 @@ ffmpegPlugin::ffmpegPlugin( void )
 {
 	mNodeEntries.append( ClassEntry( "Image Convert", "FFMPEG", NID_SWR_IMAGE_CONVERT, &ImageConvertNode::staticMetaObject ) );
 	mNodeEntries.append( ClassEntry( "Media Player",   "FFMPEG", NID_MEDIA_PLAYER, &MediaNode::staticMetaObject ) );
+	mNodeEntries.append( ClassEntry( "Media Recorder",   "FFMPEG", NID_MEDIA_RECORDER, &MediaRecorderNode::staticMetaObject ) );
+	mNodeEntries.append( ClassEntry( "Media Processor",   "FFMPEG", NID_MEDIA_PROCESSOR, &MediaProcessorNode::staticMetaObject ) );
 }
 
 ffmpegPlugin::~ffmpegPlugin( void )
@@ -39,6 +42,8 @@ ffmpegPlugin::~ffmpegPlugin( void )
 
 PluginInterface::InitResult ffmpegPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mInstance = this;
 
 	mApp = pApp;

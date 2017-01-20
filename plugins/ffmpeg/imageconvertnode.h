@@ -45,7 +45,8 @@ public:
 	virtual void loadSettings(QSettings &pSettings) Q_DECL_OVERRIDE;
 	virtual void saveSettings(QSettings &pSettings) const Q_DECL_OVERRIDE;
 
-protected:
+protected slots:
+	void formatChanged( const QString &pFormat );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;

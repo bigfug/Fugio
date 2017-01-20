@@ -80,7 +80,7 @@ void TextureCopyNode::inputsUpdated( qint64 pTimeStamp )
 		TexDst->setType( TexSrc->type() );
 		TexDst->setWrap( TexSrc->wrapS(), TexSrc->wrapT(), TexSrc->wrapR() );
 
-		TexDst->update( 0, 0 );
+		TexDst->update();
 	}
 
 	if( TexDst->dstTexId() )

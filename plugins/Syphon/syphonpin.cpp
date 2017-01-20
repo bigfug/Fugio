@@ -155,7 +155,12 @@ void SyphonPin::setInternalFormat( quint32 )
 {
 }
 
-void SyphonPin::update( const unsigned char *, int, int )
+void SyphonPin::update()
+{
+
+}
+
+void SyphonPin::update( const unsigned char *, int, int, int )
 {
 }
 

@@ -165,7 +165,12 @@ void SpoutPin::setInternalFormat( quint32 )
 {
 }
 
-void SpoutPin::update( const unsigned char *, int , int )
+void SpoutPin::update()
+{
+
+}
+
+void SpoutPin::update( const unsigned char *, int, int, int )
 {
 }
 

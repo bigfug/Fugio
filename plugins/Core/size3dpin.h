@@ -16,6 +16,12 @@ class Size3dPin : public fugio::PinControlBase, public fugio::VariantInterface
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface )
 
+	Q_CLASSINFO( "Author", "Alex May" )
+	Q_CLASSINFO( "Version", "1.0" )
+	Q_CLASSINFO( "Description", "" )
+	Q_CLASSINFO( "URL", WIKI_PIN_URL( "Size3d" ) )
+	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
+
 public:
 	Q_INVOKABLE explicit Size3dPin( QSharedPointer<fugio::PinInterface> pPin );
 

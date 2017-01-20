@@ -18,6 +18,12 @@ class StringPin : public fugio::PinControlBase, public fugio::VariantInterface, 
 	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface )
 	Q_PROPERTY( QString mValue READ value WRITE setValue NOTIFY valueChanged )
 
+	Q_CLASSINFO( "Author", "Alex May" )
+	Q_CLASSINFO( "Version", "1.0" )
+	Q_CLASSINFO( "Description", "" )
+	Q_CLASSINFO( "URL", WIKI_PIN_URL( "String" ) )
+	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
+
 public:
 	Q_INVOKABLE explicit StringPin( QSharedPointer<fugio::PinInterface> pPin );
 

@@ -195,7 +195,7 @@ bool MediaAudioProcessor::loadMedia( const QString &pFileName )
 
 	for( int i = 0 ; i < (int)mFormatContext->nb_streams ; i++ )
 	{
-		if( mAudioStream < 0 && mFormatContext->streams[ i ]->codec->codec_type == AVMEDIA_TYPE_AUDIO )
+		if( mAudioStream < 0 && mFormatContext->streams[ i ]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO )
 		{
 			mAudioStream = i;
 		}
@@ -214,28 +214,40 @@ bool MediaAudioProcessor::loadMedia( const QString &pFileName )
 	}
 
 	//-------------------------------------------------------------------------
-
-	mAudioCodecContext = ( mAudioStream < 0 ? 0 : mFormatContext->streams[ mAudioStream ]->codec );
-
-	//-------------------------------------------------------------------------
 	// Open Audio Stream
 
-	if( mAudioStream >= 0 && ( mAudioCodec = avcodec_find_decoder( mAudioCodecContext->codec_id ) ) == 0 )
+	if( mAudioStream >= 0 )
 	{
-		qWarning() << "Couldn't avcodec_find_decoder for audio" << mFileName;
+		AVStream		*Stream = mFormatContext->streams[ mAudioStream ];
 
-		mAudioStream = -1;
+		mAudioCodec = avcodec_find_decoder( Stream->codecpar->codec_id );
 
-		mAudioCodecContext = 0;
-	}
+		if( !mAudioCodec )
+		{
+			qWarning() << "Couldn't avcodec_find_decoder for stream";
 
-	if( mAudioCodec != 0 && avcodec_open2( mAudioCodecContext, mAudioCodec, 0 ) < 0 )
-	{
-		qWarning() << "Couldn't avcodec_open2 for audio" << mFileName;
+			return( true );
+		}
 
-		mErrorState = true;
+		mAudioCodecContext = avcodec_alloc_context3( NULL );
 
-		return( false );
+		if( !mAudioCodecContext )
+		{
+			return( false );
+		}
+
+		avcodec_parameters_to_context( mAudioCodecContext, Stream->codecpar );
+
+		av_codec_set_pkt_timebase( mAudioCodecContext, Stream->time_base );
+
+		mAudioCodecContext->framerate = Stream->avg_frame_rate;
+
+		if( avcodec_open2( mAudioCodecContext, mAudioCodec, NULL ) < 0 )
+		{
+			qWarning() << "Couldn't avcodec_open2 for stream";
+
+			return( true );
+		}
 	}
 
 	//-------------------------------------------------------------------------
@@ -605,18 +617,32 @@ void MediaAudioProcessor::process( void )
 		{
 			if( mPacket.stream_index == mAudioStream )
 			{
-				if( ( BytesRead = avcodec_decode_audio4( mAudioCodecContext, mFrameSrc, &mFrameFinished, &mPacket ) ) < 0 )
+				int	RcvRet = avcodec_receive_frame( mAudioCodecContext, mFrameSrc );
+
+				if( !RcvRet )
+				{
+					processAudioFrame();
+				}
+				else if( RcvRet && RcvRet != AVERROR(EAGAIN) )
 				{
 					qWarning() << av_err( "avcodec_decode_audio4", BytesRead );
 
 					mErrorState = true;
+				}
 
-					//return;
-				}
-				else if( mFrameFinished != 0 )
-				{
-					processAudioFrame();
-				}
+
+//				if( ( BytesRead = avcodec_decode_audio4( mAudioCodecContext, mFrameSrc, &mFrameFinished, &mPacket ) ) < 0 )
+//				{
+//					qWarning() << av_err( "avcodec_decode_audio4", BytesRead );
+
+//					mErrorState = true;
+
+//					//return;
+//				}
+//				else if( mFrameFinished != 0 )
+//				{
+//					processAudioFrame();
+//				}
 			}
 			else
 			{
@@ -633,13 +659,13 @@ void MediaAudioProcessor::process( void )
 
 	if( !mProcessAborted )
 	{
-		while( ( BytesRead = avcodec_decode_audio4( mAudioCodecContext, mFrameSrc, &mFrameFinished, &mPacket ) ) > 0 )
-		{
-			if( mFrameFinished != 0 )
-			{
-				processAudioFrame();
-			}
-		}
+//		while( ( BytesRead = avcodec_decode_audio4( mAudioCodecContext, mFrameSrc, &mFrameFinished, &mPacket ) ) > 0 )
+//		{
+//			if( mFrameFinished != 0 )
+//			{
+//				processAudioFrame();
+//			}
+//		}
 	}
 
 	if( mOptions.testFlag( Preload ) && !mPreloaded )

@@ -15,6 +15,7 @@
 #include <QColorDialog>
 #include <QSignalMapper>
 #include <QMessageBox>
+#include <QDesktopServices>
 
 #include <QDebug>
 
@@ -209,6 +210,8 @@ void PinItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 	NodeItem			*Node  = qobject_cast<NodeItem *>( parentObject() );
 	NodeItem			*Group = mContextView->findNodeItem( Node->groupId() ).data();
 
+	QString				 HelpUrl = helpUrl();
+
 	QMenu		Menu( mPinName );
 
 	QAction		*actionTitle = Menu.addAction( mPinName );
@@ -368,6 +371,16 @@ void PinItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 					connect( &SigMap, SIGNAL(mapped(QString)), this, SLOT(menuSplit(QString)) );
 				}
 			}
+		}
+	}
+
+	if( !HelpUrl.isEmpty() )
+	{
+		Menu.addSeparator();
+
+		if( QAction *A = Menu.addAction( tr( "Help..." ) ) )
+		{
+			connect( A, SIGNAL(triggered()), this, SLOT(menuHelp()) );
 		}
 	}
 
@@ -742,6 +755,28 @@ PinItem *PinItem::findDest( const QPointF &pPoint )
 	return( PinDst );
 }
 
+QString PinItem::helpUrl()
+{
+	QString		HelpUrl;
+
+	if( mPin->hasControl() )
+	{
+		const QMetaObject	*DMO = mPin->control()->qobject()->metaObject();
+
+		if( DMO )
+		{
+			int			 HelpClassInfoIndex = DMO->indexOfClassInfo( "URL" );
+
+			if( HelpClassInfoIndex != -1 )
+			{
+				HelpUrl = QString( DMO->classInfo( HelpClassInfoIndex ).value() );
+			}
+		}
+	}
+
+	return( HelpUrl );
+}
+
 void PinItem::menuRename()
 {
 	bool	OK;
@@ -985,5 +1020,15 @@ void PinItem::menuDisconnectGlobal()
 	if( CmdPinDisconnectGlobal *Cmd = new CmdPinDisconnectGlobal( mContextView, mPin, mPin->connectedPin()->globalId() ) )
 	{
 		mContextView->widget()->undoStack()->push( Cmd );
+	}
+}
+
+void PinItem::menuHelp()
+{
+	QString		HelpUrl = helpUrl();
+
+	if( !HelpUrl.isEmpty() )
+	{
+		QDesktopServices::openUrl( QUrl( HelpUrl.append( "?utm_source=fugio&utm_medium=pin-help" ) ) );
 	}
 }

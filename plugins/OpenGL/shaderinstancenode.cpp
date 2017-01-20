@@ -164,14 +164,14 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 			{
 				if( !OutTex->dstTexId() )
 				{
-					OutTex->update( 0, 0 );
+					OutTex->update();
 				}
 
 				if( OutTex->dstTexId() && !OutTex->srcTexId() )
 				{
 					OutTex->swapTexture();
 
-					OutTex->update( 0, 0 );
+					OutTex->update();
 				}
 			}
 		}
@@ -533,7 +533,7 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 
 		if( !OutTex->dstTexId() )
 		{
-			OutTex->update( 0, 0 );
+			OutTex->update();
 
 			if( !OutTex->dstTexId() )
 			{

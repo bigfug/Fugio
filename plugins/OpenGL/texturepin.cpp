@@ -245,7 +245,7 @@ bool TexturePin::isCompressedFormat( GLenum pFormat )
 	return( false );
 }
 
-void TexturePin::update( const unsigned char *pData, int pDataSize, int pCubeFaceIndex )
+void TexturePin::update()
 {
 	if( !OpenGLPlugin::hasContextStatic() )
 	{
@@ -416,81 +416,95 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pCubeFac
 			return;
 		}
 	}
+}
 
-	if( pData )
+void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSize, int pCubeFaceIndex )
+{
+	if( !OpenGLPlugin::hasContextStatic() )
 	{
-		dstBind();
+		return;
+	}
 
-		if( isCompressedFormat( mTextureInternalFormat ) )
-		{
+	OPENGL_PLUGIN_DEBUG
+
+	update();
+
+	if( mImageSize.isNull() || !mDstTexId )
+	{
+		return;
+	}
+
+	dstBind();
+
+	if( isCompressedFormat( mTextureInternalFormat ) )
+	{
 #if defined( GL_VERSION_1_3 )
-				switch( mTarget )
-				{
-					case GL_TEXTURE_1D:
-						glCompressedTexImage1D( mTarget, 0, mTextureInternalFormat, mImageSize.x(), 0, pDataSize, pData );
-						break;
-
-					case GL_TEXTURE_2D:
-					case GL_TEXTURE_RECTANGLE:
-						glCompressedTexImage2DARB( mTarget, 0, mTextureInternalFormat, mImageSize.x(), mImageSize.y(), 0, pDataSize, pData );
-						break;
-
-					case GL_TEXTURE_CUBE_MAP:
-						glCompressedTexImage2DARB( GL_TEXTURE_CUBE_MAP_POSITIVE_X + pCubeFaceIndex, 0, mTextureInternalFormat, mImageSize.x(), mImageSize.y(), 0, pDataSize, pData );
-						break;
-
-					case GL_TEXTURE_3D:
-						glCompressedTexImage3D( mTarget, 0, mTextureInternalFormat, mImageSize.x(), mImageSize.y(), mImageSize.z(), 0, pDataSize, pData );
-						break;
-				}
-#endif
-		}
-		else
-		{
-			glPixelStorei( GL_UNPACK_ALIGNMENT, 1 );
-
-			OPENGL_DEBUG( mPin->node()->name() );
-
 			switch( mTarget )
 			{
-#if !defined( GL_ES_VERSION_2_0 )
 				case GL_TEXTURE_1D:
-					glTexSubImage1D( mTarget, 0, 0, mImageSize.x(), mTextureFormat, mTextureType, pData );
+					glCompressedTexImage1D( mTarget, 0, mTextureInternalFormat, mImageSize.x(), 0, pDataSize, pData );
 					break;
-#endif
 
 				case GL_TEXTURE_2D:
 				case GL_TEXTURE_RECTANGLE:
-					glTexSubImage2D( mTarget, 0, 0, 0, mImageSize.x(), mImageSize.y(), mTextureFormat, mTextureType, pData );
+					glCompressedTexImage2DARB( mTarget, 0, mTextureInternalFormat, mImageSize.x(), mImageSize.y(), 0, pDataSize, pData );
 					break;
 
-#if !defined( GL_ES_VERSION_2_0 )
 				case GL_TEXTURE_CUBE_MAP:
-					glTexSubImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + pCubeFaceIndex, 0, 0, 0, mImageSize.x(), mImageSize.y(), mTextureFormat, mTextureType, pData );
+					glCompressedTexImage2DARB( GL_TEXTURE_CUBE_MAP_POSITIVE_X + pCubeFaceIndex, 0, mTextureInternalFormat, mImageSize.x(), mImageSize.y(), 0, pDataSize, pData );
 					break;
 
 				case GL_TEXTURE_3D:
-					glTexSubImage3D( mTarget, 0, 0, 0, 0, mImageSize.x(), mImageSize.y(), mImageSize.z(), mTextureFormat, mTextureType, pData );
+					glCompressedTexImage3D( mTarget, 0, mTextureInternalFormat, mImageSize.x(), mImageSize.y(), mImageSize.z(), 0, pDataSize, pData );
 					break;
-#endif
 			}
+#endif
+	}
+	else
+	{
+		glPixelStorei( GL_UNPACK_ALIGNMENT, 4 );
 
-			OPENGL_DEBUG( mPin->node()->name() );
+		OPENGL_DEBUG( mPin->node()->name() );
 
-			glPixelStorei( GL_UNPACK_ALIGNMENT, 4 );
+		switch( mTarget )
+		{
+#if !defined( GL_ES_VERSION_2_0 )
+			case GL_TEXTURE_1D:
+				glTexSubImage1D( mTarget, 0, 0, mImageSize.x(), mTextureFormat, mTextureType, pData );
+				break;
+#endif
+
+			case GL_TEXTURE_2D:
+			case GL_TEXTURE_RECTANGLE:
+				glTexSubImage2D( mTarget, 0, 0, 0, mImageSize.x(), mImageSize.y(), mTextureFormat, mTextureType, pData );
+				break;
 
 #if !defined( GL_ES_VERSION_2_0 )
-			if( mGenerateMipMaps && GLEW_ARB_framebuffer_object && ( mTarget == GL_TEXTURE_2D || mTarget == GL_TEXTURE_CUBE_MAP ) )
-#else
-			if( mGenerateMipMaps && ( mTarget == GL_TEXTURE_2D || mTarget == GL_TEXTURE_CUBE_MAP ) )
+			case GL_TEXTURE_CUBE_MAP:
+				glTexSubImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + pCubeFaceIndex, 0, 0, 0, mImageSize.x(), mImageSize.y(), mTextureFormat, mTextureType, pData );
+				break;
+
+			case GL_TEXTURE_3D:
+				glTexSubImage3D( mTarget, 0, 0, 0, 0, mImageSize.x(), mImageSize.y(), mImageSize.z(), mTextureFormat, mTextureType, pData );
+				break;
 #endif
-			{
-				glGenerateMipmap( mTarget );
-			}
 		}
 
-		release();
+		OPENGL_DEBUG( mPin->node()->name() );
+
+		glPixelStorei( GL_UNPACK_ALIGNMENT, 4 );
+
+#if !defined( GL_ES_VERSION_2_0 )
+		if( mGenerateMipMaps && GLEW_ARB_framebuffer_object && ( mTarget == GL_TEXTURE_2D || mTarget == GL_TEXTURE_CUBE_MAP ) )
+#else
+		if( mGenerateMipMaps && ( mTarget == GL_TEXTURE_2D || mTarget == GL_TEXTURE_CUBE_MAP ) )
+#endif
+		{
+			glGenerateMipmap( mTarget );
+		}
 	}
+
+	release();
 }
 
 void TexturePin::setFilter( quint32 pMin, quint32 pMag )
