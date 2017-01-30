@@ -145,6 +145,7 @@ mac:exists( $$(LIBS)/glew-2.0.0 ) {
 win32 {
 	exists( $$(LIBS)/Spout2/SpoutSDK/Source ) {
 		SOURCES += \
+			$$(LIBS)/Spout2/SpoutSDK/Source/SpoutCopy.cpp \
 			$$(LIBS)/Spout2/SpoutSDK/Source/SpoutDirectX.cpp \
 			$$(LIBS)/Spout2/SpoutSDK/Source/SpoutGLDXinterop.cpp \
 			$$(LIBS)/Spout2/SpoutSDK/Source/SpoutGLextensions.cpp \
@@ -159,6 +160,7 @@ win32 {
 		HEADERS += \
 			$$(LIBS)/Spout2/SpoutSDK/Source/Spout.h \
 			$$(LIBS)/Spout2/SpoutSDK/Source/SpoutCommon.h \
+			$$(LIBS)/Spout2/SpoutSDK/Source/SpoutCopy.h \
 			$$(LIBS)/Spout2/SpoutSDK/Source/SpoutDirectX.h \
 			$$(LIBS)/Spout2/SpoutSDK/Source/SpoutGLDXinterop.h \
 			$$(LIBS)/Spout2/SpoutSDK/Source/SpoutGLextensions.h \
