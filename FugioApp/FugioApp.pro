@@ -492,3 +492,9 @@ windows:exists( "C:/Program Files (x86)/PrimeSense/NiTE2/Redist" ) {
 	LIBS += -L"C:/Program Files (x86)/PrimeSense/NiTE2/Redist"
 }
 
+#------------------------------------------------------------------------------
+# V8
+
+windows:exists( $$(LIBS)/v8/v8/include/v8.h ) {
+	LIBS += -L$$(LIBS)/v8/v8/out.gn/ia32.release
+}
