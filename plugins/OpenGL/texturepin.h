@@ -44,23 +44,23 @@ public:
 	//-------------------------------------------------------------------------
 	// InterfaceTexture
 
-	virtual QVector3D textureSize( void ) Q_DECL_OVERRIDE;
+	virtual QVector3D textureSize( void ) const Q_DECL_OVERRIDE;
 
-	virtual QVector3D size( void ) Q_DECL_OVERRIDE;
+	virtual QVector3D size( void ) const Q_DECL_OVERRIDE;
 
 	virtual void setDoubleBuffered( bool pDoubleBuffered ) Q_DECL_OVERRIDE
 	{
-		mDoubleBuffered = pDoubleBuffered;
+		mTexDsc.mDoubleBuffered = pDoubleBuffered;
 	}
 
 	virtual bool isDoubleBuffered( void ) const Q_DECL_OVERRIDE
 	{
-		return( mDoubleBuffered );
+		return( mTexDsc.mDoubleBuffered );
 	}
 
 	virtual bool isDepthTexture( void ) const Q_DECL_OVERRIDE
 	{
-		switch( mTextureInternalFormat )
+		switch( mTexDsc.mInternalFormat )
 		{
 			case GL_DEPTH_COMPONENT:
 			case GL_DEPTH_COMPONENT16:
@@ -76,13 +76,13 @@ public:
 	virtual quint32 srcTexId( void ) const Q_DECL_OVERRIDE;
 	virtual quint32 dstTexId( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 target( void ) Q_DECL_OVERRIDE;
+	virtual quint32 target( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 format( void ) Q_DECL_OVERRIDE;
+	virtual quint32 format( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 internalFormat( void ) Q_DECL_OVERRIDE;
+	virtual quint32 internalFormat( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 type( void ) Q_DECL_OVERRIDE;
+	virtual quint32 type( void ) const Q_DECL_OVERRIDE;
 
 	virtual int filterMin( void ) const Q_DECL_OVERRIDE;
 	virtual int filterMag( void ) const Q_DECL_OVERRIDE;
@@ -135,6 +135,21 @@ public:
 	virtual quint32 compare() const Q_DECL_OVERRIDE;
 	virtual void setCompare(quint32 pCompare) Q_DECL_OVERRIDE;
 
+	virtual OpenGLTextureDescription textureDescription() const Q_DECL_OVERRIDE
+	{
+		return( mTexDsc );
+	}
+
+	virtual void setTextureDescription( const fugio::OpenGLTextureDescription &pDescription ) Q_DECL_OVERRIDE
+	{
+		if( memcmp( &mTexDsc, &pDescription, sizeof( OpenGLTextureDescription ) ) != 0 )
+		{
+			memcpy( &mTexDsc, &pDescription, sizeof( OpenGLTextureDescription ) );
+
+			mDefinitionChanged = true;
+		}
+	}
+
 	//-------------------------------------------------------------------------
 
 	// SizeInterface interface
@@ -153,28 +168,12 @@ protected:
 	void checkDefinition();
 
 private:
-	GLenum			mTextureFormat;
-	GLenum			mTextureInternalFormat;
+	OpenGLTextureDescription		mTexDsc;
 
-	QVector3D		mTextureSize;
-
-	QVector3D		mImageSize;
+	bool			mDefinitionChanged;
 
 	GLuint			mSrcTexId;
 	GLuint			mDstTexId;
-
-	quint32			mTarget;
-	GLenum			mTextureType;
-
-	GLenum			mTextureMinFilter;
-	GLenum			mTextureMagFilter;
-
-	GLint			mTextureWrapX;
-	GLint			mTextureWrapY;
-	GLint			mTextureWrapZ;
-
-	bool			mDefinitionChanged;
-	bool			mGenerateMipMaps;
 
 	GLuint			mFBOId;
 	GLuint			mFBODepthRBId;
@@ -183,10 +182,6 @@ private:
 	GLuint			mFBOMSId;
 	GLuint			mFBOMSColourRBId;
 	GLuint			mFBOMSDepthRBId;
-
-	bool			mDoubleBuffered;
-
-	GLint			mCompare;
 };
 
 #endif // TEXTURE_H

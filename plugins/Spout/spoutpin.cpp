@@ -41,12 +41,12 @@ bool SpoutPin::receiveTexture( const QString &pName )
 #endif
 }
 
-QVector3D SpoutPin::textureSize()
+QVector3D SpoutPin::textureSize() const
 {
 	return( QVector3D( mWidth, mHeight, 0 ) );
 }
 
-QVector3D SpoutPin::size()
+QVector3D SpoutPin::size() const
 {
 	return( QVector3D( mWidth, mHeight, 0 ) );
 }
@@ -65,12 +65,12 @@ quint32 SpoutPin::dstTexId( void ) const
 	return( 0 );
 }
 
-quint32 SpoutPin::target()
+quint32 SpoutPin::target() const
 {
 	return( GL_TEXTURE_2D );
 }
 
-quint32 SpoutPin::format()
+quint32 SpoutPin::format() const
 {
 #if defined( SPOUT_SUPPORTED )
 	return( GL_BGRA );
@@ -79,7 +79,7 @@ quint32 SpoutPin::format()
 #endif
 }
 
-quint32 SpoutPin::internalFormat()
+quint32 SpoutPin::internalFormat() const
 {
 #if defined( SPOUT_SUPPORTED )
 	return( GL_RGBA8 );
@@ -88,7 +88,7 @@ quint32 SpoutPin::internalFormat()
 #endif
 }
 
-quint32 SpoutPin::type()
+quint32 SpoutPin::type() const
 {
 	return( GL_UNSIGNED_BYTE );
 }

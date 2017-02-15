@@ -18,28 +18,30 @@
 TexturePin::TexturePin( QSharedPointer<fugio::PinInterface> pPin )
 	: PinControlBase( pPin )
 {
-	mTextureFormat = GL_RGBA;
-	mTextureInternalFormat = GL_RGBA;
+	memset( &mTexDsc, 0, sizeof( mTexDsc ) );
 
-	mTextureSize = QVector3D();
+	mTexDsc.mFormat = GL_RGBA;
+	mTexDsc.mInternalFormat = GL_RGBA;
 
-	mImageSize = QVector3D();
+	mTexDsc.mType = GL_UNSIGNED_BYTE;
 
-	mSrcTexId = 0;
-	mDstTexId = 0;
-	mTarget = 0;
-	mTextureType = GL_UNSIGNED_BYTE;
+	mTexDsc.mMinFilter = GL_NEAREST;
+	mTexDsc.mMagFilter = GL_NEAREST;
 
-	mTextureMinFilter = GL_NEAREST;
-	mTextureMagFilter = GL_NEAREST;
+	mTexDsc.mWrapX = GL_REPEAT;
+	mTexDsc.mWrapY = GL_REPEAT;
+	mTexDsc.mWrapZ = GL_REPEAT;
 
-	mTextureWrapX = GL_REPEAT;
-	mTextureWrapY = GL_REPEAT;
-	mTextureWrapZ = GL_REPEAT;
+	mTexDsc.mGenerateMipMaps = false;
+
+	mTexDsc.mDoubleBuffered = false;
+
+	mTexDsc.mCompare = GL_NONE;
 
 	mDefinitionChanged = true;
 
-	mGenerateMipMaps = false;
+	mSrcTexId = 0;
+	mDstTexId = 0;
 
 	mFBOId = 0;
 	mFBODepthRBId = 0;
@@ -48,10 +50,6 @@ TexturePin::TexturePin( QSharedPointer<fugio::PinInterface> pPin )
 	mFBOMSId = 0;
 	mFBOMSColourRBId = 0;
 	mFBOMSDepthRBId = 0;
-
-	mDoubleBuffered = false;
-
-	mCompare = GL_NONE;
 }
 
 TexturePin::~TexturePin( void )
@@ -69,19 +67,19 @@ void TexturePin::saveSettings( QSettings &pSettings ) const
 	Q_UNUSED( pSettings )
 }
 
-QVector3D TexturePin::textureSize()
+QVector3D TexturePin::textureSize() const
 {
-	return( mTextureSize );
+	return( QVector3D( mTexDsc.mTexWidth, mTexDsc.mTexHeight, mTexDsc.mTexDepth ) );
 }
 
-QVector3D TexturePin::size()
+QVector3D TexturePin::size() const
 {
-	return( mImageSize );
+	return( QVector3D( mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mImgDepth ) );
 }
 
 quint32 TexturePin::srcTexId() const
 {
-	return( mDoubleBuffered ? mSrcTexId : mDstTexId );
+	return( mTexDsc.mDoubleBuffered ? mSrcTexId : mDstTexId );
 }
 
 quint32 TexturePin::dstTexId() const
@@ -89,54 +87,54 @@ quint32 TexturePin::dstTexId() const
 	return( mDstTexId );
 }
 
-quint32 TexturePin::target()
+quint32 TexturePin::target() const
 {
-	return( mTarget );
+	return( mTexDsc.mTarget );
 }
 
-quint32 TexturePin::format()
+quint32 TexturePin::format() const
 {
-	return( mTextureFormat );
+	return( mTexDsc.mFormat );
 }
 
-quint32 TexturePin::internalFormat()
+quint32 TexturePin::internalFormat() const
 {
-	return( mTextureInternalFormat );
+	return( mTexDsc.mInternalFormat );
 }
 
-quint32 TexturePin::type()
+quint32 TexturePin::type() const
 {
-	return( mTextureType );
+	return( mTexDsc.mType );
 }
 
 int TexturePin::filterMin( void ) const
 {
-	return( mTextureMinFilter );
+	return( mTexDsc.mMinFilter );
 }
 
 int TexturePin::filterMag( void ) const
 {
-	return( mTextureMagFilter );
+	return( mTexDsc.mMagFilter );
 }
 
 int TexturePin::wrapS( void ) const
 {
-	return( mTextureWrapX );
+	return( mTexDsc.mWrapX );
 }
 
 int TexturePin::wrapT( void ) const
 {
-	return( mTextureWrapY );
+	return( mTexDsc.mWrapY );
 }
 
 int TexturePin::wrapR() const
 {
-	return( mTextureWrapZ );
+	return( mTexDsc.mWrapZ );
 }
 
 bool TexturePin::genMipMaps( void ) const
 {
-	return( mGenerateMipMaps );
+	return( mTexDsc.mGenerateMipMaps );
 }
 
 void TexturePin::setSize( qint32 pWidth, qint32 pHeight, qint32 pDepth )
@@ -159,9 +157,11 @@ unsigned int roundUpToNextPowerOfTwo(unsigned int x)
 
 void TexturePin::setSize( const QVector3D &pSize )
 {
-	if( pSize != mImageSize )
+	if( pSize != size() )
 	{
-		mImageSize = pSize;
+		mTexDsc.mImgWidth  = pSize.x();
+		mTexDsc.mImgHeight = pSize.y();
+		mTexDsc.mImgDepth  = pSize.z();
 
 		bool		TextureNPOT = false;
 
@@ -174,15 +174,17 @@ void TexturePin::setSize( const QVector3D &pSize )
 
 		if( !TextureNPOT )
 		{
-			mTextureSize.setX( roundUpToNextPowerOfTwo( mImageSize.x() ) );
-			mTextureSize.setY( roundUpToNextPowerOfTwo( mImageSize.y() ) );
-			mTextureSize.setZ( roundUpToNextPowerOfTwo( mImageSize.z() ) );
+			mTexDsc.mTexWidth  = roundUpToNextPowerOfTwo( mTexDsc.mImgWidth );
+			mTexDsc.mTexHeight = roundUpToNextPowerOfTwo( mTexDsc.mImgHeight );
+			mTexDsc.mTexDepth  = roundUpToNextPowerOfTwo( mTexDsc.mImgDepth );
 
-			qDebug() << "NPOT" << mImageSize << "->" << mTextureSize;
+			qDebug() << "NPOT" << size() << "->" << textureSize();
 		}
 		else
 		{
-			mTextureSize = mImageSize;
+			mTexDsc.mTexWidth  = mTexDsc.mImgWidth;
+			mTexDsc.mTexHeight = mTexDsc.mImgHeight;
+			mTexDsc.mTexDepth  = mTexDsc.mImgDepth;
 		}
 
 		mDefinitionChanged = true;
@@ -191,9 +193,9 @@ void TexturePin::setSize( const QVector3D &pSize )
 
 void TexturePin::setTarget(quint32 pTarget)
 {
-	if( pTarget != mTarget )
+	if( pTarget != mTexDsc.mTarget )
 	{
-		mTarget = pTarget;
+		mTexDsc.mTarget = pTarget;
 
 		mDefinitionChanged = true;
 	}
@@ -201,9 +203,9 @@ void TexturePin::setTarget(quint32 pTarget)
 
 void TexturePin::setFormat( quint32 pFormat )
 {
-	if( pFormat != mTextureFormat )
+	if( pFormat != mTexDsc.mFormat )
 	{
-		mTextureFormat = pFormat;
+		mTexDsc.mFormat = pFormat;
 
 		mDefinitionChanged = true;
 	}
@@ -211,9 +213,9 @@ void TexturePin::setFormat( quint32 pFormat )
 
 void TexturePin::setType( quint32 pType )
 {
-	if( mTextureType != pType )
+	if( mTexDsc.mType != pType )
 	{
-		mTextureType = pType;
+		mTexDsc.mType = pType;
 
 		mDefinitionChanged = true;
 	}
@@ -221,9 +223,9 @@ void TexturePin::setType( quint32 pType )
 
 void TexturePin::setInternalFormat( quint32 pInternalFormat )
 {
-	if( mTextureInternalFormat != pInternalFormat )
+	if( mTexDsc.mInternalFormat != pInternalFormat )
 	{
-		mTextureInternalFormat = pInternalFormat;
+		mTexDsc.mInternalFormat = pInternalFormat;
 
 		mDefinitionChanged = true;
 	}
@@ -256,7 +258,7 @@ void TexturePin::update()
 
 	checkDefinition();
 
-	if( mImageSize.isNull() )
+	if( !mTexDsc.mImgWidth )
 	{
 		return;
 	}
@@ -285,13 +287,13 @@ void TexturePin::update()
 		OPENGL_DEBUG( mPin->node()->name() );
 
 #if !defined( Q_OS_RASPBERRY_PI )
-		if( TextureNPOT && !isCompressedFormat( mTextureInternalFormat ) && GLEW_VERSION_4_2 )
+		if( TextureNPOT && !isCompressedFormat( mTexDsc.mInternalFormat ) && GLEW_VERSION_4_2 )
 		{
-			switch( mTarget )
+			switch( mTexDsc.mTarget )
 			{
 				case GL_TEXTURE_1D:
 					{
-						glTexStorage1D( mTarget, 1, mTextureInternalFormat, mTextureSize.x() );
+						glTexStorage1D( mTexDsc.mTarget, 1, mTexDsc.mInternalFormat, mTexDsc.mTexWidth );
 
 						TextureAllocated = true;
 					}
@@ -300,7 +302,7 @@ void TexturePin::update()
 				case GL_TEXTURE_2D:
 				case GL_TEXTURE_RECTANGLE:
 					{
-						glTexStorage2D( mTarget, 1, mTextureInternalFormat, mTextureSize.x(), mTextureSize.y() );
+						glTexStorage2D( mTexDsc.mTarget, 1, mTexDsc.mInternalFormat, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
 
 						TextureAllocated = true;
 					}
@@ -308,7 +310,7 @@ void TexturePin::update()
 
 				case GL_TEXTURE_3D:
 					{
-						glTexStorage3D( mTarget, 1, mTextureInternalFormat, mTextureSize.x(), mTextureSize.y(), mTextureSize.z() );
+						glTexStorage3D( mTexDsc.mTarget, 1, mTexDsc.mInternalFormat, mTexDsc.mTexWidth, mTexDsc.mTexHeight, mTexDsc.mTexDepth );
 
 						TextureAllocated = true;
 					}
@@ -319,14 +321,14 @@ void TexturePin::update()
 		}
 #endif
 
-		if( !TextureAllocated && !isCompressedFormat( mTextureInternalFormat ) )
+		if( !TextureAllocated && !isCompressedFormat( mTexDsc.mInternalFormat ) )
 		{
-			switch( mTarget )
+			switch( mTexDsc.mTarget )
 			{
 #if !defined( GL_ES_VERSION_2_0 )
 				case GL_TEXTURE_1D:
 					{
-						glTexImage1D( mTarget, 0, mTextureInternalFormat, mTextureSize.x(), 0, mTextureFormat, mTextureType, 0 );
+						glTexImage1D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mTexWidth, 0, mTexDsc.mFormat, mTexDsc.mType, 0 );
 
 						TextureAllocated = true;
 					}
@@ -336,7 +338,7 @@ void TexturePin::update()
 				case GL_TEXTURE_2D:
 				case GL_TEXTURE_RECTANGLE:
 					{
-						glTexImage2D( mTarget, 0, mTextureInternalFormat, mTextureSize.x(), mTextureSize.y(), 0, mTextureFormat, mTextureType, 0 );
+						glTexImage2D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mTexWidth, mTexDsc.mTexHeight, 0, mTexDsc.mFormat, mTexDsc.mType, 0 );
 
 						TextureAllocated = true;
 					}
@@ -346,7 +348,7 @@ void TexturePin::update()
 					{
 						for( int i = 0 ; i < 6 ; i++ )
 						{
-							glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, mTextureInternalFormat, mTextureSize.x(), mTextureSize.y(), 0, mTextureFormat, mTextureType, 0 );
+							glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, mTexDsc.mInternalFormat, mTexDsc.mTexWidth, mTexDsc.mTexHeight, 0, mTexDsc.mFormat, mTexDsc.mType, 0 );
 						}
 
 						TextureAllocated = true;
@@ -356,7 +358,7 @@ void TexturePin::update()
 #if defined( GLEW_VERSION_1_2 )
 				case GL_TEXTURE_3D:
 					{
-						glTexImage3D( mTarget, 0, mTextureInternalFormat, mTextureSize.x(), mTextureSize.y(), mTextureSize.z(), 0, mTextureFormat, mTextureType, 0 );
+						glTexImage3D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mTexWidth, mTexDsc.mTexHeight, mTexDsc.mTexDepth, 0, mTexDsc.mFormat, mTexDsc.mType, 0 );
 
 						TextureAllocated = true;
 					}
@@ -367,39 +369,39 @@ void TexturePin::update()
 			OPENGL_DEBUG( mPin->node()->name() );
 		}
 
-		if( !isCompressedFormat( mTextureInternalFormat ) )
+		if( !isCompressedFormat( mTexDsc.mInternalFormat ) )
 		{
-			glTexParameteri( mTarget, GL_TEXTURE_MIN_FILTER, mTextureMinFilter );
-			glTexParameteri( mTarget, GL_TEXTURE_MAG_FILTER, mTextureMagFilter );
+			glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_MIN_FILTER, mTexDsc.mMinFilter );
+			glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_MAG_FILTER, mTexDsc.mMagFilter );
 		}
 		else
 		{
-			glTexParameteri( mTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			glTexParameteri( mTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+			glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 		}
 
 		OPENGL_DEBUG( mPin->node()->name() );
 
-		glTexParameteri( mTarget, GL_TEXTURE_WRAP_S, mTextureWrapX );
-		glTexParameteri( mTarget, GL_TEXTURE_WRAP_T, mTextureWrapY );
+		glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_WRAP_S, mTexDsc.mWrapX );
+		glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_WRAP_T, mTexDsc.mWrapY );
 
-		if( mTextureFormat == GL_DEPTH_COMPONENT )
+		if( mTexDsc.mFormat == GL_DEPTH_COMPONENT )
 		{
-			if( mCompare == GL_NONE )
+			if( mTexDsc.mCompare == GL_NONE )
 			{
-				glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE, GL_NONE );
+				glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_COMPARE_MODE, GL_NONE );
 			}
 			else
 			{
-				glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE );
-				glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC, mCompare );
+				glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE );
+				glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_COMPARE_FUNC, mTexDsc.mCompare );
 			}
 		}
 
 #if !defined( GL_ES_VERSION_2_0 )
 		if( GLEW_VERSION_1_2 )
 		{
-			glTexParameteri( mTarget, GL_TEXTURE_WRAP_R, mTextureWrapZ );
+			glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_WRAP_R, mTexDsc.mWrapZ );
 		}
 #endif
 
@@ -409,7 +411,7 @@ void TexturePin::update()
 
 		OPENGL_DEBUG( mPin->node()->name() );
 
-		if( !TextureAllocated && !isCompressedFormat( mTextureInternalFormat ) )
+		if( !TextureAllocated && !isCompressedFormat( mTexDsc.mInternalFormat ) )
 		{
 			qDebug() << "Couldn't allocate texture";
 
@@ -429,33 +431,33 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 
 	update();
 
-	if( mImageSize.isNull() || !mDstTexId )
+	if( !mTexDsc.mImgWidth || !mDstTexId )
 	{
 		return;
 	}
 
 	dstBind();
 
-	if( isCompressedFormat( mTextureInternalFormat ) )
+	if( isCompressedFormat( mTexDsc.mInternalFormat ) )
 	{
 #if defined( GL_VERSION_1_3 )
-			switch( mTarget )
+			switch( mTexDsc.mTarget )
 			{
 				case GL_TEXTURE_1D:
-					glCompressedTexImage1D( mTarget, 0, mTextureInternalFormat, mImageSize.x(), 0, pDataSize, pData );
+					glCompressedTexImage1D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, 0, pDataSize, pData );
 					break;
 
 				case GL_TEXTURE_2D:
 				case GL_TEXTURE_RECTANGLE:
-					glCompressedTexImage2DARB( mTarget, 0, mTextureInternalFormat, mImageSize.x(), mImageSize.y(), 0, pDataSize, pData );
+					glCompressedTexImage2DARB( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, mTexDsc.mImgHeight, 0, pDataSize, pData );
 					break;
 
 				case GL_TEXTURE_CUBE_MAP:
-					glCompressedTexImage2DARB( GL_TEXTURE_CUBE_MAP_POSITIVE_X + pCubeFaceIndex, 0, mTextureInternalFormat, mImageSize.x(), mImageSize.y(), 0, pDataSize, pData );
+					glCompressedTexImage2DARB( GL_TEXTURE_CUBE_MAP_POSITIVE_X + pCubeFaceIndex, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, mTexDsc.mImgHeight, 0, pDataSize, pData );
 					break;
 
 				case GL_TEXTURE_3D:
-					glCompressedTexImage3D( mTarget, 0, mTextureInternalFormat, mImageSize.x(), mImageSize.y(), mImageSize.z(), 0, pDataSize, pData );
+					glCompressedTexImage3D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mImgDepth, 0, pDataSize, pData );
 					break;
 			}
 #endif
@@ -466,26 +468,26 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 
 		OPENGL_DEBUG( mPin->node()->name() );
 
-		switch( mTarget )
+		switch( mTexDsc.mTarget )
 		{
 #if !defined( GL_ES_VERSION_2_0 )
 			case GL_TEXTURE_1D:
-				glTexSubImage1D( mTarget, 0, 0, mImageSize.x(), mTextureFormat, mTextureType, pData );
+				glTexSubImage1D( mTexDsc.mTarget, 0, 0, mTexDsc.mImgWidth, mTexDsc.mFormat, mTexDsc.mType, pData );
 				break;
 #endif
 
 			case GL_TEXTURE_2D:
 			case GL_TEXTURE_RECTANGLE:
-				glTexSubImage2D( mTarget, 0, 0, 0, mImageSize.x(), mImageSize.y(), mTextureFormat, mTextureType, pData );
+				glTexSubImage2D( mTexDsc.mTarget, 0, 0, 0, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mFormat, mTexDsc.mType, pData );
 				break;
 
 #if !defined( GL_ES_VERSION_2_0 )
 			case GL_TEXTURE_CUBE_MAP:
-				glTexSubImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + pCubeFaceIndex, 0, 0, 0, mImageSize.x(), mImageSize.y(), mTextureFormat, mTextureType, pData );
+				glTexSubImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + pCubeFaceIndex, 0, 0, 0, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mFormat, mTexDsc.mType, pData );
 				break;
 
 			case GL_TEXTURE_3D:
-				glTexSubImage3D( mTarget, 0, 0, 0, 0, mImageSize.x(), mImageSize.y(), mImageSize.z(), mTextureFormat, mTextureType, pData );
+				glTexSubImage3D( mTexDsc.mTarget, 0, 0, 0, 0, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mImgDepth, mTexDsc.mFormat, mTexDsc.mType, pData );
 				break;
 #endif
 		}
@@ -495,12 +497,12 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 		glPixelStorei( GL_UNPACK_ALIGNMENT, 4 );
 
 #if !defined( GL_ES_VERSION_2_0 )
-		if( mGenerateMipMaps && GLEW_ARB_framebuffer_object && ( mTarget == GL_TEXTURE_2D || mTarget == GL_TEXTURE_CUBE_MAP ) )
+		if( mTexDsc.mGenerateMipMaps && GLEW_ARB_framebuffer_object && ( mTexDsc.mTarget == GL_TEXTURE_2D || mTexDsc.mTarget == GL_TEXTURE_CUBE_MAP ) )
 #else
-		if( mGenerateMipMaps && ( mTarget == GL_TEXTURE_2D || mTarget == GL_TEXTURE_CUBE_MAP ) )
+		if( mTexDsc.mGenerateMipMaps && ( mTexDsc.mTarget == GL_TEXTURE_2D || mTexDsc.mTarget == GL_TEXTURE_CUBE_MAP ) )
 #endif
 		{
-			glGenerateMipmap( mTarget );
+			glGenerateMipmap( mTexDsc.mTarget );
 		}
 	}
 
@@ -509,20 +511,20 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 
 void TexturePin::setFilter( quint32 pMin, quint32 pMag )
 {
-	mTextureMinFilter = pMin;
-	mTextureMagFilter = pMag;
+	mTexDsc.mMinFilter = pMin;
+	mTexDsc.mMagFilter = pMag;
 }
 
 void TexturePin::setWrap( quint32 pX, quint32 pY, quint32 pZ )
 {
-	mTextureWrapX = pX;
-	mTextureWrapY = pY;
-	mTextureWrapZ = pZ;
+	mTexDsc.mWrapX = pX;
+	mTexDsc.mWrapY = pY;
+	mTexDsc.mWrapZ = pZ;
 }
 
 void TexturePin::setGenMipMaps( bool pGenMipMaps )
 {
-	mGenerateMipMaps = pGenMipMaps;
+	mTexDsc.mGenerateMipMaps = pGenMipMaps;
 }
 
 void TexturePin::free()
@@ -548,20 +550,20 @@ void TexturePin::free()
 
 QImage TexturePin::image()
 {
-	QImage		Image( mTextureSize.x(), mTextureSize.y(), QImage::Format_ARGB32 );
+	QImage		Image( mTexDsc.mTexWidth, mTexDsc.mTexHeight, QImage::Format_ARGB32 );
 
 	if( !mSrcTexId )
 	{
 #if !defined( GL_ES_VERSION_2_0 )
-		glGetTexImage( mTarget, 0, GL_RGBA, GL_UNSIGNED_BYTE, Image.bits() );
+		glGetTexImage( mTexDsc.mTarget, 0, GL_RGBA, GL_UNSIGNED_BYTE, Image.bits() );
 #endif
 	}
 
 	OPENGL_PLUGIN_DEBUG
 
-	if( mTextureSize != mImageSize )
+	if( textureSize() != size() )
 	{
-		Image = Image.copy( 0, 0, mImageSize.x(), mImageSize.y() );
+		Image = Image.copy( 0, 0, mTexDsc.mImgWidth, mTexDsc.mImgHeight );
 	}
 
 	return( Image );
@@ -569,17 +571,17 @@ QImage TexturePin::image()
 
 void TexturePin::srcBind()
 {
-	glBindTexture( mTarget, srcTexId() );
+	glBindTexture( mTexDsc.mTarget, srcTexId() );
 }
 
 void TexturePin::dstBind()
 {
-	glBindTexture( mTarget, dstTexId() );
+	glBindTexture( mTexDsc.mTarget, dstTexId() );
 }
 
 void TexturePin::release()
 {
-	glBindTexture( mTarget, 0 );
+	glBindTexture( mTexDsc.mTarget, 0 );
 }
 
 quint32 TexturePin::fbo( bool pUseDepth )
@@ -591,9 +593,9 @@ quint32 TexturePin::fbo( bool pUseDepth )
 	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
 
 #if defined( GL_ES_VERSION_2_0 )
-	if( !mFBOId && mDstTexId && !mTextureSize.isNull() )
+	if( !mFBOId && mDstTexId && mTexDsc.mTexWidth )
 #else
-	if( !mFBOId && mDstTexId && !mTextureSize.isNull() && GLEW_ARB_framebuffer_object )
+	if( !mFBOId && mDstTexId && mTexDsc.mTexWidth && GLEW_ARB_framebuffer_object )
 #endif
 	{
 		glGenFramebuffers( 1, &mFBOId );
@@ -605,9 +607,9 @@ quint32 TexturePin::fbo( bool pUseDepth )
 			glBindRenderbuffer( GL_RENDERBUFFER, mFBODepthRBId );
 
 #if defined( GL_ES_VERSION_2_0 )
-			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, mTextureSize.x(), mTextureSize.y() );
+			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
 #else
-			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mTextureSize.x(), mTextureSize.y() );
+			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
 #endif
 
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mFBODepthRBId );
@@ -617,14 +619,14 @@ quint32 TexturePin::fbo( bool pUseDepth )
 	}
 
 #if defined( GL_ES_VERSION_2_0 )
-	if( mFBOId && mDstTexId && !mTextureSize.isNull() )
+	if( mFBOId && mDstTexId && mTexDsc.mTexWidth )
 #else
-	if( mFBOId && mDstTexId && mDstTexId != mFBOBoundTexId && !mTextureSize.isNull() && GLEW_ARB_framebuffer_object )
+	if( mFBOId && mDstTexId && mDstTexId != mFBOBoundTexId && mTexDsc.mTexWidth && GLEW_ARB_framebuffer_object )
 #endif
 	{
 		glBindFramebuffer( GL_FRAMEBUFFER, mFBOId );
 
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mTarget, mDstTexId, 0 );
+		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mTexDsc.mTarget, mDstTexId, 0 );
 
 		GLenum	FBOStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
 
@@ -704,7 +706,7 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
 
 #if !defined( GL_ES_VERSION_2_0 )
-	if( !mFBOMSId && !mTextureSize.isNull() && GLEW_ARB_framebuffer_object )
+	if( !mFBOMSId && mTexDsc.mTexWidth && GLEW_ARB_framebuffer_object )
 	{
 		GLint		FBOCur, RBCur;
 
@@ -717,7 +719,7 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 		glGenRenderbuffers( 1, &mFBOMSColourRBId );
 		glBindRenderbuffer( GL_RENDERBUFFER, mFBOMSColourRBId );
 
-		glRenderbufferStorageMultisample( GL_RENDERBUFFER, pSamples, GL_RGBA, mTextureSize.x(), mTextureSize.y() );
+		glRenderbufferStorageMultisample( GL_RENDERBUFFER, pSamples, GL_RGBA, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
 		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, mFBOMSColourRBId );
 
 		if( pUseDepth )
@@ -725,7 +727,7 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 			glGenRenderbuffers( 1, &mFBOMSDepthRBId );
 			glBindRenderbuffer( GL_RENDERBUFFER, mFBOMSDepthRBId );
 
-			glRenderbufferStorageMultisample( GL_RENDERBUFFER, pSamples, GL_DEPTH_COMPONENT24, mTextureSize.x(), mTextureSize.y() );
+			glRenderbufferStorageMultisample( GL_RENDERBUFFER, pSamples, GL_DEPTH_COMPONENT24, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mFBOMSDepthRBId );
 		}
 
@@ -750,7 +752,7 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 
 void TexturePin::swapTexture()
 {
-	if( mDoubleBuffered )
+	if( mTexDsc.mDoubleBuffered )
 	{
 		std::swap( mSrcTexId, mDstTexId );
 	}
@@ -758,7 +760,7 @@ void TexturePin::swapTexture()
 
 int TexturePin::sizeDimensions() const
 {
-	switch( mTarget )
+	switch( mTexDsc.mTarget )
 	{
 #if !defined( GL_ES_VERSION_2_0 )
 		case GL_TEXTURE_1D:
@@ -782,44 +784,49 @@ int TexturePin::sizeDimensions() const
 
 float TexturePin::size(int pDimension) const
 {
-	if( pDimension == 0 ) return( mTextureSize.x() );
-	if( pDimension == 1 ) return( mTextureSize.y() );
-	if( pDimension == 2 ) return( mTextureSize.z() );
+	if( pDimension == 0 ) return( mTexDsc.mTexWidth );
+	if( pDimension == 1 ) return( mTexDsc.mTexHeight );
+	if( pDimension == 2 ) return( mTexDsc.mTexDepth );
 
 	return( 0 );
 }
 
 float TexturePin::sizeWidth() const
 {
-	return( mTextureSize.x() );
+	return( mTexDsc.mTexWidth );
 }
 
 float TexturePin::sizeHeight() const
 {
-	return( mTextureSize.y() );
+	return( mTexDsc.mTexHeight );
 }
 
 float TexturePin::sizeDepth() const
 {
-	return( mTextureSize.z() );
+	return( mTexDsc.mTexDepth );
 }
 
 QSizeF TexturePin::toSizeF() const
 {
-	return( QSizeF( mTextureSize.x(), mTextureSize.y() ) );
+	return( QSizeF( mTexDsc.mTexWidth, mTexDsc.mTexHeight ) );
 }
 
 QVector3D TexturePin::toVector3D() const
 {
-	return( mTextureSize );
+	return( textureSize() );
 }
 
 quint32 TexturePin::compare() const
 {
-	return( mCompare );
+	return( mTexDsc.mCompare );
 }
 
-void TexturePin::setCompare(quint32 pCompare)
+void TexturePin::setCompare( quint32 pCompare )
 {
-	mCompare = pCompare;
+	if( mTexDsc.mCompare != pCompare )
+	{
+		mTexDsc.mCompare = pCompare;
+
+		mDefinitionChanged = true;
+	}
 }

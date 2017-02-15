@@ -41,56 +41,34 @@ void TextureCopyNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	if( !mPinTexSrc->isConnected() || !mPinTexDst->isConnectedToActiveNode() )
-	{
-		return;
-	}
-
-	fugio::OpenGLTextureInterface	*TexSrc = qobject_cast<fugio::OpenGLTextureInterface *>( mPinTexSrc->connectedPin()->control()->qobject() );
+	fugio::OpenGLTextureInterface	*TexSrc = input<fugio::OpenGLTextureInterface *>( mPinTexSrc );
 	fugio::OpenGLTextureInterface	*TexDst = mTexDst;
-	QVector3D				 SrcSze = TexSrc->size();
 
-	quint32				 SrcCnt = 0;
-
-	for( int i = 0 ; i < 3 ; i++ )
-	{
-		SrcCnt += SrcSze[ i ];
-	}
-
-	if( SrcCnt == 0 )
+	if( !TexSrc || !TexDst )
 	{
 		return;
 	}
 
-	QVector3D			 DstSze = TexDst->size();
+	fugio::OpenGLTextureDescription		SrcDsc = TexSrc->textureDescription();
+	fugio::OpenGLTextureDescription		DstDsc = TexDst->textureDescription();
 
-	quint32				 DstCnt = 0;
-
-	for( int i = 0 ; i < 3 ; i++ )
+	if( memcmp( &SrcDsc, &DstDsc, sizeof( fugio::OpenGLTextureDescription ) ) != 0 )
 	{
-		DstCnt += ( SrcSze[ i ] != DstSze[ i ] ? 1 : 0 );
-	}
-
-	if( DstCnt )
-	{
-		TexDst->setSize( SrcSze[ 0 ], SrcSze[ 1 ], SrcSze[ 2 ] );
-		TexDst->setFormat( TexSrc->format() );
-		TexDst->setInternalFormat( TexSrc->internalFormat() );
-		TexDst->setTarget( TexSrc->target() );
-		TexDst->setType( TexSrc->type() );
-		TexDst->setWrap( TexSrc->wrapS(), TexSrc->wrapT(), TexSrc->wrapR() );
+		TexDst->setTextureDescription( SrcDsc );
 
 		TexDst->update();
 	}
 
 	if( TexDst->dstTexId() )
 	{
+		const QVector3D		TexSze = TexSrc->size();
+
 #if !defined( GL_ES_VERSION_2_0 )
 		if( glCopyImageSubData )
 		{
 			glCopyImageSubData( TexSrc->srcTexId(), TexSrc->target(), 0, 0, 0, 0,
 								TexDst->dstTexId(), TexDst->target(), 0, 0, 0, 0,
-								SrcSze[ 0 ], SrcSze[ 1 ], qMax<GLsizei>( SrcSze[ 2 ], 1 ) );
+								TexSze.x(), TexSze.y(), qMax<GLsizei>( TexSze.z(), 1 ) );
 		}
 		else
 		{
@@ -111,14 +89,14 @@ void TextureCopyNode::inputsUpdated( qint64 pTimeStamp )
 
 				glDrawBuffers( 1, drawBuffers );
 
-				glBlitFramebuffer( 0, 0, SrcSze[ 0 ], SrcSze[ 1 ], 0, 0, SrcSze[ 0 ], SrcSze[ 1 ], GL_COLOR_BUFFER_BIT, GL_NEAREST );
+				glBlitFramebuffer( 0, 0, TexSze.x(), TexSze.y(), 0, 0, TexSze.x(), TexSze.y(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
 
 				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 			}
 		}
 #endif
-	}
 
-	mNode->context()->pinUpdated( mPinTexDst );
+		pinUpdated( mPinTexDst );
+	}
 }
 

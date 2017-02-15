@@ -13,14 +13,44 @@ class QImage;
 
 FUGIO_NAMESPACE_BEGIN
 
+typedef struct OpenGLTextureDescription
+{
+	GLenum			mFormat;
+	GLenum			mInternalFormat;
+
+	GLsizei			mTexWidth;
+	GLsizei			mTexHeight;
+	GLsizei			mTexDepth;
+
+	GLsizei			mImgWidth;
+	GLsizei			mImgHeight;
+	GLsizei			mImgDepth;
+
+	quint32			mTarget;
+	GLenum			mType;
+
+	GLenum			mMinFilter;
+	GLenum			mMagFilter;
+
+	GLint			mWrapX;
+	GLint			mWrapY;
+	GLint			mWrapZ;
+
+	bool			mGenerateMipMaps;
+
+	bool			mDoubleBuffered;
+
+	GLint			mCompare;
+} OpenGLTextureDescription;
+
 class OpenGLTextureInterface
 {
 public:
 	virtual ~OpenGLTextureInterface( void ) {}
 
-	virtual QVector3D textureSize( void ) = 0;
+	virtual QVector3D textureSize( void ) const = 0;
 
-	virtual QVector3D size( void ) = 0;
+	virtual QVector3D size( void ) const = 0;
 
 	virtual void setDoubleBuffered( bool pDoubleBuffered ) = 0;
 
@@ -34,13 +64,13 @@ public:
 
 	virtual quint32 dstTexId( void ) const = 0;
 
-	virtual quint32 target( void ) = 0;
+	virtual quint32 target( void ) const = 0;
 
-	virtual quint32 format( void ) = 0;
+	virtual quint32 format( void ) const = 0;
 
-	virtual quint32 internalFormat( void ) = 0;
+	virtual quint32 internalFormat( void ) const = 0;
 
-	virtual quint32 type( void ) = 0;
+	virtual quint32 type( void ) const = 0;
 
 	virtual quint32 compare( void ) const = 0;
 
@@ -89,6 +119,10 @@ public:
 	virtual void dstBind( void ) = 0;
 
 	virtual void release( void ) = 0;
+
+	virtual OpenGLTextureDescription textureDescription( void ) const = 0;
+
+	virtual void setTextureDescription( const OpenGLTextureDescription &pDescription ) = 0;
 };
 
 FUGIO_NAMESPACE_END

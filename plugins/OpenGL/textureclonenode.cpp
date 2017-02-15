@@ -49,8 +49,6 @@ bool TextureCloneNode::initialise()
 
 void TextureCloneNode::inputsUpdated( qint64 pTimeStamp )
 {
-	fugio::Performance	Perf( mNode, "inputsUpdated", pTimeStamp );
-
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
 	if( !OpenGLPlugin::hasContextStatic() )
@@ -61,49 +59,18 @@ void TextureCloneNode::inputsUpdated( qint64 pTimeStamp )
 	if( mPinTexClone->isUpdated( pTimeStamp ) )
 	{
 		fugio::OpenGLTextureInterface	*TexSrc = input<fugio::OpenGLTextureInterface *>( mPinTexClone );
+		fugio::OpenGLTextureInterface	*TexDst = mValTexDst;
 
 		if( TexSrc )
 		{
-			fugio::OpenGLTextureInterface	*TexDst = mValTexDst;
-			QVector3D						 SrcSze = TexSrc->size();
+			fugio::OpenGLTextureDescription		SrcDsc = TexSrc->textureDescription();
+			fugio::OpenGLTextureDescription		DstDsc = TexDst->textureDescription();
 
-			quint32				 SrcCnt = 0;
-
-			for( int i = 0 ; i < 3 ; i++ )
+			if( memcmp( &SrcDsc, &DstDsc, sizeof( fugio::OpenGLTextureDescription ) ) != 0 )
 			{
-				SrcCnt += SrcSze[ i ];
-			}
-
-			if( SrcCnt == 0 )
-			{
-				return;
-			}
-
-			QVector3D			 DstSze = TexDst->size();
-
-			quint32				 DstCnt = 0;
-
-			for( int i = 0 ; i < 3 ; i++ )
-			{
-				DstCnt += ( SrcSze[ i ] != DstSze[ i ] ? 1 : 0 );
-			}
-
-			if( DstCnt )
-			{
-				TexDst->setCompare( TexSrc->compare() );
-				TexDst->setDoubleBuffered( TexSrc->isDoubleBuffered() );
-				TexDst->setFilter( TexSrc->filterMin(), TexSrc->filterMag() );
-				TexDst->setGenMipMaps( TexSrc->genMipMaps() );
-				TexDst->setSize( SrcSze[ 0 ], SrcSze[ 1 ], SrcSze[ 2 ] );
-				TexDst->setFormat( TexSrc->format() );
-				TexDst->setInternalFormat( TexSrc->internalFormat() );
-				TexDst->setTarget( TexSrc->target() );
-				TexDst->setType( TexSrc->type() );
-				TexDst->setWrap( TexSrc->wrapS(), TexSrc->wrapT(), TexSrc->wrapR() );
+				TexDst->setTextureDescription( SrcDsc );
 
 				TexDst->update();
-
-				pinUpdated( mPinTexDst );
 			}
 		}
 	}
