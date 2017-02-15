@@ -69,7 +69,8 @@ SOURCES += \
 	getsizenode.cpp \
     triggerarraynode.cpp \
     triggerbooleannode.cpp \
-    makearraynode.cpp
+    makearraynode.cpp \
+    flipflopnode.cpp
 
 HEADERS += \
 	stringpin.h \
@@ -134,7 +135,8 @@ HEADERS += \
 	getsizenode.h \
     triggerarraynode.h \
     triggerbooleannode.h \
-    makearraynode.h
+    makearraynode.h \
+    flipflopnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
