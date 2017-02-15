@@ -56,23 +56,25 @@ void TextureCloneNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	if( mPinTexClone->isUpdated( pTimeStamp ) )
+	fugio::OpenGLTextureInterface	*TexSrc = input<fugio::OpenGLTextureInterface *>( mPinTexClone );
+	fugio::OpenGLTextureInterface	*TexDst = mValTexDst;
+
+	if( TexSrc )
 	{
-		fugio::OpenGLTextureInterface	*TexSrc = input<fugio::OpenGLTextureInterface *>( mPinTexClone );
-		fugio::OpenGLTextureInterface	*TexDst = mValTexDst;
+		fugio::OpenGLTextureDescription		SrcDsc = TexSrc->textureDescription();
+		fugio::OpenGLTextureDescription		DstDsc = TexDst->textureDescription();
 
-		if( TexSrc )
+		if( memcmp( &SrcDsc, &DstDsc, sizeof( fugio::OpenGLTextureDescription ) ) != 0 )
 		{
-			fugio::OpenGLTextureDescription		SrcDsc = TexSrc->textureDescription();
-			fugio::OpenGLTextureDescription		DstDsc = TexDst->textureDescription();
+			TexDst->setTextureDescription( SrcDsc );
 
-			if( memcmp( &SrcDsc, &DstDsc, sizeof( fugio::OpenGLTextureDescription ) ) != 0 )
-			{
-				TexDst->setTextureDescription( SrcDsc );
-
-				TexDst->update();
-			}
+			TexDst->update();
 		}
+	}
+
+	if( !mValTexDst->dstTexId() )
+	{
+		return;
 	}
 
 	if( mPinTexSrc->isUpdated( pTimeStamp ) )
