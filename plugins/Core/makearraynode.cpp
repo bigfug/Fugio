@@ -51,6 +51,9 @@ void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
 			case QMetaType::QMatrix4x4:
 				mValOutput->setStride( sizeof( float ) * 16 );
 				break;
+
+			default:
+				return;
 		}
 	}
 
@@ -78,6 +81,9 @@ void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
 					memcpy( D, M.constData(), sizeof( float ) * 16 );
 				}
 				break;
+
+			default:
+				return;
 		}
 	}
 
@@ -103,6 +109,9 @@ QList<QUuid> MakeArrayNode::pinAddTypesInput() const
 			case QMetaType::QMatrix4x4:
 				PinLst << PID_MATRIX4;
 				break;
+
+			default:
+				break;
 		}
 
 		return( PinLst );
@@ -125,7 +134,7 @@ bool MakeArrayNode::canAcceptPin( fugio::PinInterface *pPin ) const
 		return( false );
 	}
 
-	return( V->variant().type() == mType );
+	return( QMetaType::Type( V->variant().type() ) == mType );
 }
 
 void MakeArrayNode::setType( int pIndex )

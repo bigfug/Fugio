@@ -134,7 +134,7 @@ protected:
 
 		}
 
-		ShaderCompilerData::ShaderCompilerData( ShaderCompilerData &&other )
+		ShaderCompilerData( ShaderCompilerData &&other )
 		{
 			*this = std::move( other );
 		}
@@ -144,7 +144,7 @@ protected:
 			clear();
 		}
 
-		ShaderCompilerData &ShaderCompilerData::operator = ( ShaderCompilerData && other )
+		ShaderCompilerData &operator = ( ShaderCompilerData && other )
 		{
 			mProgramId = other.mProgramId;
 			mProgramLinked = other.mProgramLinked;

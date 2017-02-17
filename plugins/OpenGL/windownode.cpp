@@ -242,12 +242,13 @@ void WindowNode::render( qint64 pTimeStamp )
 	const bool CaptureWindow = ( !mGrabFileNames.isEmpty() || mPinTexture->isConnectedToActiveNode() );
 #endif
 
-	const bool	CaptureWindow = !mGrabFileNames.isEmpty();
-
-	const int	TextureSamples = qMax( OutputSamples, 1 );
 	GLuint		FBOId   = 0;
 
 #if defined( USE_TEXTURE_PIN )
+	const bool	CaptureWindow = !mGrabFileNames.isEmpty();
+
+	const int	TextureSamples = qMax( OutputSamples, 1 );
+
 	if( CaptureWindow )
 	{
 		mTexture->update( 0, 0 );

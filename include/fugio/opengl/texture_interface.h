@@ -72,7 +72,7 @@ public:
 
 	virtual quint32 type( void ) const = 0;
 
-	virtual quint32 compare( void ) const = 0;
+	virtual qint32 compare( void ) const = 0;
 
 	virtual int filterMin( void ) const = 0;
 	virtual int filterMag( void ) const = 0;
@@ -81,7 +81,7 @@ public:
 	virtual int wrapR( void ) const = 0;
 	virtual bool genMipMaps( void ) const = 0;
 
-	virtual void setCompare( quint32 pCompare ) = 0;
+	virtual void setCompare( qint32 pCompare ) = 0;
 
 	virtual void setTarget( quint32 pTarget ) = 0;
 

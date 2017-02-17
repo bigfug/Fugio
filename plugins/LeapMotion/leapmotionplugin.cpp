@@ -57,6 +57,8 @@ QVector3D LeapMotionPlugin::leapToVec3(const Vector &pSrcVec)
 
 fugio::PluginInterface::InitResult LeapMotionPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mApp = pApp;
 
 	mApp->registerNodeClasses( mNodeClasses );

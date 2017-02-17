@@ -422,6 +422,8 @@ void TexturePin::update()
 
 void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSize, int pCubeFaceIndex )
 {
+	Q_UNUSED( pLineSize )
+
 	if( !OpenGLPlugin::hasContextStatic() )
 	{
 		return;
@@ -816,12 +818,12 @@ QVector3D TexturePin::toVector3D() const
 	return( textureSize() );
 }
 
-quint32 TexturePin::compare() const
+qint32 TexturePin::compare() const
 {
 	return( mTexDsc.mCompare );
 }
 
-void TexturePin::setCompare( quint32 pCompare )
+void TexturePin::setCompare( qint32 pCompare )
 {
 	if( mTexDsc.mCompare != pCompare )
 	{

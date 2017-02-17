@@ -132,8 +132,8 @@ public:
 
 	virtual void swapTexture( void ) Q_DECL_OVERRIDE;
 
-	virtual quint32 compare() const Q_DECL_OVERRIDE;
-	virtual void setCompare(quint32 pCompare) Q_DECL_OVERRIDE;
+	virtual qint32 compare() const Q_DECL_OVERRIDE;
+	virtual void setCompare( qint32 pCompare ) Q_DECL_OVERRIDE;
 
 	virtual OpenGLTextureDescription textureDescription() const Q_DECL_OVERRIDE
 	{
