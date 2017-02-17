@@ -15,6 +15,7 @@
 #include "pluginterfaces/vst/ivstaudioprocessor.h"
 #include "pluginterfaces/vst/ivstmessage.h"
 #include "pluginterfaces/vst/ivstevents.h"
+#include "pluginterfaces/vst/ivstcontextmenu.h"
 
 #include <pluginterfaces/gui/iplugview.h>
 

@@ -45,6 +45,7 @@ typedef bool (*bundleExitPtr)(void);
 #include "pluginterfaces/vst/ivstaudioprocessor.h"
 #include "pluginterfaces/vst/ivsthostapplication.h"
 #include "pluginterfaces/vst/ivsteditcontroller.h"
+#include "pluginterfaces/vst/ivstcontextmenu.h"
 #include "pluginterfaces/vst/ivstunits.h"
 
 #include "base/source/fstring.h"
@@ -174,7 +175,7 @@ tresult PLUGIN_API ParameterValueQueue::addPoint (int32 sampleOffset, ParamValue
 VST3Node::VST3Node( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 #if defined( VST_SUPPORTED )
-	, mPluginFactory( nullptr ), mPluginContext( nullptr ), mPluginComponent( nullptr ), mPluginController( nullptr ), mPluginView( nullptr )
+	, mPluginFactory( nullptr ), mPluginComponent( nullptr ), mPluginController( nullptr ), mPluginView( nullptr )
 	, mDockWidget( nullptr ), mDockArea( Qt::BottomDockWidgetArea )
 #endif
 {
@@ -224,12 +225,7 @@ bool VST3Node::initialise()
 #if defined( Q_OS_WIN )
 	InitModuleProc InitModuleProcFunc = (InitModuleProc)mPluginLibrary.resolve( kInitModuleProcName );
 
-	if( !InitModuleProcFunc )
-	{
-		return( false );
-	}
-
-	if( !InitModuleProcFunc() )
+	if( InitModuleProcFunc && !InitModuleProcFunc() )
 	{
 		return( false );
 	}
@@ -260,6 +256,15 @@ bool VST3Node::initialise()
 		factory2->release ();
 	}
 
+	Steinberg::IPluginFactory3* factory3;
+
+	if (mPluginFactory->queryInterface (Steinberg::IPluginFactory3::iid, (void**)&factory3) == Steinberg::kResultTrue)
+	{
+		factory3->setHostContext( getFUnknown() );
+
+		factory3->release ();
+	}
+
 	bool res = false;
 	tresult result;
 
@@ -284,7 +289,7 @@ bool VST3Node::initialise()
 	}
 
 	// initialize the component with our context
-	res = ( mPluginComponent->initialize( mPluginContext ) == kResultOk );
+	res = ( mPluginComponent->initialize( getFUnknown() ) == kResultOk );
 
 	// try to create the controller part from the component
 	// (for Plug-ins which did not succeed to separate component from controller)
@@ -301,34 +306,39 @@ bool VST3Node::initialise()
 			if (mPluginController && (result == kResultOk))
 			{
 				// initialize the component with our context
-				res = (mPluginController->initialize (mPluginContext) == kResultOk);
+				res = (mPluginController->initialize ( getFUnknown() ) == kResultOk);
 
 				if( res )
 				{
-					QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
+					mPluginController->setComponentHandler( this );
+				}
+			}
+		}
+	}
 
-					if( MainWindow )
+	if( mPluginController )
+	{
+		QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
+
+		if( MainWindow )
+		{
+			Steinberg::IPlugView					*PluginView;
+
+			PluginView = mPluginController->createView( Steinberg::Vst::ViewType::kEditor );
+
+			if( PluginView )
+			{
+				if( PluginView->isPlatformTypeSupported( Steinberg::kPlatformTypeHWND ) == kResultTrue )
+				{
+					if( ( mDockWidget = new QDockWidget( QString( "VST: %1" ).arg( mNode->name() ), MainWindow ) ) )
 					{
-						Steinberg::IPlugView					*mPluginView;
+						mDockWidget->setWidget( new VSTView( PluginView ) );
 
-						mPluginView = mPluginController->createView( Steinberg::Vst::ViewType::kEditor );
+						mDockWidget->setObjectName( mNode->name() );
 
-						if( mPluginView )
-						{
-							if( mPluginView->isPlatformTypeSupported( Steinberg::kPlatformTypeHWND ) == kResultTrue )
-							{
-								if( ( mDockWidget = new QDockWidget( QString( "VST: %1" ).arg( mNode->name() ), MainWindow ) ) )
-								{
-									mDockWidget->setWidget( new VSTView( mPluginView ) );
+						MainWindow->addDockWidget( mDockArea, mDockWidget );
 
-									mDockWidget->setObjectName( mNode->name() );
-
-									MainWindow->addDockWidget( mDockArea, mDockWidget );
-
-									mDockWidget->show();
-								}
-							}
-						}
+						mDockWidget->show();
 					}
 				}
 			}
@@ -475,18 +485,23 @@ bool VST3Node::initialise()
 
 	if( mPluginController )
 	{
-		mPluginController->setComponentHandler( this );
-
 		Vst::IConnectionPoint* iConnectionPointComponent = 0;
 		Vst::IConnectionPoint* iConnectionPointController = 0;
 
 		mPluginComponent->queryInterface (Vst::IConnectionPoint::iid, (void**)&iConnectionPointComponent);
 		mPluginController->queryInterface (Vst::IConnectionPoint::iid, (void**)&iConnectionPointController);
 
-		if (iConnectionPointComponent && iConnectionPointController)
+		try
 		{
-			iConnectionPointComponent->connect (iConnectionPointController);
-			iConnectionPointController->connect (iConnectionPointComponent);
+			if (iConnectionPointComponent && iConnectionPointController)
+			{
+				iConnectionPointComponent->connect (iConnectionPointController);
+				iConnectionPointController->connect (iConnectionPointComponent);
+			}
+		}
+		catch( ... )
+		{
+
 		}
 
 		// synchronize controller to component by using setComponentState
@@ -1031,4 +1046,30 @@ qint64 VST3Node::audioLatency() const
 	}
 
 	return( MaxLat );
+}
+
+
+tresult VST3Node::setDirty(TBool state)
+{
+	return( kResultOk );
+}
+
+tresult VST3Node::requestOpenEditor(FIDString name)
+{
+	return( kResultOk );
+}
+
+tresult VST3Node::startGroupEdit()
+{
+	return( kResultOk );
+}
+
+tresult VST3Node::finishGroupEdit()
+{
+	return( kResultOk );
+}
+
+IContextMenu *VST3Node::createContextMenu(IPlugView *plugView, const ParamID *paramID)
+{
+	return( 0 );
 }
