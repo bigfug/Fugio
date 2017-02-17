@@ -28,4 +28,5 @@ SUBDIRS += \
 	Syphon \
 	Text \
 	Time \
+	VST \
 	XInput
