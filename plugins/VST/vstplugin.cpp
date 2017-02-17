@@ -111,13 +111,13 @@ PluginInterface::InitResult VSTPlugin::initialise( GlobalInterface *pApp, bool p
 
 	if( !ProgramFiles64Path.isEmpty() )
 	{
-		pluginDirScan( QDir( ProgramFiles64Path ).absoluteFilePath( "Common Files/VST3/Steinberg" ) );	// VST3
+		pluginDirScan( QDir( ProgramFiles64Path ).absoluteFilePath( "Common Files/VST3" ) );				// VST3
 		//pluginDirScan( QDir( ProgramFiles64Path ).absoluteFilePath( "Steinberg/VstPlugins" ) );			// VST2
 	}
 
 	if( !ProgramFiles32Path.isEmpty() )
 	{
-		pluginDirScan( QDir( ProgramFiles32Path ).absoluteFilePath( "Common Files/VST3/Steinberg" ) );	// VST3
+		pluginDirScan( QDir( ProgramFiles32Path ).absoluteFilePath( "Common Files/VST3" ) );				// VST3
 		//pluginDirScan( QDir( ProgramFiles32Path ).absoluteFilePath( "Steinberg/VstPlugins" ) );			// VST2
 	}
 #elif defined( Q_OS_MACX )
@@ -198,7 +198,7 @@ void VSTPlugin::pluginDirScan( QDir pDir )
 
 				if( !pluginProcess3( PlgLib ) )
 				{
-					pluginProcess2( PlgLib );
+					//pluginProcess2( PlgLib );
 				}
 			}
 		}
@@ -271,16 +271,12 @@ bool VSTPlugin::pluginProcess3( QLibrary &pPlgLib )
 #if defined( Q_OS_WIN )
 	InitModuleProc InitModuleProcFunc = (InitModuleProc)pPlgLib.resolve( "InitDll" );
 
-	if( !InitModuleProcFunc )
-	{
-		return( false );
-	}
-
-	if( !InitModuleProcFunc() )
+	if( InitModuleProcFunc && !InitModuleProcFunc() )
 	{
 		return( false );
 	}
 #endif
+
 	GetFactoryProc GetFactoryProcFunc = (GetFactoryProc)pPlgLib.resolve( "GetPluginFactory" );
 
 	if( !GetFactoryProcFunc )

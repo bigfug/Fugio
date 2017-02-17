@@ -29,6 +29,7 @@
 #include "pluginterfaces/vst/ivsteditcontroller.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
 #include "pluginterfaces/vst/ivstevents.h"
+#include "pluginterfaces/vst/ivstcontextmenu.h"
 
 namespace Steinberg {
 namespace Vst {
@@ -96,7 +97,8 @@ protected:
 
 class VST3Node : public fugio::NodeControlBase, public fugio::AudioProducerInterface
 #if defined( VST_SUPPORTED )
-		, public Steinberg::FObject, public Steinberg::Vst::IParameterChanges, public Steinberg::Vst::IComponentHandler
+		, public Steinberg::FObject, public Steinberg::Vst::IParameterChanges, public Steinberg::Vst::IComponentHandler,
+		public Steinberg::Vst::IComponentHandler2, public Steinberg::Vst::IComponentHandler3
 #endif
 {
 	Q_OBJECT
@@ -161,13 +163,27 @@ public:
 		\param flags is a combination of RestartFlags */
 	virtual Steinberg::tresult PLUGIN_API restartComponent (Steinberg::int32 flags);
 
+
+	//------------------------------------------------------------------------
+
+	// IComponentHandler2 interface
+public:
+	virtual Steinberg::tresult PLUGIN_API setDirty(Steinberg::TBool state);
+	virtual Steinberg::tresult PLUGIN_API requestOpenEditor(Steinberg::FIDString name);
+	virtual Steinberg::tresult PLUGIN_API startGroupEdit();
+	virtual Steinberg::tresult PLUGIN_API finishGroupEdit();
+
+	// IComponentHandler3 interface
+public:
+	virtual Steinberg::Vst::IContextMenu * PLUGIN_API createContextMenu(Steinberg::IPlugView *plugView, const Steinberg::Vst::ParamID *paramID);
+
 	//------------------------------------------------------------------------
 
 	OBJ_METHODS(VST3Node, FObject)
 	REFCOUNT_METHODS(FObject)
-	DEF_INTERFACES_2(IParameterChanges, IComponentHandler, FObject)
+	DEF_INTERFACES_4(IParameterChanges, IComponentHandler, IComponentHandler2, IComponentHandler3, FObject)
 
-	//------------------------------------------------------------------------
+	Steinberg::FUnknown* getFUnknown()     { return static_cast<Steinberg::Vst::IComponentHandler*> (this); }
 #endif
 
 protected:
@@ -241,43 +257,6 @@ private:
 		QVector<QVector<float>>					 mDatOut;
 	};
 
-//	class AudioInstanceData : public Steinberg::Vst::IEventList
-//	{
-//		DECLARE_FUNKNOWN_METHODS
-
-//	public:
-//		AudioInstanceData( void )
-//		{
-//			FUNKNOWN_CTOR
-//		}
-
-//		virtual ~AudioInstanceData( void )
-//		{
-//			FUNKNOWN_DTOR
-//		}
-
-//		//------------------------------------------------------------------------
-//		// IEventList interface
-
-//		virtual Steinberg::int32 PLUGIN_API getEventCount();
-//		virtual Steinberg::tresult PLUGIN_API getEvent(Steinberg::int32 index, Steinberg::Vst::Event &e);
-//		virtual Steinberg::tresult PLUGIN_API addEvent(Steinberg::Vst::Event &e);
-
-//	public:
-//		qreal									mSampleRate;
-//		fugio::AudioSampleFormat						mSampleFormat;
-//		int										mChannels;
-
-//		void									*mInstance;
-//		Steinberg::Vst::IAudioProcessor			*mAudioProcessor;
-
-//		QMutex									 mEventMutex;
-//		QList<Steinberg::Vst::Event>			 mEventList;
-
-//		QVector<QVector<float>>			 mDatInp;
-//		QVector<QVector<float>>			 mDatOut;
-//	};
-
 	void audio(qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const;
 #endif
 
@@ -289,8 +268,6 @@ private:
 #if defined( VST_SUPPORTED )
 	QLibrary								 mPluginLibrary;
 	Steinberg::IPluginFactory				*mPluginFactory;
-
-	Steinberg::FUnknown						*mPluginContext;
 
 	Steinberg::Vst::IComponent				*mPluginComponent;
 	Steinberg::Vst::IEditController			*mPluginController;
