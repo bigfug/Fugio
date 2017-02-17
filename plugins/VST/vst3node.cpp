@@ -1027,7 +1027,7 @@ qint64 VST3Node::audioLatency() const
 	{
 		fugio::AudioProducerInterface *IAP = input<fugio::AudioProducerInterface *>( P );
 
-		MaxLat = std::max( MaxLat, IAP ? IAP->audioLatency() : 0 );
+		MaxLat = qMax( MaxLat, IAP ? IAP->audioLatency() : 0 );
 	}
 
 	return( MaxLat );
