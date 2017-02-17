@@ -23,7 +23,7 @@ void SyphonPin::updateFromReceiver()
 }
 #endif
 
-QVector3D SyphonPin::textureSize()
+QVector3D SyphonPin::textureSize() const
 {
 #if defined( SYPHON_SUPPORTED )
 	return( QVector3D( mReceiver.textureWidth(), mReceiver.textureHeight(), 0 ) );
@@ -32,7 +32,7 @@ QVector3D SyphonPin::textureSize()
 #endif
 }
 
-QVector3D SyphonPin::size()
+QVector3D SyphonPin::size() const
 {
 #if defined( SYPHON_SUPPORTED )
 	return( QVector3D( mReceiver.textureWidth(), mReceiver.textureHeight(), 0 ) );
@@ -55,7 +55,7 @@ quint32 SyphonPin::dstTexId() const
 	return( 0 );
 }
 
-quint32 SyphonPin::target()
+quint32 SyphonPin::target() const
 {
 #if defined( SYPHON_SUPPORTED )
 	return( GL_TEXTURE_RECTANGLE );
@@ -64,7 +64,7 @@ quint32 SyphonPin::target()
 #endif
 }
 
-quint32 SyphonPin::format()
+quint32 SyphonPin::format() const
 {
 #if defined( SYPHON_SUPPORTED )
 	return( GL_BGRA );
@@ -73,7 +73,7 @@ quint32 SyphonPin::format()
 #endif
 }
 
-quint32 SyphonPin::internalFormat()
+quint32 SyphonPin::internalFormat() const
 {
 #if defined( SYPHON_SUPPORTED )
 	return( GL_RGBA8 );
@@ -82,7 +82,7 @@ quint32 SyphonPin::internalFormat()
 #endif
 }
 
-quint32 SyphonPin::type()
+quint32 SyphonPin::type() const
 {
 	return( GL_UNSIGNED_BYTE );
 }
@@ -205,4 +205,3 @@ void SyphonPin::release()
 	mReceiver.release();
 #endif
 }
-

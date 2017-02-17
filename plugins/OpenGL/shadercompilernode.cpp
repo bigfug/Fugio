@@ -216,6 +216,12 @@ void ShaderCompilerNode::loadShader()
 {
 	ShaderCompilerData		CompilerData;
 
+	GLuint					ShaderVertId = 0;
+	GLuint					ShaderGeomId = 0;
+	GLuint					ShaderTessCtrlId = 0;
+	GLuint					ShaderTessEvalId = 0;
+	GLuint					ShaderFragId = 0;
+
 	GLint					Compiled = 0;
 	GLint					Failed   = 0;
 
@@ -228,29 +234,29 @@ void ShaderCompilerNode::loadShader()
 
 	OPENGL_PLUGIN_DEBUG;
 
-	loadShader( mPinShaderVertex, CompilerData.mProgramId, CompilerData.mShaderVertId, GL_VERTEX_SHADER, Compiled, Failed );
+	loadShader( mPinShaderVertex, CompilerData.mProgramId, ShaderVertId, GL_VERTEX_SHADER, Compiled, Failed );
 
 	OPENGL_PLUGIN_DEBUG;
 
 #if defined( GL_TESS_CONTROL_SHADER )
-	loadShader( mPinShaderTessCtrl, CompilerData.mProgramId, CompilerData.mShaderTessCtrlId, GL_TESS_CONTROL_SHADER, Compiled, Failed );
+	loadShader( mPinShaderTessCtrl, CompilerData.mProgramId, ShaderTessCtrlId, GL_TESS_CONTROL_SHADER, Compiled, Failed );
 
 	OPENGL_PLUGIN_DEBUG;
 #endif
 
 #if defined( GL_TESS_EVALUATION_SHADER )
-	loadShader( mPinShaderTessEval, CompilerData.mProgramId, CompilerData.mShaderTessEvalId, GL_TESS_EVALUATION_SHADER, Compiled, Failed );
+	loadShader( mPinShaderTessEval, CompilerData.mProgramId, ShaderTessEvalId, GL_TESS_EVALUATION_SHADER, Compiled, Failed );
 
 	OPENGL_PLUGIN_DEBUG;
 #endif
 
 #if defined( GL_GEOMETRY_SHADER )
-	loadShader( mPinShaderGeometry, CompilerData.mProgramId, CompilerData.mShaderGeomId, GL_GEOMETRY_SHADER, Compiled, Failed );
+	loadShader( mPinShaderGeometry, CompilerData.mProgramId, ShaderGeomId, GL_GEOMETRY_SHADER, Compiled, Failed );
 #endif
 
 	OPENGL_PLUGIN_DEBUG;
 
-	loadShader( mPinShaderFragment, CompilerData.mProgramId, CompilerData.mShaderFragId, GL_FRAGMENT_SHADER, Compiled, Failed );
+	loadShader( mPinShaderFragment, CompilerData.mProgramId, ShaderFragId, GL_FRAGMENT_SHADER, Compiled, Failed );
 
 	OPENGL_PLUGIN_DEBUG;
 
@@ -339,6 +345,46 @@ void ShaderCompilerNode::loadShader()
 	}
 
 	OPENGL_PLUGIN_DEBUG;
+
+	//-------------------------------------------------------------------------
+	// we don't need to keep these around...
+
+	if( ShaderFragId )
+	{
+		glDeleteShader( ShaderFragId );
+
+		ShaderFragId = 0;
+	}
+
+	if( ShaderGeomId )
+	{
+		glDeleteShader( ShaderGeomId );
+
+		ShaderGeomId = 0;
+	}
+
+	if( ShaderTessEvalId )
+	{
+		glDeleteShader( ShaderTessEvalId );
+
+		ShaderTessEvalId = 0;
+	}
+
+	if( ShaderTessCtrlId )
+	{
+		glDeleteShader( ShaderTessCtrlId );
+
+		ShaderTessCtrlId = 0;
+	}
+
+	if( ShaderVertId )
+	{
+		glDeleteShader( ShaderVertId );
+
+		ShaderVertId = 0;
+	}
+
+	//-------------------------------------------------------------------------
 
 	GLint			LinkStatus = GL_FALSE;
 
@@ -592,41 +638,6 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 
 void ShaderCompilerNode::ShaderCompilerData::clear()
 {
-	if( mShaderFragId )
-	{
-		glDeleteShader( mShaderFragId );
-
-		mShaderFragId = 0;
-	}
-
-	if( mShaderGeomId )
-	{
-		glDeleteShader( mShaderGeomId );
-
-		mShaderGeomId = 0;
-	}
-
-	if( mShaderTessEvalId )
-	{
-		glDeleteShader( mShaderTessEvalId );
-
-		mShaderTessEvalId = 0;
-	}
-
-	if( mShaderTessCtrlId )
-	{
-		glDeleteShader( mShaderTessCtrlId );
-
-		mShaderTessCtrlId = 0;
-	}
-
-	if( mShaderVertId )
-	{
-		glDeleteShader( mShaderVertId );
-
-		mShaderVertId = 0;
-	}
-
 	if( mProgramId )
 	{
 		glDeleteProgram( mProgramId );

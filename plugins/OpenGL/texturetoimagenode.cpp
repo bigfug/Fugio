@@ -5,9 +5,9 @@
 #include <fugio/opengl/uuid.h>
 #include <fugio/image/uuid.h>
 
-#include <fugio/opengl/texture_interface.h>
-
 #include "opengl_includes.h"
+
+#include <fugio/opengl/texture_interface.h>
 
 using namespace fugio;
 

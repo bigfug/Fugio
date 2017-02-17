@@ -53,7 +53,10 @@ IntervalNode::IntervalNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void IntervalNode::inputsUpdated( qint64 pTimeStamp )
 {
-	Q_UNUSED( pTimeStamp )
+	if( !pTimeStamp )
+	{
+		return;
+	}
 
 	QVariant		V = variant( mPinInputInterval );
 	int				Interval = 0;
@@ -77,11 +80,16 @@ void IntervalNode::inputsUpdated( qint64 pTimeStamp )
 	for( fugio::NodeInterface::UuidPair UP : mNode->pairedPins() )
 	{
 		QSharedPointer<fugio::PinInterface>		 PinI = mNode->findPinByLocalId( UP.first );
-		QSharedPointer<fugio::PinInterface>		 PinO = mNode->findPinByLocalId( UP.second );
 
+		if( !PinI || !PinI->isUpdated( pTimeStamp ) )
+		{
+			continue;
+		}
+
+		QSharedPointer<fugio::PinInterface>		 PinO = mNode->findPinByLocalId( UP.second );
 		fugio::VariantInterface					*VarO = qobject_cast<fugio::VariantInterface *>( PinO && PinO->hasControl() ? PinO->control()->qobject() : nullptr );
 
-		if( !PinI || !PinO || !VarO )
+		if( !VarO )
 		{
 			continue;
 		}
@@ -91,7 +99,7 @@ void IntervalNode::inputsUpdated( qint64 pTimeStamp )
 
 		NoteInterval = qBound( 0, NoteInterval, 127 );
 
-		if( VarO->variant().toInt() != NoteInterval )
+		//if( VarO->variant().toInt() != NoteInterval )
 		{
 			VarO->setVariant( NoteInterval );
 

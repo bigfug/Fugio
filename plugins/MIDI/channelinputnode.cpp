@@ -217,16 +217,16 @@ void ChannelInputNode::midiProcessInput( const fugio::MidiEvent *pMessages, quin
 				{
 					if( !mNoteValue.mVal && mListen )
 					{
-						createMidiPin( mNotesActive, "note-value", PID_INTEGER );
+						createMidiPin( mNoteValue, "note-value", PID_INTEGER );
 
 						SortPins = true;
 					}
 
 					if( mNoteValue.mVal )
 					{
-						PinItr->mVal->setVariant( MsgData1 );
+						mNoteValue.mVal->setVariant( MsgData1 );
 
-						pinUpdated( PinItr->mPin );
+						pinUpdated( mNoteValue.mPin );
 					}
 
 					PinItr = findOrCreatePin( QString( "note/%1" ).arg( MsgData1 ), mNotePins, MsgData1, mListen, SortPins, PID_INTEGER );

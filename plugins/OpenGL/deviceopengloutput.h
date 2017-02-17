@@ -8,6 +8,7 @@
 
 #include <QOpenGLContext>
 #include <QOpenGLWindow>
+#include <QOpenGLDebugLogger>
 
 #include <fugio/node_interface.h>
 #include <fugio/opengl/output_interface.h>
@@ -105,12 +106,16 @@ protected slots:
 
 	void screengrab( void );
 
+	void handleLoggedMessage( const QOpenGLDebugMessage &debugMessage );
+
 protected:
 	QWeakPointer<fugio::NodeInterface>				 mNode;
 
 	fugio::InputEventsInterface						*mInputEvents;
 
 	bool											 mUpdatePending;
+
+	static QOpenGLDebugLogger						*mDebugLogger;
 };
 
 #endif // DEVICEOPENGLOUTPUT_H

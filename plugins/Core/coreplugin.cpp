@@ -39,6 +39,7 @@
 #include "triggerarraynode.h"
 #include "triggerbooleannode.h"
 #include "makearraynode.h"
+#include "flipflopnode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -71,6 +72,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Duplicate Pins", "Fugio", NID_DUPLICATE_PINS, &DuplicatePinsNode::staticMetaObject ),
 	ClassEntry( "Envelope", "Number", NID_ENVELOPE, &EnvelopeNode::staticMetaObject ),
 	ClassEntry( "Float Threshold", NID_FLOAT_THRESHOLD, &FloatThresholdNode::staticMetaObject ),
+	ClassEntry( "Flip Flop", NID_FLIP_FLOP, &FlipFlopNode::staticMetaObject ),
 	ClassEntry( "Frame Delay", "Context", NID_FRAME_DELAY, &FrameDelayNode::staticMetaObject ),
 	ClassEntry( "Get Size", "Size", NID_GET_SIZE, &GetSizeNode::staticMetaObject ),
 	ClassEntry( "Smooth", "Number", ClassEntry::None, NID_FADE, &SmoothNode::staticMetaObject ),

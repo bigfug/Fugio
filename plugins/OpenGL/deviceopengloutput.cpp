@@ -17,6 +17,10 @@
 #include "openglplugin.h"
 #include "windownode.h"
 
+//#define OPENGL_DEBUG_ENABLE
+
+QOpenGLDebugLogger			*DeviceOpenGLOutput::mDebugLogger = nullptr;
+
 void DeviceOpenGLOutput::deviceInitialise()
 {
 }
@@ -49,6 +53,10 @@ QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( bool pContextO
 	//SurfaceFormat.setSwapInterval( 0 );
 	SurfaceFormat.setVersion( 4, 5 );
 
+#if defined( OPENGL_DEBUG_ENABLE )
+	SurfaceFormat.setOption( QSurfaceFormat::DebugContext );
+#endif
+
 	NewDev = QSharedPointer<DeviceOpenGLOutput>( new DeviceOpenGLOutput() );
 
 	if( NewDev )
@@ -66,6 +74,21 @@ QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( bool pContextO
 		{
 			QCoreApplication::processEvents();
 		}
+
+#if defined( OPENGL_DEBUG_ENABLE )
+		if( !mDebugLogger )
+		{
+			if( ( mDebugLogger = new QOpenGLDebugLogger( NewDev.data() ) ) != nullptr )
+			{
+				if( mDebugLogger->initialize() )
+				{
+					connect( mDebugLogger, &QOpenGLDebugLogger::messageLogged, NewDev.data(), &DeviceOpenGLOutput::handleLoggedMessage );
+
+					mDebugLogger->startLogging( QOpenGLDebugLogger::SynchronousLogging );
+				}
+			}
+		}
+#endif
 
 		if( pContextOnly )
 		{
@@ -211,6 +234,11 @@ void DeviceOpenGLOutput::screengrab()
 			Output->screengrab();
 		}
 	}
+}
+
+void DeviceOpenGLOutput::handleLoggedMessage( const QOpenGLDebugMessage &pDebugMessage )
+{
+	qDebug() << pDebugMessage;
 }
 
 #if 0

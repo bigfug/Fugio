@@ -127,22 +127,37 @@ protected:
 
 		GLuint									 mProgramId;
 		GLboolean								 mProgramLinked;
-		GLuint									 mShaderVertId;
-		GLuint									 mShaderGeomId;
-		GLuint									 mShaderTessCtrlId;
-		GLuint									 mShaderTessEvalId;
-		GLuint									 mShaderFragId;
 
 		ShaderCompilerData( void )
-			: mProgramId( 0 ), mProgramLinked( false ), mShaderVertId( 0 ), mShaderGeomId( 0 ), mShaderTessCtrlId( 0 ),
-			  mShaderTessEvalId( 0 ), mShaderFragId( 0 )
+			: mProgramId( 0 ), mProgramLinked( false )
 		{
 
+		}
+
+		ShaderCompilerData( ShaderCompilerData &&other )
+		{
+			*this = std::move( other );
 		}
 
 		~ShaderCompilerData( void )
 		{
 			clear();
+		}
+
+		ShaderCompilerData &operator = ( ShaderCompilerData && other )
+		{
+			mProgramId = other.mProgramId;
+			mProgramLinked = other.mProgramLinked;
+
+			other.mProgramId = 0;
+			other.mProgramLinked = false;
+
+			mShaderUniformTypes = std::move( other.mShaderUniformTypes );
+			mShaderAttributeTypes = std::move( other.mShaderAttributeTypes );
+			mUniformNames = std::move( other.mUniformNames );
+			mAttributeNames = std::move( other.mAttributeNames );
+
+			return( *this );
 		}
 
 		void process( void );

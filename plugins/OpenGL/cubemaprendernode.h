@@ -7,6 +7,8 @@
 
 #include <fugio/core/variant_interface.h>
 
+#include "opengl_includes.h"
+
 #include <fugio/opengl/texture_interface.h>
 
 class CubeMapRenderNode : public fugio::NodeControlBase

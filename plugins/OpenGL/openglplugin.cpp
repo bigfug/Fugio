@@ -11,6 +11,7 @@
 
 #include "texturenode.h"
 #include "texturecopynode.h"
+#include "textureclonenode.h"
 #include "statenode.h"
 #include "previewnode.h"
 #include "drawnode.h"
@@ -87,6 +88,7 @@ ClassEntry		OpenGLPlugin::mNodeClasses[] =
 	ClassEntry( "Shader Instance", "OpenGL", NID_OPENGL_SHADER_INSTANCE, &ShaderInstanceNode::staticMetaObject ),
 	ClassEntry( "Texture", "OpenGL", NID_OPENGL_TEXTURE, &TextureNode::staticMetaObject ),
 	ClassEntry( "Texture To Image", "OpenGL", NID_OPENGL_TEXTURE_TO_IMAGE, &TextureToImageNode::staticMetaObject ),
+	ClassEntry( "Texture Clone", "OpenGL", NID_OPENGL_TEXTURE_CLONE, &TextureCloneNode::staticMetaObject ),
 	ClassEntry( "Texture Copy", "OpenGL", NID_OPENGL_TEXTURE_COPY, &TextureCopyNode::staticMetaObject ),
 	ClassEntry( "Texture Cube", "OpenGL", NID_OPENGL_TEXTURE_CUBE, &TextureCubeNode::staticMetaObject ),
 	ClassEntry( "Transform Feedback", "OpenGL", NID_OPENGL_TRANSFORM_FEEDBACK, &TransformFeedbackNode::staticMetaObject ),
@@ -114,8 +116,8 @@ OpenGLPlugin		*OpenGLPlugin::mInstance = 0;
 #include <QCoreApplication>
 
 OpenGLPlugin::OpenGLPlugin( void )
-	: mApp( 0 ), mTriangleCount( 0 ),
-	   mOpenGLFullScreenOption( "opengl-full-screen", "Open all OpenGL windows as full screen" )
+	: mApp( 0 ),
+	   mOpenGLFullScreenOption( "opengl-full-screen", "Open all OpenGL windows as full screen" ), mTriangleCount( 0 )
 {
 	mInstance = this;
 

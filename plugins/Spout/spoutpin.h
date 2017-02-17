@@ -14,6 +14,8 @@
 #include <Spout.h>
 #endif
 
+using namespace fugio;
+
 class SpoutPin : public fugio::PinControlBase, public fugio::OpenGLTextureInterface
 {
 	Q_OBJECT
@@ -47,20 +49,20 @@ public:
 	//-------------------------------------------------------------------------
 	// InterfaceTexture
 
-	virtual QVector3D textureSize( void ) Q_DECL_OVERRIDE;
+	virtual QVector3D textureSize( void ) const Q_DECL_OVERRIDE;
 
-	virtual QVector3D size( void ) Q_DECL_OVERRIDE;
+	virtual QVector3D size( void ) const Q_DECL_OVERRIDE;
 
 	virtual quint32 srcTexId( void ) const Q_DECL_OVERRIDE;
 	virtual quint32 dstTexId( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 target( void ) Q_DECL_OVERRIDE;
+	virtual quint32 target( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 format( void ) Q_DECL_OVERRIDE;
+	virtual quint32 format( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 internalFormat( void ) Q_DECL_OVERRIDE;
+	virtual quint32 internalFormat( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 type( void ) Q_DECL_OVERRIDE;
+	virtual quint32 type( void ) const Q_DECL_OVERRIDE;
 
 	virtual int filterMin( void ) const Q_DECL_OVERRIDE;
 	virtual int filterMag( void ) const Q_DECL_OVERRIDE;
@@ -134,14 +136,24 @@ public:
 		return( false );
 	}
 
-	virtual quint32 compare() const Q_DECL_OVERRIDE
+	virtual qint32 compare() const Q_DECL_OVERRIDE
 	{
 		return( GL_NONE );
 	}
 
-	virtual void setCompare(quint32 pCompare) Q_DECL_OVERRIDE
+	virtual void setCompare( qint32 pCompare) Q_DECL_OVERRIDE
 	{
 		Q_UNUSED( pCompare )
+	}
+
+	virtual OpenGLTextureDescription textureDescription() const Q_DECL_OVERRIDE
+	{
+		return( OpenGLTextureDescription() );
+	}
+
+	virtual void setTextureDescription( const OpenGLTextureDescription &pDescription ) Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pDescription )
 	}
 
 	//-------------------------------------------------------------------------

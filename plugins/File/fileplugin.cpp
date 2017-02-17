@@ -32,6 +32,8 @@ FilePlugin::FilePlugin()
 
 PluginInterface::InitResult FilePlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mApp = pApp;
 
 	mApp->registerNodeClasses( mNodeClasses );

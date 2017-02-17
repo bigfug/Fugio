@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QMap>
 
+#include "opengl_includes.h"
+
 #include <fugio/opengl/texture_interface.h>
 
 namespace Ui {

@@ -36,10 +36,10 @@ void MidiNoteNode::inputsUpdated( qint64 pTimeStamp )
 
 		Note = qBound( 0, Note, 127 );
 
-		if( Note == Last )
-		{
-			return;
-		}
+//		if( Note == Last )
+//		{
+//			return;
+//		}
 
 		if( Last != -1 )
 		{
