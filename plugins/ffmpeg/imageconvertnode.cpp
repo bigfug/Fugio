@@ -154,7 +154,7 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 	switch( mCurrImageFormat )
 	{
 		case ImageInterface::FORMAT_BGR8:
-			DstFmt = AV_PIX_FMT_BGR8;
+			DstFmt = AV_PIX_FMT_BGR24;
 			break;
 
 		case ImageInterface::FORMAT_BGRA8:
@@ -170,7 +170,7 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			break;
 
 		case ImageInterface::FORMAT_RGB8:
-			DstFmt = AV_PIX_FMT_RGB8;
+			DstFmt = AV_PIX_FMT_RGB24;
 			break;
 
 		case ImageInterface::FORMAT_RGBA8:
