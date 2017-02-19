@@ -6,6 +6,7 @@
 #endif
 
 #include <QRectF>
+#include <QUuid>
 
 class LuaRectF
 {
@@ -76,6 +77,8 @@ public:
 
 		return( *UD );
 	}
+
+	static int luaPinGet( const QUuid &pPinLocalId, lua_State *L );
 
 private:
 	static RectFUserData *checkrectfuserdata( lua_State *L, int i = 1 )

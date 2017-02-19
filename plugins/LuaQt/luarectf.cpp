@@ -1,8 +1,14 @@
 #include "luarectf.h"
 
+#include "luaqtplugin.h"
+
 #include "luapointf.h"
 #include "luasizef.h"
 #include "luapainter.h"
+
+#include <fugio/core/variant_interface.h>
+#include <fugio/node_interface.h>
+#include <fugio/pin_interface.h>
 
 const char *LuaRectF::RectFUserData::TypeName = "qt.rectf";
 
@@ -55,6 +61,42 @@ int LuaRectF::luaNew( lua_State *L )
 	pushrectf( L, R );
 
 	return( 1 );
+}
+
+int LuaRectF::luaPinGet( const QUuid &pPinLocalId, lua_State *L )
+{
+	fugio::LuaInterface						*Lua  = LuaQtPlugin::lua();
+	NodeInterface							*Node = Lua->node( L );
+	QSharedPointer<fugio::PinInterface>		 Pin = Node->findPinByLocalId( pPinLocalId );
+	QSharedPointer<fugio::PinInterface>		 PinSrc;
+
+	if( !Pin )
+	{
+		return( luaL_error( L, "No source pin" ) );
+	}
+
+	if( Pin->direction() == PIN_OUTPUT )
+	{
+		PinSrc = Pin;
+	}
+	else
+	{
+		PinSrc = Pin->connectedPin();
+	}
+
+	if( !PinSrc || !PinSrc->hasControl() )
+	{
+		return( luaL_error( L, "No rect pin" ) );
+	}
+
+	fugio::VariantInterface			*SrcVar = qobject_cast<fugio::VariantInterface *>( PinSrc->control()->qobject() );
+
+	if( !SrcVar )
+	{
+		return( luaL_error( L, "Can't access rect" ) );
+	}
+
+	return( pushrectf( L, SrcVar->variant().toRectF() ) );
 }
 
 QRectF LuaRectF::parseRectF( lua_State *L, int &pNewTop, bool *pRectOk )
