@@ -29,7 +29,7 @@ ClassEntry		mNodeClasses[] =
 	ClassEntry( "Image Loader", "Image", NID_IMAGE_LOADER, &ImageLoaderNode::staticMetaObject ),
 	ClassEntry( "Image Preview", "Image", NID_IMAGE_PREVIEW, &ImagePreviewNode::staticMetaObject ),
 	ClassEntry( "Painter Window", "Image", NID_PAINTER_WINDOW, &PainterWindowNode::staticMetaObject ),
-	ClassEntry( "Scale", "Image", NID_SCALE_IMAGE, &ScaleImageNode::staticMetaObject ),
+	ClassEntry( "Scale", "Image", ClassEntry::Deprecated, NID_SCALE_IMAGE, &ScaleImageNode::staticMetaObject ),
 	ClassEntry( "Save", "Image", NID_IMAGE_SAVE, &ImageSaveNode::staticMetaObject ),
 	ClassEntry( "Size", "Image", ClassEntry::Deprecated, NID_IMAGE_SIZE, &ImageSizeNode::staticMetaObject ),
 	ClassEntry()
