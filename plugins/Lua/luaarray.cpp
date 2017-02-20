@@ -1,5 +1,8 @@
 #include "luaarray.h"
 
+#include <QRect>
+#include <QRectF>
+
 #include <fugio/core/list_interface.h>
 #include <fugio/core/array_list_interface.h>
 
@@ -680,6 +683,18 @@ int LuaArray::luaSetType( lua_State *L )
 	{
 		LstInt->setType( QMetaType::QMatrix4x4 );
 		LstInt->setStride( sizeof( float ) * 4 * 4 );
+		LstInt->setSize( 1 );
+	}
+	else if( strcmp( LstTyp, "rect" ) == 0 )
+	{
+		LstInt->setType( QMetaType::QRect );
+		LstInt->setStride( sizeof( QRect ) );
+		LstInt->setSize( 1 );
+	}
+	else if( strcmp( LstTyp, "rectf" ) == 0 )
+	{
+		LstInt->setType( QMetaType::QRectF );
+		LstInt->setStride( sizeof( QRectF ) );
 		LstInt->setSize( 1 );
 	}
 	else

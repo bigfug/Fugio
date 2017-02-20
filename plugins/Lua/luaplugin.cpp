@@ -3,6 +3,8 @@
 #include <QVector2D>
 #include <QVector3D>
 #include <QVector4D>
+#include <QRect>
+#include <QRectF>
 
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
@@ -352,7 +354,56 @@ int LuaPlugin::pushVariant( lua_State *L, const QVariant &V )
 
 				return( 1 );
 			}
-			break;
+
+		case QMetaType::QRect:
+			{
+				const QRect			Data = V.value<QRect>();
+
+				lua_newtable( L );
+
+				lua_pushstring( L, "x" );
+				lua_pushinteger( L, Data.x() );
+				lua_settable( L, -3 );
+
+				lua_pushstring( L, "y" );
+				lua_pushinteger( L, Data.y() );
+				lua_settable( L, -3 );
+
+				lua_pushstring( L, "width" );
+				lua_pushinteger( L, Data.width() );
+				lua_settable( L, -3 );
+
+				lua_pushstring( L, "height" );
+				lua_pushinteger( L, Data.height() );
+				lua_settable( L, -3 );
+
+				return( 1 );
+			}
+
+		case QMetaType::QRectF:
+			{
+				const QRectF			Data = V.value<QRectF>();
+
+				lua_newtable( L );
+
+				lua_pushstring( L, "x" );
+				lua_pushnumber( L, Data.x() );
+				lua_settable( L, -3 );
+
+				lua_pushstring( L, "y" );
+				lua_pushnumber( L, Data.y() );
+				lua_settable( L, -3 );
+
+				lua_pushstring( L, "width" );
+				lua_pushnumber( L, Data.width() );
+				lua_settable( L, -3 );
+
+				lua_pushstring( L, "height" );
+				lua_pushnumber( L, Data.height() );
+				lua_settable( L, -3 );
+
+				return( 1 );
+			}
 
 		default:
 			break;
