@@ -1413,7 +1413,7 @@ void MediaSegment::readNext()
 
 	while( true )
 	{
-		if( AudioStream )
+		if( AudioStream && !VideoStream )
 		{
 
 		}
