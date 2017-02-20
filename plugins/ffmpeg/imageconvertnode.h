@@ -48,11 +48,24 @@ public:
 protected slots:
 	void formatChanged( const QString &pFormat );
 
+private:
+	// From QImage
+
+	static QTransform trueMatrix(const QTransform &matrix, int w, int h)
+	{
+		const QRectF rect(0, 0, w, h);
+		const QRect mapped = matrix.mapRect(rect).toAlignedRect();
+		const QPoint delta = mapped.topLeft();
+		return matrix * QTransform().translate(-delta.x(), -delta.y());
+	}
+
 protected:
-	QSharedPointer<fugio::PinInterface>			 mPinInput;
+	QSharedPointer<fugio::PinInterface>			 mPinInputImage;
+	QSharedPointer<fugio::PinInterface>			 mPinInputWidth;
+	QSharedPointer<fugio::PinInterface>			 mPinInputHeight;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::ImageInterface						*mOutput;
+	fugio::ImageInterface						*mValOutputImage;
 
 	fugio::ImageInterface::Format				 mCurrImageFormat;
 	fugio::ImageInterface::Format				 mLastImageFormat;
