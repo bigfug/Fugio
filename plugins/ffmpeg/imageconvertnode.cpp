@@ -56,6 +56,7 @@ ImageConvertNode::ImageConvertNode( QSharedPointer<NodeInterface> pNode )
 		mImageFormatMap.insert( ImageInterface::FORMAT_BGR8, "BGR8" );
 		mImageFormatMap.insert( ImageInterface::FORMAT_BGRA8, "BGRA8" );
 		mImageFormatMap.insert( ImageInterface::FORMAT_YUYV422, "YUYV422" );
+		mImageFormatMap.insert( ImageInterface::FORMAT_YUV420P, "YUV420P" );
 		mImageFormatMap.insert( ImageInterface::FORMAT_GRAY16, "GRAY16" );
 		mImageFormatMap.insert( ImageInterface::FORMAT_GRAY8, "GRAY8" );
 	}
@@ -163,6 +164,10 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 				SrcFmt = AV_PIX_FMT_UYVY422;
 				break;
 
+			case ImageInterface::FORMAT_YUV420P:
+				SrcFmt = AV_PIX_FMT_YUV420P;
+				break;
+
 			default:
 				break;
 		}
@@ -196,6 +201,10 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 
 		case ImageInterface::FORMAT_YUYV422:
 			DstFmt = AV_PIX_FMT_UYVY422;
+			break;
+
+		case ImageInterface::FORMAT_YUV420P:
+			DstFmt = AV_PIX_FMT_YUV420P;
 			break;
 
 		default:
