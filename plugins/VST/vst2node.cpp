@@ -215,6 +215,7 @@ void VST2Node::inputsUpdated( qint64 pTimeStamp )
 	//	mNode->context()->pinUpdated( mPinOutput );
 }
 
+#if defined( VST_SUPPORTED )
 VstIntPtr VST2Node::audioMaster( AEffect *effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void *dataPtr, float opt )
 {
 	PluginVst2xId pluginId;
@@ -331,3 +332,4 @@ void VST2Node::dispatch( VstInt32 opcode, VstInt32 index, VstIntPtr value, void 
 {
 	mDispatcher( mEffect, opcode, index, value, dataPtr, opt );
 }
+#endif
