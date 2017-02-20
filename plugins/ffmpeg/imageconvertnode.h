@@ -69,6 +69,7 @@ protected:
 
 	fugio::ImageInterface::Format				 mCurrImageFormat;
 	fugio::ImageInterface::Format				 mLastImageFormat;
+	QSize										 mLastImageSize;
 
 #if defined( FFMPEG_SUPPORTED )
 	SwsContext									*mScaleContext;

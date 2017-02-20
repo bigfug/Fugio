@@ -90,11 +90,18 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( !SrcImg || !SrcImg->isValid() )
 	{
+		if( mScaleContext )
+		{
+			sws_freeContext( mScaleContext );
+
+			mScaleContext = 0;
+		}
+
 		return;
 	}
 
 #if defined( FFMPEG_SUPPORTED )
-	if( mCurrImageFormat != mLastImageFormat )
+	if( mCurrImageFormat != mLastImageFormat || SrcImg->size() != mLastImageSize )
 	{
 		if( mScaleContext )
 		{
@@ -104,6 +111,7 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 		}
 
 		mLastImageFormat = mCurrImageFormat;
+		mLastImageSize   = SrcImg->size();
 	}
 
 	AVPixelFormat		SrcFmt = AV_PIX_FMT_NONE;
