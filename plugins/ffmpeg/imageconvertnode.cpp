@@ -159,6 +159,10 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 				SrcFmt = AV_PIX_FMT_RGBA;
 				break;
 
+			case ImageInterface::FORMAT_YUYV422:
+				SrcFmt = AV_PIX_FMT_UYVY422;
+				break;
+
 			default:
 				break;
 		}
@@ -191,7 +195,7 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			break;
 
 		case ImageInterface::FORMAT_YUYV422:
-			DstFmt = AV_PIX_FMT_YUV422P;
+			DstFmt = AV_PIX_FMT_UYVY422;
 			break;
 
 		default:
