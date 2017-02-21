@@ -148,6 +148,8 @@ exists( $$PWD/../../../FugioPlugins/include ) {
 		mediaplayervideopreview.h
 
 	FORMS += mediaplayervideopreview.ui
+
+	DEFINES += TIMELINE_SUPPORTED
 }
 
 #------------------------------------------------------------------------------
