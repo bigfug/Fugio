@@ -220,11 +220,6 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 		}
 	}
 
-	if( !mLoaded )
-	{
-		return;
-	}
-
 	if( mNode->status() != fugio::NodeInterface::Initialised )
 	{
 		mNode->setStatus( fugio::NodeInterface::Initialised );
@@ -255,12 +250,15 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 				{
 					pinUpdated( mPinOutputRects );
 
-					pinUpdated( mPinOutputShapes );
+					if( mLoaded )
+					{
+						pinUpdated( mPinOutputShapes );
+					}
 				}
 
 				mValOutputRects->setCount( dets.size() );
 
-				mValOutputShapes->setCount( dets.size() );
+				mValOutputShapes->setCount( mLoaded ? dets.size() : 0 );
 
 				if( !dets.empty() )
 				{
@@ -270,26 +268,27 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 					{
 						const rectangle	&r = dets[ j ];
 
-						full_object_detection shape = mShapePredictor( SrcMat, r );
+						*R++ = QRect( r.left(), r.top(), r.width(), r.height() );
 
-						const rectangle	&r2 = shape.get_rect();
-
-						*R++ = QRect( r2.left(), r2.top(), r2.width(), r2.height() );
-
-						fugio::ArrayInterface	*ShapeArray = mValOutputShapes->arrayIndex( j );
-
-						ShapeArray->setSize( 1 );
-						ShapeArray->setStride( sizeof( QPoint ) );
-						ShapeArray->setType( QMetaType::QPoint );
-						ShapeArray->setCount( shape.num_parts() );
-
-						QPoint		*P = (QPoint *)ShapeArray->array();
-
-						for( unsigned long i = 0; i < shape.num_parts() ; ++i )
+						if( mLoaded )
 						{
-							const point &p = shape.part( i );
+							full_object_detection shape = mShapePredictor( SrcMat, r );
 
-							*P++ = QPoint( p.x(), p.y() );
+							fugio::ArrayInterface	*ShapeArray = mValOutputShapes->arrayIndex( j );
+
+							ShapeArray->setSize( 1 );
+							ShapeArray->setStride( sizeof( QPoint ) );
+							ShapeArray->setType( QMetaType::QPoint );
+							ShapeArray->setCount( shape.num_parts() );
+
+							QPoint		*P = (QPoint *)ShapeArray->array();
+
+							for( unsigned long i = 0; i < shape.num_parts() ; ++i )
+							{
+								const point &p = shape.part( i );
+
+								*P++ = QPoint( p.x(), p.y() );
+							}
 						}
 					}
 				}
