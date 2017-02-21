@@ -24,7 +24,7 @@ SOURCES += \
     mediarecorderform.cpp \
     mediarecordernode.cpp \
     mediapreset/mediapresetmanager.cpp \
-    mediaprocessornode.cpp
+	mediaprocessornode.cpp
 
 HEADERS += \
 	../../include/fugio/ffmpeg/uuid.h \
@@ -51,7 +51,10 @@ HEADERS += \
     mediapreset/mediaYouTube1080pWide.h \
     mediaprocessornode.h \
     processoraudiobuffer.h \
-    mediapreset/mediapresetinterface.h
+	mediapreset/mediapresetinterface.h
+
+FORMS += \
+	mediarecorderform.ui
 
 windows {
 	QMAKE_LFLAGS_DEBUG += /INCREMENTAL:NO
@@ -134,6 +137,18 @@ windows {
 # API
 
 INCLUDEPATH += $$PWD/../../include
+
+exists( $$PWD/../../../FugioPlugins/include ) {
+	INCLUDEPATH += $$PWD/../../../FugioPlugins/include
+
+	SOURCES += mediatimelinenode.cpp \
+		mediaplayervideopreview.cpp
+
+	HEADERS += mediatimelinenode.h \
+		mediaplayervideopreview.h
+
+	FORMS += mediaplayervideopreview.ui
+}
 
 #------------------------------------------------------------------------------
 # ffmpeg
@@ -223,6 +238,3 @@ contains( DEFINES, FFMPEG_SUPPORTED ) {
 !contains( DEFINES, FFMPEG_SUPPORTED ) {
 	warning( "FFMPEG not supported" )
 }
-
-FORMS += \
-    mediarecorderform.ui

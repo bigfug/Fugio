@@ -84,49 +84,27 @@ private:
 	static QString av_err( const QString &pHeader, int pErrorCode );
 
 private:
-	Options				mOptions;
+	Options					mOptions;
 
 #if defined( FFMPEG_SUPPORTED )
-	QString				 mFileName;
-	AVFormatContext		*mFormatContext;
-	int					 mAudioStream;
-	AVCodecContext		*mAudioCodecContext;
-	AVCodec				*mAudioCodec;
-	AVFrame				*mFrameSrc;
-	AVFrame				*mFrameDst;
-	int					 mPacketSize;
-	AVPacket			 mPacket;
-
-	SwsContext			*mScaleContext;
+	QString					 mFileName;
+	AVFormatContext			*mFormatContext;
+	int						 mAudioStream;
+	AVCodecContext			*mAudioCodecContext;
+	AVCodec					*mAudioCodec;
+	AVFrame					*mFrameSrc;
+	int						 mPacketSize;
+	AVPacket				 mPacket;
 
 #if defined( TL_USE_LIB_AV )
 #else
-    SwrContext			*mSwrContext;
+	SwrContext				*mSwrContext;
 #endif
 
-	qreal 				 mAudioPTS;
-	qreal				 mAudioSamplePTS;
-	qreal				 mFrameReadDuration;
-	qreal				 mFrameReadPTS;
-	qreal				 mFrameCurrDuration;
-	qreal				 mFrameCurrPTS;
-	qreal				 mFrameDurationAverage;
-
-	int					 mFrameIdx1;
-	int					 mFrameIdx2;
-	qreal				 mFrameMix;
-
-	AVCodecParserContext	*AudioParserContext;
-	uint8_t					*ParserData;
-	int						 ParserSize;
-	AVPacket				 mParserPacket;
-
-	int						 mFrameFinished;
+	qreal					 mAudioPTS;
+	qreal					 mAudioSamplePTS;
 
 	bool					 mErrorState;
-
-	uint8_t					*SrcDat;
-	int						 SrcLen;
 
 	qreal					 mDuration;
 
@@ -136,8 +114,6 @@ private:
 
 	bool					 mCalculated;
 	bool					 mPreloaded;
-	bool					 mDecodeI;
-	bool					 mDecodeB;
 
 	class AudPrv
 	{
@@ -159,7 +135,7 @@ private:
 	int						mSampleRate;
 	enum AVSampleFormat		mSampleFmt;
 
-	AudioBuffer			mAD;
+	AudioBuffer				mAD;
 
 	QVector<QVector<float>>	mAudBuf;
 
