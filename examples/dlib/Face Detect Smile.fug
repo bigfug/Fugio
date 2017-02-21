@@ -247,7 +247,7 @@ name=Output
 direction=2
 order=0
 uuid=261cc653-d7fa-4c34-a08b-3603e8ae71d5
-control\array=@ByteArray(\xe3\0\0\0Y\0\0\0J\x1\0\0\xc0\0\0\0)
+control\array=@ByteArray(\xad\0\0\0u\0\0\0\xf5\0\0\0\xbd\0\0\0)
 
 [94028d8a-a66b-4b17-8f5a-4eeebb9fa218]
 version=2
@@ -304,7 +304,7 @@ uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
 
 [00502bed-5971-4dbc-a6d7-7bfc7f1791d1]
 version=2
-name=LCD Number
+name=Smile Ratio
 inputs\1\ba430199-941b-4e0f-9b50-9846923e33ed=00000000-0000-0000-0000-000000000000
 inputs\size=1
 outputs\size=0

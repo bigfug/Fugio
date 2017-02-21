@@ -167,19 +167,21 @@ FaceFeaturesNode::FaceFeaturesNode( QSharedPointer<fugio::NodeInterface> pNode )
 	FUGID( PIN_INPUT_IMAGE, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
 	FUGID( PIN_OUTPUT_RECTS, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
 	FUGID( PIN_OUTPUT_SHAPES, "249f2932-f483-422f-b811-ab679f006381" );
-	//FUGID( PIN_XXX_XXX, "ce8d578e-c5a4-422f-b3c4-a1bdf40facdb" );
-
-	mPinInputData = pinInput( "Data", PIN_INPUT_DATA );
+	FUGID( PIN_OUTPUT_CHIPS, "ce8d578e-c5a4-422f-b3c4-a1bdf40facdb" );
 
 	mPinInputImage = pinInput( "Image", PIN_INPUT_IMAGE );
+
+	mPinInputData = pinInput( "Data", PIN_INPUT_DATA );
 
 	mValOutputRects = pinOutput<fugio::ArrayInterface *>( "Rects", mPinOutputRects, PID_ARRAY, PIN_OUTPUT_RECTS );
 
 	mValOutputRects->setSize( 1 );
-	mValOutputRects->setStride( sizeof( QRect ) );
-	mValOutputRects->setType( QMetaType::QRect );
+	mValOutputRects->setStride( sizeof( QRectF ) );
+	mValOutputRects->setType( QMetaType::QRectF );
 
 	mValOutputShapes = pinOutput<fugio::ArrayListInterface *>( "Shapes", mPinOutputShapes, PID_ARRAY_LIST, PIN_OUTPUT_SHAPES );
+
+	mValOutputChips = pinOutput<fugio::ArrayListInterface *>( "Chips", mPinOutputChips, PID_ARRAY_LIST, PIN_OUTPUT_CHIPS );
 
 	mDetector = get_frontal_face_detector();
 }
@@ -246,52 +248,83 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 
 				std::vector<rectangle> dets = mDetector( SrcMat );
 
-				if( dets.size() != mValOutputRects->count() )
-				{
-					pinUpdated( mPinOutputRects );
-
-					if( mLoaded )
-					{
-						pinUpdated( mPinOutputShapes );
-					}
-				}
-
 				mValOutputRects->setCount( dets.size() );
 
 				mValOutputShapes->setCount( mLoaded ? dets.size() : 0 );
 
+				mValOutputChips->setCount( mLoaded ? dets.size() : 0 );
+
 				if( !dets.empty() )
 				{
-					QRect		*R = (QRect *)mValOutputRects->array();
+					std::vector<full_object_detection> shapes;
 
-					for (unsigned long j = 0; j < dets.size(); ++j)
+					QRectF		*R = (QRectF *)mValOutputRects->array();
+
+					for( unsigned long j = 0; j < dets.size(); ++j )
 					{
 						const rectangle	&r = dets[ j ];
 
-						*R++ = QRect( r.left(), r.top(), r.width(), r.height() );
+						*R++ = QRectF( r.left(), r.top(), r.width(), r.height() );
 
 						if( mLoaded )
 						{
 							full_object_detection shape = mShapePredictor( SrcMat, r );
 
+							shapes.push_back( shape );
+
 							fugio::ArrayInterface	*ShapeArray = mValOutputShapes->arrayIndex( j );
 
 							ShapeArray->setSize( 1 );
-							ShapeArray->setStride( sizeof( QPoint ) );
+							ShapeArray->setStride( sizeof( int ) * 2 );
 							ShapeArray->setType( QMetaType::QPoint );
 							ShapeArray->setCount( shape.num_parts() );
 
-							QPoint		*P = (QPoint *)ShapeArray->array();
+							int		*P = (int *)ShapeArray->array();
 
 							for( unsigned long i = 0; i < shape.num_parts() ; ++i )
 							{
 								const point &p = shape.part( i );
 
-								*P++ = QPoint( p.x(), p.y() );
+								*P++ = p.x();	*P++ = p.y();
 							}
 						}
 					}
+
+					if( mLoaded )
+					{
+						const std::vector<chip_details> chips = get_face_chip_details( shapes );
+
+						for( unsigned long j = 0 ; j < chips.size() ; ++j )
+						{
+							const chip_details	&c = chips[ j ];
+
+							const dlib::vector<double,2> cent = center( c.rect );
+
+							const dlib::vector<double,2> r0 = rotate_point<double>( cent, c.rect.tl_corner(), c.angle );
+							const dlib::vector<double,2> r1 = rotate_point<double>( cent, c.rect.tr_corner(), c.angle );
+							const dlib::vector<double,2> r2 = rotate_point<double>( cent, c.rect.br_corner(), c.angle );
+							const dlib::vector<double,2> r3 = rotate_point<double>( cent, c.rect.bl_corner(), c.angle );
+
+							fugio::ArrayInterface	*ChipArray = mValOutputChips->arrayIndex( j );
+
+							ChipArray->setSize( 1 );
+							ChipArray->setStride( sizeof( float ) * 2 );
+							ChipArray->setType( QMetaType::QPointF );
+							ChipArray->setCount( 4 );
+
+							float		*P = (float *)ChipArray->array();
+
+							*P++ = r0.x();	*P++ = r0.y();
+							*P++ = r1.x();	*P++ = r1.y();
+							*P++ = r2.x();	*P++ = r2.y();
+							*P++ = r3.x();	*P++ = r3.y();
+						}
+					}
 				}
+
+				pinUpdated( mPinOutputRects );
+				pinUpdated( mPinOutputShapes );
+				pinUpdated( mPinOutputChips );
 			}
 			catch( ... )
 			{

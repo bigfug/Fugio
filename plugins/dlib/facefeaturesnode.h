@@ -52,6 +52,9 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinOutputShapes;
 	fugio::ArrayListInterface					*mValOutputShapes;
 
+	QSharedPointer<fugio::PinInterface>			 mPinOutputChips;
+	fugio::ArrayListInterface					*mValOutputChips;
+
 	volatile bool								 mLoading;
 	volatile bool								 mLoaded;
 
