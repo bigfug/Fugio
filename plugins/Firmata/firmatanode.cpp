@@ -578,7 +578,21 @@ void FirmataNode::contextFrameProcess( qint64 pTimeStamp )
 
 					case DIGITAL_MESSAGE:		// digital I/O message
 						{
-							setDigitalValue( mMessageChannel, ( mMessageData2 << 7 ) | mMessageData1 );
+							int			BitMsk = ( mMessageData2 << 7 ) | mMessageData1;
+
+							for( int i = 0 ; i <= 7 ; i++ )
+							{
+								int		ChnMsk = 1 << i;
+
+								if( ( BitMsk & ChnMsk ) != 0 )
+								{
+									setDigitalValue( i, true );
+								}
+								else
+								{
+									setDigitalValue( i, false );
+								}
+							}
 						}
 						break;
 
