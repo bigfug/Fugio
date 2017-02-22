@@ -106,9 +106,9 @@ void FirmataNode::processSysEx( const QByteArray &pSysEx )
 
 			qDebug() << "REPORT_FIRMWARE" << VerMaj << VerMin << FirmwareName;
 
-			mOutputCommands.append( START_SYSEX );
-			mOutputCommands.append( CAPABILITY_QUERY );
-			mOutputCommands.append( END_SYSEX );
+			mOutputCommands.append( char( START_SYSEX ) );
+			mOutputCommands.append( char( CAPABILITY_QUERY ) );
+			mOutputCommands.append( char( END_SYSEX ) );
 		}
 	}
 	else if( pSysEx[ 0 ] == STRING_DATA )
@@ -180,9 +180,9 @@ void FirmataNode::processSysEx( const QByteArray &pSysEx )
 
 		std::sort( mPinIdxList.begin(), mPinIdxList.end() );
 
-		mOutputCommands.append( START_SYSEX );
-		mOutputCommands.append( ANALOG_MAPPING_QUERY );
-		mOutputCommands.append( END_SYSEX );
+		mOutputCommands.append( char( START_SYSEX ) );
+		mOutputCommands.append( char( ANALOG_MAPPING_QUERY ) );
+		mOutputCommands.append( char( END_SYSEX ) );
 	}
 	else if( pSysEx[ 0 ] == ANALOG_MAPPING_RESPONSE )
 	{
@@ -281,10 +281,10 @@ void FirmataNode::beginPinStateQuery( void )
 
 	if( !mPinIdxList.isEmpty() )
 	{
-		mOutputCommands.append( START_SYSEX );
-		mOutputCommands.append( PIN_STATE_QUERY );
+		mOutputCommands.append( char( START_SYSEX ) );
+		mOutputCommands.append( char( PIN_STATE_QUERY ) );
 		mOutputCommands.append( mPinIdxList.at( mPinStateQueryIdx ) );
-		mOutputCommands.append( END_SYSEX );
+		mOutputCommands.append( char( END_SYSEX ) );
 	}
 }
 
@@ -294,10 +294,10 @@ void FirmataNode::nextPinStateQuery( void )
 
 	if( mPinIdxList.size() > mPinStateQueryIdx )
 	{
-		mOutputCommands.append( START_SYSEX );
-		mOutputCommands.append( PIN_STATE_QUERY );
+		mOutputCommands.append( char( START_SYSEX ) );
+		mOutputCommands.append( char( PIN_STATE_QUERY ) );
 		mOutputCommands.append( mPinIdxList.at( mPinStateQueryIdx ) );
-		mOutputCommands.append( END_SYSEX );
+		mOutputCommands.append( char( END_SYSEX ) );
 	}
 }
 
@@ -479,7 +479,7 @@ void FirmataNode::editPins()
 
 			addPin( PinIdx, Type );
 
-			mOutputCommands.append( SET_PIN_MODE );
+			mOutputCommands.append( char( SET_PIN_MODE ) );
 			mOutputCommands.append( char( PinIdx ) );
 			mOutputCommands.append( char( Type ) );
 		}
@@ -498,7 +498,7 @@ void FirmataNode::contextFrameProcess( qint64 pTimeStamp )
 
 		mLastResponse = QDateTime::currentMSecsSinceEpoch();
 
-		mOutputCommands.append( PROTOCOL_VERSION );
+		mOutputCommands.append( char( PROTOCOL_VERSION ) );
 	}
 
 	if( mPinInputData->isUpdated( pTimeStamp ) )
@@ -606,9 +606,15 @@ void FirmataNode::contextFrameProcess( qint64 pTimeStamp )
 						{
 							qDebug() << "Firmata Protocol Version:" << mMessageData1 << mMessageData2;
 
-							mOutputCommands.append( START_SYSEX );
-							mOutputCommands.append( CAPABILITY_QUERY );
-							mOutputCommands.append( END_SYSEX );
+							mOutputCommands.append( char( START_SYSEX ) );
+							mOutputCommands.append( char( CAPABILITY_QUERY ) );
+							mOutputCommands.append( char( END_SYSEX ) );
+						}
+						break;
+
+					default:
+						{
+							qDebug() << "UNKNOWN:" << QString::number( mMessageType, 16 );
 						}
 						break;
 				}
@@ -650,20 +656,20 @@ void FirmataNode::contextFrameFinalise( qint64 pTimeStamp )
 
 				if( PinTyp == OUTPUT )
 				{
-					mOutputCommands.append(	SET_DIGITAL_VALUE );
+					mOutputCommands.append(	char( SET_DIGITAL_VALUE ) );
 					mOutputCommands.append( char( PinIdx ) );
-					mOutputCommands.append(	V.toBool() ? 0x01 : 0x00 );
+					mOutputCommands.append(	char( V.toBool() ? 0x01 : 0x00 ) );
 				}
 				else if( PinTyp == PWM )
 				{
 					const int	i = V.toInt();
 
-					mOutputCommands.append( START_SYSEX );
-					mOutputCommands.append( EXTENDED_ANALOG );
+					mOutputCommands.append( char( START_SYSEX ) );
+					mOutputCommands.append( char( EXTENDED_ANALOG ) );
 					mOutputCommands.append( char( PinIdx ) );
-					mOutputCommands.append( ( i >> 0 ) & 0x7f );
-					mOutputCommands.append( ( i >> 7 ) & 0x7f );
-					mOutputCommands.append( END_SYSEX );
+					mOutputCommands.append( char( ( i >> 0 ) & 0x7f ) );
+					mOutputCommands.append( char( ( i >> 7 ) & 0x7f ) );
+					mOutputCommands.append( char( END_SYSEX ) );
 				}
 			}
 		}
