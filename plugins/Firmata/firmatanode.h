@@ -83,6 +83,9 @@ protected:
 
 	quint8										 mPinStateQueryIdx;
 
+	quint16										 mDigitalOutputValues;
+	quint16										 mDigitalOutputReport;
+
 	QByteArray									 mOutputCommands;
 
 	qint64										 mLastUpdate;

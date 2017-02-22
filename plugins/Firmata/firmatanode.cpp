@@ -19,7 +19,7 @@
 
 FirmataNode::FirmataNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mLastResponse( 0 ), mInSysEx( false ), mMessageCount( 0 ),
-	  mLastUpdate( 0 )
+	  mDigitalOutputValues( 0 ), mDigitalOutputReport( 0 ), mLastUpdate( 0 )
 {
 	FUGID( PIN_INPUT_DATA, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 	FUGID( PIN_INPUT_RESET, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
@@ -343,15 +343,21 @@ void FirmataNode::pinLinked( QSharedPointer<fugio::PinInterface> S, QSharedPoint
 			{
 				if( mPinAnalogMap.at( PinIdx ) == 0x7f )
 				{
-					mOutputCommands.append( REPORT_DIGITAL_PIN + PinIdx );
+					quint16		RepMsk = 1 << PinIdx;
+
+					if( ( mDigitalOutputReport & RepMsk ) == 0 )
+					{
+						mDigitalOutputReport |= RepMsk;
+
+						mOutputCommands.append( char( REPORT_DIGITAL_PIN | quint8( ( mDigitalOutputReport >> 7 ) & 0x0f ) ) );
+						mOutputCommands.append( char( mDigitalOutputReport & 0x7f ) );
+					}
 				}
 				else
 				{
 					mOutputCommands.append( REPORT_ANALOG_PIN + mPinAnalogMap[ PinIdx ] );
+					mOutputCommands.append( char( 1 ) );
 				}
-
-				mOutputCommands.append( char( 1 ) );
-				mOutputCommands.append( char( 0 ) );
 			}
 		}
 	}
@@ -371,15 +377,21 @@ void FirmataNode::pinUnlinked( QSharedPointer<fugio::PinInterface> S, QSharedPoi
 			{
 				if( mPinAnalogMap.at( PinIdx ) == 0x7f )
 				{
-					mOutputCommands.append( REPORT_DIGITAL_PIN + PinIdx );
+					quint16		RepMsk = 1 << PinIdx;
+
+					if( ( mDigitalOutputReport & RepMsk ) != 0 )
+					{
+						mDigitalOutputReport ^= ~RepMsk;
+
+						mOutputCommands.append( char( REPORT_DIGITAL_PIN | quint8( ( mDigitalOutputReport >> 7 ) & 0x0f ) ) );
+						mOutputCommands.append( char( mDigitalOutputReport & 0x7f ) );
+					}
 				}
 				else
 				{
 					mOutputCommands.append( REPORT_ANALOG_PIN + mPinAnalogMap[ PinIdx ] );
+					mOutputCommands.append( char( 0 ) );
 				}
-
-				mOutputCommands.append( char( 0 ) );
-				mOutputCommands.append( char( 0 ) );
 			}
 		}
 	}
@@ -578,19 +590,24 @@ void FirmataNode::contextFrameProcess( qint64 pTimeStamp )
 
 					case DIGITAL_MESSAGE:		// digital I/O message
 						{
-							int			BitMsk = ( mMessageData2 << 7 ) | mMessageData1;
+							quint16			BitMsk = ( mMessageData2 << 7 ) | mMessageData1;
 
-							for( int i = 0 ; i <= 7 ; i++ )
+							for( int i = 0 ; i < mPinIdxList.size() ; i++ )
 							{
-								int		ChnMsk = 1 << i;
+								quint16		PinIdx = mPinIdxList[ i ];
 
-								if( ( BitMsk & ChnMsk ) != 0 )
+								if( mPinAnalogMap.at( i ) == 0x7f && mPinMapType.value( PinIdx ) == INPUT )
 								{
-									setDigitalValue( i, true );
-								}
-								else
-								{
-									setDigitalValue( i, false );
+									quint16		ChnMsk = 1 << PinIdx;
+
+									if( ( BitMsk & ChnMsk ) != 0 )
+									{
+										setDigitalValue( PinIdx, true );
+									}
+									else
+									{
+										setDigitalValue( PinIdx, false );
+									}
 								}
 							}
 						}
@@ -628,7 +645,7 @@ void FirmataNode::contextFrameProcess( qint64 pTimeStamp )
 
 					default:
 						{
-							qDebug() << "UNKNOWN:" << QString::number( mMessageType, 16 );
+							qDebug() << "FIRMATA UNKNOWN:" << QString::number( mMessageType, 16 );
 						}
 						break;
 				}
@@ -667,6 +684,21 @@ void FirmataNode::contextFrameFinalise( qint64 pTimeStamp )
 			{
 				QVariant		V = variant( P );
 				int				PinTyp = mPinMapType.value( PinIdx );
+				int				PinRes = 14;
+
+				for( QPair<int,int> P : mPinMapData.values( PinIdx ) )
+				{
+					if( P.first != PinTyp )
+					{
+						continue;
+					}
+
+					PinRes = P.second;
+
+					break;
+				}
+
+				PinRes = ( 1 << PinRes ) - 1;
 
 				if( PinTyp == OUTPUT )
 				{
@@ -676,7 +708,8 @@ void FirmataNode::contextFrameFinalise( qint64 pTimeStamp )
 				}
 				else if( PinTyp == PWM )
 				{
-					const int	i = V.toInt();
+					const float v = V.toFloat();
+					const int   i = v * PinRes;
 
 					mOutputCommands.append( char( START_SYSEX ) );
 					mOutputCommands.append( char( EXTENDED_ANALOG ) );
@@ -713,6 +746,11 @@ void FirmataNode::addPin( int pIdx, int pType )
 
 	if( pType == OUTPUT || pType == PWM )
 	{
+		if( pIdx < 16 )
+		{
+			mDigitalOutputReport &= ~( 1 << pIdx );
+		}
+
 		if( true )
 		{
 			PinMapOutput::iterator	it = mPinMapOutput.find( pIdx );
@@ -739,6 +777,11 @@ void FirmataNode::addPin( int pIdx, int pType )
 	}
 	else
 	{
+		if( pIdx < 16 )
+		{
+			mDigitalOutputReport |= ( 1 << pIdx );
+		}
+
 		QUuid		ControlUuid;
 
 		if( pType == INPUT )
