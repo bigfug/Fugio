@@ -752,6 +752,8 @@ void FirmataNode::addPin( int pIdx, int pType )
 				{
 					return;
 				}
+
+				mNode->removePin( it.value().first );
 			}
 		}
 
