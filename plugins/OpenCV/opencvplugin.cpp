@@ -16,6 +16,7 @@
 #include "resizenode.h"
 #include "equalizehistnode.h"
 #include "cascadeclassifiernode.h"
+#include "momentsnode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -35,6 +36,7 @@ ClassEntry	OpenCVPlugin::mNodeEntries[] =
 	ClassEntry( "Image Homography", "OpenCV", NID_OPENCV_IMAGE_HOMOGRAPHY, &ImageHomographyNode::staticMetaObject ),
 	ClassEntry( "Background Subtraction", "OpenCV", NID_OPENCV_BACKGROUND_SUBTRACTION, &BackgroundSubtractionNode::staticMetaObject ),
 	ClassEntry( "Resize", "OpenCV", ClassEntry::Deprecated, NID_OPENCV_RESIZE, &ResizeNode::staticMetaObject ),
+	ClassEntry( "Moments", "OpenCV", NID_OPENCV_MOMENTS, &MomentsNode::staticMetaObject ),
 	ClassEntry()
 };
 
