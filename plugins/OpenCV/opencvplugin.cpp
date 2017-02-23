@@ -31,7 +31,7 @@ ClassEntry	OpenCVPlugin::mNodeEntries[] =
 	ClassEntry( "InPaint", "OpenCV", NID_OPENCV_INPAINT, &InPaintNode::staticMetaObject ),
 	ClassEntry( "InRange", "OpenCV", NID_OPENCV_INRANGE, &InRangeNode::staticMetaObject ),
 	ClassEntry( "Video Capture", "OpenCV", ClassEntry::Deprecated, NID_OPENCV_VIDEO_CAPTURE, &VideoCaptureNode::staticMetaObject ),		// Unstable!
-	ClassEntry( "Image Convert", "OpenCV", ClassEntry::Deprecated, NID_OPENCV_IMAGE_CONVERT, &ImageConvertNode::staticMetaObject ),
+	ClassEntry( "Image Convert", "OpenCV", NID_OPENCV_IMAGE_CONVERT, &ImageConvertNode::staticMetaObject ),
 	ClassEntry( "Image Homography", "OpenCV", NID_OPENCV_IMAGE_HOMOGRAPHY, &ImageHomographyNode::staticMetaObject ),
 	ClassEntry( "Background Subtraction", "OpenCV", NID_OPENCV_BACKGROUND_SUBTRACTION, &BackgroundSubtractionNode::staticMetaObject ),
 	ClassEntry( "Resize", "OpenCV", ClassEntry::Deprecated, NID_OPENCV_RESIZE, &ResizeNode::staticMetaObject ),
@@ -99,11 +99,11 @@ cv::Mat OpenCVPlugin::image2mat( fugio::ImageInterface *pSrcImg )
 			break;
 
 		case fugio::ImageInterface::FORMAT_GRAY8:
-			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_8U, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
+			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_8UC1, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
 			break;
 
 		case fugio::ImageInterface::FORMAT_GRAY16:
-			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_16U, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
+			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_16UC1, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
 			break;
 
 		case fugio::ImageInterface::FORMAT_YUYV422:

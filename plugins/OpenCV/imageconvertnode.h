@@ -21,7 +21,7 @@ class ImageConvertNode : public fugio::NodeControlBase
 public:
 	Q_INVOKABLE explicit ImageConvertNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~ImageConvertNode( void );
+	virtual ~ImageConvertNode( void ) {}
 
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 

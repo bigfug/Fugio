@@ -39,11 +39,6 @@ ImageConvertNode::ImageConvertNode( QSharedPointer<fugio::NodeInterface> pNode )
 	}
 }
 
-ImageConvertNode::~ImageConvertNode( void )
-{
-
-}
-
 QWidget *ImageConvertNode::gui( void )
 {
 	QComboBox		*GUI = new QComboBox();
@@ -128,6 +123,22 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 
 	switch( SrcImg->format() )
 	{
+		case fugio::ImageInterface::FORMAT_HSV8:
+			switch( mDestinationFormat )
+			{
+				case fugio::ImageInterface::FORMAT_BGR8:
+					CvtCod = CV_HSV2BGR;
+					break;
+
+				case fugio::ImageInterface::FORMAT_RGB8:
+					CvtCod = CV_HSV2RGB;
+					break;
+
+				default:
+					break;
+			}
+			break;
+
 		case fugio::ImageInterface::FORMAT_RGB8:
 			switch( mDestinationFormat )
 			{
