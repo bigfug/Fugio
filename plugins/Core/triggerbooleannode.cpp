@@ -9,9 +9,17 @@
 TriggerBooleanNode::TriggerBooleanNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mTimeStart( 0 )
 {
-	mPinInput  = pinInput( "Trigger" );
+	FUGID( PIN_INPUT_DURATION, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+	FUGID( PIN_INPUT_TRIGGER, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_OUTPUT_BOOLEAN, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "Boolean", mPinOutput, PID_BOOL );
+	mPinInputDuration = pinInput( "Duration", PIN_INPUT_DURATION );
+
+	mPinInputDuration->setValue( 250 );
+
+	mPinInput  = pinInput( "Trigger", PIN_INPUT_TRIGGER );
+
+	mValOutput = pinOutput<fugio::VariantInterface *>( "Boolean", mPinOutput, PID_BOOL, PIN_OUTPUT_BOOLEAN );
 
 	mValOutput->setVariant( false );
 }
@@ -22,14 +30,11 @@ void TriggerBooleanNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( mPinInput->isUpdated( pTimeStamp ) )
 	{
-		if( !mValOutput->variant().toBool() )
-		{
-			mValOutput->setVariant( true );
+		mValOutput->setVariant( true );
 
-			pinUpdated( mPinOutput );
+		pinUpdated( mPinOutput );
 
-			connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(contextFrame(qint64)) );
-		}
+		connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(contextFrame(qint64)) );
 
 		mTimeStart = pTimeStamp;
 	}
@@ -37,7 +42,9 @@ void TriggerBooleanNode::inputsUpdated( qint64 pTimeStamp )
 
 void TriggerBooleanNode::contextFrame( qint64 pTimeStamp )
 {
-	if( pTimeStamp - mTimeStart > 250 )
+	int		Duration = variant( mPinInputDuration ).toInt();
+
+	if( pTimeStamp - mTimeStart > Duration )
 	{
 		mValOutput->setVariant( false );
 

@@ -32,6 +32,7 @@ private slots:
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
+	QSharedPointer<fugio::PinInterface>			 mPinInputDuration;
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
 	fugio::VariantInterface						*mValOutput;
 	qint64										 mTimeStart;
