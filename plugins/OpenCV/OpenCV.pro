@@ -100,8 +100,8 @@ macx {
 # Windows
 
 windows {
-	OPENCV_DIR = $$(LIBS)/opencv-3.1.0
-	OPENCV_VER = 310
+	OPENCV_DIR = $$(LIBS)/opencv-3.2.0
+	OPENCV_VER = 320
 
 	exists( $$OPENCV_DIR ) {
 		INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
@@ -137,7 +137,7 @@ win32:exists( $$OPENCV_DIR/build/lib ) {
 	INCLUDEPATH += $$OPENCV_DIR/build/include
 
 	CONFIG(debug,debug|release) {
-		LIBS += -L$$OPENCV_DIR/build/lib/Debug -lopencv_core$${OPENCV_VER}d -lopencv_imgproc$${OPENCV_VER}d -lopencv_photo$${OPENCV_VER}d -lopencv_highgui$${OPENCV_VER}d -lopencv_video310d -lopencv_videoio$${OPENCV_VER}d -lopencv_objdetect$${OPENCV_VER}d
+		LIBS += -L$$OPENCV_DIR/build/lib/Debug -lopencv_core$${OPENCV_VER}d -lopencv_imgproc$${OPENCV_VER}d -lopencv_photo$${OPENCV_VER}d -lopencv_highgui$${OPENCV_VER}d -lopencv_video$${OPENCV_VER}d -lopencv_videoio$${OPENCV_VER}d -lopencv_objdetect$${OPENCV_VER}d
 	} else {
 		LIBS += -L$$OPENCV_DIR/build/lib/Release -lopencv_core$${OPENCV_VER} -lopencv_imgproc$${OPENCV_VER} -lopencv_photo$${OPENCV_VER} -lopencv_highgui$${OPENCV_VER} -lopencv_video$${OPENCV_VER} -lopencv_videoio$${OPENCV_VER} -lopencv_objdetect$${OPENCV_VER}
 	}

@@ -366,9 +366,9 @@ win32 {
 
 win32 {
 	CONFIG(debug,debug|release) {
-		LIBS += -L$$(LIBS)/opencv-3.1.0/build/bin/Debug
+		LIBS += -L$$(LIBS)/opencv-3.2.0/build/bin/Debug
 	} else {
-		LIBS += -L$$(LIBS)/opencv-3.1.0/build/bin/Release
+		LIBS += -L$$(LIBS)/opencv-3.2.0/build/bin/Release
 	}
 }
 
