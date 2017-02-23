@@ -46,7 +46,7 @@ void FindContoursNode::inputsUpdated( qint64 pTimeStamp )
 	}
 
 #if defined( OPENCV_SUPPORTED )
-	if( true ) //false )
+	if( false )
 	{
 		mNode->context()->futureSync( QtConcurrent::run( &FindContoursNode::conversion, this, pTimeStamp ) );
 	}
@@ -62,38 +62,36 @@ void FindContoursNode::conversion( FindContoursNode *pNode, qint64 pTimeStamp )
 	fugio::Performance	Perf( pNode->node(), "conversion", pTimeStamp );
 
 #if defined( OPENCV_SUPPORTED )
+	std::vector< std::vector<cv::Point> >		 Contours;
+	std::vector<cv::Vec4i>						 Hierarchy;
+
 	fugio::ImageInterface		*SrcImg = pNode->input<fugio::ImageInterface *>( pNode->mPinInputImage );
 
-	cv::Mat						 MatSrc;
+	cv::Mat						 MatSrc = OpenCVPlugin::image2mat( SrcImg ).clone();		// findContrours modifies the source mat
 
-	OpenCVPlugin::image2mat( SrcImg ).copyTo( MatSrc );		// findContrours modifies the source mat
+	cv::findContours( MatSrc, Contours, Hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE );
 
-	pNode->mValOutputContours->clear();
+	pNode->mValOutputContours->setCount( Contours.size() );
 
-	pNode->mValOutputHierarchy->setCount( 0 );
-	pNode->mValOutputHierarchy->setArray( nullptr );
-
-	pNode->mContours.clear();
-	pNode->mHierarchy.clear();
-
-	cv::findContours( MatSrc, pNode->mContours, pNode->mHierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE );
-
-	pNode->mValOutputContours->setCount( pNode->mContours.size() );
-
-	for( unsigned int i = 0 ; i < pNode->mContours.size() ; i++ )
+	for( unsigned int i = 0 ; i < Contours.size() ; i++ )
 	{
-		std::vector<cv::Point>		&Src = pNode->mContours.at( i );
+		std::vector<cv::Point>		&Src = Contours.at( i );
 		fugio::ArrayInterface		*Dst = pNode->mValOutputContours->arrayIndex( i );
 
-		Dst->setArray( Src.data() );
 		Dst->setCount( Src.size() );
-		Dst->setStride( sizeof( cv::Point ) );
+		Dst->setStride( sizeof( int ) * 2 );
 		Dst->setType( QMetaType::QPoint );
 		Dst->setSize( 1 );
+
+		memcpy( Dst->array(), Src.data(), sizeof( int ) * 2 * Src.size() );
 	}
 
-	pNode->mValOutputHierarchy->setCount( pNode->mHierarchy.size() );
-	pNode->mValOutputHierarchy->setArray( pNode->mHierarchy.data() );
+	pNode->mValOutputHierarchy->setCount( Hierarchy.size() );
+
+	if( Hierarchy.size() )
+	{
+		memcpy( pNode->mValOutputHierarchy->array(), Hierarchy.data(), sizeof( int ) * 4 * Hierarchy.size() );
+	}
 
 	pNode->pinUpdated( pNode->mPinOutputContours );
 	pNode->pinUpdated( pNode->mPinOutputHierarchy );

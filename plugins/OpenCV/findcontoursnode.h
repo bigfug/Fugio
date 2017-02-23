@@ -43,8 +43,6 @@ private:
 	fugio::ArrayInterface						*mValOutputHierarchy;
 
 #if defined( OPENCV_SUPPORTED )
-	std::vector<std::vector<cv::Point> >		 mContours;
-	std::vector<cv::Vec4i>						 mHierarchy;
 #endif
 };
 
