@@ -296,7 +296,11 @@ DeviceMidi::DeviceMidi( PmDeviceID pDevIdx )
 
 	const PmDeviceInfo	*DevInf = Pm_GetDeviceInfo( pDevIdx );
 
-	if( DevInf->input )
+	if( !DevInf )
+	{
+		qWarning() << "PortMidi input device no info:" << mDeviceName;
+	}
+	else if( DevInf->input )
 	{
 		if( mDeviceId == pmNoDevice )
 		{
