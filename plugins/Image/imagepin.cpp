@@ -61,6 +61,7 @@ QString ImagePin::toString() const
 		case FORMAT_BGR8:			FmtVal = "FORMAT_BGR8";		break;
 		case FORMAT_BGRA8:			FmtVal = "FORMAT_BGRA8";		break;
 		case FORMAT_YUYV422:		FmtVal = "FORMAT_YUYV422";		break;
+		case FORMAT_YUV420P:		FmtVal = "FORMAT_YUV420P";		break;
 		case FORMAT_GRAY16:			FmtVal = "FORMAT_GRAY16";		break;
 		case FORMAT_GRAY8:			FmtVal = "FORMAT_GRAY8";		break;
 		case FORMAT_RG32:			FmtVal = "FORMAT_RG32";		break;
@@ -83,7 +84,7 @@ quint8 *ImagePin::internalBuffer( int pIndex )
 {
 	Q_ASSERT( pIndex >= 0 && pIndex < PLANE_COUNT );
 
-	const int	BufSiz = mLineWidth[ pIndex ] * mImageSize.height();
+	const int	BufSiz = bufferSize( pIndex ); // mLineWidth[ pIndex ] * mImageSize.height();
 
 	if( mBufferSizes[ pIndex ] != BufSiz )
 	{
@@ -112,7 +113,7 @@ quint8 *ImagePin::internalBuffer( int pIndex ) const
 {
 	Q_ASSERT( pIndex >= 0 && pIndex < PLANE_COUNT );
 
-	const int	BufSiz = mLineWidth[ pIndex ] * mImageSize.height();
+	const int	BufSiz = bufferSize( pIndex ); //mLineWidth[ pIndex ] * mImageSize.height();
 
 	if( mBufferSizes[ pIndex ] != BufSiz )
 	{
@@ -219,6 +220,13 @@ const quint8 * const *ImagePin::buffers() const
 	return( mImagePointer[ 0 ] ? mImagePointer : mImageBuffer );
 }
 
+int ImagePin::bufferSize( int pIndex ) const
+{
+	int			S = mImageSize.height() >= 0 ? mLineWidth[ pIndex ] * mImageSize.height() : 0;
+
+	return( !pIndex ? S : S / 2  );
+}
+
 void ImagePin::unsetBuffers()
 {
 	for( int i = 0 ; i < PLANE_COUNT ; i++ )
@@ -246,6 +254,11 @@ void ImagePin::setBuffers( quint8 * const pBuffer[] )
 void ImagePin::setSize( quint32 pWidth, quint32 pHeight )
 {
 	mImageSize = QSize( pWidth, pHeight );
+}
+
+void ImagePin::setFormat( fugio::ImageInterface::Format pFormat )
+{
+	mImageFormat = pFormat;
 }
 
 void ImagePin::setLineSize( int pIndex, int pLineSize )
@@ -310,7 +323,6 @@ bool ImagePin::isValid() const
 {
 	return( !mImageSize.isEmpty() && mImageFormat != fugio::ImageInterface::FORMAT_UNKNOWN );
 }
-
 
 int ImagePin::sizeDimensions() const
 {

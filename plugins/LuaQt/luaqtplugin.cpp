@@ -121,6 +121,7 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaAddPinGet( PID_IMAGE, LuaImage::luaPinGet );
 	LUA->luaAddPinGet( PID_MATRIX4, LuaMatrix4x4::luaPinGet );
 	LUA->luaAddPinGet( PID_POINT, LuaPointF::luaPinGet );
+	LUA->luaAddPinGet( PID_RECT, LuaRectF::luaPinGet );
 	LUA->luaAddPinGet( PID_SIZE, LuaSizeF::luaPinGet );
 	LUA->luaAddPinGet( PID_VECTOR3, LuaVector3D::luaPinGet );
 #endif

@@ -47,6 +47,7 @@ enum FirmataPinMode
 	ANALOG,
 	PWM,
 	SERVO,
+	SHIFT,
 	I2C,
 	ONEWIRE,
 	STEPPER,

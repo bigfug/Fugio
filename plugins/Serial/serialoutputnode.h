@@ -36,6 +36,8 @@ public:
 private slots:
 	void deviceSelection( int pDeviceIndex );
 
+	void setDevice( const QUuid &pDevUid );
+
 signals:
 	void deviceSelected( int pDeviceIndex );
 

@@ -186,6 +186,7 @@ VST3Node::~VST3Node( void )
 
 }
 
+#if defined( VST_SUPPORTED )
 bool VST3Node::initialise()
 {
 	if( !NodeControlBase::initialise() )
@@ -533,13 +534,10 @@ bool VST3Node::initialise()
 	}
 
 	return( res );
-#endif
-	return( false );
 }
 
 bool VST3Node::deinitialise()
 {
-#if defined( VST_SUPPORTED )
 	QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
 
 	if( mPluginView )
@@ -647,7 +645,6 @@ bool VST3Node::deinitialise()
 
 void VST3Node::inputsUpdated( qint64 pTimeStamp )
 {
-#if defined( VST_SUPPORTED )
 	QList<Steinberg::Vst::Event>		VstEvt;
 
 	for( auto it = mEventInputs.begin() ; it != mEventInputs.end() ; it++ )
@@ -723,13 +720,10 @@ void VST3Node::inputsUpdated( qint64 pTimeStamp )
 	}
 
 	mInstanceMutex.unlock();
-
-#endif
 }
 
 void VST3Node::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const
 {
-#if defined( VST_SUPPORTED )
 	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
 
 	if( !InsDat )
@@ -841,7 +835,6 @@ void VST3Node::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelO
 			DstPtr[ i ] += SrcPtr[ i ];
 		}
 	}
-#endif
 }
 
 void VST3Node::audioLinked( QSharedPointer<fugio::PinInterface> pPin )
@@ -893,8 +886,6 @@ void VST3Node::audioUnlinked( QSharedPointer<fugio::PinInterface> pPin )
 	}
 }
 
-#if defined( VST_SUPPORTED )
-
 int32 VST3Node::getParameterCount( void )
 {
 	return( mParamList.size() );
@@ -943,11 +934,9 @@ bool VST3Node::filterClassCategory (char *category, char *classCategory) const
 	return strcmp (category, classCategory) == 0;
 }
 
-#endif
 
 fugio::AudioInstanceBase *VST3Node::audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels )
 {
-#if defined( VST_SUPPORTED )
 	AudioInstanceData		*InsDat = new AudioInstanceData( qSharedPointerDynamicCast<fugio::AudioProducerInterface>( mNode->control() ), pSampleRate, pSampleFormat, pChannels );
 
 	if( InsDat )
@@ -989,12 +978,7 @@ fugio::AudioInstanceBase *VST3Node::audioAllocInstance( qreal pSampleRate, fugio
 	}
 
 	return( InsDat );
-#else
-	return( nullptr );
-#endif
 }
-
-#if defined( VST_SUPPORTED )
 
 IMPLEMENT_FUNKNOWN_METHODS( VST3Node::AudioInstanceData, Steinberg::Vst::IEventList, Steinberg::Vst::IEventList::iid )
 
@@ -1016,8 +1000,6 @@ tresult VST3Node::AudioInstanceData::addEvent( Event &e )
 
 	return( kResultOk );
 }
-
-#endif
 
 int VST3Node::audioChannels() const
 {
@@ -1073,3 +1055,5 @@ IContextMenu *VST3Node::createContextMenu(IPlugView *plugView, const ParamID *pa
 {
 	return( 0 );
 }
+
+#endif

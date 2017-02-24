@@ -31,8 +31,6 @@ public:
 
 	// NodeControlInterface interface
 public:
-	virtual bool initialise( void ) Q_DECL_OVERRIDE;
-
 	virtual bool deinitialise( void ) Q_DECL_OVERRIDE;
 
 	virtual QWidget *gui() Q_DECL_OVERRIDE;
@@ -44,6 +42,8 @@ private slots:
 	void onFrameStart( void );
 
 	void deviceSelection( int pDeviceIndex );
+
+	void setDevice( const QUuid &pDevUid );
 
 signals:
 	void deviceSelected( int pDeviceIndex );

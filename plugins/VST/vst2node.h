@@ -47,9 +47,11 @@ public:
 private:
 	friend class VSTPlugin;
 
+#if defined( VST_SUPPORTED )
 	static VstIntPtr VSTCALLBACK audioMaster( AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* dataPtr, float opt );
 
 	void dispatch( VstInt32 opcode, VstInt32 index = 0, VstIntPtr value = 0, void *dataPtr = 0, float opt = 0.0f );
+#endif
 
 protected:
 #if defined( VST_SUPPORTED )

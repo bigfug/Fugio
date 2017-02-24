@@ -35,3 +35,24 @@ void FilenamePin::saveSettings( QSettings &pSettings ) const
 		pSettings.setValue( "filename", FileName );
 	}
 }
+
+
+void FilenamePin::setVariant(const QVariant &pValue)
+{
+	mFilename = pValue.toString();
+}
+
+QVariant FilenamePin::variant() const
+{
+	return( mFilename );
+}
+
+void FilenamePin::setFromBaseVariant( const QVariant &pValue )
+{
+	mFilename = pValue.toString();
+}
+
+QVariant FilenamePin::baseVariant() const
+{
+	return( mFilename );
+}

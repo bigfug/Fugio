@@ -27,6 +27,8 @@ SerialPlugin::~SerialPlugin()
 
 fugio::PluginInterface::InitResult SerialPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
+	Q_UNUSED( pLastChance )
+
 	mApp = pApp;
 
 	mApp->registerNodeClasses( mNodeClasses );

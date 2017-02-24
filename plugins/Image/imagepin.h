@@ -75,10 +75,7 @@ public:
     //virtual const quint8 * const *buffers( void ) Q_DECL_OVERRIDE;
 	virtual const quint8 * const *buffers( void ) const Q_DECL_OVERRIDE;
 
-	virtual int bufferSize( int pIndex ) const Q_DECL_OVERRIDE
-	{
-		return( mImageSize.height() >= 0 ? mLineWidth[ pIndex ] * mImageSize.height() : 0 );
-	}
+	virtual int bufferSize( int pIndex ) const Q_DECL_OVERRIDE;
 
 	virtual Format format( void ) const Q_DECL_OVERRIDE
 	{
@@ -98,10 +95,7 @@ public:
 
 	virtual void setSize( quint32 pWidth, quint32 pHeight ) Q_DECL_OVERRIDE;
 
-	virtual void setFormat( Format pFormat ) Q_DECL_OVERRIDE
-	{
-		mImageFormat = pFormat;
-	}
+	virtual void setFormat( Format pFormat ) Q_DECL_OVERRIDE;
 
 	virtual void setInternalFormat( int pInternalFormat ) Q_DECL_OVERRIDE
 	{

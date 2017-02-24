@@ -11,30 +11,41 @@
 SerialOutputNode::SerialOutputNode( QSharedPointer<fugio::NodeInterface> pNode ) :
 	NodeControlBase( pNode ), mDevice( 0 ), mLastSend( 0 )
 {
-	mPinInput = pinInput( "Input" );
+	FUGID( PIN_INPUT_DATA, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+
+	mPinInput = pinInput( "Input", PIN_INPUT_DATA );
 }
 
 void SerialOutputNode::inputsUpdated( qint64 pTimeStamp )
 {
+	NodeControlBase::inputsUpdated( pTimeStamp );
+
 	if( !mDevice )
 	{
+		mNode->setStatus( fugio::NodeInterface::Error );
+
 		return;
 	}
 
-	NodeControlBase::inputsUpdated( pTimeStamp );
+	if( !mDevice->isEnabled() )
+	{
+		mNode->setStatus( fugio::NodeInterface::Warning );
+	}
+	else
+	{
+		mNode->setStatus( fugio::NodeInterface::Initialised );
+	}
 
 	QByteArray		SerDat;
 
-	fugio::ArrayInterface		*A = input<fugio::ArrayInterface *>( mPinInput );
+	fugio::ArrayInterface	*A;
+	fugio::VariantInterface	*V;
 
-	if( A )
+	if( A = input<fugio::ArrayInterface *>( mPinInput ) )
 	{
 		SerDat.append( (const char *)A->array(), A->stride() * A->count() );
 	}
-
-	fugio::VariantInterface	*V = input<fugio::VariantInterface *>( mPinInput );
-
-	if( V )
+	else if( V = input<fugio::VariantInterface *>( mPinInput ) )
 	{
 		SerDat = V->variant().toByteArray();
 	}
@@ -45,13 +56,32 @@ void SerialOutputNode::inputsUpdated( qint64 pTimeStamp )
 	}
 }
 
+void SerialOutputNode::setDevice( const QUuid &pDevUid )
+{
+	if( mDevice && pDevUid == mDevice->uuid() )
+	{
+		return;
+	}
+
+	mDevice = DeviceSerial::findDevice( mDeviceUuid );
+
+	if( mDevice )
+	{
+		mNode->setStatus( fugio::NodeInterface::Initialised );
+	}
+	else
+	{
+		mNode->setStatus( fugio::NodeInterface::Error );
+	}
+}
+
 void SerialOutputNode::deviceSelection( int )
 {
 	QComboBox		*DevLst = qobject_cast<QComboBox *>( sender() );
 
 	mDeviceUuid = DevLst->currentData().toUuid();
 
-	mDevice = DeviceSerial::findDevice( mDeviceUuid );
+	setDevice( mDeviceUuid );
 }
 
 QWidget *SerialOutputNode::gui()
@@ -63,10 +93,21 @@ QWidget *SerialOutputNode::gui()
 		return( 0 );
 	}
 
+	if( !mDevice )
+	{
+		mNode->setStatus( fugio::NodeInterface::Error );
+	}
+	else
+	{
+		mNode->setStatus( fugio::NodeInterface::Initialised );
+	}
+
 	for( DeviceSerial *DevSer : DeviceSerial::devices() )
 	{
 		DevLst->addItem( DevSer->name(), DevSer->uuid() );
 	}
+
+	DevLst->setCurrentIndex( -1 );
 
 	for( int i = 0 ; i < DevLst->count() ; i++ )
 	{
@@ -94,10 +135,11 @@ void SerialOutputNode::loadSettings( QSettings &pSettings )
 		mDeviceUuid = DeviceSerial::devices().first()->uuid();
 	}
 
-	mDevice = DeviceSerial::findDevice( mDeviceUuid );
+	setDevice( mDeviceUuid );
 }
 
 void SerialOutputNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "uuid", mDeviceUuid );
 }
+

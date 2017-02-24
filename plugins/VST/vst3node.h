@@ -95,14 +95,18 @@ protected:
 
 }}
 
-class VST3Node : public fugio::NodeControlBase, public fugio::AudioProducerInterface
+class VST3Node : public fugio::NodeControlBase
 #if defined( VST_SUPPORTED )
+		, public fugio::AudioProducerInterface
 		, public Steinberg::FObject, public Steinberg::Vst::IParameterChanges, public Steinberg::Vst::IComponentHandler,
 		public Steinberg::Vst::IComponentHandler2, public Steinberg::Vst::IComponentHandler3
 #endif
 {
 	Q_OBJECT
+
+#if defined( VST_SUPPORTED )
 	Q_INTERFACES( fugio::AudioProducerInterface )
+#endif
 
 public:
 	Q_INVOKABLE explicit VST3Node( QSharedPointer<fugio::NodeInterface> pNode );
@@ -112,16 +116,19 @@ public:
 	//-------------------------------------------------------------------------
 	// InterfaceNodeControl
 
+#if defined( VST_SUPPORTED )
 	virtual bool initialise( void );
 
 	virtual bool deinitialise( void );
 
 	virtual void inputsUpdated( qint64 pTimeStamp );
+#endif
 
 	//-------------------------------------------------------------------------
 	// fugio::AudioProducerInterface interface
 
 public:
+#if defined( VST_SUPPORTED )
 	virtual fugio::AudioInstanceBase *audioAllocInstance( qreal pSampleRate, fugio::AudioSampleFormat pSampleFormat, int pChannels );
 //	virtual void audioFreeInstance(void *pInstanceData);
 	virtual int audioChannels() const;
@@ -135,6 +142,7 @@ public:
 
 		return( true );
 	}
+#endif
 
 #if defined( VST_SUPPORTED )
 	//------------------------------------------------------------------------
@@ -258,14 +266,12 @@ private:
 	};
 
 	void audio(qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const;
-#endif
 
 private slots:
 	void audioLinked( QSharedPointer<fugio::PinInterface> pPin );
 	void audioUnlinked( QSharedPointer<fugio::PinInterface> pPin );
 
 private:
-#if defined( VST_SUPPORTED )
 	QLibrary								 mPluginLibrary;
 	Steinberg::IPluginFactory				*mPluginFactory;
 

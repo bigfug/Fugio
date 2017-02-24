@@ -5,6 +5,7 @@ SUBDIRS += \
 	Audio \
 	Colour \
 	Core \
+	dlib \
 	ffmpeg \
 	FFTW \
 	File \
@@ -17,6 +18,7 @@ SUBDIRS += \
 	LuaQt \
 	Math \
 	MIDI \
+	OpenCV \
 	OpenGL \
 	OSC \
 	PortAudio \
@@ -28,5 +30,6 @@ SUBDIRS += \
 	Syphon \
 	Text \
 	Time \
+	VideoCapture \
 	VST \
 	XInput

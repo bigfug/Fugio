@@ -203,6 +203,10 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 					mValImage->setFormat( fugio::ImageInterface::FORMAT_YUYV422 );
 					break;
 
+				case AV_PIX_FMT_YUV420P:
+					mValImage->setFormat( fugio::ImageInterface::FORMAT_YUV420P );
+					break;
+
 				case AV_PIX_FMT_GRAY8:
 					mValImage->setFormat( fugio::ImageInterface::FORMAT_GRAY8 );
 					break;

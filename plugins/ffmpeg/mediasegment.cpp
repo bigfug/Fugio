@@ -937,7 +937,7 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 
 	const bool VideoIsPicture = isVideoPicture();
 
-	if( ( !VideoStream || !VideoIsPicture ) && AudioStream && mAudioProcessor->preloaded() )
+	if( ( !VideoStream || VideoIsPicture ) && AudioStream && mAudioProcessor->preloaded() )
 	{
 		return;
 	}
@@ -956,7 +956,7 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 	if( mDuration > 0.25 )
 	{
 		const bool VideoNeedsSeek = ( mVideo.mStreamId == -1 || ( mVideo.mPTS != -1 && ( mVideo.mPTS + 0.50 < mPlayHead || mVideo.mPTS - 0.5 > mPlayHead ) && !VideoIsPicture ) || VideoIsPicture );
-		const bool AudioNeedsSeek = ( mAudio.mStreamId == -1 || ( mAudio.mPTS != -1 && ( mAudio.mPTS + 0.25 < mPlayHead || mAudio.mPTS - 1.0 > mPlayHead ) ) );
+		const bool AudioNeedsSeek = ( mAudio.mStreamId == -1 || ( mAudio.mPTS != -1 && ( mAudio.mPTS + 0.25 < mPlayHead || mAudio.mPTS - 1.0 > mPlayHead ) ) || mAudioProcessor->preloaded() );
 
 		if( VideoNeedsSeek && AudioNeedsSeek )
 		{
@@ -1017,7 +1017,7 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 
 	while( true )
 	{
-		if( AudioStream )
+		if( AudioStream && !mAudioProcessor->preloaded() )
 		{
 			if( mAudio.mPTS - qMin( mDuration * 0.5, 0.5 ) >= mPlayHead && ( !VideoStream || haveVideoFrames() ) )
 			{
@@ -1413,7 +1413,7 @@ void MediaSegment::readNext()
 
 	while( true )
 	{
-		if( AudioStream )
+		if( AudioStream && !VideoStream )
 		{
 
 		}

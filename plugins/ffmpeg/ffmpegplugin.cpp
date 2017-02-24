@@ -23,6 +23,11 @@ extern "C"
 #include "imageconvertnode.h"
 #include "mediarecordernode.h"
 #include "mediaprocessornode.h"
+
+#if defined( TIMELINE_SUPPORTED )
+#include "mediatimelinenode.h"
+#endif
+
 QList<QUuid>				 NodeControlBase::PID_UUID;
 
 ffmpegPlugin				*ffmpegPlugin::mInstance = 0;
@@ -34,6 +39,10 @@ ffmpegPlugin::ffmpegPlugin( void )
 	mNodeEntries.append( ClassEntry( "Media Player",   "FFMPEG", NID_MEDIA_PLAYER, &MediaNode::staticMetaObject ) );
 	mNodeEntries.append( ClassEntry( "Media Recorder",   "FFMPEG", NID_MEDIA_RECORDER, &MediaRecorderNode::staticMetaObject ) );
 	mNodeEntries.append( ClassEntry( "Media Processor",   "FFMPEG", NID_MEDIA_PROCESSOR, &MediaProcessorNode::staticMetaObject ) );
+
+#if defined( TIMELINE_SUPPORTED )
+	mNodeEntries.append( ClassEntry( "Media Timeline",   "FFMPEG", NID_MEDIA_TIMELINE, &MediaTimelineNode::staticMetaObject ) );
+#endif
 }
 
 ffmpegPlugin::~ffmpegPlugin( void )

@@ -2,6 +2,9 @@
 
 #include <fugio/core/uuid.h>
 
+#include <QRect>
+#include <QRectF>
+
 ArrayPin::ArrayPin( QSharedPointer<fugio::PinInterface> pPin )
 	: PinControlBase( pPin ), mData( nullptr ),
 	  mType( QMetaType::UnknownType ), mStride( 0 ), mCount( 0 ), mSize( 0 ), mReserve( 0 )
@@ -91,6 +94,14 @@ QVariant ArrayPin::listIndex( int pIndex ) const
 	{
 		case QMetaType::Float:
 			V = static_cast<const float *>( A )[ pIndex ];
+			break;
+
+		case QMetaType::QRect:
+			V = static_cast<const QRect *>( A )[ pIndex ];
+			break;
+
+		case QMetaType::QRectF:
+			V = static_cast<const QRectF *>( A )[ pIndex ];
 			break;
 
 		default:
