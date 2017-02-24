@@ -15,13 +15,15 @@ CONFIG += plugin c++11
 DESTDIR = $$DESTDIR/plugins
 
 SOURCES += videocaptureplugin.cpp \
-	videocapturenode.cpp
+	videocapturenode.cpp \
+    devicedialog.cpp
 
 HEADERS += videocaptureplugin.h \
 	../../include/fugio/nodecontrolbase.h \
 	../../include/fugio/pincontrolbase.h \
 	../../include/fugio/videocapture/uuid.h \
-	videocapturenode.h
+	videocapturenode.h \
+    devicedialog.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -121,3 +123,6 @@ win32:exists( $$(LIBS)/video_capture/build ) {
 # API
 
 INCLUDEPATH += $$PWD/../../include
+
+FORMS += \
+    devicedialog.ui

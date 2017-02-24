@@ -45,9 +45,9 @@ private:
 private slots:
 	void frameStart( void );
 
-	void currentIndexChanged( int pIndex );
+	void setCurrentDevice( int pDevIdx , int pCfgIdx);
 
-	void setCurrentDevice( int pDevIdx );
+	void chooseDevice( void );
 
 signals:
 	void deviceIndexUpdated( int pIndex );
@@ -59,6 +59,7 @@ protected:
 	fugio::ImageInterface						*mValOutputImage;
 
 	int											 mDeviceIndex;
+	int											 mFormatIndex;
 
 #if defined( VIDEOCAPTURE_SUPPORTED )
 	ca::Capture									 mCapture;

@@ -1,14 +1,16 @@
 #include "videocapturenode.h"
 
-#include <QComboBox>
+#include <QPushButton>
 
 #include <fugio/core/uuid.h>
 #include <fugio/image/uuid.h>
 
 #include <fugio/context_signals.h>
 
+#include "devicedialog.h"
+
 VideoCaptureNode::VideoCaptureNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mDeviceIndex( -1 )
+	: NodeControlBase( pNode ), mDeviceIndex( -1 ), mFormatIndex( -1 )
 #if defined( VIDEOCAPTURE_SUPPORTED )
 	 , mCapture( &VideoCaptureNode::frameCallbackStatic, this )
 #endif
@@ -23,6 +25,11 @@ bool VideoCaptureNode::initialise( void )
 	if( !NodeControlBase::initialise() )
 	{
 		return( false );
+	}
+
+	if( mDeviceIndex < 0 || mFormatIndex < 0 )
+	{
+		setCurrentDevice( qMax( mDeviceIndex, 0 ), qMax( mFormatIndex, 0 ) );
 	}
 
 	return( true );
@@ -71,6 +78,7 @@ void VideoCaptureNode::frameCallback( ca::PixelBuffer &pBuffer )
 				break;
 
 			case CA_UYVY422:                                                              /* Cb Y0 Cr Y1 */
+			case CA_YUYV422:                                                             /* Y0 Cb Y1 Cr */
 				mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_YUYV422 );
 				break;
 
@@ -118,72 +126,62 @@ void VideoCaptureNode::frameStart()
 	mCapture.update();
 }
 
-void VideoCaptureNode::currentIndexChanged( int pIndex )
+void VideoCaptureNode::setCurrentDevice( int pDevIdx, int pCfgIdx )
 {
-	QComboBox		*GUI = qobject_cast<QComboBox *>( sender() );
-
-	const int		 DevIdx = GUI->itemData( pIndex ).toInt();
-
-	setCurrentDevice( DevIdx );
-}
-
-void VideoCaptureNode::setCurrentDevice( int pDevIdx )
-{
-	if( mDeviceIndex == pDevIdx )
+	if( mDeviceIndex == pDevIdx && mFormatIndex == pCfgIdx )
 	{
 		return;
 	}
+
+	disconnect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(frameStart()) );
 
 	mCapture.stop();
 	mCapture.close();
 
 	mDeviceIndex = pDevIdx;
+	mFormatIndex = pCfgIdx;
 
-	const std::vector<ca::Capability>		CapLst = mCapture.getCapabilities( mDeviceIndex );
-
-	if( CapLst.empty() )
+	if( mDeviceIndex < 0 || mFormatIndex < 0 )
 	{
 		return;
 	}
 
+	std::vector<ca::Capability>	CapLst = mCapture.getCapabilities( mDeviceIndex );
+
+	if( mFormatIndex < 0 || mFormatIndex >= CapLst.size() )
+	{
+		return;
+	}
+
+	ca::Capability		DevCap = CapLst.at( mFormatIndex );
+
 	ca::Settings		DevCfg;
 
-	DevCfg.device =  mDeviceIndex;
-	DevCfg.format = -1;
+	DevCfg.device     = mDeviceIndex;
+	DevCfg.capability = mFormatIndex;
+	DevCfg.format     = CA_NONE;
 
-	int					DevErr = -1;
-
-	for( size_t i = 0 ; DevErr < 0 && i < CapLst.size() ; i++ )
+	switch( DevCap.pixel_format )
 	{
-		const ca::Capability	&DevCap = CapLst[ i ];
+		case CA_JPEG_OPENDML:                                                          /* JPEG with Open-DML extensions */
+		case CA_H264:                                                                  /* H264 */
+		case CA_MJPEG:                                                                /* MJPEG 2*/
 
-		switch( DevCap.pixel_format )
-		{
-			case CA_JPEG_OPENDML:                                                          /* JPEG with Open-DML extensions */
-			case CA_H264:                                                                  /* H264 */
-			case CA_MJPEG:                                                                /* MJPEG 2*/
-				break;
+		case CA_YUV422P:                                                             /* YUV422 Planar */
+		case CA_YUV420BP:                                                            /* YUV420 Bi Planar */
+		case CA_YUVJ420P:                                                          /* YUV420 Planar Full Range (JPEG), J comes from the JPEG. (values 0-255 used) */
+		case CA_YUVJ420BP:                                                          /* YUV420 Bi-Planer Full Range (JPEG), J comes fro the JPEG. (values: luma = [16,235], chroma=[16,240]) */
+			{
+				DevCfg.format = CA_YUYV422;
+			}
+			break;
 
-			case CA_UYVY422:                                                              /* Cb Y0 Cr Y1 */
-			case CA_YUYV422:                                                           /* Y0 Cb Y1 Cr */
-			case CA_YUV422P:                                                             /* YUV422 Planar */
-			case CA_YUV420P:                                                           /* YUV420 Planar */
-			case CA_YUV420BP:                                                            /* YUV420 Bi Planar */
-			case CA_YUVJ420P:                                                          /* YUV420 Planar Full Range (JPEG), J comes from the JPEG. (values 0-255 used) */
-			case CA_YUVJ420BP:                                                          /* YUV420 Bi-Planer Full Range (JPEG), J comes fro the JPEG. (values: luma = [16,235], chroma=[16,240]) */
-			case CA_ARGB32:                                                              /* ARGB 8:8:8:8 32bpp, ARGBARGBARGB... */
-			case CA_BGRA32:                                                             /* BGRA 8:8:8:8 32bpp, BGRABGRABGRA... */
-			case CA_RGBA32:                                                              /* RGBA 8:8:8:8 32bpp. */
-			case CA_RGB24:                                                              /* RGB 8:8:8 24bit */
-				{
-					DevCfg.capability = DevCap.capability_index;
-					DevCfg.format     = DevCap.pixel_format;
+		default:
+			break;
 
-					DevErr = mCapture.open( DevCfg );
-				}
-				break;
-		}
 	}
+
+	int DevErr = mCapture.open( DevCfg );
 
 	if( DevErr < 0 )
 	{
@@ -196,25 +194,23 @@ void VideoCaptureNode::setCurrentDevice( int pDevIdx )
 	{
 		connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(frameStart()) );
 	}
+}
 
-	emit deviceIndexUpdated( mDeviceIndex );
+void VideoCaptureNode::chooseDevice()
+{
+	DeviceDialog		DD( mCapture, mDeviceIndex, mFormatIndex );
+
+	if( DD.exec() == QDialog::Accepted )
+	{
+		setCurrentDevice( DD.deviceIdx(), DD.formatIdx() );
+	}
 }
 
 QWidget *VideoCaptureNode::gui()
 {
-	QComboBox					*GUI = new QComboBox();
+	QPushButton					*GUI = new QPushButton( "Select..." );
 
-	std::vector<ca::Device>		 DevLst = mCapture.getDevices();
-
-	for( const ca::Device &DevEnt : DevLst )
-	{
-		GUI->addItem( QString::fromStdString( DevEnt.name ), QVariant( DevEnt.index ) );
-	}
-
-	GUI->setCurrentIndex( GUI->findData( mDeviceIndex ) );
-
-	connect( GUI, SIGNAL(currentIndexChanged(int)), this, SLOT(currentIndexChanged(int)) );
-	connect( this, SIGNAL(deviceIndexUpdated(int)), GUI, SLOT(setCurrentIndex(int)) );
+	connect( GUI, SIGNAL(released()), this, SLOT(chooseDevice()) );
 
 	return( GUI );
 }
@@ -222,11 +218,13 @@ QWidget *VideoCaptureNode::gui()
 void VideoCaptureNode::loadSettings( QSettings &pSettings )
 {
 	int	DevIdx = pSettings.value( "index", mDeviceIndex ).toInt();
+	int	CfgIdx = pSettings.value( "format", mFormatIndex ).toInt();
 
-	setCurrentDevice( DevIdx );
+	setCurrentDevice( DevIdx, CfgIdx );
 }
 
 void VideoCaptureNode::saveSettings( QSettings &pSettings ) const
 {
 	pSettings.setValue( "index", mDeviceIndex );
+	pSettings.setValue( "format", mFormatIndex );
 }
