@@ -63,6 +63,10 @@
 
 #include "minmaxnode.h"
 
+#include "ceilnode.h"
+#include "floornode.h"
+#include "roundnode.h"
+
 MathPlugin *MathPlugin::mInstance = nullptr;
 
 QList<QUuid>	NodeControlBase::PID_UUID;
@@ -77,7 +81,9 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Cross Product", "Vector3", NID_CROSS_PRODUCT, &CrossProductNode::staticMetaObject ),
 	ClassEntry( "Radians to Degrees", "Number", NID_RADIANS_TO_DEGREES, &RadiansToDegreesNode::staticMetaObject ),
 	ClassEntry( "Dot Product", "Vector3", NID_DOT_PRODUCT, &DotProductNode::staticMetaObject ),
+	ClassEntry( "Ceil", "Math", NID_CEIL, &CeilNode::staticMetaObject ),
 	ClassEntry( "Divide", "Math", NID_DIVIDE, &DivideNode::staticMetaObject ),
+	ClassEntry( "Floor", "Math", NID_FLOOR, &FloorNode::staticMetaObject ),
 	ClassEntry( "Inverse", "Matrix", NID_MATRIX_INVERSE, &MatrixInverseNode::staticMetaObject ),
 	ClassEntry( "Join", "Vector3", NID_JOIN_VECTOR3, &JoinVector3Node::staticMetaObject ),
 	ClassEntry( "Join", "Vector4", NID_JOIN_VECTOR4, &JoinVector4Node::staticMetaObject ),
@@ -94,6 +100,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Pi", "Number", NID_PI, &PiNode::staticMetaObject ),
 	ClassEntry( "Rotate", "Matrix", NID_MATRIX_ROTATE, &MatrixRotateNode::staticMetaObject ),
 	ClassEntry( "Rotation From Vectors", "Matrix", NID_ROTATION_FROM_VECTORS, &RotationFromVectorsNode::staticMetaObject ),
+	ClassEntry( "Round", "Math", NID_ROUND, &RoundNode::staticMetaObject ),
 	ClassEntry( "Scale", "Matrix", NID_MATRIX_SCALE, &MatrixScaleNode::staticMetaObject ),
 	ClassEntry( "Sine (Degrees)", NID_SIN_DEGREES, &SinDegreeNode::staticMetaObject ),
 	ClassEntry( "Sine (Radians)", NID_SIN_RADIANS, &SinRadianNode::staticMetaObject ),
