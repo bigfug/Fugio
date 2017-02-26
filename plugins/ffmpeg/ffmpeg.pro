@@ -195,6 +195,8 @@ contains( DEFINES, FFMPEG_SUPPORTED ) {
 
 		SOURCES += $$(LIBS)/hap/source/hap.c
 		HEADERS += $$(LIBS)/hap/source/hap.h
+
+		DEFINES += HAP_SUPPORTED
 	}
 }
 
@@ -239,4 +241,8 @@ contains( DEFINES, FFMPEG_SUPPORTED ) {
 
 !contains( DEFINES, FFMPEG_SUPPORTED ) {
 	warning( "FFMPEG not supported" )
+}
+
+!contains( DEFINES, HAP_SUPPORTED ) {
+	warning( "HAP not supported" )
 }

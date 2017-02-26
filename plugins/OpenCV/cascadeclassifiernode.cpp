@@ -47,6 +47,7 @@ void CascadeClassifierNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
+#if defined( OPENCV_SUPPORTED )
 	if( mPinInputFilename->isUpdated( pTimeStamp ) )
 	{
 		QString				 Filename = variant( mPinInputFilename ).toString();
@@ -80,7 +81,6 @@ void CascadeClassifierNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-#if defined( OPENCV_SUPPORTED )
 	if( false )
 	{
 		mNode->context()->futureSync( QtConcurrent::run( &CascadeClassifierNode::conversion, this ) );

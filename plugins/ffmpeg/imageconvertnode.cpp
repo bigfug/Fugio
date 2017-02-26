@@ -86,6 +86,7 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 {
 	Performance( mNode, "inputsUpdated", pTimeStamp );
 
+#if defined( FFMPEG_SUPPORTED )
 	ImageInterface		*SrcImg = input<ImageInterface *>( mPinInputImage );
 
 	if( !SrcImg || !SrcImg->isValid() )
@@ -100,7 +101,6 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-#if defined( FFMPEG_SUPPORTED )
 	if( mCurrImageFormat != mLastImageFormat || SrcImg->size() != mLastImageSize )
 	{
 		if( mScaleContext )

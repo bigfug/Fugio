@@ -32,7 +32,9 @@
 //#include "mediaplayervideopreview.h"
 #include "mediaaudioprocessor.h"
 
+#if defined( HAP_SUPPORTED )
 #include <hap.h>
+#endif
 
 MediaProcessorNode::MediaProcessorNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mSegment( 0 ),
@@ -158,6 +160,7 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 
 		if( mSegment->imageIsHap() )
 		{
+#if defined( HAP_SUPPORTED )
 			switch( HapTextureFormat( mSegment->imageFormat() ) )
 			{
 				case HapTextureFormat_RGB_DXT1:
@@ -176,11 +179,15 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 					mValImage->setFormat( fugio::ImageInterface::FORMAT_UNKNOWN );
 					break;
 			}
+#else
+			mValImage->setFormat( fugio::ImageInterface::FORMAT_UNKNOWN );
+#endif
 		}
 		else
 		{
 			mValImage->setInternalFormat( mSegment->imageFormat() );
 
+#if defined( FFMPEG_SUPPORTED )
 			switch( AVPixelFormat( mSegment->imageFormat() ) )
 			{
 				case AV_PIX_FMT_RGB24:
@@ -219,6 +226,9 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 					mValImage->setFormat( fugio::ImageInterface::FORMAT_INTERNAL );
 					break;
 			}
+#else
+			mValImage->setFormat( fugio::ImageInterface::FORMAT_INTERNAL );
+#endif
 		}
 
 		mValImage->setBuffers( VD->mData );

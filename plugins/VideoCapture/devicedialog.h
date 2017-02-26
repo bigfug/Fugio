@@ -10,6 +10,8 @@ class DeviceDialog;
 
 #if defined( VIDEOCAPTURE_SUPPORTED )
 #include <videocapture/Capture.h>
+#else
+namespace ca { typedef int Capture; }
 #endif
 
 class DeviceDialog : public QDialog
@@ -18,7 +20,8 @@ class DeviceDialog : public QDialog
 
 public:
 	explicit DeviceDialog( ca::Capture &pCapture, int pDevIdx, int pCfgIdx, QWidget *parent = 0);
-	~DeviceDialog();
+
+	virtual ~DeviceDialog();
 
 	inline int deviceIdx( void ) const
 	{
@@ -38,7 +41,11 @@ private slots:
 
 private:
 	Ui::DeviceDialog	*ui;
+
+#if defined( VIDEOCAPTURE_SUPPORTED )
 	ca::Capture			&mCapture;
+#endif
+
 	int					 mDevIdx;
 	int					 mCfgIdx;
 };

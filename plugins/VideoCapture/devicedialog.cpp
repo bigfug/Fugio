@@ -4,10 +4,14 @@
 DeviceDialog::DeviceDialog( ca::Capture &pCapture, int pDevIdx, int pCfgIdx, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::DeviceDialog),
-	mCapture( pCapture ), mDevIdx( pDevIdx ), mCfgIdx( pCfgIdx )
+#if defined( VIDEOCAPTURE_SUPPORTED )
+	mCapture( pCapture ),
+#endif
+	mDevIdx( pDevIdx ), mCfgIdx( pCfgIdx )
 {
 	ui->setupUi( this );
 
+#if defined( VIDEOCAPTURE_SUPPORTED )
 	const std::vector<ca::Device>	DevLst = mCapture.getDevices();
 
 	int		DevIdx = -1;
@@ -28,6 +32,7 @@ DeviceDialog::DeviceDialog( ca::Capture &pCapture, int pDevIdx, int pCfgIdx, QWi
 	}
 
 	updateFormatList();
+#endif
 
 	connect( ui->mDevice, SIGNAL(currentIndexChanged(int)), this, SLOT(deviceChanged(int)) );
 
@@ -62,6 +67,7 @@ void DeviceDialog::updateFormatList( void )
 
 	ui->mFormat->clear();
 
+#if defined( VIDEOCAPTURE_SUPPORTED )
 	const std::vector<ca::Capability>	CapLst = mCapture.getCapabilities( mDevIdx );
 
 	int		CapIdx = -1;
@@ -86,6 +92,7 @@ void DeviceDialog::updateFormatList( void )
 	{
 		mCfgIdx = CapLst.empty() ? -1 : 0;
 	}
+#endif
 }
 
 void DeviceDialog::deviceChanged( int index )

@@ -7,6 +7,7 @@
 #include <fugio/image/image_interface.h>
 #include <fugio/performance.h>
 
+#if defined( DLIB_SUPPORTED )
 #include <dlib/image_processing.h>
 #include <dlib/image_processing/frontal_face_detector.h>
 #include <dlib/image_processing/render_face_detections.h>
@@ -160,6 +161,8 @@ inline long width_step(
 
 }
 
+#endif
+
 FaceFeaturesNode::FaceFeaturesNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mLoading( false ), mLoaded( false )
 {
@@ -183,7 +186,9 @@ FaceFeaturesNode::FaceFeaturesNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mValOutputChips = pinOutput<fugio::ArrayListInterface *>( "Chips", mPinOutputChips, PID_ARRAY_LIST, PIN_OUTPUT_CHIPS );
 
+#if defined( DLIB_SUPPORTED )
 	mDetector = get_frontal_face_detector();
+#endif
 }
 
 void FaceFeaturesNode::loadDataFile( const QString &pFilename )
@@ -191,6 +196,7 @@ void FaceFeaturesNode::loadDataFile( const QString &pFilename )
 	mLoading = true;
 	mLoaded  = false;
 
+#if defined( DLIB_SUPPORTED )
 	try
 	{
 		dlib::deserialize( pFilename.toStdString() ) >> mShapePredictor;
@@ -202,6 +208,7 @@ void FaceFeaturesNode::loadDataFile( const QString &pFilename )
 	catch( ... )
 	{
 	}
+#endif
 
 	mLoading = false;
 }
@@ -240,6 +247,7 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 
 			fugio::Performance		Perf( mNode, "inputsUpdated", pTimeStamp );
 
+#if defined( DLIB_SUPPORTED )
 			try
 			{
 				dlib::matrix<unsigned char>		SrcMat;
@@ -330,6 +338,7 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 			{
 				return;
 			}
+#endif
 		}
 	}
 }

@@ -43,7 +43,9 @@ private:
 #endif
 
 private slots:
+#if defined( VIDEOCAPTURE_SUPPORTED )
 	void frameStart( void );
+#endif
 
 	void setCurrentDevice( int pDevIdx , int pCfgIdx);
 

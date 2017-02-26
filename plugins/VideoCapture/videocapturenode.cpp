@@ -37,11 +37,13 @@ bool VideoCaptureNode::initialise( void )
 
 bool VideoCaptureNode::deinitialise( void )
 {
+#if defined( VIDEOCAPTURE_SUPPORTED )
 	mCapture.stop();
 
 	disconnect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(frameStart()) );
 
 	mCapture.close();
+#endif
 
 	return( NodeControlBase::deinitialise() );
 }
@@ -51,6 +53,7 @@ void VideoCaptureNode::inputsUpdated( qint64 pTimeStamp )
 	NodeControlBase::inputsUpdated( pTimeStamp );
 }
 
+#if defined( VIDEOCAPTURE_SUPPORTED )
 void VideoCaptureNode::frameCallbackStatic( ca::PixelBuffer &pBuffer )
 {
 	static_cast<VideoCaptureNode *>( pBuffer.user )->frameCallback( pBuffer );
@@ -125,6 +128,7 @@ void VideoCaptureNode::frameStart()
 {
 	mCapture.update();
 }
+#endif
 
 void VideoCaptureNode::setCurrentDevice( int pDevIdx, int pCfgIdx )
 {
@@ -133,6 +137,7 @@ void VideoCaptureNode::setCurrentDevice( int pDevIdx, int pCfgIdx )
 		return;
 	}
 
+#if defined( VIDEOCAPTURE_SUPPORTED )
 	disconnect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(frameStart()) );
 
 	mCapture.stop();
@@ -194,16 +199,19 @@ void VideoCaptureNode::setCurrentDevice( int pDevIdx, int pCfgIdx )
 	{
 		connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(frameStart()) );
 	}
+#endif
 }
 
 void VideoCaptureNode::chooseDevice()
 {
+#if defined( VIDEOCAPTURE_SUPPORTED )
 	DeviceDialog		DD( mCapture, mDeviceIndex, mFormatIndex );
 
 	if( DD.exec() == QDialog::Accepted )
 	{
 		setCurrentDevice( DD.deviceIdx(), DD.formatIdx() );
 	}
+#endif
 }
 
 QWidget *VideoCaptureNode::gui()

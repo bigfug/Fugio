@@ -58,6 +58,7 @@ void DeviceVideoCapture::shutdown()
 	}
 }
 
+#if defined( OPENCV_SUPPORTED )
 cv::Mat DeviceVideoCapture::lockFrame()
 {
 	mFrmMtx.lock();
@@ -76,6 +77,7 @@ cv::Mat DeviceVideoCapture::frame()
 
 	return( mMatImg.clone() );
 }
+#endif
 
 void DeviceVideoCapture::run()
 {
