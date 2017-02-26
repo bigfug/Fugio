@@ -16,7 +16,7 @@
 
 #include <fugio/core/uuid.h>
 #include <fugio/audio/uuid.h>
-#include <fugio/fugio-timeline.h>
+#include <fugio/timeline/uuid.h>
 #include <fugio/image/uuid.h>
 #include <fugio/context_signals.h>
 #include <fugio/performance.h>
@@ -27,13 +27,13 @@
 #include <fugio/core/variant_interface.h>
 #include <fugio/file/filename_interface.h>
 #include <fugio/audio/audio_producer_interface.h>
-#include <fugio/interface_timeline.h>
-#include <fugio/interface_timeline_control.h>
-#include <fugio/interface_timeline_widget.h>
-#include <fugio/interface_keyframes_provider.h>
-#include <fugio/interface_keyframes_time.h>
-#include <fugio/interface_keyframes_editor.h>
-#include <fugio/interface_keyframes_widget.h>
+#include <fugio/timeline/timeline_interface.h>
+#include <fugio/timeline/timeline_control_interface.h>
+#include <fugio/timeline/timeline_widget_interface.h>
+#include <fugio/timeline/keyframes_provider_interface.h>
+#include <fugio/timeline/keyframes_time_interface.h>
+#include <fugio/timeline/keyframes_editor_interface.h>
+#include <fugio/timeline/keyframes_widget_interface.h>
 
 #include "../Timeline/keyframedata/keyframedatatime.h"
 
@@ -83,13 +83,13 @@ MediaTimelineNode::MediaTimelineNode( QSharedPointer<fugio::NodeInterface> pNode
 
 	mPinAudio->setDescription( tr( "The audio output from the media file - link to a PortAudio node to hear it" ) );
 
-	InterfaceTimeline *TL = qobject_cast<InterfaceTimeline *>( ffmpegPlugin::instance()->app()->findInterface( IID_TIMELINE ) );
+	TimelineInterface *TL = qobject_cast<TimelineInterface *>( ffmpegPlugin::instance()->app()->findInterface( IID_TIMELINE ) );
 
 	if( TL )
 	{
 		mTimelineControl = TL->control( this );
 
-		mKF = qobject_cast<InterfaceKeyFramesTime *>( TL->keyframes( this, KID_TIME )->object() );
+		mKF = qobject_cast<KeyFramesTimeInterface *>( TL->keyframes( this, KID_TIME )->object() );
 	}
 }
 
@@ -115,7 +115,7 @@ bool MediaTimelineNode::initialise()
 		return( false );
 	}
 
-	InterfaceTimelineWidget		*TLW = qobject_cast<InterfaceTimelineWidget *>( mNode->context()->findInterface( IID_TIMELINE_WIDGET ) );
+	TimelineWidgetInterface		*TLW = qobject_cast<TimelineWidgetInterface *>( mNode->context()->findInterface( IID_TIMELINE_WIDGET ) );
 
 	if( TLW )
 	{
@@ -142,7 +142,7 @@ bool MediaTimelineNode::deinitialise()
 
 	// mNode->context()->unregisterPlayhead( this );
 
-	InterfaceTimelineWidget		*TLW = qobject_cast<InterfaceTimelineWidget *>( mNode->context()->findInterface( IID_TIMELINE_WIDGET ) );
+	TimelineWidgetInterface		*TLW = qobject_cast<TimelineWidgetInterface *>( mNode->context()->findInterface( IID_TIMELINE_WIDGET ) );
 
 	if( TLW )
 	{
@@ -316,17 +316,17 @@ qreal MediaTimelineNode::duration() const
 	return( mNode->context()->duration() );
 }
 
-InterfaceKeyFramesWidget *MediaTimelineNode::newTimelineGui()
+KeyFramesWidgetInterface *MediaTimelineNode::newTimelineGui()
 {
-	InterfaceTimeline *TL = qobject_cast<InterfaceTimeline *>( mNode->context()->global()->findInterface( IID_TIMELINE ) );
+	TimelineInterface *TL = qobject_cast<TimelineInterface *>( mNode->context()->global()->findInterface( IID_TIMELINE ) );
 
 	if( TL )
 	{
-		InterfaceKeyFramesEditor	*KFE = qobject_cast<InterfaceKeyFramesProvider *>( mKF->object() )->newEditor();
+		KeyFramesEditorInterface	*KFE = qobject_cast<KeyFramesProviderInterface *>( mKF->object() )->newEditor();
 
 		if( KFE )
 		{
-			InterfaceKeyFramesWidget	*KFW = TL->keyframesWidget( this, mTimelineControl, KFE );
+			KeyFramesWidgetInterface	*KFW = TL->keyframesWidget( this, mTimelineControl, KFE );
 
 			if( KFW )
 			{
@@ -342,7 +342,7 @@ InterfaceKeyFramesWidget *MediaTimelineNode::newTimelineGui()
 	return( 0 );
 }
 
-void MediaTimelineNode::drawBackground( const InterfaceKeyFramesWidget *pTrackWidget, QPainter &pPainter, const QRect &pUpdateRect ) const
+void MediaTimelineNode::drawBackground( const KeyFramesWidgetInterface *pTrackWidget, QPainter &pPainter, const QRect &pUpdateRect ) const
 {
 	if( !mSegment )
 	{
@@ -634,9 +634,9 @@ qreal MediaTimelineNode::latency() const
 	return( mTimelineControl->latency() );
 }
 
-QList<InterfaceKeyFramesControls *> MediaTimelineNode::editorControls()
+QList<KeyFramesControlsInterface *> MediaTimelineNode::editorControls()
 {
-	QList<InterfaceKeyFramesControls *>	CtlLst;
+	QList<KeyFramesControlsInterface *>	CtlLst;
 
 	MediaPlayerVideoPreview	*CTL = new MediaPlayerVideoPreview( this );
 
