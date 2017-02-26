@@ -61,6 +61,7 @@ QString ImagePin::toString() const
 		case FORMAT_BGR8:			FmtVal = "FORMAT_BGR8";		break;
 		case FORMAT_BGRA8:			FmtVal = "FORMAT_BGRA8";		break;
 		case FORMAT_YUYV422:		FmtVal = "FORMAT_YUYV422";		break;
+		case FORMAT_UYVY422:		FmtVal = "FORMAT_UYVY422";		break;
 		case FORMAT_YUV420P:		FmtVal = "FORMAT_YUV420P";		break;
 		case FORMAT_GRAY16:			FmtVal = "FORMAT_GRAY16";		break;
 		case FORMAT_GRAY8:			FmtVal = "FORMAT_GRAY8";		break;

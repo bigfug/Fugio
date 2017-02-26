@@ -103,6 +103,7 @@ void TextureCubeNode::processTexture( QSharedPointer<fugio::PinInterface> pPin, 
 				break;
 
 			case fugio::ImageInterface::FORMAT_YUYV422:
+			case fugio::ImageInterface::FORMAT_UYVY422:
 				mTexDst->setFormat( GL_RG );
 
 				mTexDst->setInternalFormat( GL_RG8 );

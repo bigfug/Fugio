@@ -81,6 +81,9 @@ void VideoCaptureNode::frameCallback( ca::PixelBuffer &pBuffer )
 				break;
 
 			case CA_UYVY422:                                                              /* Cb Y0 Cr Y1 */
+				mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_UYVY422 );
+				break;
+
 			case CA_YUYV422:                                                             /* Y0 Cb Y1 Cr */
 				mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_YUYV422 );
 				break;

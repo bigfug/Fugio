@@ -585,6 +585,10 @@ void MediaTimelineNode::updateVideo( qreal pTimeCurr )
 					mValImage->setFormat( fugio::ImageInterface::FORMAT_YUYV422 );
 					break;
 
+				case AV_PIX_FMT_UYVY422:
+					mValImage->setFormat( fugio::ImageInterface::FORMAT_UYVY422 );
+					break;
+
 				case AV_PIX_FMT_GRAY8:
 					mValImage->setFormat( fugio::ImageInterface::FORMAT_GRAY8 );
 					break;

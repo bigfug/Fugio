@@ -29,7 +29,8 @@ public:
 		FORMAT_DXT5,
 		FORMAT_YCoCg_DXT5,
 		FORMAT_HSV8,
-		FORMAT_YUV420P
+		FORMAT_YUV420P,
+		FORMAT_UYVY422
 	} Format;
 
 	static int formatPixelByteCount( Format pFormat, int pBuffer = 0 )
@@ -42,6 +43,7 @@ public:
 			case FORMAT_BGRA8:		return( 4 );
 			case FORMAT_YUV420P:	return( !pBuffer ? 2 : 1 );
 			case FORMAT_YUYV422:	return( 2 );
+			case FORMAT_UYVY422:	return( 2 );
 			case FORMAT_GRAY16:		return( 2 );
 			case FORMAT_GRAY8:		return( 1 );
 			case FORMAT_RG32:		return( 4 );

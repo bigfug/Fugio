@@ -305,6 +305,7 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 				break;
 
 			case fugio::ImageInterface::FORMAT_YUYV422:
+			case fugio::ImageInterface::FORMAT_UYVY422:
 				mTexture->setFormat( GL_RG );
 
 				mTexture->setInternalFormat( GL_RG8 );
