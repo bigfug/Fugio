@@ -1,7 +1,7 @@
 #include "resizenode.h"
 
 #if defined( OPENCV_SUPPORTED )
-#include <opencv2/imgproc.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #endif
 
 #include <fugio/image/uuid.h>

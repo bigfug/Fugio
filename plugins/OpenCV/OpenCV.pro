@@ -126,7 +126,7 @@ windows {
 macx:exists( /usr/local/opt/opencv3 ) {
 	INCLUDEPATH += /usr/local/opt/opencv3/include
 
-	LIBS += -L/usr/local/opt/opencv3/lib -lopencv_core -lopencv_imgproc -lopencv_photo -lopencv_highgui -lopencv_video -lopencv_videoio -lopencv_videoio -lopencv_objdetect
+	LIBS += -L/usr/local/opt/opencv3/lib -lopencv_core -lopencv_imgproc -lopencv_photo -lopencv_highgui -lopencv_video -lopencv_videoio -lopencv_objdetect
 
 	DEFINES += OPENCV_SUPPORTED
 }
@@ -143,6 +143,14 @@ win32:exists( $$OPENCV_DIR/build/lib ) {
 	} else {
 		LIBS += -L$$OPENCV_DIR/build/lib/Release -lopencv_core$${OPENCV_VER} -lopencv_imgproc$${OPENCV_VER} -lopencv_photo$${OPENCV_VER} -lopencv_highgui$${OPENCV_VER} -lopencv_video$${OPENCV_VER} -lopencv_videoio$${OPENCV_VER} -lopencv_objdetect$${OPENCV_VER}
 	}
+
+	DEFINES += OPENCV_SUPPORTED
+}
+
+linux:!macx:exists( /usr/include/opencv2 ) {
+	INCLUDEPATH += /usr/include
+
+	LIBS += -L/usr/lib -lopencv_core -lopencv_imgproc -lopencv_photo -lopencv_highgui -lopencv_video -lopencv_objdetect
 
 	DEFINES += OPENCV_SUPPORTED
 }

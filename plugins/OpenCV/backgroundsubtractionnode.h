@@ -12,8 +12,9 @@
 #include <fugio/nodecontrolbase.h>
 
 #if defined( OPENCV_SUPPORTED )
-#include <opencv2/core.hpp>
-#include <opencv2/video.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/video/video.hpp>
+#include <opencv2/video/background_segm.hpp>
 #endif
 
 class BackgroundSubtractionNode : public fugio::NodeControlBase
