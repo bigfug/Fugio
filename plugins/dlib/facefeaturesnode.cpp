@@ -10,7 +10,6 @@
 #if defined( DLIB_SUPPORTED )
 #include <dlib/image_processing.h>
 #include <dlib/image_processing/frontal_face_detector.h>
-#include <dlib/image_processing/render_face_detections.h>
 
 namespace dlib
 {

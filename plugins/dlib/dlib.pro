@@ -87,6 +87,14 @@ windows {
 #------------------------------------------------------------------------------
 # dlib
 
+linux:!macx:exists( /usr/include/dlib ) {
+	INCLUDEPATH += /usr/include
+
+	LIBS += -L/usr/lib -ldlib
+
+	DEFINES += DLIB_SUPPORTED
+}
+
 macx:exists( /usr/local/include/dlib ) {
 	INCLUDEPATH += /usr/local/include
 
