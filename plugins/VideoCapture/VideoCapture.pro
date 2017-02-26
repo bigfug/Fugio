@@ -25,6 +25,9 @@ HEADERS += videocaptureplugin.h \
 	videocapturenode.h \
     devicedialog.h
 
+FORMS += \
+	devicedialog.ui
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
@@ -87,7 +90,7 @@ windows {
 }
 
 #------------------------------------------------------------------------------
-# dlib
+# video_capture
 
 macx:exists( $$(LIBS)/video_capture/install/mac-clang-x86_64/include/videocapture/Capture.h ) {
 	INCLUDEPATH += $$(LIBS)/video_capture/install/mac-clang-x86_64/include
@@ -115,6 +118,16 @@ win32:exists( $$(LIBS)/video_capture/build ) {
 	DEFINES += VIDEOCAPTURE_SUPPORTED
 }
 
+linux:!macx:exists( $$(LIBS)/video_capture/install/linux-gcc-x86_64/include/videocapture/Capture.h ) {
+	INCLUDEPATH += $$(LIBS)/video_capture/install/linux-gcc-x86_64/include
+
+	LIBS += -L$$(LIBS)/video_capture/install/linux-gcc-x86_64/lib -lvideocapture
+
+#	LIBS += -framework Cocoa -framework Carbon -framework CoreMedia -framework CoreVideo -framework AVFoundation
+
+	DEFINES += VIDEOCAPTURE_SUPPORTED
+}
+
 !contains( DEFINES, VIDEOCAPTURE_SUPPORTED ) {
 	warning( "videocapture not supported" )
 }
@@ -123,6 +136,3 @@ win32:exists( $$(LIBS)/video_capture/build ) {
 # API
 
 INCLUDEPATH += $$PWD/../../include
-
-FORMS += \
-    devicedialog.ui
