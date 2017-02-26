@@ -156,6 +156,27 @@ macx:exists( "$$(LIBS)/VST3 SDK" ) {
 	HEADERS += "$$(LIBS)/VST3 SDK/public.sdk/source/common/memorystream.h"
 }
 
+linux:!macx:exists( $$(LIBS)/VST3SDK ) {
+	INCLUDEPATH += $$(LIBS)/VST3SDK
+
+	DEFINES += __UNIX__ LINUX PTHREADS
+
+#	LIBS += -L"$$(LIBS)/VST3 SDK/base/mac"
+#	LIBS += -lbase_stdc++
+
+	CONFIG(debug,debug|release) {
+		DEFINES += _DEBUG
+	} else {
+		DEFINES += RELEASE
+	}
+
+	DEFINES += VST_SUPPORTED
+
+	SOURCES += $$(LIBS)/VST3SDK/public.sdk/source/common/memorystream.cpp
+
+	HEADERS += $$(LIBS)/VST3SDK/public.sdk/source/common/memorystream.h
+}
+
 !contains( DEFINES, VST_SUPPORTED ) {
 	warning( "VST not supported" )
 }
