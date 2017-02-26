@@ -64,12 +64,14 @@ MediaRecorderNode::MediaRecorderNode( QSharedPointer<fugio::NodeInterface> pNode
 
 	mPinInputAudio->setDescription( tr( "The input audio to record" ) );
 
+	mFrameCount			= 0;
+	mFrameCountAudio    = 0;
+
+#if defined( FFMPEG_SUPPORTED )
 	mOutputFormat		= 0;
 	mFormatContext		= 0;
 	mStreamVideo		= 0;
 	mStreamAudio        = 0;
-	mFrameCount			= 0;
-	mFrameCountAudio    = 0;
 	mScaleContext		= 0;
 	mCodecContextVideo	= 0;
 	mCodecVideo			= 0;
@@ -80,14 +82,16 @@ MediaRecorderNode::MediaRecorderNode( QSharedPointer<fugio::NodeInterface> pNode
 	mFrameVideo         = 0;
 	mFrameAudio         = 0;
 
-	mMediaPreset        = 0;
-
-	mAudioInstance		= 0;
-
 #if defined( TL_USE_LIB_AV )
 #else
 	mSwrContext			= 0;
 #endif
+
+#endif
+
+	mMediaPreset        = 0;
+
+	mAudioInstance		= 0;
 
 	mTimeStart    = 0;
 	mTimeDuration = 30.0;
@@ -290,6 +294,8 @@ void MediaRecorderNode::record( const QString &pFileName )
 
 	mFrameCount = 0;
 	mFrameCountAudio = 0;
+
+#if defined( FFMPEG_SUPPORTED )
 
 #if defined( TL_USE_LIB_AV )
 	return;
@@ -572,6 +578,8 @@ void MediaRecorderNode::record( const QString &pFileName )
 	QFile( "G:/record-src.raw" ).open( QFile::WriteOnly | QFile::Truncate );
 	QFile( "G:/record-dst.raw" ).open( QFile::WriteOnly | QFile::Truncate );
 #endif
+
+#endif
 }
 
 void MediaRecorderNode::cancel()
@@ -587,6 +595,7 @@ void MediaRecorderNode::frameStart( qint64 )
 
 		pinUpdated( mPinOutputStarted );
 
+#if defined( FFMPEG_SUPPORTED )
 		if( mStreamVideo )
 		{
 			QSize		ImageSize = QSize( mStreamVideo->codecpar->width, mStreamVideo->codecpar->height );
@@ -598,6 +607,7 @@ void MediaRecorderNode::frameStart( qint64 )
 				pinUpdated( mPinOutputImageSize );
 			}
 		}
+#endif
 
 		if( mValOutputFilename->filename() != mFilename )
 		{
@@ -619,6 +629,7 @@ void MediaRecorderNode::frameEnd( qint64 )
 
 void MediaRecorderNode::recordEntry()
 {
+#if defined( FFMPEG_SUPPORTED )
 	const bool		HasVideo = ( mStreamVideo != 0 );
 	const bool		HasAudio = ( mStreamAudio != 0 );
 
@@ -956,6 +967,7 @@ void MediaRecorderNode::recordEntry()
 
 		pinUpdated( mPinOutputFinished );
 	}
+#endif
 }
 
 QImage MediaRecorderNode::cropImage( const QImage &pImage, const QSize &pSize )
@@ -1028,6 +1040,7 @@ bool MediaRecorderNode::imageToFrame( void )
 		SrcImg = TmpImg.copy();
 	}
 
+#if defined( FFMPEG_SUPPORTED )
 	int		sw = SrcImg.width();
 	int		sh = SrcImg.height();
 	int		dw = mFrameVideo->width;
@@ -1152,4 +1165,7 @@ bool MediaRecorderNode::imageToFrame( void )
 	sws_scale( mScaleContext, SrcDat, SrcSze, 0, SrcImg.height(), mFrameVideo->data, mFrameVideo->linesize );
 
 	return( true );
+#else
+	return( false );
+#endif
 }
