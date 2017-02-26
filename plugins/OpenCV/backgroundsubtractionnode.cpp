@@ -58,14 +58,14 @@ void BackgroundSubtractionNode::process( void )
 
 	if( !mBckSub )
 	{
-#if( CV_VERSION_EPOCH > 2 )
+#if ( ( defined( CV_VERSION_EPOCH ) && ( CV_VERSION_EPOCH > 2 ) ) || ( !defined( CV_VERSION_EPOCH ) && CV_VERSION_MAJOR >= 3 ) )
 		mBckSub = cv::createBackgroundSubtractorMOG2();
 #else
 		mBckSub = new cv::BackgroundSubtractorMOG2();
 #endif
 	}
 
-#if( CV_VERSION_EPOCH > 2 )
+#if ( ( defined( CV_VERSION_EPOCH ) && ( CV_VERSION_EPOCH > 2 ) ) || ( !defined( CV_VERSION_EPOCH ) && CV_VERSION_MAJOR >= 3 ) )
 	mBckSub->apply( MatSrc, mMatDst );
 #else
 	mBckSub->operator()( MatSrc, mMatDst );
