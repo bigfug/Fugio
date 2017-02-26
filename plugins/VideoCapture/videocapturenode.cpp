@@ -18,6 +18,10 @@ VideoCaptureNode::VideoCaptureNode( QSharedPointer<fugio::NodeInterface> pNode )
 	FUGID( PIN_OUTPUT_IMAGE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 
 	mValOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
+
+#if defined( VIDEOCAPTURE_SUPPORTED )
+	memset( &mPrvDat, 0, sizeof( ca::PixelBuffer ) );
+#endif
 }
 
 bool VideoCaptureNode::initialise( void )
@@ -61,8 +65,20 @@ void VideoCaptureNode::frameCallbackStatic( ca::PixelBuffer &pBuffer )
 
 void VideoCaptureNode::frameCallback( ca::PixelBuffer &pBuffer )
 {
-	if( mValOutputImage->width() != pBuffer.width[ 0 ] || mValOutputImage->height() != pBuffer.height[ 0 ] )
+	ca::PixelBuffer TmpBuf = pBuffer;
+
+	for( int i = 0 ; i < 3 ; i++ )
 	{
+		TmpBuf.plane[ i ] = 0;
+	}
+
+	TmpBuf.pixels = 0;
+	TmpBuf.user = 0;
+
+	if( memcmp( &TmpBuf, &mPrvDat, sizeof( ca::PixelBuffer ) ) != 0 )
+	{
+		mPrvDat = TmpBuf;
+
 		mValOutputImage->setSize( pBuffer.width[ 0 ], pBuffer.height[ 0 ] );
 
 		switch( pBuffer.pixel_format )
@@ -120,7 +136,7 @@ void VideoCaptureNode::frameCallback( ca::PixelBuffer &pBuffer )
 
 		if( SrcPtr && DstPtr )
 		{
-			memcpy( DstPtr, SrcPtr, mValOutputImage->bufferSize( i ) );
+			memcpy( DstPtr, SrcPtr, pBuffer.stride[ i ] * pBuffer.height[ i ] );
 		}
 	}
 

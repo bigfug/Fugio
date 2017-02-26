@@ -65,6 +65,7 @@ protected:
 
 #if defined( VIDEOCAPTURE_SUPPORTED )
 	ca::Capture									 mCapture;
+	ca::PixelBuffer								 mPrvDat;
 #endif
 };
 
