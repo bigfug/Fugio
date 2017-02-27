@@ -70,14 +70,24 @@ void DistanceTransformNode::conversion( DistanceTransformNode *pNode )
 
 	cv::Mat								 MatSrc = OpenCVPlugin::image2mat( SrcImg );
 
-	cv::distanceTransform( MatSrc, pNode->mMatImg, pNode->mMatLab, cv::DIST_L2, 5, cv::DIST_LABEL_CCOMP );
+	try
+	{
+		cv::distanceTransform( MatSrc, pNode->mMatImg, pNode->mMatLab, cv::DIST_L2, 5, cv::DIST_LABEL_CCOMP );
 
-	OpenCVPlugin::mat2image( pNode->mMatImg, pNode->mValOutputImage );
+		OpenCVPlugin::mat2image( pNode->mMatImg, pNode->mValOutputImage );
 
-	OpenCVPlugin::mat2image( pNode->mMatLab, pNode->mValOutputLabels );
+		OpenCVPlugin::mat2image( pNode->mMatLab, pNode->mValOutputLabels );
 
-	pNode->pinUpdated( pNode->mPinOutputImage );
+		pNode->pinUpdated( pNode->mPinOutputImage );
 
-	pNode->pinUpdated( pNode->mPinOutputLabels );
+		pNode->pinUpdated( pNode->mPinOutputLabels );
+
+		pNode->mNode->setStatus( fugio::NodeInterface::Initialised );
+	}
+	catch( ... )
+	{
+		pNode->mNode->setStatus( fugio::NodeInterface::Error );
+	}
+
 #endif
 }

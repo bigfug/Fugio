@@ -1,5 +1,5 @@
-#ifndef IMAGETHRESHOLDNODE_H
-#define IMAGETHRESHOLDNODE_H
+#ifndef CONVERTTONODE_H
+#define CONVERTTONODE_H
 
 #include <QObject>
 
@@ -16,36 +16,44 @@
 #include <opencv2/core/core.hpp>
 #endif
 
-class ImageThresholdNode : public fugio::NodeControlBase
+class ConvertToNode : public fugio::NodeControlBase
 {
 	Q_OBJECT
 
-public:
-	Q_INVOKABLE explicit ImageThresholdNode( QSharedPointer<fugio::NodeInterface> pNode );
+	Q_CLASSINFO( "Author", "Alex May" )
+	Q_CLASSINFO( "Version", "1.0" )
+	Q_CLASSINFO( "Description", "Converts a matrix of data to different formats" )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "ConvertTo_(OpenCV)" ) )
+	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
-	virtual ~ImageThresholdNode( void ) {}
+public:
+	Q_INVOKABLE explicit ConvertToNode( QSharedPointer<fugio::NodeInterface> pNode );
+
+	virtual ~ConvertToNode( void ) {}
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
 
-	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
+	virtual void inputsUpdated( qint64 pTimeStamp );
+
+private:
+	static void conversion( ConvertToNode *pNode );
 
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputImage;
-	QSharedPointer<fugio::PinInterface>			 mPinInputThreshold;
-	QSharedPointer<fugio::PinInterface>			 mPinInputMaxVal;
 	QSharedPointer<fugio::PinInterface>			 mPinInputType;
 
 	fugio::ChoiceInterface						*mValInputType;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface						*mOutputImage;
+	fugio::ImageInterface						*mValOutputImage;
+
+	static QMap<QString,int>					 mTypeMap;
 
 #if defined( OPENCV_SUPPORTED )
 	cv::Mat										 mMatImg;
+	cv::Mat										 mMatLab;
 #endif
-
-	static QMap<QString,int>					 mTypeList;
 };
 
-#endif // IMAGETHRESHOLDNODE_H
+#endif // CONVERTTONODE_H

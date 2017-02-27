@@ -19,5 +19,7 @@
 #define NID_OPENCV_CASCADE_CLASSIFER	(QUuid("{acdf9a56-e69c-4746-b3d6-4f93ef2f8534}"))
 #define NID_OPENCV_MOMENTS			(QUuid("{1775e664-cd01-48d2-a6e0-4e0b5793cb9e}"))
 #define NID_OPENCV_DISTANCE_TRANSFORM	(QUuid("{b3fe1dfc-1257-4dab-993d-407c101e536c}"))
+#define NID_OPENCV_CONVERT_TO			(QUuid("{953d806b-2121-4da8-a4ef-8bd8b29863c7}"))
+#define NID_OPENCV_ADD					(QUuid("{cfbea28c-51af-4c64-9240-c146931eb0d3}"))
 
 #endif // FUGIO_OPENCV_H
