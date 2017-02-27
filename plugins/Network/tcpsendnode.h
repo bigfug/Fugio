@@ -33,9 +33,15 @@ public:
 	virtual bool deinitialise() Q_DECL_OVERRIDE;
 
 protected slots:
+	void hostFound( void );
+
+	void socketError( QAbstractSocket::SocketError pSocketError );
+
 	void socketConnected( void );
 
 	void sendData( qint64 pTimeStamp );
+
+	void socketConnect( void );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinHost;

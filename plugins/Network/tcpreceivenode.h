@@ -32,9 +32,11 @@ public:
 	virtual bool deinitialise() Q_DECL_OVERRIDE;
 
 protected slots:
-	void frameStart( qint64 pTimeStamp );
-
 	void serverNewConnection( void );
+
+	void serverDisconnected( void );
+
+	void serverRead( void );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinPort;
