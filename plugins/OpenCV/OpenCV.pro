@@ -32,7 +32,8 @@ SOURCES += \
 	resizenode.cpp \
 	equalizehistnode.cpp \
 	cascadeclassifiernode.cpp \
-    momentsnode.cpp
+    momentsnode.cpp \
+    distancetransformnode.cpp
 
 HEADERS +=\
 	../../include/fugio/nodecontrolbase.h \
@@ -53,7 +54,8 @@ HEADERS +=\
 	resizenode.h \
 	equalizehistnode.h \
 	cascadeclassifiernode.h \
-    momentsnode.h
+    momentsnode.h \
+    distancetransformnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

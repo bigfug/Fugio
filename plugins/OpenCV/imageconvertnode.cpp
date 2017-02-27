@@ -222,6 +222,8 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 
 		case fugio::ImageInterface::FORMAT_GRAY8:
 		case fugio::ImageInterface::FORMAT_GRAY16:
+		case fugio::ImageInterface::FORMAT_R32F:
+		case fugio::ImageInterface::FORMAT_R32S:
 			switch( mDestinationFormat )
 			{
 				case fugio::ImageInterface::FORMAT_RGB8:
