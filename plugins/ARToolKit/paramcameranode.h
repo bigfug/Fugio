@@ -34,6 +34,7 @@ public:
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
 private:
+#if defined( ARTOOLKIT_SUPPORTED )
 	static void arglCameraFrustumRHf(const ARParam *cparam, const float focalmin, const float focalmax, float m_projection[16])
 	{
 		ARdouble    icpara[3][4];
@@ -92,6 +93,7 @@ private:
 									q[i][3];
 		}
 	}
+#endif
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputParam;

@@ -39,6 +39,7 @@ public:
 private:
 	void freeTracker( void );
 
+#if defined( ARTOOLKIT_SUPPORTED )
 	// para's type is also equivalent to (double(*)[4]).
 	static void arglCameraViewRH( const ARdouble para[3][4], float m_modelview[16], const float scale = 0.0 )
 	{
@@ -64,6 +65,7 @@ private:
 			m_modelview[14] *= scale;
 		}
 	}
+#endif
 
 private slots:
 	void updateConfidence(float cf);
@@ -86,6 +88,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinOutputConfidence;
 	fugio::VariantInterface						*mValOutputConfidence;
 
+#if defined( ARTOOLKIT_SUPPORTED )
 	ARParamLT									*mParamLT;
 	ARHandle									*mHandle;
 	AR3DHandle									*mHandle3D;
@@ -94,6 +97,7 @@ protected:
 	int											 mPatternIndex;
 	ARdouble									 mPatTrn[ 3 ][ 4 ];
 	bool										 mPatFnd;
+#endif
 };
 
 #endif // TRACKERNODE_H

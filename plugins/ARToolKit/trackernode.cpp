@@ -14,8 +14,11 @@
 #include <fugio/file/filename_interface.h>
 
 TrackerNode::TrackerNode( QSharedPointer<fugio::NodeInterface> pNode )
-	:NodeControlBase( pNode ), mParamLT( 0 ), mHandle( 0 ), mHandle3D( 0 ), mHandlePatt( 0 ),
+	:NodeControlBase( pNode )
+#if defined( ARTOOLKIT_SUPPORTED )
+	, mParamLT( 0 ), mHandle( 0 ), mHandle3D( 0 ), mHandlePatt( 0 ),
 	  mPixFmt( AR_PIXEL_FORMAT_INVALID ), mPatternIndex( -1 ), mPatFnd( false )
+#endif
 {
 	FUGID( PIN_INPUT_PARAM, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 	FUGID( PIN_INPUT_IMAGE, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
@@ -91,6 +94,7 @@ void TrackerNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+#if defined( ARTOOLKIT_SUPPORTED )
 	if( mPinInputImage->isUpdated( pTimeStamp ) )
 	{
 		AR_PIXEL_FORMAT			PixFmt = mPixFmt;
@@ -310,10 +314,12 @@ void TrackerNode::inputsUpdated( qint64 pTimeStamp )
 
 		pinUpdated( mPinOutputMatrix );
 	}
+#endif
 }
 
 void TrackerNode::freeTracker()
 {
+#if defined( ARTOOLKIT_SUPPORTED )
 	if( mPatternIndex != -1 )
 	{
 		arPattFree( mHandlePatt, mPatternIndex );
@@ -343,6 +349,7 @@ void TrackerNode::freeTracker()
 	}
 
 	arParamLTFree( &mParamLT );
+#endif
 }
 
 

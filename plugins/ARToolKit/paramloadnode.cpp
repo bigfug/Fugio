@@ -30,6 +30,7 @@ void ParamLoadNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+#if defined( ARTOOLKIT_SUPPORTED )
 	ARParam			PR;
 
 	if( arParamLoad( FN.toLatin1().constData(), 1, &PR ) < 0 )
@@ -47,4 +48,5 @@ void ParamLoadNode::inputsUpdated( qint64 pTimeStamp )
 
 		pinUpdated( mPinOutputParam );
 	}
+#endif
 }

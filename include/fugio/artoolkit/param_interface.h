@@ -7,7 +7,9 @@
 
 #include <fugio/node_control_interface.h>
 
+#if defined( ARTOOLKIT_SUPPORTED )
 #include <AR/ar.h>
+#endif
 
 FUGIO_NAMESPACE_BEGIN
 
@@ -18,9 +20,11 @@ class ParamInterface
 public:
 	virtual ~ParamInterface( void ) {}
 
+#if defined( ARTOOLKIT_SUPPORTED )
 	virtual const ARParam &param( void ) const = 0;
 
 	virtual void setParam( const ARParam &pParam ) = 0;
+#endif
 };
 
 } // namespace ar

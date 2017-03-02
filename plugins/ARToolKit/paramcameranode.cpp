@@ -45,6 +45,7 @@ void ParamCameraNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+#if defined( ARTOOLKIT_SUPPORTED )
 	ARParam			PrmDat = PrmInt->param();
 
 	if( !mPinInputSize->isUpdated( pTimeStamp ) || !mPinInputNear->isUpdated( pTimeStamp ) || !mPinInputFar->isUpdated( pTimeStamp ) )
@@ -63,4 +64,5 @@ void ParamCameraNode::inputsUpdated( qint64 pTimeStamp )
 	mValOutputMatrix->setVariant( CamMat );
 
 	pinUpdated( mPinOutputMatrix );
+#endif
 }

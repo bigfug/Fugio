@@ -72,7 +72,11 @@ void DistanceTransformNode::conversion( DistanceTransformNode *pNode )
 
 	try
 	{
+#if ( ( defined( CV_VERSION_EPOCH ) && ( CV_VERSION_EPOCH > 2 ) ) || ( !defined( CV_VERSION_EPOCH ) && CV_VERSION_MAJOR >= 3 ) )
 		cv::distanceTransform( MatSrc, pNode->mMatImg, pNode->mMatLab, cv::DIST_L2, 5, cv::DIST_LABEL_CCOMP );
+#else
+		cv::distanceTransform( MatSrc, pNode->mMatImg, pNode->mMatLab, CV_DIST_L2, 5, cv::DIST_LABEL_CCOMP );
+#endif
 
 		OpenCVPlugin::mat2image( pNode->mMatImg, pNode->mValOutputImage );
 
