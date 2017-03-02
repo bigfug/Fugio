@@ -51,7 +51,8 @@ HEADERS += \
     mediapreset/mediaYouTube1080pWide.h \
     mediaprocessornode.h \
     processoraudiobuffer.h \
-	mediapreset/mediapresetinterface.h
+	mediapreset/mediapresetinterface.h \
+    mediapreset/media360_2048.h
 
 FORMS += \
 	mediarecorderform.ui
