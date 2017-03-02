@@ -44,13 +44,13 @@ public:
 	}
 
 
+#if defined( ARTOOLKIT_SUPPORTED )
 	// ParamInterface interface
 public:
 	virtual const ARParam &param() const Q_DECL_OVERRIDE;
 	virtual void setParam( const ARParam &pParam ) Q_DECL_OVERRIDE;
 
 private:
-#if defined( ARTOOLKIT_SUPPORTED )
 	ARParam			mParam;
 #endif
 };
