@@ -1,5 +1,7 @@
 #include "floornode.h"
 
+#include <cmath>
+
 #include <fugio/core/uuid.h>
 
 #include <fugio/context_interface.h>
