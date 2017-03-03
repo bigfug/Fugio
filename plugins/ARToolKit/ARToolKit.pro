@@ -6,7 +6,7 @@
 
 include( ../../FugioGlobal.pri )
 
-QT       += widgets opengl
+QT       += widgets
 
 TARGET = $$qtLibraryTarget(fugio-artoolkit)
 TEMPLATE = lib
@@ -15,10 +15,10 @@ CONFIG += plugin c++11
 DESTDIR = $$DESTDIR/plugins
 
 SOURCES += artoolkitplugin.cpp \
-    paramloadnode.cpp \
-    parampin.cpp \
-    trackernode.cpp \
-    paramcameranode.cpp
+	paramloadnode.cpp \
+	parampin.cpp \
+	trackernode.cpp \
+	paramcameranode.cpp
 
 HEADERS += artoolkitplugin.h \
 	../../include/fugio/nodecontrolbase.h \
@@ -26,9 +26,9 @@ HEADERS += artoolkitplugin.h \
 	../../include/fugio/artoolkit/uuid.h \
 	../../include/fugio/artoolkit/param_interface.h \
 	paramloadnode.h \
-    parampin.h \
-    trackernode.h \
-    paramcameranode.h
+	parampin.h \
+	trackernode.h \
+	paramcameranode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -59,7 +59,6 @@ macx {
 
 		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
-		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$FRAMEWORKDIR
 		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
 
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
@@ -110,9 +109,9 @@ windows:exists( $$(ARTOOLKIT5_ROOT) ) {
 macx:exists( $$(ARTOOLKIT5_ROOT) ) {
 	INCLUDEPATH += $$(ARTOOLKIT5_ROOT)/include
 
-	LIBS += -L$$(ARTOOLKIT5_ROOT)/lib -lAR
+	LIBS += -L$$(ARTOOLKIT5_ROOT)/lib -lAR -lARICP
 
-	LIBS += -framework CoreFoundation -framework AppKit
+	LIBS += -framework CoreFoundation -framework AppKit -framework Accelerate
 
 	DEFINES += ARTOOLKIT_SUPPORTED
 }
