@@ -17,12 +17,18 @@
 #include "equalizehistnode.h"
 #include "cascadeclassifiernode.h"
 #include "momentsnode.h"
+#include "distancetransformnode.h"
+#include "converttonode.h"
+#include "addnode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
 ClassEntry	OpenCVPlugin::mNodeEntries[] =
 {
-	ClassEntry( "CascadeClassifier", "OpenCV", NID_OPENCV_CASCADE_CLASSIFER, &CascadeClassifierNode::staticMetaObject ),
+	ClassEntry( "Add", "OpenCV", NID_OPENCV_ADD, &AddNode::staticMetaObject ),
+	ClassEntry( "Cascade Classifier", "OpenCV", NID_OPENCV_CASCADE_CLASSIFER, &CascadeClassifierNode::staticMetaObject ),
+	ClassEntry( "ConvertTo", "OpenCV", NID_OPENCV_CONVERT_TO, &ConvertToNode::staticMetaObject ),
+	ClassEntry( "Distance Transform", "OpenCV", NID_OPENCV_DISTANCE_TRANSFORM, &DistanceTransformNode::staticMetaObject ),
 	ClassEntry( "Dilate", "OpenCV", NID_OPENCV_DILATE, &DilateNode::staticMetaObject ),
 	ClassEntry( "Erode", "OpenCV", NID_OPENCV_ERODE, &ErodeNode::staticMetaObject ),
 	ClassEntry( "EqualizeHist", "OpenCV", NID_OPENCV_EQUALIZE_HIST, &EqualizeHistNode::staticMetaObject ),
@@ -109,7 +115,16 @@ cv::Mat OpenCVPlugin::image2mat( fugio::ImageInterface *pSrcImg )
 			break;
 
 		case fugio::ImageInterface::FORMAT_YUYV422:
+		case fugio::ImageInterface::FORMAT_UYVY422:
 			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_8UC2, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
+			break;
+
+		case fugio::ImageInterface::FORMAT_R32F:
+			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_32FC1, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
+			break;
+
+		case fugio::ImageInterface::FORMAT_R32S:
+			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_32SC1, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
 			break;
 
 		default:
@@ -138,6 +153,14 @@ void OpenCVPlugin::mat2image( cv::Mat &pSrcMat, fugio::ImageInterface *pDstImg, 
 
 			case CV_16U:
 				pDstImg->setFormat( fugio::ImageInterface::FORMAT_GRAY16 );
+				break;
+
+			case CV_32SC1:
+				pDstImg->setFormat( fugio::ImageInterface::FORMAT_R32S );
+				break;
+
+			case CV_32FC1:
+				pDstImg->setFormat( fugio::ImageInterface::FORMAT_R32F );
 				break;
 		}
 	}

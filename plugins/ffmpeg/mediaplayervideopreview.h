@@ -5,16 +5,16 @@
 
 #include "mediatimelinenode.h"
 
-#include <fugio/interface_keyframes_controls.h>
+#include <fugio/timeline/keyframes_controls_interface.h>
 
 namespace Ui {
 	class MediaPlayerVideoPreview;
 }
 
-class MediaPlayerVideoPreview : public QWidget, public InterfaceKeyFramesControls
+class MediaPlayerVideoPreview : public QWidget, public fugio::KeyFramesControlsInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( InterfaceKeyFramesControls )
+	Q_INTERFACES( fugio::KeyFramesControlsInterface )
 
 public:
 	explicit MediaPlayerVideoPreview( MediaTimelineNode *pMediaPlayer );
@@ -29,10 +29,10 @@ public:
 	virtual void playheadPlay( qreal pTimeLast, qreal pTimeCurr );
 
 private:
-	Ui::MediaPlayerVideoPreview *ui;
+	Ui::MediaPlayerVideoPreview		 *ui;
 
 	MediaTimelineNode				*mMediaPlayer;
-	qreal						 mLastImageUpdate;
+	qreal							 mLastImageUpdate;
 };
 
 #endif // MEDIAPLAYERVIDEOPREVIEW_H

@@ -14,9 +14,10 @@
 
 #if defined( OPENCV_SUPPORTED )
 #include <opencv2/imgproc/imgproc.hpp>
-#endif
 
 Q_STATIC_ASSERT( sizeof( QPoint ) == sizeof( cv::Point ) );
+
+#endif
 
 FindContoursNode::FindContoursNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )

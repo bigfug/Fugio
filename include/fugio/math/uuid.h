@@ -60,4 +60,8 @@
 
 #define NID_MINMAX				(QUuid("{0e884852-1a9f-44d5-a053-52b09de6c724}"))
 
+#define NID_CEIL				(QUuid("{e838e126-f085-4f24-a2aa-bf50277caa41}"))
+#define NID_FLOOR				(QUuid("{0521ed8f-4b09-4dc4-b637-5fb42a12b375}"))
+#define NID_ROUND				(QUuid("{a69e01a2-25a0-4507-b040-d43d2f5b9d00}"))
+
 #endif // MATH_GLOBAL_H

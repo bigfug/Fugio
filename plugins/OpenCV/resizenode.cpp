@@ -1,7 +1,7 @@
 #include "resizenode.h"
 
 #if defined( OPENCV_SUPPORTED )
-#include <opencv2/imgproc.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #endif
 
 #include <fugio/image/uuid.h>
@@ -40,8 +40,10 @@ ResizeNode::ResizeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mValInputInterpolation = pinInput<fugio::ChoiceInterface *>( "Interpolation", mPinInputInterpolation, PID_CHOICE, PIN_INPUT_INTERPOLATION );
 
+#if defined( OPENCV_SUPPORTED )
 	mValInputInterpolation->setChoices( mInterpolationMap.values() );
 	mPinInputInterpolation->setValue( "INTER_LINEAR" );
+#endif
 
 	mValOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 }
@@ -52,6 +54,8 @@ void ResizeNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		return;
 	}
+
+#if defined( OPENCV_SUPPORTED )
 
 	fugio::ImageInterface		*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
 
@@ -82,4 +86,5 @@ void ResizeNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		mNode->setStatus( fugio::NodeInterface::Error );
 	}
+#endif
 }

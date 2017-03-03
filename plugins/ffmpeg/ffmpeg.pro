@@ -51,7 +51,8 @@ HEADERS += \
     mediapreset/mediaYouTube1080pWide.h \
     mediaprocessornode.h \
     processoraudiobuffer.h \
-	mediapreset/mediapresetinterface.h
+	mediapreset/mediapresetinterface.h \
+    mediapreset/media360_2048.h
 
 FORMS += \
 	mediarecorderform.ui
@@ -189,13 +190,17 @@ contains( DEFINES, FFMPEG_SUPPORTED ) {
 #------------------------------------------------------------------------------
 # hap
 
-contains( DEFINES, FFMPEG_SUPPORTED ) {
-	exists( $$(LIBS)/hap/source ) {
-		INCLUDEPATH += $$(LIBS)/hap/source
+exists( $$(LIBS)/hap/source ) {
+	INCLUDEPATH += $$(LIBS)/hap/source
 
-		SOURCES += $$(LIBS)/hap/source/hap.c
-		HEADERS += $$(LIBS)/hap/source/hap.h
-	}
+	SOURCES += $$(LIBS)/hap/source/hap.c
+	HEADERS += $$(LIBS)/hap/source/hap.h
+
+	DEFINES += HAP_SUPPORTED
+}
+
+!contains( DEFINES, HAP_SUPPORTED ) {
+	warning( "HAP not supported" )
 }
 
 #------------------------------------------------------------------------------

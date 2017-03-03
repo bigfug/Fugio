@@ -48,7 +48,9 @@ private:
 	DeviceVideoCapture						*mVidCapDev;
 	qint64									 mFrmNum;
 
+#if defined( OPENCV_SUPPORTED )
 	cv::Mat									 mMatImg;
+#endif
 
 	int										 mCameraIndex;
 };

@@ -56,6 +56,7 @@ ImageConvertNode::ImageConvertNode( QSharedPointer<NodeInterface> pNode )
 		mImageFormatMap.insert( ImageInterface::FORMAT_BGR8, "BGR8" );
 		mImageFormatMap.insert( ImageInterface::FORMAT_BGRA8, "BGRA8" );
 		mImageFormatMap.insert( ImageInterface::FORMAT_YUYV422, "YUYV422" );
+		mImageFormatMap.insert( ImageInterface::FORMAT_UYVY422, "UYVY422" );
 		mImageFormatMap.insert( ImageInterface::FORMAT_YUV420P, "YUV420P" );
 		mImageFormatMap.insert( ImageInterface::FORMAT_GRAY16, "GRAY16" );
 		mImageFormatMap.insert( ImageInterface::FORMAT_GRAY8, "GRAY8" );
@@ -86,6 +87,7 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 {
 	Performance( mNode, "inputsUpdated", pTimeStamp );
 
+#if defined( FFMPEG_SUPPORTED )
 	ImageInterface		*SrcImg = input<ImageInterface *>( mPinInputImage );
 
 	if( !SrcImg || !SrcImg->isValid() )
@@ -100,7 +102,6 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-#if defined( FFMPEG_SUPPORTED )
 	if( mCurrImageFormat != mLastImageFormat || SrcImg->size() != mLastImageSize )
 	{
 		if( mScaleContext )
@@ -169,6 +170,10 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 				break;
 
 			case ImageInterface::FORMAT_YUYV422:
+				SrcFmt = AV_PIX_FMT_YUYV422;
+				break;
+
+			case ImageInterface::FORMAT_UYVY422:
 				SrcFmt = AV_PIX_FMT_UYVY422;
 				break;
 
@@ -208,6 +213,10 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			break;
 
 		case ImageInterface::FORMAT_YUYV422:
+			DstFmt = AV_PIX_FMT_YUYV422;
+			break;
+
+		case ImageInterface::FORMAT_UYVY422:
 			DstFmt = AV_PIX_FMT_UYVY422;
 			break;
 

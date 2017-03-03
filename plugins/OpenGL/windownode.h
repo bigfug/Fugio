@@ -86,6 +86,8 @@ private slots:
 	void outputResized(QSize pSize );
 
 private:
+	QSharedPointer<fugio::PinInterface>	 mPinInputTrigger;
+
 	QSharedPointer<fugio::PinInterface>	 mPinState;
 
 	QSharedPointer<fugio::PinInterface>	 mPinMouseShowCursor;

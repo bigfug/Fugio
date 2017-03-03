@@ -45,7 +45,7 @@ private:
 	cv::Mat										 mMatImg;
 #endif
 
-	static QStringList							 mTypeList;
+	static QMap<QString,int>					 mTypeList;
 };
 
 #endif // IMAGETHRESHOLDNODE_H

@@ -13,13 +13,15 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #endif
 
-QStringList	ImageThresholdNode::mTypeList =
+QMap<QString,int>	ImageThresholdNode::mTypeList =
 {
-	"THRESH_BINARY",
-	"THRESH_BINARY_INV",
-	"THRESH_TRUNC",
-	"THRESH_TOZERO",
-	"THRESH_TOZERO_INV"
+#if defined( OPENCV_SUPPORTED )
+	{ "THRESH_BINARY",		cv::THRESH_BINARY },
+	{ "THRESH_BINARY_INV",	cv::THRESH_BINARY_INV },
+	{ "THRESH_TRUNC",		cv::THRESH_TRUNC },
+	{ "THRESH_TOZERO",		cv::THRESH_TOZERO },
+	{ "THRESH_TOZERO_INV",	cv::THRESH_TOZERO_INV }
+#endif
 };
 
 ImageThresholdNode::ImageThresholdNode( QSharedPointer<fugio::NodeInterface> pNode )
@@ -37,7 +39,7 @@ ImageThresholdNode::ImageThresholdNode( QSharedPointer<fugio::NodeInterface> pNo
 
 	mValInputType = pinInput<fugio::ChoiceInterface *>( "Type", mPinInputType, PID_CHOICE, PIN_INPUT_TYPE );
 
-	mValInputType->setChoices( mTypeList );
+	mValInputType->setChoices( mTypeList.keys() );
 
 	mOutputImage = pinOutput<fugio::ImageInterface *>( "Output", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 
@@ -62,7 +64,7 @@ void ImageThresholdNode::inputsUpdated( qint64 pTimeStamp )
 
 	double		Threshold = variant( mPinInputThreshold ).toDouble();
 	double		MaxVal    = variant( mPinInputMaxVal ).toDouble();
-	int			Type      = cv::THRESH_BINARY; //mTypeList.indexOf( variant( mPinInputType ).toString() );
+	int			Type      = mTypeList.value( variant( mPinInputType ).toString() );
 
 	try
 	{

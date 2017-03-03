@@ -15,13 +15,18 @@ CONFIG += plugin c++11
 DESTDIR = $$DESTDIR/plugins
 
 SOURCES += videocaptureplugin.cpp \
-	videocapturenode.cpp
+	videocapturenode.cpp \
+    devicedialog.cpp
 
 HEADERS += videocaptureplugin.h \
 	../../include/fugio/nodecontrolbase.h \
 	../../include/fugio/pincontrolbase.h \
 	../../include/fugio/videocapture/uuid.h \
-	videocapturenode.h
+	videocapturenode.h \
+    devicedialog.h
+
+FORMS += \
+	devicedialog.ui
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -85,7 +90,7 @@ windows {
 }
 
 #------------------------------------------------------------------------------
-# dlib
+# video_capture
 
 macx:exists( $$(LIBS)/video_capture/install/mac-clang-x86_64/include/videocapture/Capture.h ) {
 	INCLUDEPATH += $$(LIBS)/video_capture/install/mac-clang-x86_64/include
@@ -109,6 +114,16 @@ win32:exists( $$(LIBS)/video_capture/build ) {
 	LIBS += -lvideocapture
 
 	LIBS += -lShlwapi -lOle32 -lMfplat -lMf -lMfuuid -lMfreadwrite
+
+	DEFINES += VIDEOCAPTURE_SUPPORTED
+}
+
+linux:!macx:exists( $$(LIBS)/video_capture/install/linux-gcc-x86_64/include/videocapture/Capture.h ) {
+	INCLUDEPATH += $$(LIBS)/video_capture/install/linux-gcc-x86_64/include
+
+	LIBS += -L$$(LIBS)/video_capture/install/linux-gcc-x86_64/lib -lvideocapture
+
+#	LIBS += -framework Cocoa -framework Carbon -framework CoreMedia -framework CoreVideo -framework AVFoundation
 
 	DEFINES += VIDEOCAPTURE_SUPPORTED
 }

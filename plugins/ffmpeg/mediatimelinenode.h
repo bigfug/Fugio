@@ -20,11 +20,11 @@
 
 #include <fugio/nodecontrolbase.h>
 
-#include <fugio/interface_timeline_track.h>
+#include <fugio/timeline/timeline_track_interface.h>
 
-#include <fugio/interface_keyframes.h>
-#include <fugio/interface_keyframes_time.h>
-#include <fugio/interface_keyframes_background.h>
+#include <fugio/timeline/keyframes_interface.h>
+#include <fugio/timeline/keyframes_time_interface.h>
+#include <fugio/timeline/keyframes_background_interface.h>
 
 #include "segmentinterface.h"
 
@@ -32,10 +32,10 @@
 
 FUGIO_NAMESPACE_BEGIN
 class ImageInterface;
+class TimelineControlInterface;
 FUGIO_NAMESPACE_END
 
 class InterfaceSegment;
-class InterfaceTimelineControl;
 class QPushButton;
 
 typedef struct AudioBuffer3
@@ -81,10 +81,10 @@ typedef struct AudioBuffer3
 
 using namespace fugio;
 
-class MediaTimelineNode : public fugio::NodeControlBase, public fugio::AudioProducerInterface, public fugio::PlayheadInterface, public InterfaceTimelineTrack, public InterfaceKeyFramesBackground
+class MediaTimelineNode : public fugio::NodeControlBase, public fugio::AudioProducerInterface, public fugio::PlayheadInterface, public fugio::TimelineTrackInterface, public fugio::KeyFramesBackgroundInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::AudioProducerInterface fugio::PlayheadInterface InterfaceTimelineTrack InterfaceKeyFramesBackground )
+	Q_INTERFACES( fugio::AudioProducerInterface fugio::PlayheadInterface fugio::TimelineTrackInterface fugio::KeyFramesBackgroundInterface )
 
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
@@ -157,9 +157,9 @@ public:
 
 	virtual qreal duration( void ) const Q_DECL_OVERRIDE;
 
-	virtual InterfaceKeyFramesWidget *newTimelineGui( void ) Q_DECL_OVERRIDE;
+	virtual KeyFramesWidgetInterface *newTimelineGui( void ) Q_DECL_OVERRIDE;
 
-	virtual InterfaceTimelineControl *control( void ) Q_DECL_OVERRIDE
+	virtual TimelineControlInterface *control( void ) Q_DECL_OVERRIDE
 	{
 		return( mTimelineControl );
 	}
@@ -169,12 +169,12 @@ public:
 		return( this );
 	}
 
-	virtual InterfaceKeyFrames *keyframes( void ) Q_DECL_OVERRIDE
+	virtual KeyFramesInterface *keyframes( void ) Q_DECL_OVERRIDE
 	{
 		return( mKF->keyframes() );
 	}
 
-	virtual QList<InterfaceKeyFramesControls *> editorControls( void ) Q_DECL_OVERRIDE;
+	virtual QList<KeyFramesControlsInterface *> editorControls( void ) Q_DECL_OVERRIDE;
 
 	virtual bool canRecord( void ) const Q_DECL_OVERRIDE
 	{
@@ -184,7 +184,7 @@ public:
 	//-------------------------------------------------------------------------
 	// InterfaceTimelineTrack
 
-	virtual void drawBackground( const InterfaceKeyFramesWidget *pTrackWidget, QPainter &pPainter, const QRect &pUpdateRect ) const Q_DECL_OVERRIDE;
+	virtual void drawBackground( const KeyFramesWidgetInterface *pTrackWidget, QPainter &pPainter, const QRect &pUpdateRect ) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 
@@ -217,7 +217,7 @@ private:
 	void setInstanceSampleOffset( qint64 pSampleOffset );
 
 private:
-	InterfaceTimelineControl						*mTimelineControl;
+	TimelineControlInterface						*mTimelineControl;
 
 	QSharedPointer<fugio::PinInterface>				 mPinFilename;
 	QSharedPointer<fugio::PinInterface>				 mPinVolume;
@@ -232,7 +232,7 @@ private:
 
 	fugio::SegmentInterface							*mSegment;
 
-	InterfaceKeyFramesTime							*mKF;
+	KeyFramesTimeInterface							*mKF;
 
 	bool											 mAudioMute;
 

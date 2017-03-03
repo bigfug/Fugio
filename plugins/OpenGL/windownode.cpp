@@ -35,6 +35,8 @@ WindowNode::WindowNode( QSharedPointer<fugio::NodeInterface> pNode )
 	FUGID( PIN_OUTPUT_WINDOW_SIZE, "e6bf944e-5f46-4994-bd51-13c2aa6415b7" );
 	FUGID( PIN_OUTPUT_EVENTS, "524e9f30-7094-4f87-b5ab-ead2da04256b" );
 
+	mPinInputTrigger = pinInput( "Trigger", PID_FUGIO_NODE_TRIGGER );
+
 	mPinInputRender = pinInput( "Render", PIN_INPUT_RENDER );
 
 	mPinMouseShowCursor = pinInput( "Hide Cursor", PIN_INPUT_HIDE_CURSOR );
@@ -139,7 +141,7 @@ void WindowNode::inputsUpdated( qint64 pTimeStamp )
 {
 	mTimeStamp = pTimeStamp;
 
-	if( mPinInputRender->isUpdated( pTimeStamp ) && mOutput )
+	if( ( mPinInputTrigger->isUpdated( pTimeStamp ) || mPinInputRender->isUpdated( pTimeStamp ) ) && mOutput )
 	{
 		mOutput->renderLater();
 	}

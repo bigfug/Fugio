@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QVector>
 
+#if defined( FFMPEG_SUPPORTED )
 #ifndef INT64_C
 #define INT64_C(c) (c ## LL)
 #define UINT64_C(c) (c ## ULL)
@@ -24,6 +25,8 @@ extern "C"
 	#include <libswresample/swresample.h>
 #endif
 }
+
+#endif
 
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
@@ -203,6 +206,7 @@ private:
 	qreal						 mTimePrev;
 	qreal						 mTimeCurr;
 
+#if defined( FFMPEG_SUPPORTED )
 	AVFormatContext				*mFormatContext;
 
 	AVDictionary				*mOptionsVideo;
@@ -221,17 +225,20 @@ private:
 
 	AVFrame						*mFrameVideo;
 	AVFrame						*mFrameAudio;
+#endif
 	//QVector<uint8_t>			 mBufferVideo;
 	int64_t						 mFrameCount;
 	qint64						 mAudioOffsetInput;
 	qint64						 mAudioOffsetOutput;
 	qint64						 mFrameCountAudio;
 
+#if defined( FFMPEG_SUPPORTED )
 	SwsContext					*mScaleContext;
 
 #if defined( TL_USE_LIB_AV )
 #else
 	SwrContext					*mSwrContext;
+#endif
 #endif
 
 	QVector<QVector<float>>		 mBufferAudio;

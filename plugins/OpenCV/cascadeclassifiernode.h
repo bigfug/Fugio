@@ -14,7 +14,7 @@
 
 #if defined( OPENCV_SUPPORTED )
 #include <opencv2/core/core.hpp>
-#include <opencv2/objdetect.hpp>
+#include <opencv2/objdetect/objdetect.hpp>
 #endif
 
 class CascadeClassifierNode : public fugio::NodeControlBase

@@ -305,9 +305,26 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 				break;
 
 			case fugio::ImageInterface::FORMAT_YUYV422:
+			case fugio::ImageInterface::FORMAT_UYVY422:
 				mTexture->setFormat( GL_RG );
 
 				mTexture->setInternalFormat( GL_RG8 );
+				break;
+
+			case fugio::ImageInterface::FORMAT_R32F:
+				mTexture->setFormat( GL_RED );
+
+				mTexture->setType( GL_FLOAT );
+
+				mTexture->setInternalFormat( GL_R32F );
+				break;
+
+			case fugio::ImageInterface::FORMAT_R32S:
+				mTexture->setFormat( GL_RED_INTEGER );
+
+				mTexture->setType( GL_INT );
+
+				mTexture->setInternalFormat( GL_R32I );
 				break;
 
 			case fugio::ImageInterface::FORMAT_RG32:

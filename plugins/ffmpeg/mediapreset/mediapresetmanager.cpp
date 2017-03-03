@@ -8,6 +8,8 @@
 #include "mediaYouTube720pWide.h"
 #include "mediaYouTube1080pWide.h"
 
+#include "media360_2048.h"
+
 #include "mediaWav44.h"
 
 #include "mediadvdpal.h"
@@ -26,6 +28,8 @@ MediaPresetManager::MediaPresetManager(QObject *parent) :
 	MediaYouTube480pWide::registerPreset( *this );
 	MediaYouTube720pWide::registerPreset( *this );
 	MediaYouTube1080pWide::registerPreset( *this );
+
+	Media360_2048::registerPreset( *this );
 }
 
 void MediaPresetManager::registerPreset( const QString &pPresetName, MediaPresetManager::PresetFunction pPresetFunction )

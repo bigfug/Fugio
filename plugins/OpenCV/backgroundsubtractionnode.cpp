@@ -8,6 +8,7 @@
 
 #include "opencvplugin.h"
 
+
 BackgroundSubtractionNode::BackgroundSubtractionNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
@@ -57,10 +58,18 @@ void BackgroundSubtractionNode::process( void )
 
 	if( !mBckSub )
 	{
+#if ( ( defined( CV_VERSION_EPOCH ) && ( CV_VERSION_EPOCH > 2 ) ) || ( !defined( CV_VERSION_EPOCH ) && CV_VERSION_MAJOR >= 3 ) )
 		mBckSub = cv::createBackgroundSubtractorMOG2();
+#else
+		mBckSub = new cv::BackgroundSubtractorMOG2();
+#endif
 	}
 
+#if ( ( defined( CV_VERSION_EPOCH ) && ( CV_VERSION_EPOCH > 2 ) ) || ( !defined( CV_VERSION_EPOCH ) && CV_VERSION_MAJOR >= 3 ) )
 	mBckSub->apply( MatSrc, mMatDst );
+#else
+	mBckSub->operator()( MatSrc, mMatDst );
+#endif
 
 	OpenCVPlugin::mat2image( mMatDst, mOutputImage );
 

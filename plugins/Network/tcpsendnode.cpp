@@ -1,5 +1,7 @@
 #include "tcpsendnode.h"
 
+#include <QTimer>
+
 #include <fugio/core/uuid.h>
 
 #include <fugio/context_interface.h>
@@ -32,7 +34,13 @@ bool TCPSendNode::initialise()
 		return( false );
 	}
 
-	connect( &mSocket, SIGNAL(connected()), this, SLOT(socketConnected()) );
+	connect( &mSocket, &QTcpSocket::hostFound, this, &TCPSendNode::hostFound );
+
+	connect( &mSocket, &QTcpSocket::connected, this, &TCPSendNode::socketConnected );
+
+	connect( &mSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)) );
+
+	mNode->setStatus( fugio::NodeInterface::Warning );
 
 	return( true );
 }
@@ -44,6 +52,22 @@ bool TCPSendNode::deinitialise()
 	return( NodeControlBase::deinitialise() );
 }
 
+void TCPSendNode::hostFound()
+{
+	mNode->setStatus( fugio::NodeInterface::Warning );
+}
+
+void TCPSendNode::socketError( QAbstractSocket::SocketError pSocketError )
+{
+	Q_UNUSED( pSocketError )
+
+	mNode->setStatusMessage( mSocket.errorString() );
+
+	mNode->setStatus( fugio::NodeInterface::Error );
+
+	QTimer::singleShot( 1000, this, SLOT(socketConnect()) );
+}
+
 void TCPSendNode::inputsUpdated( qint64 pTimeStamp )
 {
 	fugio::Performance	Perf( mNode, "inputsUpdated", pTimeStamp );
@@ -52,15 +76,21 @@ void TCPSendNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		mSocket.disconnectFromHost();
 
-		mSocket.connectToHost( variant( mPinHost ).toString(), variant( mPinPort ).toInt() );
+		mNode->setStatus( fugio::NodeInterface::Warning );
+
+		socketConnect();
 
 		return;
 	}
 
-	if( !mSocket.isOpen() || !mSocket.isWritable() )
+	if( mSocket.state() != QTcpSocket::ConnectedState )
 	{
+		mNode->setStatus( fugio::NodeInterface::Warning );
+
 		return;
 	}
+
+	mNode->setStatus( fugio::NodeInterface::Initialised );
 
 	sendData( pTimeStamp );
 }
@@ -96,7 +126,7 @@ void TCPSendNode::sendData( qint64 pTimeStamp )
 
 		if( SerialiseInterface *S = input<SerialiseInterface *>( P ) )
 		{
-			qDebug() << P->name();
+			//qDebug() << P->name();
 
 			mStream << P->globalId();
 			mStream << P->connectedPin()->controlUuid();
@@ -107,4 +137,12 @@ void TCPSendNode::sendData( qint64 pTimeStamp )
 	}
 
 	mWriteTime = pTimeStamp + 1;
+}
+
+void TCPSendNode::socketConnect()
+{
+	if( mSocket.state() != QTcpSocket::ConnectingState && mSocket.state() != QTcpSocket::ConnectedState )
+	{
+		mSocket.connectToHost( variant( mPinHost ).toString(), variant( mPinPort ).toInt() );
+	}
 }

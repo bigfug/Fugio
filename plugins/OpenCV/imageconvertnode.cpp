@@ -32,6 +32,7 @@ ImageConvertNode::ImageConvertNode( QSharedPointer<fugio::NodeInterface> pNode )
 		mFormats[ "BGR8" ] = fugio::ImageInterface::FORMAT_BGR8;
 		mFormats[ "BGRA8" ] = fugio::ImageInterface::FORMAT_BGRA8;
 		mFormats[ "YUYV422" ] = fugio::ImageInterface::FORMAT_YUYV422;
+		mFormats[ "UYVY422" ] = fugio::ImageInterface::FORMAT_UYVY422;
 		mFormats[ "YUV420P" ] = fugio::ImageInterface::FORMAT_YUV420P;
 		mFormats[ "GRAY16" ] = fugio::ImageInterface::FORMAT_GRAY16;
 		mFormats[ "GRAY8" ] = fugio::ImageInterface::FORMAT_GRAY8;
@@ -221,6 +222,8 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 
 		case fugio::ImageInterface::FORMAT_GRAY8:
 		case fugio::ImageInterface::FORMAT_GRAY16:
+		case fugio::ImageInterface::FORMAT_R32F:
+		case fugio::ImageInterface::FORMAT_R32S:
 			switch( mDestinationFormat )
 			{
 				case fugio::ImageInterface::FORMAT_RGB8:

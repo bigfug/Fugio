@@ -30,9 +30,9 @@ bool TCPReceiveNode::initialise()
 		return( false );
 	}
 
-	connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(frameStart(qint64)) );
-
 	connect( &mServer, SIGNAL(newConnection()), this, SLOT(serverNewConnection()) );
+
+	mNode->setStatus( fugio::NodeInterface::Warning );
 
 	return( true );
 }
@@ -42,64 +42,82 @@ bool TCPReceiveNode::deinitialise()
 	return( NodeControlBase::deinitialise() );
 }
 
-void TCPReceiveNode::frameStart( qint64 pTimeStamp )
-{
-	fugio::Performance	Perf( mNode, "frameStart", pTimeStamp );
-
-	for( int i = 0 ; i < mStreams.size() ; )
-	{
-		QDataStream		*D = mStreams.at( i );
-		QTcpSocket		*S = qobject_cast<QTcpSocket *>( D->device() );
-
-		if( !S->isOpen() )
-		{
-			mStreams.removeAt( i );
-
-			delete D;
-			delete S;
-
-			continue;
-		}
-
-		if( !S->bytesAvailable() )
-		{
-			i++;
-
-			continue;
-		}
-
-		QUuid		ControlId, LocalId;
-		QString		Name;
-
-		*D >> LocalId;
-		*D >> ControlId;
-		*D >> Name;
-
-		QSharedPointer<fugio::PinInterface>		P = mNode->findPinByLocalId( LocalId );
-
-		if( !P )
-		{
-			P = pinOutput( Name, ControlId, LocalId );
-		}
-
-		if( SerialiseInterface *S = qobject_cast<SerialiseInterface *>( P->control()->qobject() ) )
-		{
-			S->deserialise( *D );
-
-			pinUpdated( P );
-		}
-
-		i++;
-	}
-}
-
 void TCPReceiveNode::serverNewConnection()
 {
 	QTcpSocket		*S = mServer.nextPendingConnection();
 
 	if( S )
 	{
+		connect( S, &QTcpSocket::readyRead, this, &TCPReceiveNode::serverRead );
+		connect( S, &QTcpSocket::disconnected, this, &TCPReceiveNode::serverDisconnected );
+
 		mStreams << new QDataStream( S );
+	}
+}
+
+void TCPReceiveNode::serverDisconnected()
+{
+	QTcpSocket		*X = qobject_cast<QTcpSocket *>( sender() );
+
+	for( int i = 0 ; i < mStreams.size() ; )
+	{
+		QDataStream		*D = mStreams.at( i );
+		QTcpSocket		*S = qobject_cast<QTcpSocket *>( D->device() );
+
+		if( X == S )
+		{
+			mStreams.removeAt( i );
+
+			X->deleteLater();
+
+			delete D;
+
+			break;
+		}
+	}
+}
+
+void TCPReceiveNode::serverRead()
+{
+	QTcpSocket		*X = qobject_cast<QTcpSocket *>( sender() );
+
+	for( int i = 0 ; i < mStreams.size() ; )
+	{
+		QDataStream		*D = mStreams.at( i );
+		QTcpSocket		*S = qobject_cast<QTcpSocket *>( D->device() );
+
+		if( X == S )
+		{
+			QUuid		ControlId, LocalId;
+			QString		Name;
+
+			D->startTransaction();
+
+			*D >> LocalId >> ControlId >> Name;
+
+			if( !D->commitTransaction() )
+			{
+				return;
+			}
+
+			QSharedPointer<fugio::PinInterface>		P = mNode->findPinByLocalId( LocalId );
+
+			if( !P )
+			{
+				P = pinOutput( Name, ControlId, LocalId );
+			}
+
+			if( SerialiseInterface *S = qobject_cast<SerialiseInterface *>( P->control()->qobject() ) )
+			{
+				S->deserialise( *D );
+
+				pinUpdated( P );
+			}
+
+			mNode->setStatus( fugio::NodeInterface::Initialised );
+
+			return;
+		}
 	}
 }
 
@@ -108,6 +126,20 @@ void TCPReceiveNode::inputsUpdated( qint64 pTimeStamp )
 	if( mPinPort->isUpdated( pTimeStamp ) )
 	{
 		mServer.close();
+
+		mNode->setStatus( fugio::NodeInterface::Warning );
+
+		for( int i = 0 ; i < mStreams.size() ; )
+		{
+			QDataStream		*D = mStreams.at( i );
+			QTcpSocket		*S = qobject_cast<QTcpSocket *>( D->device() );
+
+			S->deleteLater();
+
+			delete D;
+		}
+
+		mStreams.clear();
 
 		mServer.listen( QHostAddress::Any, variant( mPinPort ).toInt() );
 
