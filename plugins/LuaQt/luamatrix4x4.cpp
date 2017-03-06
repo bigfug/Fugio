@@ -266,7 +266,7 @@ int LuaMatrix4x4::luaIsIdentity(lua_State *L)
 
 	lua_pushboolean( L, MatrixData->mMatrix.isIdentity() );
 
-	return( 0 );
+	return( 1 );
 }
 
 int LuaMatrix4x4::luaToArray( lua_State *L )
