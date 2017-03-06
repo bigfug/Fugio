@@ -31,6 +31,7 @@
 #include "luajsonarray.h"
 #include "luajsonobject.h"
 #include "luavector3.h"
+#include "luaquaternion.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
@@ -63,6 +64,7 @@ const luaL_Reg LuaQtPlugin::mLuaFunctions[] =
 	{ "matrix4x4", LuaMatrix4x4::luaNew },
 	{ "pen", LuaPen::luaNew },
 	{ "point", LuaPointF::luaNew },
+	{ "quaternion", LuaQuaternion::luaNew },
 	{ "rect", LuaRectF::luaNew },
 	{ "size", LuaSizeF::luaNew },
 	{ "transform", LuaTransform::luaNew },
@@ -116,11 +118,13 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaRegisterExtension( LuaRectF::luaOpen );
 	LUA->luaRegisterExtension( LuaMatrix4x4::luaOpen );
 	LUA->luaRegisterExtension( LuaVector3D::luaOpen );
+	LUA->luaRegisterExtension( LuaQuaternion::luaOpen );
 
 	LUA->luaAddPinGet( PID_COLOUR, LuaColor::luaPinGet );
 	LUA->luaAddPinGet( PID_IMAGE, LuaImage::luaPinGet );
 	LUA->luaAddPinGet( PID_MATRIX4, LuaMatrix4x4::luaPinGet );
 	LUA->luaAddPinGet( PID_POINT, LuaPointF::luaPinGet );
+	LUA->luaAddPinGet( PID_QUATERNION, LuaQuaternion::luaPinGet );
 	LUA->luaAddPinGet( PID_RECT, LuaRectF::luaPinGet );
 	LUA->luaAddPinGet( PID_SIZE, LuaSizeF::luaPinGet );
 	LUA->luaAddPinGet( PID_VECTOR3, LuaVector3D::luaPinGet );
