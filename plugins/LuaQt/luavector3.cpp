@@ -19,6 +19,7 @@ const char *LuaVector3D::UserData::TypeName = "qt.vector3d";
 
 const luaL_Reg LuaVector3D::mLuaInstance[] =
 {
+	{ "new",				LuaVector3D::luaNew },
 	{ 0, 0 }
 };
 
@@ -43,14 +44,15 @@ const luaL_Reg LuaVector3D::mLuaMethods[] =
 
 int LuaVector3D::luaOpen (lua_State *L )
 {
-	luaL_newmetatable( L, UserData::TypeName );
+	if( luaL_newmetatable( L, UserData::TypeName ) == 1 )
+	{
+		lua_pushvalue( L, -1 );
+		lua_setfield( L, -2, "__index" );
 
-	lua_pushvalue( L, -1 );
-	lua_setfield( L, -2, "__index" );
+		luaL_setfuncs( L, mLuaMethods, 0 );
 
-	luaL_setfuncs( L, mLuaMethods, 0 );
-
-	luaL_newlib( L, mLuaInstance );
+		luaL_newlib( L, mLuaInstance );
+	}
 
 	return( 1 );
 }

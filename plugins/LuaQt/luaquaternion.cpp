@@ -58,14 +58,12 @@ const luaL_Reg LuaQuaternion::mLuaMethods[] =
 
 int LuaQuaternion::luaOpen( lua_State *L )
 {
-	luaL_newmetatable( L, UserData::TypeName );
+	if( luaL_newmetatable( L, UserData::TypeName ) == 1 )
+	{
+		luaL_setfuncs( L, mLuaMetaMethods, 0 );
 
-//	lua_pushvalue( L, -1 );
-//	lua_setfield( L, -2, "__index" );
-
-	luaL_setfuncs( L, mLuaMetaMethods, 0 );
-
-	luaL_newlib( L, mLuaFunctions );
+		luaL_newlib( L, mLuaFunctions );
+	}
 
 	return( 1 );
 }

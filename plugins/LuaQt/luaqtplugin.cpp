@@ -101,7 +101,8 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 #if defined( LUA_SUPPORTED )
 	LUA->luaRegisterLibrary( "qt", LuaQtPlugin::luaOpen );
 
-	LUA->luaRegisterLibrary( "vector3d", LuaVector3D::luaOpen );
+//	LUA->luaRegisterLibrary( "matrix4x4", LuaMatrix4x4::luaOpen );
+//	LUA->luaRegisterLibrary( "vector3d", LuaVector3D::luaOpen );
 	LUA->luaRegisterLibrary( "quaternion", LuaQuaternion::luaOpen );
 
 	LUA->luaRegisterExtension( LuaBrush::luaOpen );
