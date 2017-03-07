@@ -10,25 +10,15 @@ MatrixRotateNode::MatrixRotateNode( QSharedPointer<fugio::NodeInterface> pNode )
 {
 	mValue = pinOutput<fugio::VariantInterface *>( "Matrix", mPinValue, PID_MATRIX4 );
 
-	mPinInputMatrix = pinInput( "Matrix Input" );
+	mPinInputMatrix = pinInput( "Matrix" );
 
 	mPinInputX = pinInput( "X" );
 	mPinInputY = pinInput( "Y" );
 	mPinInputZ = pinInput( "Z" );
-}
 
-MatrixRotateNode::~MatrixRotateNode( void )
-{
-
-}
-
-bool MatrixRotateNode::initialise()
-{
 	mPinInputX->setValue( 0.0 );
 	mPinInputY->setValue( 0.0 );
 	mPinInputZ->setValue( 0.0 );
-
-	return( true );
 }
 
 void MatrixRotateNode::inputsUpdated( qint64 pTimeStamp )

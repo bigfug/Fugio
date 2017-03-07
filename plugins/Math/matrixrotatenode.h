@@ -25,12 +25,10 @@ class MatrixRotateNode : public fugio::NodeControlBase
 public:
 	Q_INVOKABLE explicit MatrixRotateNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~MatrixRotateNode( void );
+	virtual ~MatrixRotateNode( void ) {}
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
-
-	virtual bool initialise( void );
 
 	virtual void inputsUpdated( qint64 pTimeStamp );
 
