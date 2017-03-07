@@ -20,6 +20,7 @@
 #include "distancetransformnode.h"
 #include "converttonode.h"
 #include "addnode.h"
+#include "flipnode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -33,6 +34,7 @@ ClassEntry	OpenCVPlugin::mNodeEntries[] =
 	ClassEntry( "Erode", "OpenCV", NID_OPENCV_ERODE, &ErodeNode::staticMetaObject ),
 	ClassEntry( "EqualizeHist", "OpenCV", NID_OPENCV_EQUALIZE_HIST, &EqualizeHistNode::staticMetaObject ),
 	ClassEntry( "Find Contours", "OpenCV", NID_OPENCV_FIND_CONTOURS, &FindContoursNode::staticMetaObject ),
+	ClassEntry( "Flip", "OpenCV", NID_OPENCV_FLIP, &FlipNode::staticMetaObject ),
 	ClassEntry( "Grayscale", "OpenCV", NID_OPENCV_GRAYSCALE, &GrayscaleNode::staticMetaObject ),
 	ClassEntry( "Threshold (Image)", "OpenCV", NID_OPENCV_IMAGE_THRESHOLD, &ImageThresholdNode::staticMetaObject ),
 	ClassEntry( "InPaint", "OpenCV", NID_OPENCV_INPAINT, &InPaintNode::staticMetaObject ),
@@ -147,11 +149,19 @@ void OpenCVPlugin::mat2image( cv::Mat &pSrcMat, fugio::ImageInterface *pDstImg, 
 	{
 		switch( pSrcMat.type() )
 		{
-			case CV_8U:
+			case CV_8UC1:
 				pDstImg->setFormat( fugio::ImageInterface::FORMAT_GRAY8 );
 				break;
 
-			case CV_16U:
+			case CV_8UC3:
+				pDstImg->setFormat( fugio::ImageInterface::FORMAT_RGB8 );
+				break;
+
+			case CV_8UC4:
+				pDstImg->setFormat( fugio::ImageInterface::FORMAT_RGBA8 );
+				break;
+
+			case CV_16UC1:
 				pDstImg->setFormat( fugio::ImageInterface::FORMAT_GRAY16 );
 				break;
 
@@ -162,6 +172,12 @@ void OpenCVPlugin::mat2image( cv::Mat &pSrcMat, fugio::ImageInterface *pDstImg, 
 			case CV_32FC1:
 				pDstImg->setFormat( fugio::ImageInterface::FORMAT_R32F );
 				break;
+
+#if defined( QT_DEBUG )
+			default:
+				qDebug() << "Unknown format:" << pSrcMat.type();
+				break;
+#endif
 		}
 	}
 

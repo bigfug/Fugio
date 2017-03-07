@@ -35,7 +35,8 @@ SOURCES += \
     momentsnode.cpp \
     distancetransformnode.cpp \
     converttonode.cpp \
-    addnode.cpp
+    addnode.cpp \
+    flipnode.cpp
 
 HEADERS +=\
 	../../include/fugio/nodecontrolbase.h \
@@ -59,7 +60,8 @@ HEADERS +=\
     momentsnode.h \
     distancetransformnode.h \
     converttonode.h \
-    addnode.h
+    addnode.h \
+    flipnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
