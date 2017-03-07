@@ -66,14 +66,42 @@ private:
 		return( UD );
 	}
 
+	static int luaAdd( lua_State *L );
+	static int luaDiv( lua_State *L );
+	static int luaEq( lua_State *L );
+	static int luaMul( lua_State *L );
+	static int luaSub( lua_State *L );
+
+	static int luaDotProduct( lua_State *L );
+
+	static int luaFromEulerAngles( lua_State *L );
+	static int luaFromRotationMatrix( lua_State *L );
+
+	static int luaIsIdentity( lua_State *L );
+	static int luaIsNull( lua_State *L );
+
 	static int luaLength( lua_State *L );
+	static int luaLengthSquared( lua_State *L );
+
+	static int luaNormalize( lua_State *L );
+	static int luaNormalized( lua_State *L );
+
+	static int luaRotatedVector( lua_State *L );
+
+	static int luaToEulerAngles( lua_State *L );
+	static int luaToRotationMatrix( lua_State *L );
 
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 )
 	static int luaConjugated( lua_State *L );
+	static int luaInverted( lua_State *L );
 #endif
 
+	static int luaIndex( lua_State *L );
+	static int luaNewIndex( lua_State *L );
+
 private:
-	static const luaL_Reg					mLuaInstance[];
+	static const luaL_Reg					mLuaFunctions[];
+	static const luaL_Reg					mLuaMetaMethods[];
 	static const luaL_Reg					mLuaMethods[];
 #endif
 };

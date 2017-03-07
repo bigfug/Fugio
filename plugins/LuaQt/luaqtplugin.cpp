@@ -64,7 +64,7 @@ const luaL_Reg LuaQtPlugin::mLuaFunctions[] =
 	{ "matrix4x4", LuaMatrix4x4::luaNew },
 	{ "pen", LuaPen::luaNew },
 	{ "point", LuaPointF::luaNew },
-	{ "quaternion", LuaQuaternion::luaNew },
+//	{ "quaternion", LuaQuaternion::luaNew },
 	{ "rect", LuaRectF::luaNew },
 	{ "size", LuaSizeF::luaNew },
 	{ "transform", LuaTransform::luaNew },
@@ -101,6 +101,9 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 #if defined( LUA_SUPPORTED )
 	LUA->luaRegisterLibrary( "qt", LuaQtPlugin::luaOpen );
 
+	LUA->luaRegisterLibrary( "vector3d", LuaVector3D::luaOpen );
+	LUA->luaRegisterLibrary( "quaternion", LuaQuaternion::luaOpen );
+
 	LUA->luaRegisterExtension( LuaBrush::luaOpen );
 	LUA->luaRegisterExtension( LuaColor::luaOpen );
 	LUA->luaRegisterExtension( LuaFont::luaOpen );
@@ -113,12 +116,12 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaRegisterExtension( LuaPainter::luaOpen );
 	LUA->luaRegisterExtension( LuaPen::luaOpen );
 	LUA->luaRegisterExtension( LuaPointF::luaOpen );
+//	LUA->luaRegisterExtension( LuaQuaternion::luaOpen );
 	LUA->luaRegisterExtension( LuaSizeF::luaOpen );
 	LUA->luaRegisterExtension( LuaTransform::luaOpen );
 	LUA->luaRegisterExtension( LuaRectF::luaOpen );
 	LUA->luaRegisterExtension( LuaMatrix4x4::luaOpen );
 	LUA->luaRegisterExtension( LuaVector3D::luaOpen );
-	LUA->luaRegisterExtension( LuaQuaternion::luaOpen );
 
 	LUA->luaAddPinGet( PID_COLOUR, LuaColor::luaPinGet );
 	LUA->luaAddPinGet( PID_IMAGE, LuaImage::luaPinGet );
@@ -148,8 +151,8 @@ int LuaQtPlugin::luaOpen( lua_State *L )
 	luaL_newmetatable( L, "fugio.qt" );
 
 	/* metatable.__index = metatable */
-	lua_pushvalue(L, -1);  /* duplicates the metatable */
-	lua_setfield(L, -2, "__index");
+//	lua_pushvalue(L, -1);  /* duplicates the metatable */
+//	lua_setfield(L, -2, "__index");
 
 	luaL_setfuncs( L, mLuaMethods, 0 );
 
