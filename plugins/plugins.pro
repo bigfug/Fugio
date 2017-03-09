@@ -19,6 +19,7 @@ SUBDIRS += \
 	LuaQt \
 	Math \
 	MIDI \
+	OculusRift \
 	OpenCV \
 	OpenGL \
 	OSC \
