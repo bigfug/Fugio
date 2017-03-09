@@ -424,9 +424,16 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 					continue;
 				}
 
-				if( !pNodeList || pNodeList->contains( P->connectedPin()->node()->uuid() ) )
+				QSharedPointer<fugio::PinInterface>	ConPin = P->connectedPin();
+
+				if( !ConPin || !ConPin->node() )
 				{
-					CFG.setValue( fugio::utils::uuid2string( P->globalId() ), fugio::utils::uuid2string( P->connectedPin()->globalId() ) );
+					continue;
+				}
+
+				if( !pNodeList || pNodeList->contains( ConPin->node()->uuid() ) )
+				{
+					CFG.setValue( fugio::utils::uuid2string( P->globalId() ), fugio::utils::uuid2string( ConPin->globalId() ) );
 				}
 			}
 		}

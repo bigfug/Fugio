@@ -62,7 +62,12 @@ public:
 				{
 					if( DstPin->isConnected() )
 					{
-						auto SrcPin = DstPin->connectedPin();
+						QSharedPointer<fugio::PinInterface> SrcPin = DstPin->connectedPin();
+
+						if( !SrcPin )
+						{
+							continue;
+						}
 
 						if( !pLinkLst.contains( SrcPin->globalId(), DstPin->globalId() ) )
 						{

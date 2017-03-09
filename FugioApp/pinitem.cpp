@@ -121,8 +121,15 @@ void PinItem::paint( QPainter *pPainter, const QStyleOptionGraphicsItem *pOption
 
 	if( mPin->direction() == PIN_INPUT && mPin->isConnected() )
 	{
-		NodeItem		*SrcNod = mContextView->findNodeItem( mPin->connectedPin()->node()->uuid() ).data();
-		PinItem			*SrcPin = SrcNod->findPinOutput( mPin->connectedPin()->globalId() );
+		QSharedPointer<fugio::PinInterface>	ConPin = mPin->connectedPin();
+
+		if( !ConPin || !ConPin->node() )
+		{
+			return;
+		}
+
+		NodeItem		*SrcNod = mContextView->findNodeItem( ConPin->node()->uuid() ).data();
+		PinItem			*SrcPin = SrcNod->findPinOutput( ConPin->globalId() );
 
 		PinColour = SrcPin->colour();
 	}
