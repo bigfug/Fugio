@@ -44,6 +44,8 @@
 #define PID_VECTOR3				(QUuid("{5C790F59-3619-476c-8EB7-BD85087A7D10}"))
 #define PID_VECTOR4				(QUuid("{bd8daab6-e467-43bb-8828-31967de9f0ff}"))
 
+#define PID_QUATERNION			(QUuid("{c21098d8-0ff6-4c72-93c5-397c12ffa42e}"))
+
 #define NID_VECTOR3				(QUuid("{89333a3e-35e8-4a4b-9897-e7ba87595f1es}"))
 
 #define NID_DOT_PRODUCT			(QUuid("{37f4e4cf-268e-4c24-8f42-5f1610bc7c40}"))

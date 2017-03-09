@@ -19,6 +19,7 @@ const char *LuaMatrix4x4::Matrix4x4UserData::TypeName = "qt.matrix4x4";
 
 const luaL_Reg LuaMatrix4x4::mLuaInstance[] =
 {
+	{ "new",				LuaMatrix4x4::luaNew },
 	{ 0, 0 }
 };
 
@@ -44,14 +45,15 @@ const luaL_Reg LuaMatrix4x4::mLuaMethods[] =
 
 int LuaMatrix4x4::luaOpen (lua_State *L )
 {
-	luaL_newmetatable( L, Matrix4x4UserData::TypeName );
+	if( luaL_newmetatable( L, Matrix4x4UserData::TypeName ) == 1 )
+	{
+		lua_pushvalue( L, -1 );
+		lua_setfield( L, -2, "__index" );
 
-	lua_pushvalue( L, -1 );
-	lua_setfield( L, -2, "__index" );
+		luaL_setfuncs( L, mLuaMethods, 0 );
 
-	luaL_setfuncs( L, mLuaMethods, 0 );
-
-	luaL_newlib( L, mLuaInstance );
+		luaL_newlib( L, mLuaInstance );
+	}
 
 	return( 1 );
 }
@@ -266,7 +268,7 @@ int LuaMatrix4x4::luaIsIdentity(lua_State *L)
 
 	lua_pushboolean( L, MatrixData->mMatrix.isIdentity() );
 
-	return( 0 );
+	return( 1 );
 }
 
 int LuaMatrix4x4::luaToArray( lua_State *L )
