@@ -15,6 +15,8 @@ class FirmataNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Firmata" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
+	void updateDigitalReport();
+
 public:
 	Q_INVOKABLE FirmataNode( QSharedPointer<fugio::NodeInterface> pNode );
 
