@@ -166,7 +166,6 @@ macx {
 	APP_DIR      = $$DESTDIR/$$TARGET".app"
 	PLUGIN_DIR   = $$APP_DIR/Contents/PlugIns
 	RESOURCE_DIR = $$APP_DIR/Contents/Resources
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
 
 	CONFIG(release,debug|release) {
 		QMAKE_POST_LINK += install_name_tool -change libfugio.1.dylib @executable_path/../../../libfugio.1.dylib $$APP_DIR/Contents/MacOS/Fugio
@@ -182,30 +181,30 @@ macx {
 
 		QMAKE_POST_LINK += && cp $$(QTDIR)/plugins/platforms/libqcocoa.dylib $$PLUGIN_DIR/platforms
 
-		QMAKE_POST_LINK += && mkdir -pv $$PLUGIN_DIR/examples
+		isEmpty( CASKBASE ) {
+			QMAKE_POST_LINK += && mkdir -pv $$INSTALLROOT/config
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLBASE/config
+			QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../config.osx.xml $$INSTALLROOT/config/config.xml
 
-		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../config.osx.xml $$INSTALLBASE/config/config.xml
+			QMAKE_POST_LINK += && mkdir -pv $$INSTALLROOT/meta
+			QMAKE_POST_LINK += && mkdir -pv $$INSTALLROOT/data
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data
+			QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/package.xml $$INSTALLROOT/meta
+		}
 
-		QMAKE_POST_LINK += && rm -rf $$INSTALLDIR/data/$$TARGET".app"
+		QMAKE_POST_LINK += && rm -rf $$INSTALLDATA/$$TARGET".app"
 
-		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/package.xml $$INSTALLDIR/meta
+		QMAKE_POST_LINK += && cp -R $$APP_DIR $$INSTALLDATA/
 
-		QMAKE_POST_LINK += && cp -R $$APP_DIR $$INSTALLDIR/data
+		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDATA/include
+		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDATA/plugins
+		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDATA/snippets
+		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDATA/examples
+		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDATA/share
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/include
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/plugins
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/snippets
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/examples
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/share
-
-		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../examples/* $$INSTALLDIR/data/examples
-		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../snippets/* $$INSTALLDIR/data/snippets
-		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../share/* $$INSTALLDIR/data/share
+		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../examples/* $$INSTALLDATA/examples
+		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../snippets/* $$INSTALLDATA/snippets
+		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../share/* $$INSTALLDATA/share
 	}
 }
 
@@ -339,7 +338,8 @@ win32 {
 	CONFIG(release,debug|release) {
 		LIBS += -LC:/Python34/DLLs
 	} else {
-		LIBS += -L$$(LIBS)/Python-3.4.3/PCbuild
+		LIBS += -L
+/Python-3.4.3/PCbuild
 	}
 }
 

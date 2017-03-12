@@ -41,10 +41,21 @@ defineReplace( qtLibChange ) {
 
 FUGIO_ROOT = $$clean_path( $$PWD/.. )
 
+CASKBASE = $$(CASKBASE)
+
 CONFIG(debug,debug|release) {
 	DESTDIR = $$FUGIO_ROOT/deploy-debug-$$QMAKE_TARGET.arch
 } else {
 	DESTDIR = $$FUGIO_ROOT/deploy-release-$$QMAKE_TARGET.arch
 }
 
-INSTALLBASE = $$FUGIO_ROOT/deploy-installer-$$QMAKE_TARGET.arch
+isEmpty( CASKBASE ) {
+	INSTALLBASE = $$FUGIO_ROOT/deploy-installer-$$QMAKE_TARGET.arch
+	INSTALLROOT = $$INSTALLBASE/packages/com.bigfug.fugio
+	INSTALLDATA = $$INSTALLROOT/data
+} else {
+	INSTALLBASE = $$FUGIO_ROOT/deploy-cask
+	INSTALLROOT = $$INSTALLBASE/fugio
+	INSTALLDATA = $$INSTALLROOT
+}
+
