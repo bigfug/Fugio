@@ -54,9 +54,8 @@ macx {
 	CONFIG += lib_bundle
 
 	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-	INSTALLDEST  = $$INSTALLDIR/data/plugins
-	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
+	INSTALLDEST  = $$INSTALLDATA/plugins
+	INCLUDEDEST  = $$INSTALLDATA/include/fugio
 	FRAMEWORKDIR = $$BUNDLEDIR/Contents/Frameworks
 
 	DESTDIR = $$BUNDLEDIR/Contents/MacOS
@@ -73,7 +72,9 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
+		isEmpty( CASKBASE ) {
+			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
+		}
 
 		QMAKE_POST_LINK += && mkdir -pv $$FRAMEWORKDIR
 
@@ -81,7 +82,6 @@ macx {
 
 		QMAKE_POST_LINK += && cp -R /Library/Frameworks/Syphon.framework $$FRAMEWORKDIR
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
 		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
 

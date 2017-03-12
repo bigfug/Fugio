@@ -34,7 +34,7 @@ SOURCES += \
 	luajsonarray.cpp \
 	luajsonobject.cpp \
 	luavector3.cpp \
-    luaquaternion.cpp
+	luaquaternion.cpp
 
 HEADERS +=\
 	../../include/fugio/luaqt/uuid.h \
@@ -58,7 +58,7 @@ HEADERS +=\
 	luajsonarray.h \
 	luajsonobject.h \
 	luavector3.h \
-    luaquaternion.h
+	luaquaternion.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -69,9 +69,8 @@ macx {
 	CONFIG += lib_bundle
 
 	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-	INSTALLDEST  = $$INSTALLDIR/data/plugins
-	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
+	INSTALLDEST  = $$INSTALLDATA/plugins
+	INCLUDEDEST  = $$INSTALLDATA/include/fugio
 
 	DESTDIR = $$BUNDLEDIR/Contents/MacOS
 	DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
@@ -99,21 +98,24 @@ macx {
 
 #		QMAKE_POST_LINK += && install_name_tool -change liblua.5.2.dylib /usr/local/lib/liblua.5.2.dylib $$LIBCHANGEDEST
 
-		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
+		isEmpty( CASKBASE ) {
+			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
+		}
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
 		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
 
-		exists( /usr/local/opt/lua ) {
-			QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
+		isEmpty( CASKBASE ) {
+			exists( /usr/local/opt/lua ) {
+				QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
 
-			QMAKE_POST_LINK += && cp -a /usr/local/opt/lua/lib/*.dylib $$INSTALLDIR/data/libs/
+				QMAKE_POST_LINK += && cp -a /usr/local/opt/lua/lib/*.dylib $$INSTALLDATA/libs/
 
-		} else:exists( $$(LIBS)/lua-5.3.3/src ) {
-			QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
+			} else:exists( $$(LIBS)/lua-5.3.3/src ) {
+				QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
 
-			QMAKE_POST_LINK += && cp $$(LIBS)/lua-5.3.3/src/liblua5.3.3.dylib $$INSTALLDIR/data/libs/
+				QMAKE_POST_LINK += && cp $$(LIBS)/lua-5.3.3/src/liblua5.3.3.dylib $$INSTALLDATA/libs/
+			}
 		}
 
 		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"

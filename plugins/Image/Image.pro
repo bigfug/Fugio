@@ -62,9 +62,8 @@ macx {
 	CONFIG += lib_bundle
 
 	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-	INSTALLDEST  = $$INSTALLDIR/data/plugins
-	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
+	INSTALLDEST  = $$INSTALLDATA/plugins
+	INCLUDEDEST  = $$INSTALLDATA/include/fugio
 
 	DESTDIR = $$BUNDLEDIR/Contents/MacOS
 	DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
@@ -82,7 +81,6 @@ macx {
 
 		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
 		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
 

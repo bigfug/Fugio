@@ -21,9 +21,9 @@ SOURCES += \
 	imageconvertnode.cpp \
 	ffmpegplugin.cpp \
 	mediasegment.cpp \
-    mediarecorderform.cpp \
-    mediarecordernode.cpp \
-    mediapreset/mediapresetmanager.cpp \
+	mediarecorderform.cpp \
+	mediarecordernode.cpp \
+	mediapreset/mediapresetmanager.cpp \
 	mediaprocessornode.cpp
 
 HEADERS += \
@@ -35,24 +35,24 @@ HEADERS += \
 	imageconvertnode.h \
 	ffmpegplugin.h \
 	mediasegment.h \
-    segmentinterface.h \
-    mediarecorderform.h \
-    mediarecordernode.h \
-    mediapreset/mediadvdpal.h \
-    mediapreset/mediapresetmanager.h \
-    mediapreset/mediapresetmp4.h \
-    mediapreset/mediaProxy.h \
-    mediapreset/mediaWav44.h \
-    mediapreset/mediaYouTube240p.h \
-    mediapreset/mediaYouTube240pWide.h \
-    mediapreset/mediaYouTube360pWide.h \
-    mediapreset/mediaYouTube480pWide.h \
-    mediapreset/mediaYouTube720pWide.h \
-    mediapreset/mediaYouTube1080pWide.h \
-    mediaprocessornode.h \
-    processoraudiobuffer.h \
+	segmentinterface.h \
+	mediarecorderform.h \
+	mediarecordernode.h \
+	mediapreset/mediadvdpal.h \
+	mediapreset/mediapresetmanager.h \
+	mediapreset/mediapresetmp4.h \
+	mediapreset/mediaProxy.h \
+	mediapreset/mediaWav44.h \
+	mediapreset/mediaYouTube240p.h \
+	mediapreset/mediaYouTube240pWide.h \
+	mediapreset/mediaYouTube360pWide.h \
+	mediapreset/mediaYouTube480pWide.h \
+	mediapreset/mediaYouTube720pWide.h \
+	mediapreset/mediaYouTube1080pWide.h \
+	mediaprocessornode.h \
+	processoraudiobuffer.h \
 	mediapreset/mediapresetinterface.h \
-    mediapreset/media360_2048.h
+	mediapreset/media360_2048.h
 
 FORMS += \
 	mediarecorderform.ui
@@ -70,9 +70,8 @@ macx {
 	CONFIG += lib_bundle
 
 	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-	INSTALLDEST  = $$INSTALLDIR/data/plugins
-	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
+	INSTALLDEST  = $$INSTALLDATA/plugins
+	INCLUDEDEST  = $$INSTALLDATA/include/fugio
 	FRAMEWORKDIR = $$BUNDLEDIR/Contents/Frameworks
 
 	DESTDIR = $$BUNDLEDIR/Contents/MacOS
@@ -89,12 +88,13 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+		isEmpty( CASKBASE ) {
+			QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
-		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$FRAMEWORKDIR
-		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
+			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$FRAMEWORKDIR
+			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
+		}
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
 		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
 		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
 
