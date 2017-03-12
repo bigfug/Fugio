@@ -1,5 +1,6 @@
 #include "loggernode.h"
 
+#include <fugio/core/list_interface.h>
 
 LoggerNode::LoggerNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -13,11 +14,28 @@ void LoggerNode::inputsUpdated( qint64 pTimeStamp )
 {
 	if( mPinInputString->isUpdated( pTimeStamp ) )
 	{
-		QString		S = variant( mPinInputString ).toString();
+		fugio::ListInterface	*L = input<fugio::ListInterface *>( mPinInputString );
 
-		if( !S.isEmpty() )
+		if( L )
 		{
-			qInfo() << S;
+			for( int i = 0 ; i < L->listSize() ; i++ )
+			{
+				QString		S = L->listIndex( i ).toString();
+
+				if( !S.isEmpty() )
+				{
+					qInfo() << S;
+				}
+			}
+		}
+		else
+		{
+			QString		S = variant( mPinInputString ).toString();
+
+			if( !S.isEmpty() )
+			{
+				qInfo() << S;
+			}
 		}
 	}
 }
