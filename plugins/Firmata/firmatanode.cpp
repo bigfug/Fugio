@@ -624,7 +624,14 @@ void FirmataNode::contextFrameProcess( qint64 pTimeStamp )
 
 					case DIGITAL_MESSAGE:		// digital I/O message
 						{
-							quint16			BitMsk = ( mMessageData2 << 7 ) | mMessageData1;
+							quint32			ChnMsk = 0xff;
+							quint32			BitMsk = ( mMessageData2 << 7 ) | mMessageData1;
+
+							for( int i = 0 ; i < mMessageChannel ; i++ )
+							{
+								ChnMsk <<= 8;
+								BitMsk <<= 8;
+							}
 
 							for( int i = 0 ; i < mPinIdxList.size() ; i++ )
 							{
@@ -632,15 +639,18 @@ void FirmataNode::contextFrameProcess( qint64 pTimeStamp )
 
 								if( mPinAnalogMap.at( i ) == 0x7f && mPinMapType.value( PinIdx ) == INPUT )
 								{
-									quint16		ChnMsk = 1 << PinIdx;
+									quint32		ChnBit = 1 << PinIdx;
 
-									if( ( BitMsk & ChnMsk ) != 0 )
+									if( ( ChnMsk & ChnBit ) != 0 )
 									{
-										setDigitalValue( PinIdx, true );
-									}
-									else
-									{
-										setDigitalValue( PinIdx, false );
+										if( ( BitMsk & ChnBit ) != 0 )
+										{
+											setDigitalValue( PinIdx, true );
+										}
+										else
+										{
+											setDigitalValue( PinIdx, false );
+										}
 									}
 								}
 							}
