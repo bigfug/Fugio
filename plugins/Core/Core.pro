@@ -70,7 +70,8 @@ SOURCES += \
     triggerarraynode.cpp \
     triggerbooleannode.cpp \
     makearraynode.cpp \
-    flipflopnode.cpp
+    flipflopnode.cpp \
+    loggernode.cpp
 
 HEADERS += \
 	stringpin.h \
@@ -136,7 +137,8 @@ HEADERS += \
     triggerarraynode.h \
     triggerbooleannode.h \
     makearraynode.h \
-    flipflopnode.h
+    flipflopnode.h \
+    loggernode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
