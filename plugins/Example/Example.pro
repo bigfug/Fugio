@@ -25,6 +25,10 @@ HEADERS += exampleplugin.h \
 	../../include/fugio/pincontrolbase.h \
 	example1node.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_example_fr.ts \
+	$$FUGIO_BASE/translations/fugio_example_es.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

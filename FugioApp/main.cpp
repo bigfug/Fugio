@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
 
 	QTranslator		Translator;
 
-	if( !Translator.load( SystemLocal, "fugioapp_", QString(), "translations" ) )
+	if( !Translator.load( SystemLocal, "fugio_app_", QString(), "translations" ) )
 	{
 		qWarning() << "Can't load FugioApp translator for" << SystemLocal.name();
 	}

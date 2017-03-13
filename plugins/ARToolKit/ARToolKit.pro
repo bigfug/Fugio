@@ -30,6 +30,10 @@ HEADERS += artoolkitplugin.h \
 	trackernode.h \
 	paramcameranode.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_artoolkit_fr.ts \
+	$$FUGIO_BASE/translations/fugio_artoolkit_es.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

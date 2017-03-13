@@ -40,6 +40,7 @@ defineReplace( qtLibChange ) {
 # Set FUGIO_ROOT
 
 FUGIO_ROOT = $$clean_path( $$PWD/.. )
+FUGIO_BASE = $$clean_path( $$PWD )
 
 CASKBASE = $$(CASKBASE)
 

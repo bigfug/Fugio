@@ -41,6 +41,10 @@ HEADERS += \
 	joincolourhslanode.h \
 	colourbuttonnode.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_colour_fr.ts \
+	$$FUGIO_BASE/translations/fugio_colour_es.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

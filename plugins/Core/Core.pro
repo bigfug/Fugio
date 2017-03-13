@@ -140,6 +140,10 @@ HEADERS += \
     flipflopnode.h \
     loggernode.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_core_fr.ts \
+	$$FUGIO_BASE/translations/fugio_core_es.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

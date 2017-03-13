@@ -111,6 +111,10 @@ HEADERS += mathplugin.h \
 	floornode.h \
 	roundnode.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_math_fr.ts \
+	$$FUGIO_BASE/translations/fugio_math_es.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

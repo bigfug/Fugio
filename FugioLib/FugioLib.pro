@@ -57,7 +57,9 @@ HEADERS += fugio.h\
 	../include/fugio/paired_pins_helper_interface.h \
 	../include/fugio/menu_control_interface.h
 
-TRANSLATIONS = fugio_fr.ts
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_lib_fr.ts \
+	$$FUGIO_BASE/translations/fugio_lib_es.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
