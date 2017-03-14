@@ -61,6 +61,8 @@ public:
 
 	virtual void luaAddPinGet( const QUuid &pPID, luaPinGetFunc pFunction ) Q_DECL_OVERRIDE;
 
+	virtual void luaAddPinSet( const QUuid &pPID, luaPinSetFunc pFunction ) Q_DECL_OVERRIDE;
+
 	virtual fugio::NodeInterface *node( lua_State *L ) Q_DECL_OVERRIDE;
 
 	virtual QUuid checkpin( lua_State *L, int i = 1 ) Q_DECL_OVERRIDE;
@@ -93,6 +95,11 @@ public:
 		return( mGetFunctions );
 	}
 
+	const QMap<QUuid,luaPinSetFunc> &setFunctions( void ) const
+	{
+		return( mSetFunctions );
+	}
+
 public:
 #if defined( LUA_SUPPORTED )
 	static int pushVariant( lua_State *L, const QVariant &V );
@@ -118,6 +125,7 @@ private:
 	QMultiMap<QUuid,luaL_Reg>				 mPinFunctions;
 	QMap<const char *,lua_CFunction>		 mLibFunctions;
 	QMap<QUuid,luaPinGetFunc>				 mGetFunctions;
+	QMap<QUuid,luaPinSetFunc>				 mSetFunctions;
 };
 
 #endif // LUAPLUGIN_H

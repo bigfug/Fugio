@@ -181,6 +181,13 @@ int LuaExPin::luaPinSetValue( lua_State *L )
 		return( 0 );
 	}
 
+	LuaPlugin::luaPinSetFunc		PinSetFnc = LuaPlugin::instance()->setFunctions().value( P->controlUuid() );
+
+	if( PinSetFnc )
+	{
+		return( PinSetFnc( P->localId(), L, 2 ) );
+	}
+
 	QVariant			 V = LuaPlugin::popVariant( L, 2 );
 
 	if( V.isValid() )
