@@ -11,7 +11,7 @@ QT += network
 greaterThan( QT_MAJOR_VERSION, 4 ): QT += widgets concurrent opengl
 
 qtHaveModule( qml ) {
-	QT += quickwidgets quick qml serialport
+	QT += quickwidgets quickcontrols2 quick qml serialport
 }
 
 qtHaveModule( websockets ) {
