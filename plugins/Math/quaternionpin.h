@@ -8,14 +8,15 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
+#include <fugio/core/list_interface.h>
 #include <fugio/core/variant_interface.h>
 
 #include <fugio/pincontrolbase.h>
 
-class QuaternionPin : public fugio::PinControlBase, public fugio::VariantInterface
+class QuaternionPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::ListInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::VariantInterface )
+	Q_INTERFACES( fugio::VariantInterface fugio::ListInterface )
 
 public:
 	Q_INVOKABLE explicit QuaternionPin( QSharedPointer<fugio::PinInterface> pPin );
@@ -58,6 +59,18 @@ public:
 	{
 		return( variant() );
 	}
+
+	//-------------------------------------------------------------------------
+	// ListInterface interface
+public:
+	virtual int listSize() const Q_DECL_OVERRIDE;
+	virtual QUuid listPinControl() const Q_DECL_OVERRIDE;
+	virtual QVariant listIndex(int pIndex) const Q_DECL_OVERRIDE;
+	virtual void listSetIndex(int pIndex, const QVariant &pValue) Q_DECL_OVERRIDE;
+	virtual void listSetSize(int pSize) Q_DECL_OVERRIDE;
+	virtual void listClear() Q_DECL_OVERRIDE;
+	virtual void listAppend(const QVariant &pValue) Q_DECL_OVERRIDE;
+	virtual bool listIsEmpty() const Q_DECL_OVERRIDE;
 
 private:
 	QQuaternion			mValue;
