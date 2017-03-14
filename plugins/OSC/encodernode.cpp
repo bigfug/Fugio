@@ -4,8 +4,11 @@
 #include <QColor>
 
 #include <fugio/context_signals.h>
+
 #include <fugio/core/uuid.h>
+
 #include <fugio/colour/colour_interface.h>
+#include <fugio/core/list_interface.h>
 
 #include <fugio/performance.h>
 
@@ -79,6 +82,136 @@ QUuid EncoderNode::pinAddControlUuid(fugio::PinInterface *pPin) const
 	return( QUuid() );
 }
 
+bool EncoderNode::encodeVariant( const QVariant &pV, QByteArray &pTag, QByteArray &pData ) const
+{
+	switch( QMetaType::Type( pV.type() ) )
+	{
+		case QMetaType::QString:
+			{
+				const QString		&Value = pV.toString();
+
+				pTag.append( 's' );
+
+				pData.append( Value.toLatin1().constData(), Value.size() + 1 );
+
+				buffer( pData );
+
+				return( true );
+			}
+			break;
+
+		case QMetaType::Double:
+			{
+				float		Value = pV.toDouble();
+				quint32		Temp, *TmpPtr;
+				quint8		TmpBuf[ 4 ];
+
+				TmpPtr = (quint32 *)&Value;
+				Temp   = *TmpPtr;
+
+				qToBigEndian( Temp, TmpBuf );
+
+				pTag.append( "f" );
+
+				pData.append( (const char *)&TmpBuf, 4 );
+
+				return( true );
+			}
+			break;
+
+		case QMetaType::Float:
+			{
+				float		Value = pV.toFloat();
+				quint32		Temp, *TmpPtr;
+				quint8		TmpBuf[ 4 ];
+
+				TmpPtr = (quint32 *)&Value;
+				Temp   = *TmpPtr;
+
+				qToBigEndian( Temp, TmpBuf );
+
+				pTag.append( "f" );
+
+				pData.append( (const char *)&TmpBuf, 4 );
+
+				return( true );
+			}
+			break;
+
+		case QMetaType::QColor:
+			{
+				QColor		 C = pV.value<QColor>();
+				quint32		 i;
+				quint8		*v = (quint8 *)&i;
+
+				v[ 0 ] = C.red();
+				v[ 1 ] = C.green();
+				v[ 2 ] = C.blue();
+				v[ 3 ] = C.alpha();
+
+				i = qToBigEndian( i );
+
+				pTag.append( "r" );
+
+				pData.append( (const char *)v, 4 );
+
+				return( true );
+			}
+			break;
+
+		case QMetaType::Int:
+			{
+				uchar		TmpBuf[ 4 ];
+
+				qToBigEndian( pV.toInt(), TmpBuf );
+
+				pTag.append( "i" );
+
+				pData.append( (const char *)&TmpBuf, 4 );
+
+				return( true );
+			}
+			break;
+
+		case QMetaType::QByteArray:
+			{
+				const QByteArray	S = pV.toByteArray();
+				uchar				TmpBuf[ 4 ];
+
+				qToBigEndian( S.size(), TmpBuf );
+
+				pTag.append( "b" );
+
+				pData.append( (const char *)&TmpBuf, 4 );
+
+				pData.append( S.constData(), S.size() );
+
+				buffer( pData );
+
+				return( true );
+			}
+			break;
+
+		case QMetaType::QVariantList:
+			{
+				const QVariantList	L = pV.toList();
+
+				for( const QVariant &V : L )
+				{
+					encodeVariant( V, pTag, pData );
+				}
+
+				return( true );
+			}
+			break;
+
+		default:
+			break;
+	}
+
+	return( false );
+}
+
 void EncoderNode::contextFrameFinalise( qint64 pTimeStamp )
 {
 	if( mDataOutput.isEmpty() )
@@ -93,76 +226,12 @@ void EncoderNode::contextFrameFinalise( qint64 pTimeStamp )
 	for( QHash<QString,QVariant>::const_iterator it = mDataOutput.begin() ; it != mDataOutput.end() ; it++ )
 	{
 		QByteArray		Message;
+		QByteArray		Tags;
+		QByteArray		Data;
 
-		switch( QMetaType::Type( it.value().type() ) )
+		if( encodeVariant( it.value(), Tags, Data ) )
 		{
-			case QMetaType::QString:
-				{
-					const QString		&Value = it.value().toString();
-
-					oscMessage( Message, it.key(), "s", Value.toLatin1().constData(), Value.size() + 1 );
-				}
-				break;
-
-			case QMetaType::Double:
-				{
-					float		Value = it.value().toDouble();
-					quint32		Temp, *TmpPtr;
-					quint8		TmpBuf[ 4 ];
-
-					TmpPtr = (quint32 *)&Value;
-					Temp   = *TmpPtr;
-
-					qToBigEndian( Temp, TmpBuf );
-
-					oscMessage( Message, it.key(), "f", (const char *)&TmpBuf, 4 );
-				}
-				break;
-
-			case QMetaType::Float:
-				{
-					float		Value = it.value().toFloat();
-					quint32		Temp, *TmpPtr;
-					quint8		TmpBuf[ 4 ];
-
-					TmpPtr = (quint32 *)&Value;
-					Temp   = *TmpPtr;
-
-					qToBigEndian( Temp, TmpBuf );
-
-					oscMessage( Message, it.key(), "f", (const char *)&TmpBuf, 4 );
-				}
-				break;
-
-			case QMetaType::QColor:
-				{
-					QColor		 C = it.value().value<QColor>();
-					quint32		 i;
-					quint8		*v = (quint8 *)&i;
-
-					v[ 0 ] = C.red();
-					v[ 1 ] = C.green();
-					v[ 2 ] = C.blue();
-					v[ 3 ] = C.alpha();
-
-					i = qToBigEndian( i );
-
-					oscMessage( Message, it.key(), "r", (const char *)v, 4 );
-				}
-				break;
-
-			case QMetaType::Int:
-				{
-					uchar		TmpBuf[ 4 ];
-
-					qToBigEndian( it.value().toInt(), TmpBuf );
-
-					oscMessage( Message, it.key(), "i", (const char *)&TmpBuf, 4 );
-				}
-				break;
-
-			default:
-				continue;
+			oscMessage( Message, it.key(), Tags, Data, Data.size() );
 		}
 
 		if( Message.isEmpty() )
@@ -244,6 +313,22 @@ void EncoderNode::inputsUpdated( qint64 pTimeStamp )
 
 		if( input<fugio::osc::JoinInterface *>( P ) )
 		{
+			continue;
+		}
+
+		fugio::ListInterface		*L = input<fugio::ListInterface *>( P );
+
+		if( L )
+		{
+			QVariantList		VL;
+
+			for( int i = 0 ; i < L->listSize() ; i++ )
+			{
+				VL << L->listIndex( i );
+			}
+
+			output( P->name(), VL );
+
 			continue;
 		}
 

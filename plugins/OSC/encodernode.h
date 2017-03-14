@@ -56,6 +56,8 @@ private:
 
 	void output( const QString &pAddress, const QVariant &pValue );
 
+	bool encodeVariant( const QVariant &pV, QByteArray &pTag, QByteArray &pData ) const;
+
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputNamespace;
 
