@@ -209,8 +209,8 @@ macx {
 		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../snippets/* $$INSTALLDATA/snippets
 		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../share/* $$INSTALLDATA/share
 
-		QMAKE_POST_LINK += && cp -R $$(FUGIO_BASE)/translations/*.qm $$INSTALLDATA/translations
 		QMAKE_POST_LINK += && cp -R $$(QTDIR)/translations/qt*.qm $$INSTALLDATA/translations
+		QMAKE_POST_LINK += && cp -R $$FUGIO_BASE/translations/*.qm $$INSTALLDATA/translations
 	}
 }
 
@@ -242,8 +242,8 @@ windows {
 		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../snippets/* ) $$shell_path( $$INSTALLDIR/data/snippets ) /f /s /y
 		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../share/* ) $$shell_path( $$INSTALLDIR/data/share ) /f /s /y
 
-		QMAKE_POST_LINK += & xcopy $$shell_path( $$(FUGIO_BASE)/translations/*.qm ) $$shell_path( $$INSTALLDIR/data/translations ) /f /s /y
 		QMAKE_POST_LINK += & xcopy $$shell_path( $$(QTDIR)/translations/qt*.qm ) $$shell_path( $$INSTALLDIR/data/translations ) /f /s /y
+		QMAKE_POST_LINK += & xcopy $$shell_path( $$FUGIO_BASE/translations/*.qm ) $$shell_path( $$INSTALLDIR/data/translations ) /f /s /y
 
 		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
 	}
