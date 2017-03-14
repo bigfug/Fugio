@@ -60,7 +60,8 @@ SOURCES += mathplugin.cpp \
 	matrixorthographicnode.cpp \
 	ceilnode.cpp \
 	floornode.cpp \
-	roundnode.cpp
+	roundnode.cpp \
+    quaternionpin.cpp
 
 HEADERS += mathplugin.h \
 	../../include/fugio/math/uuid.h \
@@ -109,7 +110,8 @@ HEADERS += mathplugin.h \
 	matrixorthographicnode.h \
 	ceilnode.h \
 	floornode.h \
-	roundnode.h
+	roundnode.h \
+    quaternionpin.h
 
 TRANSLATIONS = \
 	$$FUGIO_BASE/translations/fugio_math_fr.ts \
