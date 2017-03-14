@@ -99,7 +99,7 @@ int LuaQuaternion::luaNew( lua_State *L )
 	//return( luaL_error( L, "incorrect arguments" ) );
 }
 
-int LuaQuaternion::luaPinGet(const QUuid &pPinLocalId, lua_State *L)
+int LuaQuaternion::luaPinGet( const QUuid &pPinLocalId, lua_State *L )
 {
 	fugio::LuaInterface						*Lua  = LuaQtPlugin::lua();
 	NodeInterface							*Node = Lua->node( L );
@@ -133,6 +133,45 @@ int LuaQuaternion::luaPinGet(const QUuid &pPinLocalId, lua_State *L)
 	}
 
 	return( pushquaternion( L, SrcVar->variant().value<QQuaternion>() ) );
+}
+
+int LuaQuaternion::luaPinSet( const QUuid &pPinLocalId, lua_State *L, int pIndex )
+{
+	fugio::LuaInterface						*Lua  = LuaQtPlugin::lua();
+	NodeInterface							*Node = Lua->node( L );
+	QSharedPointer<fugio::PinInterface>		 Pin = Node->findPinByLocalId( pPinLocalId );
+	UserData								*Q = checkuserdata( L, pIndex );
+
+	if( !Pin )
+	{
+		return( luaL_error( L, "No destination pin" ) );
+	}
+
+	if( Pin->direction() != PIN_OUTPUT )
+	{
+		return( luaL_error( L, "No destination pin" ) );
+	}
+
+	if( !Pin->hasControl() )
+	{
+		return( luaL_error( L, "No quaternion pin" ) );
+	}
+
+	fugio::VariantInterface			*DstVar = qobject_cast<fugio::VariantInterface *>( Pin->control()->qobject() );
+
+	if( !DstVar )
+	{
+		return( luaL_error( L, "Can't access quaternion" ) );
+	}
+
+	if( Q->mQuaternion != DstVar->variant().value<QQuaternion>() )
+	{
+		DstVar->setVariant( Q->mQuaternion );
+
+		Pin->node()->context()->pinUpdated( Pin );
+	}
+
+	return( 0 );
 }
 
 int LuaQuaternion::luaAdd( lua_State *L )
