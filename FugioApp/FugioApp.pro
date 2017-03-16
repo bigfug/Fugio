@@ -155,10 +155,28 @@ DISTFILES += \
 	../config.win.xml \
 	about.html \
 	version.txt \
-	../installer/brew_install_update
+	../installer/brew_install_update \
+    ../installer/install_fugio
+
 
 RESOURCES += \
 	fugio.qrc
+
+CONFIG(release,debug|release) {
+	examples.path = $$INSTALLDATA/examples
+	examples.files = ../examples/*
+
+	share.path = $$INSTALLDATA/share
+	share.files = ../share/*
+
+	snippets.path = $$INSTALLDATA/snippets
+	snippets.files = ../snippets/*
+
+	includes.path = $$INSTALLDATA/include
+	includes.files = ../include/fugio
+
+	INSTALLS += examples includes share snippets
+}
 
 macx {
 	QMAKE_INFO_PLIST = Info.plist
@@ -172,78 +190,72 @@ macx {
 	CONFIG(release,debug|release) {
 		QMAKE_POST_LINK += install_name_tool -change libfugio.1.dylib @executable_path/../../../libfugio.1.dylib $$APP_DIR/Contents/MacOS/Fugio
 
-		QMAKE_POST_LINK += && macdeployqt $$APP_DIR -always-overwrite
+		QMAKE_POST_LINK += && macdeployqt $$APP_DIR -always-overwrite -qmldir=../qml
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$APP_DIR ) CFBundleVersion \"$$FUGIO_VERSION\"
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$APP_DIR ) CFBundleGetInfoString \"$$FUGIO_VERSION\"
 
 		QMAKE_POST_LINK += && install_name_tool -add_rpath @loader_path/../../../libs $$APP_DIR/Contents/MacOS/Fugio
 
-		QMAKE_POST_LINK += && mkdir -pv $$PLUGIN_DIR/platforms
-
-		QMAKE_POST_LINK += && cp $$(QTDIR)/plugins/platforms/libqcocoa.dylib $$PLUGIN_DIR/platforms
-
 		isEmpty( CASKBASE ) {
-			QMAKE_POST_LINK += && mkdir -pv $$INSTALLROOT/config
+			installer_meta.path  = $$INSTALLROOT/meta
+			installer_meta.files = $$_PRO_FILE_PWD_/package.xml
 
-			QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../config.osx.xml $$INSTALLROOT/config/config.xml
+			installer_config.path  = $$INSTALLBASE/config
+			installer_config.extra = cp $$_PRO_FILE_PWD_/../config.osx.xml $$installer_config.path/config.xml
 
-			QMAKE_POST_LINK += && mkdir -pv $$INSTALLROOT/meta
-			QMAKE_POST_LINK += && mkdir -pv $$INSTALLROOT/data
-
-			QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/package.xml $$INSTALLROOT/meta
+			INSTALLS += installer_meta installer_config
 		}
 
-		QMAKE_POST_LINK += && rm -rf $$INSTALLDATA/$$TARGET".app"
+		app.path  = $$INSTALLDATA
+		app.files = $$APP_DIR
+		app.extra = cp $$(QTDIR)/plugins/platforms/libqcocoa.dylib $$PLUGIN_DIR/platforms
 
-		QMAKE_POST_LINK += && cp -R $$APP_DIR $$INSTALLDATA/
-
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDATA/include
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDATA/plugins
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDATA/snippets
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDATA/examples
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDATA/share
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDATA/translations
-
-		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../examples/* $$INSTALLDATA/examples
-		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../snippets/* $$INSTALLDATA/snippets
-		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../share/* $$INSTALLDATA/share
-
-		QMAKE_POST_LINK += && cp -R $$(QTDIR)/translations/qt*.qm $$INSTALLDATA/translations
-		QMAKE_POST_LINK += && cp -R $$FUGIO_BASE/translations/*.qm $$INSTALLDATA/translations
+		INSTALLS += app
 	}
+
+	isEmpty( CASKBASE ) {
+		brew_meta.path = $$INSTALLBASE/packages/sh.brew/meta
+		brew_meta.files = ../installer/package.xml ../installer/installscript.qs
+
+		brew_data.path = $$INSTALLBASE/packages/sh.brew/data
+		brew_data.files = ../installer/brew_install_update
+
+		INSTALLS += brew_meta brew_data
+	}
+
+	translation.path = $$app.path/$$TARGET".app"/Contents/translations
+	translation.files = $$(QTDIR)/translations/qt*.qm
+
+	INSTALLS += translation
 }
 
 windows {
 	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
 
+	installer_meta.path  = $$INSTALLROOT/meta
+	installer_meta.files = $$_PRO_FILE_PWD_/package.xml
+
+	installer_config.path  = $$INSTALLROOT/config
+	installer_config.extra = cp $$_PRO_FILE_PWD_/../config.win.xml $$installer_config.path/config.xml
+
+	INSTALLS += installer_meta installer_config
+
+	translation.path = $$INSTALLDIR/data/plugins/translations
+	translation.files = $$(QTDIR)/translations/qt*.qm
+
+	INSTALLS += translation
+
+
 	CONFIG(release,debug|release) {
 		QMAKE_POST_LINK += echo
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLBASE/config )
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$_PRO_FILE_PWD_/../config.win.xml ) $$shell_path( $$INSTALLBASE/config/config.xml )
-
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/meta )
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data )
-
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$_PRO_FILE_PWD_/package.xml ) $$shell_path( $$INSTALLDIR/meta/ )
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".exe" ) $$shell_path( $$INSTALLDIR/data/ )
 
-		QMAKE_POST_LINK += & windeployqt --force --no-angle --no-opengl-sw $$shell_path( $$INSTALLDIR/data )
+		QMAKE_POST_LINK += & windeployqt --force --no-angle --no-opengl-sw -qmldir ../qml $$shell_path( $$INSTALLDIR/data )
 
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/include )
 		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/snippets )
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/examples )
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/share )
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/translations )
-
-		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../examples/* ) $$shell_path( $$INSTALLDIR/data/examples ) /f /s /y
-		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../snippets/* ) $$shell_path( $$INSTALLDIR/data/snippets ) /f /s /y
-		QMAKE_POST_LINK += & xcopy $$shell_path( $$_PRO_FILE_PWD_/../share/* ) $$shell_path( $$INSTALLDIR/data/share ) /f /s /y
-
-		QMAKE_POST_LINK += & xcopy $$shell_path( $$(QTDIR)/translations/qt*.qm ) $$shell_path( $$INSTALLDIR/data/translations ) /f /s /y
-		QMAKE_POST_LINK += & xcopy $$shell_path( $$FUGIO_BASE/translations/*.qm ) $$shell_path( $$INSTALLDIR/data/translations ) /f /s /y
 
 		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
 	}
@@ -254,50 +266,25 @@ unix:!macx {
 
 	QMAKE_LFLAGS += "-Wl,-rpath '-Wl,$${DOLLAR}$${DOLLAR}ORIGIN'"
 
-	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-		target.path = Desktop/Fugio
+#	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
+#		target.path = Desktop/Fugio
 
-		INSTALLS += target
+#		INSTALLS += target
 
-		examples.path  = Desktop/Fugio/examples
-		examples.files = $$_PRO_FILE_PWD_/../examples/*
+#		examples.path  = Desktop/Fugio/examples
+#		examples.files = $$_PRO_FILE_PWD_/../examples/*
 
-		INSTALLS += examples
+#		INSTALLS += examples
 
-		snippets.path  = Desktop/Fugio/snippets
-		snippets.files = $$_PRO_FILE_PWD_/../snippets/*
+#		snippets.path  = Desktop/Fugio/snippets
+#		snippets.files = $$_PRO_FILE_PWD_/../snippets/*
 
-		INSTALLS += snippets
+#		INSTALLS += snippets
 
-		share.path  = Desktop/Fugio/share
-		share.files = $$_PRO_FILE_PWD_/../share/*
+#		share.path  = Desktop/Fugio/share
+#		share.files = $$_PRO_FILE_PWD_/../share/*
 
-		INSTALLS += share
-	}
-
-#	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
-
-#	CONFIG(release,debug|release) {
-#		QMAKE_POST_LINK += echo
-
-#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLBASE/config )
-
-#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/meta )
-#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data )
-
-#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/include )
-#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/plugins )
-#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/snippets )
-#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/examples )
-#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/platforms )
-#		QMAKE_POST_LINK += && mkdir -pv $$shell_path( $$INSTALLDIR/data/share )
-
-#		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/package.xml $$INSTALLDIR/meta
-#		QMAKE_POST_LINK += && cp -R $$shell_path( $$DESTDIR/$$TARGET ) $$INSTALLDIR/data
-
-#		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../examples/* $$INSTALLDIR/data/examples
-#		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../snippets/* $$INSTALLDIR/data/snippets
-#		QMAKE_POST_LINK += && cp -R $$_PRO_FILE_PWD_/../share/* $$INSTALLDIR/data/share
+#		INSTALLS += share
 #	}
 }
 
@@ -348,8 +335,7 @@ win32 {
 	CONFIG(release,debug|release) {
 		LIBS += -LC:/Python34/DLLs
 	} else {
-		LIBS += -L
-/Python-3.4.3/PCbuild
+		LIBS += -LC:/Python-3.4.3/PCbuild
 	}
 }
 
