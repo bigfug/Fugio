@@ -67,12 +67,11 @@ macx {
 
 		QMAKE_POST_LINK += && install_name_tool -change $$(LIBS)/LeapSDK/lib/libLeap.dylib @loader_path/../Frameworks/libLeap.dylib $$DESTDIR/libfugio-leapmotion.dylib
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
-		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
+		plugin.path = $$INSTALLDEST
+		plugin.files = $$BUNDLEDIR
+		plugin.extra = rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
-		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
-
-		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
+		INSTALLS += plugin
 	}
 }
 

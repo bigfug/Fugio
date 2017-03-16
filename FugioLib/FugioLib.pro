@@ -67,10 +67,10 @@ TRANSLATIONS = \
 macx {
 	DEFINES += TARGET_OS_MAC
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += mkdir -pv $$INSTALLDATA
-		QMAKE_POST_LINK += && cp -R $$DESTDIR/libfugio* $$INSTALLDATA
-	}
+	install.path = $$INSTALLDATA
+	install.files = $$DESTDIR/libfugio.1.dylib
+
+	INSTALLS += install
 }
 
 #------------------------------------------------------------------------------

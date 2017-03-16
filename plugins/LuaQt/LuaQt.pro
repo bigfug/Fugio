@@ -102,9 +102,6 @@ macx {
 			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
 		}
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
-		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
-
 		isEmpty( CASKBASE ) {
 			exists( /usr/local/opt/lua ) {
 				QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
@@ -118,9 +115,11 @@ macx {
 			}
 		}
 
-		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
+		plugin.path = $$INSTALLDEST
+		plugin.files = $$BUNDLEDIR
+		plugin.extra = rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
-		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
+		INSTALLS += plugin
 	}
 }
 

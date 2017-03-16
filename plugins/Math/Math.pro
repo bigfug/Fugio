@@ -61,7 +61,7 @@ SOURCES += mathplugin.cpp \
 	ceilnode.cpp \
 	floornode.cpp \
 	roundnode.cpp \
-    quaternionpin.cpp
+	quaternionpin.cpp
 
 HEADERS += mathplugin.h \
 	../../include/fugio/math/uuid.h \
@@ -111,7 +111,7 @@ HEADERS += mathplugin.h \
 	ceilnode.h \
 	floornode.h \
 	roundnode.h \
-    quaternionpin.h
+	quaternionpin.h
 
 TRANSLATIONS = \
 	$$FUGIO_BASE/translations/fugio_math_fr.ts \
@@ -147,12 +147,11 @@ macx {
 			QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 		}
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
-		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
+		plugin.path = $$INSTALLDEST
+		plugin.files = $$BUNDLEDIR
+		plugin.extra = rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
-		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
-
-		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
+		INSTALLS += plugin
 	}
 }
 

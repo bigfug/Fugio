@@ -67,11 +67,11 @@ SOURCES += \
 	arraylistpin.cpp \
 	rectpin.cpp \
 	getsizenode.cpp \
-    triggerarraynode.cpp \
-    triggerbooleannode.cpp \
-    makearraynode.cpp \
-    flipflopnode.cpp \
-    loggernode.cpp
+	triggerarraynode.cpp \
+	triggerbooleannode.cpp \
+	makearraynode.cpp \
+	flipflopnode.cpp \
+	loggernode.cpp
 
 HEADERS += \
 	stringpin.h \
@@ -134,11 +134,11 @@ HEADERS += \
 	rectpin.h \
 	../../include/fugio/core/size_interface.h \
 	getsizenode.h \
-    triggerarraynode.h \
-    triggerbooleannode.h \
-    makearraynode.h \
-    flipflopnode.h \
-    loggernode.h
+	triggerarraynode.h \
+	triggerbooleannode.h \
+	makearraynode.h \
+	flipflopnode.h \
+	loggernode.h
 
 TRANSLATIONS = \
 	$$FUGIO_BASE/translations/fugio_core_fr.ts \
@@ -170,16 +170,15 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		isEmpty( CASKBASE ) {
-			QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
-		}
+#		isEmpty( CASKBASE ) {
+#			QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+#		}
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
-		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
+		plugin.path = $$INSTALLDEST
+		plugin.files = $$BUNDLEDIR
+		plugin.extra = rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
-		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
-
-		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
+		INSTALLS += plugin
 	}
 }
 

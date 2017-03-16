@@ -69,12 +69,11 @@ macx {
 			QMAKE_POST_LINK += $$libChange( libGLEW.2.0.0.dylib )
 		}
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
-		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
+		plugin.path = $$INSTALLDEST
+		plugin.files = $$BUNDLEDIR
+		plugin.extra = rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
-		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
-
-		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
+		INSTALLS += plugin
 	}
 }
 

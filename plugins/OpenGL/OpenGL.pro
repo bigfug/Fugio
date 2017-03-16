@@ -207,13 +207,6 @@ macx {
 			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
 		}
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
-		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
-
-		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
-
-		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
-
 		isEmpty( CASKBASE ) {
 			exists( /usr/local/opt/glew ) {
 				QMAKE_POST_LINK += && mkdir -pv $$INSTALLDATA/libs
@@ -221,6 +214,12 @@ macx {
 				QMAKE_POST_LINK += && cp -a /usr/local/opt/glew/lib/*.dylib $$INSTALLDATA/libs/
 			}
 		}
+
+		plugin.path = $$INSTALLDEST
+		plugin.files = $$BUNDLEDIR
+		plugin.extra = rm -rf $$INSTALLDEST/$$TARGET".bundle"
+
+		INSTALLS += plugin
 	}
 }
 
