@@ -13,64 +13,70 @@ TARGET = $$qtLibraryTarget(fugio)
 TEMPLATE = lib
 CONFIG += c++11
 
+contains( DEFINES, FUGIOLIB_STATIC ) {
+	CONFIG += staticlib
+}
+
 DEFINES += FUGIOLIB_LIBRARY
 
 SOURCES += fugio.cpp \
-    contextprivate.cpp \
-    context.cpp \
-    globalprivate.cpp \
-    global.cpp \
-    pinprivate.cpp \
-    pin.cpp \
-    nodeprivate.cpp \
-    node.cpp \
-    interpolation.cpp
+	contextprivate.cpp \
+	context.cpp \
+	globalprivate.cpp \
+	global.cpp \
+	pinprivate.cpp \
+	pin.cpp \
+	nodeprivate.cpp \
+	node.cpp \
+	interpolation.cpp
 
 HEADERS += fugio.h\
-    ../include/fugio/global.h \
-    contextprivate.h \
-    globalprivate.h \
-    pinprivate.h \
-    nodeprivate.h \
-    ../include/fugio/interpolation.h \
-    ../include/fugio/performance.h \
-    ../stable.h \
-    ../include/fugio/pluginbase.h \
-    ../include/fugio/choice_interface.h \
-    ../include/fugio/global_interface.h \
-    ../include/fugio/plugin_interface.h \
-    ../include/fugio/serialise_interface.h \
-    ../include/fugio/pin_signals.h \
-    ../include/fugio/node_signals.h \
-    ../include/fugio/playhead_interface.h \
-    ../include/fugio/pin_control_interface.h \
-    ../include/fugio/pin_interface.h \
-    ../include/fugio/node_control_interface.h \
-    ../include/fugio/node_interface.h \
-    ../include/fugio/edit_interface.h \
-    ../include/fugio/device_factory_interface.h \
-    ../include/fugio/context_widget_interface.h \
-    ../include/fugio/context_interface.h \
-    ../include/fugio/global_signals.h \
-    ../include/fugio/utils.h \
-    ../include/fugio/context_signals.h \
-    ../include/fugio/paired_pins_helper_interface.h \
-    ../include/fugio/menu_control_interface.h
+	../include/fugio/global.h \
+	contextprivate.h \
+	globalprivate.h \
+	pinprivate.h \
+	nodeprivate.h \
+	../include/fugio/interpolation.h \
+	../include/fugio/performance.h \
+	../stable.h \
+	../include/fugio/pluginbase.h \
+	../include/fugio/choice_interface.h \
+	../include/fugio/global_interface.h \
+	../include/fugio/plugin_interface.h \
+	../include/fugio/serialise_interface.h \
+	../include/fugio/pin_signals.h \
+	../include/fugio/node_signals.h \
+	../include/fugio/playhead_interface.h \
+	../include/fugio/pin_control_interface.h \
+	../include/fugio/pin_interface.h \
+	../include/fugio/node_control_interface.h \
+	../include/fugio/node_interface.h \
+	../include/fugio/edit_interface.h \
+	../include/fugio/device_factory_interface.h \
+	../include/fugio/context_widget_interface.h \
+	../include/fugio/context_interface.h \
+	../include/fugio/global_signals.h \
+	../include/fugio/utils.h \
+	../include/fugio/context_signals.h \
+	../include/fugio/paired_pins_helper_interface.h \
+	../include/fugio/menu_control_interface.h
 
-TRANSLATIONS = fugio_fr.ts
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_lib_fr.ts \
+	$$FUGIO_BASE/translations/fugio_lib_es.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
 macx {
-    DEFINES += TARGET_OS_MAC
+	DEFINES += TARGET_OS_MAC
 
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+	!contains( DEFINES, FUGIOLIB_STATIC ) {
+		install.path = $$INSTALLDATA
+		install.files = $$DESTDIR/libfugio.1.dylib
 
-    CONFIG(release,debug|release) {
-        QMAKE_POST_LINK += mkdir -pv $$INSTALLDIR/data
-        QMAKE_POST_LINK += && cp -R $$DESTDIR/libfugio* $$INSTALLDIR/data
-    }
+		INSTALLS += install
+	}
 }
 
 #------------------------------------------------------------------------------
@@ -78,14 +84,11 @@ macx {
 windows {
 	QMAKE_LFLAGS_DEBUG += /INCREMENTAL:NO
 
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+	!contains( DEFINES, FUGIOLIB_STATIC ) {
+		install.path = $$INSTALLDATA
+		install.files = $$DESTDIR/$$TARGET".dll"
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
-
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data )
-
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/ )
+		INSTALLS += install
 	}
 }
 
@@ -93,15 +96,15 @@ windows {
 # Linux
 
 unix:!macx {
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+	!contains( DEFINES, FUGIOLIB_STATIC ) {
+		contains( DEFINES, Q_OS_RASPBERRY_PI ) {
+			target.path = Desktop/Fugio
+		} else {
+			target.path = $$INSTALLDATA
+		}
 
-	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-		target.path = Desktop/Fugio
-	} else {
-		target.path = $$shell_path( $$INSTALLDIR/data )
+		INSTALLS += target
 	}
-
-	INSTALLS += target
 }
 
 #------------------------------------------------------------------------------
@@ -112,7 +115,7 @@ CONFIG += precompile_header
 PRECOMPILED_HEADER = ../stable.h
 
 precompile_header:!isEmpty(PRECOMPILED_HEADER) {
-    DEFINES += USING_PCH
+	DEFINES += USING_PCH
 }
 
 #------------------------------------------------------------------------------
@@ -124,5 +127,5 @@ INCLUDEPATH += $$PWD/../include
 # Raspberry Pi
 
 contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-    LIBS += -L/opt/vc/lib -lGLESv2 -lEGL
+	LIBS += -L/opt/vc/lib -lGLESv2 -lEGL
 }

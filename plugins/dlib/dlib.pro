@@ -15,13 +15,13 @@ CONFIG += plugin c++11
 DESTDIR = $$DESTDIR/plugins
 
 SOURCES += dlibplugin.cpp \
-    facefeaturesnode.cpp
+	facefeaturesnode.cpp
 
 HEADERS += dlibplugin.h \
 	../../include/fugio/nodecontrolbase.h \
 	../../include/fugio/pincontrolbase.h \
 	../../include/fugio/dlib/uuid.h \
-    facefeaturesnode.h
+	facefeaturesnode.h
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -32,9 +32,8 @@ macx {
 	CONFIG += lib_bundle
 
 	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-	INSTALLDEST  = $$INSTALLDIR/data/plugins
-	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
+	INSTALLDEST  = $$INSTALLDATA/plugins
+	INCLUDEDEST  = $$INSTALLDATA/include/fugio
 	FRAMEWORKDIR = $$BUNDLEDIR/Contents/Frameworks
 
 	DESTDIR = $$BUNDLEDIR/Contents/MacOS
@@ -57,18 +56,18 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+		isEmpty( CASKBASE ) {
+			QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
-		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$FRAMEWORKDIR
-		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
+			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$FRAMEWORKDIR
+			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
+		}
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
-		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
+		plugin.path = $$INSTALLDEST
+		plugin.files = $$BUNDLEDIR
+		plugin.extra = rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
-		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
-
-		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
+		INSTALLS += plugin
 	}
 }
 

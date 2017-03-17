@@ -58,8 +58,8 @@ SOURCES += openglplugin.cpp \
 	shadercompilernode.cpp \
 	viewportmatrixnode.cpp \
 	renderpin.cpp \
-    cubemaprendernode.cpp \
-    textureclonenode.cpp
+	cubemaprendernode.cpp \
+	textureclonenode.cpp
 
 HEADERS +=\
 	texturenode.h \
@@ -114,8 +114,8 @@ HEADERS +=\
 	viewportmatrixnode.h \
 	renderpin.h \
 	../../include/fugio/output_interface.h \
-    cubemaprendernode.h \
-    textureclonenode.h
+	cubemaprendernode.h \
+	textureclonenode.h
 
 FORMS += \
 	texturenodeform.ui \
@@ -186,9 +186,8 @@ macx {
 	CONFIG += lib_bundle
 
 	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-	INSTALLDEST  = $$INSTALLDIR/data/plugins
-	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
+	INSTALLDEST  = $$INSTALLDATA/plugins
+	INCLUDEDEST  = $$INSTALLDATA/include/fugio
 	FRAMEWORKDIR = $$BUNDLEDIR/Contents/Frameworks
 
 	DESTDIR = $$BUNDLEDIR/Contents/MacOS
@@ -204,21 +203,23 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
-
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
-		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
-
-		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
-
-		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
-
-		exists( /usr/local/opt/glew ) {
-			QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
-
-			QMAKE_POST_LINK += && cp -a /usr/local/opt/glew/lib/*.dylib $$INSTALLDIR/data/libs/
+		isEmpty( CASKBASE ) {
+			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
 		}
+
+		isEmpty( CASKBASE ) {
+			exists( /usr/local/opt/glew ) {
+				QMAKE_POST_LINK += && mkdir -pv $$INSTALLDATA/libs
+
+				QMAKE_POST_LINK += && cp -a /usr/local/opt/glew/lib/*.dylib $$INSTALLDATA/libs/
+			}
+		}
+
+		plugin.path = $$INSTALLDEST
+		plugin.files = $$BUNDLEDIR
+		plugin.extra = rm -rf $$INSTALLDEST/$$TARGET".bundle"
+
+		INSTALLS += plugin
 	}
 }
 

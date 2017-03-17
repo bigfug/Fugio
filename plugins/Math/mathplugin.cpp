@@ -67,6 +67,8 @@
 #include "floornode.h"
 #include "roundnode.h"
 
+#include "quaternionpin.h"
+
 MathPlugin *MathPlugin::mInstance = nullptr;
 
 QList<QUuid>	NodeControlBase::PID_UUID;
@@ -117,6 +119,7 @@ ClassEntry	NodeClasses[] =
 ClassEntry PinClasses[] =
 {
 	ClassEntry( "Matrix4", PID_MATRIX4, &Matrix4Pin::staticMetaObject ),
+	ClassEntry( "Quaternion", PID_QUATERNION, &QuaternionPin::staticMetaObject ),
 	ClassEntry( "Vector3", PID_VECTOR3, &Vector3Pin::staticMetaObject ),
 	ClassEntry( "Vector4", PID_VECTOR4, &Vector4Pin::staticMetaObject ),
 	ClassEntry()

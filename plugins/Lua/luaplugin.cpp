@@ -136,6 +136,11 @@ void LuaPlugin::luaAddPinGet( const QUuid &pPID, LuaInterface::luaPinGetFunc pFu
 	mGetFunctions.insert( pPID, pFunction );
 }
 
+void LuaPlugin::luaAddPinSet(const QUuid &pPID, LuaInterface::luaPinSetFunc pFunction)
+{
+	mSetFunctions.insert( pPID, pFunction );
+}
+
 NodeInterface *LuaPlugin::node( lua_State *L)
 {
 #if defined( LUA_SUPPORTED )

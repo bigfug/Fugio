@@ -38,6 +38,7 @@ class LuaInterface
 {
 public:
 	typedef int (*luaPinGetFunc)( const QUuid &pPinLocalId, lua_State *L );
+	typedef int (*luaPinSetFunc)( const QUuid &pPinLocalId, lua_State *L, int pIndex );
 
 	virtual ~LuaInterface( void ) {}
 
@@ -54,6 +55,8 @@ public:
 	virtual void luaAddExtensions( lua_State *L ) = 0;
 
 	virtual void luaAddPinGet( const QUuid &pPID, luaPinGetFunc pFunction ) = 0;
+
+	virtual void luaAddPinSet( const QUuid &pPID, luaPinSetFunc pFunction ) = 0;
 
 	// methods callable from static Lua functions
 

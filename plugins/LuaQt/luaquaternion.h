@@ -55,6 +55,7 @@ public:
 	}
 
 	static int luaPinGet( const QUuid &pPinLocalId, lua_State *L );
+	static int luaPinSet( const QUuid &pPinLocalId, lua_State *L, int pIndex );
 
 private:
 	static UserData *checkuserdata( lua_State *L, int i = 1 )

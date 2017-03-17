@@ -2,6 +2,7 @@
 
 #include <fugio/core/uuid.h>
 #include <fugio/colour/colour_interface.h>
+#include <fugio/core/list_interface.h>
 
 JoinNode::JoinNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -58,11 +59,27 @@ void JoinNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
+		fugio::ListInterface		*L = input<fugio::ListInterface *>( P );
+
+		if( L )
+		{
+			QVariantList		VL;
+
+			for( int i = 0 ; i < L->listSize() ; i++ )
+			{
+				VL << L->listIndex( i );
+			}
+
+			mValOutput->oscJoin( QStringList( P->name() ), VL );
+
+			continue;
+		}
+
 		fugio::ColourInterface		*C = input<fugio::ColourInterface *>( P );
 
 		if( C )
 		{
-			mValOutput->oscJoin( QStringList( P->name() ) , C->colour() );
+			mValOutput->oscJoin( QStringList( P->name() ), C->colour() );
 
 			continue;
 		}
@@ -71,7 +88,7 @@ void JoinNode::inputsUpdated( qint64 pTimeStamp )
 
 		if( V )
 		{
-			mValOutput->oscJoin( QStringList( P->name() ) , V->variant() );
+			mValOutput->oscJoin( QStringList( P->name() ), V->variant() );
 
 			continue;
 		}

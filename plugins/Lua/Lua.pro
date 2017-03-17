@@ -46,21 +46,22 @@ macx {
 	CONFIG += lib_bundle
 
 	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-	INSTALLDEST  = $$INSTALLDIR/data/plugins
-	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
+	INSTALLDEST  = $$INSTALLDATA/plugins
+	INCLUDEDEST  = $$INSTALLDATA/include/fugio
 
 	QMAKE_POST_LINK += echo
 
-	exists( /usr/local/opt/lua ) {
-		QMAKE_POST_LINK += && mkdir -pv $$DESTDIR/../libs
+	isEmpty( CASKBASE ) {
+		exists( /usr/local/opt/lua ) {
+			QMAKE_POST_LINK += && mkdir -pv $$DESTDIR/../libs
 
-		QMAKE_POST_LINK += && cp -a /usr/local/opt/lua/lib/*.dylib $$DESTDIR/../libs/
+			QMAKE_POST_LINK += && cp -a /usr/local/opt/lua/lib/*.dylib $$DESTDIR/../libs/
 
-	} else:exists( $$(LIBS)/lua-5.3.3/src ) {
-		QMAKE_POST_LINK += && mkdir -pv $$DESTDIR/../libs
+		} else:exists( $$(LIBS)/lua-5.3.3/src ) {
+			QMAKE_POST_LINK += && mkdir -pv $$DESTDIR/../libs
 
-		QMAKE_POST_LINK += && cp $$(LIBS)/lua-5.3.3/src/liblua5.3.3.dylib $$DESTDIR/../libs/
+			QMAKE_POST_LINK += && cp $$(LIBS)/lua-5.3.3/src/liblua5.3.3.dylib $$DESTDIR/../libs/
+		}
 	}
 
 	DESTDIR = $$BUNDLEDIR/Contents/MacOS
@@ -85,26 +86,28 @@ macx {
 
 #		QMAKE_POST_LINK += && install_name_tool -change liblua.5.2.dylib /usr/local/lib/liblua.5.2.dylib $$LIBCHANGEDEST
 
-		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
-
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
-		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
-
-		exists( /usr/local/opt/lua ) {
-			QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
-
-			QMAKE_POST_LINK += && cp -a /usr/local/opt/lua/lib/*.dylib $$INSTALLDIR/data/libs/
-
-		} else:exists( $$(LIBS)/lua-5.3.3/src ) {
-			QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
-
-			QMAKE_POST_LINK += && cp $$(LIBS)/lua-5.3.3/src/liblua5.3.3.dylib $$INSTALLDIR/data/libs/
+		isEmpty( CASKBASE ) {
+			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
 		}
 
-		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
+		isEmpty( CASKBASE ) {
+			exists( /usr/local/opt/lua ) {
+				QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
 
-		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
+				QMAKE_POST_LINK += && cp -a /usr/local/opt/lua/lib/*.dylib $$INSTALLDATA/libs/
+
+			} else:exists( $$(LIBS)/lua-5.3.3/src ) {
+				QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
+
+				QMAKE_POST_LINK += && cp $$(LIBS)/lua-5.3.3/src/liblua5.3.3.dylib $$INSTALLDATA/libs/
+			}
+		}
+
+		plugin.path = $$INSTALLDEST
+		plugin.files = $$BUNDLEDIR
+		plugin.extra = rm -rf $$INSTALLDEST/$$TARGET".bundle"
+
+		INSTALLS += plugin
 	}
 }
 

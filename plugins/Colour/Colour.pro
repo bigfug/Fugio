@@ -41,6 +41,10 @@ HEADERS += \
 	joincolourhslanode.h \
 	colourbuttonnode.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_colour_fr.ts \
+	$$FUGIO_BASE/translations/fugio_colour_es.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
@@ -50,9 +54,8 @@ macx {
 	CONFIG += lib_bundle
 
 	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-	INSTALLDEST  = $$INSTALLDIR/data/plugins
-	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
+	INSTALLDEST  = $$INSTALLDATA/plugins
+	INCLUDEDEST  = $$INSTALLDATA/include/fugio
 
 	DESTDIR = $$BUNDLEDIR/Contents/MacOS
 	DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
@@ -70,13 +73,11 @@ macx {
 
 		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
-		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
+		plugin.path = $$INSTALLDEST
+		plugin.files = $$BUNDLEDIR
+		plugin.extra = rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
-		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
-
-		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
+		INSTALLS += plugin
 	}
 }
 

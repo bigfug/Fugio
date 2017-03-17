@@ -59,6 +59,7 @@
 #include "variantlistpin.h"
 #include "arraylistpin.h"
 #include "rectpin.h"
+#include "loggernode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -81,6 +82,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Index", NID_INDEX, &IndexNode::staticMetaObject ),
 	ClassEntry( "List Size", NID_LIST_SIZE, &ListSizeNode::staticMetaObject ),
 	ClassEntry( "List Index", NID_LIST_INDEX, &ListIndexNode::staticMetaObject ),
+	ClassEntry( "Logger", NID_LOGGER, &LoggerNode::staticMetaObject ),
 	ClassEntry( "Make Array", NID_MAKE_ARRAY, &MakeArrayNode::staticMetaObject ),
 	ClassEntry( "Number Range Limit", NID_NUMBER_RANGE_LIMIT, &NumberRangeLimitNode::staticMetaObject ),
 	ClassEntry( "Number Range Map", NID_NUMBER_RANGE, &NumberRangeNode::staticMetaObject ),

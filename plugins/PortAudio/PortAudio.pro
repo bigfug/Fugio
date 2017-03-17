@@ -40,9 +40,8 @@ macx {
 	CONFIG += lib_bundle
 
 	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-	INSTALLDEST  = $$INSTALLDIR/data/plugins
-	INCLUDEDEST  = $$INSTALLDIR/data/include/fugio
+	INSTALLDEST  = $$INSTALLDATA/plugins
+	INCLUDEDEST  = $$INSTALLDATA/include/fugio
 
 	DESTDIR = $$BUNDLEDIR/Contents/MacOS
 	DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
@@ -58,17 +57,18 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+		isEmpty( CASKBASE ) {
+			QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
-		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
+			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/Frameworks
+			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
+		}
 
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/meta
-		QMAKE_POST_LINK += && mkdir -pv $$INSTALLDEST
-		QMAKE_POST_LINK += && mkdir -pv $$INCLUDEDEST
+		plugin.path = $$INSTALLDEST
+		plugin.files = $$BUNDLEDIR
+		plugin.extra = rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
-		QMAKE_POST_LINK += && rm -rf $$INSTALLDEST/$$TARGET".bundle"
-
-		QMAKE_POST_LINK += && cp -a $$BUNDLEDIR $$INSTALLDEST
+		INSTALLS += plugin
 	}
 }
 
@@ -131,8 +131,9 @@ windows {
 macx {
 	exists( /usr/local/opt/portaudio ) {
 		INCLUDEPATH += /usr/local/opt/portaudio/include
-		LIBS += /usr/local/opt/portaudio/lib/libportaudio.a
-		LIBS += -framework Carbon -framework AudioUnit -framework AudioToolbox -framework CoreAudio
+#		LIBS += /usr/local/opt/portaudio/lib/libportaudio.a
+#		LIBS += -framework Carbon -framework AudioUnit -framework AudioToolbox -framework CoreAudio
+		LIBS += -L/usr/local/opt/portaudio/lib -lportaudio
 		DEFINES += PORTAUDIO_SUPPORTED
 	}
 }

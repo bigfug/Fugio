@@ -95,9 +95,9 @@ int main(int argc, char *argv[])
 	bcm_host_init();
 #endif
 
-#if defined( QT_DEBUG )
+	// Translation Test
+
 	//QLocale::setDefault( QLocale( QLocale::French, QLocale::France ) );
-#endif
 
 	qInstallMessageHandler( logger_static );
 
@@ -179,31 +179,40 @@ int main(int argc, char *argv[])
 
 	QLocale		SystemLocal;
 
+	const QString		TranslatorSource = QDir::current().absoluteFilePath( "translations" );
+
 	QTranslator qtTranslator;
+
+	qInfo() << "Looking for translations in" << QLibraryInfo::location( QLibraryInfo::TranslationsPath );
+	qInfo() << "Looking for translations in" << TranslatorSource;
 
 	if( QFileInfo::exists( QLibraryInfo::location( QLibraryInfo::TranslationsPath ) ) )
 	{
-		qtTranslator.load( SystemLocal, "qt_", QString(), QLibraryInfo::location( QLibraryInfo::TranslationsPath ) );
+		qtTranslator.load( SystemLocal, QLatin1String( "qt" ), QLatin1String( "_" ), QLibraryInfo::location( QLibraryInfo::TranslationsPath ) );
 	}
-	else if( QFileInfo::exists( "translations" ) )
+	else if( QFileInfo::exists( TranslatorSource ) )
 	{
-		qtTranslator.load( SystemLocal, "qt_", "translations" );
+		qtTranslator.load( SystemLocal, QLatin1String( "qt" ), QLatin1String( "_" ), TranslatorSource, QLatin1String( ".qm" ) );
 	}
 
 	if( !qtTranslator.isEmpty() )
 	{
-		qApp->installTranslator(&qtTranslator);
+		qApp->installTranslator( &qtTranslator );
+	}
+	else
+	{
+		qWarning() << "Couldn't load Qt translation for" << SystemLocal.name();
 	}
 
 	QTranslator		Translator;
 
-	if( !Translator.load( SystemLocal, "fugioapp_", QString(), "translations" ) )
+	if( Translator.load( SystemLocal, QLatin1String( "fugio_app" ), QLatin1String( "_" ), TranslatorSource ) )
 	{
-		qWarning() << "Can't load FugioApp translator for" << SystemLocal.name();
+		qApp->installTranslator( &Translator );
 	}
 	else
 	{
-		qApp->installTranslator( &Translator );
+		qWarning() << "Can't load FugioApp translator for" << SystemLocal.name();
 	}
 
 	//-------------------------------------------------------------------------
