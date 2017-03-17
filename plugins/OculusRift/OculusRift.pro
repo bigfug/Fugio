@@ -27,10 +27,13 @@ HEADERS += oculusriftplugin.h\
 	oculusriftnode.h \
 	deviceoculusrift.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_oculusrift_de.ts \
-	$$FUGIO_BASE/translations/fugio_oculusrift_es.ts \
-	$$FUGIO_BASE/translations/fugio_oculusrift_fr.ts
+	translations/fugio_oculusrift_de.ts \
+	translations/fugio_oculusrift_es.ts \
+	translations/fugio_oculusrift_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

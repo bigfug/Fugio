@@ -15,7 +15,7 @@ class MidiPlugin : public QObject, public PluginInterface
 	Q_INTERFACES( fugio::PluginInterface )
 
 public:
-	Q_INVOKABLE explicit MidiPlugin( void ) {}
+	Q_INVOKABLE explicit MidiPlugin( void );
 
 	virtual ~MidiPlugin( void ) {}
 

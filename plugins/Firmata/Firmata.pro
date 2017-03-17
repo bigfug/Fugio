@@ -21,10 +21,13 @@ HEADERS += \
 	firmataplugin.h \
 	firmatanode.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_firmata_de.ts \
-	$$FUGIO_BASE/translations/fugio_firmata_es.ts \
-	$$FUGIO_BASE/translations/fugio_firmata_fr.ts
+	translations/fugio_firmata_de.ts \
+	translations/fugio_firmata_es.ts \
+	translations/fugio_firmata_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

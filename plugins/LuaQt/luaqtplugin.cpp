@@ -1,5 +1,8 @@
 #include "luaqtplugin.h"
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
@@ -77,6 +80,21 @@ const luaL_Reg LuaQtPlugin::mLuaMethods[] =
 {
 	{ 0, 0 }
 };
+
+LuaQtPlugin::LuaQtPlugin()
+{
+	mInstance = this;
+
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_luaqt" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+}
 
 LuaInterface *LuaQtPlugin::lua()
 {

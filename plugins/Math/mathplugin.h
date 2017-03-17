@@ -14,7 +14,7 @@ class MathPlugin : public QObject, public fugio::PluginInterface, public fugio::
 	Q_INTERFACES( fugio::PluginInterface fugio::MathInterface )
 
 public:
-	Q_INVOKABLE explicit MathPlugin( void ) : mApp( 0 ) { mInstance = this; }
+	Q_INVOKABLE explicit MathPlugin( void );
 
 	virtual ~MathPlugin( void ) {}
 

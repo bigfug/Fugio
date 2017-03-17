@@ -51,10 +51,13 @@ HEADERS += audioplugin.h\
 	../../include/fugio/audio/audio_instance_base.h \
 	ringmodulatornode.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_audio_de.ts \
-	$$FUGIO_BASE/translations/fugio_audio_es.ts \
-	$$FUGIO_BASE/translations/fugio_audio_fr.ts
+	translations/fugio_audio_de.ts \
+	translations/fugio_audio_es.ts \
+	translations/fugio_audio_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

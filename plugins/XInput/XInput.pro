@@ -22,10 +22,13 @@ HEADERS += xinputplugin.h \
 	../../include/fugio/xinput/uuid.h \
 	xinputnode.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_xinput_de.ts \
-	$$FUGIO_BASE/translations/fugio_xinput_es.ts \
-	$$FUGIO_BASE/translations/fugio_xinput_fr.ts
+	translations/fugio_xinput_de.ts \
+	translations/fugio_xinput_es.ts \
+	translations/fugio_xinput_fr.ts
 
 windows:contains( QMAKE_CC, cl ) {
 	LIBS += -lXinput9_1_0

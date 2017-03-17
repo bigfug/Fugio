@@ -4,6 +4,9 @@
 
 #include <QDebug>
 
+#include <QTranslator>
+#include <QApplication>
+
 #include "fugio/core/uuid.h"
 
 #include "floatnode.h"
@@ -57,6 +60,15 @@ ClassEntry		GuiPlugin::mPinClasses[] =
 GuiPlugin::GuiPlugin( void )
 	: mApp( 0 )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_gui" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 GuiPlugin::~GuiPlugin( void )

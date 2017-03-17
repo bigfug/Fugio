@@ -49,10 +49,13 @@ HEADERS += timeplugin.h \
 FORMS += \
 	cronform.ui
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_time_de.ts \
-	$$FUGIO_BASE/translations/fugio_time_es.ts \
-	$$FUGIO_BASE/translations/fugio_time_fr.ts
+	translations/fugio_time_de.ts \
+	translations/fugio_time_es.ts \
+	translations/fugio_time_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

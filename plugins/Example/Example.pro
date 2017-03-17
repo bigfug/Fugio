@@ -25,10 +25,13 @@ HEADERS += exampleplugin.h \
 	../../include/fugio/pincontrolbase.h \
 	example1node.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_example_de.ts \
-	$$FUGIO_BASE/translations/fugio_example_es.ts \
-	$$FUGIO_BASE/translations/fugio_example_fr.ts
+	translations/fugio_example_de.ts \
+	translations/fugio_example_es.ts \
+	translations/fugio_example_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

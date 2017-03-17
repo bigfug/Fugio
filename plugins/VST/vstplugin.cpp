@@ -1,5 +1,8 @@
 #include "vstplugin.h"
 
+#include <QTranslator>
+#include <QCoreApplication>
+
 #include <QLocale>
 
 #include <QStandardPaths>
@@ -78,6 +81,15 @@ ClassEntry		NodeClasses[] =
 VSTPlugin::VSTPlugin( void )
 	: mApp( 0 )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_vst" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 VSTPlugin::~VSTPlugin( void )

@@ -2,6 +2,9 @@
 
 #include <QtPlugin>
 
+#include <QTranslator>
+#include <QApplication>
+
 #include "kinectnode.h"
 
 #include <fugio/kinect/uuid.h>
@@ -11,6 +14,16 @@ QList<QUuid>				fugio::NodeControlBase::PID_UUID;
 KinectPlugin::KinectPlugin( void )
 	: mApp( 0 )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_kinect" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+
 	mNodeEntries.append( fugio::ClassEntry( "Kinect", "Kinect", NID_KINECT, &KinectNode::staticMetaObject ) );
 }
 

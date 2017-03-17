@@ -36,10 +36,13 @@ HEADERS += spoutplugin.h\
 FORMS += \
 	spoutreceiverform.ui
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_spout_de.ts \
-	$$FUGIO_BASE/translations/fugio_spout_es.ts \
-	$$FUGIO_BASE/translations/fugio_spout_fr.ts
+	translations/fugio_spout_de.ts \
+	translations/fugio_spout_es.ts \
+	translations/fugio_spout_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

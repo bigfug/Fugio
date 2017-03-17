@@ -13,7 +13,7 @@ class TimePlugin : public QObject, public PluginInterface
 	Q_INTERFACES( fugio::PluginInterface )
 
 public:
-	Q_INVOKABLE explicit TimePlugin( void ) : mApp( 0 ) {}
+	Q_INVOKABLE explicit TimePlugin( void );
 
 	virtual ~TimePlugin( void ) {}
 

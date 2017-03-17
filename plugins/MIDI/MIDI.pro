@@ -56,10 +56,13 @@ HEADERS += \
 	mididecodernode.h \
 	midioutputpin.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_midi_de.ts \
-	$$FUGIO_BASE/translations/fugio_midi_es.ts \
-	$$FUGIO_BASE/translations/fugio_midi_fr.ts
+	translations/fugio_midi_de.ts \
+	translations/fugio_midi_es.ts \
+	translations/fugio_midi_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

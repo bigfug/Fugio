@@ -57,10 +57,13 @@ HEADERS += \
 FORMS += \
 	mediarecorderform.ui
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_ffmpeg_de.ts \
-	$$FUGIO_BASE/translations/fugio_ffmpeg_es.ts \
-	$$FUGIO_BASE/translations/fugio_ffmpeg_fr.ts
+	translations/fugio_ffmpeg_de.ts \
+	translations/fugio_ffmpeg_es.ts \
+	translations/fugio_ffmpeg_fr.ts
 
 windows {
 	QMAKE_LFLAGS_DEBUG += /INCREMENTAL:NO

@@ -31,10 +31,13 @@ HEADERS += \
 	portaudioinputnode.h \
 	portaudioplugin.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_portaudio_de.ts \
-	$$FUGIO_BASE/translations/fugio_portaudio_es.ts \
-	$$FUGIO_BASE/translations/fugio_portaudio_fr.ts
+	translations/fugio_portaudio_de.ts \
+	translations/fugio_portaudio_es.ts \
+	translations/fugio_portaudio_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

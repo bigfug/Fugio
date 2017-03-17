@@ -62,9 +62,9 @@ HEADERS += fugio.h\
 	../include/fugio/menu_control_interface.h
 
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_lib_de.ts \
-	$$FUGIO_BASE/translations/fugio_lib_es.ts \
-	$$FUGIO_BASE/translations/fugio_lib_fr.ts
+	translations/fugio_lib_de.ts \
+	translations/fugio_lib_es.ts \
+	translations/fugio_lib_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -130,3 +130,6 @@ INCLUDEPATH += $$PWD/../include
 contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 	LIBS += -L/opt/vc/lib -lGLESv2 -lEGL
 }
+
+RESOURCES += \
+    resources.qrc

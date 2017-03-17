@@ -12,7 +12,7 @@ class DlibPlugin : public QObject, public PluginInterface
 	Q_INTERFACES( fugio::PluginInterface )
 
 public:
-	Q_INVOKABLE explicit DlibPlugin( void ) {}
+	Q_INVOKABLE explicit DlibPlugin( void );
 
 	virtual ~DlibPlugin( void ) {}
 

@@ -30,10 +30,13 @@ HEADERS += \
 	portmidiinputnode.h \
 	portmidioutputnode.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_portmidi_de.ts \
-	$$FUGIO_BASE/translations/fugio_portmidi_es.ts \
-	$$FUGIO_BASE/translations/fugio_portmidi_fr.ts
+	translations/fugio_portmidi_de.ts \
+	translations/fugio_portmidi_es.ts \
+	translations/fugio_portmidi_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

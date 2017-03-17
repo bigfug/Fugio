@@ -113,10 +113,13 @@ HEADERS += mathplugin.h \
 	roundnode.h \
 	quaternionpin.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_math_de.ts \
-	$$FUGIO_BASE/translations/fugio_math_es.ts \
-	$$FUGIO_BASE/translations/fugio_math_fr.ts
+	translations/fugio_math_de.ts \
+	translations/fugio_math_es.ts \
+	translations/fugio_math_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

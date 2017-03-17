@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>translations/fugio_ffmpeg_de.qm</file>
+        <file>translations/fugio_ffmpeg_es.qm</file>
+        <file>translations/fugio_ffmpeg_fr.qm</file>
+    </qresource>
+</RCC>

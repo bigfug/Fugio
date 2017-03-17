@@ -32,10 +32,13 @@ HEADERS +=\
 FORMS += \
 	kinectconfigdialog.ui
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_kinect_de.ts \
-	$$FUGIO_BASE/translations/fugio_kinect_es.ts \
-	$$FUGIO_BASE/translations/fugio_kinect_fr.ts
+	translations/fugio_kinect_de.ts \
+	translations/fugio_kinect_es.ts \
+	translations/fugio_kinect_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

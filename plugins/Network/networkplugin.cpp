@@ -60,6 +60,16 @@ NetworkPlugin::NetworkPlugin()
 	: mApp( 0 ), mNetworkAccessManager( 0 )
 {
 	mInstance = this;
+
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_network" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 PluginInterface::InitResult NetworkPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )

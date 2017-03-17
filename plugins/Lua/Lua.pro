@@ -37,10 +37,13 @@ HEADERS += luaplugin.h \
 	luaexpin.h \
 	luaarray.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_lua_de.ts \
-	$$FUGIO_BASE/translations/fugio_lua_es.ts \
-	$$FUGIO_BASE/translations/fugio_lua_fr.ts
+	translations/fugio_lua_de.ts \
+	translations/fugio_lua_es.ts \
+	translations/fugio_lua_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

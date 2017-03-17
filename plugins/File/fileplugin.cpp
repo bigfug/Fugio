@@ -1,5 +1,8 @@
 #include "fileplugin.h"
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <fugio/file/uuid.h>
 
 #include "filewatchernode.h"
@@ -27,7 +30,15 @@ ClassEntry		mPinClasses[] =
 FilePlugin::FilePlugin()
 	: mApp( 0 )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
 
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_file" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 PluginInterface::InitResult FilePlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )

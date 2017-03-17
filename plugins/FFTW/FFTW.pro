@@ -24,10 +24,13 @@ HEADERS += fftwplugin.h\
 	../../include/fugio/fftw/uuid.h \
 	fftnode.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_fftw_de.ts \
-	$$FUGIO_BASE/translations/fugio_fftw_es.ts \
-	$$FUGIO_BASE/translations/fugio_fftw_fr.ts
+	translations/fugio_fftw_de.ts \
+	translations/fugio_fftw_es.ts \
+	translations/fugio_fftw_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

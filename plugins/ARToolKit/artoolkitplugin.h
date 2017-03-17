@@ -17,7 +17,7 @@ class ARToolKitPlugin : public QObject, public PluginInterface
 	Q_INTERFACES( fugio::PluginInterface )
 
 public:
-	Q_INVOKABLE explicit ARToolKitPlugin( void ) { mInstance = this; }
+	Q_INVOKABLE explicit ARToolKitPlugin( void );
 
 	virtual ~ARToolKitPlugin( void ) {}
 

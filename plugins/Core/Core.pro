@@ -140,10 +140,13 @@ HEADERS += \
 	flipflopnode.h \
 	loggernode.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_core_de.ts \
-	$$FUGIO_BASE/translations/fugio_core_es.ts \
-	$$FUGIO_BASE/translations/fugio_core_fr.ts
+	translations/fugio_core_de.ts \
+	translations/fugio_core_es.ts \
+	translations/fugio_core_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

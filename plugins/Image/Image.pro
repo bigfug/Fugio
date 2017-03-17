@@ -53,10 +53,13 @@ HEADERS += imageplugin.h\
 	../../include/fugio/image/uuid.h \
 	../../include/fugio/image/image_interface.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_image_de.ts \
-	$$FUGIO_BASE/translations/fugio_image_es.ts \
-	$$FUGIO_BASE/translations/fugio_image_fr.ts
+	translations/fugio_image_de.ts \
+	translations/fugio_image_es.ts \
+	translations/fugio_image_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

@@ -1,5 +1,8 @@
 #include "openglplugin.h"
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <fugio/opengl/uuid.h>
 
 #include <fugio/global_interface.h>
@@ -120,6 +123,16 @@ OpenGLPlugin::OpenGLPlugin( void )
 	   mOpenGLFullScreenOption( "opengl-full-screen", "Open all OpenGL windows as full screen" ), mTriangleCount( 0 )
 {
 	mInstance = this;
+
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_opengl" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 
 	initStaticData();
 }

@@ -55,10 +55,13 @@ HEADERS += networkplugin.h\
 	cobsencodenode.h \
 	websocketclientnode.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_network_de.ts \
-	$$FUGIO_BASE/translations/fugio_network_es.ts \
-	$$FUGIO_BASE/translations/fugio_network_fr.ts
+	translations/fugio_network_de.ts \
+	translations/fugio_network_es.ts \
+	translations/fugio_network_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

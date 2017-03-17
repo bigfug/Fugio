@@ -30,10 +30,13 @@ HEADERS += vstplugin.h \
 	vst3node.h \
 	dirlocker.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_vst_de.ts \
-	$$FUGIO_BASE/translations/fugio_vst_es.ts \
-	$$FUGIO_BASE/translations/fugio_vst_fr.ts
+	translations/fugio_vst_de.ts \
+	translations/fugio_vst_es.ts \
+	translations/fugio_vst_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

@@ -32,10 +32,13 @@ HEADERS += \
 FORMS += \
 	deviceserialconfiguration.ui
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_serial_de.ts \
-	$$FUGIO_BASE/translations/fugio_serial_es.ts \
-	$$FUGIO_BASE/translations/fugio_serial_fr.ts
+	translations/fugio_serial_de.ts \
+	translations/fugio_serial_es.ts \
+	translations/fugio_serial_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

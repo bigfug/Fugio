@@ -28,10 +28,13 @@ HEADERS += videocaptureplugin.h \
 FORMS += \
 	devicedialog.ui
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_videocapture_de.ts \
-	$$FUGIO_BASE/translations/fugio_videocapture_es.ts \
-	$$FUGIO_BASE/translations/fugio_videocapture_fr.ts
+	translations/fugio_videocapture_de.ts \
+	translations/fugio_videocapture_es.ts \
+	translations/fugio_videocapture_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

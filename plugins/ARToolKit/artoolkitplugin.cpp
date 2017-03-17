@@ -1,5 +1,8 @@
 #include "artoolkitplugin.h"
 
+#include <QTranslator>
+#include <QCoreApplication>
+
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
@@ -59,6 +62,21 @@ ClassEntry PinClasses[] =
 	ClassEntry( "Param", "ARToolKit", PID_AR_PARAM, &ParamPin::staticMetaObject ),
 	ClassEntry()
 };
+
+ARToolKitPlugin::ARToolKitPlugin()
+{
+	mInstance = this;
+
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_artoolkit" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+}
 
 LuaInterface *ARToolKitPlugin::lua()
 {

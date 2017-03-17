@@ -143,9 +143,9 @@ FORMS    += mainwindow.ui \
 RC_FILE = fugio.rc
 
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_app_de.ts \
-	$$FUGIO_BASE/translations/fugio_app_es.ts \
-	$$FUGIO_BASE/translations/fugio_app_fr.ts
+	translations/fugio_app_de.ts \
+	translations/fugio_app_es.ts \
+	translations/fugio_app_fr.ts
 
 DISTFILES += \
 	fugio-icon.ico \
@@ -177,7 +177,10 @@ CONFIG(release,debug|release) {
 	includes.path = $$INSTALLDATA/include
 	includes.files = ../include/fugio
 
-	INSTALLS += examples includes share snippets
+	translations.path = $$INSTALLDATA/translations
+	translations.files = ../translations/*.qm
+
+	INSTALLS += examples includes share snippets translations
 }
 
 macx {
@@ -226,39 +229,34 @@ macx {
 		INSTALLS += brew_meta brew_data
 	}
 
-	translation.path = $$app.path/$$TARGET".app"/Contents/translations
-	translation.files = $$(QTDIR)/translations/qt*.qm
+	qttranslation.path = $$app.path/$$TARGET".app"/Contents/translations
+	qttranslation.files = $$(QTDIR)/translations/qt*.qm
 
-	INSTALLS += translation
+	INSTALLS += qttranslation
 }
 
 windows {
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
-
 	installer_meta.path  = $$INSTALLROOT/meta
 	installer_meta.files = $$_PRO_FILE_PWD_/package.xml
 
-	installer_config.path  = $$INSTALLROOT/config
+	installer_config.path  = $$INSTALLBASE/config
 	installer_config.extra = cp $$_PRO_FILE_PWD_/../config.win.xml $$installer_config.path/config.xml
 
 	INSTALLS += installer_meta installer_config
 
-	translation.path = $$INSTALLDIR/data/plugins/translations
-	translation.files = $$(QTDIR)/translations/qt*.qm
+	qttranslation.path = $$INSTALLDATA/translations
+	qttranslation.files = $$(QTDIR)/translations/qt*.qm
 
-	INSTALLS += translation
+	INSTALLS += qttranslation
 
 	CONFIG(release,debug|release) {
 		QMAKE_POST_LINK += echo
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".exe" ) $$shell_path( $$INSTALLDIR/data/ )
+		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".exe" ) $$shell_path( $$INSTALLDATA )
 
-		QMAKE_POST_LINK += & windeployqt --force --no-angle --no-opengl-sw -qmldir ../qml $$shell_path( $$INSTALLDIR/data )
+		QMAKE_POST_LINK += & windeployqt --force --no-angle --no-opengl-sw -qmldir ../qml $$shell_path( $$INSTALLDATA )
 
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/include )
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
-
-		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
+		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) ) do copy %I $$shell_path( $$INSTALLDATA )
 	}
 }
 

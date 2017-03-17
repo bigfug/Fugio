@@ -1,5 +1,8 @@
 #include "raspberrypiplugin.h"
 
+#include <QTranslator>
+#include <QCoreApplication>
+
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
@@ -27,6 +30,19 @@ ClassEntry PinClasses[] =
 {
 	ClassEntry()
 };
+
+RasperryPiPlugin::RasperryPiPlugin() : mApp( 0 )
+{
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_raspberrypi" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+}
 
 PluginInterface::InitResult RasperryPiPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {

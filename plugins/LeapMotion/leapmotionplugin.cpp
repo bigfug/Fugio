@@ -4,6 +4,9 @@
 
 #include <QDebug>
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <fugio/core/uuid.h>
 
 #if defined( LEAP_PLUGIN_SUPPORTED )
@@ -41,6 +44,15 @@ fugio::ClassEntry		LeapMotionPlugin::mPinClasses[] =
 LeapMotionPlugin::LeapMotionPlugin( void )
 	: mApp( 0 )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_leapmotion" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 LeapMotionPlugin::~LeapMotionPlugin( void )

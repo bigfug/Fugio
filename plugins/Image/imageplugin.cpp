@@ -1,5 +1,8 @@
 #include "imageplugin.h"
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <fugio/image/uuid.h>
 
 #include "imageloadernode.h"
@@ -44,7 +47,15 @@ ClassEntry		mPinClasses[] =
 ImagePlugin::ImagePlugin()
 	: mApp( 0 )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
 
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_image" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 PluginInterface::InitResult ImagePlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )

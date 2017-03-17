@@ -4,6 +4,9 @@
 
 #include <QDebug>
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <fugio/fftw/uuid.h>
 #include <fugio/nodecontrolbase.h>
 
@@ -25,6 +28,15 @@ ClassEntry		FftwPlugin::mPinClasses[] =
 FftwPlugin::FftwPlugin( void )
 	: mApp( 0 )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_fftw" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 FftwPlugin::~FftwPlugin( void )

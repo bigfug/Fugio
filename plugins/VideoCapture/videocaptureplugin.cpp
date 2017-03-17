@@ -1,5 +1,8 @@
 #include "videocaptureplugin.h"
 
+#include <QTranslator>
+#include <QCoreApplication>
+
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
@@ -21,6 +24,19 @@ ClassEntry PinClasses[] =
 {
 	ClassEntry()
 };
+
+VideoCapturePlugin::VideoCapturePlugin()
+{
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_videocapture" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+}
 
 PluginInterface::InitResult VideoCapturePlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {

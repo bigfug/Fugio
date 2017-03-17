@@ -89,7 +89,7 @@ void logger_static( QtMsgType type, const QMessageLogContext &context, const QSt
 #define Q(x) #x
 #define QUOTE(x) Q(x)
 
-int main(int argc, char *argv[])
+int main( int argc, char *argv[] )
 {
 #if defined( Q_OS_RASPBERRY_PI )
 	bcm_host_init();
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
 
 	// Translation Test
 
-	//QLocale::setDefault( QLocale( QLocale::French, QLocale::France ) );
+	//QLocale::setDefault( QLocale( QLocale::German, QLocale::Austria ) );
 
 	qInstallMessageHandler( logger_static );
 
@@ -183,9 +183,6 @@ int main(int argc, char *argv[])
 
 	QTranslator qtTranslator;
 
-	qInfo() << "Looking for translations in" << QLibraryInfo::location( QLibraryInfo::TranslationsPath );
-	qInfo() << "Looking for translations in" << TranslatorSource;
-
 	if( QFileInfo::exists( QLibraryInfo::location( QLibraryInfo::TranslationsPath ) ) )
 	{
 		qtTranslator.load( SystemLocal, QLatin1String( "qt" ), QLatin1String( "_" ), QLibraryInfo::location( QLibraryInfo::TranslationsPath ) );
@@ -199,20 +196,12 @@ int main(int argc, char *argv[])
 	{
 		qApp->installTranslator( &qtTranslator );
 	}
-	else
-	{
-		qWarning() << "Couldn't load Qt translation for" << SystemLocal.name();
-	}
 
 	QTranslator		Translator;
 
-	if( Translator.load( SystemLocal, QLatin1String( "fugio_app" ), QLatin1String( "_" ), TranslatorSource ) )
+	if( Translator.load( SystemLocal, QLatin1String( "fugio_app" ), QLatin1String( "_" ), ":/translations" ) )
 	{
 		qApp->installTranslator( &Translator );
-	}
-	else
-	{
-		qWarning() << "Can't load FugioApp translator for" << SystemLocal.name();
 	}
 
 	//-------------------------------------------------------------------------

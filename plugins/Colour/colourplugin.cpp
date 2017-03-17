@@ -4,6 +4,9 @@
 
 #include <QDebug>
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <fugio/colour/uuid.h>
 #include <fugio/nodecontrolbase.h>
 
@@ -35,6 +38,15 @@ ClassEntry		ColourPlugin::mPinClasses[] =
 ColourPlugin::ColourPlugin( void )
 	: mApp( 0 )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_colour" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 ColourPlugin::~ColourPlugin( void )

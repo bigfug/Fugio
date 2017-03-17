@@ -34,10 +34,13 @@ HEADERS += leapmotionplugin.h \
 	leaphandnode.h \
 	leaphandpin.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_leapmotion_de.ts \
-	$$FUGIO_BASE/translations/fugio_leapmotion_es.ts \
-	$$FUGIO_BASE/translations/fugio_leapmotion_fr.ts
+	translations/fugio_leapmotion_de.ts \
+	translations/fugio_leapmotion_es.ts \
+	translations/fugio_leapmotion_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

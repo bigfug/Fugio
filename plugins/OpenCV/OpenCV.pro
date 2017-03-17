@@ -63,10 +63,13 @@ HEADERS +=\
 	addnode.h \
 	flipnode.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_opencv_de.ts \
-	$$FUGIO_BASE/translations/fugio_opencv_es.ts \
-	$$FUGIO_BASE/translations/fugio_opencv_fr.ts
+	translations/fugio_opencv_de.ts \
+	translations/fugio_opencv_es.ts \
+	translations/fugio_opencv_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

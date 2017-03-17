@@ -1,5 +1,8 @@
 #include "dlibplugin.h"
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
@@ -24,6 +27,19 @@ ClassEntry PinClasses[] =
 {
 	ClassEntry()
 };
+
+DlibPlugin::DlibPlugin()
+{
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_dlib" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+}
 
 PluginInterface::InitResult DlibPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {

@@ -1,5 +1,8 @@
 #include "textplugin.h"
 
+#include <QTranslator>
+#include <QCoreApplication>
+
 #include <fugio/text/uuid.h>
 
 #include "texteditornode.h"
@@ -31,7 +34,15 @@ ClassEntry		mPinClasses[] =
 
 TextPlugin::TextPlugin()
 {
+	//-------------------------------------------------------------------------
+	// Install translator
 
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_text" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 PluginInterface::InitResult TextPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )

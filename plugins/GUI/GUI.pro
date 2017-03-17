@@ -73,10 +73,13 @@ FORMS += \
 	numbermonitorform.ui \
 	keyboarddialog.ui
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_gui_de.ts \
-	$$FUGIO_BASE/translations/fugio_gui_es.ts \
-	$$FUGIO_BASE/translations/fugio_gui_fr.ts
+	translations/fugio_gui_de.ts \
+	translations/fugio_gui_es.ts \
+	translations/fugio_gui_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

@@ -1,5 +1,8 @@
 #include "xinputplugin.h"
 
+#include <QTranslator>
+#include <QCoreApplication>
+
 #include "xinputnode.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
@@ -12,7 +15,15 @@ ClassEntry	NodeClasses[] =
 
 XInputPlugin::XInputPlugin()
 {
+	//-------------------------------------------------------------------------
+	// Install translator
 
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_xinput" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 XInputPlugin::~XInputPlugin()

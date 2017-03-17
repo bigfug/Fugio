@@ -1,5 +1,8 @@
 #include "oculusriftplugin.h"
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
@@ -30,6 +33,16 @@ OculusRiftPlugin::OculusRiftPlugin( void )
 	: mApp( 0 )
 {
 	mInstance = this;
+
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_oculusrift" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 bool OculusRiftPlugin::hasOpenGLContext()
