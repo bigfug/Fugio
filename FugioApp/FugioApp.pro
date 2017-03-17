@@ -240,21 +240,21 @@ windows {
 	installer_meta.files = $$_PRO_FILE_PWD_/package.xml
 
 	installer_config.path  = $$INSTALLBASE/config
-	installer_config.extra = cp $$_PRO_FILE_PWD_/../config.win.xml $$installer_config.path/config.xml
+	installer_config.extra = copy /V /Y $$shell_path( $$_PRO_FILE_PWD_/../config.win.xml ) $$shell_path( $$installer_config.path/config.xml )
 
 	INSTALLS += installer_meta installer_config
 
-	qttranslation.path = $$INSTALLDATA/translations
-	qttranslation.files = $$(QTDIR)/translations/qt*.qm
+#	translation.path = $$INSTALLDATA/translations
+#	translation.files = $$(QTDIR)/translations/qt*.qm
 
-	INSTALLS += qttranslation
+#	INSTALLS += translation
 
 	CONFIG(release,debug|release) {
 		QMAKE_POST_LINK += echo
 
 		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".exe" ) $$shell_path( $$INSTALLDATA )
 
-		QMAKE_POST_LINK += & windeployqt --force --no-angle --no-opengl-sw -qmldir ../qml $$shell_path( $$INSTALLDATA )
+		QMAKE_POST_LINK += & windeployqt --force --no-angle --no-opengl-sw --qmldir ../qml $$shell_path( $$INSTALLDIR/data )
 
 		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/Qt5Concurrent.dll ) ) do copy %I $$shell_path( $$INSTALLDATA )
 	}
