@@ -143,8 +143,9 @@ FORMS    += mainwindow.ui \
 RC_FILE = fugio.rc
 
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_app_fr.ts \
-	$$FUGIO_BASE/translations/fugio_app_es.ts
+	$$FUGIO_BASE/translations/fugio_app_de.ts \
+	$$FUGIO_BASE/translations/fugio_app_es.ts \
+	$$FUGIO_BASE/translations/fugio_app_fr.ts
 
 DISTFILES += \
 	fugio-icon.ico \

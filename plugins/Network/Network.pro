@@ -55,6 +55,11 @@ HEADERS += networkplugin.h\
 	cobsencodenode.h \
 	websocketclientnode.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_network_de.ts \
+	$$FUGIO_BASE/translations/fugio_network_es.ts \
+	$$FUGIO_BASE/translations/fugio_network_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

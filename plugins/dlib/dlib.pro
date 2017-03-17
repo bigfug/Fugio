@@ -23,6 +23,11 @@ HEADERS += dlibplugin.h \
 	../../include/fugio/dlib/uuid.h \
 	facefeaturesnode.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_dlib_de.ts \
+	$$FUGIO_BASE/translations/fugio_dlib_es.ts \
+	$$FUGIO_BASE/translations/fugio_dlib_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

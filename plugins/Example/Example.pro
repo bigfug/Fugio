@@ -26,8 +26,9 @@ HEADERS += exampleplugin.h \
 	example1node.h
 
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_example_fr.ts \
-	$$FUGIO_BASE/translations/fugio_example_es.ts
+	$$FUGIO_BASE/translations/fugio_example_de.ts \
+	$$FUGIO_BASE/translations/fugio_example_es.ts \
+	$$FUGIO_BASE/translations/fugio_example_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

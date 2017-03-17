@@ -43,6 +43,11 @@ HEADERS += \
 	splitnode.h \
 	namespacepin.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_osc_de.ts \
+	$$FUGIO_BASE/translations/fugio_osc_es.ts \
+	$$FUGIO_BASE/translations/fugio_osc_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

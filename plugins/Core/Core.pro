@@ -141,8 +141,9 @@ HEADERS += \
 	loggernode.h
 
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_core_fr.ts \
-	$$FUGIO_BASE/translations/fugio_core_es.ts
+	$$FUGIO_BASE/translations/fugio_core_de.ts \
+	$$FUGIO_BASE/translations/fugio_core_es.ts \
+	$$FUGIO_BASE/translations/fugio_core_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

@@ -60,6 +60,11 @@ HEADERS +=\
 	luavector3.h \
 	luaquaternion.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_luaqt_de.ts \
+	$$FUGIO_BASE/translations/fugio_luaqt_es.ts \
+	$$FUGIO_BASE/translations/fugio_luaqt_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

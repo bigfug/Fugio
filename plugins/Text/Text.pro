@@ -43,6 +43,11 @@ HEADERS += textplugin.h\
 FORMS += \
 	texteditorform.ui
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_text_de.ts \
+	$$FUGIO_BASE/translations/fugio_text_es.ts \
+	$$FUGIO_BASE/translations/fugio_text_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

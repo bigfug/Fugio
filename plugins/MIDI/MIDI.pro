@@ -56,6 +56,11 @@ HEADERS += \
 	mididecodernode.h \
 	midioutputpin.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_midi_de.ts \
+	$$FUGIO_BASE/translations/fugio_midi_es.ts \
+	$$FUGIO_BASE/translations/fugio_midi_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

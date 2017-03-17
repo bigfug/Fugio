@@ -32,6 +32,11 @@ HEADERS += fileplugin.h\
 	../../include/fugio/file/filename_interface.h \
 	loadnode.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_file_de.ts \
+	$$FUGIO_BASE/translations/fugio_file_es.ts \
+	$$FUGIO_BASE/translations/fugio_file_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

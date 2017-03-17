@@ -29,7 +29,12 @@ HEADERS += \
 	../../include/fugio/nodecontrolbase.h \
 	deviceportaudio.h \
 	portaudioinputnode.h \
-		portaudioplugin.h
+	portaudioplugin.h
+
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_portaudio_de.ts \
+	$$FUGIO_BASE/translations/fugio_portaudio_es.ts \
+	$$FUGIO_BASE/translations/fugio_portaudio_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

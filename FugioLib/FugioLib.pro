@@ -62,8 +62,9 @@ HEADERS += fugio.h\
 	../include/fugio/menu_control_interface.h
 
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_lib_fr.ts \
-	$$FUGIO_BASE/translations/fugio_lib_es.ts
+	$$FUGIO_BASE/translations/fugio_lib_de.ts \
+	$$FUGIO_BASE/translations/fugio_lib_es.ts \
+	$$FUGIO_BASE/translations/fugio_lib_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

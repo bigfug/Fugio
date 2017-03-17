@@ -121,6 +121,11 @@ FORMS += \
 	texturenodeform.ui \
 	openglstateform.ui
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_opengl_de.ts \
+	$$FUGIO_BASE/translations/fugio_opengl_es.ts \
+	$$FUGIO_BASE/translations/fugio_opengl_fr.ts
+
 contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 	SOURCES += deviceopengloutputrpi.cpp
 	HEADERS += deviceopengloutputrpi.h

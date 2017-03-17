@@ -53,6 +53,11 @@ HEADERS += imageplugin.h\
 	../../include/fugio/image/uuid.h \
 	../../include/fugio/image/image_interface.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_image_de.ts \
+	$$FUGIO_BASE/translations/fugio_image_es.ts \
+	$$FUGIO_BASE/translations/fugio_image_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

@@ -22,6 +22,11 @@ HEADERS += raspberrypiplugin.h \
 	../../include/fugio/nodecontrolbase.h \
 	../../include/fugio/pincontrolbase.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_raspberrypi_de.ts \
+	$$FUGIO_BASE/translations/fugio_raspberrypi_es.ts \
+	$$FUGIO_BASE/translations/fugio_raspberrypi_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

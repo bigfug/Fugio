@@ -45,6 +45,11 @@ HEADERS += \
 	syphonsender.h \
 	syphonrendernode.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_syphon_de.ts \
+	$$FUGIO_BASE/translations/fugio_syphon_es.ts \
+	$$FUGIO_BASE/translations/fugio_syphon_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

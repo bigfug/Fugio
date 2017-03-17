@@ -114,8 +114,9 @@ HEADERS += mathplugin.h \
 	quaternionpin.h
 
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_math_fr.ts \
-	$$FUGIO_BASE/translations/fugio_math_es.ts
+	$$FUGIO_BASE/translations/fugio_math_de.ts \
+	$$FUGIO_BASE/translations/fugio_math_es.ts \
+	$$FUGIO_BASE/translations/fugio_math_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle

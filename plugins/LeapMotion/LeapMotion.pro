@@ -34,6 +34,11 @@ HEADERS += leapmotionplugin.h \
 	leaphandnode.h \
 	leaphandpin.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_leapmotion_de.ts \
+	$$FUGIO_BASE/translations/fugio_leapmotion_es.ts \
+	$$FUGIO_BASE/translations/fugio_leapmotion_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 

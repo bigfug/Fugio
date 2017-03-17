@@ -30,6 +30,11 @@ HEADERS += \
 	portmidiinputnode.h \
 	portmidioutputnode.h
 
+TRANSLATIONS = \
+	$$FUGIO_BASE/translations/fugio_portmidi_de.ts \
+	$$FUGIO_BASE/translations/fugio_portmidi_es.ts \
+	$$FUGIO_BASE/translations/fugio_portmidi_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
