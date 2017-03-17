@@ -13,6 +13,10 @@ TARGET = $$qtLibraryTarget(fugio)
 TEMPLATE = lib
 CONFIG += c++11
 
+contains( DEFINES, FUGIOLIB_STATIC ) {
+	CONFIG += staticlib
+}
+
 DEFINES += FUGIOLIB_LIBRARY
 
 SOURCES += fugio.cpp \
@@ -67,10 +71,12 @@ TRANSLATIONS = \
 macx {
 	DEFINES += TARGET_OS_MAC
 
-	install.path = $$INSTALLDATA
-	install.files = $$DESTDIR/libfugio.1.dylib
+	!contains( DEFINES, FUGIOLIB_STATIC ) {
+		install.path = $$INSTALLDATA
+		install.files = $$DESTDIR/libfugio.1.dylib
 
-	INSTALLS += install
+		INSTALLS += install
+	}
 }
 
 #------------------------------------------------------------------------------
@@ -78,14 +84,11 @@ macx {
 windows {
 	QMAKE_LFLAGS_DEBUG += /INCREMENTAL:NO
 
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+	!contains( DEFINES, FUGIOLIB_STATIC ) {
+		install.path = $$INSTALLDATA
+		install.files = $$DESTDIR/$$TARGET".dll"
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
-
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data )
-
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/ )
+		INSTALLS += install
 	}
 }
 
@@ -93,15 +96,15 @@ windows {
 # Linux
 
 unix:!macx {
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+	!contains( DEFINES, FUGIOLIB_STATIC ) {
+		contains( DEFINES, Q_OS_RASPBERRY_PI ) {
+			target.path = Desktop/Fugio
+		} else {
+			target.path = $$INSTALLDATA
+		}
 
-	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-		target.path = Desktop/Fugio
-	} else {
-		target.path = $$shell_path( $$INSTALLDIR/data )
+		INSTALLS += target
 	}
-
-	INSTALLS += target
 }
 
 #------------------------------------------------------------------------------

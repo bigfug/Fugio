@@ -158,9 +158,10 @@ DISTFILES += \
 	../installer/brew_install_update \
     ../installer/install_fugio
 
-
 RESOURCES += \
 	fugio.qrc
+
+#------------------------------------------------------------------------------
 
 CONFIG(release,debug|release) {
 	examples.path = $$INSTALLDATA/examples
@@ -245,7 +246,6 @@ windows {
 	translation.files = $$(QTDIR)/translations/qt*.qm
 
 	INSTALLS += translation
-
 
 	CONFIG(release,debug|release) {
 		QMAKE_POST_LINK += echo
