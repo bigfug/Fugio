@@ -46,7 +46,7 @@ else
 fi
 
 if [ ! -e /Applications/Fugio ]; then
-  brew cask install Fugio
+  brew cask install fugio
 else
   echo "Fugio is already installed..."
 fi
