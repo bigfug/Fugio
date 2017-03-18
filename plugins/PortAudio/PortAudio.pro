@@ -81,23 +81,24 @@ macx {
 }
 
 windows {
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	INSTALLDEST  = $$INSTALLDATA/plugins/portaudio
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
+	plugin.path  = $$INSTALLDEST
+	plugin.files = $$DESTDIR/$$TARGET".dll"
 
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins/portaudio )
+	INSTALLS += plugin
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins/portaudio )
+	libraries.path  = $$INSTALLDEST
 
-		win32 {
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/portaudio.32.2015/Release/portaudio_x86.dll ) $$shell_path( $$INSTALLDIR/data/plugins/portaudio )
-		}
-
-		win64 {
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/portaudio.64.2015/Release/portaudio_x64.dll ) $$shell_path( $$INSTALLDIR/data/plugins/portaudio )
-		}
+	win32 {
+		 libraries.files = $$(LIBS)/portaudio.32.2015/Release/portaudio_x86.dll
 	}
+
+	win64 {
+		 libraries.files = $$(LIBS)/portaudio.64.2015/Release/portaudio_x64.dll
+	}
+
+	INSTALLS += libraries
 }
 
 #------------------------------------------------------------------------------

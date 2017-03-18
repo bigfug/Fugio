@@ -121,18 +121,20 @@ windows {
 	OPENCV_VER = 320
 
 	exists( $$OPENCV_DIR ) {
-		INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-		INSTALLDEST  = $$INSTALLDIR/data/plugins/opencv
+		INSTALLDEST  = $$INSTALLDATA/plugins/opencv
 
-		CONFIG(release,debug|release) {
-			QMAKE_POST_LINK += echo
+		plugin.path  = $$INSTALLDEST
+		plugin.files = $$DESTDIR/$$TARGET".dll"
 
-			QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDEST )
+		INSTALLS += plugin
 
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
+		libraries.path  = $$INSTALLDEST
 
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$OPENCV_DIR/build/bin/Release/*.dll ) $$shell_path( $$INSTALLDEST )
+		win32 {
+			 libraries.files = $$OPENCV_DIR/build/bin/Release/*.dll
 		}
+
+		INSTALLS += libraries
 	}
 }
 

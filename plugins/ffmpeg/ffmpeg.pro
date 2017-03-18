@@ -115,28 +115,27 @@ macx {
 # Windows
 
 windows {
+	INSTALLDEST  = $$INSTALLDATA/plugins/ffmpeg
+
+	plugin.path  = $$INSTALLDEST
+	plugin.files = $$DESTDIR/$$TARGET".dll"
+
+	INSTALLS += plugin
+
 	win32 {
-		FFMPEGDIR    = $$(LIBS)/ffmpeg-3.2-win32
+		FFMPEGDIR = $$(LIBS)/ffmpeg-3.2-win32
 	}
 
 	win64 {
-		FFMPEGDIR    = $$(LIBS)/ffmpeg-3.2-win64
+		FFMPEGDIR = $$(LIBS)/ffmpeg-3.2-win64
 	}
 
+	libraries.path  = $$INSTALLDEST
+	libraries.files = $$FFMPEGDIR/bin/*.dll
+
+	INSTALLS += libraries
+
 	exists( $$FFMPEGDIR ) {
-		INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-		INSTALLDEST  = $$INSTALLDIR/data/plugins/ffmpeg
-
-		CONFIG(release,debug|release) {
-			QMAKE_POST_LINK += echo
-
-			QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDEST )
-
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
-
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$FFMPEGDIR/bin/*.dll ) $$shell_path( $$INSTALLDEST )
-		}
-
 		DEFINES += FFMPEG_SUPPORTED
 	}
 }

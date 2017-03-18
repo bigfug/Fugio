@@ -235,18 +235,15 @@ macx {
 # Windows
 
 windows {
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-	INSTALLDEST  = $$INSTALLDIR/data/plugins
+	plugin.path  = $$INSTALLDATA/plugins
+	plugin.files = $$DESTDIR/$$TARGET".dll"
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
+	INSTALLS += plugin
 
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDEST )
+	libraries.path  = $$INSTALLDATA
+	libraries.files = $$(QTDIR)/bin/Qt5OpenGL.dll
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
-
-		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/Qt5OpenGL.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
-	}
+	INSTALLS += libraries
 }
 
 #------------------------------------------------------------------------------
