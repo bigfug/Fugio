@@ -284,7 +284,7 @@
     </message>
     <message>
         <location filename="../plugins/OpenGL/texturenodeform.ui" line="72"/>
-        <source>Mag. Filter:</source>
+        <source>Max. Filter:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

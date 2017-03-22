@@ -24,12 +24,12 @@
     <message>
         <location filename="../plugins/Math/matrixlookatnode.cpp" line="13"/>
         <source>Matrix</source>
-        <translation></translation>
+        <translation>Matrix</translation>
     </message>
     <message>
         <location filename="../plugins/Math/matrixlookatnode.cpp" line="17"/>
         <source>Position</source>
-        <translation></translation>
+        <translation>Position</translation>
     </message>
     <message>
         <location filename="../plugins/Math/matrixlookatnode.cpp" line="21"/>
@@ -67,12 +67,12 @@
     <message>
         <location filename="../plugins/Math/matrixorthographicnode.cpp" line="18"/>
         <source>Near</source>
-        <translation></translation>
+        <translation>Nah(Near)</translation>
     </message>
     <message>
         <location filename="../plugins/Math/matrixorthographicnode.cpp" line="19"/>
         <source>Far</source>
-        <translation></translation>
+        <translation>Fern (Far)</translation>
     </message>
 </context>
 <context>
@@ -90,12 +90,12 @@
     <message>
         <location filename="../plugins/Math/matrixperspectivenode.cpp" line="16"/>
         <source>Near Plane</source>
-        <translation></translation>
+        <translation>Nahe Fläche (Near Plane)</translation>
     </message>
     <message>
         <location filename="../plugins/Math/matrixperspectivenode.cpp" line="17"/>
         <source>Far Plane</source>
-        <translation></translation>
+        <translation>Ferne Fläche(Far Plane)</translation>
     </message>
 </context>
 </TS>

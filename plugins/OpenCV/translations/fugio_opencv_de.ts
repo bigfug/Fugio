@@ -6,12 +6,12 @@
     <message>
         <location filename="../plugins/OpenCV/imageconvertnode.cpp" line="252"/>
         <source>Unknown source format: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Unbekanntes Quell Format: %1</translation>
     </message>
     <message>
         <location filename="../plugins/OpenCV/imageconvertnode.cpp" line="259"/>
         <source>Can&apos;t convert input to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Input kann nicht konvertiert werden %1</translation>
     </message>
 </context>
 </TS>
