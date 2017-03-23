@@ -43,6 +43,11 @@ if [ ! -x /usr/local/bin/brew ]; then
   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 fi
 
+if ! echo "$taps" | grep -q 'caskroom/cask' &> /dev/null; then
+  echo "Adding tap caskroom/cask..."
+  brew tap caskroom/cask
+fi
+
 if [ ! -e /usr/local/opt/ffmpeg ]; then
   brew install ffmpeg --with-fdk-aac --with-libass --with-x265 --with-freetype --with-libvorbis --with-libvpx --with-opus
 else
