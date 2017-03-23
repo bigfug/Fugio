@@ -17,7 +17,7 @@ class FirmataPlugin : public QObject, public fugio::PluginInterface
 	Q_PLUGIN_METADATA( IID "com.bigfug.fugio.firmata.plugin" )
 
 public:
-	explicit FirmataPlugin( void ) : mApp( 0 ) {}
+	explicit FirmataPlugin( void );
 
 	virtual ~FirmataPlugin( void ) {}
 

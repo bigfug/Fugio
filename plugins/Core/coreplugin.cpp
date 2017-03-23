@@ -3,6 +3,9 @@
 #include <QtPlugin>
 
 #include <QDebug>
+#include <QTranslator>
+#include <QDir>
+#include <QApplication>
 
 #include "fugio/core/uuid.h"
 
@@ -129,6 +132,15 @@ ClassEntry		CorePlugin::mPinClasses[] =
 CorePlugin::CorePlugin( void )
 	: mApp( 0 )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_core" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 CorePlugin::~CorePlugin( void )

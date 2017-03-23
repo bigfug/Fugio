@@ -2,6 +2,9 @@
 
 #include <QtPlugin>
 
+#include <QTranslator>
+#include <QCoreApplication>
+
 #if defined( PORTAUDIO_SUPPORTED )
 #include <portaudio.h>
 #endif
@@ -35,6 +38,16 @@ PortAudioPlugin::PortAudioPlugin( void )
 	: mApp( 0 )
 {
 	mInstance = this;
+
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_portaudio" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 PortAudioPlugin::~PortAudioPlugin()

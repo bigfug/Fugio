@@ -1,5 +1,8 @@
 #include "spoutplugin.h"
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <QTimer>
 
 #include <fugio/global_interface.h>
@@ -41,6 +44,16 @@ ClassEntry PinClasses[] =
 SpoutPlugin::SpoutPlugin() : mApp( 0 )
 {
 	mInstance = this;
+
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_spout" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 bool SpoutPlugin::hasOpenGLContext()

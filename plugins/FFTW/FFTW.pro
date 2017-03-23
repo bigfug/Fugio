@@ -24,6 +24,14 @@ HEADERS += fftwplugin.h\
 	../../include/fugio/fftw/uuid.h \
 	fftnode.h
 
+RESOURCES += \
+    resources.qrc
+
+TRANSLATIONS = \
+	translations/fugio_fftw_de.ts \
+	translations/fugio_fftw_es.ts \
+	translations/fugio_fftw_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
@@ -68,24 +76,24 @@ macx {
 # Windows
 
 windows {
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-	INSTALLDEST  = $$INSTALLDIR/data/plugins/fftw
+	INSTALLDEST  = $$INSTALLDATA/plugins/fftw
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
+	plugin.path  = $$INSTALLDEST
+	plugin.files = $$DESTDIR/$$TARGET".dll"
 
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDEST )
+	INSTALLS += plugin
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
+	libraries.path  = $$INSTALLDEST
 
-		win32 {
-			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/fftw-3.3.5/libfftw3f-3.dll ) $$shell_path( $$INSTALLDEST )
-		}
-
-		win64 {
-			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/fftw-3.3.5/libfftw3f-3.dll ) $$shell_path( $$INSTALLDEST )
-		}
+	win32 {
+		 libraries.files = $$(LIBS)/fftw-3.3.5/libfftw3f-3.dll
 	}
+
+	win64 {
+		 libraries.files = $$(LIBS)/fftw-3.3.5/libfftw3f-3.dll
+	}
+
+	INSTALLS += libraries
 }
 
 #------------------------------------------------------------------------------

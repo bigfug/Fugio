@@ -12,7 +12,7 @@ class RasperryPiPlugin : public QObject, public fugio::PluginInterface
 	Q_INTERFACES( fugio::PluginInterface )
 
 public:
-	Q_INVOKABLE explicit RasperryPiPlugin( void ) : mApp( 0 ) {}
+	Q_INVOKABLE explicit RasperryPiPlugin( void );
 
 	virtual ~RasperryPiPlugin( void ) {}
 

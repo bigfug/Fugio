@@ -4,6 +4,9 @@
 
 #include <QDebug>
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <fugio/core/uuid.h>
 #include <fugio/example/uuid.h>
 
@@ -25,6 +28,15 @@ ClassEntry		mPinClasses[] =
 ExamplePlugin::ExamplePlugin()
 	: mApp( 0 )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_example" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 ExamplePlugin::~ExamplePlugin( void )

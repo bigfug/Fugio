@@ -1,5 +1,8 @@
 #include "midiplugin.h"
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
@@ -47,6 +50,19 @@ ClassEntry PinClasses[] =
 	ClassEntry( "MIDI Input Pin", PID_MIDI_INPUT, &MidiInputPin::staticMetaObject ),
 	ClassEntry()
 };
+
+MidiPlugin::MidiPlugin()
+{
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_midi" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+}
 
 PluginInterface::InitResult MidiPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {

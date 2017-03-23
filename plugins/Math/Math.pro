@@ -113,9 +113,13 @@ HEADERS += mathplugin.h \
 	roundnode.h \
 	quaternionpin.h
 
+RESOURCES += \
+    resources.qrc
+
 TRANSLATIONS = \
-	$$FUGIO_BASE/translations/fugio_math_fr.ts \
-	$$FUGIO_BASE/translations/fugio_math_es.ts
+	translations/fugio_math_de.ts \
+	translations/fugio_math_es.ts \
+	translations/fugio_math_fr.ts
 
 #------------------------------------------------------------------------------
 # OSX plugin bundle
@@ -156,15 +160,10 @@ macx {
 }
 
 windows {
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	plugin.path  = $$INSTALLDATA/plugins
+	plugin.files = $$DESTDIR/$$TARGET".dll"
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
-
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
-
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
-	}
+	INSTALLS += plugin
 }
 
 #------------------------------------------------------------------------------

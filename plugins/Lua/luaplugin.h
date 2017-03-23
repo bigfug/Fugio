@@ -19,7 +19,7 @@ class LuaPlugin : public QObject, public fugio::PluginInterface, public fugio::L
 	Q_INTERFACES( fugio::PluginInterface fugio::LuaInterface )
 
 public:
-	Q_INVOKABLE explicit LuaPlugin( void ) : mApp( 0 ) { mInstance = this; }
+	Q_INVOKABLE explicit LuaPlugin( void );
 
 	virtual ~LuaPlugin( void ) {}
 

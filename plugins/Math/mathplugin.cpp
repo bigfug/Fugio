@@ -1,5 +1,8 @@
 #include "mathplugin.h"
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
@@ -124,6 +127,21 @@ ClassEntry PinClasses[] =
 	ClassEntry( "Vector4", PID_VECTOR4, &Vector4Pin::staticMetaObject ),
 	ClassEntry()
 };
+
+MathPlugin::MathPlugin() : mApp( 0 )
+{
+	mInstance = this;
+
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_math" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+}
 
 PluginInterface::InitResult MathPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {

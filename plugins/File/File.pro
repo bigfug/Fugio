@@ -32,6 +32,14 @@ HEADERS += fileplugin.h\
 	../../include/fugio/file/filename_interface.h \
 	loadnode.h
 
+RESOURCES += \
+    resources.qrc
+
+TRANSLATIONS = \
+	translations/fugio_file_de.ts \
+	translations/fugio_file_es.ts \
+	translations/fugio_file_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
@@ -72,16 +80,10 @@ macx {
 # Windows
 
 windows {
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
-	INSTALLDEST  = $$INSTALLDIR/data/plugins
+	plugin.path  = $$INSTALLDATA/plugins
+	plugin.files = $$DESTDIR/$$TARGET".dll"
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
-
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDEST )
-
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDEST )
-	}
+	INSTALLS += plugin
 }
 
 #------------------------------------------------------------------------------

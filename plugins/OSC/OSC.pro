@@ -43,6 +43,14 @@ HEADERS += \
 	splitnode.h \
 	namespacepin.h
 
+RESOURCES += \
+    resources.qrc
+
+TRANSLATIONS = \
+	translations/fugio_osc_de.ts \
+	translations/fugio_osc_es.ts \
+	translations/fugio_osc_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
@@ -83,15 +91,10 @@ macx {
 # Windows Install
 
 windows {
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	plugin.path  = $$INSTALLDATA/plugins
+	plugin.files = $$DESTDIR/$$TARGET".dll"
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
-
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
-
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
-	}
+	INSTALLS += plugin
 }
 
 #------------------------------------------------------------------------------

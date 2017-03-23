@@ -4,6 +4,9 @@
 
 #include <QDebug>
 
+#include <QTranslator>
+#include <QCoreApplication>
+
 #include <fugio/core/uuid.h>
 
 #include "audiomixernode.h"
@@ -45,6 +48,15 @@ ClassEntry		mPinClasses[] =
 AudioPlugin::AudioPlugin()
 	: mApp( 0 )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_audio" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 AudioPlugin::~AudioPlugin( void )

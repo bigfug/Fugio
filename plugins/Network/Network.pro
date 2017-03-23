@@ -55,6 +55,14 @@ HEADERS += networkplugin.h\
 	cobsencodenode.h \
 	websocketclientnode.h
 
+RESOURCES += \
+    resources.qrc
+
+TRANSLATIONS = \
+	translations/fugio_network_de.ts \
+	translations/fugio_network_es.ts \
+	translations/fugio_network_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
@@ -97,17 +105,15 @@ macx {
 # Windows Install
 
 windows {
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	plugin.path  = $$INSTALLDATA/plugins
+	plugin.files = $$DESTDIR/$$TARGET".dll"
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
+	INSTALLS += plugin
 
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
+	libraries.path  = $$INSTALLDATA
+	libraries.files = $$(QTDIR)/bin/Qt5Network.dll $$(QTDIR)/bin/Qt5WebSockets.dll
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
-
-		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/Qt5WebSockets.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
-	}
+	INSTALLS += libraries
 }
 
 #------------------------------------------------------------------------------

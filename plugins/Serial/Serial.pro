@@ -32,6 +32,14 @@ HEADERS += \
 FORMS += \
 	deviceserialconfiguration.ui
 
+RESOURCES += \
+    resources.qrc
+
+TRANSLATIONS = \
+	translations/fugio_serial_de.ts \
+	translations/fugio_serial_es.ts \
+	translations/fugio_serial_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
@@ -72,17 +80,15 @@ macx {
 
 
 windows {
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	plugin.path  = $$INSTALLDATA/plugins
+	plugin.files = $$DESTDIR/$$TARGET".dll"
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
+	INSTALLS += plugin
 
-		QMAKE_POST_LINK += & for %I in ( $$shell_path( $(QTDIR)/bin/Qt5SerialPort.dll ) ) do copy %I $$shell_path( $$INSTALLDIR/data/ )
+	libraries.path  = $$INSTALLDATA
+	libraries.files = $$(QTDIR)/bin/Qt5SerialPort.dll
 
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
-
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
-	}
+	INSTALLS += libraries
 }
 
 #------------------------------------------------------------------------------

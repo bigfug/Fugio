@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>translations/fugio_lua_de.qm</file>
+        <file>translations/fugio_lua_es.qm</file>
+        <file>translations/fugio_lua_fr.qm</file>
+    </qresource>
+</RCC>

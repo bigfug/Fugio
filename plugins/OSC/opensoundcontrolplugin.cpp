@@ -1,5 +1,8 @@
 #include "opensoundcontrolplugin.h"
 
+#include <QTranslator>
+#include <QApplication>
+
 #include "decodernode.h"
 #include "encodernode.h"
 
@@ -41,6 +44,16 @@ OpenSoundControlPlugin::OpenSoundControlPlugin( void )
 	: mApp( 0 )
 {
 	mInstance = this;
+
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_osc" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 OpenSoundControlPlugin::~OpenSoundControlPlugin()

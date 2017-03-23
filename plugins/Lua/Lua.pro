@@ -37,6 +37,14 @@ HEADERS += luaplugin.h \
 	luaexpin.h \
 	luaarray.h
 
+RESOURCES += \
+    resources.qrc
+
+TRANSLATIONS = \
+	translations/fugio_lua_de.ts \
+	translations/fugio_lua_es.ts \
+	translations/fugio_lua_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
@@ -112,19 +120,15 @@ macx {
 }
 
 windows {
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	plugin.path  = $$INSTALLDATA/plugins
+	plugin.files = $$DESTDIR/$$TARGET".dll"
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
+	INSTALLS += plugin
 
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
+	libraries.path  = $$INSTALLDATA
+	libraries.files = $$(LIBS)/Lua-5.3.3/lua53.dll
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
-
-		win32 {
-			 QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/Lua-5.3.3/lua53.dll ) $$shell_path( $$INSTALLDIR/data )
-		}
-	}
+	INSTALLS += libraries
 }
 
 #------------------------------------------------------------------------------

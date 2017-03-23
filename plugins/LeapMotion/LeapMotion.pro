@@ -34,6 +34,14 @@ HEADERS += leapmotionplugin.h \
 	leaphandnode.h \
 	leaphandpin.h
 
+RESOURCES += \
+    resources.qrc
+
+TRANSLATIONS = \
+	translations/fugio_leapmotion_de.ts \
+	translations/fugio_leapmotion_es.ts \
+	translations/fugio_leapmotion_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
@@ -76,23 +84,24 @@ macx {
 }
 
 windows {
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	INSTALLDEST  = $$INSTALLDATA/plugins/leapmotion
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
+	plugin.path  = $$INSTALLDEST
+	plugin.files = $$DESTDIR/$$TARGET".dll"
 
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins/leapmotion )
+	INSTALLS += plugin
 
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins/leapmotion )
+	libraries.path  = $$INSTALLDEST
 
-		win32 {
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/LeapSDK/lib/x86/Leap.dll ) $$shell_path( $$INSTALLDIR/data/plugins/leapmotion )
-		}
-
-		win64 {
-			QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$(LIBS)/LeapSDK/lib/x64/Leap.dll ) $$shell_path( $$INSTALLDIR/data/plugins/leapmotion )
-		}
+	win32 {
+		 libraries.files = $$(LIBS)/LeapSDK/lib/x86/Leap.dll
 	}
+
+	win64 {
+		 libraries.files = $$(LIBS)/LeapSDK/lib/x64/Leap.dll
+	}
+
+	INSTALLS += libraries
 }
 
 #------------------------------------------------------------------------------

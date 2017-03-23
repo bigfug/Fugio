@@ -50,7 +50,11 @@ CONFIG(debug,debug|release) {
 	DESTDIR = $$FUGIO_ROOT/deploy-release-$$QMAKE_TARGET.arch
 }
 
-isEmpty( CASKBASE ) {
+contains( DEFINES, INTERNAL_BUILD ) {
+	INSTALLBASE = $$FUGIO_ROOT/deploy-internal
+	INSTALLROOT = $$INSTALLBASE
+	INSTALLDATA = $$INSTALLROOT
+} else:isEmpty( CASKBASE ) {
 	INSTALLBASE = $$FUGIO_ROOT/deploy-installer-$$QMAKE_TARGET.arch
 	INSTALLROOT = $$INSTALLBASE/packages/com.bigfug.fugio
 	INSTALLDATA = $$INSTALLROOT/data

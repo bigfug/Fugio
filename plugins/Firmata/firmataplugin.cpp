@@ -4,6 +4,9 @@
 
 #include <QDebug>
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <fugio/core/uuid.h>
 
 #include <fugio/firmata/uuid.h>
@@ -22,6 +25,19 @@ ClassEntry		mPinClasses[] =
 {
 	ClassEntry()
 };
+
+FirmataPlugin::FirmataPlugin() : mApp( 0 )
+{
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_firmata" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+}
 
 PluginInterface::InitResult FirmataPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {

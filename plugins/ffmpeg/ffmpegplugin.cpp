@@ -4,6 +4,9 @@
 
 #include <QDebug>
 
+#include <QTranslator>
+#include <QApplication>
+
 #ifndef INT64_C
 #define INT64_C(c) (c ## LL)
 #define UINT64_C(c) (c ## ULL)
@@ -35,6 +38,16 @@ ffmpegPlugin				*ffmpegPlugin::mInstance = 0;
 ffmpegPlugin::ffmpegPlugin( void )
 	: mApp( 0 )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_ffmpeg" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+
 	mNodeEntries.append( ClassEntry( "Image Convert", "FFMPEG", NID_SWR_IMAGE_CONVERT, &ImageConvertNode::staticMetaObject ) );
 	mNodeEntries.append( ClassEntry( "Media Player",   "FFMPEG", NID_MEDIA_PLAYER, &MediaNode::staticMetaObject ) );
 	mNodeEntries.append( ClassEntry( "Media Recorder",   "FFMPEG", NID_MEDIA_RECORDER, &MediaRecorderNode::staticMetaObject ) );

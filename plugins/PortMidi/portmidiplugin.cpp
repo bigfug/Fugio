@@ -1,5 +1,8 @@
 #include "portmidiplugin.h"
 
+#include <QTranslator>
+#include <QApplication>
+
 #include "devicemidi.h"
 
 #include <fugio/global_interface.h>
@@ -27,6 +30,16 @@ ClassEntry PinClasses[] =
 PortMidiPlugin::PortMidiPlugin( void )
 {
 	mInstance = this;
+
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_portmidi" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 PluginInterface::InitResult PortMidiPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )

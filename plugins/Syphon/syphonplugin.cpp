@@ -1,5 +1,8 @@
 #include "syphonplugin.h"
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <QTimer>
 
 #include <fugio/global_interface.h>
@@ -39,6 +42,16 @@ ClassEntry PinClasses[] =
 SyphonPlugin::SyphonPlugin() : mApp( 0 )
 {
 	mInstance = this;
+
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_syphon" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 
 #if defined( SYPHON_SUPPORTED )
 	glewExperimental = GL_FALSE;

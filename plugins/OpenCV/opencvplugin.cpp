@@ -1,5 +1,8 @@
 #include "opencvplugin.h"
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <fugio/image/image_interface.h>
 
 #include "grayscalenode.h"
@@ -56,6 +59,15 @@ ClassEntry OpenCVPlugin::mPinEntries[] =
 OpenCVPlugin::OpenCVPlugin()
 	: mApp( 0 )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_opencv" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 OpenCVPlugin::~OpenCVPlugin()

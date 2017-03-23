@@ -32,6 +32,14 @@ HEADERS +=\
 FORMS += \
 	kinectconfigdialog.ui
 
+RESOURCES += \
+    resources.qrc
+
+TRANSLATIONS = \
+	translations/fugio_kinect_de.ts \
+	translations/fugio_kinect_es.ts \
+	translations/fugio_kinect_fr.ts
+
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
@@ -75,15 +83,10 @@ macx {
 windows {
 	QMAKE_LFLAGS_DEBUG += /INCREMENTAL:NO
 
-	INSTALLDIR   = $$INSTALLBASE/packages/com.bigfug.fugio
+	plugin.path  = $$INSTALLDATA/plugins
+	plugin.files = $$DESTDIR/$$TARGET".dll"
 
-	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += echo
-
-		QMAKE_POST_LINK += & mkdir $$shell_path( $$INSTALLDIR/data/plugins )
-
-		QMAKE_POST_LINK += & copy /V /Y $$shell_path( $$DESTDIR/$$TARGET".dll" ) $$shell_path( $$INSTALLDIR/data/plugins )
-	}
+	INSTALLS += plugin
 }
 
 #------------------------------------------------------------------------------

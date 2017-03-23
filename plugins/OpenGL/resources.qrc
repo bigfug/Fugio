@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>translations/fugio_opengl_de.qm</file>
+        <file>translations/fugio_opengl_es.qm</file>
+        <file>translations/fugio_opengl_fr.qm</file>
+    </qresource>
+</RCC>

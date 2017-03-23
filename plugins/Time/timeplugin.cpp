@@ -1,5 +1,8 @@
 #include "timeplugin.h"
 
+#include <QTranslator>
+#include <QCoreApplication>
+
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
@@ -42,6 +45,19 @@ ClassEntry PinClasses[] =
 {
 	ClassEntry()
 };
+
+TimePlugin::TimePlugin() : mApp( 0 )
+{
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_time" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+}
 
 PluginInterface::InitResult TimePlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {

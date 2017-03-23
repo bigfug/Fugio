@@ -12,7 +12,7 @@ class VideoCapturePlugin : public QObject, public PluginInterface
 	Q_INTERFACES( fugio::PluginInterface )
 
 public:
-	Q_INVOKABLE explicit VideoCapturePlugin( void ) {}
+	Q_INVOKABLE explicit VideoCapturePlugin( void );
 
 	virtual ~VideoCapturePlugin( void ) {}
 

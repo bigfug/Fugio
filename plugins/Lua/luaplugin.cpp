@@ -1,5 +1,8 @@
 #include "luaplugin.h"
 
+#include <QTranslator>
+#include <QApplication>
+
 #include <QVector2D>
 #include <QVector3D>
 #include <QVector4D>
@@ -42,7 +45,23 @@ ClassEntry PinClasses[] =
 	ClassEntry()
 };
 
+LuaPlugin::LuaPlugin() : mApp( 0 )
+{
+	mInstance = this;
+
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_lua" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+}
+
 #if defined( LUA_SUPPORTED )
+
 void LuaPlugin::registerNodeToState( NodeInterface *N, lua_State *L ) const
 {
 	// Store a pointer to this in Lua's registry

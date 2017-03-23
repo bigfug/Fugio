@@ -26,11 +26,25 @@
 #include <Windows.h>
 #endif
 
+#include <QLibraryInfo>
+
 GlobalPrivate *GlobalPrivate::mInstance = 0;
 
 GlobalPrivate::GlobalPrivate( QObject * ) :
 	GlobalSignals( this ), mEditTarget( nullptr ), mPause( false )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_lib" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+
+	//-------------------------------------------------------------------------
+
 	mGlobalTimer.start();
 
 	qDebug() << "Global Timer Monotonic:" << mGlobalTimer.isMonotonic();

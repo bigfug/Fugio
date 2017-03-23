@@ -1,4 +1,8 @@
 #include "serialplugin.h"
+
+#include <QTranslator>
+#include <QApplication>
+
 #include "deviceserialconfiguration.h"
 
 #include "serialinputnode.h"
@@ -18,6 +22,15 @@ fugio::ClassEntry		SerialPlugin::mNodeClasses[] =
 SerialPlugin::SerialPlugin( void )
 	: mApp( 0 )
 {
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "fugio_serial" ), QLatin1String( "_" ), ":/translations" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
 }
 
 SerialPlugin::~SerialPlugin()
