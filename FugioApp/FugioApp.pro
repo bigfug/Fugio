@@ -248,14 +248,15 @@ windows {
 
 	app.path  = $$INSTALLDATA
 	app.files = $$DESTDIR/$$TARGET".exe"
-	app.extra = windeployqt --force --no-angle --no-opengl-sw --verbose 2 --qmldir $$shell_path( $$FUGIO_BASE/qml ) $$shell_path( $$INSTALLDATA )
-
-	INSTALLS += app
 
 	libraries.path  = $$INSTALLDATA
 	libraries.files = $$(QTDIR)/bin/Qt5Concurrent.dll
+	
+	deploy.path     = $$INSTALLDATA
+	deploy.depends  = install_app install_libraries
+	deploy.commands = windeployqt --force --no-angle --no-opengl-sw --verbose 2 --qmldir $$shell_path( $$FUGIO_BASE/qml ) $$shell_path( $$INSTALLDATA )
 
-	INSTALLS += libraries
+	INSTALLS += app deploy libraries
 }
 
 unix:!macx {
