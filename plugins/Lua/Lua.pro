@@ -125,7 +125,7 @@ windows {
 
 	INSTALLS += plugin
 
-	libraries.path  = $$INSTALLROOT
+	libraries.path  = $$INSTALLDATA
 	libraries.files = $$(LIBS)/Lua-5.3.3/lua53.dll
 
 	INSTALLS += libraries
