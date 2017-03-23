@@ -35,8 +35,17 @@ while true; do
 	esac
 done
 
+if [ ! -x /usr/bin/gcc ]; then
+	xcode-select --install
+fi
+
 if [ ! -x /usr/local/bin/brew ]; then
   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+fi
+
+if ! echo "$taps" | grep -q 'caskroom/cask' &> /dev/null; then
+  echo "Adding tap caskroom/cask..."
+  brew tap caskroom/cask
 fi
 
 if [ ! -e /usr/local/opt/ffmpeg ]; then

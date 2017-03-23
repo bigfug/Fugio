@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 	<Installer>
 	<Name>Fugio</Name>
-	<Version>2.7.0</Version>
+	<Version>2.8.0</Version>
 	<Title>Fugio Installer</Title>
 	<Publisher>www.bigfug.com</Publisher>
 	<StartMenuDir>Fugio</StartMenuDir>
