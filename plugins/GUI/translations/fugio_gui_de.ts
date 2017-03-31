@@ -6,22 +6,22 @@
     <message>
         <location filename="../plugins/GUI/buttonnode.cpp" line="27"/>
         <source>When the button is pressed (not released) this trigger will fire</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn der Button geklickt wird(nicht beim loslassen), wird der Trigger ausgelöst</translation>
     </message>
     <message>
         <location filename="../plugins/GUI/buttonnode.cpp" line="29"/>
         <source>This pin is true when the button is pressed, false when it isn&apos;t</source>
-        <translation type="unfinished"></translation>
+        <translation>Pin ist True wenn der Button geklickt ist, Fals wenn nicht</translation>
     </message>
     <message>
         <location filename="../plugins/GUI/buttonnode.cpp" line="31"/>
         <source>This boolean will switch between true and false every time the button is pressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Pin wechselt zwischen True und False jedesmal wenn der Button geklickt wird</translation>
     </message>
     <message>
         <location filename="../plugins/GUI/buttonnode.cpp" line="42"/>
         <source>Button</source>
-        <translation type="unfinished"></translation>
+        <translation>Button</translation>
     </message>
 </context>
 <context>
@@ -29,7 +29,7 @@
     <message>
         <location filename="../plugins/GUI/choicenode.cpp" line="182"/>
         <source>Select</source>
-        <translation type="unfinished"></translation>
+        <translation>Select</translation>
     </message>
 </context>
 <context>
@@ -37,7 +37,7 @@
     <message>
         <location filename="../plugins/GUI/floatnode.cpp" line="20"/>
         <source>The output Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Output Zahl</translation>
     </message>
 </context>
 <context>
@@ -45,7 +45,7 @@
     <message>
         <location filename="../plugins/GUI/integernode.cpp" line="17"/>
         <source>The output Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Output Zahl</translation>
     </message>
 </context>
 <context>
@@ -53,7 +53,7 @@
     <message>
         <location filename="../plugins/GUI/keyboarddialog.ui" line="14"/>
         <source>Enter keyboard shortcut</source>
-        <translation type="unfinished"></translation>
+        <translation>Tasten Kürzel eingeben</translation>
     </message>
 </context>
 <context>
@@ -61,7 +61,7 @@
     <message>
         <location filename="../plugins/GUI/keyboardnode.cpp" line="20"/>
         <source>Keyboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Tastatur</translation>
     </message>
 </context>
 <context>
@@ -69,22 +69,22 @@
     <message>
         <location filename="../plugins/GUI/numbermonitorform.ui" line="16"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Form</translation>
     </message>
     <message>
         <location filename="../plugins/GUI/numbermonitorform.cpp" line="100"/>
         <source>Monitor: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Monitor: %1</translation>
     </message>
     <message>
         <location filename="../plugins/GUI/numbermonitorform.cpp" line="128"/>
         <source>Save Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Bild speichern</translation>
     </message>
     <message>
         <location filename="../plugins/GUI/numbermonitorform.cpp" line="128"/>
         <source>PNG Images (*.png);;JPG Images (*jpg)</source>
-        <translation type="unfinished"></translation>
+        <translation>PNG Bilder(*.png);;JPG Bilder(*.jpg)</translation>
     </message>
 </context>
 </TS>

@@ -6,17 +6,17 @@
     <message>
         <location filename="../plugins/VideoCapture/devicedialog.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Dialog</translation>
     </message>
     <message>
         <location filename="../plugins/VideoCapture/devicedialog.ui" line="22"/>
         <source>Device:</source>
-        <translation type="unfinished"></translation>
+        <translation>Gerät:</translation>
     </message>
     <message>
         <location filename="../plugins/VideoCapture/devicedialog.ui" line="32"/>
         <source>Format</source>
-        <translation type="unfinished"></translation>
+        <translation>Format</translation>
     </message>
 </context>
 </TS>

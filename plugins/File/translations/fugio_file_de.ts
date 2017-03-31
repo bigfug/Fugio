@@ -6,7 +6,7 @@
     <message>
         <location filename="../plugins/File/filenamenode.cpp" line="19"/>
         <source>...</source>
-        <translation type="unfinished"></translation>
+        <translation>...</translation>
     </message>
 </context>
 </TS>

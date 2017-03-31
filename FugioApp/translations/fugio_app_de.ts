@@ -29,32 +29,32 @@
     <message>
         <location filename="../FugioApp/contextwidgetprivate.ui" line="26"/>
         <source>Play</source>
-        <translation></translation>
+        <translation>Play</translation>
     </message>
     <message>
         <location filename="../FugioApp/contextwidgetprivate.ui" line="33"/>
         <source>Stop</source>
-        <translation></translation>
+        <translation>Stop</translation>
     </message>
     <message>
         <location filename="../FugioApp/contextwidgetprivate.ui" line="92"/>
         <source>999:99:99:999</source>
-        <translation></translation>
+        <translation>999:99:99:999</translation>
     </message>
     <message>
         <location filename="../FugioApp/contextwidgetprivate.ui" line="95"/>
         <source>000:00:00:000</source>
-        <translation></translation>
+        <translation>000:00:00:000</translation>
     </message>
     <message>
         <location filename="../FugioApp/contextwidgetprivate.ui" line="110"/>
         <source>Root</source>
-        <translation></translation>
+        <translation>Root</translation>
     </message>
     <message>
         <location filename="../FugioApp/contextwidgetprivate.cpp" line="50"/>
         <source>Node Editor</source>
-        <translation></translation>
+        <translation>Node Editor</translation>
     </message>
     <message>
         <location filename="../FugioApp/contextwidgetprivate.cpp" line="231"/>
@@ -64,7 +64,7 @@
     <message>
         <location filename="../FugioApp/contextwidgetprivate.cpp" line="231"/>
         <source>Fugio Patches (*.fug)</source>
-        <translation></translation>
+        <translation>Fugio Patches (*.fug)</translation>
     </message>
 </context>
 <context>
@@ -72,7 +72,7 @@
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="14"/>
         <source>Fugio</source>
-        <translation></translation>
+        <translation>Fugio</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="74"/>
@@ -113,25 +113,25 @@
         <location filename="../FugioApp/mainwindow.ui" line="180"/>
         <location filename="../FugioApp/mainwindow.ui" line="357"/>
         <source>Browser</source>
-        <translation></translation>
+        <translation>Browser</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="217"/>
         <location filename="../FugioApp/mainwindow.ui" line="365"/>
         <source>Nodes</source>
-        <translation></translation>
+        <translation>Nodes</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="244"/>
         <location filename="../FugioApp/mainwindow.ui" line="346"/>
         <source>Logger</source>
-        <translation></translation>
+        <translation>Logger</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="281"/>
         <location filename="../FugioApp/mainwindow.ui" line="415"/>
         <source>Stylesheet</source>
-        <translation></translation>
+        <translation>Stylesheet</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="290"/>
@@ -143,27 +143,27 @@
         <location filename="../FugioApp/mainwindow.ui" line="299"/>
         <location filename="../FugioApp/mainwindow.ui" line="639"/>
         <source>Snippets</source>
-        <translation></translation>
+        <translation>Snippets</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="308"/>
         <source>&amp;Open...</source>
-        <translation>&amp;Öffnen</translation>
+        <translation>&amp;Öffnen...</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="311"/>
         <source>Ctrl+O</source>
-        <translation></translation>
+        <translation>Strg+O</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="319"/>
         <source>&amp;Save</source>
-        <translation>Speichern</translation>
+        <translation>&amp;Speichern</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="322"/>
         <source>Ctrl+S</source>
-        <translation></translation>
+        <translation>Strg+S</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="330"/>
@@ -178,7 +178,7 @@
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="338"/>
         <source>Ctrl+N</source>
-        <translation></translation>
+        <translation>Strg+N</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="370"/>
@@ -188,17 +188,17 @@
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="378"/>
         <source>Cursor to Start</source>
-        <translation>Cursor und Start</translation>
+        <translation>Pos1</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="381"/>
         <source>Home</source>
-        <translation></translation>
+        <translation>Home</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="386"/>
         <source>Cursor to End</source>
-        <translation>Corsor und Ende</translation>
+        <translation>Ende</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="389"/>
@@ -208,7 +208,7 @@
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="394"/>
         <source>Play Toggle</source>
-        <translation></translation>
+        <translation>Play umschalten(Play/Stop)</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="397"/>
@@ -218,7 +218,7 @@
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="402"/>
         <source>Output #1</source>
-        <translation></translation>
+        <translation>Output #1</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="407"/>
@@ -273,7 +273,7 @@
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="576"/>
         <source>Cascade</source>
-        <translation></translation>
+        <translation>Kaskade</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="581"/>
@@ -293,7 +293,7 @@
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="599"/>
         <source>Facebook Page...</source>
-        <translation></translation>
+        <translation>Facebook Seite...</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="612"/>
@@ -308,7 +308,7 @@
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="620"/>
         <source>Ctrl+G</source>
-        <translation></translation>
+        <translation>Strg+G</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="625"/>
@@ -318,7 +318,7 @@
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="628"/>
         <source>Ctrl+P</source>
-        <translation></translation>
+        <translation>Strg+P</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="644"/>
@@ -333,7 +333,7 @@
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="652"/>
         <source>Ctrl+U</source>
-        <translation></translation>
+        <translation>Strg+U</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.ui" line="657"/>
@@ -374,17 +374,17 @@
         <location filename="../FugioApp/mainwindow.cpp" line="431"/>
         <location filename="../FugioApp/mainwindow.cpp" line="1113"/>
         <source>Fugio Patches (*.fug)</source>
-        <translation></translation>
+        <translation>Fugio Patches (*.fug)</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.cpp" line="615"/>
         <source>%1 v%2 by Alex May - DEBUG VERSION (not for distribution)</source>
-        <translation></translation>
+        <translation>%1 v %2 by ALex May - DEBUG VERSION (not for distribution)</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.cpp" line="617"/>
         <source>%1 v%2 by Alex May</source>
-        <translation></translation>
+        <translation>%1 v %2 by Alex May</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.cpp" line="629"/>
@@ -399,12 +399,12 @@
     <message>
         <location filename="../FugioApp/mainwindow.cpp" line="964"/>
         <source>&amp;%1 %2</source>
-        <translation></translation>
+        <translation>&amp;%1 %2</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.cpp" line="969"/>
         <source>%1 %2</source>
-        <translation></translation>
+        <translation>%1 %2</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.cpp" line="1113"/>
@@ -414,7 +414,7 @@
     <message>
         <location filename="../FugioApp/mainwindow.cpp" line="1141"/>
         <source>Name Snippet</source>
-        <translation></translation>
+        <translation>Snippet Name</translation>
     </message>
     <message>
         <location filename="../FugioApp/mainwindow.cpp" line="1141"/>
@@ -457,7 +457,7 @@
     <message>
         <location filename="../FugioApp/wizards/nodeeditorwizard.cpp" line="11"/>
         <source>Node Editor</source>
-        <translation></translation>
+        <translation>Node Editor</translation>
     </message>
     <message>
         <location filename="../FugioApp/wizards/nodeeditorwizard.cpp" line="17"/>
@@ -548,7 +548,7 @@
     <message>
         <location filename="../FugioApp/nodelistform.ui" line="14"/>
         <source>Form</source>
-        <translation></translation>
+        <translation>Form</translation>
     </message>
     <message>
         <location filename="../FugioApp/nodelistform.ui" line="39"/>
@@ -587,7 +587,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../FugioApp/patchpromptdialog.ui" line="14"/>
         <source>Patch Wizard</source>
-        <translation></translation>
+        <translation>Patch Wizard</translation>
     </message>
     <message>
         <location filename="../FugioApp/patchpromptdialog.ui" line="22"/>
@@ -620,12 +620,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../FugioApp/performanceform.ui" line="14"/>
         <source>Form</source>
-        <translation></translation>
+        <translation>Form</translation>
     </message>
     <message>
         <location filename="../FugioApp/performanceform.ui" line="36"/>
         <source>Node</source>
-        <translation></translation>
+        <translation>Node</translation>
     </message>
     <message>
         <location filename="../FugioApp/performanceform.ui" line="41"/>
@@ -635,7 +635,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../FugioApp/performanceform.ui" line="46"/>
         <source>Calls</source>
-        <translation></translation>
+        <translation>Calls</translation>
     </message>
     <message>
         <location filename="../FugioApp/performanceform.ui" line="51"/>
@@ -673,22 +673,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../FugioApp/pinitem.cpp" line="250"/>
         <source>Import</source>
-        <translation></translation>
+        <translation>Import</translation>
     </message>
     <message>
         <location filename="../FugioApp/pinitem.cpp" line="251"/>
         <source>Export</source>
-        <translation></translation>
+        <translation>Export</translation>
     </message>
     <message>
         <location filename="../FugioApp/pinitem.cpp" line="257"/>
         <source>Disconnect Global</source>
-        <translation></translation>
+        <translation>Global trennen</translation>
     </message>
     <message>
         <location filename="../FugioApp/pinitem.cpp" line="263"/>
         <source>Connect Global...</source>
-        <translation></translation>
+        <translation>Global verbinden...</translation>
     </message>
     <message>
         <location filename="../FugioApp/pinitem.cpp" line="272"/>
@@ -703,7 +703,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../FugioApp/pinitem.cpp" line="299"/>
         <source>Joiners</source>
-        <translation></translation>
+        <translation>Verbinder</translation>
     </message>
     <message>
         <location filename="../FugioApp/pinitem.cpp" line="318"/>
@@ -733,7 +733,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../FugioApp/pinitem.cpp" line="366"/>
         <source>Splitters</source>
-        <translation></translation>
+        <translation>Splitter</translation>
     </message>
     <message>
         <location filename="../FugioApp/pinitem.cpp" line="388"/>
@@ -806,32 +806,32 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../FugioApp/undo/cmdgroupaddinput.h" line="20"/>
         <source>Group Add Input</source>
-        <translation></translation>
+        <translation>Gruppen Input hinzufügen</translation>
     </message>
     <message>
         <location filename="../FugioApp/undo/cmdgroupaddoutput.h" line="20"/>
         <source>Group Add Output</source>
-        <translation></translation>
+        <translation>Gruppen Output hinzufügen</translation>
     </message>
     <message>
         <location filename="../FugioApp/undo/cmdgrouppop.h" line="20"/>
         <source>Group Parent</source>
-        <translation></translation>
+        <translation>Parent Gruppieren</translation>
     </message>
     <message>
         <location filename="../FugioApp/undo/cmdgrouppush.h" line="20"/>
         <source>Group Push</source>
-        <translation></translation>
+        <translation>Gruppe Pushen</translation>
     </message>
     <message>
         <location filename="../FugioApp/undo/cmdgroupreminput.h" line="20"/>
         <source>Group Remove Input</source>
-        <translation></translation>
+        <translation>Gruppen Input entfernen</translation>
     </message>
     <message>
         <location filename="../FugioApp/undo/cmdgroupremoutput.h" line="20"/>
         <source>Group Remove Output</source>
-        <translation></translation>
+        <translation>Gruppen Output entfernen</translation>
     </message>
     <message>
         <location filename="../FugioApp/undo/cmdgrouprename.h" line="20"/>
@@ -926,12 +926,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../FugioApp/undo/cmdpinjoin.h" line="14"/>
         <source>Pin Join</source>
-        <translation></translation>
+        <translation>Pin Verbindung</translation>
     </message>
     <message>
         <location filename="../FugioApp/undo/cmdpinjoin.h" line="39"/>
         <source>Join</source>
-        <translation></translation>
+        <translation>Verbinden</translation>
     </message>
     <message>
         <location filename="../FugioApp/undo/cmdpinmakeglobal.h" line="18"/>
@@ -951,12 +951,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../FugioApp/undo/cmdpinsplit.h" line="14"/>
         <source>Pin Split</source>
-        <translation></translation>
+        <translation>Pin Trennung</translation>
     </message>
     <message>
         <location filename="../FugioApp/undo/cmdpinsplit.h" line="39"/>
         <source>Split</source>
-        <translation></translation>
+        <translation>Trennung</translation>
     </message>
     <message>
         <location filename="../FugioApp/undo/cmdremove.h" line="22"/>
@@ -999,12 +999,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../FugioApp/settings/settingsdialog.ui" line="14"/>
         <source>Dialog</source>
-        <translation></translation>
+        <translation>Dialog</translation>
     </message>
     <message>
         <location filename="../FugioApp/settings/settingsdialog.ui" line="26"/>
         <source>Snippets</source>
-        <translation></translation>
+        <translation>Snippets</translation>
     </message>
     <message>
         <location filename="../FugioApp/settings/settingsdialog.ui" line="52"/>
@@ -1027,12 +1027,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../FugioApp/snippets/snippetsform.ui" line="14"/>
         <source>Snippets</source>
-        <translation></translation>
+        <translation>Snippets</translation>
     </message>
     <message>
         <location filename="../FugioApp/snippets/snippetsform.ui" line="33"/>
         <source>Fugio Snippets</source>
-        <translation></translation>
+        <translation>Fugio Snippets</translation>
     </message>
     <message>
         <location filename="../FugioApp/snippets/snippetsform.ui" line="38"/>
@@ -1095,12 +1095,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../FugioApp/stylesheetform.ui" line="14"/>
         <source>Form</source>
-        <translation></translation>
+        <translation>Form</translation>
     </message>
     <message>
         <location filename="../FugioApp/stylesheetform.ui" line="37"/>
         <source>Update</source>
-        <translation></translation>
+        <translation>Update</translation>
     </message>
     <message>
         <location filename="../FugioApp/stylesheetform.ui" line="44"/>
@@ -1121,7 +1121,7 @@ p, li { white-space: pre-wrap; }
         <location filename="../FugioApp/stylesheetform.cpp" line="57"/>
         <location filename="../FugioApp/stylesheetform.cpp" line="79"/>
         <source>Stylesheets (*.css)</source>
-        <translation></translation>
+        <translation>Sylesheet (*.css)</translation>
     </message>
     <message>
         <location filename="../FugioApp/stylesheetform.cpp" line="79"/>

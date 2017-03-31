@@ -11,7 +11,7 @@
     <message>
         <location filename="../FugioLib/contextprivate.cpp" line="1414"/>
         <source>Node has no control class: missing plugin or error loading plugin?</source>
-        <translation>Node hat keine Control Class: Fehlendes Plugin oder beim Laden des Plugins ist ein Fehler aufgetreten</translation>
+        <translation>Node hat keine Control Class: Fehlendes Plugin oder beim Laden des Plugins ist ein Fehler aufgetreten?</translation>
     </message>
 </context>
 <context>
@@ -24,7 +24,7 @@
     <message>
         <location filename="../FugioLib/globalprivate.cpp" line="134"/>
         <source>Nodes registered: %1</source>
-        <translation></translation>
+        <translation>Nodes registriert: %1</translation>
     </message>
 </context>
 <context>
@@ -37,7 +37,7 @@
     <message>
         <location filename="../FugioLib/interpolation.cpp" line="21"/>
         <source>Linear</source>
-        <translation></translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="../FugioLib/interpolation.cpp" line="22"/>
@@ -72,7 +72,7 @@
     <message>
         <location filename="../FugioLib/interpolation.cpp" line="29"/>
         <source>Gamma (2.2)</source>
-        <translation></translation>
+        <translation>Gamma (2.2)</translation>
     </message>
     <message>
         <location filename="../FugioLib/interpolation.cpp" line="30"/>

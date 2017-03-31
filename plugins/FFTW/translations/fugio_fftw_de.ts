@@ -6,42 +6,42 @@
     <message>
         <location filename="../plugins/FFTW/fftnode.cpp" line="51"/>
         <source>Samples</source>
-        <translation type="unfinished"></translation>
+        <translation>Samples</translation>
     </message>
     <message>
         <location filename="../plugins/FFTW/fftnode.cpp" line="55"/>
         <source>Shift</source>
-        <translation type="unfinished"></translation>
+        <translation>Shift</translation>
     </message>
     <message>
         <location filename="../plugins/FFTW/fftnode.cpp" line="57"/>
         <source>Window</source>
-        <translation type="unfinished"></translation>
+        <translation>Fenster</translation>
     </message>
     <message>
         <location filename="../plugins/FFTW/fftnode.cpp" line="64"/>
         <source>An audio input</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio Input</translation>
     </message>
     <message>
         <location filename="../plugins/FFTW/fftnode.cpp" line="66"/>
         <source>The number of samples to calculate each FFT from</source>
-        <translation type="unfinished"></translation>
+        <translation>Anzahl der Samples um FFT zu berechnen</translation>
     </message>
     <message>
         <location filename="../plugins/FFTW/fftnode.cpp" line="68"/>
         <source>The output Fast Fourier Transform</source>
-        <translation type="unfinished"></translation>
+        <translation>Output Fast Fourier Transform</translation>
     </message>
     <message>
         <location filename="../plugins/FFTW/fftnode.cpp" line="70"/>
         <source>The window function that will be applied to the audio before FFT processing</source>
-        <translation type="unfinished"></translation>
+        <translation>Fenster Funktion die vor dem FFT Processing angewendet wird</translation>
     </message>
     <message>
         <location filename="../plugins/FFTW/fftnode.cpp" line="238"/>
         <source>Sample count must be power of two</source>
-        <translation type="unfinished"></translation>
+        <translation>Sample Anzahl muss eine Mehrzahl von 2 sein</translation>
     </message>
 </context>
 </TS>

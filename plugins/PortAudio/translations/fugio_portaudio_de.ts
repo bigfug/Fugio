@@ -6,22 +6,22 @@
     <message>
         <location filename="../plugins/PortAudio/portaudioinputnode.cpp" line="68"/>
         <source>Select Audio Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio Gerät wählen</translation>
     </message>
     <message>
         <location filename="../plugins/PortAudio/portaudioinputnode.cpp" line="81"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>None</translation>
     </message>
     <message>
         <location filename="../plugins/PortAudio/portaudioinputnode.cpp" line="82"/>
         <source>Default Audio Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Standard Audio Gerät</translation>
     </message>
     <message>
         <location filename="../plugins/PortAudio/portaudioinputnode.cpp" line="142"/>
         <source>Choose Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Gerät wählen</translation>
     </message>
 </context>
 <context>
@@ -29,22 +29,22 @@
     <message>
         <location filename="../plugins/PortAudio/portaudiooutputnode.cpp" line="207"/>
         <source>Select Audio Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio Gerät wählen</translation>
     </message>
     <message>
         <location filename="../plugins/PortAudio/portaudiooutputnode.cpp" line="220"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>None</translation>
     </message>
     <message>
         <location filename="../plugins/PortAudio/portaudiooutputnode.cpp" line="221"/>
         <source>Default Audio Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Standard Audio Gerät</translation>
     </message>
     <message>
         <location filename="../plugins/PortAudio/portaudiooutputnode.cpp" line="262"/>
         <source>Choose Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Gerät wählen</translation>
     </message>
 </context>
 <context>
@@ -52,12 +52,12 @@
     <message>
         <location filename="../plugins/PortAudio/portaudioplugin.cpp" line="22"/>
         <source>Audio Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Audio Input</translation>
     </message>
     <message>
         <location filename="../plugins/PortAudio/portaudioplugin.cpp" line="23"/>
         <source>Audio Output</source>
-        <translation type="unfinished"></translation>
+        <translation>AUdio Output</translation>
     </message>
 </context>
 </TS>

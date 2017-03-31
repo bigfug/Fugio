@@ -68,7 +68,7 @@
     <message>
         <location filename="../plugins/Audio/signalnode.cpp" line="46"/>
         <source>Volume</source>
-        <translation></translation>
+        <translation>Lautstärke</translation>
     </message>
     <message>
         <location filename="../plugins/Audio/signalnode.cpp" line="50"/>
