@@ -4,12 +4,12 @@
 <context>
     <name>ContextPrivate</name>
     <message>
-        <location filename="../FugioLib/contextprivate.cpp" line="42"/>
+        <location filename="../contextprivate.cpp" line="42"/>
         <source>Untitled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FugioLib/contextprivate.cpp" line="1414"/>
+        <location filename="../contextprivate.cpp" line="1414"/>
         <source>Node has no control class: missing plugin or error loading plugin?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -17,12 +17,12 @@
 <context>
     <name>GlobalPrivate</name>
     <message>
-        <location filename="../FugioLib/globalprivate.cpp" line="132"/>
+        <location filename="../globalprivate.cpp" line="146"/>
         <source>Plugins loaded: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FugioLib/globalprivate.cpp" line="134"/>
+        <location filename="../globalprivate.cpp" line="148"/>
         <source>Nodes registered: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -30,52 +30,52 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../FugioLib/interpolation.cpp" line="20"/>
+        <location filename="../interpolation.cpp" line="20"/>
         <source>Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FugioLib/interpolation.cpp" line="21"/>
+        <location filename="../interpolation.cpp" line="21"/>
         <source>Linear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FugioLib/interpolation.cpp" line="22"/>
+        <location filename="../interpolation.cpp" line="22"/>
         <source>Cosine</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FugioLib/interpolation.cpp" line="23"/>
+        <location filename="../interpolation.cpp" line="23"/>
         <source>Linear Fall</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FugioLib/interpolation.cpp" line="24"/>
+        <location filename="../interpolation.cpp" line="24"/>
         <source>Linear Rise</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FugioLib/interpolation.cpp" line="25"/>
+        <location filename="../interpolation.cpp" line="25"/>
         <source>Time Forward</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FugioLib/interpolation.cpp" line="26"/>
+        <location filename="../interpolation.cpp" line="26"/>
         <source>Time Backward</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FugioLib/interpolation.cpp" line="27"/>
+        <location filename="../interpolation.cpp" line="27"/>
         <source>Hold</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FugioLib/interpolation.cpp" line="29"/>
+        <location filename="../interpolation.cpp" line="29"/>
         <source>Gamma (2.2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../FugioLib/interpolation.cpp" line="30"/>
+        <location filename="../interpolation.cpp" line="30"/>
         <source>Gamma Correction (2.2)</source>
         <translation type="unfinished"></translation>
     </message>

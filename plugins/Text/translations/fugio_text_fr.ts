@@ -4,32 +4,32 @@
 <context>
     <name>TextEditorForm</name>
     <message>
-        <location filename="../plugins/Text/texteditorform.ui" line="14"/>
+        <location filename="../texteditorform.ui" line="14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Text/texteditorform.ui" line="35"/>
+        <location filename="../texteditorform.ui" line="35"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Text/texteditorform.cpp" line="25"/>
+        <location filename="../texteditorform.cpp" line="25"/>
         <source>&amp;Open...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Text/texteditorform.cpp" line="26"/>
+        <location filename="../texteditorform.cpp" line="26"/>
         <source>&amp;Save...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Text/texteditorform.cpp" line="27"/>
+        <location filename="../texteditorform.cpp" line="27"/>
         <source>&amp;Save as...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Text/texteditorform.cpp" line="47"/>
+        <location filename="../texteditorform.cpp" line="47"/>
         <source>&amp;Update</source>
         <translation type="unfinished"></translation>
     </message>

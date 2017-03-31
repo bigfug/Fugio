@@ -4,81 +4,81 @@
 <context>
     <name>MediaNode</name>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="94"/>
+        <location filename="../medianode.cpp" line="94"/>
         <source>The filename of the media file to load</source>
         <translation>Dateiname der zu ladenden Datei</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="96"/>
+        <location filename="../medianode.cpp" line="96"/>
         <source>The volume of the media playback (normally 0.0 to 1.0, but you can specify higher than 1.0 to increase gain</source>
         <translation>Lautstärke der Datei welche abgespielt wird(0.0-1.0, kann aber auf mehr wie 1.0 erhöht werden um die Lautstärke zu erhöhen)</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="98"/>
+        <location filename="../medianode.cpp" line="98"/>
         <source>Trigger this pin to start the media playing</source>
         <translation>Pin triggern um Wiedergabe zu starten</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="99"/>
+        <location filename="../medianode.cpp" line="99"/>
         <source>Trigger this pin to pause the media playback (trigger Play to start again)</source>
         <translation>Pin Triggern um Wiedergabe zu pausieren</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="100"/>
+        <location filename="../medianode.cpp" line="100"/>
         <source>Trigger this pin to stop playback and rewind to the beginning of the media</source>
         <translation>Pin Triggern um die Wiedergabe zu stoppen und zum Beginn zu springen</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="101"/>
+        <location filename="../medianode.cpp" line="101"/>
         <source>Trigger this pin to rewind to the beginning of the media (without stopping playback)</source>
         <translation>Pin Triggern um zum Beginn zu springen(ohne die WIedergabe zu Stoppen)</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="103"/>
+        <location filename="../medianode.cpp" line="103"/>
         <source>Set how many loops we should play this media for (0 = loop forever, 1 = play once, etc)</source>
         <translation>Anzahl der WIederholungen setzen(0 = unendlich wiederholen, 1= einmal usw.)</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="105"/>
+        <location filename="../medianode.cpp" line="105"/>
         <source>The output image from the media file - link to an Image Preview node to see it</source>
         <translation>Output Bild der Datei - mit einem Preview Node verbinden um das Vorschau zu sehen</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="107"/>
+        <location filename="../medianode.cpp" line="107"/>
         <source>The audio output from the media file - link to an audio output node to hear it</source>
         <translation>Audio Output der Datei - mit einem PortAudio Node verbinden um ihn zu hören</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="109"/>
+        <location filename="../medianode.cpp" line="109"/>
         <source>This is true when the media file has been successfully loaded</source>
         <translation>Pin ist True wenn die Datei fehlerfrei geladen wurde, Ansonsten False</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="110"/>
+        <location filename="../medianode.cpp" line="110"/>
         <source>This pin is true when the media file is playing, false otherwise</source>
         <translation>Pin ist True wenn die Datei abgespielt wird, ansonsten False
 </translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="111"/>
+        <location filename="../medianode.cpp" line="111"/>
         <source>This pin is true when the media file is paused, false otherwise</source>
         <translation>Pin ist True wenn die Wiedergabe pausiert ist, ansonsten False
 </translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="112"/>
+        <location filename="../medianode.cpp" line="112"/>
         <source>This pin is true when the media file is stopped, false otherwise</source>
         <translation>Pin ist True wenn die Wiedergabe gestoppt ist, ansonsten False
 </translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="114"/>
+        <location filename="../medianode.cpp" line="114"/>
         <source>This pin is triggered everytime the media file is looped</source>
         <translation>Pin ist True jedesmal wenn die WIedergabe wiederholt wird
 </translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/medianode.cpp" line="115"/>
+        <location filename="../medianode.cpp" line="115"/>
         <source>This pin is the number of times the media has looped since it started playback</source>
         <translation>Pin zeigt die Anzahl der Wiederholungen seit beginn der Wiedergabe</translation>
     </message>
@@ -86,7 +86,7 @@
 <context>
     <name>MediaPlayerVideoPreview</name>
     <message>
-        <location filename="../plugins/ffmpeg/mediaplayervideopreview.ui" line="14"/>
+        <location filename="../mediaplayervideopreview.ui" line="14"/>
         <source>Form</source>
         <translation>Form</translation>
     </message>
@@ -94,17 +94,17 @@
 <context>
     <name>MediaProcessorNode</name>
     <message>
-        <location filename="../plugins/ffmpeg/mediaprocessornode.cpp" line="63"/>
+        <location filename="../mediaprocessornode.cpp" line="63"/>
         <source>The filename of the media file to load</source>
         <translation>Dateiname der zu ladenden Datei</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediaprocessornode.cpp" line="65"/>
+        <location filename="../mediaprocessornode.cpp" line="65"/>
         <source>The output image from the media file - link to an Image Preview node to see it</source>
         <translation>Output Image der Datei - mit einem Preview Node verbinden um das Vorschau zu sehen</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediaprocessornode.cpp" line="67"/>
+        <location filename="../mediaprocessornode.cpp" line="67"/>
         <source>The audio output from the media file - link to a PortAudio node to hear it</source>
         <translation>Audio Output der Datei - mit einem PortAudio Node verbinden um ihn zu hören</translation>
     </message>
@@ -112,134 +112,134 @@
 <context>
     <name>MediaRecorderForm</name>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="20"/>
+        <location filename="../mediarecorderform.ui" line="20"/>
         <source>Form</source>
         <translation>Form</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="26"/>
+        <location filename="../mediarecorderform.ui" line="26"/>
         <source>Video Format</source>
         <translation>VIdeo Format</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="40"/>
+        <location filename="../mediarecorderform.ui" line="40"/>
         <source>Format:</source>
         <translation>Format:</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="60"/>
+        <location filename="../mediarecorderform.ui" line="60"/>
         <source>Video Fit:</source>
         <translation>Video Fit:</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="80"/>
+        <location filename="../mediarecorderform.ui" line="80"/>
         <source>Stretch</source>
         <translation>Strecken</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="85"/>
+        <location filename="../mediarecorderform.ui" line="85"/>
         <source>Fill</source>
         <translation>Füllen</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="90"/>
+        <location filename="../mediarecorderform.ui" line="90"/>
         <source>Fit</source>
         <translation>Anpassen</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="98"/>
+        <location filename="../mediarecorderform.ui" line="98"/>
         <source>Speed:</source>
         <translation>Geschwindigkeit:</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="112"/>
+        <location filename="../mediarecorderform.ui" line="112"/>
         <source>Quality:</source>
         <translation>Qualität:</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="126"/>
+        <location filename="../mediarecorderform.ui" line="126"/>
         <source>Width:</source>
         <translation>Breite:</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="146"/>
+        <location filename="../mediarecorderform.ui" line="146"/>
         <source>Height</source>
         <translation>Höhe</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="175"/>
+        <location filename="../mediarecorderform.ui" line="175"/>
         <source>Playhead</source>
         <translation>Playhead</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="180"/>
+        <location filename="../mediarecorderform.ui" line="180"/>
         <source>Realtime</source>
         <translation>Echtzeit</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="185"/>
+        <location filename="../mediarecorderform.ui" line="185"/>
         <source>Frames</source>
         <translation>Frames</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="202"/>
+        <location filename="../mediarecorderform.ui" line="202"/>
         <source>Start Time:</source>
         <translation>Start Zeit:</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="209"/>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="226"/>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="246"/>
+        <location filename="../mediarecorderform.ui" line="209"/>
+        <location filename="../mediarecorderform.ui" line="226"/>
+        <location filename="../mediarecorderform.ui" line="246"/>
         <source>99:99:999</source>
         <translation>99:99:999</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="212"/>
+        <location filename="../mediarecorderform.ui" line="212"/>
         <source>00:00:000</source>
         <translation>00:00:000</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="219"/>
+        <location filename="../mediarecorderform.ui" line="219"/>
         <source>Duration:</source>
         <translation>Dauer:</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="229"/>
+        <location filename="../mediarecorderform.ui" line="229"/>
         <source>00:30:000</source>
         <translation>00:30:000</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="239"/>
+        <location filename="../mediarecorderform.ui" line="239"/>
         <source>End Time:</source>
         <translation>End Zeit:</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.ui" line="270"/>
+        <location filename="../mediarecorderform.ui" line="270"/>
         <source>Record</source>
         <translation>Record</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.cpp" line="126"/>
+        <location filename="../mediarecorderform.cpp" line="126"/>
         <source>Media Recorder</source>
         <translation>Media Recorder</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.cpp" line="126"/>
+        <location filename="../mediarecorderform.cpp" line="126"/>
         <source>You need to set a valid time duration or time end</source>
         <translation>Sie müssen eine gültige Dauer oder Endzeit eingeben</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.cpp" line="131"/>
+        <location filename="../mediarecorderform.cpp" line="131"/>
         <source>Save Media</source>
         <translation>Datei speichern</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.cpp" line="213"/>
+        <location filename="../mediarecorderform.cpp" line="213"/>
         <source>Recording</source>
         <translation>Aufnahme</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecorderform.cpp" line="213"/>
+        <location filename="../mediarecorderform.cpp" line="213"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
@@ -247,17 +247,17 @@
 <context>
     <name>MediaRecorderNode</name>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecordernode.cpp" line="63"/>
+        <location filename="../mediarecordernode.cpp" line="63"/>
         <source>The input image to record</source>
         <translation>Input Video das aufgenommen wird</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecordernode.cpp" line="65"/>
+        <location filename="../mediarecordernode.cpp" line="65"/>
         <source>The input audio to record</source>
         <translation>Input Audio welches aufgenommen wird</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediarecordernode.cpp" line="305"/>
+        <location filename="../mediarecordernode.cpp" line="305"/>
         <source>Couldn&apos;t av_guess_format of filename: %1</source>
         <translatorcomment>not sure about the right value of the Variable</translatorcomment>
         <translation>Format der Datei %1 konnte nicht erraten werden</translation>
@@ -266,32 +266,32 @@
 <context>
     <name>MediaTimelineNode</name>
     <message>
-        <location filename="../plugins/ffmpeg/mediatimelinenode.cpp" line="76"/>
+        <location filename="../mediatimelinenode.cpp" line="76"/>
         <source>The filename of the media file to load</source>
         <translation>Dateiname der zu ladenden Datei</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediatimelinenode.cpp" line="78"/>
+        <location filename="../mediatimelinenode.cpp" line="78"/>
         <source>The volume of the media playback (normally 0.0 to 1.0, but you can specify higher than 1.0 to increase gain</source>
         <translation>Lautstärke der Datei welche abgespielt wird(0.0-1.0, kann aber auf mehr wie 1.0 erhöht werden um die Lautstärke zu erhöhen)</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediatimelinenode.cpp" line="82"/>
+        <location filename="../mediatimelinenode.cpp" line="82"/>
         <source>The output image from the media file - link to an Image Preview node to see it</source>
         <translation>Output Bild der Datei - mit einem Preview Node verbinden um das Vorschau zu sehen</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediatimelinenode.cpp" line="84"/>
+        <location filename="../mediatimelinenode.cpp" line="84"/>
         <source>The audio output from the media file - link to a PortAudio node to hear it</source>
         <translation>Audio Output der Datei - mit einem PortAudio Node verbinden um ihn zu hören</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediatimelinenode.cpp" line="159"/>
+        <location filename="../mediatimelinenode.cpp" line="159"/>
         <source>Preload Audio</source>
         <translation>Audio vorladen</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediatimelinenode.cpp" line="643"/>
+        <location filename="../mediatimelinenode.cpp" line="643"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
@@ -299,12 +299,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../plugins/ffmpeg/mediapreset/mediaWav44.h" line="48"/>
+        <location filename="../mediapreset/mediaWav44.h" line="48"/>
         <source>WAV Audio (*.wav)</source>
         <translation>WAV Audio(*.wav)</translation>
     </message>
     <message>
-        <location filename="../plugins/ffmpeg/mediapreset/mediapresetmp4.h" line="48"/>
+        <location filename="../mediapreset/mediapresetmp4.h" line="48"/>
         <source>MP4 Video (*.mp4)</source>
         <translation>MP4 Video (*.mp4)</translation>
     </message>

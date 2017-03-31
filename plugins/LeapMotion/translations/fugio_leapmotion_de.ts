@@ -4,12 +4,12 @@
 <context>
     <name>LeapNode</name>
     <message>
-        <location filename="../plugins/LeapMotion/leapnode.cpp" line="17"/>
+        <location filename="../leapnode.cpp" line="17"/>
         <source>Left Hand</source>
         <translation>Linke Hand</translation>
     </message>
     <message>
-        <location filename="../plugins/LeapMotion/leapnode.cpp" line="19"/>
+        <location filename="../leapnode.cpp" line="19"/>
         <source>Right Hand</source>
         <translation>Rechte Hand</translation>
     </message>

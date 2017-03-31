@@ -4,7 +4,7 @@
 <context>
     <name>MidiDecoderNode</name>
     <message>
-        <location filename="../plugins/MIDI/mididecodernode.cpp" line="165"/>
+        <location filename="../mididecodernode.cpp" line="165"/>
         <source>Channel %1</source>
         <translation>Kanal %1</translation>
     </message>

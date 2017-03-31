@@ -4,7 +4,7 @@
 <context>
     <name>SpoutReceiverForm</name>
     <message>
-        <location filename="../plugins/Spout/spoutreceiverform.ui" line="14"/>
+        <location filename="../spoutreceiverform.ui" line="14"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
@@ -12,7 +12,7 @@
 <context>
     <name>SpoutReceiverNode</name>
     <message>
-        <location filename="../plugins/Spout/spoutreceivernode.cpp" line="84"/>
+        <location filename="../spoutreceivernode.cpp" line="84"/>
         <source>Spout not supported on this platform</source>
         <translation type="unfinished"></translation>
     </message>
@@ -20,7 +20,7 @@
 <context>
     <name>SpoutSenderNode</name>
     <message>
-        <location filename="../plugins/Spout/spoutsendernode.cpp" line="110"/>
+        <location filename="../spoutsendernode.cpp" line="110"/>
         <source>Spout not supported on this platform</source>
         <translation type="unfinished"></translation>
     </message>

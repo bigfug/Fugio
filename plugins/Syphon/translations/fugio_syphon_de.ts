@@ -4,22 +4,22 @@
 <context>
     <name>SyphonReceiverNode</name>
     <message>
-        <location filename="../plugins/Syphon/syphonreceivernode.cpp" line="40"/>
+        <location filename="../syphonreceivernode.cpp" line="40"/>
         <source>Syphon not supported on this platform</source>
         <translation>Syphon wird auf dieser Plattform nicht unterstützt</translation>
     </message>
     <message>
-        <location filename="../plugins/Syphon/syphonreceivernode.cpp" line="48"/>
+        <location filename="../syphonreceivernode.cpp" line="48"/>
         <source>No active OpenGL context</source>
         <translation>Kein aktiver OpenGL Context</translation>
     </message>
     <message>
-        <location filename="../plugins/Syphon/syphonreceivernode.cpp" line="123"/>
+        <location filename="../syphonreceivernode.cpp" line="123"/>
         <source>Syphon Server</source>
         <translation>Syphon Server</translation>
     </message>
     <message>
-        <location filename="../plugins/Syphon/syphonreceivernode.cpp" line="123"/>
+        <location filename="../syphonreceivernode.cpp" line="123"/>
         <source>Choose a Syphon server</source>
         <translation>Wähle einen Syphon Server</translation>
     </message>
@@ -27,7 +27,7 @@
 <context>
     <name>SyphonRenderNode</name>
     <message>
-        <location filename="../plugins/Syphon/syphonrendernode.cpp" line="50"/>
+        <location filename="../syphonrendernode.cpp" line="50"/>
         <source>Syphon not supported on this platform</source>
         <translation>Syphon wird auf dieser Plattform nicht unterstützt</translation>
     </message>
@@ -35,7 +35,7 @@
 <context>
     <name>SyphonSenderNode</name>
     <message>
-        <location filename="../plugins/Syphon/syphonsendernode.cpp" line="45"/>
+        <location filename="../syphonsendernode.cpp" line="45"/>
         <source>Syphon not supported on this platform</source>
         <translation>Syphon wird auf dieser Plattform nicht unterstützt</translation>
     </message>

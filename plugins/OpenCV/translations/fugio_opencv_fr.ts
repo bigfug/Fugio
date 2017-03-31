@@ -4,12 +4,12 @@
 <context>
     <name>ImageConvertNode</name>
     <message>
-        <location filename="../plugins/OpenCV/imageconvertnode.cpp" line="252"/>
+        <location filename="../imageconvertnode.cpp" line="252"/>
         <source>Unknown source format: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/OpenCV/imageconvertnode.cpp" line="259"/>
+        <location filename="../imageconvertnode.cpp" line="259"/>
         <source>Can&apos;t convert input to %1</source>
         <translation type="unfinished"></translation>
     </message>
