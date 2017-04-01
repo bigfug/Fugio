@@ -1035,11 +1035,11 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 			{
 				break;
 			}
+		}
 
-			if( mVideo.mPTS - 5.0 >= mPlayHead )
-			{
-				break;
-			}
+		if( VideoStream && mVideo.mPTS - 5.0 >= mPlayHead )
+		{
+			break;
 		}
 
 		av_packet_unref( &mPacket );
