@@ -4,64 +4,64 @@
 <context>
     <name>KinectConfigDialog</name>
     <message>
-        <location filename="../plugins/Kinect/kinectconfigdialog.ui" line="14"/>
+        <location filename="../kinectconfigdialog.ui" line="14"/>
         <source>Kinect Configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Kinect/kinectconfigdialog.ui" line="25"/>
-        <location filename="../plugins/Kinect/kinectconfigdialog.ui" line="60"/>
+        <location filename="../kinectconfigdialog.ui" line="25"/>
+        <location filename="../kinectconfigdialog.ui" line="60"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Kinect/kinectconfigdialog.ui" line="30"/>
+        <location filename="../kinectconfigdialog.ui" line="30"/>
         <source>Colour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Kinect/kinectconfigdialog.ui" line="35"/>
+        <location filename="../kinectconfigdialog.ui" line="35"/>
         <source>Infrared</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Kinect/kinectconfigdialog.ui" line="47"/>
-        <location filename="../plugins/Kinect/kinectconfigdialog.ui" line="65"/>
+        <location filename="../kinectconfigdialog.ui" line="47"/>
+        <location filename="../kinectconfigdialog.ui" line="65"/>
         <source>640x480</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Kinect/kinectconfigdialog.ui" line="76"/>
+        <location filename="../kinectconfigdialog.ui" line="76"/>
         <source>Detect Users</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Kinect/kinectconfigdialog.ui" line="85"/>
+        <location filename="../kinectconfigdialog.ui" line="85"/>
         <source>Colour camera:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Kinect/kinectconfigdialog.ui" line="95"/>
+        <location filename="../kinectconfigdialog.ui" line="95"/>
         <source>Skeleton:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Kinect/kinectconfigdialog.ui" line="110"/>
+        <location filename="../kinectconfigdialog.ui" line="110"/>
         <source>Enabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Kinect/kinectconfigdialog.ui" line="120"/>
+        <location filename="../kinectconfigdialog.ui" line="120"/>
         <source>Near Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Kinect/kinectconfigdialog.ui" line="130"/>
+        <location filename="../kinectconfigdialog.ui" line="130"/>
         <source>Seated Mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Kinect/kinectconfigdialog.ui" line="139"/>
+        <location filename="../kinectconfigdialog.ui" line="139"/>
         <source>Depth camera:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -69,17 +69,17 @@
 <context>
     <name>KinectNode</name>
     <message>
-        <location filename="../plugins/Kinect/kinectnode.cpp" line="156"/>
+        <location filename="../kinectnode.cpp" line="156"/>
         <source>Kinect not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Kinect/kinectnode.cpp" line="597"/>
+        <location filename="../kinectnode.cpp" line="597"/>
         <source>No Kinect sensors detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/Kinect/kinectnode.cpp" line="749"/>
+        <location filename="../kinectnode.cpp" line="749"/>
         <source>Setup...</source>
         <translation type="unfinished"></translation>
     </message>

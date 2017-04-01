@@ -11,7 +11,7 @@
     <message>
         <location filename="../anytriggernode.h" line="13"/>
         <source>Takes any number of trigger inputs and fires off a trigger if any of them activate.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wenn einer der Input Trigger ausgelöst wird wird auch der Trigger ausgelöst</translation>
     </message>
 </context>
 <context>
@@ -37,7 +37,7 @@
     <message>
         <location filename="../coreplugin.cpp" line="71"/>
         <source>Any Trigger</source>
-        <translation></translation>
+        <translation>Any Trigger</translation>
     </message>
 </context>
 <context>
@@ -81,12 +81,12 @@
     <message>
         <location filename="../signalnumbernode.cpp" line="39"/>
         <source>Volume</source>
-        <translation></translation>
+        <translation>Lautstärke</translation>
     </message>
     <message>
         <location filename="../signalnumbernode.cpp" line="43"/>
         <source>Offset</source>
-        <translation></translation>
+        <translation>Versatz</translation>
     </message>
     <message>
         <location filename="../signalnumbernode.cpp" line="49"/>
@@ -132,12 +132,12 @@
     <message>
         <location filename="../splitpointnode.cpp" line="15"/>
         <source>X</source>
-        <translation></translation>
+        <translation>X</translation>
     </message>
     <message>
         <location filename="../splitpointnode.cpp" line="17"/>
         <source>Y</source>
-        <translation></translation>
+        <translation>Y</translation>
     </message>
 </context>
 <context>

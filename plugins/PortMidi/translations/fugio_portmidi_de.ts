@@ -4,27 +4,27 @@
 <context>
     <name>PortMidiInputNode</name>
     <message>
-        <location filename="../plugins/PortMidi/portmidiinputnode.cpp" line="125"/>
+        <location filename="../portmidiinputnode.cpp" line="125"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../plugins/PortMidi/portmidiinputnode.cpp" line="126"/>
+        <location filename="../portmidiinputnode.cpp" line="126"/>
         <source>Default Midi Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Standard Midi Input</translation>
     </message>
 </context>
 <context>
     <name>PortMidiOutputNode</name>
     <message>
-        <location filename="../plugins/PortMidi/portmidioutputnode.cpp" line="267"/>
+        <location filename="../portmidioutputnode.cpp" line="267"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>None</translation>
     </message>
     <message>
-        <location filename="../plugins/PortMidi/portmidioutputnode.cpp" line="268"/>
+        <location filename="../portmidioutputnode.cpp" line="268"/>
         <source>Default Midi Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Standard Midi Output</translation>
     </message>
 </context>
 </TS>

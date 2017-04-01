@@ -4,7 +4,7 @@
 <context>
     <name>TrackerNode</name>
     <message>
-        <location filename="../plugins/ARToolKit/trackernode.cpp" line="48"/>
+        <location filename="../trackernode.cpp" line="48"/>
         <source>Width of the marker pattern in mm</source>
         <translation>Breite des Marker Patterns in mm</translation>
     </message>

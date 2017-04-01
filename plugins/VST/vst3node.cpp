@@ -677,7 +677,19 @@ void VST3Node::inputsUpdated( qint64 pTimeStamp )
 				continue;
 			}
 
-			if( Status == MIDI_NOTE_ON )
+			if( Status == MIDI_NOTE_OFF || ( Status == MIDI_NOTE_ON && Pm_MessageData2( PE.message ) == 0 ) )
+			{
+				VE.type = Steinberg::Vst::Event::kNoteOffEvent;
+
+				VE.noteOff.channel  = Pm_MessageStatus( PE.message ) & 0x0F;
+				VE.noteOff.noteId   = -1;
+				VE.noteOff.pitch    = Pm_MessageData1( PE.message );
+				VE.noteOff.tuning   = 0.0f;
+				VE.noteOff.velocity = float( Pm_MessageData2( PE.message ) ) / 127.0f;
+
+				VstEvt << VE;
+			}
+			else if( Status == MIDI_NOTE_ON )
 			{
 				VE.type = Steinberg::Vst::Event::kNoteOnEvent;
 
@@ -687,18 +699,6 @@ void VST3Node::inputsUpdated( qint64 pTimeStamp )
 				VE.noteOn.pitch    = Pm_MessageData1( PE.message );
 				VE.noteOn.tuning   = 0.0f;
 				VE.noteOn.velocity = float( Pm_MessageData2( PE.message ) ) / 127.0f;
-
-				VstEvt << VE;
-			}
-			else if( Status == MIDI_NOTE_OFF )
-			{
-				VE.type = Steinberg::Vst::Event::kNoteOnEvent;
-
-				VE.noteOff.channel  = Pm_MessageStatus( PE.message ) & 0x0F;
-				VE.noteOff.noteId   = -1;
-				VE.noteOff.pitch    = Pm_MessageData1( PE.message );
-				VE.noteOff.tuning   = 0.0f;
-				VE.noteOff.velocity = float( Pm_MessageData2( PE.message ) ) / 127.0f;
 
 				VstEvt << VE;
 			}

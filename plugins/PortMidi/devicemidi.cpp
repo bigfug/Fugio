@@ -3,6 +3,8 @@
 #include <QSettings>
 #include <QHash>
 
+#include "porttime.h"
+
 #include <fugio/utils.h>
 
 #include <fugio/context_interface.h>
@@ -12,11 +14,19 @@
 #include <fugio/core/variant_interface.h>
 #include <fugio/core/uuid.h>
 
+#define TIME_PROC ((int32_t (*)(void *)) Pt_Time)
+#define TIME_INFO NULL
+
 QList<QWeakPointer<DeviceMidi>>	 DeviceMidi::mDeviceList;
 
 bool DeviceMidi::deviceInitialise( void )
 {
 #if defined( PORTMIDI_SUPPORTED )
+	if( Pt_Start( 1, nullptr, nullptr ) != ptNoError )
+	{
+		return( false );
+	}
+
 	PmError			Error;
 
 	if( ( Error = Pm_Initialize() ) != pmNoError )
@@ -87,6 +97,8 @@ void DeviceMidi::deviceDeinitialise( void )
 
 #if defined( PORTMIDI_SUPPORTED )
 	Pm_Terminate();
+
+	Pt_Stop();
 #endif
 }
 
@@ -306,7 +318,7 @@ DeviceMidi::DeviceMidi( PmDeviceID pDevIdx )
 		{
 			qWarning() << "PortMidi input device not available:" << mDeviceName;
 		}
-		else if( ( ER = Pm_OpenInput( &mStreamInput, mDeviceId, 0, 0, 0, 0 ) ) != pmNoError )
+		else if( ( ER = Pm_OpenInput( &mStreamInput, mDeviceId, nullptr, 0, TIME_PROC, TIME_INFO ) ) != pmNoError )
 		{
 			qWarning() << "PortMidi input device failed to open:" << mDeviceName << QString( Pm_GetErrorText( ER ) );
 		}
@@ -321,7 +333,7 @@ DeviceMidi::DeviceMidi( PmDeviceID pDevIdx )
 		{
 			qWarning() << "PortMidi output device not available:" << mDeviceName;
 		}
-		else if( ( ER = Pm_OpenOutput( &mStreamOutput, mDeviceId, 0, 0, 0, 0, 0 ) ) != pmNoError )
+		else if( ( ER = Pm_OpenOutput( &mStreamOutput, mDeviceId, nullptr, 0, TIME_PROC, TIME_INFO, 0 ) ) != pmNoError )
 		{
 			qWarning() << "PortMidi output device failed to open:" << mDeviceName << QString( Pm_GetErrorText( ER ) );
 		}

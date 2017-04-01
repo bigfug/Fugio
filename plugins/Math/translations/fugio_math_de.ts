@@ -4,17 +4,17 @@
 <context>
     <name>AddNode</name>
     <message>
-        <location filename="../plugins/Math/addnode.cpp" line="18"/>
+        <location filename="../addnode.cpp" line="18"/>
         <source>The first number to add together</source>
         <translation>Erste Zahl zum Addieren</translation>
     </message>
     <message>
-        <location filename="../plugins/Math/addnode.cpp" line="19"/>
+        <location filename="../addnode.cpp" line="19"/>
         <source>The second number to add together</source>
         <translation>Zweite Zahl zum Addieren</translation>
     </message>
     <message>
-        <location filename="../plugins/Math/addnode.cpp" line="21"/>
+        <location filename="../addnode.cpp" line="21"/>
         <source>The sum of the input pins added together</source>
         <translation>Summe aller Input Pins addiert</translation>
     </message>
@@ -22,22 +22,22 @@
 <context>
     <name>MatrixLookAtNode</name>
     <message>
-        <location filename="../plugins/Math/matrixlookatnode.cpp" line="13"/>
+        <location filename="../matrixlookatnode.cpp" line="13"/>
         <source>Matrix</source>
-        <translation></translation>
+        <translation>Matrix</translation>
     </message>
     <message>
-        <location filename="../plugins/Math/matrixlookatnode.cpp" line="17"/>
+        <location filename="../matrixlookatnode.cpp" line="17"/>
         <source>Position</source>
-        <translation></translation>
+        <translation>Position</translation>
     </message>
     <message>
-        <location filename="../plugins/Math/matrixlookatnode.cpp" line="21"/>
+        <location filename="../matrixlookatnode.cpp" line="21"/>
         <source>Center</source>
         <translation>Mittelpunkt</translation>
     </message>
     <message>
-        <location filename="../plugins/Math/matrixlookatnode.cpp" line="25"/>
+        <location filename="../matrixlookatnode.cpp" line="25"/>
         <source>Up</source>
         <translation>Oben</translation>
     </message>
@@ -45,57 +45,57 @@
 <context>
     <name>MatrixOrthographicNode</name>
     <message>
-        <location filename="../plugins/Math/matrixorthographicnode.cpp" line="14"/>
+        <location filename="../matrixorthographicnode.cpp" line="14"/>
         <source>Left</source>
         <translation>Links</translation>
     </message>
     <message>
-        <location filename="../plugins/Math/matrixorthographicnode.cpp" line="15"/>
+        <location filename="../matrixorthographicnode.cpp" line="15"/>
         <source>Right</source>
         <translation>Rechts</translation>
     </message>
     <message>
-        <location filename="../plugins/Math/matrixorthographicnode.cpp" line="16"/>
+        <location filename="../matrixorthographicnode.cpp" line="16"/>
         <source>Bottom</source>
         <translation>Unten</translation>
     </message>
     <message>
-        <location filename="../plugins/Math/matrixorthographicnode.cpp" line="17"/>
+        <location filename="../matrixorthographicnode.cpp" line="17"/>
         <source>Top</source>
         <translation>Oben</translation>
     </message>
     <message>
-        <location filename="../plugins/Math/matrixorthographicnode.cpp" line="18"/>
+        <location filename="../matrixorthographicnode.cpp" line="18"/>
         <source>Near</source>
-        <translation></translation>
+        <translation>Nah(Near)</translation>
     </message>
     <message>
-        <location filename="../plugins/Math/matrixorthographicnode.cpp" line="19"/>
+        <location filename="../matrixorthographicnode.cpp" line="19"/>
         <source>Far</source>
-        <translation></translation>
+        <translation>Fern (Far)</translation>
     </message>
 </context>
 <context>
     <name>MatrixPerspectiveNode</name>
     <message>
-        <location filename="../plugins/Math/matrixperspectivenode.cpp" line="14"/>
+        <location filename="../matrixperspectivenode.cpp" line="14"/>
         <source>Vertical Angle</source>
         <translation>Vertikaler Winkel</translation>
     </message>
     <message>
-        <location filename="../plugins/Math/matrixperspectivenode.cpp" line="15"/>
+        <location filename="../matrixperspectivenode.cpp" line="15"/>
         <source>Aspect Ratio</source>
         <translation>Seitenverhältnis</translation>
     </message>
     <message>
-        <location filename="../plugins/Math/matrixperspectivenode.cpp" line="16"/>
+        <location filename="../matrixperspectivenode.cpp" line="16"/>
         <source>Near Plane</source>
-        <translation></translation>
+        <translation>Nahe Fläche (Near Plane)</translation>
     </message>
     <message>
-        <location filename="../plugins/Math/matrixperspectivenode.cpp" line="17"/>
+        <location filename="../matrixperspectivenode.cpp" line="17"/>
         <source>Far Plane</source>
-        <translation></translation>
+        <translation>Ferne Fläche(Far Plane)</translation>
     </message>
 </context>
 </TS>

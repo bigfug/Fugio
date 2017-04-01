@@ -4,9 +4,9 @@
 <context>
     <name>LuaNode</name>
     <message>
-        <location filename="../plugins/Lua/luanode.cpp" line="40"/>
+        <location filename="../luanode.cpp" line="40"/>
         <source>Lua source code</source>
-        <translation type="unfinished"></translation>
+        <translation>Lua Quellcode</translation>
     </message>
 </context>
 </TS>

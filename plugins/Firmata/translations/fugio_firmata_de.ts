@@ -4,9 +4,9 @@
 <context>
     <name>FirmataNode</name>
     <message>
-        <location filename="../plugins/Firmata/firmatanode.cpp" line="891"/>
+        <location filename="../firmatanode.cpp" line="891"/>
         <source>Edit Pins</source>
-        <translation type="unfinished"></translation>
+        <translation>Pins bearbeiten</translation>
     </message>
 </context>
 </TS>

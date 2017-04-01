@@ -4,42 +4,42 @@
 <context>
     <name>FFTNode</name>
     <message>
-        <location filename="../plugins/FFTW/fftnode.cpp" line="51"/>
+        <location filename="../fftnode.cpp" line="51"/>
         <source>Samples</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/FFTW/fftnode.cpp" line="55"/>
+        <location filename="../fftnode.cpp" line="55"/>
         <source>Shift</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/FFTW/fftnode.cpp" line="57"/>
+        <location filename="../fftnode.cpp" line="57"/>
         <source>Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/FFTW/fftnode.cpp" line="64"/>
+        <location filename="../fftnode.cpp" line="64"/>
         <source>An audio input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/FFTW/fftnode.cpp" line="66"/>
+        <location filename="../fftnode.cpp" line="66"/>
         <source>The number of samples to calculate each FFT from</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/FFTW/fftnode.cpp" line="68"/>
+        <location filename="../fftnode.cpp" line="68"/>
         <source>The output Fast Fourier Transform</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/FFTW/fftnode.cpp" line="70"/>
+        <location filename="../fftnode.cpp" line="70"/>
         <source>The window function that will be applied to the audio before FFT processing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/FFTW/fftnode.cpp" line="238"/>
+        <location filename="../fftnode.cpp" line="238"/>
         <source>Sample count must be power of two</source>
         <translation type="unfinished"></translation>
     </message>
