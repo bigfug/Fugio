@@ -89,6 +89,26 @@ void logger_static( QtMsgType type, const QMessageLogContext &context, const QSt
 #define Q(x) #x
 #define QUOTE(x) Q(x)
 
+void checkLocale( App *APP )
+{
+	bool		FndLoc = false;
+
+	for( QString a : APP->arguments() )
+	{
+		if( FndLoc )
+		{
+			QLocale::setDefault( QLocale( a ) );
+
+			break;
+		}
+
+		if( a == "--locale" )
+		{
+			FndLoc = true;
+		}
+	}
+}
+
 int main( int argc, char *argv[] )
 {
 #if defined( Q_OS_RASPBERRY_PI )
@@ -138,6 +158,10 @@ int main( int argc, char *argv[] )
 	{
 		return( -1 );
 	}
+
+	//-------------------------------------------------------------------------
+
+	checkLocale( APP );
 
 	//-------------------------------------------------------------------------
 	// Create QSettings
@@ -214,6 +238,10 @@ int main( int argc, char *argv[] )
 	QCommandLineOption		ClearSettingsOption( "clear-settings", "Clear all settings (mainly for testing purposes)" );
 
 	CLP.addOption( ClearSettingsOption );
+
+	QCommandLineOption		SetLocaleOption( "locale", "Set default locale", "locale", QLocale().bcp47Name() );
+
+	CLP.addOption( SetLocaleOption );
 
 	//-------------------------------------------------------------------------
 	// Register and load plugins
