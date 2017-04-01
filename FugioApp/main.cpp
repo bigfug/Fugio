@@ -175,24 +175,24 @@ int main( int argc, char *argv[] )
 	//-------------------------------------------------------------------------
 	// Ask the user if we can collect some anonymous data about how they use Fugio
 
-	if( Settings.value( "first-time", true ).toBool() )
-	{
-		if( !Settings.value( "asked-data-collection-permission", false ).toBool() )
-		{
-			if( QMessageBox::question( nullptr, "Help Fugio Improve", "To understand how users are using Fugio, we would like to collect some anonymous data that will be stored on our website.\n\nYou can opt in or out at any time.\n\nWould you allow Fugio to do this?", QMessageBox::Yes, QMessageBox::No ) == QMessageBox::Yes )
-			{
-				Settings.setValue( "data-collection-permission", true );
-			}
-			else
-			{
-				Settings.setValue( "data-collection-permission", false );
-			}
+//	if( Settings.value( "first-time", true ).toBool() )
+//	{
+//		if( !Settings.value( "asked-data-collection-permission", false ).toBool() )
+//		{
+//			if( QMessageBox::question( nullptr, "Help Fugio Improve", "To understand how users are using Fugio, we would like to collect some anonymous data that will be stored on our website.\n\nYou can opt in or out at any time.\n\nWould you allow Fugio to do this?", QMessageBox::Yes, QMessageBox::No ) == QMessageBox::Yes )
+//			{
+//				Settings.setValue( "data-collection-permission", true );
+//			}
+//			else
+//			{
+//				Settings.setValue( "data-collection-permission", false );
+//			}
 
-			Settings.setValue( "asked-data-collection-permission", true );
-		}
+//			Settings.setValue( "asked-data-collection-permission", true );
+//		}
 
-		Settings.setValue( "first-time", false );
-	}
+//		Settings.setValue( "first-time", false );
+//	}
 
 	//-------------------------------------------------------------------------
 
