@@ -252,19 +252,27 @@ private:
 		int				 mStreamId;
 		AVCodecContext	*mCodecContext;
 		AVCodec			*mCodec;
+		AVFrame			*mFrame;
 		double 			 mPTS;
 		double			 mMaxPTS, mMaxDur;
 		AVRational		 mFrameRate;
 
 		Stream( void )
-			: mStreamId( -1 ), mCodecContext( nullptr ), mCodec( nullptr ), mPTS( -1 ),
+			: mStreamId( -1 ), mCodecContext( nullptr ), mCodec( nullptr ), mFrame( 0 ), mPTS( -1 ),
 			  mMaxPTS( 0 ), mMaxDur( 0 )
 		{
 
 		}
 
 		bool open( AVStream *pStream, AVDictionary **pOpts )
-		{
+		{	
+			mFrame = av_frame_alloc();
+
+			if( !mFrame )
+			{
+				return( false );
+			}
+
 			mCodec = avcodec_find_decoder( pStream->codecpar->codec_id );
 
 			if( !mCodec )
@@ -314,6 +322,8 @@ private:
 			mPTS = -1;
 
 			mMaxPTS = mMaxDur = 0;
+
+			av_frame_free( &mFrame );
 		}
 	} Stream;
 
@@ -348,7 +358,6 @@ private:
 	VideoStream			 mVideo;
 	AudioStream			 mAudio;
 
-	AVFrame				*mFrameSrc;
 	AVPacket			 mPacket;
 
 	int					 mVideoSendResult;
@@ -376,12 +385,12 @@ private:
 	bool				 mDecodeI;
 	bool				 mDecodeB;
 
-	uint64_t			mChannelLayout;
-	int					mChannels;
-	int					mSampleRate;
-	enum AVSampleFormat	mSampleFmt;
+	uint64_t			 mChannelLayout;
+	int					 mChannels;
+	int					 mSampleRate;
+	enum AVSampleFormat	 mSampleFmt;
 
-	MediaAudioProcessor					*mAudioProcessor;
+	MediaAudioProcessor	*mAudioProcessor;
 #endif
 };
 
