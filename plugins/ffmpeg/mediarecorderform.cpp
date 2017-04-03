@@ -31,7 +31,7 @@ QString timeToString( qreal pTime )
 
 MediaRecorderForm::MediaRecorderForm( MediaRecorderNode &pRecorder, QWidget *parent ) :
 	QWidget(parent),
-	ui(new Ui::MediaRecorderForm), mMediaPreset( 0 ), VR( pRecorder )
+	ui(new Ui::MediaRecorderForm), mMediaPreset( 0 ), mProgressDialog( 0 ), VR( pRecorder )
 {
 	ui->setupUi( this );
 
@@ -243,7 +243,10 @@ void MediaRecorderForm::recordingStopped()
 
 void MediaRecorderForm::recording( qreal pTimeStamp )
 {
-	mProgressDialog->setValue( pTimeStamp * 10 );
+	if( mProgressDialog )
+	{
+		mProgressDialog->setValue( pTimeStamp * 10 );
+	}
 }
 
 void MediaRecorderForm::qualityUpdated( int position )
