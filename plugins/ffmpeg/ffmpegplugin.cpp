@@ -62,6 +62,32 @@ ffmpegPlugin::~ffmpegPlugin( void )
 {
 }
 
+QString ffmpegPlugin::av_err( const QString &pHeader, int pErrorCode)
+{
+#if defined( FFMPEG_SUPPORTED )
+	char	errbuf[ AV_ERROR_MAX_STRING_SIZE ];
+
+	av_make_error_string( errbuf, AV_ERROR_MAX_STRING_SIZE, pErrorCode );
+
+	return( QString( "%1: %2" ).arg( pHeader ).arg( QString::fromLatin1( errbuf ) ) );
+#else
+	return( "" );
+#endif
+}
+
+QString ffmpegPlugin::av_err( int pErrorCode )
+{
+#if defined( FFMPEG_SUPPORTED )
+	char	errbuf[ AV_ERROR_MAX_STRING_SIZE ];
+
+	av_make_error_string( errbuf, AV_ERROR_MAX_STRING_SIZE, pErrorCode );
+
+	return( QString::fromLatin1( errbuf ) );
+#else
+	return( "" );
+#endif
+}
+
 PluginInterface::InitResult ffmpegPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
 	Q_UNUSED( pLastChance )
