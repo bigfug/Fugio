@@ -22,6 +22,8 @@
 
 #include "mediarecorderform.h"
 
+#include "ffmpegplugin.h"
+
 #include <fugio/utils.h>
 
 //#define RECORD_RAW_OUTPUT
@@ -283,6 +285,8 @@ void MediaRecorderNode::onFormClicked( void )
 
 void MediaRecorderNode::record( const QString &pFileName )
 {
+	int			AVErr = 0;
+
 	if( mMediaPreset == 0 )
 	{
 		return;
@@ -300,9 +304,9 @@ void MediaRecorderNode::record( const QString &pFileName )
 #if defined( TL_USE_LIB_AV )
 	return;
 #else
-	if( avformat_alloc_output_context2( &mFormatContext, NULL, NULL, pFileName.toLatin1() ) < 0 )
+	if( ( AVErr = avformat_alloc_output_context2( &mFormatContext, NULL, NULL, pFileName.toLatin1() ) ) < 0 )
 	{
-		qWarning() << tr( "Couldn't av_guess_format of filename: %1" ).arg( pFileName );
+		qWarning() << tr( "Couldn't av_guess_format of filename: %1 - %2" ).arg( pFileName ).arg( ffmpegPlugin::av_err( AVErr ) );
 
 		return;
 	}
@@ -386,8 +390,10 @@ void MediaRecorderNode::record( const QString &pFileName )
 
 	if( mStreamVideo )
 	{
-		if( avcodec_open2( mCodecContextVideo, NULL, &mOptionsVideo ) != 0 )
+		if( ( AVErr = avcodec_open2( mCodecContextVideo, NULL, &mOptionsVideo ) ) != 0 )
 		{
+			qWarning() << ffmpegPlugin::av_err( "avcodec_open2", AVErr );
+
 			return;
 		}
 
@@ -434,8 +440,10 @@ void MediaRecorderNode::record( const QString &pFileName )
 
 	if( mStreamAudio != 0 )
 	{
-		if( avcodec_open2( mCodecContextAudio, NULL, &mOptionsAudio ) != 0 )
+		if( ( AVErr = avcodec_open2( mCodecContextAudio, NULL, &mOptionsAudio ) ) != 0 )
 		{
+			qWarning() << ffmpegPlugin::av_err( "avcodec_open2", AVErr );
+
 			return;
 		}
 
