@@ -47,8 +47,8 @@ private:
 	cv::Mat										 mMatSrc;
 	cv::Mat										 mMatDst;
 	cv::Ptr<cv::BackgroundSubtractor>			 mBckSub;
-	double										 mLearningRate;
 #endif
+	double										 mLearningRate;
 };
 
 #endif // BACKGROUNDSUBTRACTIONNODE_H

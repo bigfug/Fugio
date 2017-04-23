@@ -317,7 +317,7 @@ void ShaderCompilerNode::loadShader()
 
 		if( GLEW_VERSION_3_0 )
 		{
-			glTransformFeedbackVaryings( CompilerData.mProgramId, VarLst.size(), VarLst.constData(), BufMod );
+			glTransformFeedbackVaryings( CompilerData.mProgramId, VarLst.size(), (const GLchar **)VarLst.constData(), BufMod );
 
 			OPENGL_PLUGIN_DEBUG;
 		}

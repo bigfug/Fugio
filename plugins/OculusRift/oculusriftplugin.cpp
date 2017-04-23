@@ -54,7 +54,7 @@ bool OculusRiftPlugin::hasOpenGLContext()
 		return( false );
 	}
 
-#if !defined( Q_OS_RASPBERRY_PI )
+#if defined( OCULUS_PLUGIN_SUPPORTED )
 	if( glewExperimental == GL_FALSE )
 	{
 		glewExperimental = GL_TRUE;
