@@ -24,7 +24,8 @@ SOURCES += \
 	mediarecorderform.cpp \
 	mediarecordernode.cpp \
 	mediapreset/mediapresetmanager.cpp \
-	mediaprocessornode.cpp
+	mediaprocessornode.cpp \
+    hap/source/hap.c
 
 HEADERS += \
 	../../include/fugio/ffmpeg/uuid.h \
@@ -52,7 +53,8 @@ HEADERS += \
 	mediaprocessornode.h \
 	processoraudiobuffer.h \
 	mediapreset/mediapresetinterface.h \
-	mediapreset/media360_2048.h
+	mediapreset/media360_2048.h \
+    hap/source/hap.h
 
 FORMS += \
 	mediarecorderform.ui
@@ -205,22 +207,6 @@ contains( DEFINES, FFMPEG_SUPPORTED ) {
 	!contains( DEFINES, TL_USE_LIB_AV ) {
 		LIBS += -lswresample -lavfilter
 	}
-}
-
-#------------------------------------------------------------------------------
-# hap
-
-exists( $$(LIBS)/hap/source ) {
-	INCLUDEPATH += $$(LIBS)/hap/source
-
-	SOURCES += $$(LIBS)/hap/source/hap.c
-	HEADERS += $$(LIBS)/hap/source/hap.h
-
-	DEFINES += HAP_SUPPORTED
-}
-
-!contains( DEFINES, HAP_SUPPORTED ) {
-	warning( "HAP not supported" )
 }
 
 #------------------------------------------------------------------------------
