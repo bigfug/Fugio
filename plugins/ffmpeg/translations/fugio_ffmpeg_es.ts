@@ -243,18 +243,18 @@
 <context>
     <name>MediaRecorderNode</name>
     <message>
-        <location filename="../mediarecordernode.cpp" line="63"/>
+        <location filename="../mediarecordernode.cpp" line="65"/>
         <source>The input image to record</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mediarecordernode.cpp" line="65"/>
+        <location filename="../mediarecordernode.cpp" line="67"/>
         <source>The input audio to record</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mediarecordernode.cpp" line="305"/>
-        <source>Couldn&apos;t av_guess_format of filename: %1</source>
+        <location filename="../mediarecordernode.cpp" line="309"/>
+        <source>Couldn&apos;t av_guess_format of filename: %1 - %2</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

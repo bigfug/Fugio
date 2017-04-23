@@ -43,6 +43,7 @@ macx {
 	BUNDLEDIR    = $$DESTDIR/$$TARGET".bundle"
 	INSTALLDEST  = $$INSTALLDATA/plugins
 	INCLUDEDEST  = $$INSTALLDATA/include/fugio
+	FRAMEWORKDIR = $$BUNDLEDIR/Contents/Frameworks
 
 	DESTDIR = $$BUNDLEDIR/Contents/MacOS
 	DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
@@ -61,7 +62,8 @@ macx {
 		isEmpty( CASKBASE ) {
 			QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
-			QMAKE_POST_LINK += $$libChange( libfftw3f.3.dylib )
+			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/Frameworks
+			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
 		}
 
 		plugin.path = $$INSTALLDEST
@@ -130,19 +132,26 @@ win32 {
 	}
 }
 
-macx:exists( /usr/local/opt/fftw ) {
-	INCLUDEPATH += /usr/local/include
+macx {
+	isEmpty( CASKBASE ) {
+		FFTW_PATH = $$(LIBS)/fftw-3.3.4-x64
 
-	LIBS += -L/usr/local/lib -lfftw3f
+		exists( $$FFTW_PATH ) {
+			INCLUDEPATH += $$FFTW_PATH/include
 
-	DEFINES += FFTW_PLUGIN_SUPPORTED
+			LIBS += -L$$FFTW_PATH/lib -lfftw3f
 
-} else:macx:exists( $$(LIBS)/fftw-3.3.5 ) {
-	INCLUDEPATH += $$(LIBS)/fftw-3.3.5/api
+			DEFINES += FFTW_PLUGIN_SUPPORTED
+		}
+	} else {
+		exists( /usr/local/opt/fftw ) {
+			INCLUDEPATH += /usr/local/opt/fftw/include
 
-	LIBS += $$(LIBS)/fftw-3.3.5/.libs/libfftw3f.a
+			LIBS += -L/usr/local/opt/fftw/lib -lfftw3f
 
-	DEFINES += FFTW_PLUGIN_SUPPORTED
+			DEFINES += FFTW_PLUGIN_SUPPORTED
+		}
+	}
 }
 
 unix:!macx {

@@ -173,12 +173,26 @@ windows:contains( DEFINES, FFMPEG_SUPPORTED ) {
 	QMAKE_LFLAGS += /OPT:NOREF
 }
 
-macx:exists( /usr/local/opt/ffmpeg ) {
-	INCLUDEPATH += /usr/local/opt/ffmpeg/include
+macx {
+	isEmpty( CASKBASE ) {
+		FFMPEG_PATH = $$(LIBS)/ffmpeg-build
 
-	LIBS += -L/usr/local/opt/ffmpeg/lib
+		exists( $$FFMPEG_PATH ) {
+			INCLUDEPATH += $$FFMPEG_PATH/include
 
-	DEFINES += FFMPEG_SUPPORTED
+			LIBS += -L$$FFMPEG_PATH/lib
+
+			DEFINES += FFMPEG_SUPPORTED
+		}
+	} else {
+		exists( /usr/local/opt/ffmpeg ) {
+			INCLUDEPATH += /usr/local/opt/ffmpeg/include
+
+			LIBS += -L/usr/local/opt/ffmpeg/lib
+
+			DEFINES += FFMPEG_SUPPORTED
+		}
+	}
 }
 
 contains( DEFINES, FFMPEG_SUPPORTED ) {
@@ -213,8 +227,15 @@ exists( $$(LIBS)/hap/source ) {
 # snappy
 
 contains( DEFINES, FFMPEG_SUPPORTED ) {
-	macx {
+	isEmpty( CASKBASE ) {
+		SNAPPY_PATH = $$(LIBS)/snappy-build
+
+		INCLUDEPATH += $$SNAPPY_PATH/include
+
+		LIBS += -L$$SNAPPY_PATH/lib -lsnappy
+	} else {
 		INCLUDEPATH += /usr/local/opt/snappy/include
+
 		LIBS += -L/usr/local/opt/snappy/lib
 	}
 
@@ -226,12 +247,12 @@ contains( DEFINES, FFMPEG_SUPPORTED ) {
 	#    HEADERS += $$(LIBS)/snappy/snappy.h \
 	#        $$(LIBS)/snappy/snappy-c.h
 
-		LIBS += -lsnappy
+#		LIBS += -lsnappy
 	}
 
-	DEFINES += SNAPPY_STATIC
-
 	windows {
+		DEFINES += SNAPPY_STATIC
+
 		INCLUDEPATH += $$(LIBS)/snappy-1.1.1.8
 
 		SOURCES += $$(LIBS)/snappy-1.1.1.8/snappy.cc \

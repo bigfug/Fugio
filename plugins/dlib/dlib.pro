@@ -66,9 +66,6 @@ macx {
 
 		isEmpty( CASKBASE ) {
 			QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
-
-			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$FRAMEWORKDIR
-			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
 		}
 
 		plugin.path = $$INSTALLDEST
@@ -97,12 +94,30 @@ linux:!macx:exists( /usr/include/dlib ) {
 	DEFINES += DLIB_SUPPORTED
 }
 
-macx:exists( /usr/local/include/dlib ) {
-	INCLUDEPATH += /usr/local/include
+macx {
+	isEmpty( CASKBASE ) {
+		exists( $$(LIBS)/dlib-x64 ) {
+			INCLUDEPATH += $$(LIBS)/dlib-x64/include
 
-	LIBS += -L/usr/local/lib -ldlib -lblas -llapack
+			DEFINES += DLIB_NO_GUI_SUPPORT
 
-	DEFINES += DLIB_SUPPORTED
+			SOURCES += $$(LIBS)/dlib/dlib/all/source.cpp
+
+			LIBS += -framework Accelerate
+
+#			LIBS += -L/usr/local/lib -ldlib -lblas -llapack
+
+			DEFINES += DLIB_SUPPORTED
+		}
+	} else {
+		exists( /usr/local/include/dlib ) {
+			INCLUDEPATH += /usr/local/include
+
+			LIBS += -L/usr/local/lib -ldlib -lblas -llapack
+
+			DEFINES += DLIB_SUPPORTED
+		}
+	}
 }
 
 win32:exists( $$(LIBS)/dlib-19.2 ) {

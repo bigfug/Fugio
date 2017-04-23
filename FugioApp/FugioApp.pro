@@ -177,10 +177,10 @@ CONFIG(release,debug|release) {
 	includes.path = $$INSTALLDATA/include
 	includes.files = ../include/fugio
 
-	translations.path = $$INSTALLDATA/translations
-	translations.files = ../translations/*.qm
+	shared_libs.path = $$INSTALLDATA
+	shared_libs.files = $$DESTDIR/libs
 
-	INSTALLS += examples includes share snippets translations
+	INSTALLS += examples includes share shared_libs snippets
 }
 
 macx {
@@ -219,15 +219,15 @@ macx {
 		INSTALLS += app
 	}
 
-	isEmpty( CASKBASE ) {
-		brew_meta.path = $$INSTALLBASE/packages/sh.brew/meta
-		brew_meta.files = ../installer/package.xml ../installer/installscript.qs
+#	isEmpty( CASKBASE ) {
+#		brew_meta.path = $$INSTALLBASE/packages/sh.brew/meta
+#		brew_meta.files = ../installer/package.xml ../installer/installscript.qs
 
-		brew_data.path = $$INSTALLBASE/packages/sh.brew/data
-		brew_data.files = ../installer/brew_install_update
+#		brew_data.path = $$INSTALLBASE/packages/sh.brew/data
+#		brew_data.files = ../installer/brew_install_update
 
-		INSTALLS += brew_meta brew_data
-	}
+#		INSTALLS += brew_meta brew_data
+#	}
 
 	qttranslation.path = $$app.path/$$TARGET".app"/Contents/translations
 	qttranslation.files = $$(QTDIR)/translations/qt*.qm

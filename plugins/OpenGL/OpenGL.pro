@@ -153,39 +153,6 @@ contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 }
 
 #------------------------------------------------------------------------------
-# GLEW
-
-win32 {
-	INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
-
-	LIBS += -L$$(LIBS)/glew-2.0.0/lib/Release/Win32 -lglew32s
-
-	DEFINES += GLEW_STATIC
-
-	LIBS += -lopengl32
-}
-
-macx {
-	QMAKE_POST_LINK += echo
-
-	exists( /usr/local/opt/glew ) {
-		QMAKE_POST_LINK += && mkdir -pv $$DESTDIR/../libs
-
-		QMAKE_POST_LINK += && cp -a /usr/local/opt/glew/lib/*.dylib $$DESTDIR/../libs/
-
-		INCLUDEPATH += /usr/local/include
-
-		LIBS += -L/usr/local/lib -lGLEW
-	} else:exists( $$(LIBS)/glew-2.0.0 ) {
-		INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
-
-		LIBS += $$(LIBS)/glew-2.0.0/lib/libGLEW.a
-
-		DEFINES += GLEW_STATIC
-	}
-}
-
-#------------------------------------------------------------------------------
 # OSX plugin bundle
 
 macx {
@@ -198,11 +165,20 @@ macx {
 	INCLUDEDEST  = $$INSTALLDATA/include/fugio
 	FRAMEWORKDIR = $$BUNDLEDIR/Contents/Frameworks
 
+	isEmpty( CASKBASE ) {
+		libraries.path  = $$DESTDIR/../libs
+		libraries.files = $$(LIBS)/glew-2.0.0/lib/libGLEW.2.0.0.dylib
+
+		INSTALLS += libraries
+	}
+
 	DESTDIR = $$BUNDLEDIR/Contents/MacOS
 	DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
 
 	CONFIG(release,debug|release) {
 		LIBCHANGEDEST = $$DESTLIB
+
+		QMAKE_POST_LINK += echo
 
 		QMAKE_POST_LINK += $$qtLibChange( QtWidgets )
 		QMAKE_POST_LINK += $$qtLibChange( QtGui )
@@ -213,14 +189,6 @@ macx {
 
 		isEmpty( CASKBASE ) {
 			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
-		}
-
-		isEmpty( CASKBASE ) {
-			exists( /usr/local/opt/glew ) {
-				QMAKE_POST_LINK += && mkdir -pv $$INSTALLDATA/libs
-
-				QMAKE_POST_LINK += && cp -a /usr/local/opt/glew/lib/*.dylib $$INSTALLDATA/libs/
-			}
 		}
 
 		plugin.path = $$INSTALLDEST
@@ -266,3 +234,28 @@ unix:!macx {
 
 INCLUDEPATH += $$FUGIO_ROOT/Fugio/include
 
+#------------------------------------------------------------------------------
+# GLEW
+
+win32 {
+	INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
+
+	LIBS += -L$$(LIBS)/glew-2.0.0/lib/Release/Win32 -lglew32s
+
+	DEFINES += GLEW_STATIC
+
+	LIBS += -lopengl32
+}
+
+macx {
+	isEmpty( CASKBASE ) {
+		INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
+
+		LIBS += -L$$(LIBS)/glew-2.0.0/lib -lGLEW
+
+	} else {
+		INCLUDEPATH += /usr/local/include
+
+		LIBS += -L/usr/local/lib -lGLEW
+	}
+}

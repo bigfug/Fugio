@@ -66,6 +66,13 @@ macx {
 	INCLUDEDEST  = $$INSTALLDATA/include/fugio
 	FRAMEWORKDIR = $$BUNDLEDIR/Contents/Frameworks
 
+	isEmpty( CASKBASE ) {
+		libraries.path  = $$DESTDIR/../libs
+		libraries.files = $$(LIBS)/glew-2.0.0/lib/libGLEW.2.0.0.dylib
+
+		INSTALLS += libraries
+	}
+
 	DESTDIR = $$BUNDLEDIR/Contents/MacOS
 	DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
 
@@ -81,6 +88,8 @@ macx {
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
 		isEmpty( CASKBASE ) {
+			QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+
 			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
 		}
 
@@ -141,16 +150,15 @@ win32 {
 }
 
 macx {
-	exists( /usr/local/opt/glew ) {
+	isEmpty( CASKBASE ) {
+		INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
+
+		LIBS += -L$$(LIBS)/glew-2.0.0/lib -lGLEW
+
+	} else {
 		INCLUDEPATH += /usr/local/include
 
 		LIBS += -L/usr/local/lib -lGLEW
-	} else:exists( $$(LIBS)/glew-2.0.0 ) {
-		INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
-
-		LIBS += $$(LIBS)/glew-2.0.0/lib/libGLEW.a
-
-		DEFINES += GLEW_STATIC
 	}
 }
 
