@@ -264,6 +264,8 @@ public slots:
 	void addGlobalPin( QUuid pPinGlobalId );
 	void remGlobalPin( QUuid pPinGlobalId );
 
+	void updatePinItem( QUuid pPinGlobalId );
+
 protected:
 	void processSelection( bool pSaveToClipboard, bool pDeleteData );
 

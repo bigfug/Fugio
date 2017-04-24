@@ -34,6 +34,8 @@ public:
 			NI->pinOutputRemove( mPin->globalId() );
 
 			NI->layoutPins();
+
+			mContextView->updatePinItem( mPin->globalId() );
 		}
 	}
 
@@ -46,6 +48,8 @@ public:
 			NI->pinOutputAdd( mPin );
 
 			NI->layoutPins();
+
+			mContextView->updatePinItem( mPin->globalId() );
 		}
 	}
 

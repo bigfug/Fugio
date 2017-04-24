@@ -2397,6 +2397,30 @@ void ContextView::remGlobalPin( QUuid pPinGlobalId )
 	mGlobalPins.removeAll( pPinGlobalId );
 }
 
+void ContextView::updatePinItem( QUuid pPinGlobalId )
+{
+	QSharedPointer<fugio::PinInterface>	PIN = mContext->findPin( pPinGlobalId );
+
+	if( !PIN || !PIN->node() )
+	{
+		return;
+	}
+
+	QSharedPointer<NodeItem>	NI = mNodeList.value( PIN->node()->uuid() );
+
+	if( !NI )
+	{
+		return;
+	}
+
+	PinItem		*PI = ( PIN->direction() == PIN_INPUT ? NI->findPinInput( pPinGlobalId ) : NI->findPinOutput( pPinGlobalId ) );
+
+	if( PI )
+	{
+		PI->update();
+	}
+}
+
 void ContextView::processSelection( bool pSaveToClipboard, bool pDeleteData )
 {
 	sortSelectedItems( mNodeItemList, mGroupItemList, mLinkItemList, mNoteItemList, true );
