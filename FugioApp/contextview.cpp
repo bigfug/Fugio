@@ -130,7 +130,7 @@ ContextWidgetPrivate *ContextView::widget( void )
 	QObject						*O = this;
 	ContextWidgetPrivate		*C = 0;
 
-	while( O != 0 && ( C = qobject_cast<ContextWidgetPrivate *>( O ) ) == 0 )
+	while( O && ( C = qobject_cast<ContextWidgetPrivate *>( O ) ) == 0 )
 	{
 		O = O->parent();
 	}
@@ -219,7 +219,7 @@ QList<QUuid> ContextView::noteItemIds( const QList<NoteItem *> &pNoteList )
 	return( IdsLst );
 }
 
-QMultiMap<QUuid, QUuid> ContextView::linkItemIds(const QList<LinkItem *> &pLinkList)
+QMultiMap<QUuid, QUuid> ContextView::linkItemIds( const QList<LinkItem *> &pLinkList )
 {
 	QMultiMap<QUuid, QUuid>		IdsMap;
 
@@ -1506,7 +1506,7 @@ void ContextView::updateItemVisibility()
 
 		NoteItem		*TI = qgraphicsitem_cast<NoteItem *>( Item );
 
-		if( TI != 0 )
+		if( TI )
 		{
 			TI->setVisible( TI->groupId() == m_GroupId );
 
@@ -1902,7 +1902,7 @@ void ContextView::nodeMoveFinished()
 
 	CmdMove		*Cmd = new CmdMove( this, mNodeMoveData, mNoteMoveData );
 
-	if( Cmd != 0 )
+	if( Cmd )
 	{
 		widget()->undoStack()->push( Cmd );
 	}
@@ -2022,7 +2022,7 @@ bool ContextView::hasNoteItem(const QUuid pNoteId) const
 	return( false );
 }
 
-void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
+void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI )
 {
 	const QUuid		NewGroupId = NI->id();
 
@@ -2375,7 +2375,7 @@ void ContextView::ungroup( NodeItem *GI )
 	updateGroupWidgetText();
 }
 
-void ContextView::processGroupLinks(const QUuid &pGroupId)
+void ContextView::processGroupLinks( const QUuid &pGroupId )
 {
 	QSharedPointer<NodeItem>	NI = findNodeItem( pGroupId );
 
@@ -2385,7 +2385,7 @@ void ContextView::processGroupLinks(const QUuid &pGroupId)
 	}
 }
 
-void ContextView::addGlobalPin( QUuid pPinGlobalId)
+void ContextView::addGlobalPin( QUuid pPinGlobalId )
 {
 	mGlobalPins.removeAll( pPinGlobalId );
 
@@ -2624,7 +2624,7 @@ bool ContextView::event( QEvent *pEvent )
 	return( QGraphicsView::event( pEvent ) );
 }
 
-bool ContextView::gestureEvent(QGestureEvent *pEvent)
+bool ContextView::gestureEvent( QGestureEvent *pEvent )
 {
 	//qDebug() << "gestureEvent():" << pEvent;
 
