@@ -2306,6 +2306,8 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGro
 	}
 
 	updateItemVisibility();
+
+	updateGroupWidgetText();
 }
 
 void ContextView::ungroup( NodeItem *GI )
@@ -2369,6 +2371,8 @@ void ContextView::ungroup( NodeItem *GI )
 	mNodeList.remove( GI->id() );
 
 	updateItemVisibility();
+
+	updateGroupWidgetText();
 }
 
 void ContextView::processGroupLinks(const QUuid &pGroupId)
@@ -2454,6 +2458,8 @@ void ContextView::processSelection( bool pSaveToClipboard, bool pDeleteData )
 		if( Cmd )
 		{
 			widget()->undoStack()->push( Cmd );
+
+			updateGroupWidgetText();
 		}
 	}
 
