@@ -12,6 +12,10 @@ TARGET = $$qtLibraryTarget(fugio-ffmpeg)
 TEMPLATE = lib
 CONFIG += plugin c++11
 
+linux {
+	QMAKE_CFLAGS += -std=c11
+}
+
 DESTDIR = $$DESTDIR/plugins
 
 SOURCES += \
@@ -166,6 +170,8 @@ exists( $$PWD/../../../FugioPlugins/include ) {
 
 linux {
 	LIBS += -L/usr/local/lib
+
+	DEFINES += FFMPEG_SUPPORTED
 }
 
 windows:contains( DEFINES, FFMPEG_SUPPORTED ) {
@@ -200,9 +206,9 @@ macx {
 contains( DEFINES, FFMPEG_SUPPORTED ) {
 	LIBS += -lavcodec -lavdevice -lavformat -lavutil -lswscale
 
-	linux:!exists( /usr/include/libswresample/swresample.h ) {
-		DEFINES += TL_USE_LIB_AV
-	}
+#	linux:!exists( /usr/include/libswresample/swresample.h ) {
+#		DEFINES += TL_USE_LIB_AV
+#	}
 
 	!contains( DEFINES, TL_USE_LIB_AV ) {
 		LIBS += -lswresample -lavfilter
