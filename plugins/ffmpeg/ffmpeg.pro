@@ -219,16 +219,18 @@ contains( DEFINES, FFMPEG_SUPPORTED ) {
 # snappy
 
 contains( DEFINES, FFMPEG_SUPPORTED ) {
-	isEmpty( CASKBASE ) {
-		SNAPPY_PATH = $$(LIBS)/snappy-build
+	macx {
+		isEmpty( CASKBASE ) {
+			SNAPPY_PATH = $$(LIBS)/snappy-build
 
-		INCLUDEPATH += $$SNAPPY_PATH/include
+			INCLUDEPATH += $$SNAPPY_PATH/include
 
-		LIBS += -L$$SNAPPY_PATH/lib -lsnappy
-	} else {
-		INCLUDEPATH += /usr/local/opt/snappy/include
+			LIBS += -L$$SNAPPY_PATH/lib -lsnappy
+		} else {
+			INCLUDEPATH += /usr/local/opt/snappy/include
 
-		LIBS += -L/usr/local/opt/snappy/lib
+			LIBS += -L/usr/local/opt/snappy/lib
+		}
 	}
 
 	unix {
