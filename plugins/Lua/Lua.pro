@@ -59,10 +59,16 @@ macx {
 
 	isEmpty( CASKBASE ) {
 		libraries.path  = $$DESTDIR/../libs
-		libraries.files = $$(LIBS)/lua-x64/lib/liblua5.3.*.dylib
-	}
+		libraries.files = $$(LIBS)/lua-x64/lib/liblua5.3.4.dylib
 
-	INSTALLS += libraries
+		INSTALLS += libraries
+
+		library_id.path = $$DESTDIR/../libs
+		library_id.depends = install_libraries
+		library_id.commands = install_name_tool -id @rpath/liblua5.3.4.dylib $$library_id.path/liblua5.3.4.dylib
+
+		INSTALLS += library_id
+	}
 
 	QMAKE_POST_LINK += echo
 

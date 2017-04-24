@@ -192,8 +192,10 @@ macx {
 	PLUGIN_DIR   = $$APP_DIR/Contents/PlugIns
 	RESOURCE_DIR = $$APP_DIR/Contents/Resources
 
+	QMAKE_POST_LINK += echo
+
 	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += install_name_tool -change libfugio.1.dylib @executable_path/../../../libfugio.1.dylib $$APP_DIR/Contents/MacOS/Fugio
+		QMAKE_POST_LINK += && install_name_tool -change libfugio.1.dylib @executable_path/../../../libfugio.1.dylib $$APP_DIR/Contents/MacOS/Fugio
 
 		QMAKE_POST_LINK += && macdeployqt $$APP_DIR -always-overwrite -qmldir=../qml
 
