@@ -41,8 +41,7 @@
 bool ContextView::mShownWizard = false;
 
 ContextView::ContextView( QWidget *pParent ) :
-	QGraphicsView( pParent ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 ),
-	mScaleFactor( 1 ), mCurrentFactor( 1 )
+	QGraphicsView( pParent ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 )
 {
 	setScene( &mContextScene );
 
@@ -65,12 +64,16 @@ ContextView::ContextView( QWidget *pParent ) :
 	mLabelBrush = QBrush( Qt::white );
 
 	resetPasteOffset();
+
+	mGroupState.insert( QUuid(), GroupStateEntry() );
 }
 
 ContextView::~ContextView( void )
 {
 	if( QSharedPointer<ContextPrivate> C = qSharedPointerCast<ContextPrivate>( mContext ) )
 	{
+		disconnect( C.data(), 0, this, 0 );
+
 		C->clear();
 	}
 
@@ -537,8 +540,6 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 				const QUuid			OrigId    = fugio::utils::string2uuid( pSettings.value( "uuid" ).toString() );
 				const QUuid			NodeId    = ( mNodeList.contains( OrigId ) ? QUuid::createUuid() : OrigId );
 
-				//const QTransform	Transform = pSettings.value( "transform" ).value<QTransform>();
-
 				if( NodeId.isNull() )
 				{
 					continue;
@@ -547,6 +548,8 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 				GroupIdMap.insert( OrigId, NodeId );
 
 				groupAdd( NodeId );
+
+				mGroupState.insert( NodeId, GroupStateEntry::create( pSettings ) );
 
 				if( QSharedPointer<NodeItem> NI = mNodeList.value( NodeId ) )
 				{
@@ -764,6 +767,21 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 	//-------------------------------------------------------------------------
 
+	if( !pPartial )
+	{
+		GroupStateEntry	GSE;
+
+		pSettings.beginGroup( "view" );
+
+		GSE.load( pSettings );
+
+		m_GroupId = fugio::utils::string2uuid( pSettings.value( "group", fugio::utils::uuid2string( m_GroupId ) ).toString() );
+
+		pSettings.endGroup();
+
+		mGroupState.insert( QUuid(), GSE );
+	}
+
 #if !defined( Q_OS_RASPBERRY_PI )
 	if( !pPartial )
 	{
@@ -808,7 +826,9 @@ void ContextView::loadEnded( QSettings &pSettings, bool pPartial )
 		}
 	}
 
-	updateItemVisibility();
+	m_GroupId = QUuid::createUuid();	// dummy value
+
+	setGroupId( QUuid() );
 }
 
 void ContextView::saveContext( QSettings &pSettings ) const
@@ -904,7 +924,8 @@ void ContextView::saveContext( QSettings &pSettings ) const
 
 		pSettings.setValue( "name", Node->name() );
 		pSettings.setValue( "uuid", fugio::utils::uuid2string( GID ) );
-		pSettings.setValue( "transform", QTransform() );
+
+		mGroupState.value( GID ).save( pSettings );
 
 		if( !Node->groupId().isNull() )
 		{
@@ -1041,6 +1062,16 @@ void ContextView::saveContext( QSettings &pSettings ) const
 
 	if( !mSaveOnlySelected )
 	{
+		GroupStateEntry	GSE = mGroupState.value( QUuid() );
+
+		pSettings.beginGroup( "view" );
+
+		GSE.save( pSettings );
+
+		pSettings.setValue( "group", fugio::utils::uuid2string( m_GroupId ) );
+
+		pSettings.endGroup();
+
 		pSettings.setValue( "mainwindow/geometry", gApp->mainWindow()->saveGeometry() );
 		pSettings.setValue( "mainwindow/state", gApp->mainWindow()->saveState() );
 	}
@@ -1062,6 +1093,10 @@ void ContextView::clearContext( void )
 	mNoteList.clear();
 
 	mNodeList.clear();
+
+	mGroupState.clear();
+
+	mGroupState.insert( QUuid(), GroupStateEntry() );
 
 	if( scene() )
 	{
@@ -1527,6 +1562,12 @@ void ContextView::setGroupId( QUuid GroupId )
 	emit groupIdChanged( GroupId );
 
 	updateItemVisibility();
+
+	GroupStateEntry	GSE = mGroupState.value( m_GroupId );
+
+	zoom( GSE.mCurrentFactor * GSE.mScaleFactor, GSE.mScaleCenter );
+
+	centerOn( GSE.mCenter );
 }
 
 void ContextView::setSelectedColour( const QColor &pColor )
@@ -2677,21 +2718,29 @@ void ContextView::panTriggered( QPanGesture *pGesture )
 
 void ContextView::pinchTriggered( QPinchGesture *pGesture )
 {
+	GroupStateEntry	GSE = mGroupState.value( m_GroupId );
+
 	QPinchGesture::ChangeFlags ChangeFlags = pGesture->changeFlags();
 
 	if( ChangeFlags & QPinchGesture::ScaleFactorChanged )
 	{
-		mCurrentFactor = pGesture->totalScaleFactor();
+		GSE.mCurrentFactor = pGesture->totalScaleFactor();
 	}
 
 	if( pGesture->state() == Qt::GestureFinished )
 	{
-		mScaleFactor *= mCurrentFactor;
+		GSE.mScaleFactor *= GSE.mCurrentFactor;
 
-		mCurrentFactor = 1;
+		GSE.mCurrentFactor = 1;
 	}
 
-	zoom( mCurrentFactor * mScaleFactor, pGesture->centerPoint() );
+	GSE.mScaleCenter = pGesture->centerPoint();
+
+	zoom( GSE.mCurrentFactor * GSE.mScaleFactor, GSE.mScaleCenter );
+
+	GSE.mCenter = mapToScene( viewport()->rect().center() );
+
+	mGroupState.insert( m_GroupId, GSE );
 }
 
 void ContextView::swipeTriggered(QSwipeGesture *pGesture)
@@ -2703,6 +2752,8 @@ void ContextView::wheelEvent( QWheelEvent *pEvent )
 {
 	QPoint numPixels = pEvent->pixelDelta();
 	QPoint numDegrees = pEvent->angleDelta() / 8;
+
+	GroupStateEntry	GSE = mGroupState.value( m_GroupId );
 
 	if( !numPixels.isNull() )
 	{
@@ -2718,14 +2769,16 @@ void ContextView::wheelEvent( QWheelEvent *pEvent )
 
 			if( numSteps.y() > 0 )
 			{
-				mScaleFactor += qMax( 0.1, qreal( numSteps.y() ) * 0.1 );
+				GSE.mScaleFactor += qMax( 0.1, qreal( numSteps.y() ) * 0.1 );
 			}
 			else
 			{
-				mScaleFactor -= qMax( 0.1, qreal( -numSteps.y() ) * 0.1 );
+				GSE.mScaleFactor -= qMax( 0.1, qreal( -numSteps.y() ) * 0.1 );
 			}
 
-			zoom( mScaleFactor, mapToScene( pEvent->pos() ) );
+			GSE.mScaleCenter = mapToScene( pEvent->pos() );
+
+			zoom( GSE.mScaleFactor, GSE.mScaleCenter );
 		}
 		else
 		{
@@ -2734,6 +2787,10 @@ void ContextView::wheelEvent( QWheelEvent *pEvent )
 			verticalScrollBar()->setValue( verticalScrollBar()->value() - numDegrees.y() );
 		}
 	}
+
+	GSE.mCenter = mapToScene( viewport()->rect().center() );
+
+	mGroupState.insert( m_GroupId, GSE );
 
 	pEvent->accept();
 }
