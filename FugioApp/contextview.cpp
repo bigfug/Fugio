@@ -2208,15 +2208,8 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGro
 	// Search for any links that link from the ungrouping nodes to outside nodes
 	// and delete them
 
-	for( QGraphicsItem *Item : scene()->items() )
+	for( LinkItem *LI : mLinkList.toSet() )
 	{
-		LinkItem		*LI = qgraphicsitem_cast<LinkItem *>( Item );
-
-		if( !LI )
-		{
-			continue;
-		}
-
 		PinItem			*SrcPin = LI->srcPin();
 		PinItem			*DstPin = LI->dstPin();
 
@@ -2270,6 +2263,8 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGro
 
 		SrcPin->linkRem( LI );
 		DstPin->linkRem( LI );
+
+		mLinkList.removeAll( LI );
 
 		delete LI;
 
@@ -2346,6 +2341,8 @@ void ContextView::ungroup( NodeItem *GI )
 
 			if( SrcNod->id() == GI->id() || DstNod->id() == GI->id() )
 			{
+				mLinkList.removeAll( LI );
+
 				delete LI;
 			}
 
