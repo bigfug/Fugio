@@ -173,8 +173,6 @@ void PortMidiOutputNode::onFrameEnd( qint64 pTimeStamp )
 		{
 			mDevice->output( M->messages() );
 
-			M->clearData();
-
 			continue;
 		}
 
