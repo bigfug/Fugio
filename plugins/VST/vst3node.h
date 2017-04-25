@@ -260,6 +260,7 @@ private:
 		Steinberg::Vst::IAudioProcessor			*mAudioProcessor;
 
 		QList<Steinberg::Vst::Event>			 mEventList;
+		QMutex									 mEventMutex;
 
 		QVector<QVector<float>>					 mDatInp;
 		QVector<QVector<float>>					 mDatOut;

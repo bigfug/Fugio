@@ -715,7 +715,7 @@ void VST3Node::inputsUpdated( qint64 pTimeStamp )
 
 	for( AudioInstanceData *AID : mInstanceList )
 	{
-//		QMutexLocker	L( &AID->mEventMutex );
+		QMutexLocker	L( &AID->mEventMutex );
 
 		AID->mEventList.append( VstEvt );
 	}
@@ -805,6 +805,8 @@ void VST3Node::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelO
 
 	//-------------------------------------------------------------------------
 
+	InsDat->mEventMutex.lock();
+
 	Vst::ProcessData		 PD;
 
 	PD.processMode           = Vst::kRealtime;
@@ -823,6 +825,8 @@ void VST3Node::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelO
 	}
 
 	InsDat->mEventList.clear();
+
+	InsDat->mEventMutex.unlock();
 
 	//-------------------------------------------------------------------------
 
