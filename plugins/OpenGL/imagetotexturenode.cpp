@@ -12,7 +12,8 @@
 #include <QMessageBox>
 
 #include <fugio/global_interface.h>
-#include "fugio/context_interface.h"
+#include <fugio/context_interface.h>
+#include <fugio/editor_interface.h>
 
 #include <fugio/core/variant_interface.h>
 #include <fugio/performance.h>
@@ -162,7 +163,9 @@ void ImageToTextureNode::onEditClicked()
 		return;
 	}
 
-	QScopedPointer<TextureNodeForm>		Form( new TextureNodeForm( mTexture, true, mNode->context()->global()->mainWindow() ) );
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
+
+	QScopedPointer<TextureNodeForm>		Form( new TextureNodeForm( mTexture, true, EI->mainWindow() ) );
 
 	if( Form )
 	{

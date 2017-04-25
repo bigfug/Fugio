@@ -131,11 +131,11 @@ bool MainWindow::addExamplesPath( const QString &pPath )
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
-	ui(new Ui::MainWindow), mUndoStack( &gApp->undoGroup() )
+	ui(new Ui::MainWindow), mUndoStack( &gApp->undoGroup() ), mEditTarget( nullptr )
 {
 	ui->setupUi( this );
 
-	connect( gApp->global().qobject(), SIGNAL(editTargetChanged(fugio::EditInterface*)), this, SLOT(onEditTarget(fugio::EditInterface*)) );
+	//connect( gApp->global().qobject(), SIGNAL(editTargetChanged(fugio::EditInterface*)), this, SLOT(onEditTarget(fugio::EditInterface*)) );
 
 	ui->actionExit->setShortcut( QKeySequence::Quit );
 
@@ -1394,4 +1394,36 @@ void MainWindow::on_actionOptions_triggered()
 	SettingsDialog		Dialog( this );
 
 	Dialog.exec();
+}
+
+
+QMainWindow *MainWindow::mainWindow()
+{
+	return( this );
+}
+
+void MainWindow::setEditTarget( fugio::EditInterface *pEditTarget )
+{
+	if( mEditTarget != pEditTarget )
+	{
+		mEditTarget = pEditTarget;
+
+		emit mEditorSignals.editTargetChanged( mEditTarget );
+
+		onEditTarget( mEditTarget );
+	}
+}
+
+fugio::EditorSignals *MainWindow::qobject()
+{
+	return( &mEditorSignals );
+}
+
+const fugio::EditorSignals *MainWindow::qobject() const
+{
+	return( &mEditorSignals );
+}
+
+void MainWindow::menuAddFileImporter( QString pName )
+{
 }

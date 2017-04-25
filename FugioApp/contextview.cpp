@@ -1825,14 +1825,24 @@ void ContextView::dragMoveEvent( QDragMoveEvent *pEvent )
 
 void ContextView::focusInEvent( QFocusEvent *pEvent )
 {
-	mContext->global()->setEditTarget( this );
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mContext->global()->findInterface( IID_EDITOR ) );
+
+	if( EI )
+	{
+		EI->setEditTarget( this );
+	}
 
 	QGraphicsView::focusInEvent( pEvent );
 }
 
 void ContextView::focusOutEvent( QFocusEvent *pEvent )
 {
-	mContext->global()->setEditTarget( nullptr );
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mContext->global()->findInterface( IID_EDITOR ) );
+
+	if( EI )
+	{
+		EI->setEditTarget( this );
+	}
 
 	QGraphicsView::focusOutEvent( pEvent );
 }

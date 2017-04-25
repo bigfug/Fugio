@@ -11,6 +11,7 @@
 #include <fugio/core/uuid.h>
 #include <fugio/context_signals.h>
 #include <fugio/performance.h>
+#include <fugio/editor_interface.h>
 
 #include "imagepreview.h"
 
@@ -82,11 +83,11 @@ bool ImagePreviewNode::initialise( void )
 		return( false );
 	}
 
-	QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
 
-	if( MainWindow )
+	if( EI )
 	{
-		if( ( mDockWidget = new QDockWidget( QString( "Image Preview: %1" ).arg( mNode->name() ), MainWindow ) ) == 0 )
+		if( ( mDockWidget = new QDockWidget( QString( "Image Preview: %1" ).arg( mNode->name() ), EI->mainWindow() ) ) == 0 )
 		{
 			return( false );
 		}
@@ -102,7 +103,7 @@ bool ImagePreviewNode::initialise( void )
 
 		mDockWidget->setWidget( mGUI );
 
-		MainWindow->addDockWidget( mDockArea, mDockWidget );
+		EI->mainWindow()->addDockWidget( mDockArea, mDockWidget );
 
 		connect( mNode->context()->qobject(), SIGNAL(frameInitialise()), this, SLOT(contextFrameInitialise()) );
 	}

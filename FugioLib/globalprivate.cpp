@@ -31,7 +31,7 @@
 GlobalPrivate *GlobalPrivate::mInstance = 0;
 
 GlobalPrivate::GlobalPrivate( QObject * ) :
-	GlobalSignals( this ), mEditTarget( nullptr ), mPause( false )
+	GlobalSignals( this ), mPause( false )
 {
 	//-------------------------------------------------------------------------
 	// Install translator
@@ -51,7 +51,6 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 
 	mLastTime   = 0;
 	mFrameCount = 0;
-	mMainWindow = 0;
 
 	mCommandLineParser.addHelpOption();
 	mCommandLineParser.addVersionOption();
@@ -633,26 +632,6 @@ QList<QSharedPointer<fugio::ContextInterface> > GlobalPrivate::contexts()
 	return( mContexts );
 }
 
-void GlobalPrivate::setMainWindow( QMainWindow *pMainWindow )
-{
-	mMainWindow = pMainWindow;
-}
-
-QMainWindow *GlobalPrivate::mainWindow( void )
-{
-	return( mMainWindow );
-}
-
-void GlobalPrivate::setEditTarget( fugio::EditInterface *pEditTarget )
-{
-	if( mEditTarget != pEditTarget )
-	{
-		mEditTarget = pEditTarget;
-
-		emit editTargetChanged( mEditTarget );
-	}
-}
-
 void GlobalPrivate::registerDeviceFactory( fugio::DeviceFactoryInterface *pFactory )
 {
 	mDeviceFactories.append( pFactory );
@@ -744,17 +723,6 @@ QList<QUuid> GlobalPrivate::pinSplitters(const QUuid &pPinId) const
 QList<QUuid> GlobalPrivate::pinJoiners(const QUuid &pPinId) const
 {
 	return( mPinJoiners.values( pPinId ) );
-}
-
-
-void GlobalPrivate::menuAddEntry( fugio::MenuId pMenuId, QString pName, QObject *pObject, const char *pSlot )
-{
-	fugio::MenuControlInterface	*MCI = qobject_cast<fugio::MenuControlInterface *>( mainWindow() );
-
-	if( MCI )
-	{
-		MCI->menuAddEntry( pMenuId, pName, pObject, pSlot );
-	}
 }
 
 void GlobalPrivate::start()

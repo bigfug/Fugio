@@ -11,6 +11,7 @@
 #include <fugio/midi/midi_interface.h>
 #include <fugio/midi/uuid.h>
 #include <fugio/pin_signals.h>
+#include <fugio/editor_interface.h>
 
 #include "vstplugin.h"
 #include "vstview.h"
@@ -319,9 +320,9 @@ bool VST3Node::initialise()
 
 	if( mPluginController )
 	{
-		QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
+		fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
 
-		if( MainWindow )
+		if( EI )
 		{
 			Steinberg::IPlugView					*PluginView;
 
@@ -331,13 +332,13 @@ bool VST3Node::initialise()
 			{
 				if( PluginView->isPlatformTypeSupported( Steinberg::kPlatformTypeHWND ) == kResultTrue )
 				{
-					if( ( mDockWidget = new QDockWidget( QString( "VST: %1" ).arg( mNode->name() ), MainWindow ) ) )
+					if( ( mDockWidget = new QDockWidget( QString( "VST: %1" ).arg( mNode->name() ), EI->mainWindow() ) ) )
 					{
 						mDockWidget->setWidget( new VSTView( PluginView ) );
 
 						mDockWidget->setObjectName( mNode->name() );
 
-						MainWindow->addDockWidget( mDockArea, mDockWidget );
+						EI->mainWindow()->addDockWidget( mDockArea, mDockWidget );
 
 						mDockWidget->show();
 					}
@@ -538,7 +539,7 @@ bool VST3Node::initialise()
 
 bool VST3Node::deinitialise()
 {
-	QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
 
 	if( mPluginView )
 	{
@@ -547,9 +548,9 @@ bool VST3Node::deinitialise()
 		mPluginView = 0;
 	}
 
-	if( mDockWidget != 0 )
+	if( mDockWidget )
 	{
-		MainWindow->removeDockWidget( mDockWidget );
+		EI->mainWindow()->removeDockWidget( mDockWidget );
 
 		delete mDockWidget;
 

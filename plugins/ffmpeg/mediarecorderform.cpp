@@ -17,6 +17,8 @@
 
 #include <fugio/context_interface.h>
 
+#include <fugio/editor_interface.h>
+
 QString timeToString( qreal pTime )
 {
 	int		Mils = fmod( pTime, 1.0 ) * 1000.0;
@@ -208,15 +210,18 @@ void MediaRecorderForm::recordingStarted()
 		TimeDuration = TimeEnd - TimeStart;
 	}
 
-	QMainWindow			*MainWindow = VR.node()->context()->global()->mainWindow();
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( VR.node()->context()->global()->findInterface( IID_EDITOR ) );
 
-	if( ( mProgressDialog = new QProgressDialog( tr( "Recording" ), tr( "Cancel" ), 0, TimeDuration * 10, MainWindow ) ) != 0 )
+	if( EI )
 	{
-		mProgressDialog->setWindowModality( Qt::WindowModal );
+		if( ( mProgressDialog = new QProgressDialog( tr( "Recording" ), tr( "Cancel" ), 0, TimeDuration * 10, EI->mainWindow() ) ) != 0 )
+		{
+			mProgressDialog->setWindowModality( Qt::WindowModal );
 
-		mProgressDialog->setMinimumDuration( 0 );
+			mProgressDialog->setMinimumDuration( 0 );
 
-		connect( mProgressDialog, SIGNAL(canceled()), &VR, SLOT(cancel()) );
+			connect( mProgressDialog, SIGNAL(canceled()), &VR, SLOT(cancel()) );
+		}
 	}
 }
 

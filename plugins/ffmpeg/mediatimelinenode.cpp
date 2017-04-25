@@ -27,6 +27,7 @@
 #include <fugio/core/variant_interface.h>
 #include <fugio/file/filename_interface.h>
 #include <fugio/audio/audio_producer_interface.h>
+#include <fugio/editor_interface.h>
 #include <fugio/timeline/timeline_interface.h>
 #include <fugio/timeline/timeline_control_interface.h>
 #include <fugio/timeline/timeline_widget_interface.h>
@@ -448,7 +449,7 @@ bool MediaTimelineNode::loadMedia( const QString &pFileName )
 
 	SV->setPreload( mPreloadAudio );
 
-	if( !SV->loadMedia( pFileName, mNode->context()->global()->mainWindow() != 0 ) )
+	if( !SV->loadMedia( pFileName, mNode->context()->global()->findInterface( IID_EDITOR ) != nullptr ) )
 	{
 		delete SV;
 

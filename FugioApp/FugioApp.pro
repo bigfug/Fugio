@@ -128,7 +128,9 @@ HEADERS  += mainwindow.h \
 	undo/cmdpinmakeglobal.h \
 	undo/cmdpinremoveglobal.h \
 	undo/cmdpinconnectglobal.h \
-	undo/cmdpindisconnectglobal.h
+	undo/cmdpindisconnectglobal.h \
+    ../include/fugio/editor_interface.h \
+    ../include/fugio/editor_signals.h
 
 FORMS    += mainwindow.ui \
 	contextwidgetprivate.ui \

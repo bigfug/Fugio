@@ -10,6 +10,7 @@
 #include <fugio/opengl/texture_interface.h>
 #include <fugio/render_interface.h>
 #include <fugio/performance.h>
+#include <fugio/editor_interface.h>
 
 #include "preview.h"
 #include "openglplugin.h"
@@ -36,11 +37,11 @@ bool PreviewNode::initialise()
 
 	if( !mOutput && !mDockWidget )
 	{
-		QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
+		fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
 
-		if( MainWindow != 0 )
+		if( EI )
 		{
-			if( ( mDockWidget = new QDockWidget( QString( "Preview: %1" ).arg( mNode->name() ), MainWindow ) ) == 0 )
+			if( ( mDockWidget = new QDockWidget( QString( "Preview: %1" ).arg( mNode->name() ), EI->mainWindow() ) ) == 0 )
 			{
 				return( false );
 			}
@@ -49,7 +50,7 @@ bool PreviewNode::initialise()
 
 			mDockWidget->setWidget( QWidget::createWindowContainer( mOutput = new Preview( mNode ) ) );
 
-			MainWindow->addDockWidget( mDockArea, mDockWidget );
+			EI->mainWindow()->addDockWidget( mDockArea, mDockWidget );
 
 			mDockWidget->show();
 		}

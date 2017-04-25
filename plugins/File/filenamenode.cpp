@@ -7,6 +7,7 @@
 #include <fugio/global_interface.h>
 #include <fugio/context_interface.h>
 #include <fugio/node_interface.h>
+#include <fugio/editor_interface.h>
 
 FilenameNode::FilenameNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -47,7 +48,9 @@ void FilenameNode::onClick()
 	}
 #endif
 
-	QString			FilNam = QFileDialog::getOpenFileName( mNode->context()->global()->mainWindow(), QString(), DiaDir, DiaFlt );
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
+
+	QString			FilNam = QFileDialog::getOpenFileName( EI ? EI->mainWindow() : nullptr, QString(), DiaDir, DiaFlt );
 
 	if( !FilNam.isEmpty() )
 	{
