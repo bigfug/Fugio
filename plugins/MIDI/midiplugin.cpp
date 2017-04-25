@@ -27,6 +27,8 @@
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
+MidiPlugin				*MidiPlugin::mInstance = 0;
+
 ClassEntry	NodeClasses[] =
 {
 	ClassEntry( "MIDI Decoder",				"MIDI", NID_MIDI_INPUT,  &MidiDecoderNode::staticMetaObject ),
@@ -67,6 +69,8 @@ MidiPlugin::MidiPlugin()
 PluginInterface::InitResult MidiPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
 	Q_UNUSED( pLastChance )
+
+	mInstance = this;
 
 	mApp = pApp;
 

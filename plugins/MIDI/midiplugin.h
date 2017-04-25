@@ -19,6 +19,16 @@ public:
 
 	virtual ~MidiPlugin( void ) {}
 
+	static MidiPlugin *instance( void )
+	{
+		return( mInstance );
+	}
+
+	inline GlobalInterface *app( void )
+	{
+		return( mApp );
+	}
+
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
 
@@ -35,6 +45,8 @@ public:
 	}
 
 private:
+	static MidiPlugin		*mInstance;
+
 	GlobalInterface			*mApp;
 };
 
