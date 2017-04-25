@@ -20,7 +20,6 @@
 #include <fugio/plugin_interface.h>
 #include <fugio/device_factory_interface.h>
 #include <fugio/global_signals.h>
-#include <fugio/menu_control_interface.h>
 
 #if defined( Q_OS_WIN )
 #include <Windows.h>

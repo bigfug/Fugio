@@ -135,6 +135,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi( this );
 
+	gApp->global().registerInterface( IID_EDITOR, this );
+
 	//connect( gApp->global().qobject(), SIGNAL(editTargetChanged(fugio::EditInterface*)), this, SLOT(onEditTarget(fugio::EditInterface*)) );
 
 	ui->actionExit->setShortcut( QKeySequence::Quit );
@@ -301,6 +303,8 @@ MainWindow::~MainWindow( void )
 
 	gApp->undoGroup().removeStack( &mUndoStack );
 
+	gApp->global().unregisterInterface( IID_EDITOR );
+
 	delete ui;
 }
 
@@ -321,7 +325,7 @@ void MainWindow::createDeviceMenu()
 	}
 }
 
-void MainWindow::setFPS(qreal FPS )
+void MainWindow::setFPS( qreal FPS )
 {
 	QString				 Status = QString( "FPS: %1" ).arg( FPS );
 

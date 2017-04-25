@@ -12,7 +12,6 @@
 #include <fugio/edit_interface.h>
 
 #include <fugio/node_interface.h>
-#include <fugio/menu_control_interface.h>
 
 #include <fugio/editor_interface.h>
 #include <fugio/editor_signals.h>
