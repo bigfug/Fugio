@@ -6,6 +6,10 @@
 #include <fugio/plugin_interface.h>
 #include <fugio/device_factory_interface.h>
 
+FUGIO_NAMESPACE_BEGIN
+class ContextInterface;
+FUGIO_NAMESPACE_END
+
 using namespace fugio;
 
 class MidiPlugin : public QObject, public PluginInterface
@@ -43,6 +47,11 @@ public:
 	{
 		return( "MIDI Devices" );
 	}
+
+private:
+	static bool midiFileImportStatic( QString pFilename, fugio::ContextInterface *pContext );
+
+	bool midiFileImport( QString pFilename, fugio::ContextInterface *pContext );
 
 private:
 	static MidiPlugin		*mInstance;
