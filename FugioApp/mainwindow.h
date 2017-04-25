@@ -47,7 +47,7 @@ protected:
 	virtual void menuAddEntry( fugio::MenuId pMenuId, QString pEntry, QObject *pObject, const char *pSlot ) Q_DECL_OVERRIDE;
 	virtual fugio::EditorSignals *qobject() Q_DECL_OVERRIDE;
 	virtual const fugio::EditorSignals *qobject() const Q_DECL_OVERRIDE;
-	virtual void menuAddFileImporter(QString pName) Q_DECL_OVERRIDE;
+	virtual void menuAddFileImporter( QString pFilter, fugio::FileImportFunction pFunc ) Q_DECL_OVERRIDE;
 
 signals:
 	void log( const QString &pLogDat );
@@ -174,6 +174,8 @@ private slots:
 
 	void on_actionOptions_triggered();
 
+	void on_actionImport_triggered();
+
 private:
 	Ui::MainWindow								*ui;
 
@@ -191,6 +193,10 @@ private:
 	fugio::EditInterface						*mEditTarget;
 
 	fugio::EditorSignals						 mEditorSignals;
+
+	QMap<QString,fugio::FileImportFunction>		 mImportFunctions;
+
+	QString										 mImportDirectory;
 };
 
 #endif // MAINWINDOW_H

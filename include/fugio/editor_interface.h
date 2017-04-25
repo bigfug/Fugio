@@ -22,6 +22,8 @@ typedef enum MenuId
 	HELP
 } MenuId;
 
+typedef bool (*FileImportFunction)( QString pFilename );
+
 class EditorInterface
 {
 public:
@@ -45,7 +47,7 @@ public:
 
 	virtual void menuAddEntry( fugio::MenuId, QString pName, QObject *pObject, const char *pSlot ) = 0;
 
-	virtual void menuAddFileImporter( QString pName ) = 0;
+	virtual void menuAddFileImporter( QString pFilter, FileImportFunction pFunc ) = 0;
 };
 
 FUGIO_NAMESPACE_END

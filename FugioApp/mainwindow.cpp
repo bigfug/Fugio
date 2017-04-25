@@ -1428,6 +1428,33 @@ const fugio::EditorSignals *MainWindow::qobject() const
 	return( &mEditorSignals );
 }
 
-void MainWindow::menuAddFileImporter( QString pName )
+void MainWindow::menuAddFileImporter( QString pFilter, fugio::FileImportFunction pFunc )
 {
+	mImportFunctions.insert( pFilter, pFunc );
+}
+
+void MainWindow::on_actionImport_triggered()
+{
+	QStringList	Filters = mImportFunctions.keys();
+	QString		SelectedFilter;
+	QString		SelectedFile;
+
+	SelectedFile = QFileDialog::getOpenFileName( this, tr( "Import file(s)" ), mImportDirectory, Filters.join( ";;" ), &SelectedFilter );
+
+	if( !SelectedFile.isEmpty() )
+	{
+		fugio::FileImportFunction	ImportFunction = mImportFunctions.value( SelectedFilter );
+
+		if( ImportFunction )
+		{
+			if( !ImportFunction( SelectedFile ) )
+			{
+
+			}
+		}
+
+		QFileInfo	FI( SelectedFile );
+
+		mImportDirectory = FI.dir().absolutePath();
+	}
 }

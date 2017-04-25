@@ -66,7 +66,7 @@
      <x>0</x>
      <y>0</y>
      <width>920</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -106,6 +106,8 @@
     <addaction name="actionSave"/>
     <addaction name="actionSaveAs"/>
     <addaction name="actionSave_all"/>
+    <addaction name="separator"/>
+    <addaction name="actionImport"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -683,6 +685,11 @@
    </property>
    <property name="menuRole">
     <enum>QAction::PreferencesRole</enum>
+   </property>
+  </action>
+  <action name="actionImport">
+   <property name="text">
+    <string>Import...</string>
    </property>
   </action>
  </widget>
