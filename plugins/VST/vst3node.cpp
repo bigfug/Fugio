@@ -361,7 +361,7 @@ bool VST3Node::initialise()
 
 				if( !IP )
 				{
-					IP = pinInput( PinNam );
+					IP = pinInput( PinNam, QUuid::createUuid() );
 
 					IP->registerPinInputType( PID_MIDI_OUTPUT );
 				}
@@ -382,7 +382,7 @@ bool VST3Node::initialise()
 
 				if( !IP )
 				{
-					IP = pinInput( PinNam );
+					IP = pinInput( PinNam, QUuid::createUuid() );
 
 					IP->registerPinInputType( PID_AUDIO );
 				}
@@ -410,7 +410,7 @@ bool VST3Node::initialise()
 
 				if( !IP )
 				{
-					IM = pinOutput<fugio::MidiInterface *>( QString( (const QChar *)&BI.name ), IP, PID_MIDI_OUTPUT );
+					IM = pinOutput<fugio::MidiInterface *>( QString( (const QChar *)&BI.name ), IP, PID_MIDI_OUTPUT, QUuid::createUuid() );
 				}
 				else
 				{
@@ -434,7 +434,7 @@ bool VST3Node::initialise()
 
 				if( !IP )
 				{
-					IA = pinOutput<fugio::AudioProducerInterface *>( QString( (const QChar *)&BI.name ), IP, PID_AUDIO );
+					IA = pinOutput<fugio::AudioProducerInterface *>( QString( (const QChar *)&BI.name ), IP, PID_AUDIO, QUuid::createUuid() );
 				}
 				else
 				{
@@ -468,7 +468,7 @@ bool VST3Node::initialise()
 
 			if( !IP )
 			{
-				IP = pinInput( PinNam );
+				IP = pinInput( PinNam, QUuid::createUuid() );
 
 				ParamValue V = mPluginController->getParamNormalized( PI.id  );
 
