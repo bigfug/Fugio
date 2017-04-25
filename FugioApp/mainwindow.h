@@ -88,6 +88,8 @@ private:
 
 	bool addExamplesPath( const QString &pPath );
 
+	QSharedPointer<fugio::ContextInterface> currentContext( void );
+
 private slots:
 	void on_actionOpen_triggered();
 

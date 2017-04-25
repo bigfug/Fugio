@@ -9,6 +9,7 @@
 class QMainWindow;
 
 FUGIO_NAMESPACE_BEGIN
+class ContextInterface;
 class EditInterface;
 class EditorSignals;
 FUGIO_NAMESPACE_END
@@ -22,7 +23,7 @@ typedef enum MenuId
 	HELP
 } MenuId;
 
-typedef bool (*FileImportFunction)( QString pFilename );
+typedef bool (*FileImportFunction)( QString pFilename, fugio::ContextInterface *pContext );
 
 class EditorInterface
 {

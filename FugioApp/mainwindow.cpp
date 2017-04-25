@@ -531,6 +531,21 @@ void MainWindow::on_actionNew_triggered()
 	mUndoStack.push( Cmd );
 }
 
+QSharedPointer<fugio::ContextInterface> MainWindow::currentContext( void )
+{
+	ContextSubWindow	*SubWin = qobject_cast<ContextSubWindow *>( ui->mWorkArea->currentSubWindow() );
+
+	if( SubWin )
+	{
+		if( ContextWidgetPrivate *CW = SubWin->contextWidget() )
+		{
+			return( CW->context() );
+		}
+	}
+
+	return( QSharedPointer<fugio::ContextInterface>() );
+}
+
 void MainWindow::on_mWorkArea_subWindowActivated( QMdiSubWindow *pSubWin )
 {
 	ContextSubWindow	*SubWin = qobject_cast<ContextSubWindow *>( pSubWin );
@@ -1435,7 +1450,17 @@ void MainWindow::menuAddFileImporter( QString pFilter, fugio::FileImportFunction
 
 void MainWindow::on_actionImport_triggered()
 {
+	QSharedPointer<fugio::ContextInterface>	CI = currentContext();
+
+	if( !CI )
+	{
+		return;
+	}
+
 	QStringList	Filters = mImportFunctions.keys();
+
+	std::sort( Filters.begin(), Filters.end() );
+
 	QString		SelectedFilter;
 	QString		SelectedFile;
 
@@ -1447,7 +1472,7 @@ void MainWindow::on_actionImport_triggered()
 
 		if( ImportFunction )
 		{
-			if( !ImportFunction( SelectedFile ) )
+			if( !ImportFunction( SelectedFile, CI.data() ) )
 			{
 
 			}
