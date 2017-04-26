@@ -148,6 +148,8 @@ void WebSocketClientNode::disconnected()
 
 void WebSocketClientNode::error( QAbstractSocket::SocketError pError )
 {
+	Q_UNUSED( pError )
+
 	mNode->setStatus( fugio::NodeInterface::Error );
 	mNode->setStatusMessage( mSocket.errorString() );
 

@@ -41,11 +41,11 @@ void SerialOutputNode::inputsUpdated( qint64 pTimeStamp )
 	fugio::ArrayInterface	*A;
 	fugio::VariantInterface	*V;
 
-	if( A = input<fugio::ArrayInterface *>( mPinInput ) )
+	if( ( A = input<fugio::ArrayInterface *>( mPinInput ) ) )
 	{
 		SerDat.append( (const char *)A->array(), A->stride() * A->count() );
 	}
-	else if( V = input<fugio::VariantInterface *>( mPinInput ) )
+	else if( ( V = input<fugio::VariantInterface *>( mPinInput ) ) )
 	{
 		SerDat = V->variant().toByteArray();
 	}

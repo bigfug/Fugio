@@ -1,5 +1,7 @@
 #include "midifile.h"
 
+#include <cmath>
+
 #include <QtEndian>
 #include <QDebug>
 
@@ -154,7 +156,7 @@ bool MidiFile::parseMidiTrack( QByteArray pMidDat, const int pTrackIndex )
 				if( DeltaTime > 0 )
 				{
 					TimeStamp = ( DeltaTime * 50 ) / DeltaUnitsPerSMPTE;
-					TimeStamp = TimeStamp / std::abs( FramesPerSecond );
+					TimeStamp = TimeStamp / qAbs( FramesPerSecond );
 				}
 			}
 			else
