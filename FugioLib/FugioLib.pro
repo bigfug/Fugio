@@ -58,8 +58,7 @@ HEADERS += fugio.h\
 	../include/fugio/global_signals.h \
 	../include/fugio/utils.h \
 	../include/fugio/context_signals.h \
-	../include/fugio/paired_pins_helper_interface.h \
-	../include/fugio/menu_control_interface.h
+	../include/fugio/paired_pins_helper_interface.h
 
 RESOURCES += \
     resources.qrc
