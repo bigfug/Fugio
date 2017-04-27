@@ -1,7 +1,9 @@
 #ifndef DEVICEOCULUSRIFT_H
 #define DEVICEOCULUSRIFT_H
 
+#if defined( OCULUS_PLUGIN_SUPPORTED )
 #include <GL/glew.h>
+#endif
 
 #include <QObject>
 #include <QSettings>

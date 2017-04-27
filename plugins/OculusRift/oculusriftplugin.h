@@ -5,10 +5,6 @@
 #include <fugio/device_factory_interface.h>
 #include <fugio/global_interface.h>
 
-#if defined( OCULUS_PLUGIN_SUPPORTED )
-#include <OVR_CAPI.h>
-#endif
-
 #define OPENGL_PLUGIN_DEBUG 	OpenGLPlugin::instance()->checkErrors( __FILE__, __LINE__ );
 
 using namespace fugio;

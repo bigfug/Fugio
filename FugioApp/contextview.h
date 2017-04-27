@@ -264,6 +264,8 @@ public slots:
 	void addGlobalPin( QUuid pPinGlobalId );
 	void remGlobalPin( QUuid pPinGlobalId );
 
+	void updatePinItem( QUuid pPinGlobalId );
+
 protected:
 	void processSelection( bool pSaveToClipboard, bool pDeleteData );
 
@@ -417,13 +419,43 @@ public slots:
 private:
 	typedef struct GroupStateEntry
 	{
-		QUuid		mGroupId;
-		QTransform	mViewTransform;
+		qreal		 mScaleFactor;
+		qreal		 mCurrentFactor;
+		QPointF		 mScaleCenter;
+		QPointF		 mCenter;
 
-		GroupStateEntry( QUuid pGroupId, QTransform pViewTransform )
-			: mGroupId( pGroupId ), mViewTransform( pViewTransform )
+		GroupStateEntry( void ) : mScaleFactor( 1 ), mCurrentFactor( 1 )
 		{
 
+		}
+
+		void save( QSettings &pSettings ) const
+		{
+			pSettings.beginGroup( "state" );
+
+			pSettings.setValue( "scale", mScaleFactor );
+			pSettings.setValue( "center", mCenter );
+
+			pSettings.endGroup();
+		}
+
+		void load( QSettings &pSettings )
+		{
+			pSettings.beginGroup( "state" );
+
+			mScaleFactor = pSettings.value( "scale", mScaleFactor ).toReal();
+			mCenter      = pSettings.value( "center", mCenter ).toPointF();
+
+			pSettings.endGroup();
+		}
+
+		static GroupStateEntry create( QSettings &pSettings )
+		{
+			GroupStateEntry		GS;
+
+			GS.load( pSettings );
+
+			return( GS );
 		}
 	} GroupStateEntry;
 
@@ -442,6 +474,7 @@ private:
 
 	QList<QUuid>							 mGroupIds;
 	QList<QUuid>							 mGroupStack;
+	QMap<QUuid,GroupStateEntry>				 mGroupState;
 
 	bool									 mChanged;
 	QBrush									 mLabelBrush;
@@ -481,9 +514,6 @@ private:
 	QPointF									 m_PastePoint;
 
 	QUuid									 m_GroupId;
-
-	qreal									 mScaleFactor;
-	qreal									 mCurrentFactor;
 
 	QList<QUuid>							 mGlobalPins;
 };

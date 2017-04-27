@@ -59,7 +59,7 @@
     <message>
         <location filename="../contextwidgetprivate.cpp" line="231"/>
         <source>Save Patch</source>
-        <translation>Guardar Patch</translation>
+        <translation>Guardar Ejemplo</translation>
     </message>
     <message>
         <location filename="../contextwidgetprivate.cpp" line="231"/>
@@ -125,7 +125,7 @@
         <location filename="../mainwindow.ui" line="244"/>
         <location filename="../mainwindow.ui" line="346"/>
         <source>Logger</source>
-        <translation>Registrador</translation>
+        <translation>Eventos</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="281"/>
@@ -188,7 +188,7 @@
     <message>
         <location filename="../mainwindow.ui" line="378"/>
         <source>Cursor to Start</source>
-        <translation>Cursor para Iniciar</translation>
+        <translation>Cursor a Inicio</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="381"/>
@@ -198,7 +198,7 @@
     <message>
         <location filename="../mainwindow.ui" line="386"/>
         <source>Cursor to End</source>
-        <translation>Cursor para Fin</translation>
+        <translation>Cursor a Fin</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="389"/>
@@ -243,7 +243,7 @@
     <message>
         <location filename="../mainwindow.ui" line="441"/>
         <source>Online Documentation...</source>
-        <translation>EnLinea</translation>
+        <translation>Documentación EnLinea</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="449"/>
@@ -288,7 +288,7 @@
     <message>
         <location filename="../mainwindow.ui" line="594"/>
         <source>Contact Developers...</source>
-        <translation>Contactar Desarrolladores...</translation>
+        <translation>Contactar con Desarrolladores...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="599"/>
@@ -348,7 +348,7 @@
     <message>
         <location filename="../mainwindow.ui" line="667"/>
         <source>Check for updates...</source>
-        <translation>Chequear actualizaciones</translation>
+        <translation>Buscar actualizaciones</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="672"/>
@@ -368,13 +368,13 @@
     <message>
         <location filename="../mainwindow.cpp" line="431"/>
         <source>Open Patch</source>
-        <translation>Abrir Carpeta</translation>
+        <translation>Abrir Ejemplo</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="431"/>
         <location filename="../mainwindow.cpp" line="1113"/>
         <source>Fugio Patches (*.fug)</source>
-        <translation>Ejemplos Fugio</translation>
+        <translation>Ejemplos Fugio (*.fug) </translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="615"/>
@@ -409,7 +409,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1113"/>
         <source>Append Patch</source>
-        <translation>Añadir Carpeta</translation>
+        <translation>Añadir Ejemplos</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1141"/>
@@ -434,7 +434,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1244"/>
         <source>Load Recovery Files?</source>
-        <translation>Cargar Archivos Recuperados</translation>
+        <translation>Recuperar Ultimos Ficheros</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1244"/>
@@ -449,7 +449,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1246"/>
         <source>Recovery files found - delete them?</source>
-        <translation>Encontrados Archivos Recuperados. ¿Se borran estos?</translation>
+        <translation>Encontrados Archivos para Recuperar. ¿Se borran estos?</translation>
     </message>
 </context>
 <context>
@@ -583,7 +583,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../patchpromptdialog.ui" line="14"/>
         <source>Patch Wizard</source>
-        <translation>Buscar Patch</translation>
+        <translation>Buscar Ejemplos</translation>
     </message>
     <message>
         <location filename="../patchpromptdialog.ui" line="22"/>
@@ -598,12 +598,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../patchpromptdialog.ui" line="45"/>
         <source>New Patch</source>
-        <translation>Nuevo Patch</translation>
+        <translation>Nuevo Ejemplo</translation>
     </message>
     <message>
         <location filename="../patchpromptdialog.ui" line="52"/>
         <source>Open Patch...</source>
-        <translation>Abrir Patch</translation>
+        <translation>Abrir Ejemplo</translation>
     </message>
     <message>
         <location filename="../patchpromptdialog.ui" line="59"/>
@@ -927,7 +927,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdpinjoin.h" line="39"/>
         <source>Join</source>
-        <translation>Union</translation>
+        <translation>Unión</translation>
     </message>
     <message>
         <location filename="../undo/cmdpinmakeglobal.h" line="18"/>
@@ -1111,18 +1111,18 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../stylesheetform.cpp" line="57"/>
         <source>Open Stylesheet</source>
-        <translation>Abrir Hoja de Estilos</translation>
+        <translation>Abrir Hoja Estilos</translation>
     </message>
     <message>
         <location filename="../stylesheetform.cpp" line="57"/>
         <location filename="../stylesheetform.cpp" line="79"/>
         <source>Stylesheets (*.css)</source>
-        <translation>Hojas de Estilo (*.css)</translation>
+        <translation>Hojas Estilo (*.css)</translation>
     </message>
     <message>
         <location filename="../stylesheetform.cpp" line="79"/>
         <source>Save Stylesheet</source>
-        <translation>Guardar Hoja de Estilo</translation>
+        <translation>Guardar Hoja Estilo</translation>
     </message>
 </context>
 </TS>

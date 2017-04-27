@@ -11,6 +11,7 @@
 #include <fugio/midi/midi_interface.h>
 #include <fugio/midi/uuid.h>
 #include <fugio/pin_signals.h>
+#include <fugio/editor_interface.h>
 
 #include "vstplugin.h"
 #include "vstview.h"
@@ -319,9 +320,9 @@ bool VST3Node::initialise()
 
 	if( mPluginController )
 	{
-		QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
+		fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
 
-		if( MainWindow )
+		if( EI )
 		{
 			Steinberg::IPlugView					*PluginView;
 
@@ -331,13 +332,13 @@ bool VST3Node::initialise()
 			{
 				if( PluginView->isPlatformTypeSupported( Steinberg::kPlatformTypeHWND ) == kResultTrue )
 				{
-					if( ( mDockWidget = new QDockWidget( QString( "VST: %1" ).arg( mNode->name() ), MainWindow ) ) )
+					if( ( mDockWidget = new QDockWidget( QString( "VST: %1" ).arg( mNode->name() ), EI->mainWindow() ) ) )
 					{
 						mDockWidget->setWidget( new VSTView( PluginView ) );
 
 						mDockWidget->setObjectName( mNode->name() );
 
-						MainWindow->addDockWidget( mDockArea, mDockWidget );
+						EI->mainWindow()->addDockWidget( mDockArea, mDockWidget );
 
 						mDockWidget->show();
 					}
@@ -360,7 +361,7 @@ bool VST3Node::initialise()
 
 				if( !IP )
 				{
-					IP = pinInput( PinNam );
+					IP = pinInput( PinNam, QUuid::createUuid() );
 
 					IP->registerPinInputType( PID_MIDI_OUTPUT );
 				}
@@ -381,7 +382,7 @@ bool VST3Node::initialise()
 
 				if( !IP )
 				{
-					IP = pinInput( PinNam );
+					IP = pinInput( PinNam, QUuid::createUuid() );
 
 					IP->registerPinInputType( PID_AUDIO );
 				}
@@ -409,7 +410,7 @@ bool VST3Node::initialise()
 
 				if( !IP )
 				{
-					IM = pinOutput<fugio::MidiInterface *>( QString( (const QChar *)&BI.name ), IP, PID_MIDI_OUTPUT );
+					IM = pinOutput<fugio::MidiInterface *>( QString( (const QChar *)&BI.name ), IP, PID_MIDI_OUTPUT, QUuid::createUuid() );
 				}
 				else
 				{
@@ -433,7 +434,7 @@ bool VST3Node::initialise()
 
 				if( !IP )
 				{
-					IA = pinOutput<fugio::AudioProducerInterface *>( QString( (const QChar *)&BI.name ), IP, PID_AUDIO );
+					IA = pinOutput<fugio::AudioProducerInterface *>( QString( (const QChar *)&BI.name ), IP, PID_AUDIO, QUuid::createUuid() );
 				}
 				else
 				{
@@ -467,7 +468,7 @@ bool VST3Node::initialise()
 
 			if( !IP )
 			{
-				IP = pinInput( PinNam );
+				IP = pinInput( PinNam, QUuid::createUuid() );
 
 				ParamValue V = mPluginController->getParamNormalized( PI.id  );
 
@@ -538,7 +539,7 @@ bool VST3Node::initialise()
 
 bool VST3Node::deinitialise()
 {
-	QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
 
 	if( mPluginView )
 	{
@@ -547,9 +548,9 @@ bool VST3Node::deinitialise()
 		mPluginView = 0;
 	}
 
-	if( mDockWidget != 0 )
+	if( mDockWidget )
 	{
-		MainWindow->removeDockWidget( mDockWidget );
+		EI->mainWindow()->removeDockWidget( mDockWidget );
 
 		delete mDockWidget;
 
@@ -714,7 +715,7 @@ void VST3Node::inputsUpdated( qint64 pTimeStamp )
 
 	for( AudioInstanceData *AID : mInstanceList )
 	{
-//		QMutexLocker	L( &AID->mEventMutex );
+		QMutexLocker	L( &AID->mEventMutex );
 
 		AID->mEventList.append( VstEvt );
 	}
@@ -804,6 +805,8 @@ void VST3Node::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelO
 
 	//-------------------------------------------------------------------------
 
+	InsDat->mEventMutex.lock();
+
 	Vst::ProcessData		 PD;
 
 	PD.processMode           = Vst::kRealtime;
@@ -822,6 +825,8 @@ void VST3Node::audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelO
 	}
 
 	InsDat->mEventList.clear();
+
+	InsDat->mEventMutex.unlock();
 
 	//-------------------------------------------------------------------------
 

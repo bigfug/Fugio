@@ -140,12 +140,30 @@ windows {
 
 #------------------------------------------------------------------------------
 
-macx:exists( /usr/local/opt/opencv3 ) {
-	INCLUDEPATH += /usr/local/opt/opencv3/include
+macx {
+	isEmpty( CASKBASE ) {
+		OPENCV_PATH = $$(LIBS)/opencv-3.1.0-x64
 
-	LIBS += -L/usr/local/opt/opencv3/lib -lopencv_core -lopencv_imgproc -lopencv_photo -lopencv_highgui -lopencv_video -lopencv_videoio -lopencv_objdetect
+		exists( $$OPENCV_PATH ) {
+			INCLUDEPATH += $$OPENCV_PATH/include
 
-	DEFINES += OPENCV_SUPPORTED
+			LIBS += -L$$OPENCV_PATH/lib
+
+			DEFINES += OPENCV_SUPPORTED
+		}
+	} else {
+		exists( /usr/local/opt/opencv3 ) {
+			INCLUDEPATH += /usr/local/opt/opencv3/include
+
+			LIBS += -L/usr/local/opt/opencv3/lib
+
+			DEFINES += OPENCV_SUPPORTED
+		}
+	}
+
+	contains( DEFINES, OPENCV_SUPPORTED ) {
+		LIBS += -lopencv_core -lopencv_imgproc -lopencv_photo -lopencv_highgui -lopencv_video -lopencv_videoio -lopencv_objdetect
+	}
 }
 
 windows {

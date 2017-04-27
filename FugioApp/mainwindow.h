@@ -12,7 +12,9 @@
 #include <fugio/edit_interface.h>
 
 #include <fugio/node_interface.h>
-#include <fugio/menu_control_interface.h>
+
+#include <fugio/editor_interface.h>
+#include <fugio/editor_signals.h>
 
 #include "wizards/firsttimewizard.h"
 
@@ -23,10 +25,10 @@ namespace Ui {
 class ContextSubWindow;
 struct ClassEntry;
 
-class MainWindow : public QMainWindow, public fugio::MenuControlInterface
+class MainWindow : public QMainWindow, public fugio::EditorInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::MenuControlInterface )
+	Q_INTERFACES( fugio::EditorInterface )
 	
 public:
 	explicit MainWindow( QWidget *pParent = 0 );
@@ -37,9 +39,15 @@ public:
 
 	ContextSubWindow *findContextWindow( QSharedPointer<fugio::ContextInterface> pContext );
 
-	// MenuControlInterface interface
-public:
+
+	// EditorInterface interface
+protected:
+	virtual QMainWindow *mainWindow() Q_DECL_OVERRIDE;
+	virtual void setEditTarget(fugio::EditInterface *pEditTarget) Q_DECL_OVERRIDE;
 	virtual void menuAddEntry( fugio::MenuId pMenuId, QString pEntry, QObject *pObject, const char *pSlot ) Q_DECL_OVERRIDE;
+	virtual fugio::EditorSignals *qobject() Q_DECL_OVERRIDE;
+	virtual const fugio::EditorSignals *qobject() const Q_DECL_OVERRIDE;
+	virtual void menuAddFileImporter( QString pFilter, fugio::FileImportFunction pFunc ) Q_DECL_OVERRIDE;
 
 signals:
 	void log( const QString &pLogDat );
@@ -79,6 +87,8 @@ private:
 	void populateExamples( const QString &pDir, QMenu *pMenu );
 
 	bool addExamplesPath( const QString &pPath );
+
+	QSharedPointer<fugio::ContextInterface> currentContext( void );
 
 private slots:
 	void on_actionOpen_triggered();
@@ -166,6 +176,8 @@ private slots:
 
 	void on_actionOptions_triggered();
 
+	void on_actionImport_triggered();
+
 private:
 	Ui::MainWindow								*ui;
 
@@ -180,7 +192,13 @@ private:
 
 	QSignalMapper								 mActiveWindowMapper;
 
-	//FirstTimeWizard								 mWizard;
+	fugio::EditInterface						*mEditTarget;
+
+	fugio::EditorSignals						 mEditorSignals;
+
+	QMap<QString,fugio::FileImportFunction>		 mImportFunctions;
+
+	QString										 mImportDirectory;
 };
 
 #endif // MAINWINDOW_H

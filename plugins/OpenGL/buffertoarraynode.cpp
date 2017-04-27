@@ -73,11 +73,15 @@ void BufferToArrayNode::inputsUpdated( qint64 pTimeStamp )
 	}
 
 #if !defined( Q_OS_RASPBERRY_PI )
+
+#if defined( GLEW_VERSION_4_5 )
 	if( GLEW_VERSION_4_5 )
 	{
 		glGetNamedBufferSubData( BufInt->buffer(), 0, ArrLen, ArrPtr );
 	}
-	else if( BufInt->bind() )
+	else
+#endif
+	if( BufInt->bind() )
 	{
 		glGetBufferSubData( BufInt->target(), 0, ArrLen, ArrPtr );
 

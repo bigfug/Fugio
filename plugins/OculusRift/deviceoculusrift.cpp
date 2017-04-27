@@ -1,5 +1,7 @@
 #include "deviceoculusrift.h"
 
+#include <QCoreApplication>
+
 #if defined( OCULUS_PLUGIN_SUPPORTED ) && defined( Q_OS_WIN )
 
 #include "wglext.h"
@@ -35,7 +37,14 @@ void DeviceOculusRift::deviceInitialise()
 
 void DeviceOculusRift::deviceDeinitialise()
 {
-	mDeviceList.clear();
+	if( !mDeviceList.isEmpty() )
+	{
+		mDeviceList.clear();
+
+#if defined( OCULUS_PLUGIN_SUPPORTED )
+		ovr_Shutdown();
+#endif
+	}
 }
 
 void DeviceOculusRift::devicePacketStart( qint64 pTimeStamp )
@@ -44,17 +53,33 @@ void DeviceOculusRift::devicePacketStart( qint64 pTimeStamp )
 	Q_UNUSED( pTimeStamp )
 #endif
 
-	for( QWeakPointer<DeviceOculusRift> WP : mDeviceList )
+	if( mDeviceList.isEmpty() )
 	{
-		QSharedPointer<DeviceOculusRift>	SP = WP.toStrongRef();
+		return;
+	}
+
+	for( int i = 0 ; i < mDeviceList.size() ; )
+	{
+		QSharedPointer<DeviceOculusRift>	SP = mDeviceList[ i ].toStrongRef();
 
 		if( !SP )
 		{
+			mDeviceList.removeAt( i );
+
 			continue;
 		}
 
 #if defined( OCULUS_PLUGIN_SUPPORTED )
 		SP->globalFrameStart( pTimeStamp );
+#endif
+
+		i++;
+	}
+
+	if( mDeviceList.isEmpty() )
+	{
+#if defined( OCULUS_PLUGIN_SUPPORTED )
+		ovr_Shutdown();
 #endif
 	}
 }
@@ -132,6 +157,38 @@ QSharedPointer<DeviceOculusRift> DeviceOculusRift::newDevice()
 	{
 		return( mDeviceList.first() );
 	}
+
+#if defined( OCULUS_PLUGIN_SUPPORTED )
+	ovrInitParams initParams = { ovrInit_RequestVersion, OVR_MINOR_VERSION, NULL, 0, 0 };
+
+	ovrResult result = ovr_Initialize( &initParams );
+
+	if( OVR_FAILURE( result ) )
+	{
+		ovrErrorInfo errorInfo;
+
+		ovr_GetLastErrorInfo( &errorInfo );
+
+		qWarning() << "ovr_Initialize failed:" << errorInfo.ErrorString;
+
+		return( QSharedPointer<DeviceOculusRift>() );
+	}
+
+	QStringList		SL;
+
+	SL << "EngineName: Fugio";
+	SL << QString( "EngineVersion: %1" ).arg( qApp->applicationVersion() );
+	SL << "EnginePluginName: fugio-oculusrift";
+	SL << "EnginePluginVersion: 1.0.0";
+	SL << "EngineEditor: true";
+
+	QString			IC = SL.join( '\n' );
+
+	ovr_IdentifyClient( IC.toLatin1().constData() );
+
+#else
+	qWarning() << "Oculus Rift plugin is not supported";
+#endif
 
 	QSharedPointer<DeviceOculusRift>	NewDev = QSharedPointer<DeviceOculusRift>( new DeviceOculusRift() );
 
@@ -390,6 +447,14 @@ bool DeviceOculusRift::deviceOpen()
 	}
 
 #if defined( OCULUS_PLUGIN_SUPPORTED )
+	ovrHmdDesc hmdDesc;
+
+	hmdDesc = ovr_GetHmdDesc( nullptr );
+
+	if( hmdDesc.Type == ovrHmd_None )
+	{
+		return( false );
+	}
 
 #if defined( Q_OS_WIN )
 	PFNWGLSWAPINTERVALEXTPROC       wglSwapIntervalEXT = NULL;
@@ -435,9 +500,9 @@ bool DeviceOculusRift::deviceOpen()
 
 	//ovr_SetInt( mHMD, OVR_PERF_HUD_MODE, int( ovrPerfHud_RenderTiming ) );
 
-	ovrHmdDesc hmdDesc = ovr_GetHmdDesc( mHMD );
+	hmdDesc = ovr_GetHmdDesc( mHMD );
 
-	if( result != ovrSuccess )
+	if( hmdDesc.Type == ovrHmd_None )
 	{
 		deviceClose();
 

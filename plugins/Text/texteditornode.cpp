@@ -13,6 +13,7 @@
 #include <fugio/pin_signals.h>
 #include <fugio/global_interface.h>
 #include <fugio/context_signals.h>
+#include <fugio/editor_interface.h>
 
 #include "texteditorform.h"
 #include "cmdtexteditorupdate.h"
@@ -37,11 +38,11 @@ TextEditorNode::TextEditorNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 TextEditorNode::~TextEditorNode( void )
 {
-	QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
 
 	if( mDockWidget )
 	{
-		MainWindow->removeDockWidget( mDockWidget );
+		EI->mainWindow()->removeDockWidget( mDockWidget );
 
 		delete mDockWidget;
 
@@ -140,14 +141,14 @@ void TextEditorNode::inputsUpdated( qint64 pTimeStamp )
 
 bool TextEditorNode::initialise( void )
 {
-	QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
 
-	if( !MainWindow )
+	if( !EI )
 	{
 		return( false );
 	}
 
-	if( ( mDockWidget = new QDockWidget( "TextEditor", MainWindow ) ) == 0 )
+	if( ( mDockWidget = new QDockWidget( "TextEditor", EI->mainWindow() ) ) == 0 )
 	{
 		return( false );
 	}
@@ -169,7 +170,7 @@ bool TextEditorNode::initialise( void )
 
 	mDockWidget->setWidget( mTextEdit );
 
-	MainWindow->addDockWidget( mDockArea, mDockWidget );
+	EI->mainWindow()->addDockWidget( mDockArea, mDockWidget );
 
 	mTextEdit->updateNodeName( mNode->name() );
 

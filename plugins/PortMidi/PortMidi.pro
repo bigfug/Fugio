@@ -137,15 +137,20 @@ win32:exists( $$(LIBS)/portmidi.32.2015 )  {
 }
 
 macx {
-	exists( /usr/local/opt/portmidi ) {
-		INCLUDEPATH += /usr/local/opt/portmidi/include
-		LIBS += -L/usr/local/opt/portmidi/lib -lportmidi
-		DEFINES += PORTMIDI_SUPPORTED
-	} else:exists( $$(LIBS)/portmidi ) {
-		INCLUDEPATH += $$(LIBS)/portmidi/pm_common
-		LIBS += $$(LIBS)/portmidi/libportmidi_s.a
-		LIBS += -framework Carbon -framework AudioUnit -framework AudioToolbox -framework CoreAudio -framework CoreMIDI
-		DEFINES += PORTMIDI_SUPPORTED
+	isEmpty( CASKBASE ) {
+		PORTMIDI_PATH = $$(LIBS)/portmidi-x64
+
+		exists( $$PORTMIDI_PATH ) {
+			INCLUDEPATH += $$PORTMIDI_PATH/include
+			LIBS += -L$$PORTMIDI_PATH -lportmidi
+			DEFINES += PORTMIDI_SUPPORTED
+		}
+	} else {
+		exists( /usr/local/opt/portmidi ) {
+			INCLUDEPATH += /usr/local/opt/portmidi/include
+			LIBS += -L/usr/local/opt/portmidi/lib -lportmidi
+			DEFINES += PORTMIDI_SUPPORTED
+		}
 	}
 }
 

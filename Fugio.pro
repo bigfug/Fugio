@@ -5,4 +5,5 @@ SUBDIRS += \
     FugioApp \
     plugins
 
-FugioApp.depends = FugioLib
+FugioApp.depends = FugioLib plugins
+

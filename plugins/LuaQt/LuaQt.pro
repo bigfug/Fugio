@@ -94,33 +94,8 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		# we don't want to copy the Lua library into the bundle, so change its name
-
-#		QMAKE_POST_LINK += && install_name_tool -change /usr/local/opt/lua/lib/liblua.5.2.dylib liblua.5.2.dylib $$LIBCHANGEDEST
-
-#		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
-
-		#QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
-
-#		# now change it back
-
-#		QMAKE_POST_LINK += && install_name_tool -change liblua.5.2.dylib /usr/local/lib/liblua.5.2.dylib $$LIBCHANGEDEST
-
 		isEmpty( CASKBASE ) {
 			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
-		}
-
-		isEmpty( CASKBASE ) {
-			exists( /usr/local/opt/lua ) {
-				QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
-
-				QMAKE_POST_LINK += && cp -a /usr/local/opt/lua/lib/*.dylib $$INSTALLDATA/libs/
-
-			} else:exists( $$(LIBS)/lua-5.3.3/src ) {
-				QMAKE_POST_LINK += && mkdir -pv $$INSTALLDIR/data/libs
-
-				QMAKE_POST_LINK += && cp $$(LIBS)/lua-5.3.3/src/liblua5.3.3.dylib $$INSTALLDATA/libs/
-			}
 		}
 
 		plugin.path = $$INSTALLDEST
@@ -170,19 +145,22 @@ win32:exists( $$(LIBS)/Lua-5.3.3 ) {
 }
 
 macx {
-	exists( /usr/local/opt/lua ) {
-		INCLUDEPATH += /usr/local/opt/lua/include
+	isEmpty( CASKBASE ) {
+		exists( $$(LIBS)/lua-x64 ) {
+			INCLUDEPATH += $$(LIBS)/lua-x64/include
 
-		LIBS += -L/usr/local/opt/lua/lib -llua
+			LIBS += -L$$(LIBS)/lua-x64/lib -llua5
 
-		DEFINES += LUA_SUPPORTED
+			DEFINES += LUA_SUPPORTED
+		}
+	} else {
+		exists( /usr/local/opt/lua ) {
+			INCLUDEPATH += /usr/local/opt/lua/include
 
-	} else:exists( $$(LIBS)/lua-5.3.3/src ) {
-		INCLUDEPATH += $$(LIBS)/lua-5.3.3/src
+			LIBS += -L/usr/local/opt/lua/lib -llua
 
-		LIBS += -L$$(LIBS)/lua-5.3.3/src -llua5.3.3
-
-		DEFINES += LUA_SUPPORTED
+			DEFINES += LUA_SUPPORTED
+		}
 	}
 }
 

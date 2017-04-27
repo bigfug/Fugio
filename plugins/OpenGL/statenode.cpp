@@ -5,6 +5,7 @@
 
 #include <fugio/global_interface.h>
 #include "fugio/context_interface.h"
+#include <fugio/editor_interface.h>
 
 #include "openglplugin.h"
 
@@ -30,9 +31,11 @@ QWidget *StateNode::gui()
 
 void StateNode::onEditClicked()
 {
-	QScopedPointer<StateForm>		Form( new StateForm( mOutputState, mNode->context()->global()->mainWindow() ) );
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
 
-	if( Form != 0 )
+	QScopedPointer<StateForm>		Form( new StateForm( mOutputState, EI ? EI->mainWindow() : nullptr ) );
+
+	if( Form )
 	{
 		Form->setModal( true );
 

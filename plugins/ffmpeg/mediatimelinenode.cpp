@@ -27,6 +27,7 @@
 #include <fugio/core/variant_interface.h>
 #include <fugio/file/filename_interface.h>
 #include <fugio/audio/audio_producer_interface.h>
+#include <fugio/editor_interface.h>
 #include <fugio/timeline/timeline_interface.h>
 #include <fugio/timeline/timeline_control_interface.h>
 #include <fugio/timeline/timeline_widget_interface.h>
@@ -35,7 +36,7 @@
 #include <fugio/timeline/keyframes_editor_interface.h>
 #include <fugio/timeline/keyframes_widget_interface.h>
 
-#include "../Timeline/keyframedata/keyframedatatime.h"
+#include <fugio/timeline/keyframedatatime.h>
 
 #include "mediasegment.h"
 #include "mediaaudioprocessor.h"
@@ -89,7 +90,7 @@ MediaTimelineNode::MediaTimelineNode( QSharedPointer<fugio::NodeInterface> pNode
 	{
 		mTimelineControl = TL->control( this );
 
-		mKF = qobject_cast<KeyFramesTimeInterface *>( TL->keyframes( this, KID_TIME )->object() );
+		mKF = qobject_cast<KeyFramesTimeInterface *>( TL->keyframes( this, KID_TIME )->qobject() );
 	}
 }
 
@@ -322,7 +323,7 @@ KeyFramesWidgetInterface *MediaTimelineNode::newTimelineGui()
 
 	if( TL )
 	{
-		KeyFramesEditorInterface	*KFE = qobject_cast<KeyFramesProviderInterface *>( mKF->object() )->newEditor();
+		KeyFramesEditorInterface	*KFE = qobject_cast<KeyFramesProviderInterface *>( mKF->qobject() )->newEditor();
 
 		if( KFE )
 		{
@@ -448,7 +449,7 @@ bool MediaTimelineNode::loadMedia( const QString &pFileName )
 
 	SV->setPreload( mPreloadAudio );
 
-	if( !SV->loadMedia( pFileName, mNode->context()->global()->mainWindow() != 0 ) )
+	if( !SV->loadMedia( pFileName, mNode->context()->global()->findInterface( IID_EDITOR ) != nullptr ) )
 	{
 		delete SV;
 

@@ -131,11 +131,13 @@ bool MainWindow::addExamplesPath( const QString &pPath )
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
-	ui(new Ui::MainWindow), mUndoStack( &gApp->undoGroup() )
+	ui(new Ui::MainWindow), mUndoStack( &gApp->undoGroup() ), mEditTarget( nullptr )
 {
 	ui->setupUi( this );
 
-	connect( gApp->global().qobject(), SIGNAL(editTargetChanged(fugio::EditInterface*)), this, SLOT(onEditTarget(fugio::EditInterface*)) );
+	gApp->global().registerInterface( IID_EDITOR, this );
+
+	//connect( gApp->global().qobject(), SIGNAL(editTargetChanged(fugio::EditInterface*)), this, SLOT(onEditTarget(fugio::EditInterface*)) );
 
 	ui->actionExit->setShortcut( QKeySequence::Quit );
 
@@ -301,6 +303,8 @@ MainWindow::~MainWindow( void )
 
 	gApp->undoGroup().removeStack( &mUndoStack );
 
+	gApp->global().unregisterInterface( IID_EDITOR );
+
 	delete ui;
 }
 
@@ -321,7 +325,7 @@ void MainWindow::createDeviceMenu()
 	}
 }
 
-void MainWindow::setFPS(qreal FPS )
+void MainWindow::setFPS( qreal FPS )
 {
 	QString				 Status = QString( "FPS: %1" ).arg( FPS );
 
@@ -525,6 +529,21 @@ void MainWindow::on_actionNew_triggered()
 	CmdNewContext		*Cmd = new CmdNewContext();
 
 	mUndoStack.push( Cmd );
+}
+
+QSharedPointer<fugio::ContextInterface> MainWindow::currentContext( void )
+{
+	ContextSubWindow	*SubWin = qobject_cast<ContextSubWindow *>( ui->mWorkArea->currentSubWindow() );
+
+	if( SubWin )
+	{
+		if( ContextWidgetPrivate *CW = SubWin->contextWidget() )
+		{
+			return( CW->context() );
+		}
+	}
+
+	return( QSharedPointer<fugio::ContextInterface>() );
 }
 
 void MainWindow::on_mWorkArea_subWindowActivated( QMdiSubWindow *pSubWin )
@@ -1394,4 +1413,73 @@ void MainWindow::on_actionOptions_triggered()
 	SettingsDialog		Dialog( this );
 
 	Dialog.exec();
+}
+
+
+QMainWindow *MainWindow::mainWindow()
+{
+	return( this );
+}
+
+void MainWindow::setEditTarget( fugio::EditInterface *pEditTarget )
+{
+	if( mEditTarget != pEditTarget )
+	{
+		mEditTarget = pEditTarget;
+
+		emit mEditorSignals.editTargetChanged( mEditTarget );
+
+		onEditTarget( mEditTarget );
+	}
+}
+
+fugio::EditorSignals *MainWindow::qobject()
+{
+	return( &mEditorSignals );
+}
+
+const fugio::EditorSignals *MainWindow::qobject() const
+{
+	return( &mEditorSignals );
+}
+
+void MainWindow::menuAddFileImporter( QString pFilter, fugio::FileImportFunction pFunc )
+{
+	mImportFunctions.insert( pFilter, pFunc );
+}
+
+void MainWindow::on_actionImport_triggered()
+{
+	QSharedPointer<fugio::ContextInterface>	CI = currentContext();
+
+	if( !CI )
+	{
+		return;
+	}
+
+	QStringList	Filters = mImportFunctions.keys();
+
+	std::sort( Filters.begin(), Filters.end() );
+
+	QString		SelectedFilter;
+	QString		SelectedFile;
+
+	SelectedFile = QFileDialog::getOpenFileName( this, tr( "Import file(s)" ), mImportDirectory, Filters.join( ";;" ), &SelectedFilter );
+
+	if( !SelectedFile.isEmpty() )
+	{
+		fugio::FileImportFunction	ImportFunction = mImportFunctions.value( SelectedFilter );
+
+		if( ImportFunction )
+		{
+			if( !ImportFunction( SelectedFile, CI.data() ) )
+			{
+
+			}
+		}
+
+		QFileInfo	FI( SelectedFile );
+
+		mImportDirectory = FI.dir().absolutePath();
+	}
 }

@@ -1,0 +1,3 @@
+[submodule "plugins/ffmpeg/hap"]
+	path = plugins/ffmpeg/hap
+	url = https://github.com/Vidvox/hap

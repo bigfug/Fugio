@@ -31,7 +31,7 @@
 #include "mediaaudioprocessor.h"
 
 #if defined( FFMPEG_SUPPORTED )
-#include <hap.h>
+#include <hap/source/hap.h>
 #endif
 
 MediaNode::MediaNode( QSharedPointer<fugio::NodeInterface> pNode )

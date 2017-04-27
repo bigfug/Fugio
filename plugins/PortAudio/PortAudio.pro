@@ -138,12 +138,20 @@ windows {
 }
 
 macx {
-	exists( /usr/local/opt/portaudio ) {
-		INCLUDEPATH += /usr/local/opt/portaudio/include
-#		LIBS += /usr/local/opt/portaudio/lib/libportaudio.a
-#		LIBS += -framework Carbon -framework AudioUnit -framework AudioToolbox -framework CoreAudio
-		LIBS += -L/usr/local/opt/portaudio/lib -lportaudio
-		DEFINES += PORTAUDIO_SUPPORTED
+	isEmpty( CASKBASE ) {
+		PORTAUDIO_PATH = $$(LIBS)/portaudio-x64
+
+		exists( $$PORTAUDIO_PATH ) {
+			INCLUDEPATH += $$PORTAUDIO_PATH/include
+			LIBS += -L$$PORTAUDIO_PATH/lib -lportaudio
+			DEFINES += PORTAUDIO_SUPPORTED
+		}
+	} else {
+		exists( /usr/local/opt/portaudio ) {
+			INCLUDEPATH += /usr/local/opt/portaudio/include
+			LIBS += -L/usr/local/opt/portaudio/lib -lportaudio
+			DEFINES += PORTAUDIO_SUPPORTED
+		}
 	}
 }
 

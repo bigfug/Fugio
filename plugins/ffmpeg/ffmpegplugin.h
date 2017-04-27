@@ -30,6 +30,10 @@ public:
 		return( mApp );
 	}
 
+	static QString av_err( int pErrorCode );
+
+	static QString av_err( const QString &pHeader, int pErrorCode );
+
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
 

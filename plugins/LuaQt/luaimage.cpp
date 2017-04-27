@@ -209,7 +209,7 @@ int LuaImage::luaSetSize( lua_State *L )
 
 	if( IUD->mImgInf )
 	{
-		IUD->mImgInf->setFormat( fugio::ImageInterface::FORMAT_RGBA8 );
+		IUD->mImgInf->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
 		IUD->mImgInf->setSize( S.width(), S.height() );
 		IUD->mImgInf->setLineSize( 0, S.width() * 4 );
 

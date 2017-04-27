@@ -128,7 +128,9 @@ HEADERS  += mainwindow.h \
 	undo/cmdpinmakeglobal.h \
 	undo/cmdpinremoveglobal.h \
 	undo/cmdpinconnectglobal.h \
-	undo/cmdpindisconnectglobal.h
+	undo/cmdpindisconnectglobal.h \
+    ../include/fugio/editor_interface.h \
+    ../include/fugio/editor_signals.h
 
 FORMS    += mainwindow.ui \
 	contextwidgetprivate.ui \
@@ -177,10 +179,10 @@ CONFIG(release,debug|release) {
 	includes.path = $$INSTALLDATA/include
 	includes.files = ../include/fugio
 
-	translations.path = $$INSTALLDATA/translations
-	translations.files = ../translations/*.qm
+	shared_libs.path = $$INSTALLDATA
+	shared_libs.files = $$DESTDIR/libs
 
-	INSTALLS += examples includes share snippets translations
+	INSTALLS += examples includes share shared_libs snippets
 }
 
 macx {
@@ -192,8 +194,10 @@ macx {
 	PLUGIN_DIR   = $$APP_DIR/Contents/PlugIns
 	RESOURCE_DIR = $$APP_DIR/Contents/Resources
 
+	QMAKE_POST_LINK += echo
+
 	CONFIG(release,debug|release) {
-		QMAKE_POST_LINK += install_name_tool -change libfugio.1.dylib @executable_path/../../../libfugio.1.dylib $$APP_DIR/Contents/MacOS/Fugio
+		QMAKE_POST_LINK += && install_name_tool -change libfugio.1.dylib @executable_path/../../../libfugio.1.dylib $$APP_DIR/Contents/MacOS/Fugio
 
 		QMAKE_POST_LINK += && macdeployqt $$APP_DIR -always-overwrite -qmldir=../qml
 
@@ -219,15 +223,15 @@ macx {
 		INSTALLS += app
 	}
 
-	isEmpty( CASKBASE ) {
-		brew_meta.path = $$INSTALLBASE/packages/sh.brew/meta
-		brew_meta.files = ../installer/package.xml ../installer/installscript.qs
+#	isEmpty( CASKBASE ) {
+#		brew_meta.path = $$INSTALLBASE/packages/sh.brew/meta
+#		brew_meta.files = ../installer/package.xml ../installer/installscript.qs
 
-		brew_data.path = $$INSTALLBASE/packages/sh.brew/data
-		brew_data.files = ../installer/brew_install_update
+#		brew_data.path = $$INSTALLBASE/packages/sh.brew/data
+#		brew_data.files = ../installer/brew_install_update
 
-		INSTALLS += brew_meta brew_data
-	}
+#		INSTALLS += brew_meta brew_data
+#	}
 
 	qttranslation.path = $$app.path/$$TARGET".app"/Contents/translations
 	qttranslation.files = $$(QTDIR)/translations/qt*.qm
@@ -249,14 +253,18 @@ windows {
 	app.path  = $$INSTALLDATA
 	app.files = $$DESTDIR/$$TARGET".exe"
 
+	INSTALLS += app
+
 	libraries.path  = $$INSTALLDATA
 	libraries.files = $$(QTDIR)/bin/Qt5Concurrent.dll
 	
+	INSTALLS += libraries
+
 	deploy.path     = $$INSTALLDATA
 	deploy.depends  = install_app install_libraries
 	deploy.commands = windeployqt --force --no-angle --no-opengl-sw --verbose 2 --qmldir $$shell_path( $$FUGIO_BASE/qml ) $$shell_path( $$INSTALLDATA )
 
-	INSTALLS += app deploy libraries
+	INSTALLS += deploy
 }
 
 unix:!macx {

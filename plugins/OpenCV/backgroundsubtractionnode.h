@@ -38,15 +38,17 @@ private:
 
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputImage;
+	QSharedPointer<fugio::PinInterface>			 mPinInputReset;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface								*mOutputImage;
+	fugio::ImageInterface						*mOutputImage;
 
 #if defined( OPENCV_SUPPORTED )
 	cv::Mat										 mMatSrc;
 	cv::Mat										 mMatDst;
 	cv::Ptr<cv::BackgroundSubtractor>			 mBckSub;
 #endif
+	double										 mLearningRate;
 };
 
 #endif // BACKGROUNDSUBTRACTIONNODE_H

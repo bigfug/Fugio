@@ -12,6 +12,10 @@ TARGET = $$qtLibraryTarget(fugio-ffmpeg)
 TEMPLATE = lib
 CONFIG += plugin c++11
 
+linux {
+	QMAKE_CFLAGS += -std=c11
+}
+
 DESTDIR = $$DESTDIR/plugins
 
 SOURCES += \
@@ -24,7 +28,10 @@ SOURCES += \
 	mediarecorderform.cpp \
 	mediarecordernode.cpp \
 	mediapreset/mediapresetmanager.cpp \
-	mediaprocessornode.cpp
+	mediaprocessornode.cpp \
+    hap/source/hap.c \
+    mediaplayervideopreview.cpp \
+    mediatimelinenode.cpp
 
 HEADERS += \
 	../../include/fugio/ffmpeg/uuid.h \
@@ -52,10 +59,14 @@ HEADERS += \
 	mediaprocessornode.h \
 	processoraudiobuffer.h \
 	mediapreset/mediapresetinterface.h \
-	mediapreset/media360_2048.h
+	mediapreset/media360_2048.h \
+    hap/source/hap.h \
+    mediaplayervideopreview.h \
+    mediatimelinenode.h
 
 FORMS += \
-	mediarecorderform.ui
+	mediarecorderform.ui \
+    mediaplayervideopreview.ui
 
 RESOURCES += \
     resources.qrc
@@ -145,25 +156,13 @@ windows {
 
 INCLUDEPATH += $$PWD/../../include
 
-exists( $$PWD/../../../FugioPlugins/include ) {
-	INCLUDEPATH += $$PWD/../../../FugioPlugins/include
-
-	SOURCES += mediatimelinenode.cpp \
-		mediaplayervideopreview.cpp
-
-	HEADERS += mediatimelinenode.h \
-		mediaplayervideopreview.h
-
-	FORMS += mediaplayervideopreview.ui
-
-	DEFINES += TIMELINE_SUPPORTED
-}
-
 #------------------------------------------------------------------------------
 # ffmpeg
 
 linux {
 	LIBS += -L/usr/local/lib
+
+	DEFINES += FFMPEG_SUPPORTED
 }
 
 windows:contains( DEFINES, FFMPEG_SUPPORTED ) {
@@ -173,20 +172,34 @@ windows:contains( DEFINES, FFMPEG_SUPPORTED ) {
 	QMAKE_LFLAGS += /OPT:NOREF
 }
 
-macx:exists( /usr/local/opt/ffmpeg ) {
-	INCLUDEPATH += /usr/local/opt/ffmpeg/include
+macx {
+	isEmpty( CASKBASE ) {
+		FFMPEG_PATH = $$(LIBS)/ffmpeg-build
 
-	LIBS += -L/usr/local/opt/ffmpeg/lib
+		exists( $$FFMPEG_PATH ) {
+			INCLUDEPATH += $$FFMPEG_PATH/include
 
-	DEFINES += FFMPEG_SUPPORTED
+			LIBS += -L$$FFMPEG_PATH/lib
+
+			DEFINES += FFMPEG_SUPPORTED
+		}
+	} else {
+		exists( /usr/local/opt/ffmpeg ) {
+			INCLUDEPATH += /usr/local/opt/ffmpeg/include
+
+			LIBS += -L/usr/local/opt/ffmpeg/lib
+
+			DEFINES += FFMPEG_SUPPORTED
+		}
+	}
 }
 
 contains( DEFINES, FFMPEG_SUPPORTED ) {
 	LIBS += -lavcodec -lavdevice -lavformat -lavutil -lswscale
 
-	linux:!exists( /usr/include/libswresample/swresample.h ) {
-		DEFINES += TL_USE_LIB_AV
-	}
+#	linux:!exists( /usr/include/libswresample/swresample.h ) {
+#		DEFINES += TL_USE_LIB_AV
+#	}
 
 	!contains( DEFINES, TL_USE_LIB_AV ) {
 		LIBS += -lswresample -lavfilter
@@ -194,28 +207,21 @@ contains( DEFINES, FFMPEG_SUPPORTED ) {
 }
 
 #------------------------------------------------------------------------------
-# hap
-
-exists( $$(LIBS)/hap/source ) {
-	INCLUDEPATH += $$(LIBS)/hap/source
-
-	SOURCES += $$(LIBS)/hap/source/hap.c
-	HEADERS += $$(LIBS)/hap/source/hap.h
-
-	DEFINES += HAP_SUPPORTED
-}
-
-!contains( DEFINES, HAP_SUPPORTED ) {
-	warning( "HAP not supported" )
-}
-
-#------------------------------------------------------------------------------
 # snappy
 
 contains( DEFINES, FFMPEG_SUPPORTED ) {
 	macx {
-		INCLUDEPATH += /usr/local/opt/snappy/include
-		LIBS += -L/usr/local/opt/snappy/lib
+		isEmpty( CASKBASE ) {
+			SNAPPY_PATH = $$(LIBS)/snappy-build
+
+			INCLUDEPATH += $$SNAPPY_PATH/include
+
+			LIBS += -L$$SNAPPY_PATH/lib -lsnappy
+		} else {
+			INCLUDEPATH += /usr/local/opt/snappy/include
+
+			LIBS += -L/usr/local/opt/snappy/lib -lsnappy
+		}
 	}
 
 	unix {
@@ -226,12 +232,12 @@ contains( DEFINES, FFMPEG_SUPPORTED ) {
 	#    HEADERS += $$(LIBS)/snappy/snappy.h \
 	#        $$(LIBS)/snappy/snappy-c.h
 
-		LIBS += -lsnappy
+#		LIBS += -lsnappy
 	}
 
-	DEFINES += SNAPPY_STATIC
-
 	windows {
+		DEFINES += SNAPPY_STATIC
+
 		INCLUDEPATH += $$(LIBS)/snappy-1.1.1.8
 
 		SOURCES += $$(LIBS)/snappy-1.1.1.8/snappy.cc \

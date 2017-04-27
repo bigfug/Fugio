@@ -17,10 +17,13 @@
 #include <fugio/audio/audio_instance_base.h>
 #include <fugio/core/uuid.h>
 #include <fugio/file/uuid.h>
+#include <fugio/editor_interface.h>
 
 #include "mediapreset/mediapresetinterface.h"
 
 #include "mediarecorderform.h"
+
+#include "ffmpegplugin.h"
 
 #include <fugio/utils.h>
 
@@ -113,11 +116,11 @@ bool MediaRecorderNode::initialise()
 
 	if( !mDockWidget )
 	{
-		QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
+		fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
 
-		if( MainWindow )
+		if( EI )
 		{
-			if( ( mDockWidget = new QDockWidget( QString( "Media Recorder: %1" ).arg( mNode->name() ), MainWindow ) ) == 0 )
+			if( ( mDockWidget = new QDockWidget( QString( "Media Recorder: %1" ).arg( mNode->name() ), EI->mainWindow() ) ) == 0 )
 			{
 				return( false );
 			}
@@ -131,7 +134,7 @@ bool MediaRecorderNode::initialise()
 
 			mDockWidget->setObjectName( fugio::utils::uuid2string( mNode->uuid() ) );
 
-			MainWindow->addDockWidget( mDockArea, mDockWidget );
+			EI->mainWindow()->addDockWidget( mDockArea, mDockWidget );
 
 			connect( this, SIGNAL(destroyed()), mDockWidget, SLOT(deleteLater()) );
 		}
@@ -283,6 +286,8 @@ void MediaRecorderNode::onFormClicked( void )
 
 void MediaRecorderNode::record( const QString &pFileName )
 {
+	int			AVErr = 0;
+
 	if( mMediaPreset == 0 )
 	{
 		return;
@@ -300,9 +305,9 @@ void MediaRecorderNode::record( const QString &pFileName )
 #if defined( TL_USE_LIB_AV )
 	return;
 #else
-	if( avformat_alloc_output_context2( &mFormatContext, NULL, NULL, pFileName.toLatin1() ) < 0 )
+	if( ( AVErr = avformat_alloc_output_context2( &mFormatContext, NULL, NULL, pFileName.toLatin1() ) ) < 0 )
 	{
-		qWarning() << tr( "Couldn't av_guess_format of filename: %1" ).arg( pFileName );
+		qWarning() << tr( "Couldn't av_guess_format of filename: %1 - %2" ).arg( pFileName ).arg( ffmpegPlugin::av_err( AVErr ) );
 
 		return;
 	}
@@ -386,8 +391,10 @@ void MediaRecorderNode::record( const QString &pFileName )
 
 	if( mStreamVideo )
 	{
-		if( avcodec_open2( mCodecContextVideo, NULL, &mOptionsVideo ) != 0 )
+		if( ( AVErr = avcodec_open2( mCodecContextVideo, NULL, &mOptionsVideo ) ) != 0 )
 		{
+			qWarning() << ffmpegPlugin::av_err( "avcodec_open2", AVErr );
+
 			return;
 		}
 
@@ -434,8 +441,10 @@ void MediaRecorderNode::record( const QString &pFileName )
 
 	if( mStreamAudio != 0 )
 	{
-		if( avcodec_open2( mCodecContextAudio, NULL, &mOptionsAudio ) != 0 )
+		if( ( AVErr = avcodec_open2( mCodecContextAudio, NULL, &mOptionsAudio ) ) != 0 )
 		{
+			qWarning() << ffmpegPlugin::av_err( "avcodec_open2", AVErr );
+
 			return;
 		}
 

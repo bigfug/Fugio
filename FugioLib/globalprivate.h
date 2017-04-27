@@ -139,12 +139,6 @@ public:
 
 	virtual QList< QSharedPointer<fugio::ContextInterface> > contexts( void ) Q_DECL_OVERRIDE;
 
-	virtual void setMainWindow( QMainWindow *pMainWindow ) Q_DECL_OVERRIDE;
-
-	virtual QMainWindow *mainWindow( void ) Q_DECL_OVERRIDE;
-
-	virtual void setEditTarget( fugio::EditInterface *pEditTarget ) Q_DECL_OVERRIDE;
-
 	virtual void registerDeviceFactory( fugio::DeviceFactoryInterface *pFactory ) Q_DECL_OVERRIDE;
 	virtual void unregisterDeviceFactory( fugio::DeviceFactoryInterface *pFactory ) Q_DECL_OVERRIDE;
 
@@ -162,11 +156,6 @@ public:
 
 	virtual QList<QUuid> pinSplitters( const QUuid &pPinId ) const Q_DECL_OVERRIDE;
 	virtual QList<QUuid> pinJoiners( const QUuid &pPinId ) const Q_DECL_OVERRIDE;
-
-	//-------------------------------------------------------------------------
-	// Menus
-
-	virtual void menuAddEntry( fugio::MenuId, QString pName, QObject *pObject, const char *pSlot ) Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 
@@ -231,7 +220,6 @@ private:
 	UuidObjectMap					 mInterfaceMap;
 	int								 mFrameCount;
 	qint64							 mLastTime;
-	QMainWindow						*mMainWindow;
 
 	QMutex							 mContextMutex;
 
@@ -240,8 +228,6 @@ private:
 	QList<fugio::DeviceFactoryInterface *>				 mDeviceFactories;
 
 	QList<QObject *>				 mPluginInitList;
-
-	fugio::EditInterface					*mEditTarget;
 
 	QMultiMap<QUuid,QUuid>			 mPinSplitters;
 	QMultiMap<QUuid,QUuid>			 mPinJoiners;

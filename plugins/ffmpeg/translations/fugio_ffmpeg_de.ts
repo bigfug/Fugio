@@ -247,20 +247,24 @@
 <context>
     <name>MediaRecorderNode</name>
     <message>
-        <location filename="../mediarecordernode.cpp" line="63"/>
+        <location filename="../mediarecordernode.cpp" line="65"/>
         <source>The input image to record</source>
         <translation>Input Video das aufgenommen wird</translation>
     </message>
     <message>
-        <location filename="../mediarecordernode.cpp" line="65"/>
+        <location filename="../mediarecordernode.cpp" line="67"/>
         <source>The input audio to record</source>
         <translation>Input Audio welches aufgenommen wird</translation>
     </message>
     <message>
-        <location filename="../mediarecordernode.cpp" line="305"/>
+        <location filename="../mediarecordernode.cpp" line="309"/>
+        <source>Couldn&apos;t av_guess_format of filename: %1 - %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Couldn&apos;t av_guess_format of filename: %1</source>
         <translatorcomment>not sure about the right value of the Variable</translatorcomment>
-        <translation>Format der Datei %1 konnte nicht erraten werden</translation>
+        <translation type="vanished">Format der Datei %1 konnte nicht erraten werden</translation>
     </message>
 </context>
 <context>

@@ -48,7 +48,6 @@ void MediaSegment::clearSegment()
 
 	mPlayHead = 0;
 	mFormatContext = 0;
-	mFrameSrc = 0;
 	mSwrContext = 0;
 	mErrorState = false;
 	mDuration = 0;
@@ -159,15 +158,6 @@ bool MediaSegment::loadMedia( const QString &pFileName, bool pProcess )
 	}
 
 	av_dict_free( &Opts );
-
-	//-------------------------------------------------------------------------
-
-	if( ( mFrameSrc = av_frame_alloc() ) == 0 )
-	{
-		//mErrorState = true;
-
-		return( false );
-	}
 
 	//-------------------------------------------------------------------------
 
@@ -360,7 +350,7 @@ void MediaSegment::processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 	}
 	else
 	{
-		VD.mPTS = av_frame_get_best_effort_timestamp( mFrameSrc );
+		VD.mPTS = av_frame_get_best_effort_timestamp( mVideo.mFrame );
 
 		if( VD.mPTS != AV_NOPTS_VALUE )
 		{
@@ -375,13 +365,13 @@ void MediaSegment::processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 			VD.mPTS = qMax( TargetPTS, 0.0 );
 		}
 
-		if( av_frame_get_pkt_duration( mFrameSrc ) )
+		if( av_frame_get_pkt_duration( mVideo.mFrame ) )
 		{
 			/* update the video clock */
-			VD.mDuration = av_frame_get_pkt_duration( mFrameSrc ) * TimeBase;
+			VD.mDuration = av_frame_get_pkt_duration( mVideo.mFrame ) * TimeBase;
 
 			/* if we are repeating a frame, adjust clock accordingly */
-			VD.mDuration += qreal( mFrameSrc->repeat_pict ) * ( VD.mDuration * 0.5 );
+			VD.mDuration += qreal( mVideo.mFrame->repeat_pict ) * ( VD.mDuration * 0.5 );
 		}
 		else
 		{
@@ -411,18 +401,18 @@ void MediaSegment::processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 		return;
 	}
 
-	if( av_image_alloc( VD.mData, VD.mLineSizes, mFrameSrc->width, mFrameSrc->height, AVPixelFormat( mFrameSrc->format ), 32 ) < 0 )
+	if( av_image_alloc( VD.mData, VD.mLineSizes, mVideo.mFrame->width, mVideo.mFrame->height, AVPixelFormat( mVideo.mFrame->format ), 32 ) < 0 )
 	{
 		return;
 	}
 
-	av_image_copy( VD.mData, VD.mLineSizes, (const uint8_t **)( mFrameSrc->data ), mFrameSrc->linesize, AVPixelFormat( mFrameSrc->format ), mFrameSrc->width, mFrameSrc->height );
+	av_image_copy( VD.mData, VD.mLineSizes, (const uint8_t **)( mVideo.mFrame->data ), mVideo.mFrame->linesize, AVPixelFormat( mVideo.mFrame->format ), mVideo.mFrame->width, mVideo.mFrame->height );
 
 	mVidDat.append( VD );
 
 	if( mVideo.mCodecContext->refcounted_frames )
 	{
-		av_frame_unref( mFrameSrc );
+		av_frame_unref( mVideo.mFrame );
 	}
 #endif
 }
@@ -431,7 +421,7 @@ void MediaSegment::processAudioFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 {
 #if defined( FFMPEG_SUPPORTED )
 	double		TimeBase = av_q2d( mFormatContext->streams[ mAudio.mStreamId ]->time_base );
-	qreal		FrameTS = av_frame_get_best_effort_timestamp( mFrameSrc );
+	qreal		FrameTS = av_frame_get_best_effort_timestamp( mAudio.mFrame );
 
 	if( FrameTS != AV_NOPTS_VALUE )
 	{
@@ -455,7 +445,7 @@ void MediaSegment::processAudioFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 
 #if defined( TL_USE_LIB_AV )
 #else
-	int num_samples = av_rescale_rnd( swr_get_delay( mSwrContext, mAudio.mCodecContext->sample_rate ) + mFrameSrc->nb_samples, 48000, mAudio.mCodecContext->sample_rate, AV_ROUND_UP);
+	int num_samples = av_rescale_rnd( swr_get_delay( mSwrContext, mAudio.mCodecContext->sample_rate ) + mAudio.mFrame->nb_samples, 48000, mAudio.mCodecContext->sample_rate, AV_ROUND_UP );
 
 	AudioBuffer		AD;
 
@@ -470,7 +460,7 @@ void MediaSegment::processAudioFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 	{
 		if( mChannelLayout == mAudio.mCodecContext->channel_layout && mChannels == mAudio.mCodecContext->channels && mSampleRate == mAudio.mCodecContext->sample_rate && mSampleFmt == mAudio.mCodecContext->sample_fmt )
 		{
-			if( ( AD.mAudSmp = swr_convert( mSwrContext, AD.mAudDat.data(), num_samples, (const uint8_t **)mFrameSrc->data, mFrameSrc->nb_samples ) ) > 0 )
+			if( ( AD.mAudSmp = swr_convert( mSwrContext, AD.mAudDat.data(), num_samples, (const uint8_t **)mAudio.mFrame->data, mAudio.mFrame->nb_samples ) ) > 0 )
 			{
 				AD.mAudPts = mAudio.mSamplePTS;
 				AD.mAudLen = av_samples_get_buffer_size( &linsze, mChannels, AD.mAudSmp, AV_SAMPLE_FMT_FLTP, 1 );
@@ -702,13 +692,13 @@ bool MediaSegment::hapProcess( qreal TargetPTS, qreal PacketTS, bool pForce )
 
 	mVidDat.append( VD );
 
-	mFrameSrc->height        = mVideo.mCodecContext->height;
-	mFrameSrc->width         = mVideo.mCodecContext->width;
-	mFrameSrc->repeat_pict   = 0;
+	mVideo.mFrame->height        = mVideo.mCodecContext->height;
+	mVideo.mFrame->width         = mVideo.mCodecContext->width;
+	mVideo.mFrame->repeat_pict   = 0;
 
-	mFrameSrc->format        = DataFormat;
-	mFrameSrc->linesize[ 0 ] = DataUsed / mVideo.mCodecContext->height;
-	mFrameSrc->key_frame     = 1;
+	mVideo.mFrame->format        = DataFormat;
+	mVideo.mFrame->linesize[ 0 ] = DataUsed / mVideo.mCodecContext->height;
+	mVideo.mFrame->key_frame     = 1;
 
 	return( true );
 #else
@@ -728,7 +718,7 @@ bool MediaSegment::readVideoFrame( qreal TargetPTS, bool pForce )
 
 		int	RcvErr = 0;
 
-		while( ( RcvErr = avcodec_receive_frame( mVideo.mCodecContext, mFrameSrc ) ) == 0 )
+		while( ( RcvErr = avcodec_receive_frame( mVideo.mCodecContext, mVideo.mFrame ) ) == 0 )
 		{
 			processVideoFrame( TargetPTS, TargetPTS, pForce );
 		}
@@ -764,7 +754,7 @@ bool MediaSegment::readAudioFrame( qreal TargetPTS, bool pForce )
 #if defined( FFMPEG_SUPPORTED )
 	int	RcvErr;
 
-	while( ( RcvErr = avcodec_receive_frame( mAudio.mCodecContext, mFrameSrc ) ) == 0 )
+	while( ( RcvErr = avcodec_receive_frame( mAudio.mCodecContext, mAudio.mFrame ) ) == 0 )
 	{
 		processAudioFrame( TargetPTS, TargetPTS, pForce );
 	}
@@ -1132,7 +1122,7 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 		{
 			if( ( mAudioSendResult = avcodec_send_packet( mAudio.mCodecContext, &mPacket ) ) == 0 )
 			{
-				while( ( mAudioRecvResult = avcodec_receive_frame( mAudio.mCodecContext, mFrameSrc ) ) == 0 )
+				while( ( mAudioRecvResult = avcodec_receive_frame( mAudio.mCodecContext, mAudio.mFrame ) ) == 0 )
 				{
 					processAudioFrame( mPlayHead, mPlayHead, false );
 				}
@@ -1487,7 +1477,7 @@ void MediaSegment::readNext()
 			{
 				if( ( mAudioSendResult = avcodec_send_packet( mAudio.mCodecContext, &mPacket ) ) == 0 )
 				{
-					while( ( mAudioRecvResult = avcodec_receive_frame( mAudio.mCodecContext, mFrameSrc ) ) == 0 )
+					while( ( mAudioRecvResult = avcodec_receive_frame( mAudio.mCodecContext, mAudio.mFrame ) ) == 0 )
 					{
 						processAudioFrame( mPlayHead, mPlayHead, false );
 					}

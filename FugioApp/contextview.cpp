@@ -41,8 +41,7 @@
 bool ContextView::mShownWizard = false;
 
 ContextView::ContextView( QWidget *pParent ) :
-	QGraphicsView( pParent ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 ),
-	mScaleFactor( 1 ), mCurrentFactor( 1 )
+	QGraphicsView( pParent ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 )
 {
 	setScene( &mContextScene );
 
@@ -65,12 +64,16 @@ ContextView::ContextView( QWidget *pParent ) :
 	mLabelBrush = QBrush( Qt::white );
 
 	resetPasteOffset();
+
+	mGroupState.insert( QUuid(), GroupStateEntry() );
 }
 
 ContextView::~ContextView( void )
 {
 	if( QSharedPointer<ContextPrivate> C = qSharedPointerCast<ContextPrivate>( mContext ) )
 	{
+		disconnect( C.data(), 0, this, 0 );
+
 		C->clear();
 	}
 
@@ -130,7 +133,7 @@ ContextWidgetPrivate *ContextView::widget( void )
 	QObject						*O = this;
 	ContextWidgetPrivate		*C = 0;
 
-	while( O != 0 && ( C = qobject_cast<ContextWidgetPrivate *>( O ) ) == 0 )
+	while( O && ( C = qobject_cast<ContextWidgetPrivate *>( O ) ) == 0 )
 	{
 		O = O->parent();
 	}
@@ -219,7 +222,7 @@ QList<QUuid> ContextView::noteItemIds( const QList<NoteItem *> &pNoteList )
 	return( IdsLst );
 }
 
-QMultiMap<QUuid, QUuid> ContextView::linkItemIds(const QList<LinkItem *> &pLinkList)
+QMultiMap<QUuid, QUuid> ContextView::linkItemIds( const QList<LinkItem *> &pLinkList )
 {
 	QMultiMap<QUuid, QUuid>		IdsMap;
 
@@ -537,8 +540,6 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 				const QUuid			OrigId    = fugio::utils::string2uuid( pSettings.value( "uuid" ).toString() );
 				const QUuid			NodeId    = ( mNodeList.contains( OrigId ) ? QUuid::createUuid() : OrigId );
 
-				//const QTransform	Transform = pSettings.value( "transform" ).value<QTransform>();
-
 				if( NodeId.isNull() )
 				{
 					continue;
@@ -547,6 +548,8 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 				GroupIdMap.insert( OrigId, NodeId );
 
 				groupAdd( NodeId );
+
+				mGroupState.insert( NodeId, GroupStateEntry::create( pSettings ) );
 
 				if( QSharedPointer<NodeItem> NI = mNodeList.value( NodeId ) )
 				{
@@ -764,6 +767,21 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 	//-------------------------------------------------------------------------
 
+	if( !pPartial )
+	{
+		GroupStateEntry	GSE;
+
+		pSettings.beginGroup( "view" );
+
+		GSE.load( pSettings );
+
+		m_GroupId = fugio::utils::string2uuid( pSettings.value( "group", fugio::utils::uuid2string( m_GroupId ) ).toString() );
+
+		pSettings.endGroup();
+
+		mGroupState.insert( QUuid(), GSE );
+	}
+
 #if !defined( Q_OS_RASPBERRY_PI )
 	if( !pPartial )
 	{
@@ -808,7 +826,9 @@ void ContextView::loadEnded( QSettings &pSettings, bool pPartial )
 		}
 	}
 
-	updateItemVisibility();
+	m_GroupId = QUuid::createUuid();	// dummy value
+
+	setGroupId( QUuid() );
 }
 
 void ContextView::saveContext( QSettings &pSettings ) const
@@ -904,7 +924,8 @@ void ContextView::saveContext( QSettings &pSettings ) const
 
 		pSettings.setValue( "name", Node->name() );
 		pSettings.setValue( "uuid", fugio::utils::uuid2string( GID ) );
-		pSettings.setValue( "transform", QTransform() );
+
+		mGroupState.value( GID ).save( pSettings );
 
 		if( !Node->groupId().isNull() )
 		{
@@ -1041,6 +1062,16 @@ void ContextView::saveContext( QSettings &pSettings ) const
 
 	if( !mSaveOnlySelected )
 	{
+		GroupStateEntry	GSE = mGroupState.value( QUuid() );
+
+		pSettings.beginGroup( "view" );
+
+		GSE.save( pSettings );
+
+		pSettings.setValue( "group", fugio::utils::uuid2string( m_GroupId ) );
+
+		pSettings.endGroup();
+
 		pSettings.setValue( "mainwindow/geometry", gApp->mainWindow()->saveGeometry() );
 		pSettings.setValue( "mainwindow/state", gApp->mainWindow()->saveState() );
 	}
@@ -1062,6 +1093,10 @@ void ContextView::clearContext( void )
 	mNoteList.clear();
 
 	mNodeList.clear();
+
+	mGroupState.clear();
+
+	mGroupState.insert( QUuid(), GroupStateEntry() );
 
 	if( scene() )
 	{
@@ -1506,7 +1541,7 @@ void ContextView::updateItemVisibility()
 
 		NoteItem		*TI = qgraphicsitem_cast<NoteItem *>( Item );
 
-		if( TI != 0 )
+		if( TI )
 		{
 			TI->setVisible( TI->groupId() == m_GroupId );
 
@@ -1527,6 +1562,12 @@ void ContextView::setGroupId( QUuid GroupId )
 	emit groupIdChanged( GroupId );
 
 	updateItemVisibility();
+
+	GroupStateEntry	GSE = mGroupState.value( m_GroupId );
+
+	zoom( GSE.mCurrentFactor * GSE.mScaleFactor, GSE.mScaleCenter );
+
+	centerOn( GSE.mCenter );
 }
 
 void ContextView::setSelectedColour( const QColor &pColor )
@@ -1784,14 +1825,24 @@ void ContextView::dragMoveEvent( QDragMoveEvent *pEvent )
 
 void ContextView::focusInEvent( QFocusEvent *pEvent )
 {
-	mContext->global()->setEditTarget( this );
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mContext->global()->findInterface( IID_EDITOR ) );
+
+	if( EI )
+	{
+		EI->setEditTarget( this );
+	}
 
 	QGraphicsView::focusInEvent( pEvent );
 }
 
 void ContextView::focusOutEvent( QFocusEvent *pEvent )
 {
-	mContext->global()->setEditTarget( nullptr );
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mContext->global()->findInterface( IID_EDITOR ) );
+
+	if( EI )
+	{
+		EI->setEditTarget( this );
+	}
 
 	QGraphicsView::focusOutEvent( pEvent );
 }
@@ -1902,7 +1953,7 @@ void ContextView::nodeMoveFinished()
 
 	CmdMove		*Cmd = new CmdMove( this, mNodeMoveData, mNoteMoveData );
 
-	if( Cmd != 0 )
+	if( Cmd )
 	{
 		widget()->undoStack()->push( Cmd );
 	}
@@ -2022,7 +2073,7 @@ bool ContextView::hasNoteItem(const QUuid pNoteId) const
 	return( false );
 }
 
-void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI)
+void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI )
 {
 	const QUuid		NewGroupId = NI->id();
 
@@ -2208,15 +2259,8 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGro
 	// Search for any links that link from the ungrouping nodes to outside nodes
 	// and delete them
 
-	for( QGraphicsItem *Item : scene()->items() )
+	for( LinkItem *LI : mLinkList.toSet() )
 	{
-		LinkItem		*LI = qgraphicsitem_cast<LinkItem *>( Item );
-
-		if( !LI )
-		{
-			continue;
-		}
-
 		PinItem			*SrcPin = LI->srcPin();
 		PinItem			*DstPin = LI->dstPin();
 
@@ -2271,6 +2315,8 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGro
 		SrcPin->linkRem( LI );
 		DstPin->linkRem( LI );
 
+		mLinkList.removeAll( LI );
+
 		delete LI;
 
 		if( GI )
@@ -2311,6 +2357,8 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGro
 	}
 
 	updateItemVisibility();
+
+	updateGroupWidgetText();
 }
 
 void ContextView::ungroup( NodeItem *GI )
@@ -2346,6 +2394,8 @@ void ContextView::ungroup( NodeItem *GI )
 
 			if( SrcNod->id() == GI->id() || DstNod->id() == GI->id() )
 			{
+				mLinkList.removeAll( LI );
+
 				delete LI;
 			}
 
@@ -2372,9 +2422,11 @@ void ContextView::ungroup( NodeItem *GI )
 	mNodeList.remove( GI->id() );
 
 	updateItemVisibility();
+
+	updateGroupWidgetText();
 }
 
-void ContextView::processGroupLinks(const QUuid &pGroupId)
+void ContextView::processGroupLinks( const QUuid &pGroupId )
 {
 	QSharedPointer<NodeItem>	NI = findNodeItem( pGroupId );
 
@@ -2384,7 +2436,7 @@ void ContextView::processGroupLinks(const QUuid &pGroupId)
 	}
 }
 
-void ContextView::addGlobalPin( QUuid pPinGlobalId)
+void ContextView::addGlobalPin( QUuid pPinGlobalId )
 {
 	mGlobalPins.removeAll( pPinGlobalId );
 
@@ -2394,6 +2446,30 @@ void ContextView::addGlobalPin( QUuid pPinGlobalId)
 void ContextView::remGlobalPin( QUuid pPinGlobalId )
 {
 	mGlobalPins.removeAll( pPinGlobalId );
+}
+
+void ContextView::updatePinItem( QUuid pPinGlobalId )
+{
+	QSharedPointer<fugio::PinInterface>	PIN = mContext->findPin( pPinGlobalId );
+
+	if( !PIN || !PIN->node() )
+	{
+		return;
+	}
+
+	QSharedPointer<NodeItem>	NI = mNodeList.value( PIN->node()->uuid() );
+
+	if( !NI )
+	{
+		return;
+	}
+
+	PinItem		*PI = ( PIN->direction() == PIN_INPUT ? NI->findPinInput( pPinGlobalId ) : NI->findPinOutput( pPinGlobalId ) );
+
+	if( PI )
+	{
+		PI->update();
+	}
 }
 
 void ContextView::processSelection( bool pSaveToClipboard, bool pDeleteData )
@@ -2457,6 +2533,8 @@ void ContextView::processSelection( bool pSaveToClipboard, bool pDeleteData )
 		if( Cmd )
 		{
 			widget()->undoStack()->push( Cmd );
+
+			updateGroupWidgetText();
 		}
 	}
 
@@ -2621,7 +2699,7 @@ bool ContextView::event( QEvent *pEvent )
 	return( QGraphicsView::event( pEvent ) );
 }
 
-bool ContextView::gestureEvent(QGestureEvent *pEvent)
+bool ContextView::gestureEvent( QGestureEvent *pEvent )
 {
 	//qDebug() << "gestureEvent():" << pEvent;
 
@@ -2650,21 +2728,29 @@ void ContextView::panTriggered( QPanGesture *pGesture )
 
 void ContextView::pinchTriggered( QPinchGesture *pGesture )
 {
+	GroupStateEntry	GSE = mGroupState.value( m_GroupId );
+
 	QPinchGesture::ChangeFlags ChangeFlags = pGesture->changeFlags();
 
 	if( ChangeFlags & QPinchGesture::ScaleFactorChanged )
 	{
-		mCurrentFactor = pGesture->totalScaleFactor();
+		GSE.mCurrentFactor = pGesture->totalScaleFactor();
 	}
 
 	if( pGesture->state() == Qt::GestureFinished )
 	{
-		mScaleFactor *= mCurrentFactor;
+		GSE.mScaleFactor *= GSE.mCurrentFactor;
 
-		mCurrentFactor = 1;
+		GSE.mCurrentFactor = 1;
 	}
 
-	zoom( mCurrentFactor * mScaleFactor, pGesture->centerPoint() );
+	GSE.mScaleCenter = pGesture->centerPoint();
+
+	zoom( GSE.mCurrentFactor * GSE.mScaleFactor, GSE.mScaleCenter );
+
+	GSE.mCenter = mapToScene( viewport()->rect().center() );
+
+	mGroupState.insert( m_GroupId, GSE );
 }
 
 void ContextView::swipeTriggered(QSwipeGesture *pGesture)
@@ -2676,6 +2762,8 @@ void ContextView::wheelEvent( QWheelEvent *pEvent )
 {
 	QPoint numPixels = pEvent->pixelDelta();
 	QPoint numDegrees = pEvent->angleDelta() / 8;
+
+	GroupStateEntry	GSE = mGroupState.value( m_GroupId );
 
 	if( !numPixels.isNull() )
 	{
@@ -2691,14 +2779,16 @@ void ContextView::wheelEvent( QWheelEvent *pEvent )
 
 			if( numSteps.y() > 0 )
 			{
-				mScaleFactor += qMax( 0.1, qreal( numSteps.y() ) * 0.1 );
+				GSE.mScaleFactor += qMax( 0.1, qreal( numSteps.y() ) * 0.1 );
 			}
 			else
 			{
-				mScaleFactor -= qMax( 0.1, qreal( -numSteps.y() ) * 0.1 );
+				GSE.mScaleFactor -= qMax( 0.1, qreal( -numSteps.y() ) * 0.1 );
 			}
 
-			zoom( mScaleFactor, mapToScene( pEvent->pos() ) );
+			GSE.mScaleCenter = mapToScene( pEvent->pos() );
+
+			zoom( GSE.mScaleFactor, GSE.mScaleCenter );
 		}
 		else
 		{
@@ -2707,6 +2797,10 @@ void ContextView::wheelEvent( QWheelEvent *pEvent )
 			verticalScrollBar()->setValue( verticalScrollBar()->value() - numDegrees.y() );
 		}
 	}
+
+	GSE.mCenter = mapToScene( viewport()->rect().center() );
+
+	mGroupState.insert( m_GroupId, GSE );
 
 	pEvent->accept();
 }

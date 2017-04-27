@@ -6,6 +6,8 @@
 #include <fugio/global_interface.h>
 #include <fugio/context_interface.h>
 #include <fugio/colour/colour_interface.h>
+#include <fugio/editor_interface.h>
+
 #include <fugio/core/uuid.h>
 
 #include <fugio/context_signals.h>
@@ -50,11 +52,11 @@ bool NumberMonitorNode::initialise( void )
 		return( false );
 	}
 
-	QMainWindow		*MainWindow = mNode->context()->global()->mainWindow();
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
 
-	if( MainWindow )
+	if( EI )
 	{
-		if( ( mDockWidget = new QDockWidget( QString( "Monitor: %1" ).arg( mNode->name() ), MainWindow ) ) == 0 )
+		if( ( mDockWidget = new QDockWidget( QString( "Monitor: %1" ).arg( mNode->name() ), EI->mainWindow() ) ) == 0 )
 		{
 			return( false );
 		}
@@ -68,7 +70,7 @@ bool NumberMonitorNode::initialise( void )
 
 		mDockWidget->setWidget( mMonitor );
 
-		MainWindow->addDockWidget( mDockArea, mDockWidget );
+		EI->mainWindow()->addDockWidget( mDockArea, mDockWidget );
 
 		connect( mNode->qobject(), SIGNAL(nameChanged(QString)), this, SLOT(updateNodeName(QString)) );
 

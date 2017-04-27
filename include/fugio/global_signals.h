@@ -37,8 +37,6 @@ signals:
 	void configLoad( QSettings &pSettings );
 	void configSave( QSettings &pSettings ) const;
 
-	void editTargetChanged( fugio::EditInterface *pEditTarget );
-
 	void nodeClassAdded( const ClassEntry &pClassEntry );
 
 protected:

@@ -3,7 +3,9 @@
 #include <QSettings>
 #include <QHash>
 
+#if defined( PORTMIDI_SUPPORTED )
 #include "porttime.h"
+#endif
 
 #include <fugio/utils.h>
 

@@ -58,8 +58,10 @@ HEADERS += fugio.h\
 	../include/fugio/global_signals.h \
 	../include/fugio/utils.h \
 	../include/fugio/context_signals.h \
-	../include/fugio/paired_pins_helper_interface.h \
-	../include/fugio/menu_control_interface.h
+	../include/fugio/paired_pins_helper_interface.h
+
+RESOURCES += \
+    resources.qrc
 
 TRANSLATIONS = \
 	translations/fugio_lib_de.ts \
@@ -130,6 +132,3 @@ INCLUDEPATH += $$PWD/../include
 contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 	LIBS += -L/opt/vc/lib -lGLESv2 -lEGL
 }
-
-RESOURCES += \
-    resources.qrc

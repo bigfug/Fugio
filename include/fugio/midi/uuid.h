@@ -21,6 +21,10 @@
 #define NID_MIDI_CHANNEL_INPUT		(QUuid("{cc013248-e081-46a6-b971-7dfda2ffee20}"))
 #define NID_MIDI_CHANNEL_OUTPUT		(QUuid("{60758114-9627-4c81-ae91-9be7535c0a32}"))
 
+#define NID_MIDI_FILE_LOAD			(QUuid("{15677282-4b62-4e36-8da8-a5cc165e2c37}"))
+
+#define NID_MIDI_TIMELINE			(QUuid("{fa6fab6f-ae24-4c8a-9afa-299ed31073c6}"))
+
 #define PID_MIDI_OUTPUT				(QUuid("{69b8817b-9d4f-4f28-a911-0a882b38f5ef}"))
 #define PID_MIDI_INPUT				(QUuid("{E564C435-1BD7-41A8-8D60-0F4E99C0E3B9}"))
 

@@ -31,7 +31,10 @@ SOURCES += \
 	midiinputsyncnode.cpp \
 	midioutputnode.cpp \
 	mididecodernode.cpp \
-	midioutputpin.cpp
+	midioutputpin.cpp \
+	midifileloadnode.cpp \
+    import/midifile.cpp \
+    miditimelinenode.cpp
 
 HEADERS += \
 	../../include/fugio/nodecontrolbase.h \
@@ -54,7 +57,10 @@ HEADERS += \
 	midiinputsyncnode.h \
 	midioutputnode.h \
 	mididecodernode.h \
-	midioutputpin.h
+	midioutputpin.h \
+	midifileloadnode.h \
+    import/midifile.h \
+    miditimelinenode.h
 
 RESOURCES += \
     resources.qrc
@@ -130,4 +136,3 @@ unix:!macx {
 # API
 
 INCLUDEPATH += $$PWD/../../include
-

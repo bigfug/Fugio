@@ -10,6 +10,8 @@
 
 #include <fugio/network/uuid.h>
 
+#include <fugio/editor_interface.h>
+
 #include "getnode.h"
 
 #include "tcpsendnode.h"
@@ -84,7 +86,12 @@ PluginInterface::InitResult NetworkPlugin::initialise( fugio::GlobalInterface *p
 
 	mApp->registerPinClasses( PinClasses );
 
-	mApp->menuAddEntry( fugio::MenuId::HELP, tr( "Network Information..." ), this, SLOT(menuNetworkInformation()) );
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mApp->findInterface( IID_EDITOR ) );
+
+	if( EI )
+	{
+		EI->menuAddEntry( fugio::MenuId::HELP, tr( "Network Information..." ), this, SLOT(menuNetworkInformation()) );
+	}
 
 	return( INIT_OK );
 }

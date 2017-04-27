@@ -1,5 +1,6 @@
 #include "mediapresetmanager.h"
 
+#if defined( FFMPEG_SUPPORTED )
 #include "mediaYouTube240p.h"
 
 #include "mediaYouTube240pWide.h"
@@ -13,11 +14,13 @@
 #include "mediaWav44.h"
 
 #include "mediadvdpal.h"
+#endif
 
 MediaPresetManager::MediaPresetManager(QObject *parent) :
 	QObject(parent)
 {
-	MediaDvdPal::registerPreset( *this );
+#if defined( FFMPEG_SUPPORTED )
+    MediaDvdPal::registerPreset( *this );
 
 	MediaWav44::registerPreset( *this );
 
@@ -30,6 +33,7 @@ MediaPresetManager::MediaPresetManager(QObject *parent) :
 	MediaYouTube1080pWide::registerPreset( *this );
 
 	Media360_2048::registerPreset( *this );
+#endif
 }
 
 void MediaPresetManager::registerPreset( const QString &pPresetName, MediaPresetManager::PresetFunction pPresetFunction )

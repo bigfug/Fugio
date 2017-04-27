@@ -39,8 +39,12 @@ void TextureToImageNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( mValOutputImage->size() != QSize( TexSze.x(), TexSze.y() ) )
 	{
-		mValOutputImage->setSize( TexSze.x(), TexSze.y() );
+#if defined( GL_ES_VERSION_2_0 )
 		mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_RGBA8 );
+#else
+		mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+#endif
+		mValOutputImage->setSize( TexSze.x(), TexSze.y() );
 		mValOutputImage->setLineSize( 0, TexSze.x() * 4 );
 	}
 

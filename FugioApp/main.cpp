@@ -271,8 +271,6 @@ int main( int argc, char *argv[] )
 	{
 		APP->setMainWindow( WND );
 
-		PBG->setMainWindow( WND );
-
 		APP->processEvents();
 
 		WND->initBegin();
@@ -365,8 +363,6 @@ int main( int argc, char *argv[] )
 		PBG->clear();
 
 		PBG->unloadPlugins();
-
-		PBG->setMainWindow( 0 );
 
 		APP->setMainWindow( 0 );
 
