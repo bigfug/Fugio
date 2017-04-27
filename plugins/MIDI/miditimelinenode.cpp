@@ -429,3 +429,25 @@ qreal MidiTimelineNode::latency() const
 {
 	return( mTimelineControl->latency() );
 }
+
+QList<fugio::NodeControlInterface::AvailablePinEntry> MidiTimelineNode::availableOutputPins() const
+{
+	QList<fugio::NodeControlInterface::AvailablePinEntry>		PinLst = NodeControlBase::availableOutputPins();
+
+	PinLst.append( mTimelineControl->availableOutputPins() );
+
+	std::sort( PinLst.begin(), PinLst.end() );
+
+	return( PinLst );
+}
+
+QStringList MidiTimelineNode::availableInputPins() const
+{
+	QStringList		PinLst = NodeControlBase::availableInputPins();
+
+	PinLst.append( mTimelineControl->availableInputPins() );
+
+	PinLst.sort();
+
+	return( PinLst );
+}

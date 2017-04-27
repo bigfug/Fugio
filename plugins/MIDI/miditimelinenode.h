@@ -59,6 +59,9 @@ public:
 
 	virtual void saveSettings( QSettings & ) const Q_DECL_OVERRIDE;
 
+	virtual QStringList availableInputPins() const Q_DECL_OVERRIDE;
+	virtual QList<AvailablePinEntry> availableOutputPins() const Q_DECL_OVERRIDE;
+
 	//-------------------------------------------------------------------------
 	// fugio::PlayheadInterface
 
@@ -136,6 +139,7 @@ private:
 	mutable QImage	 mImage;
 	mutable qreal	 mLastViewStart;
 	mutable qreal	 mLastViewEnd;
+
 };
 
 #endif // MIDITIMELINENODE_H
