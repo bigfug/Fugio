@@ -29,7 +29,9 @@ SOURCES += \
 	mediarecordernode.cpp \
 	mediapreset/mediapresetmanager.cpp \
 	mediaprocessornode.cpp \
-    hap/source/hap.c
+    hap/source/hap.c \
+    mediaplayervideopreview.cpp \
+    mediatimelinenode.cpp
 
 HEADERS += \
 	../../include/fugio/ffmpeg/uuid.h \
@@ -58,10 +60,13 @@ HEADERS += \
 	processoraudiobuffer.h \
 	mediapreset/mediapresetinterface.h \
 	mediapreset/media360_2048.h \
-    hap/source/hap.h
+    hap/source/hap.h \
+    mediaplayervideopreview.h \
+    mediatimelinenode.h
 
 FORMS += \
-	mediarecorderform.ui
+	mediarecorderform.ui \
+    mediaplayervideopreview.ui
 
 RESOURCES += \
     resources.qrc
@@ -150,20 +155,6 @@ windows {
 # API
 
 INCLUDEPATH += $$PWD/../../include
-
-exists( $$PWD/../../../FugioPlugins/include ) {
-	INCLUDEPATH += $$PWD/../../../FugioPlugins/include
-
-	SOURCES += mediatimelinenode.cpp \
-		mediaplayervideopreview.cpp
-
-	HEADERS += mediatimelinenode.h \
-		mediaplayervideopreview.h
-
-	FORMS += mediaplayervideopreview.ui
-
-	DEFINES += TIMELINE_SUPPORTED
-}
 
 #------------------------------------------------------------------------------
 # ffmpeg

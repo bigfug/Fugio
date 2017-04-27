@@ -8,8 +8,10 @@
 #include <fugio/global_signals.h>
 
 #include <fugio/midi/uuid.h>
+#include <fugio/timeline/uuid.h>
 
 #include <fugio/editor_interface.h>
+#include <fugio/timeline/timeline_interface.h>
 
 #include "midinotenode.h"
 #include "midioutputhelpernode.h"
@@ -32,11 +34,9 @@
 
 #include "import/midifile.h"
 
-#if defined( TIMELINE_SUPPORTED )
 #include "miditimelinenode.h"
-#endif
 
-QList<QUuid>	NodeControlBase::PID_UUID;
+QList<QUuid>			 NodeControlBase::PID_UUID;
 
 MidiPlugin				*MidiPlugin::mInstance = 0;
 
@@ -55,9 +55,12 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "MIDI Interval",			"MIDI", NID_MIDI_INTERVAL, &IntervalNode::staticMetaObject ),
 	ClassEntry( "MIDI Channel Output",		"MIDI", NID_MIDI_CHANNEL_OUTPUT, &ChannelOutputNode::staticMetaObject ),
 	ClassEntry( "MIDI Channel Input",		"MIDI", NID_MIDI_CHANNEL_INPUT, &ChannelInputNode::staticMetaObject ),
-#if defined( TIMELINE_SUPPORTED )
-	ClassEntry( "MIDI Timeline",			"MIDI", NID_MIDI_TIMELINE, &MidiTimelineNode::staticMetaObject ),
-#endif
+	ClassEntry()
+};
+
+ClassEntry	TimelineNodeClasses[] =
+{
+	ClassEntry( "MIDI Timeline",		"MIDI", NID_MIDI_TIMELINE, &MidiTimelineNode::staticMetaObject ),
 	ClassEntry()
 };
 
@@ -90,6 +93,13 @@ PluginInterface::InitResult MidiPlugin::initialise( fugio::GlobalInterface *pApp
 		return( INIT_DEFER );
 	}
 
+	fugio::TimelineInterface	*TI = qobject_cast<fugio::TimelineInterface *>( pApp->findInterface( IID_TIMELINE ) );
+
+	if( !TI && !pLastChance )
+	{
+		return( INIT_DEFER );
+	}
+
 	mInstance = this;
 
 	mApp = pApp;
@@ -98,11 +108,14 @@ PluginInterface::InitResult MidiPlugin::initialise( fugio::GlobalInterface *pApp
 
 	mApp->registerPinClasses( PinClasses );
 
-	if( EI )
+	if( EI && TI )
 	{
-#if defined( TIMELINE_SUPPORTED )
 		EI->menuAddFileImporter( "Midi (*.mid)", &MidiPlugin::midiFileImportStatic );
-#endif
+	}
+
+	if( TI )
+	{
+		mApp->registerNodeClasses( TimelineNodeClasses );
 	}
 
 	return( INIT_OK );
@@ -110,6 +123,8 @@ PluginInterface::InitResult MidiPlugin::initialise( fugio::GlobalInterface *pApp
 
 void MidiPlugin::deinitialise( void )
 {
+	mApp->unregisterNodeClasses( TimelineNodeClasses );
+
 	mApp->unregisterPinClasses( PinClasses );
 
 	mApp->unregisterNodeClasses( NodeClasses );

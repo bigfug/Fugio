@@ -17,7 +17,7 @@
 #include <fugio/timeline/keyframes_editor_interface.h>
 #include <fugio/timeline/keyframes_widget_interface.h>
 
-#include "../Timeline/keyframedata/keyframedatatime.h"
+#include <fugio/timeline/keyframedatatime.h>
 
 #include "midiplugin.h"
 

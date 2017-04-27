@@ -33,7 +33,8 @@ SOURCES += \
 	mididecodernode.cpp \
 	midioutputpin.cpp \
 	midifileloadnode.cpp \
-    import/midifile.cpp
+    import/midifile.cpp \
+    miditimelinenode.cpp
 
 HEADERS += \
 	../../include/fugio/nodecontrolbase.h \
@@ -58,7 +59,8 @@ HEADERS += \
 	mididecodernode.h \
 	midioutputpin.h \
 	midifileloadnode.h \
-    import/midifile.h
+    import/midifile.h \
+    miditimelinenode.h
 
 RESOURCES += \
     resources.qrc
@@ -134,13 +136,3 @@ unix:!macx {
 # API
 
 INCLUDEPATH += $$PWD/../../include
-
-exists( $$PWD/../../../FugioPlugins/include ) {
-	INCLUDEPATH += $$PWD/../../../FugioPlugins/include
-
-	SOURCES += miditimelinenode.cpp
-
-	HEADERS += miditimelinenode.h
-
-	DEFINES += TIMELINE_SUPPORTED
-}
