@@ -245,63 +245,81 @@ void MidiTimelineNode::drawBackground( const KeyFramesWidgetInterface *pTrackWid
 
 			Painter.drawImage( UpdateRect, pTrackWidget->viewImage(), UpdateRect );
 
-			Painter.setPen( Qt::red );
-
-			QList<quint8>	Notes;
-
-			int				j = 0;
-
-			for( int i = UpdateRect.left() ; i <= UpdateRect.right() ; i++ )
+			if( !mEvents.isEmpty() )
 			{
-				const qint64	t1 = pTrackWidget->viewToTimestamp( i + 0 ) * 1000.0;
+				Painter.setPen( Qt::red );
 
-				QList<quint8>	SliceNotes = Notes;
+				QList<quint8>	Notes;
 
-				while( j < mEvents.size() )
+				int				j = 0;
+
+				for( int i = UpdateRect.left() ; i <= UpdateRect.right() ; i++ )
 				{
-					fugio::MidiEvent	ME = mEvents[ j ];
+					const qint64	t1 = qint64( mKF->time( pTrackWidget->viewToTimestamp( i ) ) * 1000.0 );
 
-					if( ME.timestamp > t1 )
+					QList<quint8>	SliceNotes = Notes;
+
+					while( j > 0 )
 					{
-						break;
+						if( j < mEvents.size() )
+						{
+							fugio::MidiEvent	ME = mEvents[ j ];
+
+							if( ME.timestamp <= t1 )
+							{
+								break;
+							}
+						}
+
+						j--;
 					}
 
-					quint8	Status = Pm_MessageStatus( ME.message ) & 0xf0;
-					quint8	Data1  = Pm_MessageData1( ME.message );
-					quint8	Data2  = Pm_MessageData2( ME.message );
-
-					if( Status == MIDI_NOTE_ON && Data2 > 0 )
+					while( j < mEvents.size() )
 					{
-						Notes.removeAll( Data1 );
-						Notes.append( Data1 );
+						fugio::MidiEvent	ME = mEvents[ j ];
 
-						SliceNotes.removeAll( Data1 );
-						SliceNotes.append( Data1 );
+						if( ME.timestamp > t1 )
+						{
+							break;
+						}
+
+						quint8	Status = Pm_MessageStatus( ME.message ) & 0xf0;
+						quint8	Data1  = Pm_MessageData1( ME.message );
+						quint8	Data2  = Pm_MessageData2( ME.message );
+
+						if( Status == MIDI_NOTE_ON && Data2 > 0 )
+						{
+							Notes.removeAll( Data1 );
+							Notes.append( Data1 );
+
+							SliceNotes.removeAll( Data1 );
+							SliceNotes.append( Data1 );
+						}
+						else if( Status == MIDI_NOTE_OFF || ( Status == MIDI_NOTE_ON && Data2 == 0 ) )
+						{
+							Notes.removeAll( Data1 );
+						}
+
+						j++;
 					}
-					else if( Status == MIDI_NOTE_OFF || ( Status == MIDI_NOTE_ON && Data2 == 0 ) )
+
+					if( i > UpdateRect.left() )
 					{
-						Notes.removeAll( Data1 );
+						for( quint8 n : SliceNotes )
+						{
+							qint32			y1 = pTrackWidget->valueToView( qreal( n ) / 127.0 );
+
+							Painter.drawPoint( i, y1 );
+						}
 					}
-
-					j++;
-				}
-
-				if( i > UpdateRect.left() )
-				{
-					for( quint8 n : SliceNotes )
+					else
 					{
-						qint32			y1 = pTrackWidget->valueToView( qreal( n ) / 127.0 );
+						for( quint8 n : Notes )
+						{
+							qint32			y1 = pTrackWidget->valueToView( qreal( n ) / 127.0 );
 
-						Painter.drawPoint( i, y1 );
-					}
-				}
-				else
-				{
-					for( quint8 n : Notes )
-					{
-						qint32			y1 = pTrackWidget->valueToView( qreal( n ) / 127.0 );
-
-						Painter.drawPoint( i, y1 );
+							Painter.drawPoint( i, y1 );
+						}
 					}
 				}
 			}
@@ -383,8 +401,8 @@ bool MidiTimelineNode::playheadPlay( qreal pTimePrev, qreal pTimeCurr )
 		return( true );
 	}
 
-	qint64	TP = pTimePrev * 1000.0;
-	qint64	TC = pTimeCurr * 1000.0;
+	qint64	TP = mKF->time( pTimePrev ) * 1000.0;
+	qint64	TC = mKF->time( pTimeCurr ) * 1000.0;
 
 	for( const fugio::MidiEvent &SE : mEvents )
 	{
