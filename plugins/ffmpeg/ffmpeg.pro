@@ -220,7 +220,7 @@ contains( DEFINES, FFMPEG_SUPPORTED ) {
 		} else {
 			INCLUDEPATH += /usr/local/opt/snappy/include
 
-			LIBS += -L/usr/local/opt/snappy/lib
+			LIBS += -L/usr/local/opt/snappy/lib -lsnappy
 		}
 	}
 
