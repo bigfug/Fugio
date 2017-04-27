@@ -90,7 +90,7 @@ MediaTimelineNode::MediaTimelineNode( QSharedPointer<fugio::NodeInterface> pNode
 	{
 		mTimelineControl = TL->control( this );
 
-		mKF = qobject_cast<KeyFramesTimeInterface *>( TL->keyframes( this, KID_TIME )->object() );
+		mKF = qobject_cast<KeyFramesTimeInterface *>( TL->keyframes( this, KID_TIME )->qobject() );
 	}
 }
 
@@ -323,7 +323,7 @@ KeyFramesWidgetInterface *MediaTimelineNode::newTimelineGui()
 
 	if( TL )
 	{
-		KeyFramesEditorInterface	*KFE = qobject_cast<KeyFramesProviderInterface *>( mKF->object() )->newEditor();
+		KeyFramesEditorInterface	*KFE = qobject_cast<KeyFramesProviderInterface *>( mKF->qobject() )->newEditor();
 
 		if( KFE )
 		{
