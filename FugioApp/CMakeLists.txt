@@ -128,3 +128,10 @@ if( APPLE )
 		MACOSX_FRAMEWORK_INFO_PLIST Info.plist
 	)
 endif()
+
+# Add dll paths for MSVC to enable run/debug
+
+if( WIN32 )
+#	set( CMAKE_MSVCIDE_RUN_PATH ${LibFoo_RUNTIME_LIBRARY_DIRS} )
+endif()
+
