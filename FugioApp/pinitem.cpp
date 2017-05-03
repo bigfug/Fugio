@@ -16,6 +16,7 @@
 #include <QSignalMapper>
 #include <QMessageBox>
 #include <QDesktopServices>
+#include <QMetaClassInfo>
 
 #include <QDebug>
 

@@ -193,7 +193,7 @@ Q_DECLARE_INTERFACE( fugio::GlobalInterface, "com.bigfug.fugio.global/1.0" )
 
 #if !defined(FUGIOLIB_LIBRARY)
 FUGIO_NAMESPACE_BEGIN
-Q_DECL_IMPORT fugio::GlobalInterface *fugio( void );
+FUGIOLIBSHARED_EXPORT fugio::GlobalInterface *fugio( void );
 FUGIO_NAMESPACE_END
 #endif
 
