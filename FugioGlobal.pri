@@ -47,9 +47,9 @@ isEmpty( CASKBASE ) {
 }
 
 CONFIG(debug,debug|release) {
-	DESTDIR = $$FUGIO_ROOT/deploy-debug-$$QMAKE_TARGET.arch
+	DESTDIR = $$FUGIO_ROOT/deploy-debug-$$QT_ARCH
 } else {
-	DESTDIR = $$FUGIO_ROOT/deploy-release-$$QMAKE_TARGET.arch
+	DESTDIR = $$FUGIO_ROOT/deploy-release-$$QT_ARCH
 }
 
 contains( DEFINES, INTERNAL_BUILD ) {
@@ -57,7 +57,7 @@ contains( DEFINES, INTERNAL_BUILD ) {
 	INSTALLROOT = $$INSTALLBASE
 	INSTALLDATA = $$INSTALLROOT
 } else:isEmpty( CASKBASE ) {
-	INSTALLBASE = $$FUGIO_ROOT/deploy-installer-$$QMAKE_TARGET.arch
+	INSTALLBASE = $$FUGIO_ROOT/deploy-installer-$$QT_ARCH
 	INSTALLROOT = $$INSTALLBASE/packages/com.bigfug.fugio
 	INSTALLDATA = $$INSTALLROOT/data
 } else {
