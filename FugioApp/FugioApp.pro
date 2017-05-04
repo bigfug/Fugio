@@ -155,7 +155,8 @@ DISTFILES += \
 	Info.plist \
 	package.xml \
 	../config.osx.xml \
-	../config.win.xml \
+	../config.win32.xml \
+	../config.win64.xml \
 	about.html \
 	version.txt \
 	../installer/brew_install_update \
@@ -245,7 +246,12 @@ windows {
 		installer_meta.files = $$_PRO_FILE_PWD_/package.xml
 
 		installer_config.path  = $$INSTALLBASE/config
-		installer_config.extra = copy /V /Y $$shell_path( $$_PRO_FILE_PWD_/../config.win.xml ) $$shell_path( $$installer_config.path/config.xml )
+
+		contains( QT_ARCH, x86_64 ) {
+			installer_config.extra = copy /V /Y $$shell_path( $$_PRO_FILE_PWD_/../config.win64.xml ) $$shell_path( $$installer_config.path/config.xml )
+		} else {
+			installer_config.extra = copy /V /Y $$shell_path( $$_PRO_FILE_PWD_/../config.win32.xml ) $$shell_path( $$installer_config.path/config.xml )
+		}
 
 		INSTALLS += installer_meta installer_config
 	}
@@ -255,13 +261,8 @@ windows {
 
 	INSTALLS += app
 
-	libraries.path  = $$INSTALLDATA
-	libraries.files = $$(QTDIR)/bin/Qt5Concurrent.dll
-	
-	INSTALLS += libraries
-
 	deploy.path     = $$INSTALLDATA
-	deploy.depends  = install_app install_libraries
+	deploy.depends  = install_app
 	deploy.commands = windeployqt --force --no-angle --no-opengl-sw --verbose 2 --qmldir $$shell_path( $$FUGIO_BASE/qml ) $$shell_path( $$INSTALLDATA )
 
 	INSTALLS += deploy

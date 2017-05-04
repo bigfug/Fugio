@@ -53,7 +53,7 @@ CONFIG(debug,debug|release) {
 }
 
 contains( DEFINES, INTERNAL_BUILD ) {
-	INSTALLBASE = $$FUGIO_ROOT/deploy-internal
+	INSTALLBASE = $$FUGIO_ROOT/deploy-internal-$$QT_ARCH
 	INSTALLROOT = $$INSTALLBASE
 	INSTALLDATA = $$INSTALLROOT
 } else:isEmpty( CASKBASE ) {
