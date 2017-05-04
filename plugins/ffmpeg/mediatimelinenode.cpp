@@ -541,6 +541,7 @@ void MediaTimelineNode::updateVideo( qreal pTimeCurr )
 
 		if( mSegment->imageIsHap() )
 		{
+#if defined( FFMPEG_SUPPORTED )
 			switch( HapTextureFormat( mSegment->imageFormat() ) )
 			{
 				case HapTextureFormat_RGB_DXT1:
@@ -559,11 +560,13 @@ void MediaTimelineNode::updateVideo( qreal pTimeCurr )
 					mValImage->setFormat( fugio::ImageInterface::FORMAT_UNKNOWN );
 					break;
 			}
+#endif
 		}
 		else
 		{
 			mValImage->setInternalFormat( mSegment->imageFormat() );
 
+#if defined( FFMPEG_SUPPORTED )
 			switch( AVPixelFormat( mSegment->imageFormat() ) )
 			{
 				case AV_PIX_FMT_RGB24:
@@ -602,6 +605,7 @@ void MediaTimelineNode::updateVideo( qreal pTimeCurr )
 					mValImage->setFormat( fugio::ImageInterface::FORMAT_INTERNAL );
 					break;
 			}
+#endif
 		}
 
 		mValImage->setBuffers( VD->mData );
