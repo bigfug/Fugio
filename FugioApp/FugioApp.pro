@@ -218,7 +218,7 @@ macx {
 
 		app.path  = $$INSTALLDATA
 		app.files = $$APP_DIR
-		app.extra = cp $$(QTDIR)/plugins/platforms/libqcocoa.dylib $$PLUGIN_DIR/platforms
+#		app.extra = cp $$(QTDIR)/plugins/platforms/libqcocoa.dylib $$PLUGIN_DIR/platforms
 
 		INSTALLS += app
 	}

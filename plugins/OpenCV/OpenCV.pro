@@ -99,7 +99,7 @@ macx {
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
 		isEmpty( CASKBASE ) {
-			QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+			QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins -verbose=2
 
 			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$FRAMEWORKDIR
 			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
@@ -143,26 +143,32 @@ windows {
 macx {
 	isEmpty( CASKBASE ) {
 		OPENCV_PATH = $$(LIBS)/opencv-3.1.0-x64
-
-		exists( $$OPENCV_PATH ) {
-			INCLUDEPATH += $$OPENCV_PATH/include
-
-			LIBS += -L$$OPENCV_PATH/lib
-
-			DEFINES += OPENCV_SUPPORTED
-		}
 	} else {
-		exists( /usr/local/opt/opencv3 ) {
-			INCLUDEPATH += /usr/local/opt/opencv3/include
+		OPENCV_PATH = /usr/local/opt/opencv3
+	}
 
-			LIBS += -L/usr/local/opt/opencv3/lib
+	exists( $$OPENCV_PATH ) {
+		INCLUDEPATH += $$OPENCV_PATH/include
 
-			DEFINES += OPENCV_SUPPORTED
-		}
+		LIBS += -L$$OPENCV_PATH/lib
+
+		DEFINES += OPENCV_SUPPORTED
 	}
 
 	contains( DEFINES, OPENCV_SUPPORTED ) {
-		LIBS += -lopencv_core -lopencv_imgproc -lopencv_photo -lopencv_highgui -lopencv_video -lopencv_videoio -lopencv_objdetect
+		LIBS += -lopencv_imgproc -lopencv_photo -lopencv_video -lopencv_objdetect
+
+		exists( $$OPENCV_PATH/lib/libopencv_core.* ) {
+			LIBS += -lopencv_core
+		}
+
+		exists( $$OPENCV_PATH/lib/libopencv_videoio.* ) {
+			LIBS += -lopencv_highgui
+		}
+
+		exists( $$OPENCV_PATH/lib/libopencv_highgui.* ) {
+			LIBS += -lopencv_highgui
+		}
 	}
 }
 

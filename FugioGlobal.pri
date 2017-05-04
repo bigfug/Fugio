@@ -42,7 +42,9 @@ defineReplace( qtLibChange ) {
 FUGIO_ROOT = $$clean_path( $$PWD/.. )
 FUGIO_BASE = $$clean_path( $$PWD )
 
-CASKBASE = $$(CASKBASE)
+isEmpty( CASKBASE ) {
+	CASKBASE = $$(CASKBASE)
+}
 
 CONFIG(debug,debug|release) {
 	DESTDIR = $$FUGIO_ROOT/deploy-debug-$$QMAKE_TARGET.arch
