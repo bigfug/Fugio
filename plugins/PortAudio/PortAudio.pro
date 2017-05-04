@@ -126,7 +126,7 @@ windows {
 		DEFINES += PORTAUDIO_SUPPORTED
 
 		libraries.path  = $$INSTALLDEST
-		libraries.files = $$PORTAUDIO_PATH/Release/$$PORTAUDIO_LIB.dll
+		libraries.files = $$PORTAUDIO_PATH/Release/$${PORTAUDIO_LIB}.dll
 
 		INSTALLS += libraries
 	}
