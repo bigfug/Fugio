@@ -127,7 +127,7 @@ PluginInterface::InitResult VSTPlugin::initialise( GlobalInterface *pApp, bool p
 		//pluginDirScan( QDir( ProgramFiles64Path ).absoluteFilePath( "Steinberg/VstPlugins" ) );			// VST2
 	}
 
-	if( !ProgramFiles32Path.isEmpty() )
+	if( !ProgramFiles32Path.isEmpty() && ProgramFiles32Path != ProgramFiles64Path )
 	{
 		pluginDirScan( QDir( ProgramFiles32Path ).absoluteFilePath( "Common Files/VST3" ) );				// VST3
 		//pluginDirScan( QDir( ProgramFiles32Path ).absoluteFilePath( "Steinberg/VstPlugins" ) );			// VST2
