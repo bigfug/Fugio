@@ -109,7 +109,7 @@ windows {
 		CONFIG(release,debug|release) {
 			LIBS += -L$$OCULUS_LIBS/Release/VS2015
 		} else {
-			LIBS += -L$$OCULUS_LIBS/VS2015
+			LIBS += -L$$OCULUS_LIBS/Debug/VS2015
 		}
 
 		LIBS += -lLibOVR -lopengl32
@@ -141,7 +141,13 @@ windows {
 	}
 
 	exists( $$GLEW_PATH ) {
-		LIBS += -L$$GLEW_PATH -llibglew32
+		LIBS += -L$$GLEW_PATH
+
+		CONFIG(release,debug|release) {
+			LIBS += -llibglew32
+		} else {
+			LIBS += -llibglew32d
+		}
 
 		DEFINES += GLEW_STATIC
 

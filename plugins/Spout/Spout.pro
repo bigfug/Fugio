@@ -140,7 +140,13 @@ windows {
 	}
 
 	exists( $$GLEW_PATH ) {
-		LIBS += -L$$GLEW_PATH -llibglew32
+		LIBS += -L$$GLEW_PATH
+
+		CONFIG(release,debug|release) {
+			LIBS += -llibglew32
+		} else {
+			LIBS += -llibglew32d
+		}
 
 		DEFINES += GLEW_STATIC
 
