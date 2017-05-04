@@ -117,7 +117,7 @@ public:
 	//-------------------------------------------------------------------------
 	// InterfaceTimelineTrack
 
-	virtual void drawBackground( const fugio::KeyFramesWidgetInterface *pTrackWidget, QPainter &pPainter, const QRect &pUpdateRect ) const Q_DECL_OVERRIDE;
+	virtual void drawBackground( const fugio::KeyFramesWidgetInterface *pTrackWidget, const QRect &pUpdateRect, QImage &pBackImage ) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 
@@ -135,11 +135,6 @@ private:
 	fugio::MidiInterface							*mValOutputMidi;
 
 	QList<fugio::MidiEvent>							 mEvents;
-
-	mutable QImage	 mImage;
-	mutable qreal	 mLastViewStart;
-	mutable qreal	 mLastViewEnd;
-
 };
 
 #endif // MIDITIMELINENODE_H

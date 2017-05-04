@@ -16,7 +16,7 @@ class KeyFramesBackgroundInterface
 public:
 	virtual ~KeyFramesBackgroundInterface( void ) {}
 
-	virtual void drawBackground( const KeyFramesWidgetInterface *pTrackWidget, QPainter &pPainter, const QRect &pUpdateRect ) const = 0;
+	virtual void drawBackground( const KeyFramesWidgetInterface *pTrackWidget, const QRect &pUpdateRect, QImage &pBackImage ) const = 0;
 };
 
 FUGIO_NAMESPACE_END
