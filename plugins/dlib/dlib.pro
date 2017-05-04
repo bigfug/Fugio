@@ -120,18 +120,27 @@ macx {
 	}
 }
 
-win32:exists( $$(LIBS)/dlib-19.2 ) {
-	INCLUDEPATH += $$(LIBS)/dlib-19.2
+windows {
+	DLIB_INCLUDE_PATH = $$(LIBS)/dlib-19.2
 
-	CONFIG(debug,debug|release) {
-		LIBS += -L$$(LIBS)/dlib-19.2.32.2015/dlib/Debug
+	contains( QT_ARCH, x86_64 ) {
 	} else {
-		LIBS += -L$$(LIBS)/dlib-19.2.32.2015/dlib/Release
+		DLIB_PATH = $$(LIBS)/dlib-19.2.32.2015
 	}
 
-	LIBS += -ldlib
+	exists( $$DLIB_PATH ) {
+		INCLUDEPATH += $$DLIB_INCLUDE_PATH
 
-	DEFINES += DLIB_SUPPORTED
+		CONFIG(debug,debug|release) {
+			LIBS += -L$$DLIB_PATH/dlib/Debug
+		} else {
+			LIBS += -L$$DLIB_PATH/dlib/Release
+		}
+
+		LIBS += -ldlib
+
+		DEFINES += DLIB_SUPPORTED
+	}
 }
 
 !contains( DEFINES, DLIB_SUPPORTED ) {

@@ -96,11 +96,17 @@ INCLUDEPATH += $$PWD/../../include
 
 #------------------------------------------------------------------------------
 
-win32:exists( "C:/Program Files/Microsoft SDKs/Kinect/v1.8" ) {
+windows:exists( "C:/Program Files/Microsoft SDKs/Kinect/v1.8" ) {
 	INCLUDEPATH += "C:/Program Files/Microsoft SDKs/Kinect/v1.8/inc"
 
-	LIBS += -L"C:/Program Files/Microsoft SDKs/Kinect/v1.8/lib/x86"
+	contains( QT_ARCH, x86_64 ) {
+		LIBS += -L"C:/Program Files/Microsoft SDKs/Kinect/v1.8/lib/amd64"
+	} else {
+		LIBS += -L"C:/Program Files/Microsoft SDKs/Kinect/v1.8/lib/x86"
+	}
+
 	LIBS += -lKinect10
+
 	DEFINES += KINECT_SUPPORTED
 }
 

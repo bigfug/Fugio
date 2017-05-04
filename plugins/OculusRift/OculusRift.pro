@@ -94,29 +94,25 @@ windows {
 #------------------------------------------------------------------------------
 # Oculus Rift
 
-win32 {
-	exists( $$(LIBS)/OculusSDK-1.10.1/LibOVR ) {
-		INCLUDEPATH += $$(LIBS)/OculusSDK-1.10.1/LibOVR/Include
+windows {
+	OCULUS_PATH = $$(LIBS)/OculusSDK-1.10.1
+
+	contains( QT_ARCH, x86_64 ) {
+		OCULUS_LIBS = $$OCULUS_PATH/LibOVR/Lib/Windows/x64
+	} else {
+		OCULUS_LIBS = $$OCULUS_PATH/LibOVR/Lib/Windows/Win32
+	}
+
+	exists( $$OCULUS_PATH/LibOVR ) {
+		INCLUDEPATH += $$OCULUS_PATH/LibOVR/Include
 
 		CONFIG(release,debug|release) {
-			LIBS += -L$$(LIBS)/OculusSDK-1.10.1/LibOVR/Lib/Windows/Win32/Release/VS2015
+			LIBS += -L$$OCULUS_LIBS/Release/VS2015
 		} else {
-			LIBS += -L$$(LIBS)/OculusSDK-1.10.1/LibOVR/Lib/Windows/Win32/Debug/VS2015
+			LIBS += -L$$OCULUS_LIBS/VS2015
 		}
 
 		LIBS += -lLibOVR -lopengl32
-
-		DEFINES += OCULUS_PLUGIN_SUPPORTED
-	}
-}
-
-win64 {
-	exists( $$(LIBS)/OculusSDK-1.10.1/LibOVR ) {
-		INCLUDEPATH += $$(LIBS)/OculusSDK-1.10.1/LibOVR/Include
-
-		LIBS += -L$$(LIBS)/OculusSDK-1.10.1/LibOVR/Lib/Windows/x64/Release/VS2015 -lLibOVR
-
-		LIBS += -lopengl32
 
 		DEFINES += OCULUS_PLUGIN_SUPPORTED
 	}
@@ -129,14 +125,28 @@ win64 {
 #------------------------------------------------------------------------------
 # GLEW
 
-win32 {
+windows {
 	INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
 
-	LIBS += -L$$(LIBS)/glew-2.0.0/lib/Release/Win32 -lglew32s
+	contains( QT_ARCH, x86_64 ) {
+		GLEW_PATH = $$(LIBS)/glew.64.2015
+	} else {
+		GLEW_PATH = $$(LIBS)/glew.32.2015
+	}
 
-	DEFINES += GLEW_STATIC
+	CONFIG(release,debug|release) {
+		GLEW_PATH = $$GLEW_PATH/lib/Release
+	} else {
+		GLEW_PATH = $$GLEW_PATH/lib/Debug
+	}
 
-	LIBS += -lopengl32
+	exists( $$GLEW_PATH ) {
+		LIBS += -L$$GLEW_PATH -llibglew32
+
+		DEFINES += GLEW_STATIC
+
+		LIBS += -lopengl32
+	}
 }
 
 macx {
