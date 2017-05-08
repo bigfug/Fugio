@@ -34,4 +34,5 @@ SUBDIRS += \
 	Time \
 	VideoCapture \
 	VST \
-	XInput
+	XInput \
+    ISF
