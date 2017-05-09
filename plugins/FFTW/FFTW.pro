@@ -84,18 +84,6 @@ windows {
 	plugin.files = $$DESTDIR/$$TARGET".dll"
 
 	INSTALLS += plugin
-
-	libraries.path  = $$INSTALLDEST
-
-	win32 {
-		 libraries.files = $$(LIBS)/fftw-3.3.5/libfftw3f-3.dll
-	}
-
-	win64 {
-		 libraries.files = $$(LIBS)/fftw-3.3.5/libfftw3f-3.dll
-	}
-
-	INSTALLS += libraries
 }
 
 #------------------------------------------------------------------------------
@@ -120,16 +108,25 @@ INCLUDEPATH += $$PWD/../../include
 
 #------------------------------------------------------------------------------
 
-win32 {
-	contains(QMAKE_CC, cl) {
-		exists( $$(LIBS)/fftw-3.3.5 ) {
-			INCLUDEPATH += $$(LIBS)/fftw-3.3.5
-
-			LIBS += -L$$(LIBS)/fftw-3.3.5 -llibfftw3f-3
-
-			DEFINES += FFTW_PLUGIN_SUPPORTED
-		}
+windows {
+	contains( QT_ARCH, x86_64 ) {
+		FFTW_PATH = $$(LIBS)/fftw-3.3.5-dll64
+	} else {
+		FFTW_PATH = $$(LIBS)/fftw-3.3.5
 	}
+
+	exists( $$FFTW_PATH ) {
+		INCLUDEPATH += $$FFTW_PATH
+
+		LIBS += -L$$FFTW_PATH -llibfftw3f-3
+
+		DEFINES += FFTW_PLUGIN_SUPPORTED
+	}
+
+	libraries.path  = $$INSTALLDEST
+	libraries.files = $$FFTW_PATH/libfftw3f-3.dll
+
+	INSTALLS += libraries
 }
 
 macx {

@@ -104,7 +104,7 @@ macx:exists( $$(LIBS)/video_capture/install/mac-clang-x86_64/include/videocaptur
 	DEFINES += VIDEOCAPTURE_SUPPORTED
 }
 
-win32:exists( $$(LIBS)/video_capture/build ) {
+windows:contains( QT_ARCH, i386 ):exists( $$(LIBS)/video_capture/build ) {
 	INCLUDEPATH += $$(LIBS)/video_capture/include
 
 	CONFIG(debug,debug|release) {

@@ -93,12 +93,10 @@ windows {
 
 	libraries.path  = $$INSTALLDEST
 
-	win32 {
-		 libraries.files = $$(LIBS)/LeapSDK/lib/x86/Leap.dll
-	}
-
-	win64 {
+	contains( QT_ARCH, x86_64 ) {
 		 libraries.files = $$(LIBS)/LeapSDK/lib/x64/Leap.dll
+	} else {
+		 libraries.files = $$(LIBS)/LeapSDK/lib/x86/Leap.dll
 	}
 
 	INSTALLS += libraries
@@ -114,12 +112,10 @@ INCLUDEPATH += $$PWD/../../include
 windows:contains(QMAKE_CC, cl):exists( $$(LIBS)/LeapSDK ) {
 	INCLUDEPATH += $$(LIBS)/LeapSDK/include
 
-	win32 {
-		LIBS += -L$$(LIBS)/LeapSDK/lib/x86 -lLeap
-	}
-
-	win64 {
+	contains( QT_ARCH, x86_64 ) {
 		LIBS += -L$$(LIBS)/LeapSDK/lib/x64 -lLeap
+	} else {
+		LIBS += -L$$(LIBS)/LeapSDK/lib/x86 -lLeap
 	}
 
 	DEFINES += LEAP_PLUGIN_SUPPORTED

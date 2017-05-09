@@ -3,6 +3,8 @@
 #include "mediarecordernode.h"
 #include "mediapreset/mediapresetmanager.h"
 
+#include <cmath>
+
 //#include "app.h"
 //#include "mainwindow.h"
 //#include "io/ioinput.h"

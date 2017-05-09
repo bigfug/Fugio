@@ -91,7 +91,10 @@ windows {
 windows:exists( $$(ARTOOLKIT5_ROOT) ) {
 	INCLUDEPATH += $$(ARTOOLKIT5_ROOT)/include
 
-	win32 {
+	contains( QT_ARCH, x86_64 ) {
+		LIBS += -L$$(ARTOOLKIT5_ROOT)/lib/win64-x64
+		LIBS += -lshell32
+	} else {
 		LIBS += -L$$(ARTOOLKIT5_ROOT)/lib/win32-i386
 		LIBS += -lshell32
 	}
@@ -124,12 +127,20 @@ macx:exists( $$(ARTOOLKIT5_ROOT) ) {
 #------------------------------------------------------------------------------
 # Lua
 
-win32:exists( $$(LIBS)/Lua-5.3.3 ) {
-	INCLUDEPATH += $$(LIBS)/Lua-5.3.3/include
+windows {
+	contains( QT_ARCH, x86_64 ) {
+		LUA_PATH = $$(LIBS)/lua-5.3.3_Win64_dll14_lib
+	} else {
+		LUA_PATH = $$(LIBS)/Lua-5.3.3
+	}
 
-	LIBS += -L$$(LIBS)/Lua-5.3.3 -llua53
+	exists( $$LUA_PATH ) {
+		INCLUDEPATH += $$LUA_PATH/include
 
-	DEFINES += LUA_SUPPORTED
+		LIBS += -L$$LUA_PATH -llua53
+
+		DEFINES += LUA_SUPPORTED
+	}
 }
 
 macx {

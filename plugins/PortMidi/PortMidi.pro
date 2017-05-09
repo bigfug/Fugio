@@ -87,18 +87,6 @@ windows {
 	plugin.files = $$DESTDIR/$$TARGET".dll"
 
 	INSTALLS += plugin
-
-	libraries.path  = $$INSTALLDEST
-
-	win32 {
-		 libraries.files = $$(LIBS)/portmidi.32.2015/Release/portmidi.dll
-	}
-
-	win64 {
-		 libraries.files = $$(LIBS)/portmidi.64.2015/Release/portmidi.dll
-	}
-
-	INSTALLS += libraries
 }
 
 #------------------------------------------------------------------------------
@@ -119,21 +107,28 @@ unix:!macx {
 #------------------------------------------------------------------------------
 # portmidi
 
-windows:exists( $$(LIBS)/portmidi ) {
-	INCLUDEPATH += $$(LIBS)/portmidi/pm_common
-	INCLUDEPATH += $$(LIBS)/portmidi/porttime
-}
+windows {
+	exists( $$(LIBS)/portmidi ) {
+		INCLUDEPATH += $$(LIBS)/portmidi/pm_common
+		INCLUDEPATH += $$(LIBS)/portmidi/porttime
+	}
 
-win64:exists( $$(LIBS)/portmidi.64.2015 ) {
-	LIBS += -L$$(LIBS)/portmidi.64.2015/Release -lportmidi
+	contains( QT_ARCH, x86_64 ) {
+		PORTMIDI_PATH = $$(LIBS)/portmidi.64.2015
+	} else {
+		PORTMIDI_PATH = $$(LIBS)/portmidi.32.2015
+	}
 
-	DEFINES += PORTMIDI_SUPPORTED
-}
+	exists( $$PORTMIDI_PATH ) {
+		LIBS += -L$$PORTMIDI_PATH/Release -lportmidi
 
-win32:exists( $$(LIBS)/portmidi.32.2015 )  {
-	LIBS += -L$$(LIBS)/portmidi.32.2015/Release -lportmidi
+		DEFINES += PORTMIDI_SUPPORTED
 
-	DEFINES += PORTMIDI_SUPPORTED
+		libraries.path  = $$INSTALLDEST
+		libraries.files = $$PORTMIDI_PATH/Release/portmidi.dll
+
+		INSTALLS += libraries
+	}
 }
 
 macx {

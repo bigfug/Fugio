@@ -101,11 +101,6 @@ windows {
 	plugin.files = $$DESTDIR/$$TARGET".dll"
 
 	INSTALLS += plugin
-
-	libraries.path  = $$INSTALLDATA
-	libraries.files = $$(LIBS)/Lua-5.3.3/lua53.dll
-
-	INSTALLS += libraries
 }
 
 #------------------------------------------------------------------------------
@@ -126,12 +121,25 @@ unix:!macx {
 #------------------------------------------------------------------------------
 # Lua
 
-win32:exists( $$(LIBS)/Lua-5.3.3 ) {
-	INCLUDEPATH += $$(LIBS)/Lua-5.3.3/include
+windows {
+	contains( QT_ARCH, x86_64 ) {
+		LUA_PATH = $$(LIBS)/lua-5.3.3_Win64_dll14_lib
+	} else {
+		LUA_PATH = $$(LIBS)/Lua-5.3.3
+	}
 
-	LIBS += -L$$(LIBS)/Lua-5.3.3 -llua53
+	exists( $$LUA_PATH ) {
+		INCLUDEPATH += $$LUA_PATH/include
 
-	DEFINES += LUA_SUPPORTED
+		LIBS += -L$$LUA_PATH -llua53
+
+		DEFINES += LUA_SUPPORTED
+
+		libraries.path  = $$INSTALLDATA
+		libraries.files = $$LUA_PATH/lua53.dll
+
+		INSTALLS += libraries
+	}
 }
 
 macx {

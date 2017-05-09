@@ -87,18 +87,6 @@ windows {
 	plugin.files = $$DESTDIR/$$TARGET".dll"
 
 	INSTALLS += plugin
-
-	libraries.path  = $$INSTALLDEST
-
-	win32 {
-		 libraries.files = $$(LIBS)/portaudio.32.2015/Release/portaudio_x86.dll
-	}
-
-	win64 {
-		 libraries.files = $$(LIBS)/portaudio.64.2015/Release/portaudio_x64.dll
-	}
-
-	INSTALLS += libraries
 }
 
 #------------------------------------------------------------------------------
@@ -120,20 +108,27 @@ unix:!macx {
 # portaudio
 
 windows {
-	contains( QMAKE_HOST.arch, x86_64 ) {
-		exists( $$(LIBS)/portaudio/include/portaudio.h ) {
-			LIBS += -L$$(LIBS)/portaudio.64.2015/Release
-			INCLUDEPATH += $$(LIBS)/portaudio/include
-			LIBS += -lportaudio_x64
-			DEFINES += PORTAUDIO_SUPPORTED
-		}
+	contains( QT_ARCH, x86_64 ) {
+		PORTAUDIO_PATH = $$(LIBS)/portaudio.64.2015
+		PORTAUDIO_LIB  = portaudio_x64
 	} else {
-		exists( $$(LIBS)/portaudio/include/portaudio.h ) {
-			LIBS += -L$$(LIBS)/portaudio.32.2015/Release
-			INCLUDEPATH += $$(LIBS)/portaudio/include
-			LIBS += -lportaudio_x86
-			DEFINES += PORTAUDIO_SUPPORTED
-		}
+		PORTAUDIO_PATH = $$(LIBS)/portaudio.32.2015
+		PORTAUDIO_LIB  = portaudio_x86
+	}
+
+	exists( $$(LIBS)/portaudio/include/portaudio.h ) {
+		INCLUDEPATH += $$(LIBS)/portaudio/include
+	}
+
+	exists( $$PORTAUDIO_PATH ) {
+		LIBS += -L$$PORTAUDIO_PATH/Release -l$$PORTAUDIO_LIB
+
+		DEFINES += PORTAUDIO_SUPPORTED
+
+		libraries.path  = $$INSTALLDEST
+		libraries.files = $$PORTAUDIO_PATH/Release/$${PORTAUDIO_LIB}.dll
+
+		INSTALLS += libraries
 	}
 }
 

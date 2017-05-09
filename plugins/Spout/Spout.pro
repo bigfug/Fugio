@@ -124,14 +124,34 @@ contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 	LIBS += -L/opt/vc/lib -lGLESv2 -lEGL
 }
 
-win32 {
+windows {
 	INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
 
-	LIBS += -L$$(LIBS)/glew-2.0.0/lib/Release/Win32 -lglew32s
+	contains( QT_ARCH, x86_64 ) {
+		GLEW_PATH = $$(LIBS)/glew.64.2015
+	} else {
+		GLEW_PATH = $$(LIBS)/glew.32.2015
+	}
 
-	DEFINES += GLEW_STATIC
+	CONFIG(release,debug|release) {
+		GLEW_PATH = $$GLEW_PATH/lib/Release
+	} else {
+		GLEW_PATH = $$GLEW_PATH/lib/Debug
+	}
 
-	LIBS += -lopengl32
+	exists( $$GLEW_PATH ) {
+		LIBS += -L$$GLEW_PATH
+
+		CONFIG(release,debug|release) {
+			LIBS += -llibglew32
+		} else {
+			LIBS += -llibglew32d
+		}
+
+		DEFINES += GLEW_STATIC
+
+		LIBS += -lopengl32
+	}
 }
 
 macx {

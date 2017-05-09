@@ -83,7 +83,7 @@ void DeviceVideoCapture::run()
 {
 	try
 	{
-#if defined( OPENCV_SUPPORTED )
+#if defined( HAVE_OPENCV_HIGHGUI )
 		if( ( mVidCap = new cv::VideoCapture( mCameraIndex ) ) == nullptr )
 		{
 			return;
