@@ -7,10 +7,12 @@
 #include <QTranslator>
 #include <QApplication>
 
-#include <fugio/colour/uuid.h>
+#include <fugio/isf/uuid.h>
 #include <fugio/nodecontrolbase.h>
 
 #include <fugio/opengl/uuid.h>
+
+#include "isfnode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -18,7 +20,7 @@ ISFPlugin					*ISFPlugin::mInstance = nullptr;
 
 ClassEntry		ISFPlugin::mNodeClasses[] =
 {
-//	ClassEntry( "Colour", "GUI", NID_COLOUR_BUTTON, &ColourButtonNode::staticMetaObject ),
+	ClassEntry( "ISF", NID_ISF, &ISFNode::staticMetaObject ),
 	ClassEntry()
 };
 
@@ -50,7 +52,7 @@ bool ISFPlugin::hasContext()
 		return( false );
 	}
 
-#if defined( OCULUS_PLUGIN_SUPPORTED )
+#if defined( GLEW_SUPPORTED )
 	if( glewExperimental == GL_FALSE )
 	{
 		glewExperimental = GL_TRUE;

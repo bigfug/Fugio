@@ -10,19 +10,21 @@ QT += gui widgets
 
 TARGET = $$qtLibraryTarget(fugio-isf)
 TEMPLATE = lib
-CONFIG += plugin
-CONFIG += c++11
+CONFIG += plugin c++11
 
 DESTDIR = $$DESTDIR/plugins
 
 SOURCES += \
-	isfplugin.cpp
+	isfplugin.cpp \
+    isfnode.cpp
 
 HEADERS += \
 	../../include/fugio/isf/uuid.h \
 	../../include/fugio/nodecontrolbase.h \
 	../../include/fugio/pincontrolbase.h \
-	isfplugin.h
+	isfplugin.h \
+    isfnode.h \
+    opengl_includes.h
 
 RESOURCES += \
 	resources.qrc \
@@ -95,3 +97,51 @@ unix:!macx {
 # API
 
 INCLUDEPATH += $$PWD/../../include
+
+#------------------------------------------------------------------------------
+# GLEW
+
+windows {
+	INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
+
+	contains( QT_ARCH, x86_64 ) {
+		GLEW_PATH = $$(LIBS)/glew.64.2015
+	} else {
+		GLEW_PATH = $$(LIBS)/glew.32.2015
+	}
+
+	CONFIG(release,debug|release) {
+		GLEW_PATH = $$GLEW_PATH/lib/Release
+	} else {
+		GLEW_PATH = $$GLEW_PATH/lib/Debug
+	}
+
+	exists( $$GLEW_PATH ) {
+		LIBS += -L$$GLEW_PATH
+
+		CONFIG(release,debug|release) {
+			LIBS += -llibglew32
+		} else {
+			LIBS += -llibglew32d
+		}
+
+		DEFINES += GLEW_STATIC
+
+		LIBS += -lopengl32
+
+		DEFINES += GLEW_SUPPORTED
+	}
+}
+
+macx {
+	isEmpty( CASKBASE ) {
+		INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
+
+		LIBS += -L$$(LIBS)/glew-2.0.0/lib -lGLEW
+
+	} else {
+		INCLUDEPATH += /usr/local/include
+
+		LIBS += -L/usr/local/lib -lGLEW
+	}
+}
