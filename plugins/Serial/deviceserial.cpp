@@ -1,6 +1,8 @@
 #include "deviceserial.h"
+#if defined( SERIALPORT_SUPPORTED )
 #include <QSerialPort>
 #include <QSerialPortInfo>
+#endif
 #include <QStringList>
 #include <QSettings>
 #include <QDateTime>
