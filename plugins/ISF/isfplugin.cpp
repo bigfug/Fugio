@@ -32,6 +32,8 @@ ClassEntry		ISFPlugin::mPinClasses[] =
 ISFPlugin::ISFPlugin( void )
 	: mApp( 0 )
 {
+	mInstance = this;
+
 	//-------------------------------------------------------------------------
 	// Install translator
 

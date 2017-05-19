@@ -47,6 +47,38 @@ public:
 public:
 	virtual void render( qint64 pTimeStamp, QUuid pSourcePinId ) Q_DECL_OVERRIDE;
 
+protected:
+	typedef enum ISFInputType
+	{
+		UNKNOWN = -1,
+		EVENT,
+		BOOL,
+		LONG,
+		FLOAT,
+		POINT2D,
+		IMAGE,
+		COLOR,
+		AUDIO,
+		AUDIOFFT
+	} ISFInputType;
+
+	static ISFInputType isfType( QString Type );
+
+	typedef struct ISFInput
+	{
+		ISFInput( void ) : mType( UNKNOWN ), mEventFlag( false ) {}
+
+		ISFInput( ISFInputType pType ) : mType( pType ), mEventFlag( false ) {}
+
+		ISFInputType	mType;
+		bool			mEventFlag;
+	} ISFInput;
+
+	QMap<QString,ISFInput> parseInputs( QJsonArray Inputs );
+
+private:
+	void loadShaders( void );
+
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputSource;
 
@@ -55,9 +87,13 @@ private:
 
 	QString										 mShaderSource;
 
+	QMap<QString,ISFInput>						 mISFInputs;
+
 	GLuint										 mVAO;
 	GLuint										 mBuffer;
 	GLuint										 mProgram;
+
+	qint64										 mLastRenderTime;
 };
 
 #endif // ISFNODE_H
