@@ -1,7 +1,9 @@
 #include "networkplugin.h"
 
+#include <QCoreApplication>
 #include <QNetworkInterface>
 #include <QMessageBox>
+#include <QTranslator>
 
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>

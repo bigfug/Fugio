@@ -91,15 +91,17 @@ void TCPReceiveNode::serverRead()
 			QUuid		ControlId, LocalId;
 			QString		Name;
 
+#if( QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 ) )
 			D->startTransaction();
-
+#endif
 			*D >> LocalId >> ControlId >> Name;
 
+#if( QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 ) )
 			if( !D->commitTransaction() )
 			{
 				return;
 			}
-
+#endif
 			QSharedPointer<fugio::PinInterface>		P = mNode->findPinByLocalId( LocalId );
 
 			if( !P )

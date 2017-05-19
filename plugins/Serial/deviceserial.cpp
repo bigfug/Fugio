@@ -113,17 +113,23 @@ QStringList DeviceSerial::portlist( void )
 {
 	QStringList					PrtLst;
 
+#if defined( SERIALPORT_SUPPORTED )
 	for( const QSerialPortInfo &PI : QSerialPortInfo::availablePorts() )
 	{
 		PrtLst.append( PI.portName() );
 	}
+#endif
 
 	return( PrtLst );
 }
 
 QList<qint32> DeviceSerial::baudrates( void )
 {
+#if defined( SERIALPORT_SUPPORTED )
 	return( QSerialPortInfo::standardBaudRates() );
+#else
+	return( QList<qint32>() );
+#endif
 }
 
 DeviceSerial *DeviceSerial::newDevice( void )
