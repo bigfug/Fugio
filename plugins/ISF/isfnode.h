@@ -76,6 +76,14 @@ protected:
 
 	QMap<QString,ISFInput> parseInputs( QJsonArray Inputs );
 
+	typedef struct ISFImport
+	{
+		QString				mPath;
+		GLuint				mTextureId;
+	} ISFImport;
+
+	void parseImports( const QJsonObject Imports );
+
 private:
 	void loadShaders( void );
 
@@ -88,6 +96,7 @@ private:
 	QString										 mShaderSource;
 
 	QMap<QString,ISFInput>						 mISFInputs;
+	QMap<QString,ISFImport>						 mISFImports;
 
 	GLuint										 mVAO;
 	GLuint										 mBuffer;

@@ -5,6 +5,7 @@
 
 #include <QByteArray>
 #include <QPointF>
+#include <QImage>
 
 #include <fugio/core/uuid.h>
 #include <fugio/colour/uuid.h>
@@ -224,6 +225,59 @@ QMap<QString,ISFNode::ISFInput> ISFNode::parseInputs( QJsonArray Inputs )
 	return( ISFNewInputs );
 }
 
+void ISFNode::parseImports( const QJsonObject Imports )
+{
+	for( const QString Name : Imports.keys() )
+	{
+		QString				Path  = Imports.value( Name ).toObject().value( "PATH" ).toString();
+
+		if( mISFImports.contains( Name ) )
+		{
+			if( mISFImports.value( Name ).mPath == Path )
+			{
+				continue;
+			}
+
+			mISFImports.remove( Name );
+		}
+
+		ISFImport	Import;
+
+		Import.mPath = Path;
+
+		QImage		ImportImage( Path );
+
+		if( ImportImage.isNull() )
+		{
+			continue;
+		}
+
+		glGenTextures( 1, &Import.mTextureId );
+
+		glBindTexture( GL_TEXTURE_2D, Import.mTextureId );
+
+		switch( ImportImage.format() )
+		{
+			case QImage::Format_ARGB32:
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+				break;
+
+			case QImage::Format_RGB888:
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, ImportImage.width(), ImportImage.height(), 0, GL_BGR, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+				break;
+
+			case QImage::Format_RGBA8888:
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+				break;
+		}
+
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
+		mISFImports.insert( Name, Import );
+	}
+}
+
 void ISFNode::inputsUpdated( qint64 pTimeStamp )
 {
 	if( pTimeStamp && mPinInputSource->isUpdated( pTimeStamp ) )
@@ -249,6 +303,8 @@ void ISFNode::inputsUpdated( qint64 pTimeStamp )
 				{
 					mShaderSource = Source.mid( CommentEnd + 2 );
 
+					// Process INPUTS
+
 					QStringList				OldInputs = mISFInputs.keys();
 
 					QJsonArray				Inputs = JOBJ.value( "INPUTS" ).toArray();
@@ -272,6 +328,12 @@ void ISFNode::inputsUpdated( qint64 pTimeStamp )
 
 					mISFInputs = NewInputs;
 
+					// Process IMPORTED
+
+					QJsonObject				Imports = JOBJ.value( "IMPORTED" ).toObject();
+
+					parseImports( Imports );
+
 					loadShaders();
 				}
 			}
@@ -292,7 +354,7 @@ void ISFNode::loadShaders()
 
 	GLuint	VertexShader = glCreateShader( GL_VERTEX_SHADER );
 
-	const QString		VS =
+	const QByteArray		VS =
 			"#version 330 core\n"
 			"layout( location = 0 ) in vec2 vertex;\n"
 			"out vec2 isf_FragNormCoord;\n"
@@ -303,7 +365,7 @@ void ISFNode::loadShaders()
 			"	isf_FragNormCoord.y = 1.0 - isf_FragNormCoord.y;\n"
 			"}";
 
-	const char			*VertexSourceArray = VS.toLatin1().constData();
+	const char			*VertexSourceArray = VS.constData();
 
 	glShaderSource( VertexShader, 1, &VertexSourceArray, NULL );
 
@@ -327,7 +389,7 @@ void ISFNode::loadShaders()
 
 	GLuint		FragmentShader = glCreateShader( GL_FRAGMENT_SHADER );
 
-	QString		FragmentSource =
+	QByteArray		FragmentSource =
 			"#version 330 core\n"
 			"#define gl_FragColor isf_OutputColour\n"
 			"#define IMG_SIZE(i) textureSize(i,0)\n"
@@ -386,11 +448,16 @@ void ISFNode::loadShaders()
 		}
 	}
 
+	for( QMap<QString,ISFImport>::iterator it = mISFImports.begin() ; it != mISFImports.end() ; it++ )
+	{
+		FragmentSource.append( QString( "uniform sampler2D %1;\n" ).arg( it.key() ) );
+	}
+
 	FragmentSource.append( mShaderSource );
 
 	qDebug() << FragmentSource.split( '\n' );
 
-	const char			*FragmentSourceArray = FragmentSource.toLatin1().constData();
+	const char			*FragmentSourceArray = FragmentSource.constData();
 
 	glShaderSource( FragmentShader, 1, &FragmentSourceArray, NULL );
 
@@ -504,6 +571,8 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		   (void*)0            // array buffer offset
 		);
 
+		GLint			TextureIndex = 0;
+
 		glUseProgram( mProgram );
 
 		for( QMap<QString,ISFInput>::iterator it = mISFInputs.begin() ; it != mISFInputs.end() ; it++ )
@@ -579,15 +648,35 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 						if( TexInf )
 						{
-							glUniform1i( UniLoc, 0 );
+							glUniform1i( UniLoc, TextureIndex );
 
-							glActiveTexture( GL_TEXTURE0 + 0 );
+							glActiveTexture( GL_TEXTURE0 + TextureIndex );
 
 							TexInf->srcBind();
+
+							TextureIndex++;
 						}
 					}
 					break;
 			}
+		}
+
+		for( QMap<QString,ISFImport>::iterator it = mISFImports.begin() ; it != mISFImports.end() ; it++ )
+		{
+			GLint	UniLoc = glGetUniformLocation( mProgram, it.key().toLatin1().constData() );
+
+			if( UniLoc == -1 )
+			{
+				continue;
+			}
+
+			glUniform1i( UniLoc, TextureIndex );
+
+			glActiveTexture( GL_TEXTURE0 + TextureIndex );
+
+			glBindTexture( GL_TEXTURE_2D, it.value().mTextureId );
+
+			TextureIndex++;
 		}
 
 		GLint	RENDERSIZE = glGetUniformLocation( mProgram, "RENDERSIZE" );
