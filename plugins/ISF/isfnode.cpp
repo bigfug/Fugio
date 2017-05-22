@@ -57,12 +57,18 @@ bool ISFNode::deinitialise()
 		{
 			GLuint		TexId = it.value().mTextureId;
 
-			if( !TexId )
+			if( TexId )
 			{
-				continue;
+				TexLst << TexId;
 			}
+		}
 
-			TexLst << TexId;
+		for( ISFPass &Pass : mISFPasses )
+		{
+			if( Pass.mTextureId )
+			{
+				TexLst << Pass.mTextureId;
+			}
 		}
 
 		if( !TexLst.isEmpty() )
@@ -312,6 +318,33 @@ QMap<QString, ISFNode::ISFImport> ISFNode::parseImports( const QDir &pDir, const
 	return( NewImports );
 }
 
+QList<ISFNode::ISFPass> ISFNode::parsePasses( const QJsonArray pPasses ) const
+{
+	QList<ISFPass>		PassList;
+
+	for( const QJsonValue v : pPasses )
+	{
+		const QJsonObject	PassObject = v.toObject();
+
+		ISFPass				Pass;
+
+		Pass.mTarget = PassObject.value( "TARGET" ).toString();
+		Pass.mPersistent = PassObject.value( "PERSISTENT" ).toBool();
+		Pass.mFloat = PassObject.value( "FLOAT" ).toBool();
+		Pass.mWidth = PassObject.value( "WIDTH" ).toString();
+		Pass.mHeight = PassObject.value( "HEIGHT" ).toString();
+
+		PassList << Pass;
+	}
+
+	if( PassList.isEmpty() )
+	{
+		PassList << ISFPass();
+	}
+
+	return( PassList );
+}
+
 void ISFNode::parseISF( const QDir &pDir, const QByteArray pSource )
 {
 	int			CommentStart = pSource.indexOf( "/*" );
@@ -337,14 +370,7 @@ void ISFNode::parseISF( const QDir &pDir, const QByteArray pSource )
 
 	const QJsonObject	JOBJ = JSON.object();
 
-	if( !JOBJ.contains( "ISFVSN" ) || JOBJ.value( "ISFVSN" ).toString().split( '.' ).first() == "2" )
-	{
-		return;
-	}
-
-	QString		ShaderSource = pSource.mid( CommentEnd + 2 );
-
-	if( !loadShaders( ShaderSource ) )
+	if( !JOBJ.contains( "ISFVSN" ) || JOBJ.value( "ISFVSN" ).toString().split( '.' ).first() != "2" )
 	{
 		return;
 	}
@@ -397,22 +423,74 @@ void ISFNode::parseISF( const QDir &pDir, const QByteArray pSource )
 		}
 	}
 
+	// Process PASSES
+
+	QJsonArray				PassesArray = JOBJ.value( "PASSES" ).toArray();
+
+	for( ISFPass &Pass : mISFPasses )
+	{
+		if( Pass.mTextureId )
+		{
+			TexLst << Pass.mTextureId;
+
+			Pass.mTextureId = 0;
+		}
+	}
+
+	mISFPasses = parsePasses( PassesArray );
+
+	// Delete all unused textures
+
 	if( !TexLst.isEmpty() )
 	{
 		glDeleteTextures( TexLst.size(), TexLst.constData() );
 	}
 
+	// Load the shader
+
+	QString		ShaderSource = pSource.mid( CommentEnd + 2 );
+
+	if( !loadShaders( ShaderSource ) )
+	{
+		return;
+	}
+
 	// Find all the uniform locations in the shader for our inputs and imports
+
+	GLint		TextureIndex = 0;
 
 	for( QMap<QString,ISFInput>::iterator it = mISFInputs.begin() ; it != mISFInputs.end() ; it++ )
 	{
-		it.value().mUniform = glGetUniformLocation( mProgram, it.key().toLatin1().constData() );
+		ISFInput	&Inp = it.value();
+
+		Inp.mUniform = glGetUniformLocation( mProgram, it.key().toLatin1() );
+
+		if( Inp.mType == IMAGE )
+		{
+			Inp.mTextureIndex = TextureIndex++;
+		}
 	}
 
 	for( QMap<QString,ISFImport>::iterator it = mISFImports.begin() ; it != mISFImports.end() ; it++ )
 	{
-		it.value().mUniform = glGetUniformLocation( mProgram, it.key().toLatin1().constData() );
+		ISFImport	&Imp = it.value();
+
+		Imp.mUniform = glGetUniformLocation( mProgram, it.key().toLatin1() );
+
+		Imp.mTextureIndex = TextureIndex++;
 	}
+
+	for( ISFPass &Pass : mISFPasses )
+	{
+		if( !Pass.mTarget.isEmpty() )
+		{
+			Pass.mUniform = glGetUniformLocation( mProgram, Pass.mTarget.toLatin1() );
+
+			Pass.mTextureIndex = TextureIndex++;
+		}
+	}
+
+	mTextureIndexCount = TextureIndex;
 }
 
 void ISFNode::inputsUpdated( qint64 pTimeStamp )
@@ -438,12 +516,16 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 			"#version 330 core\n"
 			"layout( location = 0 ) in vec2 vertex;\n"
 			"out vec2 isf_FragNormCoord;\n"
-			"void main(void)\n"
+			"void isf_vertShaderInit( void )\n"
 			"{\n"
 			"   gl_Position = vec4( vertex, 0, 1 );\n"
 			"	isf_FragNormCoord = ( vertex * 0.5 ) + 0.5;\n"
-			"	isf_FragNormCoord.y = 1.0 - isf_FragNormCoord.y;\n"
-			"}";
+			"}\n"
+			"\n"
+			"void main(void)\n"
+			"{\n"
+			"	isf_vertShaderInit();"
+			"}\n";
 
 	const char			*VertexSourceArray = VS.constData();
 
@@ -462,7 +544,7 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 
 		glGetShaderInfoLog( VertexShader, InfoLogLength, NULL, InfoLogMessage.data() );
 
-		qWarning() << "Vertex Shader:" << QString::fromLatin1( InfoLogMessage );
+		qWarning() << "ISF Vertex Shader:" << QString::fromLatin1( InfoLogMessage );
 
 		return( false );
 	}
@@ -473,10 +555,10 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 			"#version 330 core\n"
 			"#define gl_FragColor isf_OutputColour\n"
 			"#define IMG_SIZE(i) textureSize(i,0)\n"
-			"#define IMG_PIXEL(i,p) texture(i,p)\n"
-			"#define IMG_NORM_PIXEL(i,p) texture2DRect(i,p)\n"
-			"#define IMG_THIS_PIXEL(img) IMG_PIXEL(img,isf_FragNormCoord)\n"
-			"#define IMG_THIS_NORM_PIXEL(img) IMG_NORM_PIXEL(img,isf_FragNormCoord*IMG_SIZE(img))\n"
+			"#define IMG_PIXEL(i,p) texelFetch(i,ivec2(p))\n"
+			"#define IMG_NORM_PIXEL(i,p) texture(i,p)\n"
+			"#define IMG_THIS_PIXEL(i) IMG_PIXEL(i,gl_FragCoord.xy)\n"
+			"#define IMG_THIS_NORM_PIXEL(i) IMG_NORM_PIXEL(i,isf_FragNormCoord)\n"
 			"uniform int PASSINDEX;\n"
 			"uniform vec2 RENDERSIZE;\n"
 			"uniform float TIME;\n"
@@ -531,6 +613,14 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 	for( QMap<QString,ISFImport>::iterator it = mISFImports.begin() ; it != mISFImports.end() ; it++ )
 	{
 		FragmentSource.append( QString( "uniform sampler2D %1;\n" ).arg( it.key() ) );
+	}
+
+	for( ISFPass &PassData : mISFPasses )
+	{
+		if( !PassData.mTarget.isEmpty() )
+		{
+			FragmentSource.append( QString( "uniform sampler2D %1;\n" ).arg( PassData.mTarget ) );
+		}
 	}
 
 	FragmentSource.append( pShaderSource );
@@ -603,8 +693,228 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 	mUniformRenderSize = glGetUniformLocation( mProgram, "RENDERSIZE" );
 	mUniformPassIndex = glGetUniformLocation( mProgram, "PASSINDEX" );
 	mUniformTimeDelta = glGetUniformLocation( mProgram, "TIMEDELTA" );
+	mUniformFrameIndex = glGetUniformLocation( mProgram, "FRAMEINDEX" );
 
 	return( true );
+}
+
+void ISFNode::renderInputs()
+{
+	for( QMap<QString,ISFInput>::iterator it = mISFInputs.begin() ; it != mISFInputs.end() ; it++ )
+	{
+		ISFInput		&InpDat = it.value();
+		const GLint		 UniLoc = InpDat.mUniform;
+
+		if( UniLoc == -1 )
+		{
+			continue;
+		}
+
+		QSharedPointer<fugio::PinInterface> P = mNode->findInputPinByName( it.key() );
+
+		if( !P )
+		{
+			continue;
+		}
+
+		if( InpDat.mType == EVENT && InpDat.mEventFlag )
+		{
+			glUniform1i( UniLoc, false );
+
+			InpDat.mEventFlag = false;
+		}
+
+		switch( InpDat.mType )
+		{
+			case UNKNOWN:
+				break;
+
+			case EVENT:
+				glUniform1i( UniLoc, true );
+
+				InpDat.mEventFlag = true;
+				break;
+
+			case BOOL:
+				glUniform1i( UniLoc, variant( P ).toBool() );
+				break;
+
+			case LONG:
+				glUniform1i( UniLoc, variant( P ).toInt() );
+				break;
+
+			case FLOAT:
+				glUniform1f( UniLoc, variant( P ).toFloat() );
+				break;
+
+			case POINT2D:
+				{
+					QPointF	V = variant( P ).toPointF();
+
+					glUniform2f( UniLoc, V.x(), V.y() );
+				}
+				break;
+
+			case COLOR:
+				{
+					QColor	C = variant( P ).value<QColor>();
+
+					glUniform4f( UniLoc, C.redF(), C.greenF(), C.blueF(), C.alphaF() );
+				}
+				break;
+
+			case IMAGE:
+				{
+					fugio::OpenGLTextureInterface	*TexInf = input<fugio::OpenGLTextureInterface *>( P );
+
+					if( TexInf )
+					{
+						glUniform1i( UniLoc, InpDat.mTextureIndex );
+
+						glActiveTexture( GL_TEXTURE0 + InpDat.mTextureIndex );
+
+						TexInf->srcBind();
+					}
+				}
+				break;
+		}
+	}
+}
+
+void ISFNode::renderImports()
+{
+	for( QMap<QString,ISFImport>::iterator it = mISFImports.begin() ; it != mISFImports.end() ; it++ )
+	{
+		ISFImport		&ImpDat = it.value();
+
+		if( !ImpDat.mTextureId || ImpDat.mUniform == -1 )
+		{
+			continue;
+		}
+
+		glUniform1i( ImpDat.mUniform, ImpDat.mTextureIndex );
+
+		glActiveTexture( GL_TEXTURE0 + ImpDat.mTextureIndex );
+
+		glBindTexture( GL_TEXTURE_2D, ImpDat.mTextureId );
+	}
+}
+
+void ISFNode::renderPasses( GLint Viewport[ 4 ] )
+{
+	for( ISFPass &PassData : mISFPasses )
+	{
+		if( PassData.mTarget.isEmpty() )
+		{
+			continue;
+		}
+
+		if( !PassData.mFBO )
+		{
+			glGenFramebuffers( 1, &PassData.mFBO );
+		}
+
+		if( !PassData.mFBO )
+		{
+			continue;
+		}
+
+		QSize		NewSze( Viewport[ 2 ], Viewport[ 3 ] );
+
+		// TODO: calculate new size here
+
+		NewSze.setWidth( NewSze.width() / 16 );
+		NewSze.setHeight( NewSze.height() / 16 );
+
+		if( NewSze != PassData.mSize )
+		{
+			if( PassData.mTextureId )
+			{
+				glBindFramebuffer( GL_FRAMEBUFFER, PassData.mFBO );
+
+				glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0 );
+
+				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+				glDeleteTextures( 1, &PassData.mTextureId );
+
+				PassData.mTextureId = 0;
+			}
+
+			PassData.mSize = NewSze;
+		}
+
+		if( PassData.mTextureId )
+		{
+			continue;
+		}
+
+		// Allocate a new texture
+
+		glGenTextures( 1, &PassData.mTextureId );
+
+		if( PassData.mTextureId )
+		{
+			glBindTexture( GL_TEXTURE_2D, PassData.mTextureId );
+
+			glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, PassData.mSize.width(), PassData.mSize.height(), 0, GL_RGBA, PassData.mFloat ? GL_FLOAT : GL_UNSIGNED_BYTE, NULL );
+
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+		}
+
+		if( !PassData.mTextureId )
+		{
+			continue;
+		}
+
+		// Set up our FBO
+
+		glBindFramebuffer( GL_FRAMEBUFFER, PassData.mFBO );
+
+		glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, PassData.mTextureId, 0 );
+
+		GLenum DrawBuffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
+
+		glDrawBuffers( 1, DrawBuffers );
+
+		if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
+		{
+			qWarning() << "ISF GL_FRAMEBUFFER != GL_FRAMEBUFFER_COMPLETE";
+		}
+
+		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+	}
+}
+
+void ISFNode::renderUniforms( qint64 pTimeStamp, GLint Viewport[ 4 ] )
+{
+	if( mUniformRenderSize != -1 )
+	{
+		glUniform2f( mUniformRenderSize, Viewport[ 2 ], Viewport[ 3 ] );
+	}
+
+	if( mUniformTime != -1 )
+	{
+		glUniform1f( mUniformTime, GLfloat( pTimeStamp - mStartTime ) / 1000.0f );
+	}
+
+	if( mUniformTimeDelta != -1 )
+	{
+		glUniform1f( mUniformTimeDelta, GLfloat( pTimeStamp - mLastRenderTime ) / 1000.0f );
+	}
+
+	if( mUniformFrameIndex != -1 )
+	{
+		glUniform1i( mUniformFrameIndex, mFrameCounter );
+	}
+
+	if( mUniformDate != -1 )
+	{
+		const QDateTime		DateTime = QDateTime::currentDateTime();
+
+		glUniform4f( mUniformDate, DateTime.date().year(), DateTime.date().month(), DateTime.date().day(), DateTime.time().msecsSinceStartOfDay() / 1000 );
+	}
 }
 
 void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
@@ -668,159 +978,86 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		   (void*)0            // array buffer offset
 		);
 
-		GLint			TextureIndex = 0;
-
 		glUseProgram( mProgram );
 
 		//---------------------------------------------------------------------
 		// Set the INPUTS uniforms
 
-		for( QMap<QString,ISFInput>::iterator it = mISFInputs.begin() ; it != mISFInputs.end() ; it++ )
-		{
-			const GLint		UniLoc = it.value().mUniform;
-
-			if( UniLoc == -1 )
-			{
-				continue;
-			}
-
-			QSharedPointer<fugio::PinInterface> P = mNode->findInputPinByName( it.key() );
-
-			if( !P )
-			{
-				continue;
-			}
-
-			if( !P->isUpdated( mLastRenderTime ) )
-			{
-				if( it.value().mType == EVENT && it.value().mEventFlag )
-				{
-					glUniform1i( UniLoc, false );
-
-					it.value().mEventFlag = false;
-				}
-
-				continue;
-			}
-
-			switch( it.value().mType )
-			{
-				case UNKNOWN:
-					break;
-
-				case EVENT:
-					glUniform1i( UniLoc, true );
-
-					it.value().mEventFlag = true;
-					break;
-
-				case BOOL:
-					glUniform1i( UniLoc, variant( P ).toBool() );
-					break;
-
-				case LONG:
-					glUniform1i( UniLoc, variant( P ).toInt() );
-					break;
-
-				case FLOAT:
-					glUniform1f( UniLoc, variant( P ).toFloat() );
-					break;
-
-				case POINT2D:
-					{
-						QPointF	V = variant( P ).toPointF();
-
-						glUniform2f( UniLoc, V.x(), V.y() );
-					}
-					break;
-
-				case COLOR:
-					{
-						QColor	C = variant( P ).value<QColor>();
-
-						glUniform4f( UniLoc, C.redF(), C.greenF(), C.blueF(), C.alphaF() );
-					}
-					break;
-
-				case IMAGE:
-					{
-						fugio::OpenGLTextureInterface	*TexInf = input<fugio::OpenGLTextureInterface *>( P );
-
-						if( TexInf )
-						{
-							glUniform1i( UniLoc, TextureIndex );
-
-							glActiveTexture( GL_TEXTURE0 + TextureIndex );
-
-							TexInf->srcBind();
-
-							TextureIndex++;
-						}
-					}
-					break;
-			}
-		}
+		renderInputs();
 
 		//---------------------------------------------------------------------
 		// Set up the IMPORTED textures
 
-		for( QMap<QString,ISFImport>::iterator it = mISFImports.begin() ; it != mISFImports.end() ; it++ )
-		{
-			if( !it.value().mTextureId || it.value().mUniform == -1 )
-			{
-				continue;
-			}
-
-			glUniform1i( it.value().mUniform, TextureIndex );
-
-			glActiveTexture( GL_TEXTURE0 + TextureIndex );
-
-			glBindTexture( GL_TEXTURE_2D, it.value().mTextureId );
-
-			TextureIndex++;
-		}
+		renderImports();
 
 		//---------------------------------------------------------------------
 		// Set predefined uniforms
 
-		if( mUniformRenderSize != -1 )
-		{
-			glUniform2f( mUniformRenderSize, Viewport[ 2 ], Viewport[ 3 ] );
-		}
+		renderUniforms( pTimeStamp, Viewport );
 
-		if( mUniformTime != -1 )
-		{
-			glUniform1f( mUniformTime, GLfloat( pTimeStamp - mStartTime ) / 1000.0f );
-		}
+		//---------------------------------------------------------------------
+		// Updated passes
 
-		if( mUniformTimeDelta != -1 )
-		{
-			glUniform1f( mUniformTimeDelta, GLfloat( pTimeStamp - mLastRenderTime ) / 1000.0f );
-		}
+		renderPasses( Viewport );
 
-		if( mUniformFrameIndex != -1 )
-		{
-			glUniform1i( mUniformFrameIndex, mFrameCounter );
-		}
+		//---------------------------------------------------------------------
+		// Bind PASSES render targets
 
-		if( mUniformDate != -1 )
+		for( ISFPass &PassData : mISFPasses )
 		{
-			const QDateTime		DateTime = QDateTime::currentDateTime();
+			if( PassData.mUniform != -1 )
+			{
+				glUniform1i( PassData.mUniform, PassData.mTextureIndex );
+			}
 
-			glUniform4f( mUniformDate, DateTime.date().year(), DateTime.date().month(), DateTime.date().day(), DateTime.time().msecsSinceStartOfDay() / 1000 );
+			glActiveTexture( GL_TEXTURE0 + PassData.mTextureIndex );
+
+			glBindTexture( GL_TEXTURE_2D, PassData.mTextureId );
 		}
 
 		//---------------------------------------------------------------------
 		// Perform rendering passes
 
-		for( int Pass = 0 ; Pass < mPasses ; Pass++ )
+		for( int Pass = 0 ; Pass < mISFPasses.size() ; Pass++ )
 		{
 			if( mUniformPassIndex != -1 )
 			{
 				glUniform1i( mUniformPassIndex, Pass );
 			}
 
+			ISFPass		&PassData = mISFPasses[ Pass ];
+
+			// we can't read and write to textures at the same time
+
+			if( PassData.mTextureId )
+			{
+				glActiveTexture( GL_TEXTURE0 + PassData.mTextureIndex );
+
+				glBindTexture( GL_TEXTURE_2D, 0 );
+			}
+
+			if( PassData.mFBO )
+			{
+				glBindFramebuffer( GL_FRAMEBUFFER, PassData.mFBO );
+
+				glViewport( 0, 0, PassData.mSize.width(), PassData.mSize.height() );
+			}
+
 			glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+
+			if( PassData.mFBO )
+			{
+				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+				glViewport( Viewport[ 0 ], Viewport[ 1 ], Viewport[ 2 ], Viewport[ 3 ] );
+			}
+
+			if( PassData.mTextureId )
+			{
+				glActiveTexture( GL_TEXTURE0 + PassData.mTextureIndex );
+
+				glBindTexture( GL_TEXTURE_2D, PassData.mTextureId );
+			}
 		}
 
 		//---------------------------------------------------------------------
@@ -829,6 +1066,15 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		glDisableVertexAttribArray( 0 );
 
 		glUseProgram( 0 );
+
+		// release all textures
+
+		for( GLuint i = 0 ; i < mTextureIndexCount ; i++ )
+		{
+			glActiveTexture( GL_TEXTURE0 + i );
+
+			glBindTexture( GL_TEXTURE_2D, 0 );
+		}
 
 		glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 

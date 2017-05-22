@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QColor>
 #include <QDir>
+#include <QSize>
 
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
@@ -67,29 +68,58 @@ protected:
 
 	typedef struct ISFInput
 	{
-		ISFInput( void ) : mType( UNKNOWN ), mEventFlag( false ), mUniform( -1 ) {}
+		ISFInput( void ) : mType( UNKNOWN ), mEventFlag( false ), mUniform( -1 ), mTextureIndex( -1 ) {}
 
-		ISFInput( ISFInputType pType ) : mType( pType ), mEventFlag( false ), mUniform( -1 ) {}
+		ISFInput( ISFInputType pType ) : mType( pType ), mEventFlag( false ), mUniform( -1 ), mTextureIndex( -1 ) {}
 
 		ISFInputType		mType;
 		bool				mEventFlag;
 		GLint				mUniform;
+		GLint				mTextureIndex;
 	} ISFInput;
 
 	QMap<QString,ISFInput> parseInputs( QJsonArray Inputs );
 
 	typedef struct ISFImport
 	{
-		ISFImport( void ) : mTextureId( 0 ), mUniform( -1 ) {}
+		ISFImport( void ) : mTextureId( 0 ), mUniform( -1 ), mTextureIndex( -1 ) {}
 
 		QString				mPath;
 		GLuint				mTextureId;
 		GLint				mUniform;
+		GLint				mTextureIndex;
 	} ISFImport;
 
 	QMap<QString,ISFImport> parseImports( const QDir &pDir, const QJsonObject Imports ) const;
 
 	void parseISF( const QDir &pDir, QByteArray Source );
+
+	typedef struct ISFPass
+	{
+		ISFPass( void ) : mPersistent( false ), mFloat( false ), mFBO( 0 ), mTextureId( 0 ), mUniform( -1 ), mTextureIndex( -1 ) {}
+
+		QString				mTarget;
+		bool				mPersistent;
+		bool				mFloat;
+		QString				mWidth;
+		QString				mHeight;
+
+		GLuint				mFBO;
+		GLuint				mTextureId;
+		QSize				mSize;
+		GLint				mUniform;
+		GLint				mTextureIndex;
+	} ISFPass;
+
+	QList<ISFPass> parsePasses( const QJsonArray pPasses ) const;
+
+	void renderInputs();
+
+	void renderImports();
+
+	void renderPasses( GLint Viewport[ 4 ] );
+
+	void renderUniforms( qint64 pTimeStamp, GLint Viewport[ 4 ] );
 
 private:
 	bool loadShaders( const QString &pShaderSource );
@@ -102,12 +132,12 @@ private:
 
 	QMap<QString,ISFInput>						 mISFInputs;
 	QMap<QString,ISFImport>						 mISFImports;
+	QList<ISFPass>								 mISFPasses;
 
 	GLuint										 mVAO;
 	GLuint										 mBuffer;
 	GLuint										 mProgram;
 	GLuint										 mFrameCounter;
-	int											 mPasses;
 
 	GLint										 mUniformTime;
 	GLint										 mUniformRenderSize;
@@ -115,6 +145,8 @@ private:
 	GLint										 mUniformPassIndex;
 	GLint										 mUniformTimeDelta;
 	GLint										 mUniformFrameIndex;
+
+	GLuint										 mTextureIndexCount;
 
 	qint64										 mStartTime;
 	qint64										 mLastRenderTime;
