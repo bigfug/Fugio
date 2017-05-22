@@ -21,6 +21,8 @@
 
 #include <fugio/render_interface.h>
 
+#include <fugio/audio/audio_instance_base.h>
+
 class ISFNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface
 {
 	Q_OBJECT
@@ -61,21 +63,26 @@ protected:
 		IMAGE,
 		COLOR,
 		AUDIO,
-		AUDIOFFT
+		FFT
 	} ISFInputType;
 
 	static ISFInputType isfType( QString Type );
 
 	typedef struct ISFInput
 	{
-		ISFInput( void ) : mType( UNKNOWN ), mEventFlag( false ), mUniform( -1 ), mTextureIndex( -1 ) {}
+		ISFInput( void ) : mType( UNKNOWN ), mEventFlag( false ), mUniform( -1 ), mTextureIndex( -1 ), mTextureId( 0 ), mAudioInstance( nullptr ) {}
 
-		ISFInput( ISFInputType pType ) : mType( pType ), mEventFlag( false ), mUniform( -1 ), mTextureIndex( -1 ) {}
+		ISFInput( ISFInputType pType ) : mType( pType ), mEventFlag( false ), mUniform( -1 ), mTextureIndex( -1 ), mTextureId( 0 ), mAudioInstance( nullptr ) {}
 
-		ISFInputType		mType;
-		bool				mEventFlag;
-		GLint				mUniform;
-		GLint				mTextureIndex;
+		ISFInputType				 mType;
+		bool						 mEventFlag;
+		GLint						 mUniform;
+		GLint						 mTextureIndex;
+		GLuint						 mTextureId;
+		int							 mAudioMax;
+
+		fugio::AudioInstanceBase	*mAudioInstance;
+
 	} ISFInput;
 
 	QMap<QString,ISFInput> parseInputs( QJsonArray Inputs );

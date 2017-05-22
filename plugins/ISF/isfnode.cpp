@@ -18,6 +18,11 @@
 
 #include <fugio/opengl/texture_interface.h>
 
+#include <fugio/audio/fft_interface.h>
+#include <fugio/audio/audio_producer_interface.h>
+
+#include <fugio/core/array_interface.h>
+
 #include "isfplugin.h"
 
 ISFNode::ISFNode( QSharedPointer<fugio::NodeInterface> pNode )
@@ -53,6 +58,16 @@ bool ISFNode::deinitialise()
 
 		QVector<GLuint>		TexLst;
 
+		for( QMap<QString,ISFInput>::iterator it = mISFInputs.begin() ; it != mISFInputs.end() ; it++ )
+		{
+			ISFInput	&InpDat = it.value();
+
+			if( InpDat.mTextureId )
+			{
+				TexLst << InpDat.mTextureId;
+			}
+		}
+
 		for( QMap<QString,ISFImport>::iterator it = mISFImports.begin() ; it != mISFImports.end() ; it++ )
 		{
 			GLuint		TexId = it.value().mTextureId;
@@ -77,6 +92,18 @@ bool ISFNode::deinitialise()
 		}
 	}
 
+	for( QMap<QString,ISFInput>::iterator it = mISFInputs.begin() ; it != mISFInputs.end() ; it++ )
+	{
+		ISFInput	&InpDat = it.value();
+
+		if( InpDat.mAudioInstance )
+		{
+			delete InpDat.mAudioInstance;
+
+			InpDat.mAudioInstance = nullptr;
+		}
+	}
+
 	mVAO = 0;
 
 	mBuffer = 0;
@@ -84,6 +111,78 @@ bool ISFNode::deinitialise()
 	mProgram = 0;
 
 	return( NodeControlBase::deinitialise() );
+}
+
+void ISFNode::inputsUpdated( qint64 pTimeStamp )
+{
+	if( pTimeStamp && mPinInputSource->isUpdated( pTimeStamp ) )
+	{
+		QByteArray		Source = variant( mPinInputSource ).toByteArray();
+
+		parseISF( QDir::current(), Source );
+	}
+
+	for( QMap<QString,ISFInput>::iterator it = mISFInputs.begin() ; it != mISFInputs.end() ; it++ )
+	{
+		ISFInput	&InpDat = it.value();
+
+		QSharedPointer<fugio::PinInterface> P = mNode->findInputPinByName( it.key() );
+
+		if( !P )
+		{
+			continue;
+		}
+
+		if( !P->isUpdated( pTimeStamp ) )
+		{
+			continue;
+		}
+
+		if( InpDat.mType == FFT )
+		{
+			QVector<float>			 FFT;
+
+			FFT.resize( InpDat.mAudioMax );
+
+			fugio::FftInterface		*FftInf = input<fugio::FftInterface *>( P );
+
+			if( FftInf )
+			{
+				const float *fft = FftInf->fft();
+
+				if( fft )
+				{
+					memcpy( FFT.data(), fft, sizeof( float ) * qMin( FFT.size(), FftInf->count() ) );
+				}
+			}
+
+			fugio::ArrayInterface	*ArrInf = input<fugio::ArrayInterface *>( P );
+
+			if( ArrInf )
+			{
+				if( ArrInf->count() > 0 && ArrInf->type() == QMetaType::Float )
+				{
+					memcpy( FFT.data(), ArrInf->array(), sizeof( float ) * qMin( FFT.size(), ArrInf->count() ) );
+				}
+			}
+
+			for( int i = 0 ; i < FFT.size() ; i++ )
+			{
+				FFT[ i ] = 0.5;
+			}
+
+			if( InpDat.mTextureId )
+			{
+				glBindTexture( GL_TEXTURE_2D, InpDat.mTextureId );
+
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_R32F, FFT.size(), 1, 0, GL_RED, GL_FLOAT, FFT.constData() );
+
+				glBindTexture( GL_TEXTURE_2D, 0 );
+			}
+		}
+	}
+
+	pinUpdated( mPinOutputRender );
 }
 
 ISFNode::ISFInputType ISFNode::isfType( QString Type )
@@ -96,7 +195,7 @@ ISFNode::ISFInputType ISFNode::isfType( QString Type )
 	if( Type == "image" )		return( IMAGE );
 	if( Type == "color" )		return( COLOR );
 	if( Type == "audio" )		return( AUDIO );
-	if( Type == "audioFFT" )	return( AUDIOFFT );
+	if( Type == "audioFFT" )	return( FFT );
 
 	return( UNKNOWN );
 }
@@ -238,11 +337,31 @@ QMap<QString,ISFNode::ISFInput> ISFNode::parseInputs( QJsonArray Inputs )
 
 				case AUDIO:
 					ISFPin->registerPinInputType( PID_AUDIO );
+
+					CurISF.mAudioMax = Input.value( "MAX" ).toInt( 256 );
 					break;
 
-				case AUDIOFFT:
+				case FFT:
 					ISFPin->registerPinInputType( PID_FFT );
+
+					CurISF.mAudioMax = Input.value( "MAX" ).toInt( 256 );
 					break;
+			}
+
+			if( Type == AUDIO || Type == FFT )
+			{
+				glGenTextures( 1, &CurISF.mTextureId );
+
+				if( CurISF.mTextureId )
+				{
+					glBindTexture( GL_TEXTURE_2D, CurISF.mTextureId );
+
+					glTexImage2D( GL_TEXTURE_2D, 0, GL_R32F, CurISF.mAudioMax, 1, 0, GL_RED, GL_FLOAT, nullptr );
+
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+					glBindTexture( GL_TEXTURE_2D, 0 );
+				}
 			}
 
 			ISFNewInputs[ Name ] = CurISF;
@@ -396,6 +515,15 @@ void ISFNode::parseISF( const QDir &pDir, const QByteArray pSource )
 		{
 			mNode->removePin( ISFPin );
 		}
+
+		ISFInput	&InpDat = mISFInputs[ Name ];
+
+		if( InpDat.mAudioInstance )
+		{
+			delete InpDat.mAudioInstance;
+
+			InpDat.mAudioInstance = nullptr;
+		}
 	}
 
 	mISFInputs = NewInputs;
@@ -465,7 +593,7 @@ void ISFNode::parseISF( const QDir &pDir, const QByteArray pSource )
 
 		Inp.mUniform = glGetUniformLocation( mProgram, it.key().toLatin1() );
 
-		if( Inp.mType == IMAGE )
+		if( Inp.mType == IMAGE || Inp.mType == AUDIO || Inp.mType == FFT )
 		{
 			Inp.mTextureIndex = TextureIndex++;
 		}
@@ -491,18 +619,6 @@ void ISFNode::parseISF( const QDir &pDir, const QByteArray pSource )
 	}
 
 	mTextureIndexCount = TextureIndex;
-}
-
-void ISFNode::inputsUpdated( qint64 pTimeStamp )
-{
-	if( pTimeStamp && mPinInputSource->isUpdated( pTimeStamp ) )
-	{
-		QByteArray		Source = variant( mPinInputSource ).toByteArray();
-
-		parseISF( QDir::current(), Source );
-	}
-
-	pinUpdated( mPinOutputRender );
 }
 
 bool ISFNode::loadShaders( const QString &pShaderSource )
@@ -589,20 +705,14 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 				FragmentSource.append( QString( "uniform vec2 %1;\n" ).arg( it.key() ) );
 				break;
 
-			case IMAGE:
-				FragmentSource.append( QString( "uniform sampler2D %1;\n" ).arg( it.key() ) );
-				break;
-
 			case COLOR:
 				FragmentSource.append( QString( "uniform vec4 %1;\n" ).arg( it.key() ) );
 				break;
 
+			case IMAGE:
 			case AUDIO:
-				FragmentSource.append( QString( "uniform float %1;\n" ).arg( it.key() ) );
-				break;
-
-			case AUDIOFFT:
-				FragmentSource.append( QString( "uniform float %1;\n" ).arg( it.key() ) );
+			case FFT:
+				FragmentSource.append( QString( "uniform sampler2D %1;\n" ).arg( it.key() ) );
 				break;
 
 			case UNKNOWN:
@@ -775,6 +885,63 @@ void ISFNode::renderInputs()
 
 						TexInf->srcBind();
 					}
+				}
+				break;
+
+			case AUDIO:
+				{
+					fugio::AudioProducerInterface	*AudInf = input<fugio::AudioProducerInterface *>( P );
+
+					if( !AudInf )
+					{
+						if( InpDat.mAudioInstance )
+						{
+							delete InpDat.mAudioInstance;
+
+							InpDat.mAudioInstance = nullptr;
+
+//							mSamplePosition = 0;
+						}
+
+					}
+
+					if( AudInf )
+					{
+						if( !InpDat.mAudioInstance )
+						{
+							InpDat.mAudioInstance = AudInf->audioAllocInstance( 48000, fugio::AudioSampleFormat::Format32FS, 1 );
+						}
+
+						if( !InpDat.mAudioInstance )
+						{
+							continue;
+						}
+
+//						if( !mSamplePosition )
+//						{
+//							mSamplePosition = pTimeStamp * ( 48000 / 1000 );
+//						}
+					}
+
+					if( InpDat.mTextureId )
+					{
+						glUniform1i( UniLoc, InpDat.mTextureIndex );
+
+						glActiveTexture( GL_TEXTURE0 + InpDat.mTextureIndex );
+
+						glBindTexture( GL_TEXTURE_2D, InpDat.mTextureId );
+					}
+				}
+				break;
+
+			case FFT:
+				if( InpDat.mTextureId )
+				{
+					glUniform1i( UniLoc, InpDat.mTextureIndex );
+
+					glActiveTexture( GL_TEXTURE0 + InpDat.mTextureIndex );
+
+					glBindTexture( GL_TEXTURE_2D, InpDat.mTextureId );
 				}
 				break;
 		}
