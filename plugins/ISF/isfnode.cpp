@@ -6,6 +6,7 @@
 #include <QByteArray>
 #include <QPointF>
 #include <QImage>
+#include <QDateTime>
 
 #include <fugio/core/uuid.h>
 #include <fugio/colour/uuid.h>
@@ -20,7 +21,8 @@
 #include "isfplugin.h"
 
 ISFNode::ISFNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mVAO( 0 ), mBuffer( 0 ), mProgram( 0 ), mLastRenderTime( 0 )
+	: NodeControlBase( pNode ), mVAO( 0 ), mBuffer( 0 ), mProgram( 0 ), mFrameCounter( 0 ), mUniformTime( -1 ),
+	  mStartTime( -1 ), mLastRenderTime( 0 )
 {
 	FUGID( PIN_INPUT_SOURCE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 	FUGID( PIN_OUTPUT_RENDER, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
@@ -47,6 +49,25 @@ bool ISFNode::deinitialise()
 		if( mProgram )
 		{
 			glDeleteProgram( mProgram );
+		}
+
+		QVector<GLuint>		TexLst;
+
+		for( QMap<QString,ISFImport>::iterator it = mISFImports.begin() ; it != mISFImports.end() ; it++ )
+		{
+			GLuint		TexId = it.value().mTextureId;
+
+			if( !TexId )
+			{
+				continue;
+			}
+
+			TexLst << TexId;
+		}
+
+		if( !TexLst.isEmpty() )
+		{
+			glDeleteTextures( TexLst.size(), TexLst.constData() );
 		}
 	}
 
@@ -225,11 +246,15 @@ QMap<QString,ISFNode::ISFInput> ISFNode::parseInputs( QJsonArray Inputs )
 	return( ISFNewInputs );
 }
 
-void ISFNode::parseImports( const QJsonObject Imports )
+QMap<QString, ISFNode::ISFImport> ISFNode::parseImports( const QDir &pDir, const QJsonObject Imports ) const
 {
+	QMap<QString,ISFImport>		NewImports;
+
 	for( const QString Name : Imports.keys() )
 	{
 		QString				Path  = Imports.value( Name ).toObject().value( "PATH" ).toString();
+
+		Path = pDir.absoluteFilePath( Path );
 
 		if( mISFImports.contains( Name ) )
 		{
@@ -238,7 +263,7 @@ void ISFNode::parseImports( const QJsonObject Imports )
 				continue;
 			}
 
-			mISFImports.remove( Name );
+			NewImports.insert( Name, mISFImports.value( Name ) );
 		}
 
 		ISFImport	Import;
@@ -249,32 +274,144 @@ void ISFNode::parseImports( const QJsonObject Imports )
 
 		if( ImportImage.isNull() )
 		{
+			qWarning() << "ISF cannot load IMPORT" << Path;
+
 			continue;
 		}
 
 		glGenTextures( 1, &Import.mTextureId );
 
-		glBindTexture( GL_TEXTURE_2D, Import.mTextureId );
-
-		switch( ImportImage.format() )
+		if( Import.mTextureId )
 		{
-			case QImage::Format_ARGB32:
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
-				break;
+			glBindTexture( GL_TEXTURE_2D, Import.mTextureId );
 
-			case QImage::Format_RGB888:
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, ImportImage.width(), ImportImage.height(), 0, GL_BGR, GL_UNSIGNED_BYTE, ImportImage.constBits() );
-				break;
+			switch( ImportImage.format() )
+			{
+				case QImage::Format_ARGB32:
+					glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+					break;
 
-			case QImage::Format_RGBA8888:
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
-				break;
+				case QImage::Format_RGB888:
+					glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, ImportImage.width(), ImportImage.height(), 0, GL_BGR, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+					break;
+
+				case QImage::Format_RGBA8888:
+					glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+					break;
+			}
+
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
+			glBindTexture( GL_TEXTURE_2D, 0 );
 		}
 
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		NewImports.insert( Name, Import );
+	}
 
-		mISFImports.insert( Name, Import );
+	return( NewImports );
+}
+
+void ISFNode::parseISF( const QDir &pDir, const QByteArray pSource )
+{
+	int			CommentStart = pSource.indexOf( "/*" );
+	int			CommentEnd   = pSource.indexOf( "*/", CommentStart );
+
+	if( CommentStart == -1 || CommentEnd == -1 )
+	{
+		return;
+	}
+
+	QByteArray		Comment = pSource.mid( CommentStart + 2, CommentEnd - CommentStart - 2 );
+
+	QJsonParseError	JERR;
+
+	QJsonDocument	JSON = QJsonDocument::fromJson( Comment, &JERR );
+
+	if( JSON.isNull() )
+	{
+		qWarning() << JERR.errorString();
+
+		return;
+	}
+
+	const QJsonObject	JOBJ = JSON.object();
+
+	if( !JOBJ.contains( "ISFVSN" ) || JOBJ.value( "ISFVSN" ).toString().split( '.' ).first() == "2" )
+	{
+		return;
+	}
+
+	QString		ShaderSource = pSource.mid( CommentEnd + 2 );
+
+	if( !loadShaders( ShaderSource ) )
+	{
+		return;
+	}
+
+	// Process INPUTS
+
+	QStringList				OldInputs = mISFInputs.keys();
+
+	QJsonArray				Inputs = JOBJ.value( "INPUTS" ).toArray();
+
+	QMap<QString,ISFInput>	NewInputs = parseInputs( Inputs );
+
+	for( const QString &Name : NewInputs.keys() )
+	{
+		OldInputs.removeOne( Name );
+	}
+
+	for( QString Name : OldInputs )
+	{
+		QSharedPointer<fugio::PinInterface>	ISFPin = mNode->findInputPinByName( Name );
+
+		if( ISFPin )
+		{
+			mNode->removePin( ISFPin );
+		}
+	}
+
+	mISFInputs = NewInputs;
+
+	// Process IMPORTED
+
+	QJsonObject				Imports = JOBJ.value( "IMPORTED" ).toObject();
+
+	QMap<QString,ISFImport>	NewImports = parseImports( pDir, Imports );
+
+	QVector<GLuint>		TexLst;
+
+	for( const QString &Name : mISFImports.keys() )
+	{
+		GLuint		OldTexId = mISFImports.value( Name ).mTextureId;
+
+		if( NewImports.contains( Name ) && NewImports.value( Name ).mTextureId == OldTexId )
+		{
+			continue;
+		}
+
+		if( OldTexId )
+		{
+			TexLst << OldTexId;
+		}
+	}
+
+	if( !TexLst.isEmpty() )
+	{
+		glDeleteTextures( TexLst.size(), TexLst.constData() );
+	}
+
+	// Find all the uniform locations in the shader for our inputs and imports
+
+	for( QMap<QString,ISFInput>::iterator it = mISFInputs.begin() ; it != mISFInputs.end() ; it++ )
+	{
+		it.value().mUniform = glGetUniformLocation( mProgram, it.key().toLatin1().constData() );
+	}
+
+	for( QMap<QString,ISFImport>::iterator it = mISFImports.begin() ; it != mISFImports.end() ; it++ )
+	{
+		it.value().mUniform = glGetUniformLocation( mProgram, it.key().toLatin1().constData() );
 	}
 }
 
@@ -284,70 +421,13 @@ void ISFNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		QByteArray		Source = variant( mPinInputSource ).toByteArray();
 
-		int			CommentStart = Source.indexOf( "/*" );
-		int			CommentEnd   = Source.indexOf( "*/", CommentStart );
-
-		if( CommentStart != -1 && CommentEnd != -1 )
-		{
-			QByteArray		Comment = Source.mid( CommentStart + 2, CommentEnd - CommentStart - 2 );
-
-			QJsonParseError	JERR;
-
-			QJsonDocument	JSON = QJsonDocument::fromJson( Comment, &JERR );
-
-			if( !JSON.isNull() )
-			{
-				const QJsonObject	JOBJ = JSON.object();
-
-				if( JOBJ.contains( "ISFVSN" ) && JOBJ.value( "ISFVSN" ).toString().split( '.' ).first() == "2" )
-				{
-					mShaderSource = Source.mid( CommentEnd + 2 );
-
-					// Process INPUTS
-
-					QStringList				OldInputs = mISFInputs.keys();
-
-					QJsonArray				Inputs = JOBJ.value( "INPUTS" ).toArray();
-
-					QMap<QString,ISFInput>	NewInputs = parseInputs( Inputs );
-
-					for( const QString &Name : NewInputs.keys() )
-					{
-						OldInputs.removeOne( Name );
-					}
-
-					for( QString Name : OldInputs )
-					{
-						QSharedPointer<fugio::PinInterface>	ISFPin = mNode->findInputPinByName( Name );
-
-						if( ISFPin )
-						{
-							mNode->removePin( ISFPin );
-						}
-					}
-
-					mISFInputs = NewInputs;
-
-					// Process IMPORTED
-
-					QJsonObject				Imports = JOBJ.value( "IMPORTED" ).toObject();
-
-					parseImports( Imports );
-
-					loadShaders();
-				}
-			}
-			else
-			{
-				qWarning() << JERR.errorString();
-			}
-		}
+		parseISF( QDir::current(), Source );
 	}
 
 	pinUpdated( mPinOutputRender );
 }
 
-void ISFNode::loadShaders()
+bool ISFNode::loadShaders( const QString &pShaderSource )
 {
 	GLint	Result = GL_FALSE;
 	GLint	InfoLogLength = 0;
@@ -384,7 +464,7 @@ void ISFNode::loadShaders()
 
 		qWarning() << "Vertex Shader:" << QString::fromLatin1( InfoLogMessage );
 
-		return;
+		return( false );
 	}
 
 	GLuint		FragmentShader = glCreateShader( GL_FRAGMENT_SHADER );
@@ -453,7 +533,7 @@ void ISFNode::loadShaders()
 		FragmentSource.append( QString( "uniform sampler2D %1;\n" ).arg( it.key() ) );
 	}
 
-	FragmentSource.append( mShaderSource );
+	FragmentSource.append( pShaderSource );
 
 	qDebug() << FragmentSource.split( '\n' );
 
@@ -478,7 +558,7 @@ void ISFNode::loadShaders()
 
 		glDeleteShader( VertexShader );
 
-		return;
+		return( false );
 	}
 
 	GLuint		Program = glCreateProgram();
@@ -504,7 +584,7 @@ void ISFNode::loadShaders()
 		glDeleteShader( VertexShader );
 		glDeleteShader( FragmentShader );
 
-		return;
+		return( false );
 	}
 
 	if( mProgram )
@@ -513,6 +593,18 @@ void ISFNode::loadShaders()
 	}
 
 	mProgram = Program;
+
+	mFrameCounter = 0;
+
+	mStartTime = -1;
+
+	mUniformTime = glGetUniformLocation( mProgram, "TIME" );
+	mUniformDate = glGetUniformLocation( mProgram, "DATE" );
+	mUniformRenderSize = glGetUniformLocation( mProgram, "RENDERSIZE" );
+	mUniformPassIndex = glGetUniformLocation( mProgram, "PASSINDEX" );
+	mUniformTimeDelta = glGetUniformLocation( mProgram, "TIMEDELTA" );
+
+	return( true );
 }
 
 void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
@@ -527,6 +619,11 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 	GLint		Viewport[ 4 ];
 
 	glGetIntegerv( GL_VIEWPORT, Viewport );
+
+	if( mStartTime == -1 )
+	{
+		mStartTime = pTimeStamp;
+	}
 
 	if( !mVAO && GLEW_ARB_vertex_array_object )
 	{
@@ -575,9 +672,12 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 		glUseProgram( mProgram );
 
+		//---------------------------------------------------------------------
+		// Set the INPUTS uniforms
+
 		for( QMap<QString,ISFInput>::iterator it = mISFInputs.begin() ; it != mISFInputs.end() ; it++ )
 		{
-			GLint	UniLoc = glGetUniformLocation( mProgram, it.key().toLatin1().constData() );
+			const GLint		UniLoc = it.value().mUniform;
 
 			if( UniLoc == -1 )
 			{
@@ -661,16 +761,17 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 			}
 		}
 
+		//---------------------------------------------------------------------
+		// Set up the IMPORTED textures
+
 		for( QMap<QString,ISFImport>::iterator it = mISFImports.begin() ; it != mISFImports.end() ; it++ )
 		{
-			GLint	UniLoc = glGetUniformLocation( mProgram, it.key().toLatin1().constData() );
-
-			if( UniLoc == -1 )
+			if( !it.value().mTextureId || it.value().mUniform == -1 )
 			{
 				continue;
 			}
 
-			glUniform1i( UniLoc, TextureIndex );
+			glUniform1i( it.value().mUniform, TextureIndex );
 
 			glActiveTexture( GL_TEXTURE0 + TextureIndex );
 
@@ -679,24 +780,51 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 			TextureIndex++;
 		}
 
-		GLint	RENDERSIZE = glGetUniformLocation( mProgram, "RENDERSIZE" );
+		//---------------------------------------------------------------------
+		// Set predefined uniforms
 
-		if( RENDERSIZE != -1 )
+		if( mUniformRenderSize != -1 )
 		{
-			glUniform2f( RENDERSIZE, Viewport[ 2 ], Viewport[ 3 ] );
+			glUniform2f( mUniformRenderSize, Viewport[ 2 ], Viewport[ 3 ] );
 		}
 
-		GLint	PASSINDEX = glGetUniformLocation( mProgram, "PASSINDEX" );
-
-		for( int Pass = 0 ; Pass < 1 ; Pass++ )
+		if( mUniformTime != -1 )
 		{
-			if( PASSINDEX != -1 )
+			glUniform1f( mUniformTime, GLfloat( pTimeStamp - mStartTime ) / 1000.0f );
+		}
+
+		if( mUniformTimeDelta != -1 )
+		{
+			glUniform1f( mUniformTimeDelta, GLfloat( pTimeStamp - mLastRenderTime ) / 1000.0f );
+		}
+
+		if( mUniformFrameIndex != -1 )
+		{
+			glUniform1i( mUniformFrameIndex, mFrameCounter );
+		}
+
+		if( mUniformDate != -1 )
+		{
+			const QDateTime		DateTime = QDateTime::currentDateTime();
+
+			glUniform4f( mUniformDate, DateTime.date().year(), DateTime.date().month(), DateTime.date().day(), DateTime.time().msecsSinceStartOfDay() / 1000 );
+		}
+
+		//---------------------------------------------------------------------
+		// Perform rendering passes
+
+		for( int Pass = 0 ; Pass < mPasses ; Pass++ )
+		{
+			if( mUniformPassIndex != -1 )
 			{
-				glUniform1i( PASSINDEX, Pass );
+				glUniform1i( mUniformPassIndex, Pass );
 			}
 
 			glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 		}
+
+		//---------------------------------------------------------------------
+		// Clean-up
 
 		glDisableVertexAttribArray( 0 );
 
@@ -705,6 +833,8 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 
 		mLastRenderTime = pTimeStamp;
+
+		mFrameCounter++;
 	}
 
 	if( mVAO )

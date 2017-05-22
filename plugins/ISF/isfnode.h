@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QColor>
+#include <QDir>
 
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
@@ -66,26 +67,32 @@ protected:
 
 	typedef struct ISFInput
 	{
-		ISFInput( void ) : mType( UNKNOWN ), mEventFlag( false ) {}
+		ISFInput( void ) : mType( UNKNOWN ), mEventFlag( false ), mUniform( -1 ) {}
 
-		ISFInput( ISFInputType pType ) : mType( pType ), mEventFlag( false ) {}
+		ISFInput( ISFInputType pType ) : mType( pType ), mEventFlag( false ), mUniform( -1 ) {}
 
-		ISFInputType	mType;
-		bool			mEventFlag;
+		ISFInputType		mType;
+		bool				mEventFlag;
+		GLint				mUniform;
 	} ISFInput;
 
 	QMap<QString,ISFInput> parseInputs( QJsonArray Inputs );
 
 	typedef struct ISFImport
 	{
+		ISFImport( void ) : mTextureId( 0 ), mUniform( -1 ) {}
+
 		QString				mPath;
 		GLuint				mTextureId;
+		GLint				mUniform;
 	} ISFImport;
 
-	void parseImports( const QJsonObject Imports );
+	QMap<QString,ISFImport> parseImports( const QDir &pDir, const QJsonObject Imports ) const;
+
+	void parseISF( const QDir &pDir, QByteArray Source );
 
 private:
-	void loadShaders( void );
+	bool loadShaders( const QString &pShaderSource );
 
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputSource;
@@ -93,15 +100,23 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinOutputRender;
 	fugio::RenderInterface						*mValOutputRender;
 
-	QString										 mShaderSource;
-
 	QMap<QString,ISFInput>						 mISFInputs;
 	QMap<QString,ISFImport>						 mISFImports;
 
 	GLuint										 mVAO;
 	GLuint										 mBuffer;
 	GLuint										 mProgram;
+	GLuint										 mFrameCounter;
+	int											 mPasses;
 
+	GLint										 mUniformTime;
+	GLint										 mUniformRenderSize;
+	GLint										 mUniformDate;
+	GLint										 mUniformPassIndex;
+	GLint										 mUniformTimeDelta;
+	GLint										 mUniformFrameIndex;
+
+	qint64										 mStartTime;
 	qint64										 mLastRenderTime;
 };
 
