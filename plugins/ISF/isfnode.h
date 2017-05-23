@@ -23,6 +23,8 @@
 
 #include <fugio/audio/audio_instance_base.h>
 
+#include <fugio/file/filename_interface.h>
+
 class ISFNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface
 {
 	Q_OBJECT
@@ -41,6 +43,8 @@ public:
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
+
+	virtual bool initialise() Q_DECL_OVERRIDE;
 
 	virtual bool deinitialise() Q_DECL_OVERRIDE;
 
@@ -132,6 +136,9 @@ private:
 	bool loadShaders( const QString &pShaderSource );
 
 private:
+	QSharedPointer<fugio::PinInterface>			 mPinInputFilename;
+	fugio::FilenameInterface					*mValInputFilename;
+
 	QSharedPointer<fugio::PinInterface>			 mPinInputSource;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputRender;

@@ -144,4 +144,6 @@ macx {
 
 		LIBS += -L/usr/local/lib -lGLEW
 	}
+
+	DEFINES += GLEW_SUPPORTED
 }

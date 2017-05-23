@@ -7,6 +7,10 @@
 #include <QTranslator>
 #include <QApplication>
 
+#include <QJsonDocument>
+
+#include <QCryptographicHash>
+
 #include <fugio/isf/uuid.h>
 #include <fugio/nodecontrolbase.h>
 
@@ -20,7 +24,7 @@ ISFPlugin					*ISFPlugin::mInstance = nullptr;
 
 ClassEntry		ISFPlugin::mNodeClasses[] =
 {
-	ClassEntry( "ISF", NID_ISF, &ISFNode::staticMetaObject ),
+	ClassEntry( "ISF", "OpenGL", NID_ISF, &ISFNode::staticMetaObject ),
 	ClassEntry()
 };
 
@@ -87,14 +91,86 @@ PluginInterface::InitResult ISFPlugin::initialise( fugio::GlobalInterface *pApp,
 
 	mApp->registerPinClasses( mPinClasses );
 
+	scanDirectory( mPluginClassEntry, QDir( "ISF tests+tutorials" ) );
+
+	mApp->registerNodeClasses( mPluginClassEntry );
+
 	return( INIT_OK );
 }
 
 void ISFPlugin::deinitialise()
 {
+	mApp->unregisterNodeClasses( mPluginClassEntry );
+
 	mApp->unregisterPinClasses( mPinClasses );
 
 	mApp->unregisterNodeClasses( mNodeClasses );
 
 	mApp = 0;
+}
+
+void ISFPlugin::scanDirectory( ClassEntryList &pEntLst, QDir pDir, QStringList pPath )
+{
+	for( QFileInfo FI : pDir.entryInfoList( QStringList( "*.fs" ), QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot | QDir::Readable ) )
+	{
+		if( FI.isDir() )
+		{
+			QStringList	PL = pPath;
+
+			PL.append( FI.baseName() );
+
+			scanDirectory( pEntLst, QDir( FI.absoluteDir() ), PL );
+		}
+		else
+		{
+			QFile		ISFFile( FI.absoluteFilePath() );
+
+			if( !ISFFile.open( QFile::ReadOnly ) )
+			{
+				continue;
+			}
+
+			QByteArray	ISFSrc = ISFFile.readAll();
+
+			int			CommentStart = ISFSrc.indexOf( "/*" );
+			int			CommentEnd   = ISFSrc.indexOf( "*/", CommentStart );
+
+			if( CommentStart == -1 || CommentEnd == -1 )
+			{
+				continue;
+			}
+
+			QByteArray		Comment = ISFSrc.mid( CommentStart + 2, CommentEnd - CommentStart - 2 );
+
+			QJsonParseError	JERR;
+
+			QJsonDocument	JSON = QJsonDocument::fromJson( Comment, &JERR );
+
+			if( JSON.isNull() )
+			{
+				continue;
+			}
+
+			const QJsonObject	JOBJ = JSON.object();
+
+			if( !JOBJ.contains( "ISFVSN" ) || JOBJ.value( "ISFVSN" ).toString().split( '.' ).first() != "2" )
+			{
+				continue;
+			}
+
+			ClassEntry		ISFEnt;
+
+			ISFEnt.mName = pPath.join( '/' ).append( FI.baseName() );
+			ISFEnt.mGroup = "ISF";
+			ISFEnt.mMetaObject = &ISFNode::staticMetaObject;
+
+			QByteArray		Hash = QCryptographicHash::hash( ISFEnt.mName.toLatin1(), QCryptographicHash::Md5 );
+
+			ISFEnt.mUuid = QUuid::fromRfc4122( Hash.left( 16 ) );
+
+			pEntLst << ISFEnt;
+
+			mPluginUuid.insert( ISFEnt.mUuid, FI.absoluteFilePath() );
+		}
+	}
 }

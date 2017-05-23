@@ -23,6 +23,10 @@
 
 #include <fugio/core/array_interface.h>
 
+#include <fugio/file/uuid.h>
+
+#include <fugio/isf/uuid.h>
+
 #include "isfplugin.h"
 
 ISFNode::ISFNode( QSharedPointer<fugio::NodeInterface> pNode )
@@ -30,11 +34,36 @@ ISFNode::ISFNode( QSharedPointer<fugio::NodeInterface> pNode )
 	  mStartTime( -1 ), mLastRenderTime( 0 )
 {
 	FUGID( PIN_INPUT_SOURCE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_INPUT_FILENAME, "DFEBA477-4933-4C85-9B3B-24CE71053B1F" );
 	FUGID( PIN_OUTPUT_RENDER, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
 
-	mPinInputSource = pinInput( "Source", PIN_INPUT_SOURCE );
+	mValInputFilename = pinInput<fugio::FilenameInterface *>( "Filename", mPinInputFilename, PID_FILENAME, PIN_INPUT_FILENAME );
+
+	if( pNode->controlUuid() == NID_ISF )
+	{
+		mPinInputSource = pinInput( "Source", PIN_INPUT_SOURCE );
+	}
+	else
+	{
+		mPinInputFilename->setValue( ISFPlugin::instance()->pluginPath( pNode->controlUuid() ) );
+	}
 
 	mValOutputRender = pinOutput<fugio::RenderInterface *>( "Render", mPinOutputRender, PID_RENDER, PIN_OUTPUT_RENDER );
+}
+
+bool ISFNode::initialise()
+{
+	if( !NodeControlBase::initialise() )
+	{
+		return( false );
+	}
+
+	if( !ISFPlugin::hasContextStatic() )
+	{
+		return( false );
+	}
+
+	return( true );
 }
 
 bool ISFNode::deinitialise()
@@ -115,7 +144,23 @@ bool ISFNode::deinitialise()
 
 void ISFNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( pTimeStamp && mPinInputSource->isUpdated( pTimeStamp ) )
+	if( mPinInputFilename->isUpdated( pTimeStamp ) )
+	{
+		QString		SrcPth = variant( mPinInputFilename ).toString();
+
+		QFile		SrcFil( SrcPth );
+
+		if( !SrcFil.open( QFile::ReadOnly ) )
+		{
+			mNode->setStatus( NodeInterface::Error );
+		}
+		else
+		{
+			parseISF( QFileInfo( SrcPth ).dir(), SrcFil.readAll() );
+		}
+	}
+
+	if( pTimeStamp && mPinInputSource && mPinInputSource->isUpdated( pTimeStamp ) )
 	{
 		QByteArray		Source = variant( mPinInputSource ).toByteArray();
 
@@ -402,33 +447,6 @@ QMap<QString, ISFNode::ISFImport> ISFNode::parseImports( const QDir &pDir, const
 			qWarning() << "ISF cannot load IMPORT" << Path;
 
 			continue;
-		}
-
-		glGenTextures( 1, &Import.mTextureId );
-
-		if( Import.mTextureId )
-		{
-			glBindTexture( GL_TEXTURE_2D, Import.mTextureId );
-
-			switch( ImportImage.format() )
-			{
-				case QImage::Format_ARGB32:
-					glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
-					break;
-
-				case QImage::Format_RGB888:
-					glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, ImportImage.width(), ImportImage.height(), 0, GL_BGR, GL_UNSIGNED_BYTE, ImportImage.constBits() );
-					break;
-
-				case QImage::Format_RGBA8888:
-					glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
-					break;
-			}
-
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-
-			glBindTexture( GL_TEXTURE_2D, 0 );
 		}
 
 		NewImports.insert( Name, Import );
@@ -954,14 +972,51 @@ void ISFNode::renderImports()
 	{
 		ISFImport		&ImpDat = it.value();
 
-		if( !ImpDat.mTextureId || ImpDat.mUniform == -1 )
+		if( ImpDat.mUniform == -1 )
 		{
 			continue;
 		}
 
-		glUniform1i( ImpDat.mUniform, ImpDat.mTextureIndex );
+		// Avoid disturbing other texture bindings
 
 		glActiveTexture( GL_TEXTURE0 + ImpDat.mTextureIndex );
+
+		if( !ImpDat.mTextureId )
+		{
+			QImage		ImportImage( ImpDat.mPath );
+
+			if( ImportImage.isNull() )
+			{
+				continue;
+			}
+
+			glGenTextures( 1, &ImpDat.mTextureId );
+
+			if( ImpDat.mTextureId )
+			{
+				glBindTexture( GL_TEXTURE_2D, ImpDat.mTextureId );
+
+				switch( ImportImage.format() )
+				{
+					case QImage::Format_ARGB32:
+						glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+						break;
+
+					case QImage::Format_RGB888:
+						glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, ImportImage.width(), ImportImage.height(), 0, GL_BGR, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+						break;
+
+					case QImage::Format_RGBA8888:
+						glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+						break;
+				}
+
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
+				glBindTexture( GL_TEXTURE_2D, 0 );
+			}
+		}
 
 		glBindTexture( GL_TEXTURE_2D, ImpDat.mTextureId );
 	}
@@ -1015,6 +1070,10 @@ void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 		{
 			continue;
 		}
+
+		// Avoid disturbing other texture bindings
+
+		glActiveTexture( GL_TEXTURE0 + PassData.mTextureIndex );
 
 		// Allocate a new texture
 

@@ -2,6 +2,7 @@
 #define ISFPLUGIN_H
 
 #include <QObject>
+#include <QDir>
 
 #include <fugio/core/uuid.h>
 #include <fugio/global_interface.h>
@@ -34,6 +35,11 @@ public:
 		return( instance()->mApp );
 	}
 
+	QString pluginPath( const QUuid &pUuid ) const
+	{
+		return( mPluginUuid.value( pUuid ) );
+	}
+
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
 
@@ -42,12 +48,19 @@ public:
 	virtual void deinitialise( void );
 
 private:
+	void scanDirectory( ClassEntryList &pEntLst, QDir pDir, QStringList pPath = QStringList() );
+
+private:
 	static ClassEntry				 mNodeClasses[];
 	static ClassEntry				 mPinClasses[];
 
 	static ISFPlugin				*mInstance;
 
 	fugio::GlobalInterface			*mApp;
+
+	ClassEntryList					 mPluginClassEntry;
+
+	QMap<QUuid,QString>				 mPluginUuid;
 };
 
 #endif // ISFPLUGIN_H
