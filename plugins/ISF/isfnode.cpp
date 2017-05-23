@@ -37,6 +37,8 @@ ISFNode::ISFNode( QSharedPointer<fugio::NodeInterface> pNode )
 	FUGID( PIN_INPUT_FILENAME, "DFEBA477-4933-4C85-9B3B-24CE71053B1F" );
 	FUGID( PIN_OUTPUT_RENDER, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
 
+	pinInput( "Trigger", PID_FUGIO_NODE_TRIGGER );
+
 	mValInputFilename = pinInput<fugio::FilenameInterface *>( "Filename", mPinInputFilename, PID_FILENAME, PIN_INPUT_FILENAME );
 
 	if( pNode->controlUuid() == NID_ISF )
@@ -144,19 +146,24 @@ bool ISFNode::deinitialise()
 
 void ISFNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( mPinInputFilename->isUpdated( pTimeStamp ) )
+	if( pTimeStamp && mPinInputFilename->isUpdated( pTimeStamp ) )
 	{
 		QString		SrcPth = variant( mPinInputFilename ).toString();
 
-		QFile		SrcFil( SrcPth );
+		if( !SrcPth.isEmpty() )
+		{
+			QFile		SrcFil( SrcPth );
 
-		if( !SrcFil.open( QFile::ReadOnly ) )
-		{
-			mNode->setStatus( NodeInterface::Error );
-		}
-		else
-		{
-			parseISF( QFileInfo( SrcPth ).dir(), SrcFil.readAll() );
+			if( !SrcFil.open( QFile::ReadOnly ) )
+			{
+				mNode->setStatus( NodeInterface::Error );
+			}
+			else
+			{
+				mNode->setStatus( NodeInterface::Initialised );
+
+				parseISF( QFileInfo( SrcPth ).dir(), SrcFil.readAll() );
+			}
 		}
 	}
 
@@ -507,10 +514,10 @@ void ISFNode::parseISF( const QDir &pDir, const QByteArray pSource )
 
 	const QJsonObject	JOBJ = JSON.object();
 
-	if( !JOBJ.contains( "ISFVSN" ) || JOBJ.value( "ISFVSN" ).toString().split( '.' ).first() != "2" )
-	{
-		return;
-	}
+//	if( !JOBJ.contains( "ISFVSN" ) || JOBJ.value( "ISFVSN" ).toString().split( '.' ).first() != "2" )
+//	{
+//		return;
+//	}
 
 	// Process INPUTS
 
@@ -648,6 +655,8 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 
 	const QByteArray		VS =
 			"#version 330 core\n"
+			"#define vv_vertShaderInit isf_vertShaderInit\n"
+			"#define vv_FragNormCoord isf_FragNormCoord\n"
 			"layout( location = 0 ) in vec2 vertex;\n"
 			"out vec2 isf_FragNormCoord;\n"
 			"void isf_vertShaderInit( void )\n"
@@ -687,6 +696,7 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 
 	QByteArray		FragmentSource =
 			"#version 330 core\n"
+			"#define vv_FragNormCoord isf_FragNormCoord\n"
 			"#define gl_FragColor isf_OutputColour\n"
 			"#define IMG_SIZE(i) textureSize(i,0)\n"
 			"#define IMG_PIXEL(i,p) texelFetch(i,ivec2(p))\n"

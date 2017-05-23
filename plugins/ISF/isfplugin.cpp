@@ -151,13 +151,6 @@ void ISFPlugin::scanDirectory( ClassEntryList &pEntLst, QDir pDir, QStringList p
 				continue;
 			}
 
-			const QJsonObject	JOBJ = JSON.object();
-
-			if( !JOBJ.contains( "ISFVSN" ) || JOBJ.value( "ISFVSN" ).toString().split( '.' ).first() != "2" )
-			{
-				continue;
-			}
-
 			ClassEntry		ISFEnt;
 
 			ISFEnt.mName = pPath.join( '/' ).append( FI.baseName() );
