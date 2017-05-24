@@ -29,6 +29,8 @@
 
 #include "isfplugin.h"
 
+#include "../libs/exprtk/exprtk.hpp"
+
 ISFNode::ISFNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mVAO( 0 ), mBuffer( 0 ), mProgram( 0 ), mFrameCounter( 0 ), mUniformTime( -1 ),
 	  mStartTime( -1 ), mLastRenderTime( 0 )
@@ -514,10 +516,10 @@ void ISFNode::parseISF( const QDir &pDir, const QByteArray pSource )
 
 	const QJsonObject	JOBJ = JSON.object();
 
-//	if( !JOBJ.contains( "ISFVSN" ) || JOBJ.value( "ISFVSN" ).toString().split( '.' ).first() != "2" )
-//	{
-//		return;
-//	}
+	//	if( !JOBJ.contains( "ISFVSN" ) || JOBJ.value( "ISFVSN" ).toString().split( '.' ).first() != "2" )
+	//	{
+	//		return;
+	//	}
 
 	// Process INPUTS
 
@@ -763,7 +765,7 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 
 	FragmentSource.append( pShaderSource );
 
-	qDebug() << FragmentSource.split( '\n' );
+	//	qDebug() << FragmentSource.split( '\n' );
 
 	const char			*FragmentSourceArray = FragmentSource.constData();
 
@@ -928,7 +930,7 @@ void ISFNode::renderInputs()
 
 							InpDat.mAudioInstance = nullptr;
 
-//							mSamplePosition = 0;
+							//							mSamplePosition = 0;
 						}
 
 					}
@@ -945,10 +947,10 @@ void ISFNode::renderInputs()
 							continue;
 						}
 
-//						if( !mSamplePosition )
-//						{
-//							mSamplePosition = pTimeStamp * ( 48000 / 1000 );
-//						}
+						//						if( !mSamplePosition )
+						//						{
+						//							mSamplePosition = pTimeStamp * ( 48000 / 1000 );
+						//						}
 					}
 
 					if( InpDat.mTextureId )
@@ -1053,10 +1055,8 @@ void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 
 		QSize		NewSze( Viewport[ 2 ], Viewport[ 3 ] );
 
-		// TODO: calculate new size here
-
-		NewSze.setWidth( NewSze.width() / 16 );
-		NewSze.setHeight( NewSze.height() / 16 );
+		NewSze.setWidth( calculateValue( NewSze.width(), NewSze, PassData.mWidth ) );
+		NewSze.setHeight( calculateValue( NewSze.height(), NewSze, PassData.mHeight ) );
 
 		if( NewSze != PassData.mSize )
 		{
@@ -1153,6 +1153,79 @@ void ISFNode::renderUniforms( qint64 pTimeStamp, GLint Viewport[ 4 ] )
 	}
 }
 
+int ISFNode::calculateValue( int pValue, const QSize &pSize, QString pExpression ) const
+{
+	if( pExpression.isEmpty() )
+	{
+		return( pValue );
+	}
+
+	typedef qreal						        exprtk_type;
+	typedef exprtk::symbol_table<exprtk_type>   symbol_table_t;
+	typedef exprtk::expression<exprtk_type>		expression_t;
+	typedef exprtk::parser<exprtk_type>		    parser_t;
+
+	QMap<std::string,exprtk_type>				VarMap;
+
+	VarMap.insert( "isf_WIDTH", pSize.width() );
+	VarMap.insert( "isf_HEIGHT", pSize.height() );
+
+	pExpression = pExpression.replace( QRegExp( "\\$WIDTH\\b" ), "isf_WIDTH" );
+	pExpression = pExpression.replace( QRegExp( "\\$HEIGHT\\b" ), "isf_HEIGHT" );
+
+	for( QMap<QString,ISFInput>::const_iterator it = mISFInputs.begin() ; it != mISFInputs.end() ; it++ )
+	{
+		const ISFInput		&InpDat = it.value();
+
+		pExpression = pExpression.replace( QRegExp( QString( "\\$%1\\b" ).arg( it.key() ) ), QString( "isf_%1" ).arg( it.key() ) );
+
+		QSharedPointer<fugio::PinInterface> P = mNode->findInputPinByName( it.key() );
+
+		if( !P )
+		{
+			continue;
+		}
+
+		switch( InpDat.mType )
+		{
+			case BOOL:
+				VarMap.insert( QString( it.key() ).prepend( 'isf_' ).toStdString(), variant( P ).toBool() );
+				break;
+
+			case LONG:
+				VarMap.insert( QString( it.key() ).prepend( 'isf_' ).toStdString(), variant( P ).toInt() );
+				break;
+
+			case FLOAT:
+				VarMap.insert( QString( it.key() ).prepend( 'isf_' ).toStdString(), variant( P ).toFloat() );
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	symbol_table_t symbol_table;
+
+	for( QMap<std::string,exprtk_type>::iterator it = VarMap.begin() ; it != VarMap.end() ; it++ )
+	{
+		symbol_table.add_variable( it.key(), it.value(), true );
+	}
+
+	expression_t expression;
+
+	expression.register_symbol_table( symbol_table );
+
+	parser_t parser;
+
+	if( parser.compile( pExpression.toStdString(), expression ) )
+	{
+		pValue = expression.value();
+	}
+
+	return( pValue );
+}
+
 void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 {
 	Q_UNUSED( pSourcePinId )
@@ -1206,13 +1279,13 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		glBindBuffer( GL_ARRAY_BUFFER, mBuffer );
 
 		glVertexAttribPointer(
-		   0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-		   2,                  // size
-		   GL_FLOAT,           // type
-		   GL_FALSE,           // normalized?
-		   0,                  // stride
-		   (void*)0            // array buffer offset
-		);
+					0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+					2,                  // size
+					GL_FLOAT,           // type
+					GL_FALSE,           // normalized?
+					0,                  // stride
+					(void*)0            // array buffer offset
+					);
 
 		glUseProgram( mProgram );
 

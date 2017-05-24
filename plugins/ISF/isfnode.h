@@ -132,6 +132,8 @@ protected:
 
 	void renderUniforms( qint64 pTimeStamp, GLint Viewport[ 4 ] );
 
+	int calculateValue( int pValue, const QSize &pSize, QString pExpression ) const;
+
 private:
 	bool loadShaders( const QString &pShaderSource );
 
