@@ -61,7 +61,8 @@ SOURCES += mathplugin.cpp \
 	ceilnode.cpp \
 	floornode.cpp \
 	roundnode.cpp \
-	quaternionpin.cpp
+	quaternionpin.cpp \
+    mathexpressionnode.cpp
 
 HEADERS += mathplugin.h \
 	../../include/fugio/math/uuid.h \
@@ -111,7 +112,8 @@ HEADERS += mathplugin.h \
 	ceilnode.h \
 	floornode.h \
 	roundnode.h \
-	quaternionpin.h
+	quaternionpin.h \
+    mathexpressionnode.h
 
 RESOURCES += \
     resources.qrc
