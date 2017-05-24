@@ -1,3 +1,6 @@
 [submodule "plugins/ffmpeg/hap"]
 	path = plugins/ffmpeg/hap
 	url = https://github.com/Vidvox/hap
+[submodule "libs/exprtk"]
+	path = libs/exprtk
+	url = https://github.com/ArashPartow/exprtk
