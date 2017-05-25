@@ -15,6 +15,16 @@ FilenameNode::FilenameNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mValFilename = pinOutput<fugio::FilenameInterface *>( "Filename", mPinFilename, PID_FILENAME );
 }
 
+bool FilenameNode::initialise()
+{
+	if( !NodeControlBase::initialise() )
+	{
+		return( false );
+	}
+
+	return( updateStatus() );
+}
+
 QWidget *FilenameNode::gui()
 {
 	QPushButton	*GUI = new QPushButton( tr( "..." ) );
@@ -61,9 +71,12 @@ void FilenameNode::onClick()
 			PinDat->setSetting( PIN_SETTING_DIRECTORY, FilInf.absolutePath() );
 		}
 
-		mValFilename->setFilename( FilInf.absoluteFilePath() );
+		if( mValFilename->filename() != FilInf.absoluteFilePath() )
+		{
+			mValFilename->setFilename( FilInf.absoluteFilePath() );
 
-		mNode->context()->updateNode( mNode->context()->findNode( mNode->uuid() ) );
+			mNode->context()->updateNode( mNode );
+		}
 	}
 
 #if defined( Q_OS_MACX )
@@ -74,9 +87,36 @@ void FilenameNode::onClick()
 #endif
 }
 
+bool FilenameNode::updateStatus()
+{
+	if( mValFilename->filename().isEmpty() )
+	{
+		mNode->setStatus( fugio::NodeInterface::Initialising );
+
+		mNode->setStatusMessage( tr( "Click the button to choose a file" ) );
+
+		return( false );
+	}
+
+	if( !QFileInfo( mValFilename->filename() ).exists() )
+	{
+		mNode->setStatus( fugio::NodeInterface::Error );
+
+		mNode->setStatusMessage( tr( "%1: file not found" ).arg( mValFilename->filename() ) );
+
+		return( false );
+	}
+
+	mNode->setStatus( fugio::NodeInterface::Initialised );
+
+	mNode->setStatusMessage( "" );
+
+	return( true );
+}
+
 void FilenameNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( pTimeStamp )
+	if( pTimeStamp && updateStatus() )
 	{
 		pinUpdated( mPinFilename );
 	}
