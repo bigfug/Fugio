@@ -78,27 +78,17 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 
 	QUrl	FileNameUrl;
 
-	if( mPinFileName->isConnected() )
+	fugio::FilenameInterface						*IFN = input<fugio::FilenameInterface *>( mPinFileName );
+
+	if( IFN )
 	{
-		fugio::VariantInterface						*VAR = input<fugio::VariantInterface *>( mPinFileName );
+		FileName = IFN->filename();
 
-		if( VAR != 0 )
-		{
-			FileName = VAR->variant().toString();
-		}
-
-		fugio::FilenameInterface						*IFN = input<fugio::FilenameInterface *>( mPinFileName );
-
-		if( IFN )
-		{
-			FileName = IFN->filename();
-
-			FileNameUrl = QUrl::fromLocalFile( FileName );
-		}
+		FileNameUrl = QUrl::fromLocalFile( FileName );
 	}
 	else
 	{
-		FileName = mPinFileName->value().toString();
+		FileName = variant( mPinFileName ).toString();
 	}
 
 	if( FileNameUrl.isEmpty() )
@@ -277,7 +267,7 @@ void MediaProcessorNode::setVideo( fugio::SegmentInterface *pSegment )
 
 void MediaProcessorNode::unloadMedia( void )
 {
-	if( mSegment != 0 )
+	if( mSegment )
 	{
 		delete mSegment;
 
@@ -398,16 +388,6 @@ fugio::AudioInstanceBase *MediaProcessorNode::audioAllocInstance( qreal pSampleR
 
 	return( InsDat );
 }
-
-//void MediaProcessorNode::audioFreeInstance( void *pInstanceData )
-//{
-//	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
-
-//	if( InsDat )
-//	{
-//		delete InsDat;
-//	}
-//}
 
 int MediaProcessorNode::audioChannels() const
 {
