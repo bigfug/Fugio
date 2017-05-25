@@ -16,7 +16,7 @@
 #include "audiobuffer.h"
 
 #if defined( FFMPEG_SUPPORTED )
-#include <hap/source/hap.h>
+#include "hap/source/hap.h"
 #endif
 
 #ifndef INT64_C

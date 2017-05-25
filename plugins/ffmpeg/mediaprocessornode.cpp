@@ -32,8 +32,8 @@
 //#include "mediaplayervideopreview.h"
 #include "mediaaudioprocessor.h"
 
-#if defined( HAP_SUPPORTED )
-#include <hap.h>
+#if defined( FFMPEG_SUPPORTED )
+#include "hap/source/hap.h"
 #endif
 
 MediaProcessorNode::MediaProcessorNode( QSharedPointer<fugio::NodeInterface> pNode )
@@ -160,7 +160,7 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 
 		if( mSegment->imageIsHap() )
 		{
-#if defined( HAP_SUPPORTED )
+#if defined( FFMPEG_SUPPORTED )
 			switch( HapTextureFormat( mSegment->imageFormat() ) )
 			{
 				case HapTextureFormat_RGB_DXT1:
