@@ -140,6 +140,11 @@ public:
 #endif
 	}
 
+	virtual QString statusMessage( void ) const Q_DECL_OVERRIDE
+	{
+		return( mStatusMessage );
+	}
+
 private:
 	bool readVideoFrame( qreal TargetPTS, bool pForce );
 
@@ -353,6 +358,8 @@ private:
 		}
 
 	} AudioStream;
+
+	QString				 mStatusMessage;
 
 	qreal				 mPlayHead;
 	VideoStream			 mVideo;
