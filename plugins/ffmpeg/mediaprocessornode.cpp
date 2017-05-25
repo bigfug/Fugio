@@ -248,10 +248,18 @@ bool MediaProcessorNode::loadMedia( const QString &pFileName )
 
 	if( !SV->loadMedia( pFileName, false ) )
 	{
+		mNode->setStatus( fugio::NodeInterface::Error );
+
+		mNode->setStatusMessage( SV->statusMessage() );
+
 		delete SV;
 
 		return( false );
 	}
+
+	mNode->setStatus( fugio::NodeInterface::Initialised );
+
+	mNode->setStatusMessage( "" );
 
 	setVideo( SV );
 
