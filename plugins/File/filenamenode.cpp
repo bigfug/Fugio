@@ -15,16 +15,6 @@ FilenameNode::FilenameNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mValFilename = pinOutput<fugio::FilenameInterface *>( "Filename", mPinFilename, PID_FILENAME );
 }
 
-bool FilenameNode::initialise()
-{
-	if( !NodeControlBase::initialise() )
-	{
-		return( false );
-	}
-
-	return( updateStatus() );
-}
-
 QWidget *FilenameNode::gui()
 {
 	QPushButton	*GUI = new QPushButton( tr( "..." ) );
@@ -91,7 +81,7 @@ bool FilenameNode::updateStatus()
 {
 	if( mValFilename->filename().isEmpty() )
 	{
-		mNode->setStatus( fugio::NodeInterface::Initialising );
+		mNode->setStatus( fugio::NodeInterface::Warning );
 
 		mNode->setStatusMessage( tr( "Click the button to choose a file" ) );
 
@@ -116,7 +106,9 @@ bool FilenameNode::updateStatus()
 
 void FilenameNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( pTimeStamp && updateStatus() )
+	bool		Status = updateStatus();
+
+	if( pTimeStamp && Status )
 	{
 		pinUpdated( mPinFilename );
 	}

@@ -26,8 +26,6 @@ public:
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface interface
-public:
-	virtual bool initialise( void ) Q_DECL_OVERRIDE;
 
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
