@@ -359,8 +359,6 @@ private:
 
 	} AudioStream;
 
-	QString				 mStatusMessage;
-
 	qreal				 mPlayHead;
 	VideoStream			 mVideo;
 	AudioStream			 mAudio;
@@ -399,6 +397,8 @@ private:
 
 	MediaAudioProcessor	*mAudioProcessor;
 #endif
+
+	QString				 mStatusMessage;
 };
 
 #endif // MEDIASEGMENT_H

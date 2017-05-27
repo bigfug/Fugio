@@ -278,4 +278,11 @@ macx {
 
 		LIBS += -L/usr/local/lib -lGLEW
 	}
+
+	DEFINES += GLEW_SUPPORTED
 }
+
+linux:exists( /usr/include/GL/glew.h ) {
+	DEFINES += GLEW_SUPPORTED
+}
+
