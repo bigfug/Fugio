@@ -40,11 +40,11 @@ MediaProcessorNode::MediaProcessorNode( QSharedPointer<fugio::NodeInterface> pNo
 	: NodeControlBase( pNode ), mSegment( 0 ),
 	  mTimeOffset( 0 ), mTimePause( 0 ), mTimeLast( -1 )
 {
-	const static QUuid	PIN_FILENAME	= QUuid( "{43d2824f-7967-4b22-8b0f-c51358b65d17}" );
+	FUGID( PIN_FILENAME, "43d2824f-7967-4b22-8b0f-c51358b65d17" );
 	FUGID( PIN_REWIND, "ae66182c-d914-49cb-85d4-615db69cf3e2" );
 
-	const static QUuid	PIN_IMAGE		= QUuid( "{e0a3e13b-6669-4793-8eb0-e9a12afb0f6b}" );
-	const static QUuid	PIN_AUDIO		= QUuid( "{864cae6d-87a4-4f26-8f64-fd0185dad2cf}" );
+	FUGID( PIN_IMAGE, "e0a3e13b-6669-4793-8eb0-e9a12afb0f6b" );
+	FUGID( PIN_AUDIO, "864cae6d-87a4-4f26-8f64-fd0185dad2cf" );
 
 	mPinFileName = pinInput( "Filename", PIN_FILENAME );
 
@@ -241,7 +241,7 @@ bool MediaProcessorNode::loadMedia( const QString &pFileName )
 
 	MediaSegment		*SV = new MediaSegment();
 
-	if( SV == 0 )
+	if( !SV )
 	{
 		return( false );
 	}
