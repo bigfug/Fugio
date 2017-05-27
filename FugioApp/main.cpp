@@ -9,6 +9,7 @@
 #include <QLibraryInfo>
 #include <QTranslator>
 #include <QMessageBox>
+#include <QSurfaceFormat>
 
 #include "contextprivate.h"
 #include "contextsubwindow.h"
@@ -148,6 +149,17 @@ int main( int argc, char *argv[] )
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
 	QCoreApplication::setAttribute( Qt::AA_ShareOpenGLContexts );
 #endif
+
+	//-------------------------------------------------------------------------
+
+	QSurfaceFormat	SurfaceFormat;
+
+	SurfaceFormat.setDepthBufferSize( 24 );
+	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
+	SurfaceFormat.setSamples( 4 );
+	SurfaceFormat.setVersion( 4, 5 );
+
+	QSurfaceFormat::setDefaultFormat( SurfaceFormat );
 
 	//-------------------------------------------------------------------------
 
