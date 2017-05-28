@@ -18,7 +18,7 @@ DESTDIR = $$DESTDIR/plugins
 DEFINES += MATH_LIBRARY
 
 SOURCES += mathplugin.cpp \
-		matrixlookatnode.cpp \
+	matrixlookatnode.cpp \
 	matrixperspectivenode.cpp \
 	multiplynode.cpp \
 	vector3node.cpp \
@@ -166,6 +166,9 @@ windows {
 	plugin.files = $$DESTDIR/$$TARGET".dll"
 
 	INSTALLS += plugin
+
+	QMAKE_CFLAGS += /bigobj
+	QMAKE_CXXFLAGS += /bigobj
 }
 
 #------------------------------------------------------------------------------
