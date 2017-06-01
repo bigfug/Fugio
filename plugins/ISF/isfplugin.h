@@ -7,13 +7,14 @@
 #include <fugio/core/uuid.h>
 #include <fugio/global_interface.h>
 #include <fugio/plugin_interface.h>
+#include <fugio/editor_interface.h>
 
 using namespace fugio;
 
-class ISFPlugin : public QObject, public fugio::PluginInterface
+class ISFPlugin : public QObject, public fugio::PluginInterface, public fugio::SettingsInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::PluginInterface )
+	Q_INTERFACES( fugio::PluginInterface fugio::SettingsInterface )
 	Q_PLUGIN_METADATA( IID "com.bigfug.fugio.isf.plugin" )
 
 public:
@@ -43,12 +44,21 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
 
+public:
 	virtual InitResult initialise( fugio::GlobalInterface *pApp, bool pLastChance );
 
 	virtual void deinitialise( void );
 
+
+	//-------------------------------------------------------------------------
+	// SettingsInterface interface
+public:
+	virtual QWidget *settingsWidget() Q_DECL_OVERRIDE;
+
+	virtual void settingsAccept( QWidget *W ) Q_DECL_OVERRIDE;
+
 private:
-	void scanDirectory( ClassEntryList &pEntLst, QDir pDir, QStringList pPath = QStringList() );
+	static void scanDirectory( ClassEntryList &pEntLst, QDir pDir, QMap<QUuid,QString> &pUuidList, QStringList pPath = QStringList() );
 
 private:
 	static ClassEntry				 mNodeClasses[];
@@ -58,6 +68,7 @@ private:
 
 	fugio::GlobalInterface			*mApp;
 
+	ClassEntryList					 mSharedClassEntry;
 	ClassEntryList					 mPluginClassEntry;
 
 	QMap<QUuid,QString>				 mPluginUuid;

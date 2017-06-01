@@ -1,6 +1,7 @@
 #include "isfplugin.h"
 
 #include <QtPlugin>
+#include <QSettings>
 
 #include <QDebug>
 
@@ -16,7 +17,11 @@
 
 #include <fugio/opengl/uuid.h>
 
+#include <fugio/editor_interface.h>
+
 #include "isfnode.h"
+
+#include "settingsform.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -95,10 +100,26 @@ PluginInterface::InitResult ISFPlugin::initialise( fugio::GlobalInterface *pApp,
 
 	if( ISFDir.cd( "share/isf" ) )
 	{
-		scanDirectory( mPluginClassEntry, ISFDir );
+		scanDirectory( mSharedClassEntry, ISFDir, mPluginUuid );
+	}
+
+	mApp->registerNodeClasses( mSharedClassEntry );
+
+	QString		P = QSettings().value( "isf/path" ).toString();
+
+	if( !P.isEmpty() )
+	{
+		scanDirectory( mPluginClassEntry, P, mPluginUuid );
 	}
 
 	mApp->registerNodeClasses( mPluginClassEntry );
+
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mApp->findInterface( IID_EDITOR ) );
+
+	if( EI )
+	{
+		EI->registerSettings( this );
+	}
 
 	return( INIT_OK );
 }
@@ -107,6 +128,8 @@ void ISFPlugin::deinitialise()
 {
 	mApp->unregisterNodeClasses( mPluginClassEntry );
 
+	mApp->unregisterNodeClasses( mSharedClassEntry );
+
 	mApp->unregisterPinClasses( mPinClasses );
 
 	mApp->unregisterNodeClasses( mNodeClasses );
@@ -114,7 +137,7 @@ void ISFPlugin::deinitialise()
 	mApp = 0;
 }
 
-void ISFPlugin::scanDirectory( ClassEntryList &pEntLst, QDir pDir, QStringList pPath )
+void ISFPlugin::scanDirectory( ClassEntryList &pEntLst, QDir pDir, QMap<QUuid, QString> &pUuidList, QStringList pPath )
 {
 	for( QFileInfo FI : pDir.entryInfoList( QStringList( "*.fs" ), QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot | QDir::Readable ) )
 	{
@@ -124,7 +147,7 @@ void ISFPlugin::scanDirectory( ClassEntryList &pEntLst, QDir pDir, QStringList p
 
 			PL.append( FI.baseName() );
 
-			scanDirectory( pEntLst, QDir( FI.absoluteDir() ), PL );
+			scanDirectory( pEntLst, QDir( FI.absoluteDir() ), pUuidList, PL );
 		}
 		else
 		{
@@ -168,7 +191,37 @@ void ISFPlugin::scanDirectory( ClassEntryList &pEntLst, QDir pDir, QStringList p
 
 			pEntLst << ISFEnt;
 
-			mPluginUuid.insert( ISFEnt.mUuid, FI.absoluteFilePath() );
+			pUuidList.insert( ISFEnt.mUuid, FI.absoluteFilePath() );
 		}
+	}
+}
+
+QWidget *ISFPlugin::settingsWidget()
+{
+	SettingsForm	*W = new SettingsForm();
+
+	if( W )
+	{
+		W->setObjectName( "ISF" );
+
+		W->setPath( QSettings().value( "isf/path" ).toString() );
+	}
+
+	return( W );
+}
+
+void ISFPlugin::settingsAccept( QWidget *S )
+{
+	SettingsForm	*W = qobject_cast<SettingsForm *>( S );
+
+	if( W && !W->path().isEmpty() )
+	{
+		QSettings().setValue( "isf/path", W->path() );
+
+		mApp->unregisterNodeClasses( mPluginClassEntry );
+
+		mPluginClassEntry.clear();
+
+		scanDirectory( mPluginClassEntry, W->path(), mPluginUuid );
 	}
 }

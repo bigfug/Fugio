@@ -16,7 +16,8 @@ DESTDIR = $$DESTDIR/plugins
 
 SOURCES += \
 	isfplugin.cpp \
-    isfnode.cpp
+    isfnode.cpp \
+    settingsform.cpp
 
 HEADERS += \
 	../../include/fugio/isf/uuid.h \
@@ -24,7 +25,8 @@ HEADERS += \
 	../../include/fugio/pincontrolbase.h \
 	isfplugin.h \
     isfnode.h \
-    opengl_includes.h
+    opengl_includes.h \
+    settingsform.h
 
 RESOURCES += \
 	resources.qrc \
@@ -150,3 +152,6 @@ macx {
 
 	DEFINES += GLEW_SUPPORTED
 }
+
+FORMS += \
+    settingsform.ui
