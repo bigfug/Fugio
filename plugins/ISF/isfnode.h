@@ -1,6 +1,8 @@
 #ifndef ISFNODE_H
 #define ISFNODE_H
 
+#include "../libs/exprtk/exprtk.hpp"
+
 #include "opengl_includes.h"
 
 #include <QObject>

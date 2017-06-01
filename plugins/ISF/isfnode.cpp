@@ -29,8 +29,6 @@
 
 #include "isfplugin.h"
 
-#include "../libs/exprtk/exprtk.hpp"
-
 ISFNode::ISFNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mVAO( 0 ), mBuffer( 0 ), mProgram( 0 ), mFrameCounter( 0 ), mUniformTime( -1 ),
 	  mStartTime( -1 ), mLastRenderTime( 0 )

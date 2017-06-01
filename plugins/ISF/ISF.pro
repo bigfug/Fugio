@@ -76,6 +76,9 @@ windows {
 	plugin.files = $$DESTDIR/$$TARGET".dll"
 
 	INSTALLS += plugin
+
+	QMAKE_CFLAGS += /bigobj
+	QMAKE_CXXFLAGS += /bigobj
 }
 
 #------------------------------------------------------------------------------
