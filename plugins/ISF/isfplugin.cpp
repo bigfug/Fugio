@@ -91,7 +91,12 @@ PluginInterface::InitResult ISFPlugin::initialise( fugio::GlobalInterface *pApp,
 
 	mApp->registerPinClasses( mPinClasses );
 
-	scanDirectory( mPluginClassEntry, QDir( "ISF tests+tutorials" ) );
+	QDir	ISFDir = QDir( qApp->applicationDirPath() );
+
+	if( ISFDir.cd( "share/isf" ) )
+	{
+		scanDirectory( mPluginClassEntry, ISFDir );
+	}
 
 	mApp->registerNodeClasses( mPluginClassEntry );
 
