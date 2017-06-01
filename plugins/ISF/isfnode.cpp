@@ -275,6 +275,8 @@ QMap<QString,ISFNode::ISFInput> ISFNode::parseInputs( QJsonArray Inputs )
 
 			CurISF.mType = Type;
 
+			const bool	NewPin = ISFPin ? false : true;
+
 			if( !ISFPin )
 			{
 				ISFPin = pinInput( Name, QUuid::createUuid() );
@@ -292,7 +294,10 @@ QMap<QString,ISFNode::ISFInput> ISFNode::parseInputs( QJsonArray Inputs )
 					break;
 
 				case BOOL:
-					ISFPin->setValue( Input.value( "DEFAULT" ).toBool() );
+					if( NewPin )
+					{
+						ISFPin->setValue( Input.value( "DEFAULT" ).toBool() );
+					}
 					break;
 
 				case LONG:
@@ -344,23 +349,32 @@ QMap<QString,ISFNode::ISFInput> ISFNode::parseInputs( QJsonArray Inputs )
 							}
 						}
 
-						int		DefVal = Input.value( "DEFAULT" ).toInt();
-
-						if( DefVal < LabLst.size() )
+						if( NewPin )
 						{
-							ISFPin->setValue( LabLst.at( DefVal ) );
+							int		DefVal = Input.value( "DEFAULT" ).toInt();
+
+							if( DefVal < LabLst.size() )
+							{
+								ISFPin->setValue( LabLst.at( DefVal ) );
+							}
 						}
 					}
 					break;
 
 				case FLOAT:
-					ISFPin->setValue( Input.value( "DEFAULT" ).toDouble() );
+					if( NewPin )
+					{
+						ISFPin->setValue( Input.value( "DEFAULT" ).toDouble() );
+					}
 					break;
 
 				case POINT2D:
 					ISFPin->registerPinInputType( PID_POINT );
 
-					ISFPin->setValue( QPointF() );
+					if( NewPin )
+					{
+						ISFPin->setValue( QPointF() );
+					}
 					break;
 
 				case IMAGE:
@@ -373,17 +387,20 @@ QMap<QString,ISFNode::ISFInput> ISFNode::parseInputs( QJsonArray Inputs )
 
 						QColor		C;
 
-						QJsonArray	DefaultColour = Input.value( "DEFAULT" ).toArray();
-
-						if( !DefaultColour.isEmpty() )
+						if( NewPin )
 						{
-							if( DefaultColour.size() > 0 ) C.setRedF( DefaultColour.at( 0 ).toDouble() );
-							if( DefaultColour.size() > 1 ) C.setGreenF( DefaultColour.at( 1 ).toDouble() );
-							if( DefaultColour.size() > 2 ) C.setBlueF( DefaultColour.at( 2 ).toDouble() );
-							if( DefaultColour.size() > 3 ) C.setAlphaF( DefaultColour.at( 3 ).toDouble() );
-						}
+							QJsonArray	DefaultColour = Input.value( "DEFAULT" ).toArray();
 
-						ISFPin->setValue( C );
+							if( !DefaultColour.isEmpty() )
+							{
+								if( DefaultColour.size() > 0 ) C.setRedF( DefaultColour.at( 0 ).toDouble() );
+								if( DefaultColour.size() > 1 ) C.setGreenF( DefaultColour.at( 1 ).toDouble() );
+								if( DefaultColour.size() > 2 ) C.setBlueF( DefaultColour.at( 2 ).toDouble() );
+								if( DefaultColour.size() > 3 ) C.setAlphaF( DefaultColour.at( 3 ).toDouble() );
+							}
+
+							ISFPin->setValue( C );
+						}
 					}
 					break;
 
