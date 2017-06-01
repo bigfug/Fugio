@@ -2,9 +2,13 @@
 #define WEBSOCKETCLIENTNODE_H
 
 #include <QObject>
-#include <QWebSocket>
 #include <QHostInfo>
 #include <QHostAddress>
+#include <QUrl>
+
+#if defined( WEBSOCKET_SUPPORTED )
+#include <QWebSocket>
+#endif
 
 #include <fugio/nodecontrolbase.h>
 
@@ -53,7 +57,10 @@ protected:
 	fugio::VariantInterface						*mValOutputBinary;
 
 	QUrl										 mUrl;
+
+#if defined( WEBSOCKET_SUPPORTED )
 	QWebSocket									 mSocket;
+#endif
 
 	QString										 mReceivedText;
 	QByteArray									 mReceivedBinary;

@@ -6,7 +6,13 @@
 
 include( ../../FugioGlobal.pri )
 
-QT       += widgets serialport
+QT += widgets
+
+qtHaveModule( serialport ) {
+	QT += serialport
+
+	DEFINES += SERIALPORT_SUPPORTED
+}
 
 TARGET = $$qtLibraryTarget(fugio-serial)
 TEMPLATE = lib

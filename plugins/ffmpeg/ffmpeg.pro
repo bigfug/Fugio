@@ -155,10 +155,10 @@ INCLUDEPATH += $$PWD/../../include
 #------------------------------------------------------------------------------
 # ffmpeg
 
-linux {
+linux:exists( /usr/local/include/libavformat/avformat.h ) {
 	LIBS += -L/usr/local/lib
 
-	DEFINES += FFMPEG_SUPPORTED
+	#DEFINES += FFMPEG_SUPPORTED
 }
 
 windows:contains( DEFINES, FFMPEG_SUPPORTED ) {

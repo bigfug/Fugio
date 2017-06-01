@@ -26,13 +26,16 @@ public:
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface interface
-public:
+
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
 	virtual QWidget *gui( void ) Q_DECL_OVERRIDE;
 
 protected slots:
 	void onClick( void );
+
+protected:
+	bool updateStatus( void );
 
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinFilename;

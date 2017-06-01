@@ -33,6 +33,7 @@ WebSocketClientNode::WebSocketClientNode( QSharedPointer<fugio::NodeInterface> p
 
 	mValOutputBinary = pinOutput<fugio::VariantInterface *>( "Binary", mPinOutputBinary, PID_BYTEARRAY, PIN_OUTPUT_BINARY );
 
+#if defined( WEBSOCKET_SUPPORTED )
 	connect( &mSocket, &QWebSocket::connected, this, &WebSocketClientNode::connected );
 
 	connect( &mSocket, &QWebSocket::disconnected, this, &WebSocketClientNode::disconnected );
@@ -40,10 +41,12 @@ WebSocketClientNode::WebSocketClientNode( QSharedPointer<fugio::NodeInterface> p
 	connect( &mSocket, &QWebSocket::binaryMessageReceived, this, &WebSocketClientNode::receivedBinary );
 
 	connect( &mSocket, &QWebSocket::textMessageReceived, this, &WebSocketClientNode::receivedText );
+#endif
 }
 
 void WebSocketClientNode::inputsUpdated( qint64 pTimeStamp )
 {
+#if defined( WEBSOCKET_SUPPORTED )
 	fugio::Performance	Perf( mNode, "inputsUpdated", pTimeStamp );
 
 	if( mPinInputUrl->isUpdated( pTimeStamp ) )
@@ -88,6 +91,7 @@ void WebSocketClientNode::inputsUpdated( qint64 pTimeStamp )
 	}
 
 	mWriteTime = pTimeStamp + 1;
+#endif
 }
 
 void WebSocketClientNode::contextFrame()
@@ -142,7 +146,9 @@ void WebSocketClientNode::disconnected()
 
 	if( mUrl.isValid() )
 	{
+#if defined( WEBSOCKET_SUPPORTED )
 		mSocket.open( mUrl );
+#endif
 	}
 }
 
@@ -150,6 +156,7 @@ void WebSocketClientNode::error( QAbstractSocket::SocketError pError )
 {
 	Q_UNUSED( pError )
 
+#if defined( WEBSOCKET_SUPPORTED )
 	mNode->setStatus( fugio::NodeInterface::Error );
 	mNode->setStatusMessage( mSocket.errorString() );
 
@@ -157,11 +164,14 @@ void WebSocketClientNode::error( QAbstractSocket::SocketError pError )
 	{
 		mSocket.open( mUrl );
 	}
+#endif
 }
 
 bool WebSocketClientNode::deinitialise()
 {
+#if defined( WEBSOCKET_SUPPORTED )
 	mSocket.close();
+#endif
 
 	return( NodeControlBase::deinitialise() );
 }
