@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+#include <fugio/editor_interface.h>
+
 namespace Ui {
 class SettingsDialog;
 }
@@ -23,6 +25,8 @@ private slots:
 
 private:
 	Ui::SettingsDialog *ui;
+
+	QMap<fugio::SettingsInterface *, QWidget *>		mSettings;
 };
 
 #endif // SETTINGSDIALOG_H
