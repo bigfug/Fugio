@@ -25,6 +25,16 @@ typedef enum MenuId
 
 typedef bool (*FileImportFunction)( QString pFilename, fugio::ContextInterface *pContext );
 
+class SettingsInterface
+{
+public:
+	virtual ~SettingsInterface( void ) {}
+
+	virtual QWidget *settingsWidget( void ) = 0;
+
+	virtual void settingsAccept( QWidget *pWidget ) = 0;
+};
+
 class EditorInterface
 {
 public:
@@ -49,9 +59,17 @@ public:
 	virtual void menuAddEntry( fugio::MenuId, QString pName, QObject *pObject, const char *pSlot ) = 0;
 
 	virtual void menuAddFileImporter( QString pFilter, FileImportFunction pFunc ) = 0;
+
+	//-------------------------------------------------------------------------
+	// Settings
+
+	virtual void registerSettings( SettingsInterface *pSetInt ) = 0;
+	virtual void unregisterSettings( SettingsInterface *pSetInt ) = 0;
 };
 
 FUGIO_NAMESPACE_END
+
+Q_DECLARE_INTERFACE( fugio::SettingsInterface, "com.bigfug.fugio.editor.settings/1.0" )
 
 Q_DECLARE_INTERFACE( fugio::EditorInterface, "com.bigfug.fugio.editor/1.0" )
 
