@@ -1115,6 +1115,10 @@ void ISFNode::renderImports()
 					case QImage::Format_RGBA8888:
 						glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
 						break;
+
+					default:
+						glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr );
+						break;
 				}
 
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
