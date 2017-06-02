@@ -76,9 +76,9 @@ protected:
 
 	typedef struct ISFInput
 	{
-		ISFInput( void ) : mType( UNKNOWN ), mEventFlag( false ), mUniform( -1 ), mTextureIndex( -1 ), mTextureId( 0 ), mAudioInstance( nullptr ) {}
+		ISFInput( void ) : mType( UNKNOWN ), mEventFlag( false ), mUniform( -1 ), mTextureIndex( -1 ), mTextureId( 0 ), mAudioInstance( nullptr ), mSamplePosition( 0 ) {}
 
-		ISFInput( ISFInputType pType ) : mType( pType ), mEventFlag( false ), mUniform( -1 ), mTextureIndex( -1 ), mTextureId( 0 ), mAudioInstance( nullptr ) {}
+		ISFInput( ISFInputType pType ) : mType( pType ), mEventFlag( false ), mUniform( -1 ), mTextureIndex( -1 ), mTextureId( 0 ), mAudioInstance( nullptr ), mSamplePosition( 0 ) {}
 
 		ISFInputType				 mType;
 		bool						 mEventFlag;
@@ -88,6 +88,7 @@ protected:
 		int							 mAudioMax;
 
 		fugio::AudioInstanceBase	*mAudioInstance;
+		qint64						 mSamplePosition;
 
 	} ISFInput;
 
@@ -138,6 +139,10 @@ protected:
 
 private:
 	bool loadShaders( const QString &pShaderSource );
+
+	static float getBandWidth( float timeSize, float sampleRate );
+
+	static int freqToIndex( int timeSize, int sampleRate, int freq);
 
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputFilename;

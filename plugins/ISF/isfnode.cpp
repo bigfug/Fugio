@@ -1,5 +1,7 @@
 #include "isfnode.h"
 
+#include <cmath>
+
 #include <QJsonDocument>
 #include <QJsonArray>
 
@@ -241,21 +243,39 @@ void ISFNode::inputsUpdated( qint64 pTimeStamp )
 
 			if( FftInf )
 			{
-				const float *fft = FftInf->fft();
+				const int			sampleRate = FftInf->sampleRate();
+				const int			timeSize   = FftInf->samples();
 
-				if( fft )
+				const float				*DAT = FftInf->fft();
+
+				if( !DAT )
 				{
-					memcpy( FFT.data(), fft, sizeof( float ) * qMin( FFT.size(), FftInf->count() ) );
+					return;
 				}
-			}
 
-			fugio::ArrayInterface	*ArrInf = input<fugio::ArrayInterface *>( P );
+				float		*ValOut = FFT.data();
 
-			if( ArrInf )
-			{
-				if( ArrInf->count() > 0 && ArrInf->type() == QMetaType::Float )
+				for( int i = 0 ; i < InpDat.mAudioMax ; i++ )
 				{
-					memcpy( FFT.data(), ArrInf->array(), sizeof( float ) * qMin( FFT.size(), ArrInf->count() ) );
+					float	avg = 0;
+					int		lowFreq = ( !i ? 0 : (int)((sampleRate/2) / powf( 2, InpDat.mAudioMax - i ) ) );
+					int		hiFreq  = (int)((sampleRate/2) / powf( 2, InpDat.mAudioMax - 1 - i));
+					int		lowBound = freqToIndex( timeSize, sampleRate, lowFreq );
+					int		hiBound = freqToIndex( timeSize, sampleRate, hiFreq );
+
+					for (int j = lowBound; j <= hiBound; j++)
+					{
+						const float	re = ( DAT[ ( i * 2 ) + 0 ] * 2.0f ) / float( timeSize );
+						const float im = ( DAT[ ( i * 2 ) + 1 ] * 2.0f ) / float( timeSize );
+
+						avg += sqrtf( re * re + im * im ) * 10.0f;
+					}
+
+					// line has been changed since discussion in the comments
+					// avg /= (hiBound - lowBound);
+					avg /= (hiBound - lowBound + 1);
+
+					ValOut[ i ] = avg;
 				}
 			}
 
@@ -273,6 +293,8 @@ void ISFNode::inputsUpdated( qint64 pTimeStamp )
 
 				OPENGL_PLUGIN_DEBUG;
 			}
+
+			continue;
 		}
 	}
 
@@ -898,6 +920,23 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 	mUniformFrameIndex = glGetUniformLocation( mProgram, "FRAMEINDEX" );
 
 	return( true );
+}
+
+float ISFNode::getBandWidth(float timeSize, float sampleRate)
+{
+	return( ( 2.0f / timeSize ) * ( sampleRate / 2.0f ) );
+}
+
+int ISFNode::freqToIndex(int timeSize, int sampleRate, int freq)
+{
+	// special case: freq is lower than the bandwidth of spectrum[0]
+	if ( freq < getBandWidth( timeSize, sampleRate )/2 ) return 0;
+	// special case: freq is within the bandwidth of spectrum[512]
+	if ( freq > sampleRate/2 - getBandWidth( timeSize, sampleRate )/2 ) return timeSize/2;
+	// all other cases
+	float fraction = (float)freq/(float) sampleRate;
+	int i = qRound(timeSize * fraction);
+	return i;
 }
 
 void ISFNode::renderInputs()
