@@ -1,18 +1,10 @@
-cmake_minimum_required( VERSION 2.8 )
+cmake_minimum_required( VERSION 2.8.11 )
 
 project( FugioApp )
 
-find_package( Qt5Core REQUIRED )
-find_package( Qt5Concurrent REQUIRED )
-find_package( Qt5Gui REQUIRED )
-find_package( Qt5Network REQUIRED )
-find_package( Qt5Widgets REQUIRED )
-
-add_definitions( ${Qt5Widgets_DEFINITIONS} )
-
-#Concurrent Network Widgets REQUIRED )
-
-qt5_add_resources( UI_RESOURCES fugio.qrc )
+find_package( Qt5 COMPONENTS Core Concurrent Gui Network Widgets REQUIRED ) 
+ 
+set( UI_RESOURCES fugio.qrc )
 
 include_directories( ../FugioLib )
 
@@ -116,7 +108,7 @@ set( SOURCE_FILES
     ../include/fugio/editor_signals.h
 	)
 
-qt5_wrap_ui( UIS_HDRS
+set( UIS_HDRS
 	mainwindow.ui
 	snippets/snippetsform.ui
 	settings/settingsdialog.ui
@@ -131,8 +123,6 @@ qt5_wrap_ui( UIS_HDRS
 add_definitions( -DFUGIOLIB_STATIC )
 
 add_executable( Fugio MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURCES} ${UIS_HDRS} ) 
-
-target_link_libraries( Fugio libfugio Qt5::Core Qt5::Concurrent Qt5::Gui Qt5::Network Qt5::Widgets )
 
 if( APPLE )
 	set_target_properties( Fugio PROPERTIES
