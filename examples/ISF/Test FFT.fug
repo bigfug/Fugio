@@ -55,7 +55,7 @@ version=2
 default=@Variant(\0\0\0\x43\x1\0\0\0\0\0\0\0\0\0\0)
 direction=1
 name=topColor
-order=6
+order=8
 uuid=dddf26ad-b9d3-4476-bf25-2b0fe524c7ca
 version=2
 
@@ -84,12 +84,12 @@ version=2
 default=@Variant(\0\0\0\x43\x1\xff\xff@\0@\0@\0\0\0)
 direction=1
 name=strokeColor
-order=8
+order=10
 uuid=65f8ffa0-4234-4c85-aa9d-3a8e08ae9752
 version=2
 
 [5b7ec093-38e9-4b1f-bae2-b561b9e82876]
-control\array="@ByteArray(\xd4\xe\x92\x39;\x5\xa0\x39\xa6.);\xff,\x80;\x12\x34{::\xae\x18;\xbeGw:\xfa\xf0\x80;w\xf9\x6<l\xcf&<v\x9f\x1<\xae\x42\x89;3zr;\\\x81\t;0\xa5\x83;\xb4|\x19<8\x85\v<\xe4\xc5\x62;\xf5V\x8f:\xea\x33\xb8:S\xc9%;&\xd0\xbc;,\x8d\xb8;h\x11<;\xb7\xceq:\x81^c:4-\xe7:\xa7\x18j:\xf7\xc8\x42\x39\xc1h\x80:\xed\xe9\x6;\xb1\f];:\x8c\";\xfe\x94\":\xd9\xb1\x87:\xfa\x8d\x91:\xa8\"P;@\x8e\a<\xb4\xbf\x6<\xc0\xb9';X\x1f\x43;\xcc\xfb\x4;\x89\x9br:\x8f\xe8\xe7\x39\0y~:\xb3\xc0p: \xa6\xa6:9.\x9f:@\x10\xb5:G\xd1\v;\xa9\xda\b;\x84\xcb\x66:\xf8\xfbx:zZ\x9a:\x5\xac\x9c\x39\x1e\x39\xe9:\xf2\xb9\x10;\xa9\x34\x11;\x10\xae\xb2:\x4\x33\xc8:D\xa6\x86:M\f@9\\\xf8\xb1:\xc4\x14L;\xba\xd3!;\x17\xc7\x1e;\xb1\x46\x1d;pw\xbc:4\x99\x18;\x6\xadM;;!\t;S\0\xdd\x39\"\x8b\xef:zo\xdb:Q\x17\x1;\xa4*j;\x96\x85`;\x92\x86\xa3:@8\xc2:G\xfd\n;\xe7 \xb5:-Rh:{\xa5\xe7\x39\x64\xe6W:o\xbc\xb6:\t\x7f\xd6:\x80\x44\xaa:\x8c\n3;\xc4n\x87;\xcdZa;\x8c'\xb4:\x8f\x1\xbf\x39\x36%W:\xfe\x90\xad:5\n\xb2:\x97\xf9\x80;\x15\x66x;z\xbc\x8b:\t\x1ds:\xdf\xdb\x95:\x8c\xecQ:\xf8\xf3<9\x91I\xfb\x39\b6\xe5\x39$?\x14\x39\xd8\x1d\x9c\x39\xe5Q\xf6\x39\xb0 \x9b:\f\xd2\f;\x7fqL;\xcc\x8bw;\xca\x94\x30;\xfd{\xa4:\"\xf5\x10;\xea\xd4\x9b:\x16`2:=,\x88:4\x87\x96:\x94\x45@:b\x81o:\x8a\x97':}B\x9e\x38\xcctX:(J\x91:E^i9\xd9\xda ;\xd2UX;\x93\xbf\x1a;\xbb@\x8d:\xe8\x9f\x43:\x19\x1f\x93:\x94o\x17;\0\x39\x19;\xd9\x82w:\x95(\x1b:7 s:p$\xa3\x39\xd5\x61\x9d:\xd9\xa5\x1;\xf2\v\xc6:k\xf5\x88:\xe6\xff\x88::o\xcb:e\xd5\xb6:\x1e\x84\x85:>q\x99:\xdc\xcf\xa1: \xd7\x30:\xa0\xe9\xf4\x39\x42\xfa\x81:\x8a\x61\xcf:\x1aW\xdc:\xbc\xe7\x82:\x80\x30.:>0\xa9:\x6\xcb\x85:\xe2\x9c\xff\x39\xeck\xc4:\xa9L\x91:j\xf8%9\x1eKi:1E6:\x88\xfM:\x96\x35\x81:\a\t\x99:ri$:\b\xe3\x8a\x39I\xc2\x4:I\xbcM:zDi:3\x99>:H\xf3`:%\xb5\x36:\xfc=\x1a:\xbaZ\xd6\x39\x63!\x1d\x39\xfd\x63\xcb\x39\x37m@:\xcc*\x81:\x8d<\xb9:\xba\x86p:FV\xd1:\x1c\x83\x19;:\x95\xee:\xea\xb7\x92:\x5\x82\x97:+\0\x84:H\x1f\xf3\x39\x1f\x15\x1d\x39\xd6\x1a\n:6\xc1;:NN\a:9\x91\x15:J\xa9\xd9\x39y\xacg:\xc9\x36\x8d:\xf7\x1d\xa0:\xf1\x17\x9e:\xe3\xb5i:1t\xe1\x39\xe2H\x15:\x8b\xb4\x45:4\x9f/:K\x81\x9d\x39$U[9\xfaz\xc8\x39\x95S\x17:\xae\xe6\xfc\x39\x9bn]9\x8a\xaf\xa2\x39\x38\xfd\xb8\x38\x98\xdar9A\xc6\x12\x39\xaf\xf6\x9d\x39\xae\xd1\x10:\x86\x92\xdf\x39(\xab\xff\x39~\xd4\x11:\xb4\xb2\x82:\x9c\r\x11:\xc7n\xbb\x39\xfc\x39::\x90\x6+:\x82\xea\x18:\xea\xb9\x4:\xedg\xe2\x37\xca<4:bNi:\xf4\x84#:\xc1L\x91\x39\x61\xdc\a9\xfeV;:eh\x8e:\"\x1c::\xb5\xe7o9\0),:\xb7^_:\xc7@\xa3\x39\xb6\bq:P8o:\x1a\x6\xbb\x39\x4\x46\xa1\x39\xba\x97{9 \xb9\xe9\x39\xa0K\xb8\x39\xc4p\xad:\xee\xd0\x9f:\x16\x7f\x4:\xcc\r\x82:S0\x8f:_\x95\x39:\x8a\xdc\x36:\xb0\x81\x41:Y_':\xab:?:\xf6y\x1a:)"
+control\array="@ByteArray(\x8e\xfc]7bb\x19\x37\xf7\x44\xe7\x37\x46\xa1;9\xaf\x1d\xb5\x39\x95\xf2L:\xc8\xd7\xad:83\x89:&`N;\\2\xd2;`\x8b\x12<\x87{\x1c<\x84X\xf4;Z\xa5\x89;.\xf4.;8\x18i;%\xa6v;\xc4n#;e<\xd2:(\xbe\0;\xb6~+;\xb9|I;\xb4\xf4\x16;\"\xa0@;^\xe9\x94;8BP;.\x81`;\b\x9d\x1<&\x1a><@\x83O<\xf6\xd5\x33<\xf5\x8c+<\x3\x14\x31<\xaf\xf5\x13<^\t\xd1;\x18\xf0\xda;.\xb9\x2<\r;\x3<\x88\x1b\xee; \xbb\v<\x80\x98=<\xe2\xa3v<\n\xac\x8f<[\xc6\x9b<\xf8|\x93<\xcb/z<\xa6~O<\x9c\xa0\f<r|\xde;C\xa1\a<\xd6z\xea;0\x96\xb2;\x2\xa6\xb5;\xf-\xf9;\xde(\"<\xc0z+<\x9e&\x16<\xf9\xfe\xe4;S>\x96;%F2;\xde\xdeM;\x8c\x87\x8c;+\xee\xb4;#D\xe9;\x15\x11\xf<\x1f\xc4\x15<A\x12\v<\xb8\xe\x18<bb'<\xdb\r\xe<\x13\xd2\x9b;\x8c\x99\x91;\xeb\x16\xed;\xbfq\0<U\xa7\x1f<\xab\xc8P<M\x90y<\xe1\xf1\x7f<7\xees<\xe4:l<\"\x91j<nrm<X\xc9\x64<\xbf~[<\xb5mN<\xb2\xef)<\xdfw\xf8;>\t\xa6;#\xf5S;\xd6\b\xf5:2\x80\x64:\x1a\xc3\xbd:\x13\xaa\xca:t1\x1f;\x88\t2;\xe4x\xf8:\x98\xba\xd8:\xe0\x10(;{\xec\";R\x2\xae:\"\x1f\xab\x39&\xcc\f;\xbe[\x7f;\x90\xd5\x95;\aZ\xae;+\x89\xc9;s\xab\xbe;d\xb9\x8a;\x9e\xc4\x13;h\xc2\x8c\x39\xd3\x98\x9c:\x8a\xa7\x1f;\x9cid;\x11`\x84;\x10\x84\x8c;\xe0\xc9\x86;\x16\xd3x;;\x99^;\xc9~@;\xa4\xce%;e0\xfb:U\xec\xcd:\x8c\xa4\xe9:\xa5^\xfa:.\x92\xe1:\xb0\x17\xa1:\\'):\xb6\xb1\xab\x39\xaci\x8e:.\\\xd9:\xf1\x1a\xed:\x94\xfe\xe7:Pw\xf2:\xfI\0;\xef?\xe;\xc2\xf2\x39;\xfa\xfd';|9<;\xd4\x34g;k\xd4\x80;\x2\x89\x89;\xa3\x38\x82;\x7f\xd4p;l\xb0j;\xeawR;~eJ;j\x1fo;\fhC;\xafw\x15;4O,;\xfe\xcc\x45;\xfb\x17\x62;R\x9d\x80;xAS;;{\x1a;\0\x1:;q\x90T;\xb6\xf4\x84;$\xa7\x8b;\x98\bT;e\xba\x89;\x9e\x92\xa6;`\x94\xa3;\xce\x83\xa2;s\x8e\x9f;\xe5\xe9\x9b;\x81\x99\x95;B\xa3\xaf;T\xfc\xc1;\x80\x84\xbf;\x2\xc6\xca;\xec\x12\xcd;8\xfd\xcc;\xbc\xe2\xd1;\xbe\v\xe4;\xec:\xe2;M\x85\xbf;\xba\xeb\xab;\xd7\x81\xa2;a\f\xa5;\xcc\x17\x90;\xcd^g;1l\x80;\xf0{\x8b;\x8f{\x94;!1\x9d;\xad`\x9e;\xf6\xe9\xa1;\xa0\x8e\xb3;\x86\x9f\xb3;\x98\xfd\x9a;\xce\x8f\x93;\xa7\x65\x8c;\x1e\xae\x91;d1\x97;\xe4Q\x86;\xe0\x19\x83;\xaf\x97\x8f;W\xb6\x8e;\x9a\xd9\x84;nS\x87;\xb0oy;\xb8Mu;\xd6Q\x88;)\xad\x86;{Lc;\x6\x1bQ;\x4\x8fR;\xf2;R;\x18\x85Q;_\xf1\x42;\xc7\x1%;\xf1\f6;\t<6;V\x81\x15;\x1aL\xf3:\n\x15\xea:Fn\x3;\x8aX\t;\x18\x37\x2;2\xf3\x2;\x14}\x14;IhA;2\xccQ;\x80\x3V;\xaa\xb0Y; \xa6M;\xc3\x39\x42;e\x8f?;\a\xc4J;n\x1fP;R\xab\x45;\x83ZA;\x9e\xff\x44;\xba\xee\x34;\x80\xd1\r;V\b\x10;\xa4\xf3\x10;\xaf\xfc\xca:\xb0\x96\xab:\xf9\xc0\xd5:\f\x92\xc4:\x96%\xb0:<\xf\x93:z\xfcq:\x97\xaaV:\x10\xa1\x41:\0\xbc,:S\x12\x1c:\x8c\xd1\x3:\xb4\x85\xdc\x39h\x82\xcd\x39\xbf-\xeb\x39x[\xf7\x39\x8b\x36\t:\x1\xf2\xe:)"
 direction=2
 name=Bands
 order=0
@@ -99,7 +99,7 @@ version=2
 [5b9dda8c-7e74-4739-9a2b-7b1bff5f71ac]
 direction=1
 name=fftImage
-order=1
+order=3
 uuid=ef580dea-8c17-43bd-9c89-fc65a50da43e
 version=2
 
@@ -116,13 +116,13 @@ version=2
 default=0.01
 direction=1
 name=strokeSize
-order=2
+order=4
 uuid=ac9c29dc-ca1b-43c5-a97d-e67edbdd6ae1
 version=2
 
 [6c141304-7800-4556-b249-74fa76ca9696]
 control\dockarea=8
-control\value="/*{\n\t\"DESCRIPTION\": \"Visualizes an FFT analysis image with custom set colors for frequency domain\",\n\t\"CREDIT\": \"by VIDVOX\",\n\t\"ISFVSN\": \"2\",\n\t\"CATEGORIES\": [\n\t\t\"Generator\"\n\t],\n\t\"INPUTS\": [\n\t\t{\n\t\t\t\"NAME\": \"fftImage\",\n\t\t\t\"TYPE\": \"audioFFT\"\n\t\t},\n\t\t{\n\t\t\t\"NAME\": \"strokeSize\",\n\t\t\t\"TYPE\": \"float\",\n\t\t\t\"MIN\": 0.0,\n\t\t\t\"MAX\": 0.25,\n\t\t\t\"DEFAULT\": 0.01\n\t\t},\n\t\t{\n\t\t\t\"NAME\": \"gain\",\n\t\t\t\"TYPE\": \"float\",\n\t\t\t\"MIN\": 1.0,\n\t\t\t\"MAX\": 5.0,\n\t\t\t\"DEFAULT\": 1.0\n\t\t},\n\t\t{\n\t\t\t\"NAME\": \"minRange\",\n\t\t\t\"TYPE\": \"float\",\n\t\t\t\"MIN\": 0.0,\n\t\t\t\"MAX\": 1.0,\n\t\t\t\"DEFAULT\": 0.0\n\t\t},\n\t\t{\n\t\t\t\"NAME\": \"maxRange\",\n\t\t\t\"TYPE\": \"float\",\n\t\t\t\"MIN\": 0.0,\n\t\t\t\"MAX\": 1.0,\n\t\t\t\"DEFAULT\": 0.9\n\t\t},\n\t\t{\n\t\t\t\"NAME\": \"topColor\",\n\t\t\t\"TYPE\": \"color\",\n\t\t\t\"DEFAULT\": [\n\t\t\t\t0.0,\n\t\t\t\t0.0,\n\t\t\t\t0.0,\n\t\t\t\t0.0\n\t\t\t]\n\t\t},\n\t\t{\n\t\t\t\"NAME\": \"bottomColor\",\n\t\t\t\"TYPE\": \"color\",\n\t\t\t\"DEFAULT\": [\n\t\t\t\t0.0,\n\t\t\t\t0.5,\n\t\t\t\t0.9,\n\t\t\t\t1.0\n\t\t\t]\n\t\t},\n\t\t{\n\t\t\t\"NAME\": \"strokeColor\",\n\t\t\t\"TYPE\": \"color\",\n\t\t\t\"DEFAULT\": [\n\t\t\t\t0.25,\n\t\t\t\t0.25,\n\t\t\t\t0.25,\n\t\t\t\t1.0\n\t\t\t]\n\t\t}\n\t]\n}*/\n\n\n\nvoid main() {\n\t\n\tvec2 loc = isf_FragNormCoord;\n\t\n\t//\tthe fftImage is 256 steps\n\tloc.x = loc.x * abs(maxRange - minRange) + minRange;\n\t\n\tvec4 fft = IMG_NORM_PIXEL(fftImage, vec2(loc.x,0.5));\n\tfloat fftVal = gain * (fft.r + fft.g + fft.b) / 3.0;\n\tif (loc.y > fftVal)\n\t\tfft = topColor;\n\telse\n\t\tfft = bottomColor;\n\tif ((strokeSize > 0.0) && (abs(fftVal - loc.y) < strokeSize))\t{\n\t\tfft = mix(strokeColor, fft, abs(fftVal - loc.y) / strokeSize);\n\t}\n\t\n\tfft.a = 1.0;\n\n\t//(smoothstep(0.0, stroke, abs(fftVal - loc.y))) * strokeColor);\n\tgl_FragColor = fft;\n}"
+control\value="/*{\n\t\"DESCRIPTION\": \"Visualizes an FFT analysis image with custom set colors for frequency domain\",\n\t\"CREDIT\": \"by VIDVOX\",\n\t\"ISFVSN\": \"2\",\n\t\"CATEGORIES\": [\n\t\t\"Generator\"\n\t],\n\t\"INPUTS\": [\n\t\t{\n\t\t\t\"NAME\": \"fftImage\",\n\t\t\t\"TYPE\": \"audioFFT\"\n\t\t},\n\t\t{\n\t\t\t\"NAME\": \"strokeSize\",\n\t\t\t\"TYPE\": \"float\",\n\t\t\t\"MIN\": 0.0,\n\t\t\t\"MAX\": 0.25,\n\t\t\t\"DEFAULT\": 0.01\n\t\t},\n\t\t{\n\t\t\t\"NAME\": \"gain\",\n\t\t\t\"TYPE\": \"float\",\n\t\t\t\"MIN\": 1.0,\n\t\t\t\"MAX\": 5.0,\n\t\t\t\"DEFAULT\": 1.0\n\t\t},\n\t\t{\n\t\t\t\"NAME\": \"minRange\",\n\t\t\t\"TYPE\": \"float\",\n\t\t\t\"MIN\": 0.0,\n\t\t\t\"MAX\": 1.0,\n\t\t\t\"DEFAULT\": 0.0\n\t\t},\n\t\t{\n\t\t\t\"NAME\": \"maxRange\",\n\t\t\t\"TYPE\": \"float\",\n\t\t\t\"MIN\": 0.0,\n\t\t\t\"MAX\": 1.0,\n\t\t\t\"DEFAULT\": 0.9\n\t\t},\n\t\t{\n\t\t\t\"NAME\": \"topColor\",\n\t\t\t\"TYPE\": \"color\",\n\t\t\t\"DEFAULT\": [\n\t\t\t\t0.0,\n\t\t\t\t0.0,\n\t\t\t\t0.0,\n\t\t\t\t0.0\n\t\t\t]\n\t\t},\n\t\t{\n\t\t\t\"NAME\": \"bottomColor\",\n\t\t\t\"TYPE\": \"color\",\n\t\t\t\"DEFAULT\": [\n\t\t\t\t0.0,\n\t\t\t\t0.5,\n\t\t\t\t0.9,\n\t\t\t\t1.0\n\t\t\t]\n\t\t},\n\t\t{\n\t\t\t\"NAME\": \"strokeColor\",\n\t\t\t\"TYPE\": \"color\",\n\t\t\t\"DEFAULT\": [\n\t\t\t\t0.25,\n\t\t\t\t0.25,\n\t\t\t\t0.25,\n\t\t\t\t1.0\n\t\t\t]\n\t\t}\n\t]\n}*/\n\n\n\nvoid main() {\n\t\n\tvec2 loc = isf_FragNormCoord;\n\t\n\t//\tthe fftImage is 256 steps\n\tloc.x = loc.x * abs(maxRange - minRange) + minRange;\n\t\n\tvec4 fft = IMG_NORM_PIXEL(fftImage, vec2(loc.x,0.5));\n\tfloat fftVal = gain * (fft.r + fft.g + fft.b) / 1.0;\n\tif (loc.y > fftVal)\n\t\tfft = topColor;\n\telse\n\t\tfft = bottomColor;\n\tif ((strokeSize > 0.0) && (abs(fftVal - loc.y) < strokeSize))\t{\n\t\tfft = mix(strokeColor, fft, abs(fftVal - loc.y) / strokeSize);\n\t}\n\t\n\tfft.a = 1.0;\n\n\t//(smoothstep(0.0, stroke, abs(fftVal - loc.y))) * strokeColor);\n\tgl_FragColor = fft;\n}"
 control\visible=true
 inputs\1\4d63608a-5171-45c5-bab5-da321a486134=00000000-0000-0000-0000-000000000000
 inputs\2\b818b0c5-057e-42b7-a613-e9c1d6977179=00000000-0000-0000-0000-000000000000
@@ -133,10 +133,10 @@ outputs\size=1
 version=2
 
 [738476b2-cc87-4c67-83cf-22b20980e94c]
-default=1
+default=5
 direction=1
 name=gain
-order=3
+order=5
 uuid=92b22c6d-fa54-440d-b2c7-c0a26da42ca1
 version=2
 
@@ -145,6 +145,13 @@ direction=1
 name=Hide Cursor
 order=2
 uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
+version=2
+
+[8369238c-ba27-4ed0-9734-a938e390a2ba]
+direction=1
+name=Trigger
+order=1
+uuid=94fbd706-66d8-462b-bbde-b46cb15b059d
 version=2
 
 [8a10ef3d-8abf-4aad-914d-72bb36823ff3]
@@ -173,7 +180,7 @@ version=2
 default=0
 direction=1
 name=minRange
-order=4
+order=6
 uuid=5aa84292-0cbc-483a-b1fe-6a7f63baab74
 version=2
 
@@ -235,6 +242,13 @@ order=0
 uuid=e6bf944e-5f46-4994-bd51-13c2aa6415b7
 version=2
 
+[cfc55396-237a-4e9b-b015-8fdbb7e9037b]
+direction=1
+name=Filename
+order=2
+uuid=dfeba477-4933-4c85-9b3b-24ce71053b1f
+version=2
+
 [colours]
 0d6ce818-3001-4990-9410-69b54505c2c7=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 0d6ce818-3001-4990-9410-69b54505c2c7\4a27db1d-461f-4f59-9d19-5a859cd01f13=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
@@ -272,7 +286,7 @@ version=2
 default=@Variant(\0\0\0\x43\x1\xff\xff\0\0\x80\0\xe6\x66\0\0)
 direction=1
 name=bottomColor
-order=7
+order=9
 uuid=5aa7397c-5cdb-4713-8956-04054f47e8c8
 version=2
 
@@ -301,25 +315,27 @@ version=2
 
 [ef07081a-2f18-4db4-9b10-aaff1f3a71fa]
 inputs\1\a5dad7f8-346e-4714-bf11-cc0b29368b7d=00000000-0000-0000-0000-000000000000
-inputs\2\5b9dda8c-7e74-4739-9a2b-7b1bff5f71ac=00000000-0000-0000-0000-000000000000
-inputs\3\6b50d519-3090-4dc8-bc89-3ec8ab5a5a50=00000000-0000-0000-0000-000000000000
-inputs\4\738476b2-cc87-4c67-83cf-22b20980e94c=00000000-0000-0000-0000-000000000000
-inputs\5\9a151b27-1b21-4d31-86e6-0aae99cee786=00000000-0000-0000-0000-000000000000
-inputs\6\fd495312-04f8-41ca-986d-18679547a3ec=00000000-0000-0000-0000-000000000000
-inputs\7\484dd054-99ff-486f-aaa6-95446ef288f5=00000000-0000-0000-0000-000000000000
-inputs\8\da35838c-5296-4e28-abd0-89f9f6afbc04=00000000-0000-0000-0000-000000000000
-inputs\9\59937af5-e27e-438a-b10d-c35387924944=00000000-0000-0000-0000-000000000000
-inputs\size=9
+inputs\10\da35838c-5296-4e28-abd0-89f9f6afbc04=00000000-0000-0000-0000-000000000000
+inputs\11\59937af5-e27e-438a-b10d-c35387924944=00000000-0000-0000-0000-000000000000
+inputs\2\8369238c-ba27-4ed0-9734-a938e390a2ba=00000000-0000-0000-0000-000000000000
+inputs\3\cfc55396-237a-4e9b-b015-8fdbb7e9037b=7809c97a-dbb6-452c-adf6-6313510b4c80
+inputs\4\5b9dda8c-7e74-4739-9a2b-7b1bff5f71ac=00000000-0000-0000-0000-000000000000
+inputs\5\6b50d519-3090-4dc8-bc89-3ec8ab5a5a50=00000000-0000-0000-0000-000000000000
+inputs\6\738476b2-cc87-4c67-83cf-22b20980e94c=00000000-0000-0000-0000-000000000000
+inputs\7\9a151b27-1b21-4d31-86e6-0aae99cee786=00000000-0000-0000-0000-000000000000
+inputs\8\fd495312-04f8-41ca-986d-18679547a3ec=00000000-0000-0000-0000-000000000000
+inputs\9\484dd054-99ff-486f-aaa6-95446ef288f5=00000000-0000-0000-0000-000000000000
+inputs\size=11
 name=ISF
 outputs\1\d5f05354-576d-4d4f-85c7-dde2449202a9=fc5472cd-03b2-42e1-8e65-6ada5c860962
 outputs\size=1
 version=2
 
 [fd495312-04f8-41ca-986d-18679547a3ec]
-default=0.9
+default=0.5
 direction=1
 name=maxRange
-order=5
+order=7
 uuid=65326914-3782-4ec3-bf93-56e1865fbd4b
 version=2
 
@@ -332,8 +348,8 @@ size=0
 version=3
 
 [mainwindow]
-geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x2\0\0\0\0\0\0\0\0\0\x17\0\0\x5\xdf\0\0\x3\x7f\0\0\0\0\0\0\0-\0\0\x5\xdf\0\0\x3\x7f\0\0\0\0\0\0\0\0\x5\xa0)
-state="@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x3\0\0\0\0\0\0\x1\x16\0\0\x1\xd2\xfc\x2\0\0\0\x4\xfc\0\0\0\0\0\0\x1\xd2\0\0\x1\x12\x1\0\0\x14\xfa\0\0\0\0\x1\0\0\0\x3\xfb\0\0\0 \0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0t\0h\0L\0o\0g\0g\0\x65\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0O\0\xff\xff\xff\xfb\0\0\0\x1e\0m\0N\0o\0\x64\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\xff\xff\xff\xff\0\0\0h\0\xff\xff\xff\xfb\0\0\0\x14\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\0\0\x1\x16\0\0\0\0\0\0\0\0\xfb\0\0\0\x18\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0_\0\x33\x1\0\0\x1\x9d\0\0\0\xbc\0\0\0\0\0\0\0\0\xfb\0\0\0\"\0M\0u\0l\0t\0i\0m\0\x65\0\x64\0i\0\x61\0 \0P\0l\0\x61\0y\0\x65\0r\x1\0\0\x1\xc7\0\0\x1\x1e\0\0\0\0\0\0\0\0\xfb\0\0\0\"\0M\0u\0l\0t\0i\0m\0\x65\0\x64\0i\0\x61\0 \0P\0l\0\x61\0y\0\x65\0r\x1\0\0\x1\xe4\0\0\x1\x1\0\0\0\0\0\0\0\0\0\0\0\x1\0\0\x1\x1d\0\0\x1\xd2\xfc\x2\0\0\0\x5\xfb\0\0\0$\0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\x42\0r\0o\0w\0s\0\x65\0r\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x65\0\xff\xff\xff\xfb\0\0\0*\0m\0S\0t\0y\0l\0\x65\0S\0h\0\x65\0\x65\0t\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x93\0\xff\xff\xff\xfb\0\0\0,\0m\0P\0\x65\0r\0\x66\0o\0r\0m\0\x61\0n\0\x63\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\0\0\x1\xd2\0\0\0\x65\0\xff\xff\xff\xfb\0\0\0&\0m\0S\0n\0i\0p\0p\0i\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0&\0m\0S\0n\0i\0p\0p\0\x65\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x85\0\xff\xff\xff\0\0\0\x3\0\0\x5\xe0\0\0\x1k\xfc\x1\0\0\0\xe\xfb\0\0\0\b\0T\0\x65\0x\0t\x1\0\0\x6\x42\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1c\0G\0\x65\0o\0m\0\x65\0t\0r\0y\0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\x3\xbe\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\f\0V\0\x65\0r\0t\0\x65\0x\x1\0\0\x5\0\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x10\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\x1\0\0\x6\x42\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1c\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\x2\x9b\0\0\x3\xa3\0\0\0\0\0\0\0\0\xfb\0\0\0\x18\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0\x43\0o\0p\0y\x1\0\0\x1\x8e\0\0\x1V\0\0\0\0\0\0\0\0\xfb\0\0\0\x1c\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0M\0o\0t\0i\0o\0n\x1\0\0\x2\xe8\0\0\x2\x14\0\0\0\0\0\0\0\0\xfb\0\0\0\x18\0V\0\x65\0r\0t\0\x65\0x\0S\0h\0\x61\0\x64\0\x65\0r\0\0\0\x5\0\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x18\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0M\0o\0v\0\x65\x1\0\0\x5\0\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1c\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0O\0u\0t\0p\0u\0t\x1\0\0\x6\x42\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0m\0P\0l\0\x61\0y\0L\0i\0s\0t\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0\x1a\0I\0m\0\x61\0g\0\x65\0 \0P\0r\0\x65\0v\0i\0\x65\0w\x1\0\0\x2\xa0\0\0\x2<\0\0\0\0\0\0\0\0\xfb\0\0\0\x1c\0N\0u\0m\0\x62\0\x65\0r\0 \0M\0o\0n\0i\0t\0o\0r\x1\0\0\x4\xe0\0\0\x2\xa0\0\0\0\0\0\0\0\0\xfb\0\0\0L\0{\0\x36\0\x63\0\x31\0\x34\0\x31\0\x33\0\x30\0\x34\0-\0\x37\0\x38\0\x30\0\x30\0-\0\x34\0\x35\0\x35\0\x36\0-\0\x62\0\x32\0\x34\0\x39\0-\0\x37\0\x34\0\x66\0\x61\0\x37\0\x36\0\x63\0\x61\0\x39\0\x36\0\x39\0\x36\0}\x1\0\0\0\0\0\0\x5\xe0\0\0\0O\0\xff\xff\xff\0\0\x3\xab\0\0\x1\xd2\0\0\0\x4\0\0\0\x4\0\0\0\b\0\0\0\b\xfc\0\0\0\0)"
+geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x2\0\0\0\0\0\0\0\0\0\x17\0\0\x5\xdf\0\0\x3\x7f\0\0\0\0\0\0\0-\0\0\x5\xdf\0\0\x3\x7f\0\0\0\0\x2\0\0\0\x5\xa0)
+state="@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x3\0\0\0\0\0\0\x1\x16\0\0\x1\xf9\xfc\x2\0\0\0\x4\xfc\0\0\0\0\0\0\x1\xf9\0\0\x1\x12\x1\0\0\x14\xfa\0\0\0\0\x1\0\0\0\x3\xfb\0\0\0 \0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0t\0h\0L\0o\0g\0g\0\x65\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0O\0\xff\xff\xff\xfb\0\0\0\x1e\0m\0N\0o\0\x64\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\xff\xff\xff\xff\0\0\0h\0\xff\xff\xff\xfb\0\0\0\x14\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\0\0\x1\x16\0\0\0\0\0\0\0\0\xfb\0\0\0\x18\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0_\0\x33\x1\0\0\x1\x9d\0\0\0\xbc\0\0\0\0\0\0\0\0\xfb\0\0\0\"\0M\0u\0l\0t\0i\0m\0\x65\0\x64\0i\0\x61\0 \0P\0l\0\x61\0y\0\x65\0r\x1\0\0\x1\xc7\0\0\x1\x1e\0\0\0\0\0\0\0\0\xfb\0\0\0\"\0M\0u\0l\0t\0i\0m\0\x65\0\x64\0i\0\x61\0 \0P\0l\0\x61\0y\0\x65\0r\x1\0\0\x1\xe4\0\0\x1\x1\0\0\0\0\0\0\0\0\0\0\0\x1\0\0\x1\x1d\0\0\x1\xf9\xfc\x2\0\0\0\x5\xfb\0\0\0$\0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\x42\0r\0o\0w\0s\0\x65\0r\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x65\0\xff\xff\xff\xfb\0\0\0*\0m\0S\0t\0y\0l\0\x65\0S\0h\0\x65\0\x65\0t\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x93\0\xff\xff\xff\xfb\0\0\0,\0m\0P\0\x65\0r\0\x66\0o\0r\0m\0\x61\0n\0\x63\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\0\0\x1\xf9\0\0\0\x65\0\xff\xff\xff\xfb\0\0\0&\0m\0S\0n\0i\0p\0p\0i\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0&\0m\0S\0n\0i\0p\0p\0\x65\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x85\0\xff\xff\xff\0\0\0\x3\0\0\x5\xe0\0\0\x1\x44\xfc\x1\0\0\0\xe\xfb\0\0\0\b\0T\0\x65\0x\0t\x1\0\0\x6\x42\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1c\0G\0\x65\0o\0m\0\x65\0t\0r\0y\0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\x3\xbe\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\f\0V\0\x65\0r\0t\0\x65\0x\x1\0\0\x5\0\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x10\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\x1\0\0\x6\x42\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1c\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\x2\x9b\0\0\x3\xa3\0\0\0\0\0\0\0\0\xfb\0\0\0\x18\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0\x43\0o\0p\0y\x1\0\0\x1\x8e\0\0\x1V\0\0\0\0\0\0\0\0\xfb\0\0\0\x1c\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0M\0o\0t\0i\0o\0n\x1\0\0\x2\xe8\0\0\x2\x14\0\0\0\0\0\0\0\0\xfb\0\0\0\x18\0V\0\x65\0r\0t\0\x65\0x\0S\0h\0\x61\0\x64\0\x65\0r\0\0\0\x5\0\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x18\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0M\0o\0v\0\x65\x1\0\0\x5\0\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1c\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0O\0u\0t\0p\0u\0t\x1\0\0\x6\x42\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0m\0P\0l\0\x61\0y\0L\0i\0s\0t\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0\x1a\0I\0m\0\x61\0g\0\x65\0 \0P\0r\0\x65\0v\0i\0\x65\0w\x1\0\0\x2\xa0\0\0\x2<\0\0\0\0\0\0\0\0\xfb\0\0\0\x1c\0N\0u\0m\0\x62\0\x65\0r\0 \0M\0o\0n\0i\0t\0o\0r\x1\0\0\x4\xe0\0\0\x2\xa0\0\0\0\0\0\0\0\0\xfb\0\0\0L\0{\0\x36\0\x63\0\x31\0\x34\0\x31\0\x33\0\x30\0\x34\0-\0\x37\0\x38\0\x30\0\x30\0-\0\x34\0\x35\0\x35\0\x36\0-\0\x62\0\x32\0\x34\0\x39\0-\0\x37\0\x34\0\x66\0\x61\0\x37\0\x36\0\x63\0\x61\0\x39\0\x36\0\x39\0\x36\0}\x1\0\0\0\0\0\0\x5\xe0\0\0\0O\0\xff\xff\xff\0\0\x3\xab\0\0\x1\xf9\0\0\0\x4\0\0\0\x4\0\0\0\b\0\0\0\b\xfc\0\0\0\0)"
 
 [meta]
 name=Untitled
@@ -366,5 +382,5 @@ version=2
 
 [view]
 group=00000000-0000-0000-0000-000000000000
-state\center=@Variant(\0\0\0\x1a\xc0z\x90\0\0\0\0\0@G\x80\0\0\0\0\0)
+state\center=@Variant(\0\0\0\x1a\xc0z\x10\0\0\0\0\0\xc0<\0\0\0\0\0\0)
 state\scale=1

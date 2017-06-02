@@ -29,6 +29,47 @@
 
 #include "isfplugin.h"
 
+//#define OPENGL_DEBUG_ENABLE
+
+#if defined( OPENGL_DEBUG_ENABLE )
+#define OPENGL_PLUGIN_DEBUG 	checkErrors( __FILE__, __LINE__ );
+//#define OPENGL_DEBUG(x) 	checkErrors( x, __FILE__, __LINE__ );
+#else
+#define OPENGL_PLUGIN_DEBUG
+#define OPENGL_DEBUG(x)
+#endif
+
+#if defined( OPENGL_DEBUG_ENABLE )
+void checkErrors( const char *file, int line )
+{
+#if !defined( GLU_VERSION )
+	Q_UNUSED( file )
+	Q_UNUSED( line )
+#endif
+
+	if( !ISFPlugin::hasContextStatic() )
+	{
+		return;
+	}
+
+#if defined( Q_OS_RASPBERRY_PI )
+	for( GLenum e = eglGetError() ; e != EGL_SUCCESS ; e = eglGetError() )
+	{
+		qDebug() << "EGL" << file << line << ":" << QString::number( e, 16 );
+	}
+#endif
+
+	for( GLenum e = glGetError() ; e != GL_NO_ERROR ; e = glGetError() )
+	{
+#if defined( GLU_VERSION )
+		qDebug() << "GL" << file << line << ":" << QString::fromLatin1( (const char *)gluErrorString( e ) );
+#else
+		qDebug() << "GL" << file << line << ":" << QString::number( e, 16 );
+#endif
+	}
+}
+#endif
+
 ISFNode::ISFNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mVAO( 0 ), mBuffer( 0 ), mProgram( 0 ), mFrameCounter( 0 ), mUniformTime( -1 ),
 	  mStartTime( -1 ), mLastRenderTime( 0 )
@@ -218,18 +259,19 @@ void ISFNode::inputsUpdated( qint64 pTimeStamp )
 				}
 			}
 
-			for( int i = 0 ; i < FFT.size() ; i++ )
-			{
-				FFT[ i ] = 0.5;
-			}
-
 			if( InpDat.mTextureId )
 			{
+				OPENGL_PLUGIN_DEBUG;
+
+				glActiveTexture( GL_TEXTURE0 + InpDat.mTextureIndex );
+
 				glBindTexture( GL_TEXTURE_2D, InpDat.mTextureId );
 
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_R32F, FFT.size(), 1, 0, GL_RED, GL_FLOAT, FFT.constData() );
+				glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, FFT.size(), 1, GL_RED, GL_FLOAT, FFT.constData() );
 
 				glBindTexture( GL_TEXTURE_2D, 0 );
+
+				OPENGL_PLUGIN_DEBUG;
 			}
 		}
 	}
@@ -423,13 +465,18 @@ QMap<QString,ISFNode::ISFInput> ISFNode::parseInputs( QJsonArray Inputs )
 
 				if( CurISF.mTextureId )
 				{
+					OPENGL_PLUGIN_DEBUG;
+
 					glBindTexture( GL_TEXTURE_2D, CurISF.mTextureId );
 
 					glTexImage2D( GL_TEXTURE_2D, 0, GL_R32F, CurISF.mAudioMax, 1, 0, GL_RED, GL_FLOAT, nullptr );
 
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
 					glBindTexture( GL_TEXTURE_2D, 0 );
+
+					OPENGL_PLUGIN_DEBUG;
 				}
 			}
 
@@ -1324,20 +1371,24 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 		renderPasses( Viewport );
 
+		OPENGL_PLUGIN_DEBUG;
+
 		//---------------------------------------------------------------------
 		// Bind PASSES render targets
 
 		for( ISFPass &PassData : mISFPasses )
 		{
-			if( PassData.mUniform != -1 )
+			if( PassData.mTextureIndex != -1 && PassData.mUniform != -1 )
 			{
 				glUniform1i( PassData.mUniform, PassData.mTextureIndex );
+
+				glActiveTexture( GL_TEXTURE0 + PassData.mTextureIndex );
+
+				glBindTexture( GL_TEXTURE_2D, PassData.mTextureId );
 			}
-
-			glActiveTexture( GL_TEXTURE0 + PassData.mTextureIndex );
-
-			glBindTexture( GL_TEXTURE_2D, PassData.mTextureId );
 		}
+
+		OPENGL_PLUGIN_DEBUG;
 
 		//---------------------------------------------------------------------
 		// Perform rendering passes
