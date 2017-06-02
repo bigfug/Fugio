@@ -66,4 +66,6 @@
 #define NID_FLOOR				(QUuid("{0521ed8f-4b09-4dc4-b637-5fb42a12b375}"))
 #define NID_ROUND				(QUuid("{a69e01a2-25a0-4507-b040-d43d2f5b9d00}"))
 
+#define NID_MATH_EXPRESSION		(QUuid("{CB72A406-E7B4-433C-8929-CFA1A05B547C}"))
+
 #endif // MATH_GLOBAL_H

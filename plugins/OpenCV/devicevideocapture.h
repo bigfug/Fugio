@@ -6,8 +6,11 @@
 #include <QVector>
 
 #if defined( OPENCV_SUPPORTED )
+#include <opencv2/opencv_modules.hpp>
 #include <opencv2/core/core.hpp>
+#if defined( HAVE_OPENCV_HIGHGUI )
 #include <opencv2/highgui/highgui.hpp>
+#endif
 #endif
 
 class DeviceVideoCapture : public QThread
@@ -73,8 +76,11 @@ private:
 	QMutex									 mFrmMtx;
 	volatile qint64							 mFrmNum;
 
-#if defined( OPENCV_SUPPORTED )
+#if defined( HAVE_OPENCV_HIGHGUI )
 	cv::VideoCapture						*mVidCap;
+#endif
+
+#if defined( OPENCV_SUPPORTED )
 	cv::Mat									 mMatImg;
 #endif
 };

@@ -27,11 +27,16 @@ SUBDIRS += \
 	PortMidi \
 	RaspberryPi \
 	Network \
-	Serial \
 	Spout \
 	Syphon \
 	Text \
 	Time \
 	VideoCapture \
 	VST \
-	XInput
+	XInput \
+    ISF
+
+qtHaveModule( serialport ) {
+	SUBDIRS += Serial
+}
+

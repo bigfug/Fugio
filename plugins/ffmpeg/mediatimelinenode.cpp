@@ -50,8 +50,8 @@ MediaTimelineNode::MediaTimelineNode( QSharedPointer<fugio::NodeInterface> pNode
 {
 	FUGID( PIN_INPUT_FILENAME, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 	FUGID( PIN_INPUT_VOLUME, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
-	FUGID( PIN_INPUT_ALPHA, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
-	FUGID( PIN_INPUT_SCRATCH, "ce8d578e-c5a4-422f-b3c4-a1bdf40facdb" );
+//	FUGID( PIN_INPUT_ALPHA, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
+//	FUGID( PIN_INPUT_SCRATCH, "ce8d578e-c5a4-422f-b3c4-a1bdf40facdb" );
 	FUGID( PIN_OUTPUT_IMAGE, "249f2932-f483-422f-b811-ab679f006381" );
 	FUGID( PIN_OUTPUT_AUDIO, "e6bf944e-5f46-4994-bd51-13c2aa6415b7" );
 
@@ -343,85 +343,54 @@ KeyFramesWidgetInterface *MediaTimelineNode::newTimelineGui()
 	return( 0 );
 }
 
-void MediaTimelineNode::drawBackground( const KeyFramesWidgetInterface *pTrackWidget, QPainter &pPainter, const QRect &pUpdateRect ) const
+void MediaTimelineNode::drawBackground( const KeyFramesWidgetInterface *pTrackWidget, const QRect &pUpdateRect, QImage &pBackImage ) const
 {
 	if( !mSegment )
 	{
 		return;
 	}
 
-	const QRect		 r = pTrackWidget->trackSize();
+	QPainter		Painter( &pBackImage );
 
-	const QRect		 UpdateRect = pUpdateRect.intersected( r );
+	Painter.drawImage( pUpdateRect, pTrackWidget->viewImage(), pUpdateRect );
 
-	if( UpdateRect.isEmpty() )
+	Painter.setCompositionMode( QPainter::RasterOp_SourceXorDestination );
+
+	Painter.setPen( Qt::red ); //colorAudio() );
+
+	for( int i = pUpdateRect.left() ; i <= pUpdateRect.right() ; i++ )
 	{
-		return;
-	}
+		const qint64	t1 = pTrackWidget->viewToTimestamp( i + 0 ) * 1000.0;
+		const qint64	t2 = pTrackWidget->viewToTimestamp( i + 1 ) * 1000.0;
 
-	if( mAudioImage.isNull() || mAudioImage.size() != r.size() )
-	{
-		mLastAudioViewStart = -1;
-		mLastAudioViewEnd   = -1;
-	}
+		qreal			l  = mSegment->wavL( mKF->time( qreal( t1 ) / 1000.0 ) );
+		qreal			r  = mSegment->wavR( mKF->time( qreal( t1 ) / 1000.0 ) );
 
-	if( pTrackWidget->viewStart() != mLastAudioViewStart || pTrackWidget->viewEnd() != mLastAudioViewEnd )
-	{
-		if( mAudioImage.isNull() || mAudioImage.size() != r.size() )
+		for( qint64 j = t1 + 1 ; j <= t2 ; j++ )
 		{
-			mAudioImage = QImage( r.size(), QImage::Format_ARGB32_Premultiplied );
+			qreal		t = mKF->time( qreal( j ) / 1000.0 );
+
+			l = qMax( mSegment->wavL( t ), l );
+			r = qMax( mSegment->wavR( t ), r );
 		}
 
-		if( !mAudioImage.isNull() )
+		l = l * l;
+		r = r * r;
+
+		qint32			y1 = pTrackWidget->valueToView( 0.5 + ( l * 0.5 ) );
+		qint32			y2 = pTrackWidget->valueToView( 0.5 - ( r * 0.5 ) );
+
+		if( y1 != y2 )
 		{
-			QPainter		Painter( &mAudioImage );
-
-			Painter.drawImage( UpdateRect, pTrackWidget->viewImage(), UpdateRect );
-
-			Painter.setCompositionMode( QPainter::RasterOp_SourceXorDestination );
-
-			Painter.setPen( Qt::red ); //colorAudio() );
-
-			for( int i = UpdateRect.left() ; i <= UpdateRect.right() ; i++ )
-			{
-				const qint64	t1 = pTrackWidget->viewToTimestamp( i + 0 ) * 1000.0;
-				const qint64	t2 = pTrackWidget->viewToTimestamp( i + 1 ) * 1000.0;
-
-				qreal			l  = mSegment->wavL( mKF->time( qreal( t1 ) / 1000.0 ) );
-				qreal			r  = mSegment->wavR( mKF->time( qreal( t1 ) / 1000.0 ) );
-
-				for( qint64 j = t1 + 1 ; j <= t2 ; j++ )
-				{
-					qreal		t = mKF->time( qreal( j ) / 1000.0 );
-
-					l = qMax( mSegment->wavL( t ), l );
-					r = qMax( mSegment->wavR( t ), r );
-				}
-
-				l = l * l;
-				r = r * r;
-
-				qint32			y1 = pTrackWidget->valueToView( 0.5 + ( l * 0.5 ) );
-				qint32			y2 = pTrackWidget->valueToView( 0.5 - ( r * 0.5 ) );
-
-				if( y1 != y2 )
-				{
-					Painter.drawLine( i, y1, i, y2 );
-				}
-				else
-				{
-					Painter.drawPoint( i, pTrackWidget->valueToView( 0.5 ) );
-				}
-			}
-
-			Painter.setCompositionMode( QPainter::CompositionMode_SourceOver );
-
-			mLastAudioViewStart = pTrackWidget->viewStart();
-			mLastAudioViewEnd   = pTrackWidget->viewEnd();
+			Painter.drawLine( i, y1, i, y2 );
+		}
+		else
+		{
+			Painter.drawPoint( i, pTrackWidget->valueToView( 0.5 ) );
 		}
 	}
 
-	pPainter.drawImage( UpdateRect, mAudioImage, UpdateRect );
+	Painter.setCompositionMode( QPainter::CompositionMode_SourceOver );
 
 	//-------------------------------------------------------------------------
 	//
@@ -541,6 +510,7 @@ void MediaTimelineNode::updateVideo( qreal pTimeCurr )
 
 		if( mSegment->imageIsHap() )
 		{
+#if defined( FFMPEG_SUPPORTED )
 			switch( HapTextureFormat( mSegment->imageFormat() ) )
 			{
 				case HapTextureFormat_RGB_DXT1:
@@ -559,11 +529,13 @@ void MediaTimelineNode::updateVideo( qreal pTimeCurr )
 					mValImage->setFormat( fugio::ImageInterface::FORMAT_UNKNOWN );
 					break;
 			}
+#endif
 		}
 		else
 		{
 			mValImage->setInternalFormat( mSegment->imageFormat() );
 
+#if defined( FFMPEG_SUPPORTED )
 			switch( AVPixelFormat( mSegment->imageFormat() ) )
 			{
 				case AV_PIX_FMT_RGB24:
@@ -602,6 +574,7 @@ void MediaTimelineNode::updateVideo( qreal pTimeCurr )
 					mValImage->setFormat( fugio::ImageInterface::FORMAT_INTERNAL );
 					break;
 			}
+#endif
 		}
 
 		mValImage->setBuffers( VD->mData );

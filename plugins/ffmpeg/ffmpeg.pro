@@ -29,8 +29,7 @@ SOURCES += \
 	mediarecordernode.cpp \
 	mediapreset/mediapresetmanager.cpp \
 	mediaprocessornode.cpp \
-    hap/source/hap.c \
-    mediaplayervideopreview.cpp \
+	 mediaplayervideopreview.cpp \
     mediatimelinenode.cpp
 
 HEADERS += \
@@ -60,7 +59,6 @@ HEADERS += \
 	processoraudiobuffer.h \
 	mediapreset/mediapresetinterface.h \
 	mediapreset/media360_2048.h \
-    hap/source/hap.h \
     mediaplayervideopreview.h \
     mediatimelinenode.h
 
@@ -133,20 +131,18 @@ windows {
 
 	INSTALLS += plugin
 
-	win32 {
+	contains( QT_ARCH, x86_64 ) {
+		FFMPEGDIR = $$(LIBS)/ffmpeg-3.2-win64
+	} else {
 		FFMPEGDIR = $$(LIBS)/ffmpeg-3.2-win32
 	}
 
-	win64 {
-		FFMPEGDIR = $$(LIBS)/ffmpeg-3.2-win64
-	}
-
-	libraries.path  = $$INSTALLDEST
-	libraries.files = $$FFMPEGDIR/bin/*.dll
-
-	INSTALLS += libraries
-
 	exists( $$FFMPEGDIR ) {
+		libraries.path  = $$INSTALLDEST
+		libraries.files = $$FFMPEGDIR/bin/*.dll
+
+		INSTALLS += libraries
+
 		DEFINES += FFMPEG_SUPPORTED
 	}
 }
@@ -159,10 +155,10 @@ INCLUDEPATH += $$PWD/../../include
 #------------------------------------------------------------------------------
 # ffmpeg
 
-linux {
+linux:exists( /usr/local/include/libavformat/avformat.h ) {
 	LIBS += -L/usr/local/lib
 
-	DEFINES += FFMPEG_SUPPORTED
+	#DEFINES += FFMPEG_SUPPORTED
 }
 
 windows:contains( DEFINES, FFMPEG_SUPPORTED ) {
@@ -175,22 +171,16 @@ windows:contains( DEFINES, FFMPEG_SUPPORTED ) {
 macx {
 	isEmpty( CASKBASE ) {
 		FFMPEG_PATH = $$(LIBS)/ffmpeg-build
-
-		exists( $$FFMPEG_PATH ) {
-			INCLUDEPATH += $$FFMPEG_PATH/include
-
-			LIBS += -L$$FFMPEG_PATH/lib
-
-			DEFINES += FFMPEG_SUPPORTED
-		}
 	} else {
-		exists( /usr/local/opt/ffmpeg ) {
-			INCLUDEPATH += /usr/local/opt/ffmpeg/include
+		FFMPEG_PATH = /usr/local/opt/ffmpeg
+	}
 
-			LIBS += -L/usr/local/opt/ffmpeg/lib
+	exists( $$FFMPEG_PATH ) {
+		INCLUDEPATH += $$FFMPEG_PATH/include
 
-			DEFINES += FFMPEG_SUPPORTED
-		}
+		LIBS += -L$$FFMPEG_PATH/lib
+
+		DEFINES += FFMPEG_SUPPORTED
 	}
 }
 
@@ -252,6 +242,14 @@ contains( DEFINES, FFMPEG_SUPPORTED ) {
 			$$(LIBS)/snappy-1.1.1.8/snappy-stubs-internal.h \
 			$$(LIBS)/snappy-1.1.1.8/snappy-stubs-public.h
 	}
+}
+
+#------------------------------------------------------------------------------
+# hap
+
+contains( DEFINES, FFMPEG_SUPPORTED ) {
+	SOURCES += hap/source/hap.c
+	HEADERS += hap/source/hap.h
 }
 
 !contains( DEFINES, FFMPEG_SUPPORTED ) {

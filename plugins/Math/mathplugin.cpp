@@ -72,6 +72,8 @@
 
 #include "quaternionpin.h"
 
+#include "mathexpressionnode.h"
+
 MathPlugin *MathPlugin::mInstance = nullptr;
 
 QList<QUuid>	NodeControlBase::PID_UUID;
@@ -88,6 +90,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Dot Product", "Vector3", NID_DOT_PRODUCT, &DotProductNode::staticMetaObject ),
 	ClassEntry( "Ceil", "Math", NID_CEIL, &CeilNode::staticMetaObject ),
 	ClassEntry( "Divide", "Math", NID_DIVIDE, &DivideNode::staticMetaObject ),
+	ClassEntry( "Expression", "Math", NID_MATH_EXPRESSION, &MathExpressionNode::staticMetaObject ),
 	ClassEntry( "Floor", "Math", NID_FLOOR, &FloorNode::staticMetaObject ),
 	ClassEntry( "Inverse", "Matrix", NID_MATRIX_INVERSE, &MatrixInverseNode::staticMetaObject ),
 	ClassEntry( "Join", "Vector3", NID_JOIN_VECTOR3, &JoinVector3Node::staticMetaObject ),

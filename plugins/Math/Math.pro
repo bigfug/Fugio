@@ -18,7 +18,7 @@ DESTDIR = $$DESTDIR/plugins
 DEFINES += MATH_LIBRARY
 
 SOURCES += mathplugin.cpp \
-		matrixlookatnode.cpp \
+	matrixlookatnode.cpp \
 	matrixperspectivenode.cpp \
 	multiplynode.cpp \
 	vector3node.cpp \
@@ -61,7 +61,8 @@ SOURCES += mathplugin.cpp \
 	ceilnode.cpp \
 	floornode.cpp \
 	roundnode.cpp \
-	quaternionpin.cpp
+	quaternionpin.cpp \
+    mathexpressionnode.cpp
 
 HEADERS += mathplugin.h \
 	../../include/fugio/math/uuid.h \
@@ -111,7 +112,8 @@ HEADERS += mathplugin.h \
 	ceilnode.h \
 	floornode.h \
 	roundnode.h \
-	quaternionpin.h
+	quaternionpin.h \
+    mathexpressionnode.h
 
 RESOURCES += \
     resources.qrc
@@ -164,6 +166,9 @@ windows {
 	plugin.files = $$DESTDIR/$$TARGET".dll"
 
 	INSTALLS += plugin
+
+	QMAKE_CFLAGS += /bigobj
+	QMAKE_CXXFLAGS += /bigobj
 }
 
 #------------------------------------------------------------------------------

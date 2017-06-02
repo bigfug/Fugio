@@ -111,13 +111,21 @@ macx {
 windows:exists( "$$(LIBS)/VST3SDK" ) {
 	INCLUDEPATH += "$$(LIBS)/VST3SDK"
 
-	CONFIG(debug,debug|release) {
-		LIBS += -L"$$(LIBS)/VST3SDK/base/win/Win32/Debug"
-		LIBS += -lbase
+	contains( QT_ARCH, x86_64 ) {
+		CONFIG(debug,debug|release) {
+			LIBS += -L"$$(LIBS)/VST3SDK/base/win/x64/Debug"
+		} else {
+			LIBS += -L"$$(LIBS)/VST3SDK/base/win/x64/Release"
+		}
 	} else {
-		LIBS += -L"$$(LIBS)/VST3SDK/base/win/Win32/Release"
-		LIBS += -lbase
+		CONFIG(debug,debug|release) {
+			LIBS += -L"$$(LIBS)/VST3SDK/base/win/Win32/Debug"
+		} else {
+			LIBS += -L"$$(LIBS)/VST3SDK/base/win/Win32/Release"
+		}
 	}
+
+	LIBS += -lbase
 
 	LIBS += -lOle32 -lUser32
 

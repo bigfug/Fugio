@@ -240,9 +240,13 @@ void DecoderNode::processDatagram( const QByteArray &pDatagram )
 
 			case 'b':	// OSC-blob
 				{
-					qint32		l = qFromBigEndian<qint32>( pDatagram.data() + OscStr );
+					qint32		l;
 
-					OscStr += sizeof( qint32 );
+					memcpy( &l, pDatagram.data() + OscStr, sizeof( l ) );
+
+					l = qFromBigEndian( l );
+
+					OscStr += sizeof( l );
 
 					QByteArray		OscVar;
 

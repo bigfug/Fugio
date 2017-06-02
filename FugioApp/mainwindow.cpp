@@ -423,7 +423,6 @@ ContextSubWindow *MainWindow::findContextWindow( QSharedPointer<fugio::ContextIn
 	return( 0 );
 }
 
-
 QStringList MainWindow::patchOpenDialog()
 {
 	const QString		DatDir = QStandardPaths::writableLocation( QStandardPaths::DocumentsLocation );
@@ -1482,4 +1481,33 @@ void MainWindow::on_actionImport_triggered()
 
 		mImportDirectory = FI.dir().absolutePath();
 	}
+}
+
+QMap<fugio::SettingsInterface *, QWidget *> MainWindow::createSettings()
+{
+	QMap<fugio::SettingsInterface *, QWidget *>	WidLst;
+
+	for( fugio::SettingsInterface *I : mSettingsInterfaces )
+	{
+		QWidget *W = I->settingsWidget();
+
+		if( W )
+		{
+			WidLst.insert( I, W );
+		}
+	}
+
+	return( WidLst );
+}
+
+void MainWindow::registerSettings( fugio::SettingsInterface *pSetInt )
+{
+	mSettingsInterfaces.removeAll( pSetInt );
+	mSettingsInterfaces.append( pSetInt );
+}
+
+
+void MainWindow::unregisterSettings( fugio::SettingsInterface *pSetInt )
+{
+	mSettingsInterfaces.removeAll( pSetInt );
 }

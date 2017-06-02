@@ -184,7 +184,7 @@ public:
 	//-------------------------------------------------------------------------
 	// InterfaceTimelineTrack
 
-	virtual void drawBackground( const KeyFramesWidgetInterface *pTrackWidget, QPainter &pPainter, const QRect &pUpdateRect ) const Q_DECL_OVERRIDE;
+	virtual void drawBackground( const KeyFramesWidgetInterface *pTrackWidget, const QRect &pUpdateRect, QImage &pBackImage ) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 
@@ -235,10 +235,6 @@ private:
 	KeyFramesTimeInterface							*mKF;
 
 	bool											 mAudioMute;
-
-	mutable QImage	 mAudioImage;
-	mutable qreal	 mLastAudioViewStart;
-	mutable qreal	 mLastAudioViewEnd;
 
 	qreal									 mAudioVolume;
 //	qreal									 mVideoAlpha;

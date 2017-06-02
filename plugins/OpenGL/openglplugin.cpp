@@ -39,6 +39,7 @@
 #include "instancebuffernode.h"
 #include "viewportmatrixnode.h"
 #include "cubemaprendernode.h"
+#include "texturemonitornode.h"
 
 #include "texturepin.h"
 #include "renderpin.h"
@@ -94,6 +95,7 @@ ClassEntry		OpenGLPlugin::mNodeClasses[] =
 	ClassEntry( "Texture Clone", "OpenGL", NID_OPENGL_TEXTURE_CLONE, &TextureCloneNode::staticMetaObject ),
 	ClassEntry( "Texture Copy", "OpenGL", NID_OPENGL_TEXTURE_COPY, &TextureCopyNode::staticMetaObject ),
 	ClassEntry( "Texture Cube", "OpenGL", NID_OPENGL_TEXTURE_CUBE, &TextureCubeNode::staticMetaObject ),
+	ClassEntry( "Texture Monitor", "OpenGL", NID_OPENGL_TEXTURE_MONITOR, &TextureMonitorNode::staticMetaObject ),
 	ClassEntry( "Transform Feedback", "OpenGL", NID_OPENGL_TRANSFORM_FEEDBACK, &TransformFeedbackNode::staticMetaObject ),
 	ClassEntry( "Vertex Array Object", "OpenGL", NID_OPENGL_VERTEX_ARRAY_OBJECT, &VertexArrayObjectNode::staticMetaObject ),
 	ClassEntry( "Viewport", "OpenGL", NID_OPENGL_VIEWPORT, &ViewportNode::staticMetaObject ),
@@ -123,6 +125,23 @@ OpenGLPlugin::OpenGLPlugin( void )
 	   mOpenGLFullScreenOption( "opengl-full-screen", "Open all OpenGL windows as full screen" ), mTriangleCount( 0 )
 {
 	mInstance = this;
+
+//	QSurfaceFormat	SurfaceFormat;
+
+//	SurfaceFormat.setDepthBufferSize( 24 );
+//	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
+//	SurfaceFormat.setSamples( 4 );
+//	SurfaceFormat.setVersion( 4, 5 );
+
+//#if defined( OPENGL_DEBUG_ENABLE )
+//	SurfaceFormat.setOption( QSurfaceFormat::DebugContext );
+//#endif
+
+////	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
+////	SurfaceFormat.setVersion( 4, 5 );
+////	SurfaceFormat.setSwapInterval( 0 );
+
+//	QSurfaceFormat::setDefaultFormat( SurfaceFormat );
 
 	//-------------------------------------------------------------------------
 	// Install translator

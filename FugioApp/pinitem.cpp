@@ -16,6 +16,7 @@
 #include <QSignalMapper>
 #include <QMessageBox>
 #include <QDesktopServices>
+#include <QColorDialog>
 
 #include <QDebug>
 
@@ -25,6 +26,7 @@
 #include <fugio/global_interface.h>
 #include <fugio/node_control_interface.h>
 #include <fugio/choice_interface.h>
+#include <fugio/colour/colour_interface.h>
 
 #include "linkitem.h"
 #include "contextview.h"
@@ -822,18 +824,41 @@ void PinItem::menuEditDefault()
 				mContextView->widget()->undoStack()->push( Cmd );
 			}
 		}
+
+		return;
 	}
-	else
+
+	const QVariant		PinVal = mPin->value();
+
+	if( QMetaType::Type( PinVal.type() ) == QMetaType::QColor )
+	{
+		QColor			CurrentColour = mPin->value().value<QColor>();
+
+		QColor			NewColour = QColorDialog::getColor( CurrentColour, nullptr, tr( "Choose Colour" ), QColorDialog::ShowAlphaChannel );
+
+		if( NewColour.isValid() )
+		{
+			CmdSetDefaultValue		*Cmd = new CmdSetDefaultValue( mPin, NewColour );
+
+			if( Cmd )
+			{
+				mContextView->widget()->undoStack()->push( Cmd );
+			}
+		}
+
+		return;
+	}
+
 	{
 		bool	OK;
 
-		QString	New = QInputDialog::getText( nullptr, mPin->name(), "Edit Default Value", QLineEdit::Normal, mPin->value().toString(), &OK );
+		QString	New = QInputDialog::getText( nullptr, mPin->name(), tr( "Edit Default Value" ), QLineEdit::Normal, PinVal.toString(), &OK );
 
 		if( OK )
 		{
 			CmdSetDefaultValue		*Cmd = new CmdSetDefaultValue( mPin, New );
 
-			if( Cmd != 0 )
+			if( Cmd )
 			{
 				mContextView->widget()->undoStack()->push( Cmd );
 			}

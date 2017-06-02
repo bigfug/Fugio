@@ -10,7 +10,7 @@ QT       += widgets
 
 TARGET = $$qtLibraryTarget(fugio-xinput)
 TEMPLATE = lib
-CONFIG += plugin
+CONFIG += plugin c++11
 
 DESTDIR = $$DESTDIR/plugins
 

@@ -39,6 +39,7 @@ public:
 
 	ContextSubWindow *findContextWindow( QSharedPointer<fugio::ContextInterface> pContext );
 
+	QMap<fugio::SettingsInterface *, QWidget *> createSettings( void );
 
 	// EditorInterface interface
 protected:
@@ -48,6 +49,8 @@ protected:
 	virtual fugio::EditorSignals *qobject() Q_DECL_OVERRIDE;
 	virtual const fugio::EditorSignals *qobject() const Q_DECL_OVERRIDE;
 	virtual void menuAddFileImporter( QString pFilter, fugio::FileImportFunction pFunc ) Q_DECL_OVERRIDE;
+	virtual void registerSettings( fugio::SettingsInterface *pSetInt ) Q_DECL_OVERRIDE;
+	virtual void unregisterSettings( fugio::SettingsInterface *pSetInt ) Q_DECL_OVERRIDE;
 
 signals:
 	void log( const QString &pLogDat );
@@ -199,6 +202,8 @@ private:
 	QMap<QString,fugio::FileImportFunction>		 mImportFunctions;
 
 	QString										 mImportDirectory;
+
+	QList<fugio::SettingsInterface *>			 mSettingsInterfaces;
 };
 
 #endif // MAINWINDOW_H
