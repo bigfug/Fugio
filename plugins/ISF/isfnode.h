@@ -89,6 +89,9 @@ protected:
 
 		fugio::AudioInstanceBase	*mAudioInstance;
 		qint64						 mSamplePosition;
+		qint64						 mAudioLatency;
+
+		QVector<float>				 mAudioData;
 
 	} ISFInput;
 
@@ -143,6 +146,9 @@ private:
 	static float getBandWidth( float timeSize, float sampleRate );
 
 	static int freqToIndex( int timeSize, int sampleRate, int freq);
+
+private slots:
+	void contextProcess( qint64 pTimeStamp );
 
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputFilename;

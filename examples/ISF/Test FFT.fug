@@ -24,22 +24,6 @@ order=0
 uuid=94fbd706-66d8-462b-bbde-b46cb15b059d
 version=2
 
-[2c6bfcef-6005-4a86-a26a-a42310980601]
-direction=1
-name=FFT
-order=0
-uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
-version=2
-
-[2f8dc20c-b315-43f1-b16a-d2a62ebb1d14]
-inputs\1\2c6bfcef-6005-4a86-a26a-a42310980601=00000000-0000-0000-0000-000000000000
-inputs\2\9e2c7746-2805-4a47-b34d-f68f03f3a6ed=00000000-0000-0000-0000-000000000000
-inputs\size=2
-name=Frequency Bands
-outputs\1\5b7ec093-38e9-4b1f-bae2-b561b9e82876=7d17c62e-92e5-4597-8f90-6535da740add
-outputs\size=1
-version=2
-
 [37369990-0ce1-4649-acbe-392adee1733a]
 inputs\1\566506ad-a6e6-4308-9499-e42628d601fa=00000000-0000-0000-0000-000000000000
 inputs\2\e2b8afab-4d18-44b1-9dbf-b7cb8f489605=00000000-0000-0000-0000-000000000000
@@ -86,14 +70,6 @@ direction=1
 name=strokeColor
 order=10
 uuid=65f8ffa0-4234-4c85-aa9d-3a8e08ae9752
-version=2
-
-[5b7ec093-38e9-4b1f-bae2-b561b9e82876]
-control\array="@ByteArray(\x8e\xfc]7bb\x19\x37\xf7\x44\xe7\x37\x46\xa1;9\xaf\x1d\xb5\x39\x95\xf2L:\xc8\xd7\xad:83\x89:&`N;\\2\xd2;`\x8b\x12<\x87{\x1c<\x84X\xf4;Z\xa5\x89;.\xf4.;8\x18i;%\xa6v;\xc4n#;e<\xd2:(\xbe\0;\xb6~+;\xb9|I;\xb4\xf4\x16;\"\xa0@;^\xe9\x94;8BP;.\x81`;\b\x9d\x1<&\x1a><@\x83O<\xf6\xd5\x33<\xf5\x8c+<\x3\x14\x31<\xaf\xf5\x13<^\t\xd1;\x18\xf0\xda;.\xb9\x2<\r;\x3<\x88\x1b\xee; \xbb\v<\x80\x98=<\xe2\xa3v<\n\xac\x8f<[\xc6\x9b<\xf8|\x93<\xcb/z<\xa6~O<\x9c\xa0\f<r|\xde;C\xa1\a<\xd6z\xea;0\x96\xb2;\x2\xa6\xb5;\xf-\xf9;\xde(\"<\xc0z+<\x9e&\x16<\xf9\xfe\xe4;S>\x96;%F2;\xde\xdeM;\x8c\x87\x8c;+\xee\xb4;#D\xe9;\x15\x11\xf<\x1f\xc4\x15<A\x12\v<\xb8\xe\x18<bb'<\xdb\r\xe<\x13\xd2\x9b;\x8c\x99\x91;\xeb\x16\xed;\xbfq\0<U\xa7\x1f<\xab\xc8P<M\x90y<\xe1\xf1\x7f<7\xees<\xe4:l<\"\x91j<nrm<X\xc9\x64<\xbf~[<\xb5mN<\xb2\xef)<\xdfw\xf8;>\t\xa6;#\xf5S;\xd6\b\xf5:2\x80\x64:\x1a\xc3\xbd:\x13\xaa\xca:t1\x1f;\x88\t2;\xe4x\xf8:\x98\xba\xd8:\xe0\x10(;{\xec\";R\x2\xae:\"\x1f\xab\x39&\xcc\f;\xbe[\x7f;\x90\xd5\x95;\aZ\xae;+\x89\xc9;s\xab\xbe;d\xb9\x8a;\x9e\xc4\x13;h\xc2\x8c\x39\xd3\x98\x9c:\x8a\xa7\x1f;\x9cid;\x11`\x84;\x10\x84\x8c;\xe0\xc9\x86;\x16\xd3x;;\x99^;\xc9~@;\xa4\xce%;e0\xfb:U\xec\xcd:\x8c\xa4\xe9:\xa5^\xfa:.\x92\xe1:\xb0\x17\xa1:\\'):\xb6\xb1\xab\x39\xaci\x8e:.\\\xd9:\xf1\x1a\xed:\x94\xfe\xe7:Pw\xf2:\xfI\0;\xef?\xe;\xc2\xf2\x39;\xfa\xfd';|9<;\xd4\x34g;k\xd4\x80;\x2\x89\x89;\xa3\x38\x82;\x7f\xd4p;l\xb0j;\xeawR;~eJ;j\x1fo;\fhC;\xafw\x15;4O,;\xfe\xcc\x45;\xfb\x17\x62;R\x9d\x80;xAS;;{\x1a;\0\x1:;q\x90T;\xb6\xf4\x84;$\xa7\x8b;\x98\bT;e\xba\x89;\x9e\x92\xa6;`\x94\xa3;\xce\x83\xa2;s\x8e\x9f;\xe5\xe9\x9b;\x81\x99\x95;B\xa3\xaf;T\xfc\xc1;\x80\x84\xbf;\x2\xc6\xca;\xec\x12\xcd;8\xfd\xcc;\xbc\xe2\xd1;\xbe\v\xe4;\xec:\xe2;M\x85\xbf;\xba\xeb\xab;\xd7\x81\xa2;a\f\xa5;\xcc\x17\x90;\xcd^g;1l\x80;\xf0{\x8b;\x8f{\x94;!1\x9d;\xad`\x9e;\xf6\xe9\xa1;\xa0\x8e\xb3;\x86\x9f\xb3;\x98\xfd\x9a;\xce\x8f\x93;\xa7\x65\x8c;\x1e\xae\x91;d1\x97;\xe4Q\x86;\xe0\x19\x83;\xaf\x97\x8f;W\xb6\x8e;\x9a\xd9\x84;nS\x87;\xb0oy;\xb8Mu;\xd6Q\x88;)\xad\x86;{Lc;\x6\x1bQ;\x4\x8fR;\xf2;R;\x18\x85Q;_\xf1\x42;\xc7\x1%;\xf1\f6;\t<6;V\x81\x15;\x1aL\xf3:\n\x15\xea:Fn\x3;\x8aX\t;\x18\x37\x2;2\xf3\x2;\x14}\x14;IhA;2\xccQ;\x80\x3V;\xaa\xb0Y; \xa6M;\xc3\x39\x42;e\x8f?;\a\xc4J;n\x1fP;R\xab\x45;\x83ZA;\x9e\xff\x44;\xba\xee\x34;\x80\xd1\r;V\b\x10;\xa4\xf3\x10;\xaf\xfc\xca:\xb0\x96\xab:\xf9\xc0\xd5:\f\x92\xc4:\x96%\xb0:<\xf\x93:z\xfcq:\x97\xaaV:\x10\xa1\x41:\0\xbc,:S\x12\x1c:\x8c\xd1\x3:\xb4\x85\xdc\x39h\x82\xcd\x39\xbf-\xeb\x39x[\xf7\x39\x8b\x36\t:\x1\xf2\xe:)"
-direction=2
-name=Bands
-order=0
-uuid=6e978827-5f19-4f75-be8b-5f7a3d00595b
 version=2
 
 [5b9dda8c-7e74-4739-9a2b-7b1bff5f71ac]
@@ -191,14 +167,6 @@ order=0
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
 version=2
 
-[9e2c7746-2805-4a47-b34d-f68f03f3a6ed]
-default=256
-direction=1
-name=Bands
-order=1
-uuid=071d3ea3-7236-4bd1-bb50-a9e25eb93ed9
-version=2
-
 [a4f97a95-f3af-4838-aa68-e71e5c879924]
 direction=1
 name=Audio
@@ -253,8 +221,6 @@ version=2
 0d6ce818-3001-4990-9410-69b54505c2c7=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 0d6ce818-3001-4990-9410-69b54505c2c7\4a27db1d-461f-4f59-9d19-5a859cd01f13=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 0d6ce818-3001-4990-9410-69b54505c2c7\cda0e147-b2ac-49f9-8557-e67a18edc09e=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
-2f8dc20c-b315-43f1-b16a-d2a62ebb1d14=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
-2f8dc20c-b315-43f1-b16a-d2a62ebb1d14\5b7ec093-38e9-4b1f-bae2-b561b9e82876=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 37369990-0ce1-4649-acbe-392adee1733a=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 37369990-0ce1-4649-acbe-392adee1733a\9544790d-2f91-41c7-98f2-bf6b667954d4=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 5cd11783-8c91-4d9c-83c7-db515f361315=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
@@ -268,9 +234,8 @@ ef07081a-2f18-4db4-9b10-aaff1f3a71fa\d5f05354-576d-4d4f-85c7-dde2449202a9=@Varia
 version=2
 
 [connections]
-2c6bfcef-6005-4a86-a26a-a42310980601=9544790d-2f91-41c7-98f2-bf6b667954d4
 566506ad-a6e6-4308-9499-e42628d601fa=01f97b03-c5b7-40b2-a3f4-78e185e7f108
-5b9dda8c-7e74-4739-9a2b-7b1bff5f71ac=5b7ec093-38e9-4b1f-bae2-b561b9e82876
+5b9dda8c-7e74-4739-9a2b-7b1bff5f71ac=9544790d-2f91-41c7-98f2-bf6b667954d4
 925582ab-0894-494a-bbf1-6e92ce55d742=d5f05354-576d-4d4f-85c7-dde2449202a9
 a4f97a95-f3af-4838-aa68-e71e5c879924=bbd1c2fb-ab4d-4e67-9619-36d083ea4423
 a5dad7f8-346e-4714-bf11-cc0b29368b7d=9a8767c1-f859-43b0-b87d-15745cf56590
@@ -359,7 +324,6 @@ version=2
 
 [nodes]
 0d6ce818-3001-4990-9410-69b54505c2c7=3f4cda9b-a97f-4020-8f4f-63e2a4ab4b09
-2f8dc20c-b315-43f1-b16a-d2a62ebb1d14=54daa262-541c-4e78-9956-c617820b12d9
 37369990-0ce1-4649-acbe-392adee1733a=7948c3b4-d36f-45b0-94a1-942918fa4cb9
 5cd11783-8c91-4d9c-83c7-db515f361315=68f15f27-26d4-4cca-907a-abc195531bf3
 6c141304-7800-4556-b249-74fa76ca9696=327cfef0-537c-42d8-a8b6-29fa4416f1b4
@@ -372,7 +336,6 @@ version=2
 
 [positions]
 0d6ce818-3001-4990-9410-69b54505c2c7="-240,-180"
-2f8dc20c-b315-43f1-b16a-d2a62ebb1d14="-420,20"
 37369990-0ce1-4649-acbe-392adee1733a="-600,-100"
 5cd11783-8c91-4d9c-83c7-db515f361315="-840,-100"
 6c141304-7800-4556-b249-74fa76ca9696="-660,-180"

@@ -15,6 +15,8 @@
 #include <fugio/opengl/uuid.h>
 #include <fugio/audio/uuid.h>
 
+#include <fugio/context_signals.h>
+
 #include <fugio/colour/colour_interface.h>
 #include <fugio/choice_interface.h>
 
@@ -108,11 +110,15 @@ bool ISFNode::initialise()
 		return( false );
 	}
 
+	connect( mNode->context()->qobject(), SIGNAL(frameProcess(qint64)), this, SLOT(contextProcess(qint64)) );
+
 	return( true );
 }
 
 bool ISFNode::deinitialise()
 {
+	disconnect( mNode->context()->qobject(), SIGNAL(frameProcess(qint64)), this, SLOT(contextProcess(qint64)) );
+
 	if( ISFPlugin::hasContextStatic() )
 	{
 		if( mVAO )
@@ -185,6 +191,152 @@ bool ISFNode::deinitialise()
 	mProgram = 0;
 
 	return( NodeControlBase::deinitialise() );
+}
+
+void ISFNode::contextProcess( qint64 pTimeStamp )
+{
+	bool	AudioUpdate = false;
+
+	for( QMap<QString,ISFInput>::iterator it = mISFInputs.begin() ; it != mISFInputs.end() ; it++ )
+	{
+		ISFInput	&InpDat = it.value();
+
+		if( InpDat.mType != AUDIO )
+		{
+			continue;
+		}
+
+		QSharedPointer<fugio::PinInterface> P = mNode->findInputPinByName( it.key() );
+
+		if( !P )
+		{
+			continue;
+		}
+
+		fugio::AudioProducerInterface	*AudInf = input<fugio::AudioProducerInterface *>( P );
+
+		if( InpDat.mAudioInstance && ( !InpDat.mAudioInstance->isValid() || !AudInf ) )
+		{
+			delete InpDat.mAudioInstance;
+
+			InpDat.mAudioInstance = nullptr;
+
+			InpDat.mSamplePosition = 0;
+		}
+
+		if( !AudInf )
+		{
+			continue;
+		}
+
+		if( !InpDat.mAudioInstance )
+		{
+			if( InpDat.mTextureId )
+			{
+				glDeleteTextures( 1, &InpDat.mTextureId );
+
+				InpDat.mTextureId = 0;
+			}
+
+			InpDat.mAudioInstance = AudInf->audioAllocInstance( 48000, fugio::AudioSampleFormat::Format32FS, 2 );
+
+			InpDat.mAudioLatency = AudInf->audioLatency();
+		}
+
+		if( !InpDat.mAudioInstance )
+		{
+			continue;
+		}
+
+		const int			ChannelCount = InpDat.mAudioInstance->channels();
+		const int			TotalSampleCount = ChannelCount * InpDat.mAudioMax;
+
+		if( !InpDat.mTextureId )
+		{
+			glGenTextures( 1, &InpDat.mTextureId );
+
+			if( InpDat.mTextureId )
+			{
+				OPENGL_PLUGIN_DEBUG;
+
+				glBindTexture( GL_TEXTURE_2D, InpDat.mTextureId );
+
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_R32F, InpDat.mAudioMax, ChannelCount, 0, GL_RED, GL_FLOAT, nullptr );
+
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ONE );
+
+				glBindTexture( GL_TEXTURE_2D, 0 );
+
+				OPENGL_PLUGIN_DEBUG;
+			}
+		}
+
+		const qint64	CurPos = ( pTimeStamp * ( InpDat.mAudioInstance->sampleRate() / 1000 ) ) - InpDat.mAudioLatency;
+
+		if( !InpDat.mSamplePosition )
+		{
+			InpDat.mSamplePosition = CurPos;
+		}
+
+//		if( InpDat.mSamplePosition < InpDat.mAudioInstance->producer()->audioAvailableMin() )
+//		{
+//			InpDat.mSamplePosition = CurPos;
+//		}
+
+		if( CurPos - InpDat.mSamplePosition >= InpDat.mAudioMax )
+		{
+			if( TotalSampleCount != InpDat.mAudioData.size() )
+			{
+				InpDat.mAudioData.resize( TotalSampleCount );
+			}
+
+			memset( InpDat.mAudioData.data(), 0, sizeof( float ) * InpDat.mAudioData.size() );
+
+			QVector<float *>	AudPtr;
+
+			AudPtr.resize( ChannelCount );
+
+			for( int i = 0 ; i < ChannelCount ; i++ )
+			{
+				AudPtr[ i ] = InpDat.mAudioData.data() + ( InpDat.mAudioMax * i );
+			}
+
+			InpDat.mAudioInstance->audio( InpDat.mSamplePosition, InpDat.mAudioMax, 0, ChannelCount, (void **)AudPtr.data() );
+
+			if( InpDat.mTextureId )
+			{
+				OPENGL_PLUGIN_DEBUG;
+
+				glActiveTexture( GL_TEXTURE0 + InpDat.mTextureIndex );
+
+				glBindTexture( GL_TEXTURE_2D, InpDat.mTextureId );
+
+				glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, InpDat.mAudioMax, ChannelCount, GL_RED, GL_FLOAT, InpDat.mAudioData.constData() );
+
+				glBindTexture( GL_TEXTURE_2D, 0 );
+
+				OPENGL_PLUGIN_DEBUG;
+			}
+
+			InpDat.mSamplePosition += InpDat.mAudioMax;
+
+			AudioUpdate = true;
+		}
+	}
+
+	if( AudioUpdate )
+	{
+		pinUpdated( mPinOutputRender );
+	}
 }
 
 void ISFNode::inputsUpdated( qint64 pTimeStamp )
@@ -279,6 +431,36 @@ void ISFNode::inputsUpdated( qint64 pTimeStamp )
 				}
 			}
 
+
+			if( !InpDat.mTextureId )
+			{
+				glGenTextures( 1, &InpDat.mTextureId );
+
+				if( InpDat.mTextureId )
+				{
+					OPENGL_PLUGIN_DEBUG;
+
+					glBindTexture( GL_TEXTURE_2D, InpDat.mTextureId );
+
+					glTexImage2D( GL_TEXTURE_2D, 0, GL_R32F, InpDat.mAudioMax, 1, 0, GL_RED, GL_FLOAT, nullptr );
+
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_R, GL_RED );
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_G, GL_RED );
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_B, GL_RED );
+					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_A, GL_ONE );
+
+					glBindTexture( GL_TEXTURE_2D, 0 );
+
+					OPENGL_PLUGIN_DEBUG;
+				}
+			}
+
 			if( InpDat.mTextureId )
 			{
 				OPENGL_PLUGIN_DEBUG;
@@ -293,46 +475,6 @@ void ISFNode::inputsUpdated( qint64 pTimeStamp )
 
 				OPENGL_PLUGIN_DEBUG;
 			}
-
-			continue;
-		}
-
-		if( InpDat.mType == AUDIO )
-		{
-			fugio::AudioProducerInterface	*AudInf = input<fugio::AudioProducerInterface *>( P );
-
-			if( !AudInf )
-			{
-				if( InpDat.mAudioInstance )
-				{
-					delete InpDat.mAudioInstance;
-
-					InpDat.mAudioInstance = nullptr;
-
-					InpDat.mSamplePosition = 0;
-				}
-
-			}
-
-			if( AudInf )
-			{
-				if( !InpDat.mAudioInstance )
-				{
-					InpDat.mAudioInstance = AudInf->audioAllocInstance( 48000, fugio::AudioSampleFormat::Format32FS, 1 );
-				}
-
-				if( !InpDat.mAudioInstance )
-				{
-					continue;
-				}
-
-				if( !InpDat.mSamplePosition )
-				{
-					InpDat.mSamplePosition = pTimeStamp * ( 48000 / 1000 );
-				}
-			}
-
-
 		}
 	}
 
@@ -517,27 +659,6 @@ QMap<QString,ISFNode::ISFInput> ISFNode::parseInputs( QJsonArray Inputs )
 
 					CurISF.mAudioMax = Input.value( "MAX" ).toInt( 256 );
 					break;
-			}
-
-			if( Type == AUDIO || Type == FFT )
-			{
-				glGenTextures( 1, &CurISF.mTextureId );
-
-				if( CurISF.mTextureId )
-				{
-					OPENGL_PLUGIN_DEBUG;
-
-					glBindTexture( GL_TEXTURE_2D, CurISF.mTextureId );
-
-					glTexImage2D( GL_TEXTURE_2D, 0, GL_R32F, CurISF.mAudioMax, 1, 0, GL_RED, GL_FLOAT, nullptr );
-
-					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-					glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-
-					glBindTexture( GL_TEXTURE_2D, 0 );
-
-					OPENGL_PLUGIN_DEBUG;
-				}
 			}
 
 			ISFNewInputs[ Name ] = CurISF;
@@ -823,7 +944,7 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 			"#define vv_FragNormCoord isf_FragNormCoord\n"
 			"#define gl_FragColor isf_OutputColour\n"
 			"#define IMG_SIZE(i) textureSize(i,0)\n"
-			"#define IMG_PIXEL(i,p) texelFetch(i,ivec2(p))\n"
+			"#define IMG_PIXEL(i,p) texelFetch(i,ivec2(p),0)\n"
 			"#define IMG_NORM_PIXEL(i,p) texture(i,p)\n"
 			"#define IMG_THIS_PIXEL(i) IMG_PIXEL(i,gl_FragCoord.xy)\n"
 			"#define IMG_THIS_NORM_PIXEL(i) IMG_NORM_PIXEL(i,isf_FragNormCoord)\n"
