@@ -59,7 +59,9 @@ SOURCES += openglplugin.cpp \
 	viewportmatrixnode.cpp \
 	renderpin.cpp \
 	cubemaprendernode.cpp \
-	textureclonenode.cpp
+	textureclonenode.cpp \
+    texturemonitornode.cpp \
+    texturemonitor.cpp
 
 HEADERS +=\
 	texturenode.h \
@@ -115,7 +117,9 @@ HEADERS +=\
 	renderpin.h \
 	../../include/fugio/output_interface.h \
 	cubemaprendernode.h \
-	textureclonenode.h
+	textureclonenode.h \
+    texturemonitornode.h \
+    texturemonitor.h
 
 FORMS += \
 	texturenodeform.ui \
@@ -279,3 +283,8 @@ macx {
 		LIBS += -L/usr/local/lib -lGLEW
 	}
 }
+
+linux:exists( /usr/include/GL/glew.h ) {
+	DEFINES += GLEW_SUPPORTED
+}
+

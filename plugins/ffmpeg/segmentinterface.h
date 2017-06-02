@@ -67,6 +67,8 @@ public:
 
 	virtual int audioChannels( void ) const = 0;
 	virtual qreal sampleRate( void ) const = 0;
+
+	virtual QString statusMessage( void ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

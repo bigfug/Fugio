@@ -53,6 +53,10 @@ void MediaSegment::clearSegment()
 	mDuration = 0;
 	mDecodeI = true;
 	mDecodeB = true;
+
+	mStatusMessage.clear();
+#else
+	mStatusMessage = tr( "FFMPEG is not supported" );
 #endif
 }
 
@@ -62,7 +66,7 @@ bool MediaSegment::loadMedia( const QString &pFileName, bool pProcess )
 
 	clearSegment();
 
-	qDebug() << "FFMPEG Loading" << mFileName;
+	mStatusMessage = tr( "FFMPEG loading %1" ).arg( mFileName );
 
 #if defined( FFMPEG_SUPPORTED )
 	mFormatContext = avformat_alloc_context();
@@ -74,9 +78,11 @@ bool MediaSegment::loadMedia( const QString &pFileName, bool pProcess )
 
 	//-------------------------------------------------------------------------
 
-	if( avformat_open_input( &mFormatContext, mFileName.toLatin1().constData(), NULL, NULL ) != 0 )
+	int		ErrorCode = 0;
+
+	if( ( ErrorCode = avformat_open_input( &mFormatContext, mFileName.toLatin1().constData(), NULL, NULL ) ) != 0 )
 	{
-		qWarning() << "Couldn't avformat_open_input" << mFileName;
+		mStatusMessage = av_err( tr( "Couldn't avformat_open_input %1" ).arg( mFileName ), ErrorCode );
 
 		mErrorState = true;
 
@@ -85,9 +91,9 @@ bool MediaSegment::loadMedia( const QString &pFileName, bool pProcess )
 
 	av_format_inject_global_side_data( mFormatContext );
 
-	if( avformat_find_stream_info( mFormatContext, 0 ) < 0 )
+	if( ( ErrorCode = avformat_find_stream_info( mFormatContext, 0 ) ) != 0 )
 	{
-		qWarning() << "Couldn't avformat_find_stream_info" << mFileName;
+		mStatusMessage = av_err( tr( "Couldn't avformat_find_stream_info %1" ).arg( mFileName ), ErrorCode );
 
 		mErrorState = true;
 

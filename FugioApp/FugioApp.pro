@@ -8,7 +8,7 @@ include( ../FugioGlobal.pri )
 
 QT += network
 
-greaterThan( QT_MAJOR_VERSION, 4 ): QT += widgets concurrent opengl
+greaterThan( QT_MAJOR_VERSION, 4 ): QT += widgets concurrent
 
 qtHaveModule( qml ) {
 	QT += quickwidgets quickcontrols2 quick qml serialport

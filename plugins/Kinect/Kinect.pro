@@ -8,7 +8,7 @@ include( ../../FugioGlobal.pri )
 
 TARGET = $$qtLibraryTarget(fugio-kinect)
 TEMPLATE = lib
-CONFIG += plugin
+CONFIG += plugin c++11
 QT += gui widgets
 
 DESTDIR = $$DESTDIR/plugins

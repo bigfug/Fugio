@@ -15,6 +15,7 @@ QT += gui widgets network
 
 qtHaveModule( websockets ) {
 	QT += websockets
+
 	DEFINES += WEBSOCKET_SUPPORTED
 }
 

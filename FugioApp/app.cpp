@@ -75,7 +75,8 @@ void App::recordData( const QString &pName, const QString &pValue )
 {
 	QSettings		Settings;
 
-	if( !Settings.value( "data-collection-permission", false ).toBool() )
+	// Disabled this because it currently crashes on Qt 5.8 with known bug
+	if( true ) //!Settings.value( "data-collection-permission", false ).toBool() )
 	{
 		return;
 	}

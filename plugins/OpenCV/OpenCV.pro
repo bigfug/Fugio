@@ -150,7 +150,7 @@ macx {
 		}
 
 		exists( $$OPENCV_PATH/lib/libopencv_videoio.* ) {
-			LIBS += -lopencv_highgui
+			LIBS += -lopencv_videoio
 		}
 
 		exists( $$OPENCV_PATH/lib/libopencv_highgui.* ) {

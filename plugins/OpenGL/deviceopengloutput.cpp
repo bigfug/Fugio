@@ -44,25 +44,10 @@ QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( bool pContextO
 {
 	QSharedPointer<DeviceOpenGLOutput>	NewDev;
 
-	QSurfaceFormat	SurfaceFormat;
-
-	//SurfaceFormat.setAlphaBufferSize( 8 );	// sets the actual window transparent on OSX!
-	SurfaceFormat.setDepthBufferSize( 24 );
-	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
-	SurfaceFormat.setSamples( 4 );
-	//SurfaceFormat.setSwapInterval( 0 );
-	SurfaceFormat.setVersion( 4, 5 );
-
-#if defined( OPENGL_DEBUG_ENABLE )
-	SurfaceFormat.setOption( QSurfaceFormat::DebugContext );
-#endif
-
 	NewDev = QSharedPointer<DeviceOpenGLOutput>( new DeviceOpenGLOutput() );
 
 	if( NewDev )
 	{
-		NewDev->setFormat( SurfaceFormat );
-
 		NewDev->setTitle( "Fugio OpenGL Output" );
 
 		NewDev->setWidth( 640 );

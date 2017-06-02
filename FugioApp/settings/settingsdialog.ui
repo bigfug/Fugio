@@ -30,6 +30,9 @@
      </item>
      <item alignment="Qt::AlignTop">
       <widget class="QStackedWidget" name="mPages">
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
        <widget class="QWidget" name="mSnippets">
         <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0">
          <property name="leftMargin">
@@ -67,7 +70,6 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="page_2"/>
       </widget>
      </item>
     </layout>

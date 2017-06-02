@@ -4,6 +4,7 @@
 #include <QFileDialog>
 
 #include "app.h"
+#include "mainwindow.h"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
 	QDialog(parent),
@@ -15,6 +16,15 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
 	ui->mSnippetsDirectory->setText( gApp->userSnippetsDirectory() );
 	ui->mSnippetsDirectory->setReadOnly( true );
+
+	mSettings = gApp->mainWindow()->createSettings();
+
+	for( QWidget *W : mSettings.values() )
+	{
+		ui->mPages->addWidget( W );
+
+		ui->mPageList->addItem( W->objectName() );
+	}
 }
 
 SettingsDialog::~SettingsDialog()
@@ -35,4 +45,9 @@ void SettingsDialog::on_mSnippetsSelect_clicked()
 void SettingsDialog::dialogAccepted()
 {
 	gApp->setUserSnippetsDirectory( ui->mSnippetsDirectory->text() );
+
+	for( QMap<fugio::SettingsInterface *, QWidget *>::iterator it = mSettings.begin() ; it != mSettings.end() ; it++ )
+	{
+		it.key()->settingsAccept( it.value() );
+	}
 }

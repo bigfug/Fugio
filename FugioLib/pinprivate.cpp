@@ -225,13 +225,11 @@ void PinPrivate::update( qint64 pTimeStamp, bool pUpdatedConnectedNode )
 
 	if( mDirection == PIN_OUTPUT )
 	{
-		QList< QSharedPointer<fugio::PinInterface>	>	CP = connectedPins();
-
-		for( QList< QSharedPointer<fugio::PinInterface> >::iterator it = CP.begin() ; it != CP.end() ; it++ )
+		for( QSharedPointer<fugio::PinInterface> P : connectedPins() )
 		{
-			PinPrivate		*DstPin = qobject_cast<PinPrivate *>( (*it)->qobject() );
+			PinPrivate		*DstPin = qobject_cast<PinPrivate *>( P ? P->qobject() : nullptr );
 
-			if( DstPin == 0 || !DstPin->updatable() )
+			if( !DstPin || !DstPin->updatable() )
 			{
 				continue;
 			}

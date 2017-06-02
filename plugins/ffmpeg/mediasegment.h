@@ -16,7 +16,7 @@
 #include "audiobuffer.h"
 
 #if defined( FFMPEG_SUPPORTED )
-#include <hap/source/hap.h>
+#include "hap/source/hap.h"
 #endif
 
 #ifndef INT64_C
@@ -138,6 +138,11 @@ public:
 #else
 		return( 0 );
 #endif
+	}
+
+	virtual QString statusMessage( void ) const Q_DECL_OVERRIDE
+	{
+		return( mStatusMessage );
 	}
 
 private:
@@ -392,6 +397,8 @@ private:
 
 	MediaAudioProcessor	*mAudioProcessor;
 #endif
+
+	QString				 mStatusMessage;
 };
 
 #endif // MEDIASEGMENT_H

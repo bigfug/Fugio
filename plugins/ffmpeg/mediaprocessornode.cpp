@@ -32,19 +32,19 @@
 //#include "mediaplayervideopreview.h"
 #include "mediaaudioprocessor.h"
 
-#if defined( HAP_SUPPORTED )
-#include <hap.h>
+#if defined( FFMPEG_SUPPORTED )
+#include "hap/source/hap.h"
 #endif
 
 MediaProcessorNode::MediaProcessorNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mSegment( 0 ),
 	  mTimeOffset( 0 ), mTimePause( 0 ), mTimeLast( -1 )
 {
-	const static QUuid	PIN_FILENAME	= QUuid( "{43d2824f-7967-4b22-8b0f-c51358b65d17}" );
+	FUGID( PIN_FILENAME, "43d2824f-7967-4b22-8b0f-c51358b65d17" );
 	FUGID( PIN_REWIND, "ae66182c-d914-49cb-85d4-615db69cf3e2" );
 
-	const static QUuid	PIN_IMAGE		= QUuid( "{e0a3e13b-6669-4793-8eb0-e9a12afb0f6b}" );
-	const static QUuid	PIN_AUDIO		= QUuid( "{864cae6d-87a4-4f26-8f64-fd0185dad2cf}" );
+	FUGID( PIN_IMAGE, "e0a3e13b-6669-4793-8eb0-e9a12afb0f6b" );
+	FUGID( PIN_AUDIO, "864cae6d-87a4-4f26-8f64-fd0185dad2cf" );
 
 	mPinFileName = pinInput( "Filename", PIN_FILENAME );
 
@@ -78,27 +78,17 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 
 	QUrl	FileNameUrl;
 
-	if( mPinFileName->isConnected() )
+	fugio::FilenameInterface						*IFN = input<fugio::FilenameInterface *>( mPinFileName );
+
+	if( IFN )
 	{
-		fugio::VariantInterface						*VAR = input<fugio::VariantInterface *>( mPinFileName );
+		FileName = IFN->filename();
 
-		if( VAR != 0 )
-		{
-			FileName = VAR->variant().toString();
-		}
-
-		fugio::FilenameInterface						*IFN = input<fugio::FilenameInterface *>( mPinFileName );
-
-		if( IFN )
-		{
-			FileName = IFN->filename();
-
-			FileNameUrl = QUrl::fromLocalFile( FileName );
-		}
+		FileNameUrl = QUrl::fromLocalFile( FileName );
 	}
 	else
 	{
-		FileName = mPinFileName->value().toString();
+		FileName = variant( mPinFileName ).toString();
 	}
 
 	if( FileNameUrl.isEmpty() )
@@ -160,7 +150,7 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 
 		if( mSegment->imageIsHap() )
 		{
-#if defined( HAP_SUPPORTED )
+#if defined( FFMPEG_SUPPORTED )
 			switch( HapTextureFormat( mSegment->imageFormat() ) )
 			{
 				case HapTextureFormat_RGB_DXT1:
@@ -251,17 +241,25 @@ bool MediaProcessorNode::loadMedia( const QString &pFileName )
 
 	MediaSegment		*SV = new MediaSegment();
 
-	if( SV == 0 )
+	if( !SV )
 	{
 		return( false );
 	}
 
 	if( !SV->loadMedia( pFileName, false ) )
 	{
+		mNode->setStatus( fugio::NodeInterface::Error );
+
+		mNode->setStatusMessage( SV->statusMessage() );
+
 		delete SV;
 
 		return( false );
 	}
+
+	mNode->setStatus( fugio::NodeInterface::Initialised );
+
+	mNode->setStatusMessage( "" );
 
 	setVideo( SV );
 
@@ -277,7 +275,7 @@ void MediaProcessorNode::setVideo( fugio::SegmentInterface *pSegment )
 
 void MediaProcessorNode::unloadMedia( void )
 {
-	if( mSegment != 0 )
+	if( mSegment )
 	{
 		delete mSegment;
 
@@ -398,16 +396,6 @@ fugio::AudioInstanceBase *MediaProcessorNode::audioAllocInstance( qreal pSampleR
 
 	return( InsDat );
 }
-
-//void MediaProcessorNode::audioFreeInstance( void *pInstanceData )
-//{
-//	AudioInstanceData		*InsDat = static_cast<AudioInstanceData *>( pInstanceData );
-
-//	if( InsDat )
-//	{
-//		delete InsDat;
-//	}
-//}
 
 int MediaProcessorNode::audioChannels() const
 {
