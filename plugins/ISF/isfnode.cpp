@@ -296,6 +296,44 @@ void ISFNode::inputsUpdated( qint64 pTimeStamp )
 
 			continue;
 		}
+
+		if( InpDat.mType == AUDIO )
+		{
+			fugio::AudioProducerInterface	*AudInf = input<fugio::AudioProducerInterface *>( P );
+
+			if( !AudInf )
+			{
+				if( InpDat.mAudioInstance )
+				{
+					delete InpDat.mAudioInstance;
+
+					InpDat.mAudioInstance = nullptr;
+
+					InpDat.mSamplePosition = 0;
+				}
+
+			}
+
+			if( AudInf )
+			{
+				if( !InpDat.mAudioInstance )
+				{
+					InpDat.mAudioInstance = AudInf->audioAllocInstance( 48000, fugio::AudioSampleFormat::Format32FS, 1 );
+				}
+
+				if( !InpDat.mAudioInstance )
+				{
+					continue;
+				}
+
+				if( !InpDat.mSamplePosition )
+				{
+					InpDat.mSamplePosition = pTimeStamp * ( 48000 / 1000 );
+				}
+			}
+
+
+		}
 	}
 
 	pinUpdated( mPinOutputRender );
@@ -1020,51 +1058,6 @@ void ISFNode::renderInputs()
 				break;
 
 			case AUDIO:
-				{
-					fugio::AudioProducerInterface	*AudInf = input<fugio::AudioProducerInterface *>( P );
-
-					if( !AudInf )
-					{
-						if( InpDat.mAudioInstance )
-						{
-							delete InpDat.mAudioInstance;
-
-							InpDat.mAudioInstance = nullptr;
-
-							//							mSamplePosition = 0;
-						}
-
-					}
-
-					if( AudInf )
-					{
-						if( !InpDat.mAudioInstance )
-						{
-							InpDat.mAudioInstance = AudInf->audioAllocInstance( 48000, fugio::AudioSampleFormat::Format32FS, 1 );
-						}
-
-						if( !InpDat.mAudioInstance )
-						{
-							continue;
-						}
-
-						//						if( !mSamplePosition )
-						//						{
-						//							mSamplePosition = pTimeStamp * ( 48000 / 1000 );
-						//						}
-					}
-
-					if( InpDat.mTextureId )
-					{
-						glUniform1i( UniLoc, InpDat.mTextureIndex );
-
-						glActiveTexture( GL_TEXTURE0 + InpDat.mTextureIndex );
-
-						glBindTexture( GL_TEXTURE_2D, InpDat.mTextureId );
-					}
-				}
-				break;
-
 			case FFT:
 				if( InpDat.mTextureId )
 				{
