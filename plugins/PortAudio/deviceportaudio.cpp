@@ -581,8 +581,6 @@ int DevicePortAudio::streamCallbackInput( const void *input, unsigned long frame
 		mInputAudioOffset = CurrTime;
 	}
 
-	const qint64		InpLat = mInputTimeLatency * mInputSampleRate;
-
 	mInputTimeInfo = *timeInfo;
 
 	mProducerMutex.lock();
@@ -622,7 +620,7 @@ int DevicePortAudio::streamCallbackInput( const void *input, unsigned long frame
 
 	memset( &AB, 0, sizeof( AB ) );
 
-	audioInput( AB, (const float **)input, frameCount, mInputChannelCount, mInputAudioOffset - InpLat );
+	audioInput( AB, (const float **)input, frameCount, mInputChannelCount, mInputAudioOffset - audioLatency() );
 
 	mAudioBuffers.append( AB );
 
