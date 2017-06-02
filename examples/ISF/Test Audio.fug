@@ -90,7 +90,7 @@ version=2
 
 [94801070-d5b3-4db1-8056-9f820abc5d09]
 control\dockarea=8
-control\value="/*\n{\n  \"CATEGORIES\" : [\n    \"Generator\"\n  ],\n  \"DESCRIPTION\" : \"Visualizes an FFT analysis image with custom set colors for frequency domain\",\n  \"INPUTS\" : [\n    {\n      \"NAME\" : \"Audio\",\n      \"TYPE\" : \"audio\"\n    }\n  ]\n}\n*/\n\n\nvoid main()\n{\n\tfloat\tv = IMG_THIS_NORM_PIXEL( Audio ).r * 50.0;\n\n\tgl_FragColor = vec4( v < 0 ? abs( v ) : 0, v > 0 ? v : 0, v, 1);\n}"
+control\value="/*\n{\n  \"CATEGORIES\" : [\n    \"Generator\"\n  ],\n  \"DESCRIPTION\" : \"Visualizes an audio signal\",\n  \"INPUTS\" : [\n    {\n      \"NAME\" : \"Audio\",\n      \"TYPE\" : \"audio\"\n    }\n  ]\n}\n*/\n\n\nvoid main()\n{\n\tfloat\tv = IMG_THIS_NORM_PIXEL( Audio ).r * 50.0;\n\n\tgl_FragColor = vec4( v < 0 ? abs( v ) : 0, v > 0 ? v : 0, 0, 1);\n}"
 control\visible=true
 inputs\1\4b6635ee-4bc1-40f6-94ac-f4ce2490a87d=00000000-0000-0000-0000-000000000000
 inputs\2\401e2bc2-7eb6-42b3-9d34-b2fc084f624f=00000000-0000-0000-0000-000000000000
