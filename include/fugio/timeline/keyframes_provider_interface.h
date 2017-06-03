@@ -7,11 +7,6 @@
 
 class QSettings;
 
-#define	SNAP_NONE		( 0 )
-#define	SNAP_KEY_FRAMES	( 1 << 0 )
-#define	SNAP_MARKERS	( 1 << 1 )
-#define	SNAP_VALUES		( 1 << 2 )
-
 class KeyFrameData;
 
 FUGIO_NAMESPACE_BEGIN
