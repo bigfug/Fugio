@@ -1,0 +1,65 @@
+cmake_minimum_required( VERSION 3.1 )
+
+project( fugio-lua )
+
+set( SOURCE_FILES
+	../../include/fugio/nodecontrolbase.h
+	../../include/fugio/pincontrolbase.h
+	../../include/fugio/lua/uuid.h
+	../../include/fugio/lua/lua_interface.h
+	luaplugin.h
+	luanode.h
+	syntaxhighlighterlua.h
+	luahighlighter.h
+	luaexnode.h
+	luaexpin.h
+	luaarray.h
+	luaplugin.cpp
+	luanode.cpp
+	syntaxhighlighterlua.cpp
+	luahighlighter.cpp
+	luaexnode.cpp
+	luaexpin.cpp
+	luaarray.cpp
+)
+
+set( QRC_FILES
+	resources.qrc
+)
+
+add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} )
+
+set_target_properties( ${PROJECT_NAME} PROPERTIES
+  BUNDLE TRUE
+)
+
+#—————————————————————————————————-
+# Qt5
+
+find_package( Qt5 COMPONENTS Core Gui Widgets REQUIRED )
+
+target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
+
+#-------------------------------------
+# Lua
+
+find_package( Lua 5.3 )
+
+if( LUA_FOUND )
+	include_directories( ${LUA_INCLUDE_DIR} )
+
+	target_link_libraries( ${PROJECT_NAME} ${LUA_LIBRARIES} )
+
+	add_definitions( -DLUA_SUPPORTED )
+endif()
+
+#—————————————————————————————————-
+# Install
+
+install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
+
+if( WIN32 )
+	string( REPLACE ".lib" ".dll" LUA_DLL ${LUA_LIBRARIES} )
+
+	install( FILES ${LUA_DLL} DESTINATION . )
+endif( WIN32 )

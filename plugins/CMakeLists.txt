@@ -1,3 +1,6 @@
+add_subdirectory( ARToolKit )
 add_subdirectory( Audio )
+add_subdirectory( Colour )
 add_subdirectory( Core )
+add_subdirectory( Lua )
 add_subdirectory( PortAudio )
