@@ -1,9 +1,11 @@
-cmake_minimum_required( VERSION 2.8.11 )
+cmake_minimum_required( VERSION 3.1 )
 
-project( FugioApp )
+project( Fugio )
 
-find_package( Qt5 COMPONENTS Core Concurrent Gui Network Widgets REQUIRED ) 
- 
+set( CMAKE_CXX_STANDARD 11 )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+set( CMAKE_CXX_EXTENSIONS OFF )
+
 set( UI_RESOURCES fugio.qrc )
 
 include_directories( ../FugioLib )
@@ -132,3 +134,18 @@ if( APPLE )
 		MACOSX_FRAMEWORK_INFO_PLIST Info.plist
 	)
 endif()
+
+install( TARGETS Fugio
+	RUNTIME DESTINATION .
+	BUNDLE DESTINATION .
+)
+
+#—————————————————————————————————-
+# Qt5
+
+find_package( Qt5 COMPONENTS Core Concurrent Gui OpenGL Network Widgets REQUIRED ) 
+
+target_link_libraries( Fugio Qt5::Core Qt5::Network Qt5::OpenGL libfugio )
+
+include( ../qtdeploy.cmake )
+

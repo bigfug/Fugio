@@ -1,10 +1,12 @@
-cmake_minimum_required( VERSION 2.8.11 )
+cmake_minimum_required( VERSION 3.1 )
 
 project( libfugio )
 
-find_package( Qt5 REQUIRED COMPONENTS Core Concurrent Network Widgets )
+set( CMAKE_CXX_STANDARD 11 )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+set( CMAKE_CXX_EXTENSIONS OFF )
 
-include_directories( ${Qt5Core_INCLUDE_DIRS} ${Qt5Network_INCLUDE_DIRS} ${Qt5Widgets_INCLUDE_DIRS} )
+find_package( Qt5 REQUIRED COMPONENTS Core Concurrent Network Widgets )
 
 set( UI_RESOURCES resources.qrc )
 
@@ -52,3 +54,5 @@ set( SOURCE_FILES
 add_definitions( -DFUGIOLIB_STATIC )
 
 add_library( ${PROJECT_NAME} STATIC ${SOURCE_FILES} ${UI_RESOURCES} ) 
+
+target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::Widgets )

@@ -1,8 +1,6 @@
-cmake_minimum_required( VERSION 2.8.11 )
+cmake_minimum_required( VERSION 3.1 )
 
 project( fugio-core )
-
-find_package( Qt5 COMPONENTS Core REQUIRED )
 
 set( SOURCE_FILES
 	coreplugin.cpp
@@ -71,8 +69,25 @@ set( SOURCE_FILES
     arraylistentry.h
 )
 
-add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} )
+set( QRC_FILES
+	resources.qrc
+)
+
+add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} )
 
 set_target_properties( ${PROJECT_NAME} PROPERTIES
   BUNDLE TRUE
 )
+
+#—————————————————————————————————-
+# Install
+
+install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
+
+#—————————————————————————————————-
+# Qt5
+
+find_package( Qt5 COMPONENTS Core Widgets REQUIRED )
+
+target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
+
