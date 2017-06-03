@@ -10,6 +10,12 @@ set( UI_RESOURCES fugio.qrc )
 
 include_directories( ../FugioLib )
 
+file( READ version.txt FUGIO_VERSION )
+
+string( STRIP ${FUGIO_VERSION} FUGIO_VERSION )
+
+add_definitions( -DFUGIO_VERSION=${FUGIO_VERSION} )
+
 set( SOURCE_FILES
 	../include/fugio/context_widget_interface.h
 	../include/fugio/context_widget_signals.h
