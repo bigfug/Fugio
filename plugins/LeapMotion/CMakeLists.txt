@@ -1,0 +1,63 @@
+cmake_minimum_required( VERSION 3.1 )
+
+project( fugio-leapmotion )
+
+set( SOURCE_FILES
+	../../include/fugio/nodecontrolbase.h
+	../../include/fugio/pincontrolbase.h
+
+	../../include/fugio/leapmotion/uuid.h
+	../../include/fugio/leapmotion/hand_interface.h
+
+	deviceleap.cpp
+	deviceleap.h
+	leaphandnode.cpp
+	leaphandnode.h
+	leaphandpin.cpp
+	leaphandpin.h
+	leapmotionplugin.cpp
+	leapnode.cpp
+	leapnode.h
+	leaprectifynode.cpp
+	leaprectifynode.h
+)
+
+set( QRC_FILES
+	resources.qrc
+)
+
+add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} )
+
+set_target_properties( ${PROJECT_NAME} PROPERTIES
+  BUNDLE TRUE
+)
+
+#—————————————————————————————————-
+# Install
+
+install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
+
+#—————————————————————————————————-
+# Qt5
+
+find_package( Qt5 COMPONENTS Core Widgets REQUIRED )
+
+target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
+
+#—————————————————————————————————-
+# Leap Motion
+
+if( WIN32 )
+	find_path( LEAP_INCLUDE_DIR Leap.h )
+	
+	find_library( LEAP_LIB NAMES Leap )
+
+	if( LEAP_INCLUDE_DIR AND LEAP_LIB )
+		include_directories( ${LEAP_INCLUDE_DIR} )
+
+		target_link_libraries( ${PROJECT_NAME} ${LEAP_LIB} )
+
+		add_definitions( -DLEAP_PLUGIN_SUPPORTED )
+	endif( LEAP_INCLUDE_DIR AND LEAP_LIB )
+endif( WIN32 )
+
