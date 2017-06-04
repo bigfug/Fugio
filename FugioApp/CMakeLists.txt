@@ -19,9 +19,12 @@ add_definitions( -DFUGIO_VERSION=${FUGIO_VERSION} )
 set( SOURCE_FILES
 	../include/fugio/context_widget_interface.h
 	../include/fugio/context_widget_signals.h
+	../include/fugio/editor_interface.h
+	../include/fugio/editor_signals.h
 	../include/fugio/global.h
 	../include/fugio/utils.h
 	../stable.h
+	
 	app.cpp
 	app.h
 	contextsubwindow.cpp
@@ -112,20 +115,18 @@ set( SOURCE_FILES
 	wizards/firsttimewizard.h
 	wizards/nodeeditorwizard.cpp
 	wizards/nodeeditorwizard.h
-    ../include/fugio/editor_interface.h
-    ../include/fugio/editor_signals.h
-	)
+)
 
 set( UIS_HDRS
-	mainwindow.ui
-	snippets/snippetsform.ui
-	settings/settingsdialog.ui
 	contextwidgetprivate.ui
-	stylesheetform.ui
-	performanceform.ui
-	patchpromptdialog.ui
-	nodenamedialog.ui
+	mainwindow.ui
 	nodelistform.ui
+	nodenamedialog.ui
+	patchpromptdialog.ui
+	performanceform.ui
+	settings/settingsdialog.ui
+	snippets/snippetsform.ui
+	stylesheetform.ui
 )
 
 add_definitions( -DFUGIOLIB_STATIC )
