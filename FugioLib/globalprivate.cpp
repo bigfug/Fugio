@@ -153,19 +153,23 @@ void GlobalPrivate::loadPlugins( QDir pDir )
 	{
 		QDir		PlgDir = pDir.absoluteFilePath( dirName );
 
-		PlgDir.cd( "Contents" );
-		PlgDir.cd( "MacOS" );
-
-		for( QString fileName : PlgDir.entryList( QDir::Files ) )
+		if( PlgDir.cd( "Contents/MacOS" ) )
 		{
-			QFileInfo	File( PlgDir.absoluteFilePath( fileName ) );
-
-			if( !File.isReadable() )
+			for( QString fileName : PlgDir.entryList( QDir::Files ) )
 			{
-				continue;
-			}
+				QFileInfo	File( PlgDir.absoluteFilePath( fileName ) );
 
-			loadPlugin( pDir.absoluteFilePath( File.absoluteFilePath() ) );
+				if( !File.isReadable() )
+				{
+					continue;
+				}
+
+				loadPlugin( pDir.absoluteFilePath( File.absoluteFilePath() ) );
+			}
+		}
+		else
+		{
+			loadPlugins( PlgDir );
 		}
 	}
 #else
