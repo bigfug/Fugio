@@ -101,11 +101,10 @@ set( SOURCE_FILES
 	textureclonenode.h
     texturemonitornode.h
     texturemonitor.h
-
 	deviceopengloutput.cpp
-deviceopengloutput.h
+	deviceopengloutput.h
 
-texturenodeform.ui
+	texturenodeform.ui
 	openglstateform.ui
 )
 
@@ -113,14 +112,25 @@ set( QRC_FILES
 	resources.qrc
 )
 
+#—————————————————————————————————-
+
 find_package( glew REQUIRED )
 
 include_directories( ${GLEW_INCLUDE_DIRS} )
 
+link_libraries( ${GLEW_LIBRARIES} )
+
+#—————————————————————————————————-
+
+find_package( OpenGL REQUIRED )
+
+include_directories( ${OPENGL_INCLUDE_DIRS} )
+
+link_libraries( ${OPENGL_LIBRARIES} )
+
+#—————————————————————————————————-
+
 add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} )
-
-target_link_libraries( ${PROJECT_NAME} ${GLEW_LIBRARIES} )
-
 
 set_target_properties( ${PROJECT_NAME} PROPERTIES
   BUNDLE TRUE
