@@ -33,10 +33,21 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 #—————————————————————————————————-
 # Qt5
 
-find_package( Qt5 COMPONENTS Core SerialPort Widgets REQUIRED )
+find_package( Qt5 COMPONENTS Core Widgets REQUIRED )
+find_package( Qt5 COMPONENTS SerialPort )
 
-target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::SerialPort Qt5::Widgets )
+target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 
 if( Qt5SerialPort_DIR )
+	target_link_libraries( ${PROJECT_NAME} Qt5::SerialPort )
+
 	add_definitions( -DSERIALPORT_SUPPORTED )
+else( Qt5SerialPort_DIR )
+	message( "Serial is not available" )
 endif( Qt5SerialPort_DIR )
+
+#------------------------------------------------------------------------------
+# Install
+
+install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
+

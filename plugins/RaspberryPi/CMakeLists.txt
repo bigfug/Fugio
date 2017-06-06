@@ -28,3 +28,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 find_package( Qt5 COMPONENTS Core Widgets REQUIRED )
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
+
+#------------------------------------------------------------------------------
+# Install
+
+install( TARGETS ${PROJECT_NAME} DESTINATION plugins )

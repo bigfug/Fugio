@@ -79,6 +79,8 @@ if( ARTOOKIT5_FOUND )
 	endif( APPLE )
 
 	add_definitions( -DARTOOLKIT_SUPPORTED )
+else( ARTOOLKIT5_FOUND )
+	message( "ARToolKit is not configured" )
 endif( ARTOOKIT5_FOUND )
 
 #—————————————————————————————————-

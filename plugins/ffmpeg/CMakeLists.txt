@@ -84,6 +84,23 @@ if( WIN32 )
 endif( WIN32 )
 
 #—————————————————————————————————-
+# snappy
+
+if( NOT WIN32 )
+	include( FindPkgConfig )
+
+	if( PKG_CONFIG_FOUND )
+		pkg_check_modules( snappy snappy REQUIRED )
+
+		if( snappy_FOUND )
+			include_directories( ${snappy_INCLUDE_DIRS} )
+
+			link_directories( ${snappy_LIBRARY_DIRS} )
+		endif( snappy_FOUND )
+	endif( PKG_CONFIG_FOUND )
+endif( NOT WIN32 )
+
+#—————————————————————————————————-
 
 add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} ${SNAPPY_FILES} )
 
@@ -136,7 +153,7 @@ if( FFMPEG_LIBRARY_DIR )
 	)
 	
 	add_definitions( -DFFMPEG_SUPPORTED )
-endif(FFMPEG_LIBRARY_DIR)
+endif( FFMPEG_LIBRARY_DIR )
 
 if( WIN32 )
 	SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SAFESEH:NO")
@@ -156,7 +173,7 @@ endif( WIN32 )
 #—————————————————————————————————-
 # snappy
 
-if( NOT WIN32 )
-	find_package( snappy )
-endif( NOT WIN32 )
+if( NOT WIN32 AND snappy_FOUND )
+	target_link_libraries( ${PROJECT_NAME} ${snappy_LIBRARIES} )
+endif( NOT WIN32 AND snappy_FOUND )
 

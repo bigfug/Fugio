@@ -10,11 +10,16 @@ set( UI_RESOURCES fugio.qrc )
 
 include_directories( ../FugioLib )
 
+#------------------------------------------------------------------------------
+# Read version.txt
+
 file( READ version.txt FUGIO_VERSION )
 
 string( STRIP ${FUGIO_VERSION} FUGIO_VERSION )
 
 add_definitions( -DFUGIO_VERSION=${FUGIO_VERSION} )
+
+#------------------------------------------------------------------------------
 
 set( SOURCE_FILES
 	../include/fugio/context_widget_interface.h
@@ -147,12 +152,14 @@ install( TARGETS Fugio
 	BUNDLE DESTINATION .
 )
 
-#—————————————————————————————————-
+#------------------------------------------------------------------------------
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Concurrent Gui OpenGL Network Widgets REQUIRED ) 
+find_package( Qt5 COMPONENTS Core Concurrent Gui OpenGL Network Widgets REQUIRED )
 
-target_link_libraries( Fugio Qt5::Core Qt5::Network Qt5::OpenGL Qt5::Widgets libfugio )
+find_package( Qt5 COMPONENTS SerialPort WebSockets )
+
+target_link_libraries( Fugio Qt5::Core Qt5::Concurrent Qt5::Network Qt5::OpenGL Qt5::WebSockets Qt5::Widgets libfugio )
 
 include( ../qtdeploy.cmake )
 

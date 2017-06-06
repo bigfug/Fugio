@@ -34,6 +34,8 @@ if( PORTAUDIO_FOUND )
 	include_directories( ${PORTAUDIO_INCLUDE_DIRS} )
 
 	link_directories( ${PORTAUDIO_LIBRARY_DIRS} )
+else( PORTAUDIO_FOUND )
+	message( "PortAudio is not configured" )
 endif( PORTAUDIO_FOUND )
 
 #—————————————————————————————————-

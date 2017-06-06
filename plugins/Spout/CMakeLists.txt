@@ -80,8 +80,13 @@ if( WIN32 )
 		)
 		
 		add_definitions( -DSPOUT_SUPPORTED )
+	else( SPOUT_DIR )
+		message( "Spout is not configured" )
 	endif( SPOUT_DIR )
+else( WIN32 )
+	message( "Spout is not supported on this platform" )
 endif( WIN32 )
+
 #—————————————————————————————————-
 
 add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} ${SPOUT_FILES} )
