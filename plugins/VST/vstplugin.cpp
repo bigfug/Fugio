@@ -117,6 +117,8 @@ PluginInterface::InitResult VSTPlugin::initialise( GlobalInterface *pApp, bool p
 
 	mApp = pApp;
 
+#if defined( VST_SUPPORTED )
+
 #if defined( Q_OS_WIN )
 	QString		ProgramFiles64Path( getenv( "PROGRAMFILES" ) );
 	QString		ProgramFiles32Path( getenv( "PROGRAMW6432" ) );
@@ -137,6 +139,8 @@ PluginInterface::InitResult VSTPlugin::initialise( GlobalInterface *pApp, bool p
 	pluginDirScan( QDir( "/Library/Audio/Plug-Ins/VST3" ) );
 	pluginDirScan( QDir( "/Network/Library/Audio/Plug-ins/VST3" ) );
 #endif
+
+#endif	// VST_SUPPORTED
 
 	mApp->registerNodeClasses( mNodeClasses );
 
