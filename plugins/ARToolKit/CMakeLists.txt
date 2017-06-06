@@ -60,7 +60,23 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 )
 
 if( ARTOOKIT5_FOUND )
-	target_link_libraries( ${PROJECT_NAME} ${ARTOOKIT5_LIBRARY_DIR}/AR.lib ${ARTOOKIT5_LIBRARY_DIR}/ARICP.lib legacy_stdio_definitions )
+	target_link_libraries( ${PROJECT_NAME} AR ARICP )
+
+	if( MSVC14 )
+		target_link_libraries( ${PROJECT_NAME} legacy_stdio_definitions )
+	endif( MSVC14 )
+
+	if( APPLE )
+		find_library( CoreFoundation_LIBRARY CoreFoundation )
+		find_library( AppKit_LIBRARY AppKit )
+		find_library( Accelerate_LIBRARY Accelerate )
+
+		target_link_libraries( ${PROJECT_NAME}
+			${CoreFoundation_LIBRARY}
+			${AppKit_LIBRARY}
+			${Accelerate_LIBRARY}
+			)
+	endif( APPLE )
 
 	add_definitions( -DARTOOLKIT_SUPPORTED )
 endif( ARTOOKIT5_FOUND )
