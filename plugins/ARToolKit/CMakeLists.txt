@@ -91,7 +91,7 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 #-------------------------------------
 # Lua
 
-find_package( Lua 5.3 )
+find_package( Lua 5.2 )
 
 if( LUA_FOUND )
 	include_directories( ${LUA_INCLUDE_DIR} )
