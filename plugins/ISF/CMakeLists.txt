@@ -28,22 +28,6 @@ endif( MSVC )
 
 #—————————————————————————————————-
 
-find_package( glew REQUIRED )
-
-include_directories( ${GLEW_INCLUDE_DIRS} )
-
-link_libraries( ${GLEW_LIBRARIES} )
-
-#—————————————————————————————————-
-
-find_package( OpenGL REQUIRED )
-
-include_directories( ${OPENGL_INCLUDE_DIRS} )
-
-link_libraries( ${OPENGL_LIBRARIES} )
-
-#—————————————————————————————————-
-
 add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} )
 
 set_target_properties( ${PROJECT_NAME} PROPERTIES
@@ -61,4 +45,18 @@ install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
 find_package( Qt5 COMPONENTS Core Gui Widgets REQUIRED )
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
+
+#------------------------------------------------------------------------------
+# OpenGL
+
+find_package( OpenGL REQUIRED )
+
+target_link_libraries( ${PROJECT_NAME} OpenGL::GL )
+
+#------------------------------------------------------------------------------
+# GLEW
+
+find_package( GLEW REQUIRED )
+
+target_link_libraries( ${PROJECT_NAME} GLEW::GLEW )
 

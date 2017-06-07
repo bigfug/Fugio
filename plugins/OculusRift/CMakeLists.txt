@@ -22,22 +22,6 @@ set( QRC_FILES
 
 #—————————————————————————————————-
 
-find_package( glew REQUIRED )
-
-include_directories( ${GLEW_INCLUDE_DIRS} )
-
-link_libraries( ${GLEW_LIBRARIES} )
-
-#—————————————————————————————————-
-
-find_package( OpenGL REQUIRED )
-
-include_directories( ${OPENGL_INCLUDE_DIRS} )
-
-link_libraries( ${OPENGL_LIBRARIES} )
-
-#—————————————————————————————————-
-
 add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} )
 
 set_target_properties( ${PROJECT_NAME} PROPERTIES
@@ -65,11 +49,26 @@ if( WIN32 )
 	find_library( OCULUS_LIB NAMES LibOVR )
 
 	if( OCULUS_INCLUDE_DIR AND OCULUS_LIB )
-		include_directories( ${OCULUS_INCLUDE_DIR} )
+		target_include_directories( ${PROJECT_NAME} PRIVATE ${OCULUS_INCLUDE_DIR} )
 
 		target_link_libraries( ${PROJECT_NAME} ${OCULUS_LIB} )
 
-		add_definitions( -DOCULUS_PLUGIN_SUPPORTED )
+		target_compile_definitions( ${PROJECT_NAME} PRIVATE OCULUS_PLUGIN_SUPPORTED )
 	endif( OCULUS_INCLUDE_DIR AND OCULUS_LIB )
 endif( WIN32 )
+
+
+#------------------------------------------------------------------------------
+# OpenGL
+
+find_package( OpenGL REQUIRED )
+
+target_link_libraries( ${PROJECT_NAME} OpenGL::GL )
+
+#------------------------------------------------------------------------------
+# GLEW
+
+find_package( GLEW REQUIRED )
+
+target_link_libraries( ${PROJECT_NAME} GLEW::GLEW )
 

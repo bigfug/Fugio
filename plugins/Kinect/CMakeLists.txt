@@ -53,7 +53,7 @@ if( WIN32 )
 
 		target_link_libraries( ${PROJECT_NAME} ${KINECT_LIB} )
 
-		add_definitions( -DKINECT_SUPPORTED )
+		target_compile_definitions( ${PROJECT_NAME} PRIVATE KINECT_SUPPORTED )
 	endif( KINECT_INCLUDE_DIR AND KINECT_LIB )
 endif( WIN32 )
 

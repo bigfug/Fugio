@@ -27,21 +27,13 @@ set( QRC_FILES
 	resources.qrc
 )
 
-#—————————————————————————————————- ---------------
-
-find_package( glew REQUIRED )
-
-include_directories( ${GLEW_INCLUDE_DIRS} )
-
-link_libraries( ${GLEW_LIBRARIES} )
-
 #—————————————————————————————————-
 
-find_package( OpenGL REQUIRED )
+add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} ${SPOUT_FILES} )
 
-include_directories( ${OPENGL_INCLUDE_DIRS} )
-
-link_libraries( ${OPENGL_LIBRARIES} )
+set_target_properties( ${PROJECT_NAME} PROPERTIES
+  BUNDLE TRUE
+)
 
 #------------------------------------------------------------------------------
 
@@ -49,7 +41,7 @@ if( WIN32 )
 	find_path( SPOUT_DIR Spout.h )
 	
 	if( SPOUT_DIR )
-		include_directories( ${SPOUT_DIR} )
+		target_include_directories( ${PROJECT_NAME} PRIVATE ${SPOUT_DIR} )
 		
 		set( SPOUT_FILES
 			${SPOUT_DIR}/SpoutCopy.cpp
@@ -79,21 +71,17 @@ if( WIN32 )
 			${SPOUT_DIR}/SpoutSharedMemory.h
 		)
 		
-		add_definitions( -DSPOUT_SUPPORTED )
+		add_library( Spout STATIC ${SPOUT_FILES} )
+
+		target_link_libraries( ${PROJECT_NAME} Spout )
+
+		target_compile_definitions( ${PROJECT_NAME} PRIVATE SPOUT_SUPPORTED )
 	else( SPOUT_DIR )
 		message( "Spout is not configured" )
 	endif( SPOUT_DIR )
 else( WIN32 )
 	message( "Spout is not supported on this platform" )
 endif( WIN32 )
-
-#—————————————————————————————————-
-
-add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} ${SPOUT_FILES} )
-
-set_target_properties( ${PROJECT_NAME} PROPERTIES
-  BUNDLE TRUE
-)
 
 #—————————————————————————————————-
 # Install
@@ -107,3 +95,16 @@ find_package( Qt5 COMPONENTS Core Gui Widgets REQUIRED )
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 
+#------------------------------------------------------------------------------
+# OpenGL
+
+find_package( OpenGL REQUIRED )
+
+target_link_libraries( ${PROJECT_NAME} OpenGL::GL )
+
+#------------------------------------------------------------------------------
+# GLEW
+
+find_package( GLEW REQUIRED )
+
+target_link_libraries( ${PROJECT_NAME} GLEW::GLEW )

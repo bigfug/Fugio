@@ -57,7 +57,7 @@ if( WIN32 )
 
 		target_link_libraries( ${PROJECT_NAME} ${LEAP_LIB} )
 
-		add_definitions( -DLEAP_PLUGIN_SUPPORTED )
+		target_compile_definitions( ${PROJECT_NAME} PRIVATE LEAP_PLUGIN_SUPPORTED )
 	endif( LEAP_INCLUDE_DIR AND LEAP_LIB )
 endif( WIN32 )
 

@@ -41,5 +41,5 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 if( WIN32 )
 	target_link_libraries( ${PROJECT_NAME} Xinput9_1_0 )
 	
-	add_definitions( -DXINPUT_SUPPORTED )
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE XINPUT_SUPPORTED )
 endif( WIN32 )

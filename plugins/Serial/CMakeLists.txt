@@ -36,12 +36,12 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 find_package( Qt5 COMPONENTS Core Widgets REQUIRED )
 find_package( Qt5 COMPONENTS SerialPort )
 
-target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
+target_link_libraries( ${PROJECT_NAME} PUBLIC Qt5::Core Qt5::Widgets )
 
 if( Qt5SerialPort_DIR )
-	target_link_libraries( ${PROJECT_NAME} Qt5::SerialPort )
+	target_link_libraries( ${PROJECT_NAME} PUBLIC Qt5::SerialPort )
 
-	add_definitions( -DSERIALPORT_SUPPORTED )
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE SERIALPORT_SUPPORTED )
 else( Qt5SerialPort_DIR )
 	message( "Serial is not available" )
 endif( Qt5SerialPort_DIR )

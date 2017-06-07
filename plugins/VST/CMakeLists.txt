@@ -46,3 +46,11 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 
 install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
 
+#------------------------------------------------------------------------------
+# VST3SDK
+
+find_package( vst3sdk QUIET )
+
+target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
+
+#target_compile_definitions( ${PROJECT_NAME} PRIVATE 

@@ -101,7 +101,7 @@ if( WIN32 )
 			${OPENCV_VIDEO_LIB}
 		)
 		
-		add_definitions( -DOPENCV_SUPPORTED)
+		target_compile_definitions( ${PROJECT_NAME} PRIVATE OPENCV_SUPPORTED)
 	endif( OPENCV_INCLUDE_DIR )
 endif( WIN32 )
 

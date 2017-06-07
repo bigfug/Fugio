@@ -43,11 +43,11 @@ if( WIN32 )
 	find_library( DLIB_LIB NAMES dlib HINTS ${DLIB_DIR} )
 
 	if( DLIB_DIR AND DLIB_LIB )
-		include_directories( ${DLIB_DIR} )
+		target_include_directories( ${PROJECT_NAME} PRIVATE ${DLIB_DIR} )
 
 		target_link_libraries( ${PROJECT_NAME} ${DLIB_LIB} )
 
-		add_definitions( -DDLIB_SUPPORTED )
+		target_compile_definitions( ${PROJECT_NAME} PRIVATE DLIB_SUPPORTED )
 	endif( DLIB_DIR AND DLIB_LIB )
 else( WIN32 )
 #find_package( dlib )

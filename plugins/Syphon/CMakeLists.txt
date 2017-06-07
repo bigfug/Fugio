@@ -57,7 +57,7 @@ if( APPLE )
 			${Quartz_LIBRARY}
 			)
 
-		add_definitions( -DSYPHON_SUPPORTED )
+		target_compile_definitions( ${PROJECT_NAME} PRIVATE SYPHON_SUPPORTED )
 
 		set( SOURCE_FILES ${SOURCE_FILES}
 				syphonsender.h

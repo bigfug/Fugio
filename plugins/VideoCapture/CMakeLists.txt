@@ -41,3 +41,5 @@ find_package( Qt5 COMPONENTS Core Widgets REQUIRED )
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 
 message( "VideoCapture is not configured" )
+
+#target_compile_definitions( ${PROJECT_NAME} PRIVATE 

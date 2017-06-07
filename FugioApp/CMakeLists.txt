@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 3.1 )
 
-project( Fugio )
+project( Fugio LANGUAGES CXX )
 
 set( CMAKE_CXX_STANDARD 11 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
@@ -9,15 +9,6 @@ set( CMAKE_CXX_EXTENSIONS OFF )
 set( UI_RESOURCES fugio.qrc )
 
 include_directories( ../FugioLib )
-
-#------------------------------------------------------------------------------
-# Read version.txt
-
-file( READ version.txt FUGIO_VERSION )
-
-string( STRIP ${FUGIO_VERSION} FUGIO_VERSION )
-
-add_definitions( -DFUGIO_VERSION=${FUGIO_VERSION} )
 
 #------------------------------------------------------------------------------
 
@@ -153,11 +144,20 @@ install( TARGETS Fugio
 )
 
 #------------------------------------------------------------------------------
+# Read version.txt
+
+file( READ version.txt FUGIO_VERSION )
+
+string( STRIP ${FUGIO_VERSION} FUGIO_VERSION )
+
+target_compile_definitions( ${PROJECT_NAME} PRIVATE FUGIO_VERSION=${FUGIO_VERSION} )
+
+#------------------------------------------------------------------------------
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Concurrent Gui OpenGL Network Widgets REQUIRED )
-
-find_package( Qt5 COMPONENTS SerialPort WebSockets )
+find_package( Qt5
+	COMPONENTS Core Concurrent Gui OpenGL Network Widgets
+	OPTIONAL_COMPONENTS SerialPort WebSockets )
 
 target_link_libraries( Fugio Qt5::Core Qt5::Concurrent Qt5::Network Qt5::OpenGL Qt5::WebSockets Qt5::Widgets libfugio )
 

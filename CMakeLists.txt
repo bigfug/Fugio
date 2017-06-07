@@ -2,6 +2,10 @@ cmake_minimum_required( VERSION 3.1 )
 
 project( Fugio )
 
+# Must use GNUInstallDirs to install libraries into correct
+# locations on all platforms.
+include( GNUInstallDirs )
+
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
 # Instruct CMake to run moc automatically when needed.

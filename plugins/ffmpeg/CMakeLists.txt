@@ -58,49 +58,6 @@ set( QRC_FILES
 )
 
 #—————————————————————————————————-
-# snappy
-
-if( WIN32 )
-	find_path( SNAPPY_DIR snappy-stubs-public.h )
-	
-	if( SNAPPY_DIR )
-		include_directories( ${SNAPPY_DIR} )
-		
-		set( SNAPPY_FILES
-			${SNAPPY_DIR}/snappy.cc
-			${SNAPPY_DIR}/snappy-c.cc
-			${SNAPPY_DIR}/snappy-sinksource.cc
-			${SNAPPY_DIR}/snappy-stubs-internal.cc
-			${SNAPPY_DIR}/snappy.h
-			${SNAPPY_DIR}/snappy-c.h
-			${SNAPPY_DIR}/snappy-internal.h
-			${SNAPPY_DIR}/snappy-sinksource.h
-			${SNAPPY_DIR}/snappy-stubs-internal.h
-			${SNAPPY_DIR}/snappy-stubs-public.h
-		)
-		
-		add_definitions( -DSNAPPY_STATIC )
-	endif( SNAPPY_DIR )
-endif( WIN32 )
-
-#—————————————————————————————————-
-# snappy
-
-if( NOT WIN32 )
-	include( FindPkgConfig )
-
-	if( PKG_CONFIG_FOUND )
-		pkg_check_modules( snappy snappy REQUIRED )
-
-		if( snappy_FOUND )
-			include_directories( ${snappy_INCLUDE_DIRS} )
-
-			link_directories( ${snappy_LIBRARY_DIRS} )
-		endif( snappy_FOUND )
-	endif( PKG_CONFIG_FOUND )
-endif( NOT WIN32 )
-
-#—————————————————————————————————-
 
 add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} ${SNAPPY_FILES} )
 
@@ -119,6 +76,56 @@ install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
 find_package( Qt5 COMPONENTS Core Gui Widgets REQUIRED )
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
+
+#—————————————————————————————————-
+# snappy
+
+if( WIN32 )
+	find_path( SNAPPY_DIR snappy-stubs-public.h )
+	
+	if( SNAPPY_DIR )
+		target_include_directories( ${PROJECT_NAME} PRIVATE ${SNAPPY_DIR} )
+		
+		set( SNAPPY_FILES
+			${SNAPPY_DIR}/snappy.cc
+			${SNAPPY_DIR}/snappy-c.cc
+			${SNAPPY_DIR}/snappy-sinksource.cc
+			${SNAPPY_DIR}/snappy-stubs-internal.cc
+			${SNAPPY_DIR}/snappy.h
+			${SNAPPY_DIR}/snappy-c.h
+			${SNAPPY_DIR}/snappy-internal.h
+			${SNAPPY_DIR}/snappy-sinksource.h
+			${SNAPPY_DIR}/snappy-stubs-internal.h
+			${SNAPPY_DIR}/snappy-stubs-public.h
+		)
+
+		add_library( snappy STATIC ${SNAPPY_FILES} )
+		
+		target_compile_definitions( snappy PRIVATE SNAPPY_STATIC )
+
+		target_compile_definitions( ${PROJECT_NAME} PRIVATE SNAPPY_STATIC )
+
+		target_link_libraries( ${PROJECT_NAME} snappy )
+
+	endif( SNAPPY_DIR )
+endif( WIN32 )
+
+#—————————————————————————————————-
+# snappy
+
+if( NOT WIN32 )
+	include( FindPkgConfig )
+
+	if( PKG_CONFIG_FOUND )
+		pkg_check_modules( snappy snappy REQUIRED )
+
+		if( snappy_FOUND )
+			target_include_directories( ${PROJECT_NAME} PRIVATE ${snappy_INCLUDE_DIRS} )
+
+			target_link_libraries( ${PROJECT_NAME} ${snappy_LIBRARIES} )
+		endif( snappy_FOUND )
+	endif( PKG_CONFIG_FOUND )
+endif( NOT WIN32 )
 
 #—————————————————————————————————-
 # ffmpeg
@@ -152,7 +159,7 @@ if( FFMPEG_LIBRARY_DIR )
 		${FFMPEG_SWSCALE_LIBRARY}
 	)
 	
-	add_definitions( -DFFMPEG_SUPPORTED )
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE FFMPEG_SUPPORTED )
 endif( FFMPEG_LIBRARY_DIR )
 
 if( WIN32 )
@@ -169,11 +176,3 @@ if( WIN32 )
 	SET(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /SAFESEH:NO")
 	SET(CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO} /SAFESEH:NO")
 endif( WIN32 )
-
-#—————————————————————————————————-
-# snappy
-
-if( NOT WIN32 AND snappy_FOUND )
-	target_link_libraries( ${PROJECT_NAME} ${snappy_LIBRARIES} )
-endif( NOT WIN32 AND snappy_FOUND )
-

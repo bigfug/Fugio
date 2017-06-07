@@ -1,35 +1,5 @@
 cmake_minimum_required( VERSION 3.1 )
 
-find_path( ARTOOKIT5_INCLUDE_DIR NAMES AR/ar.h HINTS $ENV{ARTOOLKIT5_ROOT}/include )
-
-find_library( ARTOOKIT5_LIBRARY NAMES AR HINTS
-	$ENV{ARTOOLKIT5_ROOT}/lib/win32-i386
-	$ENV{ARTOOLKIT5_ROOT}/lib/win64-x64
-)
-
-get_filename_component( ARTOOKIT5_LIBRARY_DIR ${ARTOOKIT5_LIBRARY} DIRECTORY  )
-
-set( ARTOOKIT5_INCLUDE_DIRS
-	${ARTOOKIT5_INCLUDE_DIR}
-)
-set( ARTOOKIT5_LIBRARIES
-	${ARTOOKIT5_LIBRARY}
-)
-
-set( ARTOOKIT5_LIBRARY_DIRS
-	${ARTOOKIT5_LIBRARY_DIR}
-)
-
-if( ARTOOKIT5_INCLUDE_DIRS AND ARTOOKIT5_LIBRARIES )
-	set( ARTOOKIT5_FOUND TRUE )
-endif ()
-
-if( ARTOOKIT5_FOUND )
-	include_directories( ${ARTOOKIT5_INCLUDE_DIRS} )
-
-	link_directories( ${ARTOOKIT5_LIBRARY_DIRS} )
-endif( ARTOOKIT5_FOUND )
-
 project( fugio-artoolkit )
 
 set( SOURCE_FILES
@@ -59,7 +29,35 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
   BUNDLE TRUE
 )
 
+#------------------------------------------------------------------------------
+
+find_path( ARTOOKIT5_INCLUDE_DIR NAMES AR/ar.h HINTS $ENV{ARTOOLKIT5_ROOT}/include )
+
+find_library( ARTOOKIT5_LIBRARY NAMES AR HINTS
+	$ENV{ARTOOLKIT5_ROOT}/lib/win32-i386
+	$ENV{ARTOOLKIT5_ROOT}/lib/win64-x64
+)
+
+get_filename_component( ARTOOKIT5_LIBRARY_DIR ${ARTOOKIT5_LIBRARY} DIRECTORY  )
+
+set( ARTOOKIT5_INCLUDE_DIRS
+	${ARTOOKIT5_INCLUDE_DIR}
+)
+set( ARTOOKIT5_LIBRARIES
+	${ARTOOKIT5_LIBRARY}
+)
+
+set( ARTOOKIT5_LIBRARY_DIRS
+	${ARTOOKIT5_LIBRARY_DIR}
+)
+
+if( ARTOOKIT5_INCLUDE_DIRS AND ARTOOKIT5_LIBRARIES )
+#	set( ARTOOKIT5_FOUND TRUE )
+endif ()
+
 if( ARTOOKIT5_FOUND )
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${ARTOOKIT5_INCLUDE_DIRS} )
+
 	target_link_libraries( ${PROJECT_NAME} AR ARICP )
 
 	if( MSVC14 )
@@ -78,7 +76,7 @@ if( ARTOOKIT5_FOUND )
 			)
 	endif( APPLE )
 
-	add_definitions( -DARTOOLKIT_SUPPORTED )
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE ARTOOLKIT_SUPPORTED )
 else( ARTOOLKIT5_FOUND )
 	message( "ARToolKit is not configured" )
 endif( ARTOOKIT5_FOUND )
@@ -96,12 +94,12 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 find_package( Lua 5.2 )
 
 if( LUA_FOUND )
-	include_directories( ${LUA_INCLUDE_DIR} )
-
 	target_link_libraries( ${PROJECT_NAME} ${LUA_LIBRARIES} )
 
-	add_definitions( -DLUA_SUPPORTED )
-endif()
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${LUA_INCLUDE_DIR} )
+
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE LUA_SUPPORTED )
+endif( LUA_FOUND )
 
 #—————————————————————————————————-
 # Install

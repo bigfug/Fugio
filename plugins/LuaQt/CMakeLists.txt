@@ -75,7 +75,7 @@ if( LUA_FOUND )
 
 	target_link_libraries( ${PROJECT_NAME} ${LUA_LIBRARIES} )
 
-	add_definitions( -DLUA_SUPPORTED )
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE LUA_SUPPORTED )
 endif()
 
 #—————————————————————————————————-

@@ -47,6 +47,8 @@ if( WIN32 )
 
 		target_link_libraries( ${PROJECT_NAME} ${FFTW_LIB} )
 
-		add_definitions( -DFFTW_SUPPORTED )
+		target_compile_definitions( ${PROJECT_NAME} PRIVATE FFTW_SUPPORTED )
+	else( FFTW_DIR AND FFTW_LIB )
+		message( "FFTW not configured" )
 	endif( FFTW_DIR AND FFTW_LIB )
 endif( WIN32 )

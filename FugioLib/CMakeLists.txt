@@ -51,8 +51,8 @@ set( SOURCE_FILES
 	../include/fugio/paired_pins_helper_interface.h
 )
 
-add_definitions( -DFUGIOLIB_STATIC )
-
 add_library( ${PROJECT_NAME} STATIC ${SOURCE_FILES} ${UI_RESOURCES} ) 
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::Widgets )
+
+target_compile_definitions( ${PROJECT_NAME} PRIVATE FUGIOLIB_STATIC )

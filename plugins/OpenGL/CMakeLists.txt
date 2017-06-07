@@ -5,130 +5,116 @@ project( fugio-opengl )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/opengl/uuid.h
-	../../include/fugio/opengl/node_render_interface.h
-	../../include/fugio/opengl/vertex_array_object_interface.h
+
 	../../include/fugio/opengl/buffer_entry_interface.h
 	../../include/fugio/opengl/buffer_interface.h
+	../../include/fugio/opengl/node_render_interface.h
 	../../include/fugio/opengl/output_interface.h
 	../../include/fugio/opengl/shader_interface.h
-	../../include/fugio/opengl/texture_interface.h
 	../../include/fugio/opengl/state_interface.h
-	../../include/fugio/render_interface.h
+	../../include/fugio/opengl/texture_interface.h
+	../../include/fugio/opengl/uuid.h
+	../../include/fugio/opengl/vertex_array_object_interface.h
 	../../include/fugio/output_interface.h
-	openglplugin.cpp
-	texturenode.cpp
-	texturepin.cpp
-	syntaxhighlighterglsl.cpp
-	texturecopynode.cpp
-	texturenodeform.cpp
-	shaderinstancenode.cpp
-	shaderpin.cpp
-	viewportnode.cpp
-	bindtexturenode.cpp
-	texturecubenode.cpp
-	clearnode.cpp
-	rendernode.cpp
-	imagetotexturenode.cpp
-	texturetoimagenode.cpp
-	transformfeedbacknode.cpp
-	buffertoarraynode.cpp
-	bufferentrynode.cpp
-	bufferentrypin.cpp
-	bufferentryproxypin.cpp
-	buffernode.cpp
-	contextnode.cpp
+	../../include/fugio/render_interface.h
+	
 	arraytobuffernode.cpp
-	vertexarrayobjectnode.cpp
-	vertexarrayobjectpin.cpp
-	arraytoindexnode.cpp
-	instancebuffernode.cpp
-	bufferpin.cpp
-	drawnode.cpp
-	preview.cpp
-	previewnode.cpp
-	stateform.cpp
-	statenode.cpp
-	statepin.cpp
-	windownode.cpp
-	shadercompilernode.cpp
-	viewportmatrixnode.cpp
-	renderpin.cpp
-	cubemaprendernode.cpp
-	textureclonenode.cpp
-	texturemonitornode.cpp
-	texturemonitor.cpp
-	texturenode.h
-	texturepin.h
-	openglplugin.h
-	syntaxhighlighterglsl.h
-	texturecopynode.h
-	texturenodeform.h
-	shaderinstancenode.h
-	shaderpin.h
-	viewportnode.h
-	bindtexturenode.h
-	texturecubenode.h
-	clearnode.h
-	rendernode.h
-	opengl_includes.h
-	imagetotexturenode.h
-	texturetoimagenode.h
-	transformfeedbacknode.h
-	buffertoarraynode.h
-	bufferentrynode.h
-	bufferentrypin.h
-	bufferentryproxypin.h
-	buffernode.h
-	contextnode.h
 	arraytobuffernode.h
-	vertexarrayobjectnode.h
-	vertexarrayobjectpin.h
+	arraytoindexnode.cpp
 	arraytoindexnode.h
-	instancebuffernode.h
+	bindtexturenode.cpp
+	bindtexturenode.h
+	bufferentrynode.cpp
+	bufferentrynode.h
+	bufferentrypin.cpp
+	bufferentrypin.h
+	bufferentryproxypin.cpp
+	bufferentryproxypin.h
+	buffernode.cpp
+	buffernode.h
+	bufferpin.cpp
 	bufferpin.h
-	drawnode.h
-	preview.h
-	previewnode.h
-	stateform.h
-	statenode.h
-	statepin.h
-	windownode.h
-	shadercompilernode.h
-	viewportmatrixnode.h
-	renderpin.h
+	buffertoarraynode.cpp
+	buffertoarraynode.h
+	clearnode.cpp
+	clearnode.h
+	contextnode.cpp
+	contextnode.h
+	cubemaprendernode.cpp
 	cubemaprendernode.h
-	textureclonenode.h
-    texturemonitornode.h
-    texturemonitor.h
 	deviceopengloutput.cpp
 	deviceopengloutput.h
+	drawnode.cpp
+	drawnode.h
+	imagetotexturenode.cpp
+	imagetotexturenode.h
+	instancebuffernode.cpp
+	instancebuffernode.h
+	opengl_includes.h
+	openglplugin.cpp
+	openglplugin.h
+	preview.cpp
+	preview.h
+	previewnode.cpp
+	previewnode.h
+	rendernode.cpp
+	rendernode.h
+	renderpin.cpp
+	renderpin.h
+	shadercompilernode.cpp
+	shadercompilernode.h
+	shaderinstancenode.cpp
+	shaderinstancenode.h
+	shaderpin.cpp
+	shaderpin.h
+	stateform.cpp
+	stateform.h
+	statenode.cpp
+	statenode.h
+	statepin.cpp
+	statepin.h
+	syntaxhighlighterglsl.cpp
+	syntaxhighlighterglsl.h
+	textureclonenode.cpp
+	textureclonenode.h
+	texturecopynode.cpp
+	texturecopynode.h
+	texturecubenode.cpp
+	texturecubenode.h
+	texturemonitor.cpp
+	texturemonitornode.cpp
+	texturenode.cpp
+	texturenode.h
+	texturenodeform.cpp
+	texturenodeform.h
+	texturepin.cpp
+	texturepin.h
+	texturetoimagenode.cpp
+	texturetoimagenode.h
+	transformfeedbacknode.cpp
+	transformfeedbacknode.h
+	vertexarrayobjectnode.cpp
+	vertexarrayobjectnode.h
+	vertexarrayobjectpin.cpp
+	vertexarrayobjectpin.h
+	viewportmatrixnode.cpp
+	viewportmatrixnode.h
+	viewportnode.cpp
+	viewportnode.h
+	windownode.cpp
+	windownode.h
+    texturemonitor.h
+    texturemonitornode.h
 
-	texturenodeform.ui
 	openglstateform.ui
+	texturenodeform.ui
 )
 
 set( QRC_FILES
 	resources.qrc
 )
 
-#—————————————————————————————————-
-
-find_package( glew REQUIRED )
-
-include_directories( ${GLEW_INCLUDE_DIRS} )
-
-link_libraries( ${GLEW_LIBRARIES} )
-
-#—————————————————————————————————-
-
-find_package( OpenGL REQUIRED )
-
-include_directories( ${OPENGL_INCLUDE_DIRS} )
-
-link_libraries( ${OPENGL_LIBRARIES} )
-
-#—————————————————————————————————-
+#------------------------------------------------------------------------------
 
 add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} )
 
@@ -136,15 +122,29 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
   BUNDLE TRUE
 )
 
-#—————————————————————————————————-
+#------------------------------------------------------------------------------
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
 
-#—————————————————————————————————-
+#------------------------------------------------------------------------------
 # Qt5
 
 find_package( Qt5 COMPONENTS Core Concurrent Widgets REQUIRED )
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Concurrent Qt5::Widgets )
+
+#------------------------------------------------------------------------------
+# OpenGL
+
+find_package( OpenGL REQUIRED )
+
+target_link_libraries( ${PROJECT_NAME} OpenGL::GL )
+
+#------------------------------------------------------------------------------
+# GLEW
+
+find_package( GLEW REQUIRED )
+
+target_link_libraries( ${PROJECT_NAME} GLEW::GLEW )
 
