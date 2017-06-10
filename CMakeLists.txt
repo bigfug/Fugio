@@ -1,10 +1,8 @@
 cmake_minimum_required( VERSION 3.1 )
 
-project( Fugio )
+list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
-# Must use GNUInstallDirs to install libraries into correct
-# locations on all platforms.
-include( GNUInstallDirs )
+project( Fugio )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 

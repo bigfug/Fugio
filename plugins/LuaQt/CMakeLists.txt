@@ -71,11 +71,13 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 find_package( Lua 5.2 )
 
 if( LUA_FOUND )
-	include_directories( ${LUA_INCLUDE_DIR} )
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${LUA_INCLUDE_DIR} )
 
 	target_link_libraries( ${PROJECT_NAME} ${LUA_LIBRARIES} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE LUA_SUPPORTED )
+else()
+	message( "LuaQt/Lua not configured" )
 endif()
 
 #—————————————————————————————————-

@@ -54,16 +54,19 @@ if( WIN32 )
 		target_link_libraries( ${PROJECT_NAME} ${OCULUS_LIB} )
 
 		target_compile_definitions( ${PROJECT_NAME} PRIVATE OCULUS_PLUGIN_SUPPORTED )
-	endif( OCULUS_INCLUDE_DIR AND OCULUS_LIB )
-endif( WIN32 )
-
+	endif()
+else()
+	message( "Oculus Rift is not supported on this platform" )
+endif()
 
 #------------------------------------------------------------------------------
 # OpenGL
 
 find_package( OpenGL REQUIRED )
 
-target_link_libraries( ${PROJECT_NAME} OpenGL::GL )
+target_include_directories( ${PROJECT_NAME} PRIVATE ${OPENGL_INCLUDE_DIR} )
+
+target_link_libraries( ${PROJECT_NAME} ${OPENGL_LIBRARIES} )
 
 #------------------------------------------------------------------------------
 # GLEW

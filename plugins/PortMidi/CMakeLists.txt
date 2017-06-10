@@ -40,8 +40,6 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 
 install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
 
-message( "PortMidi is not configured" )
-
 #------------------------------------------------------------------------------
 # PortMidi
 
@@ -51,6 +49,8 @@ if( PortMidi_FOUND )
 	target_link_libraries( ${PROJECT_NAME} PortMidi )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE PORTMIDI_SUPPORTED )
-endif( PortMidi_FOUND )
+else()
+	message( "PortMidi is not configured" )
+endif()
 
 

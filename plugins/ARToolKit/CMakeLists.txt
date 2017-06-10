@@ -31,34 +31,10 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 
 #------------------------------------------------------------------------------
 
-find_path( ARTOOKIT5_INCLUDE_DIR NAMES AR/ar.h HINTS $ENV{ARTOOLKIT5_ROOT}/include )
+find_package( ARToolKit )
 
-find_library( ARTOOKIT5_LIBRARY NAMES AR HINTS
-	$ENV{ARTOOLKIT5_ROOT}/lib/win32-i386
-	$ENV{ARTOOLKIT5_ROOT}/lib/win64-x64
-)
-
-get_filename_component( ARTOOKIT5_LIBRARY_DIR ${ARTOOKIT5_LIBRARY} DIRECTORY  )
-
-set( ARTOOKIT5_INCLUDE_DIRS
-	${ARTOOKIT5_INCLUDE_DIR}
-)
-set( ARTOOKIT5_LIBRARIES
-	${ARTOOKIT5_LIBRARY}
-)
-
-set( ARTOOKIT5_LIBRARY_DIRS
-	${ARTOOKIT5_LIBRARY_DIR}
-)
-
-if( ARTOOKIT5_INCLUDE_DIRS AND ARTOOKIT5_LIBRARIES )
-#	set( ARTOOKIT5_FOUND TRUE )
-endif ()
-
-if( ARTOOKIT5_FOUND )
-	target_include_directories( ${PROJECT_NAME} PRIVATE ${ARTOOKIT5_INCLUDE_DIRS} )
-
-	target_link_libraries( ${PROJECT_NAME} AR ARICP )
+if( ARTOOKIT_FOUND )
+	target_link_libraries( ${PROJECT_NAME} ARToolKit )
 
 	if( MSVC14 )
 		target_link_libraries( ${PROJECT_NAME} legacy_stdio_definitions )
@@ -77,9 +53,9 @@ if( ARTOOKIT5_FOUND )
 	endif( APPLE )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE ARTOOLKIT_SUPPORTED )
-else( ARTOOLKIT5_FOUND )
+else()
 	message( "ARToolKit is not configured" )
-endif( ARTOOKIT5_FOUND )
+endif()
 
 #—————————————————————————————————-
 # Qt5

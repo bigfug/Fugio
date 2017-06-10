@@ -77,31 +77,13 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 #—————————————————————————————————-
 # OpenCV
 
-if( WIN32 )
-	find_path( OPENCV_INCLUDE_DIR opencv/cv.h )
-	
-	find_library( OPENCV_CORE_LIB NAMES opencv_core )
-	find_library( OPENCV_HIGHGUI_LIB NAMES opencv_highgui )
-	find_library( OPENCV_IMGPROC_LIB NAMES opencv_imgproc )
-	find_library( OPENCV_OBJDETECT_LIB NAMES opencv_objdetect )
-	find_library( OPENCV_PHOTO_LIB NAMES opencv_photo )
-	find_library( OPENCV_VIDEOIO_LIB NAMES opencv_videoio )
-	find_library( OPENCV_VIDEO_LIB NAMES opencv_video )
-	
-	if( OPENCV_INCLUDE_DIR )
-		include_directories( ${OPENCV_INCLUDE_DIR} )
+find_package( OpenCV OPTIONAL_COMPONENTS core highgui imgproc objdetect photo video videoio QUIET )
 
-		target_link_libraries( ${PROJECT_NAME}
-			${OPENCV_CORE_LIB}
-			${OPENCV_HIGHGUI_LIB}
-			${OPENCV_IMGPROC_LIB}
-			${OPENCV_OBJDETECT_LIB}
-			${OPENCV_PHOTO_LIB}
-			${OPENCV_VIDEOIO_LIB}
-			${OPENCV_VIDEO_LIB}
-		)
-		
-		target_compile_definitions( ${PROJECT_NAME} PRIVATE OPENCV_SUPPORTED)
-	endif( OPENCV_INCLUDE_DIR )
-endif( WIN32 )
+if( OpenCV_FOUND )
+	target_link_libraries( ${PROJECT_NAME} OpenCV )
+
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE OPENCV_SUPPORTED )
+else()
+	message( "OpenCV is not configured" )
+endif()
 

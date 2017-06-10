@@ -25,40 +25,14 @@ set( QRC_FILES
 	resources.qrc
 )
 
-#—————————————————————————————————- ---------------
-
-find_package( glew REQUIRED )
-
-include_directories( ${GLEW_INCLUDE_DIRS} )
-
-set( LINK_LIBRARIES ${LINK_LIBRARIES} ${GLEW_LIBRARIES} )
-
-#—————————————————————————————————-
-
-find_package( OpenGL REQUIRED )
-
-include_directories( ${OPENGL_INCLUDE_DIRS} )
-
-set( LINK_LIBRARIES ${LINK_LIBRARIES} ${OPENGL_LIBRARIES} )
-
 #------------------------------------------------------------------------------
 
 if( APPLE )
 	find_library( Syphon_LIBRARY Syphon )
-	find_library( OpenGL_LIBRARY OpenGL )
 	find_library( Cocoa_LIBRARY Cocoa )
 	find_library( Quartz_LIBRARY Quartz )
 
 	if( Syphon_LIBRARY )
-		set( LINK_LIBRARIES ${LINK_LIBRARIES}
-			${Syphon_LIBRARY}
-			${OpenGL_LIBRARY}
-			${Cocoa_LIBRARY}
-			${Quartz_LIBRARY}
-			)
-
-		target_compile_definitions( ${PROJECT_NAME} PRIVATE SYPHON_SUPPORTED )
-
 		set( SOURCE_FILES ${SOURCE_FILES}
 				syphonsender.h
 				syphonsender.mm
@@ -73,19 +47,8 @@ else( APPLE )
 endif( APPLE )
 
 #------------------------------------------------------------------------------
-# Qt5
-
-find_package( Qt5 COMPONENTS Core Gui Widgets REQUIRED )
-
-set( LINK_LIBRARIES ${LINK_LIBRARIES}
-	Qt5::Core Qt5::Gui Qt5::Widgets
-)
-
-#------------------------------------------------------------------------------
 
 add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} )
-
-target_link_libraries( ${PROJECT_NAME} ${LINK_LIBRARIES} )
 
 set_target_properties( ${PROJECT_NAME} PROPERTIES
   BUNDLE TRUE
@@ -96,3 +59,36 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 
 install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
 
+#------------------------------------------------------------------------------
+
+if( Syphon_LIBRARY )
+	target_link_libraries( ${PROJECT_NAME}
+		${Syphon_LIBRARY}
+		${Cocoa_LIBRARY}
+		${Quartz_LIBRARY}
+		)
+
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE SYPHON_SUPPORTED )
+endif( Syphon_LIBRARY )
+
+#------------------------------------------------------------------------------
+# Qt5
+
+find_package( Qt5 COMPONENTS Core Gui Widgets REQUIRED )
+
+target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
+
+#------------------------------------------------------------------------------
+# GLEW
+
+find_package( GLEW REQUIRED )
+
+target_link_libraries( ${PROJECT_NAME} GLEW::GLEW )
+
+#—————————————————————————————————-
+
+find_package( OpenGL REQUIRED )
+
+target_include_directories( ${PROJECT_NAME} PRIVATE ${OPENGL_INCLUDE_DIR} )
+
+target_link_libraries( ${PROJECT_NAME} ${OPENGL_LIBRARIES} )

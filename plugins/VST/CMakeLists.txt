@@ -30,10 +30,6 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
   BUNDLE TRUE
 )
 
-if( TRUE )
-	message( "VST is not configured" )
-endif( TRUE )
-
 #------------------------------------------------------------------------------
 # Qt5
 
@@ -51,6 +47,11 @@ install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
 
 find_package( vst3sdk QUIET )
 
-target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
+if( vst3sdk_FOUND )
+	target_link_libraries( ${PROJECT_NAME} vst3sdk )
 
-#target_compile_definitions( ${PROJECT_NAME} PRIVATE 
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE VST_SUPPORTED )
+else()
+	message( "VST is not configured" )
+endif()
+

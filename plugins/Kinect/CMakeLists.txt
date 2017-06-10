@@ -55,5 +55,7 @@ if( WIN32 )
 
 		target_compile_definitions( ${PROJECT_NAME} PRIVATE KINECT_SUPPORTED )
 	endif( KINECT_INCLUDE_DIR AND KINECT_LIB )
+else()
+	message( "Kinect is not supported on this platform" )
 endif( WIN32 )
 

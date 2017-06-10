@@ -37,18 +37,12 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 #—————————————————————————————————-
 # fftw
 
-if( WIN32 )
-	find_path( FFTW_DIR fftw3.h )
-	
-	find_library( FFTW_LIB NAMES fftw3f-3 HINTS ${FFTW_DIR} )
+find_package( FFTW QUIET )
 
-	if( FFTW_DIR AND FFTW_LIB )
-		include_directories( ${FFTW_DIR} )
+if( FFTW_FOUND )
+	target_link_libraries( ${PROJECT_NAME} ${FFTW_F_LIB} )
 
-		target_link_libraries( ${PROJECT_NAME} ${FFTW_LIB} )
-
-		target_compile_definitions( ${PROJECT_NAME} PRIVATE FFTW_SUPPORTED )
-	else( FFTW_DIR AND FFTW_LIB )
-		message( "FFTW not configured" )
-	endif( FFTW_DIR AND FFTW_LIB )
-endif( WIN32 )
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE FFTW_SUPPORTED )
+else()
+	message( "FFTW not configured" )
+endif()

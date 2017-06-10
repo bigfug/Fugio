@@ -42,4 +42,6 @@ if( WIN32 )
 	target_link_libraries( ${PROJECT_NAME} Xinput9_1_0 )
 	
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE XINPUT_SUPPORTED )
-endif( WIN32 )
+else()
+	message( "XInput is not supported on this platform" )
+endif()

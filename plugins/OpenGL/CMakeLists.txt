@@ -139,7 +139,9 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Concurrent Qt5::Widgets )
 
 find_package( OpenGL REQUIRED )
 
-target_link_libraries( ${PROJECT_NAME} OpenGL::GL )
+target_include_directories( ${PROJECT_NAME} PRIVATE ${OPENGL_INCLUDE_DIR} )
+
+target_link_libraries( ${PROJECT_NAME} ${OPENGL_LIBRARIES} )
 
 #------------------------------------------------------------------------------
 # GLEW
