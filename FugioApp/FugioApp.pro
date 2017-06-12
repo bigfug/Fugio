@@ -200,7 +200,7 @@ macx {
 	CONFIG(release,debug|release) {
 		QMAKE_POST_LINK += && install_name_tool -change libfugio.1.dylib @executable_path/../../../libfugio.1.dylib $$APP_DIR/Contents/MacOS/Fugio
 
-		QMAKE_POST_LINK += && macdeployqt $$APP_DIR -always-overwrite -qmldir=../qml
+		QMAKE_POST_LINK += && macdeployqt $$APP_DIR -always-overwrite -qmldir=$$shell_path( $$FUGIO_BASE/qml )
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$APP_DIR ) CFBundleVersion \"$$FUGIO_VERSION\"
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$APP_DIR ) CFBundleGetInfoString \"$$FUGIO_VERSION\"
