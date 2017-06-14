@@ -20,6 +20,8 @@
 
 #include <fugio/global_signals.h>
 
+#include "timesync.h"
+
 //#define GLOBAL_THREADED
 
 //class IPlugin;
@@ -46,9 +48,9 @@ public:
 
 	void updateUniversalTimestamp( qint64 pTimeStamp )
 	{
-		mUniversalOffset = pTimeStamp;
-
 		mUniversalTimer.restart();
+
+		mUniversalOffset = pTimeStamp;
 
 		mGlobalOffset = mGlobalTimer.elapsed();
 	}
@@ -266,6 +268,8 @@ private:
 #if defined( GLOBAL_THREADED )
 	QThread							 mWorkerThread;
 #endif
+
+	TimeSync						*mTimeSync;
 };
 
 #endif // GLOBAL_PRIVATE_H

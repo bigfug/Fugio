@@ -55,6 +55,8 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 
 	mCommandLineParser.addHelpOption();
 	mCommandLineParser.addVersionOption();
+
+	mTimeSync = new TimeSync( this );
 }
 
 GlobalPrivate::~GlobalPrivate( void )
