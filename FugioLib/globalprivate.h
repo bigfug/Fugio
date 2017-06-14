@@ -44,6 +44,15 @@ public:
 
 	void initialisePlugins( void );
 
+	void updateUniversalTimestamp( qint64 pTimeStamp )
+	{
+		mUniversalOffset = pTimeStamp;
+
+		mUniversalTimer.restart();
+
+		mGlobalOffset = mGlobalTimer.elapsed();
+	}
+
 	//-------------------------------------------------------------------------
 	// fugio::IGlobal
 
@@ -55,6 +64,21 @@ public:
 	virtual qint64 timestamp( void ) const Q_DECL_OVERRIDE
 	{
 		return( mGlobalTimer.elapsed() );
+	}
+
+	virtual qint64 universalTimestamp( void ) const Q_DECL_OVERRIDE
+	{
+		return( mUniversalTimer.elapsed() + mUniversalOffset );
+	}
+
+	virtual qint64 universalToGlobal( qint64 pTimeStamp ) const Q_DECL_OVERRIDE
+	{
+		return( ( pTimeStamp - mUniversalOffset ) + mGlobalOffset );
+	}
+
+	virtual qint64 globalToUniversal( qint64 pTimeStamp ) const Q_DECL_OVERRIDE
+	{
+		return( ( pTimeStamp - mGlobalOffset ) + mUniversalOffset );
 	}
 
 	virtual void start() Q_DECL_OVERRIDE;
@@ -209,6 +233,9 @@ private:
 	static GlobalPrivate			*mInstance;
 
 	QElapsedTimer					 mGlobalTimer;
+	qint64							 mGlobalOffset;		// convert from universal to global
+	QElapsedTimer					 mUniversalTimer;
+	qint64							 mUniversalOffset;
 
 	QNetworkAccessManager			*mNetworkManager;
 

@@ -95,7 +95,13 @@ public:
 
 	virtual void clear( void ) = 0;
 
-	virtual qint64 timestamp( void ) const = 0;
+	virtual qint64 timestamp( void ) const = 0;				// arbitrary global timestamp that always increases (only valid on local machine)
+	virtual qint64 universalTimestamp( void ) const = 0;	// can't be compared with timestamp(), can jump forward and back
+
+	// convert between global and universal timestamps
+
+	virtual qint64 universalToGlobal( qint64 pTimeStamp ) const = 0;
+	virtual qint64 globalToUniversal( qint64 pTimeStamp ) const = 0;
 
 	virtual void start( void ) = 0;
 	virtual void stop( void ) = 0;

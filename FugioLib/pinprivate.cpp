@@ -14,7 +14,7 @@
 
 PinPrivate::PinPrivate( void )
 	: mContext( 0 ), mNode( 0 ), mGlobalId( QUuid::createUuid() ), mLocalId( QUuid::createUuid() ), mDirection( PIN_UNKNOWN ),
-	  mUpdated( 0 ), mOrder( -1 ), mFlags( Updatable )
+	  mUpdated( 0 ), mGlobalUpdated( 0 ), mOrder( -1 ), mFlags( Updatable )
 {
 }
 
@@ -158,6 +158,11 @@ qint64 PinPrivate::updated( void ) const
 	return( mUpdated );
 }
 
+qint64 PinPrivate::updatedGlobal() const
+{
+	return( mGlobalUpdated );
+}
+
 bool PinPrivate::isConnected( void ) const
 {
 	return( mContext ? mContext->isConnected( mGlobalId ) : false );
@@ -263,7 +268,9 @@ void PinPrivate::setValue( const QVariant &pVariant )
 	{
 		mDefaultValue = pVariant;
 
-		mUpdated = std::numeric_limits<qint64>::max(); //mContext->global()->timestamp();
+		mUpdated = std::numeric_limits<qint64>::max();
+
+		mGlobalUpdated = mContext->global()->timestamp();
 
 		emit valueChanged( mDefaultValue );
 	}

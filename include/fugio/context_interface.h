@@ -111,7 +111,7 @@ public:
 	virtual void renamePin( const QUuid &pUUID1, const QUuid &pUUID2 ) = 0;
 	virtual QSharedPointer<fugio::PinInterface> findPin( const QUuid &pUUID ) = 0;
 
-	virtual void pinUpdated( QSharedPointer<fugio::PinInterface> pPin, bool pUpdatedConnectedNode = true ) = 0;
+	virtual void pinUpdated( QSharedPointer<fugio::PinInterface> pPin, qint64 pGlobalTimestamp = -1, bool pUpdatedConnectedNode = true ) = 0;
 
 	//-------------------------------------------------------------------------
 	// Connections

@@ -30,7 +30,7 @@
 GlobalPrivate *GlobalPrivate::mInstance = 0;
 
 GlobalPrivate::GlobalPrivate( QObject * ) :
-	GlobalSignals( this ), mPause( false )
+	GlobalSignals( this ), mGlobalOffset( 0 ), mUniversalOffset( 0 ), mPause( false )
 {
 	//-------------------------------------------------------------------------
 	// Install translator
@@ -47,6 +47,8 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 	mGlobalTimer.start();
 
 	qDebug() << "Global Timer Monotonic:" << mGlobalTimer.isMonotonic();
+
+	updateUniversalTimestamp( 0 );
 
 	mLastTime   = 0;
 	mFrameCount = 0;

@@ -1321,8 +1321,15 @@ void ContextPrivate::nodeInitialised( void )
 	mNodeDeferProcess = true;
 }
 
-void ContextPrivate::pinUpdated( QSharedPointer<fugio::PinInterface> pPin, bool pUpdatedConnectedNode )
+void ContextPrivate::pinUpdated( QSharedPointer<fugio::PinInterface> pPin, qint64 pGlobalTimestamp, bool pUpdatedConnectedNode )
 {
+	PinPrivate	*PP = qobject_cast<PinPrivate *>( pPin->qobject() );
+
+	if( PP )
+	{
+		PP->setGlobalTimestamp( pGlobalTimestamp >= 0 ? pGlobalTimestamp : global()->timestamp() );
+	}
+
 	emit pPin->qobject()->updated();
 
 //	if( !pPin->isConnectedToActiveNode() )
