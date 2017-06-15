@@ -1,7 +1,7 @@
 #ifndef TEXTUREMONITORNODE_H
 #define TEXTUREMONITORNODE_H
 
-#include "opengl_includes.h"
+//#include "opengl_includes.h"
 
 #include <QObject>
 #include <QDockWidget>

@@ -298,13 +298,13 @@ unix:!macx {
 #------------------------------------------------------------------------------
 # Precompiled Headers
 
-CONFIG += precompile_header
+#CONFIG += precompile_header
 
-PRECOMPILED_HEADER = ../stable.h
+#PRECOMPILED_HEADER = ../stable.h
 
-precompile_header:!isEmpty(PRECOMPILED_HEADER) {
-	DEFINES += USING_PCH
-}
+#precompile_header:!isEmpty(PRECOMPILED_HEADER) {
+#	DEFINES += USING_PCH
+#}
 
 #------------------------------------------------------------------------------
 # Raspberry Pi

@@ -20,6 +20,7 @@ void TextureMonitor::setNode( TextureMonitorNode *pNode )
 
 void TextureMonitor::initializeGL()
 {
+#if defined( __GLEW_H_ )
 	if( glewExperimental == GL_FALSE )
 	{
 		glewExperimental = GL_TRUE;
@@ -31,6 +32,7 @@ void TextureMonitor::initializeGL()
 			return;
 		}
 	}
+#endif
 
 	qDebug() << "GL_VENDOR" << QString( (const char *)glGetString( GL_VENDOR ) );
 

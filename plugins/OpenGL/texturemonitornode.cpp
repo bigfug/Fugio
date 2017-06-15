@@ -106,7 +106,7 @@ void TextureMonitorNode::paintGL()
 
 	OPENGL_PLUGIN_DEBUG;
 
-	if( !mVAO && GLEW_ARB_vertex_array_object )
+	if( !mVAO )
 	{
 		glGenVertexArrays( 1, &mVAO );
 	}
@@ -118,11 +118,11 @@ void TextureMonitorNode::paintGL()
 
 	OPENGL_PLUGIN_DEBUG;
 
-	if( !mVBO && GLEW_VERSION_1_5 )
+	if( !mVBO )
 	{
 		float Vertices[] = {
-			 -1, -1,
-			 -1, 1,
+			-1, -1,
+			-1, 1,
 			1, -1,
 			1, 1
 		};
