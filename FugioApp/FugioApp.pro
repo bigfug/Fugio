@@ -273,26 +273,26 @@ unix:!macx {
 
 	QMAKE_LFLAGS += "-Wl,-rpath '-Wl,$${DOLLAR}$${DOLLAR}ORIGIN'"
 
-#	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-#		target.path = Desktop/Fugio
+	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
+		target.path = Desktop/Fugio
 
-#		INSTALLS += target
+		INSTALLS += target
 
-#		examples.path  = Desktop/Fugio/examples
-#		examples.files = $$_PRO_FILE_PWD_/../examples/*
+		examples.path  = Desktop/Fugio/examples
+		examples.files = $$_PRO_FILE_PWD_/../examples/*
 
-#		INSTALLS += examples
+		INSTALLS += examples
 
-#		snippets.path  = Desktop/Fugio/snippets
-#		snippets.files = $$_PRO_FILE_PWD_/../snippets/*
+		snippets.path  = Desktop/Fugio/snippets
+		snippets.files = $$_PRO_FILE_PWD_/../snippets/*
 
-#		INSTALLS += snippets
+		INSTALLS += snippets
 
-#		share.path  = Desktop/Fugio/share
-#		share.files = $$_PRO_FILE_PWD_/../share/*
+		share.path  = Desktop/Fugio/share
+		share.files = $$_PRO_FILE_PWD_/../share/*
 
-#		INSTALLS += share
-#	}
+		INSTALLS += share
+	}
 }
 
 #------------------------------------------------------------------------------
