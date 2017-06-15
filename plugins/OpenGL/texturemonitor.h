@@ -1,7 +1,7 @@
 #ifndef TEXTUREMONITOR_H
 #define TEXTUREMONITOR_H
 
-//#include "opengl_includes.h"
+#include "opengl_includes.h"
 
 #include <QObject>
 #include <QOpenGLWidget>
