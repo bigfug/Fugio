@@ -185,12 +185,20 @@ windows:contains( QT_ARCH, i386 ) {
 	}
 }
 
-linux:!macx:exists( /usr/include/opencv2 ) {
-	INCLUDEPATH += /usr/include
+linux:!macx {
+	exists( $$[QT_SYSROOT]/usr/include/opencv2 ) {
+		INCLUDEPATH += $$[QT_SYSROOT]/usr/include
 
-	LIBS += -L/usr/lib -lopencv_core -lopencv_imgproc -lopencv_photo -lopencv_highgui -lopencv_video -lopencv_objdetect
+		LIBS += -lopencv_core -lopencv_imgproc -lopencv_photo -lopencv_highgui -lopencv_video -lopencv_objdetect
 
-	DEFINES += OPENCV_SUPPORTED
+		DEFINES += OPENCV_SUPPORTED
+	} else:exists( /usr/include/opencv2 ) {
+		INCLUDEPATH += /usr/include
+
+		LIBS += -L/usr/lib -lopencv_core -lopencv_imgproc -lopencv_photo -lopencv_highgui -lopencv_video -lopencv_objdetect
+
+		DEFINES += OPENCV_SUPPORTED
+	}
 }
 
 !contains( DEFINES, OPENCV_SUPPORTED ) {
