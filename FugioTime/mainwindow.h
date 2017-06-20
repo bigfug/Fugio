@@ -11,6 +11,12 @@ namespace Ui {
 class MainWindow;
 }
 
+typedef struct TimeDatagram
+{
+	qint64		mServerTimestamp;
+	qint64		mClientTimestamp;
+} TimeDatagram;
+
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT
@@ -24,12 +30,15 @@ private slots:
 
 	void sendTime( void );
 
+	void responseReady( void );
+
 private:
-	Ui::MainWindow *ui;
-	QUdpSocket *udpSocket;
-	QTimer *timer;
-	QHostAddress groupAddress;
-	QElapsedTimer	mUniverseTimer;
+	Ui::MainWindow		*ui;
+	int					 mPort;
+	QUdpSocket			*udpSocket;
+	QTimer				*timer;
+	QHostAddress		 groupAddress;
+	QElapsedTimer		 mUniverseTimer;
 };
 
 #endif // MAINWINDOW_H
