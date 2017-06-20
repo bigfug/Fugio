@@ -8,16 +8,26 @@
 OutputRangeNode::OutputRangeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mPinCnt( 0 ), mPinIdx( -1 )
 {
-	mPinInput  = pinInput( "Input" );
+	FUGID( PIN_INPUT_SOURCE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_INPUT_RANGE, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+	FUGID( PIN_INPUT_INDEX, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
+	FUGID( PIN_OUTPUT_OUTPUT, "c997473a-2016-466b-9128-beacb99870a2" );
 
-	mPinNumber = pinInput( "Number" );
+	mPinInputSource  = pinInput( "Input", PIN_INPUT_SOURCE );
+
+	mPinInputRange = pinInput( "Number", PIN_INPUT_RANGE );
+
+	mPinInputIndex = pinInput( "Index", PIN_INPUT_INDEX );
+
+	QSharedPointer<fugio::PinInterface> P = pinOutput( "Output", PIN_OUTPUT_OUTPUT );
+
+	P->setAutoRename( true );
 }
 
 void OutputRangeNode::inputsUpdated( qint64 pTimeStamp )
 {
 	QList< QSharedPointer<fugio::PinInterface> >	PinLst = mNode->enumOutputPins();
 
-	int						 PinIdx = -1;
 	int						 PinCnt = PinLst.count();
 
 	if( PinCnt != mPinCnt )
@@ -27,23 +37,26 @@ void OutputRangeNode::inputsUpdated( qint64 pTimeStamp )
 		mPinCnt = PinCnt;
 	}
 
-	if( !mPinCnt || !mPinInput->isConnectedToActiveNode() )
+	if( !mPinCnt || !mPinInputSource->isConnectedToActiveNode() )
 	{
 		return;
 	}
 
-	fugio::VariantInterface		*V;
+	int						 PinIdx = mPinIdx;
 
-	if( mPinNumber->isConnectedToActiveNode() && ( V = input<fugio::VariantInterface *>( mPinNumber ) ) != nullptr )
+	if( mPinInputRange->isUpdated( pTimeStamp ) )
 	{
-		PinIdx = qBound( 0.0, V->variant().toDouble(), 1.0 ) * double( PinCnt - 1 );
-	}
-	else
-	{
-		PinIdx = qBound( 0.0, mPinNumber->value().toDouble(), 1.0 ) * double( PinCnt - 1 );
+		PinIdx = qBound( 0.0, variant( mPinInputRange ).toDouble(), 1.0 ) * double( PinCnt );
 	}
 
-	if( PinIdx == mPidIdx && !mPinInput->isUpdated( pTimeStamp ) )
+	if( mPinInputIndex->isUpdated( pTimeStamp ) )
+	{
+		PinIdx = variant( mPinInputIndex ).toInt();
+	}
+
+	PinIdx = qBound( 0, PinIdx, PinCnt - 1 );
+
+	if( PinIdx == mPidIdx && !mPinInputSource->isUpdated( pTimeStamp ) )
 	{
 		return;
 	}
@@ -54,15 +67,13 @@ void OutputRangeNode::inputsUpdated( qint64 pTimeStamp )
 
 		if( P->order() == PinIdx )
 		{
-			P->setControl( mPinInput->connectedPin()->control() );
+			P->setControl( mPinInputSource->connectedPin()->control() );
 
 			pinUpdated( P );
 		}
 		else
 		{
-			//P->setControl( QSharedPointer<fugio::PinControlInterface>() );
-
-//			pinUpdated( P );
+			P->setControl( QSharedPointer<fugio::PinControlInterface>() );
 		}
 	}
 
@@ -72,4 +83,9 @@ void OutputRangeNode::inputsUpdated( qint64 pTimeStamp )
 bool OutputRangeNode::canAcceptPin( fugio::PinInterface *pPin ) const
 {
 	return( pPin->direction() == PIN_INPUT );
+}
+
+bool OutputRangeNode::pinShouldAutoRename( fugio::PinInterface *pPin ) const
+{
+	return( pPin->direction() == PIN_OUTPUT );
 }
