@@ -873,6 +873,11 @@ void ContextPrivate::connectPins( const QUuid &pUUID1, const QUuid &pUUID2 )
 	QSharedPointer<fugio::PinInterface>	P1 = mPinHash.value( pUUID1 );
 	QSharedPointer<fugio::PinInterface>	P2 = mPinHash.value( pUUID2 );
 
+	if( !P1 || !P2 )
+	{
+		return;
+	}
+
 	if( P1->direction() == PIN_INPUT )
 	{
 		mConnectIO.insert( pUUID1, pUUID2 );
