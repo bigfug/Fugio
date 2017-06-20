@@ -17,6 +17,16 @@ public:
 
 	virtual ~TimePlugin( void ) {}
 
+	static TimePlugin *instance( void )
+	{
+		return( mInstance );
+	}
+
+	inline GlobalInterface *app( void ) const
+	{
+		return( mApp );
+	}
+
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
 
@@ -25,7 +35,9 @@ public:
 	virtual void deinitialise( void );
 
 private:
-	GlobalInterface			*mApp;
+	static TimePlugin			*mInstance;
+
+	GlobalInterface				*mApp;
 };
 
 #endif // TIMEPLUGIN_H
