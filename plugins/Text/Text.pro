@@ -37,7 +37,9 @@ HEADERS += textplugin.h\
 	regexpnode.h \
 	numbertostringnode.h \
 	stringjoinnode.h \
-	linebuffernode.h
+	linebuffernode.h \
+    ../../include/fugio/text/syntax_highlighter_instance_interface.h \
+    ../../include/fugio/text/syntax_highlighter_factory_interface.h
 	cmdtexteditorupdate.h
 
 FORMS += \

@@ -14,6 +14,7 @@
 QList<QUuid>				NodeControlBase::PID_UUID;
 
 fugio::GlobalInterface	*TextPlugin::mApp = 0;
+TextPlugin				*TextPlugin::mInstance = 0;
 
 using namespace fugio;
 
@@ -34,6 +35,8 @@ ClassEntry		mPinClasses[] =
 
 TextPlugin::TextPlugin()
 {
+	mInstance = this;
+
 	//-------------------------------------------------------------------------
 	// Install translator
 
@@ -55,14 +58,45 @@ PluginInterface::InitResult TextPlugin::initialise( fugio::GlobalInterface *pApp
 
 	mApp->registerPinClasses( mPinClasses );
 
+	mApp->registerInterface( IID_SYNTAX_HIGHLIGHTER, this );
+
 	return( INIT_OK );
 }
 
 void TextPlugin::deinitialise()
 {
+	mApp->unregisterInterface( IID_SYNTAX_HIGHLIGHTER );
+
 	mApp->unregisterPinClasses( mPinClasses );
 
 	mApp->unregisterNodeClasses( mNodeClasses );
 
 	mApp = 0;
+}
+
+void TextPlugin::registerSyntaxHighlighter( const QUuid &pUuid, const QString &pName, SyntaxHighlighterFactoryInterface *pFactory )
+{
+	mSyntaxHighlighterFactories.insert( pUuid, SyntaxHighlighterPair( pName, pFactory ) );
+}
+
+void TextPlugin::unregisterSyntaxHighlighter( const QUuid &pUuid )
+{
+	mSyntaxHighlighterFactories.remove( pUuid );
+}
+
+SyntaxHighlighterFactoryInterface *TextPlugin::syntaxHighlighterFactory( const QUuid &pUuid ) const
+{
+	return( mSyntaxHighlighterFactories.value( pUuid ).second );
+}
+
+QList<SyntaxHighlighterInterface::SyntaxHighlighterIdentity> TextPlugin::syntaxHighlighters() const
+{
+	QList<SyntaxHighlighterInterface::SyntaxHighlighterIdentity>	L;
+
+	for( QMap<QUuid,SyntaxHighlighterPair>::const_iterator it = mSyntaxHighlighterFactories.begin() ; it != mSyntaxHighlighterFactories.end() ; it++ )
+	{
+		L.append( SyntaxHighlighterInterface::SyntaxHighlighterIdentity( it.key(), it.value().first ) );
+	}
+
+	return( L );
 }

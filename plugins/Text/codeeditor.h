@@ -5,7 +5,7 @@
 #include <fugio/global.h>
 
 FUGIO_NAMESPACE_BEGIN
-class SyntaxHighlighterInterface;
+class SyntaxHighlighterInstanceInterface;
 FUGIO_NAMESPACE_END
 
 class CodeEditor : public QPlainTextEdit
@@ -18,7 +18,7 @@ public:
 	void lineNumberAreaPaintEvent(QPaintEvent *event);
 	int lineNumberAreaWidth();
 
-	void setHighlighter( fugio::SyntaxHighlighterInterface *pHighlighter )
+	void setHighlighter( fugio::SyntaxHighlighterInstanceInterface *pHighlighter )
 	{
 		mHighlighter = pHighlighter;
 	}
@@ -34,8 +34,8 @@ private slots:
 	void updateLineNumberArea(const QRect &, int);
 
 private:
-	QWidget									*lineNumberArea;
-	fugio::SyntaxHighlighterInterface		*mHighlighter;
+	QWidget											*lineNumberArea;
+	fugio::SyntaxHighlighterInstanceInterface		*mHighlighter;
 };
 
 #endif // CODEEDITOR_H

@@ -11,12 +11,16 @@
 #include <fugio/plugin_interface.h>
 #include <fugio/lua/lua_interface.h>
 #include <fugio/pin_interface.h>
+#include <fugio/text/syntax_highlighter_interface.h>
+#include <fugio/text/syntax_highlighter_factory_interface.h>
+#include <fugio/text/syntax_highlighter_instance_interface.h>
+#include "luahighlighter.h"
 
-class LuaPlugin : public QObject, public fugio::PluginInterface, public fugio::LuaInterface
+class LuaPlugin : public QObject, public fugio::PluginInterface, public fugio::LuaInterface, public fugio::SyntaxHighlighterFactoryInterface
 {
 	Q_OBJECT
 	Q_PLUGIN_METADATA( IID "com.bigfug.fugio.lua.plugin" )
-	Q_INTERFACES( fugio::PluginInterface fugio::LuaInterface )
+	Q_INTERFACES( fugio::PluginInterface fugio::LuaInterface fugio::SyntaxHighlighterFactoryInterface )
 
 public:
 	Q_INVOKABLE explicit LuaPlugin( void );
@@ -99,6 +103,11 @@ public:
 	{
 		return( mSetFunctions );
 	}
+
+	//-------------------------------------------------------------------------
+	// SyntaxHighlighterFactoryInterface interface
+public:
+	virtual fugio::SyntaxHighlighterInstanceInterface *syntaxHighlighterInstance() const Q_DECL_OVERRIDE;
 
 public:
 #if defined( LUA_SUPPORTED )

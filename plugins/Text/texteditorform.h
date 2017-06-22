@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include "codeeditor.h"
-#include <fugio/text/syntax_highlighter_interface.h>
+#include <fugio/text/syntax_highlighter_instance_interface.h>
 
 namespace Ui {
 class TextEditorForm;
@@ -20,7 +20,7 @@ public:
 
 	QPlainTextEdit *textEdit( void );
 
-	void setHighlighter( fugio::SyntaxHighlighterInterface *pHighlighter );
+	void setHighlighter( fugio::SyntaxHighlighterInstanceInterface *pHighlighter );
 
 signals:
 	void updateText( void );
@@ -41,9 +41,15 @@ private slots:
 
 	void cursorPositionChanged( void );
 
+	void setSyntaxNone( void );
+
+	void setSyntaxDefault( void );
+
+	void setSyntax( const QUuid &pUuid );
+
 private:
 	Ui::TextEditorForm						*ui;
-	fugio::SyntaxHighlighterInterface		*mHighlighter;
+	fugio::SyntaxHighlighterInstanceInterface		*mHighlighter;
 	QString									 mFileName;
 };
 

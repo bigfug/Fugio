@@ -8,7 +8,7 @@
 #include "fugio/global_interface.h"
 #include "fugio/context_interface.h"
 #include <fugio/context_widget_interface.h>
-#include <fugio/text/syntax_highlighter_interface.h>
+#include <fugio/text/syntax_highlighter_instance_interface.h>
 #include <fugio/node_signals.h>
 #include <fugio/pin_signals.h>
 #include <fugio/global_interface.h>
@@ -86,7 +86,7 @@ void TextEditorNode::checkHighlighter()
 
 			if( mTextEdit )
 			{
-				fugio::SyntaxHighlighterInterface	*H = qobject_cast<fugio::SyntaxHighlighterInterface *>( mPinOutputString->connectedPin()->findInterface( IID_SYNTAX_HIGHLIGHTER ) );
+				fugio::SyntaxHighlighterInstanceInterface	*H = qobject_cast<fugio::SyntaxHighlighterInstanceInterface *>( mPinOutputString->connectedPin()->findInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE ) );
 
 				if( H )
 				{

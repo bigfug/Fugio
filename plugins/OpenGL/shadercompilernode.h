@@ -8,7 +8,7 @@
 
 #include <fugio/nodecontrolbase.h>
 #include <fugio/opengl/shader_interface.h>
-#include <fugio/text/syntax_highlighter_interface.h>
+#include <fugio/text/syntax_highlighter_instance_interface.h>
 #include <fugio/choice_interface.h>
 #include <fugio/opengl/vertex_array_object_interface.h>
 
@@ -18,10 +18,10 @@
 
 using namespace fugio;
 
-class ShaderHighlighter : public QObject, public fugio::SyntaxHighlighterInterface
+class ShaderHighlighter : public QObject, public fugio::SyntaxHighlighterInstanceInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::SyntaxHighlighterInterface )
+	Q_INTERFACES( fugio::SyntaxHighlighterInstanceInterface )
 
 public:
 	ShaderHighlighter( QObject *pParent = 0 )
@@ -39,9 +39,9 @@ public:
 
 	virtual QSyntaxHighlighter *highlighter( QTextDocument *pDocument ) Q_DECL_OVERRIDE;
 
-	virtual QStringList errorList( int pLineNumber ) const Q_DECL_OVERRIDE
+	virtual QList<fugio::SyntaxError> errorList( void ) const Q_DECL_OVERRIDE
 	{
-		return( mHighlighter ? mHighlighter->errorList( pLineNumber ) : QStringList() );
+		return( mHighlighter ? mHighlighter->errorList() : QList<fugio::SyntaxError>() );
 	}
 
 private:

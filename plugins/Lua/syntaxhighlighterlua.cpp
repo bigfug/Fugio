@@ -128,30 +128,43 @@ void SyntaxHighlighterLua::setErrors( const QString &pErrorText)
 
 	for( QString S : SL )
 	{
-		S = S.trimmed();
-
-		QStringList		Parts = S.split( ':', QString::KeepEmptyParts );
 		int				Line  = 0;
 
-		if( Parts.size() >= 3 )
+		S = S.trimmed();
+
+		QRegExp	P( "^\\[string \"(.+)\"\\]:(\\d+):(.+)" );
+
+		if( P.indexIn( S ) > -1 )
 		{
-			if( Parts.value( 0 ).startsWith( QStringLiteral( "[string " ) ) )
+			Line = P.cap( 2 ).toInt();
+
+			if( Line > 0 )
 			{
-				Line = Parts.value( 1 ).toInt();
+				fugio::SyntaxError	SE;
 
-				if( Line > 0 )
-				{
-					Parts.takeFirst();
-					Parts.takeFirst();
+				SE.mLineStart   = SE.mLineEnd   = Line;
+				SE.mColumnStart = SE.mColumnEnd = 0;
 
-					mErrorData.insert( Line, Parts.join( ':' ).trimmed() );
-				}
+				SE.mError = P.cap( 3 );
+
+				mErrorData << SE;
 			}
+		}
+		else
+		{
+			qDebug() << S;
 		}
 
 		if( !Line )
 		{
-			mErrorData.insert( 0, S );
+			fugio::SyntaxError	SE;
+
+			SE.mLineStart   = SE.mLineEnd   = -1;
+			SE.mColumnStart = SE.mColumnEnd = -1;
+
+			SE.mError = S;
+
+			mErrorData << SE;
 		}
 	}
 
@@ -160,16 +173,9 @@ void SyntaxHighlighterLua::setErrors( const QString &pErrorText)
 	rehighlight();
 }
 
-QStringList SyntaxHighlighterLua::errorList( int pLineNumber ) const
+QList<fugio::SyntaxError> SyntaxHighlighterLua::errorList( void ) const
 {
-	QStringList		SL;
-
-	if( mErrorData.contains( pLineNumber ) )
-	{
-		SL << mErrorData.values( pLineNumber );
-	}
-
-	return( SL );
+	return( mErrorData );
 }
 
 void SyntaxHighlighterLua::highlightBlock( const QString &text )
@@ -222,9 +228,14 @@ void SyntaxHighlighterLua::highlightBlock( const QString &text )
 
 	const int LineNumber = currentBlock().firstLineNumber() + 1;
 
-	if( mErrorData.contains( LineNumber ) )
+	for( const fugio::SyntaxError &SE : mErrorData )
 	{
-		setFormat( 0, currentBlock().length(), errorFormat );
+		if( SE.mLineStart <= LineNumber && SE.mLineEnd >= LineNumber )
+		{
+			setFormat( 0, currentBlock().length(), errorFormat );
+
+			break;
+		}
 	}
 }
 

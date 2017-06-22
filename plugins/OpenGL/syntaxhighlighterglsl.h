@@ -3,6 +3,8 @@
 
 #include <QSyntaxHighlighter>
 
+#include <fugio/text/syntax_highlighter_instance_interface.h>
+
 class SyntaxHighlighterGLSL : public QSyntaxHighlighter
 {
 	Q_OBJECT
@@ -18,7 +20,7 @@ public:
 
 	void setErrors( const QString &pErrorText );
 
-	QStringList errorList( int pLineNumber ) const;
+	QList<fugio::SyntaxError> errorList( void ) const;
 
 signals:
 	void errorsUpdated( void );
@@ -50,7 +52,7 @@ private:
 	QTextCharFormat functionFormat;
 	QTextCharFormat errorFormat;
 
-	QMultiMap<int,QString>			 mErrorData;
+	QList<fugio::SyntaxError>		 mErrorData;
 };
 
 #endif // SYNTAXHIGHLIGHTERGLSL_H

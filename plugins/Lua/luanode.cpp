@@ -39,7 +39,7 @@ LuaNode::LuaNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinSource->setDescription( tr( "Lua source code" ) );
 
-	mPinSource->registerInterface( IID_SYNTAX_HIGHLIGHTER, new LuaHighlighter( this ) );
+	mPinSource->registerInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE, new LuaHighlighter( this ) );
 }
 
 QList<QUuid> LuaNode::pinAddTypesInput() const
@@ -181,7 +181,7 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 			mNode->setStatusMessage( LuaErr );
 		}
 
-		QObject			*O = mPinSource->findInterface( IID_SYNTAX_HIGHLIGHTER );
+		QObject			*O = mPinSource->findInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE );
 
 		if( LuaHighlighter *H = qobject_cast<LuaHighlighter *>( O ) )
 		{
@@ -228,7 +228,7 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 					mNode->setStatus( fugio::NodeInterface::Error );
 					mNode->setStatusMessage( S );
 
-					QObject			*O = mPinSource->findInterface( IID_SYNTAX_HIGHLIGHTER );
+					QObject			*O = mPinSource->findInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE );
 					LuaHighlighter	*H = qobject_cast<LuaHighlighter *>( O );
 
 					if( H )
@@ -270,7 +270,7 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 		{
 			QString		LuaErr( luaL_tolstring( mL, -1, 0 ) );
 
-			QObject			*O = mPinSource->findInterface( IID_SYNTAX_HIGHLIGHTER );
+			QObject			*O = mPinSource->findInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE );
 
 			if( LuaHighlighter *H = qobject_cast<LuaHighlighter *>( O ) )
 			{

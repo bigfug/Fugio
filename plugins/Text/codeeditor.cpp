@@ -2,7 +2,7 @@
 
 #include "codeeditor.h"
 #include "linenumberarea.h"
-#include <fugio/text/syntax_highlighter_interface.h>
+#include <fugio/text/syntax_highlighter_instance_interface.h>
 
 CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent), mHighlighter( 0 )
 {
@@ -15,8 +15,6 @@ CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent), mHighlighter( 
 	updateLineNumberAreaWidth(0);
 	highlightCurrentLine();
 }
-
-
 
 int CodeEditor::lineNumberAreaWidth()
 {
@@ -52,8 +50,6 @@ void CodeEditor::updateLineNumberArea(const QRect &rect, int dy)
 		updateLineNumberAreaWidth(0);
 }
 
-
-
 void CodeEditor::resizeEvent(QResizeEvent *e)
 {
 	QPlainTextEdit::resizeEvent(e);
@@ -61,8 +57,6 @@ void CodeEditor::resizeEvent(QResizeEvent *e)
 	QRect cr = contentsRect();
 	lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
 }
-
-
 
 void CodeEditor::highlightCurrentLine()
 {
@@ -74,10 +68,10 @@ void CodeEditor::highlightCurrentLine()
 
 		QColor lineColor = QColor(Qt::yellow).lighter(160);
 
-		if( mHighlighter && !mHighlighter->errorList( textCursor().blockNumber() + 1 ).isEmpty() )
-		{
-			lineColor = QColor( Qt::red ).lighter(160);
-		}
+//		if( mHighlighter && !mHighlighter->errorList( textCursor().blockNumber() + 1 ).isEmpty() )
+//		{
+//			lineColor = QColor( Qt::red ).lighter(160);
+//		}
 
 		selection.format.setBackground(lineColor);
 		selection.format.setProperty(QTextFormat::FullWidthSelection, true);
@@ -93,7 +87,6 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
 	QPainter painter(lineNumberArea);
 	painter.fillRect(event->rect(), Qt::lightGray);
-
 
 	QTextBlock block = firstVisibleBlock();
 	int blockNumber = block.blockNumber();

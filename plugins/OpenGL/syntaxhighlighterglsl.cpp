@@ -214,7 +214,10 @@ void SyntaxHighlighterGLSL::setErrors( const QString &pErrorText)
 		EL.chop( 1 );
 	}
 
-	QStringList		SL = EL.split( '\n' );
+	QStringList			SL = EL.split( '\n' );
+	fugio::SyntaxError	SE;
+
+	SE.mColumnStart = SE.mColumnEnd = -1;
 
 	for( QString S : SL )
 	{
@@ -225,42 +228,53 @@ void SyntaxHighlighterGLSL::setErrors( const QString &pErrorText)
 			continue;
 		}
 
-		if( S.startsWith( "ERROR: " ) )
+		QRegExp	P1( "^ERROR: (.+):(\\d+):\\s+(.+)" );
+
+		if( P1.indexIn( S ) > -1 )
 		{
-			S.remove( 0, 7 );
+			SE.mLineStart = SE.mLineEnd = P1.cap( 2 ).toInt();
 
-			QRegExp		RE( ":(\\d+):" );
+			SE.mError = P1.cap( 3 );
 
-			int			LN = 0;
+			mErrorData << SE;
 
-			if( RE.indexIn( S ) )
-			{
-				LN = RE.cap( 1 ).toInt();
-			}
-
-			if( LN > 0 )
-			{
-				QStringList		SL2 = S.split( ": " );
-
-				SL2.removeFirst();
-
-				mErrorData.insert( LN, SL2.join( ": " ) );
-			}
-			else
-			{
-				mErrorData.insert( 0, S );
-			}
+			continue;
 		}
-		else
+
+		QRegExp	P2( "^ERROR:\\s?(.+)" );
+
+		if( P2.indexIn( S ) > -1 )
 		{
-//			QRegExp	R = QRegExp( "/\\(\\d+\\)\\s+:\\s+\\w+\\s+\\w+:\\s[\\s\\S]+/" );
+			SE.mLineStart = SE.mLineEnd = -1;
 
-//			R.indexIn( S );
+			SE.mError = P2.cap( 1 );
 
-//			QStringList		L = R.capturedTexts();
+			mErrorData << SE;
 
-			mErrorData.insert( 0, S );
+			continue;
 		}
+
+		QRegExp	P3( "^.+\\((\\d+)\\)\\s?:\\s?(.+):\\s?(.+)" );
+
+		if( P3.indexIn( S ) > -1 )
+		{
+			SE.mLineStart   = SE.mLineEnd = P3.cap( 1 ).toInt();
+
+			SE.mError = P3.cap( 3 );
+
+			mErrorData << SE;
+
+			continue;
+		}
+
+		SE.mLineStart = SE.mLineEnd   = -1;
+
+		SE.mError = S;
+
+		mErrorData << SE;
+
+		qDebug() << S;
+
 	}
 
 	emit errorsUpdated();
@@ -268,16 +282,9 @@ void SyntaxHighlighterGLSL::setErrors( const QString &pErrorText)
 	rehighlight();
 }
 
-QStringList SyntaxHighlighterGLSL::errorList( int pLineNumber ) const
+QList<fugio::SyntaxError> SyntaxHighlighterGLSL::errorList( void ) const
 {
-	QStringList		SL;
-
-	if( mErrorData.contains( pLineNumber ) )
-	{
-		SL << mErrorData.values( pLineNumber );
-	}
-
-	return( SL );
+	return( mErrorData );
 }
 
 void SyntaxHighlighterGLSL::highlightBlock( const QString &text )
@@ -330,8 +337,13 @@ void SyntaxHighlighterGLSL::highlightBlock( const QString &text )
 
 	const int LineNumber = currentBlock().firstLineNumber() + 1;
 
-	if( mErrorData.contains( LineNumber ) )
+	for( const fugio::SyntaxError &SE : mErrorData )
 	{
-		setFormat( 0, currentBlock().length(), errorFormat );
+		if( SE.mLineStart <= LineNumber && SE.mLineEnd >= LineNumber )
+		{
+			setFormat( 0, currentBlock().length(), errorFormat );
+
+			break;
+		}
 	}
 }

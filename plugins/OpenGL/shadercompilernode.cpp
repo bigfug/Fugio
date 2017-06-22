@@ -33,11 +33,11 @@ ShaderCompilerNode::ShaderCompilerNode( QSharedPointer<fugio::NodeInterface> pNo
 
 	mValInputBufferMode->setChoices( BufferModeChoices );
 
-	mPinShaderVertex->registerInterface( IID_SYNTAX_HIGHLIGHTER,   new ShaderHighlighter( this ) );
-	mPinShaderTessCtrl->registerInterface( IID_SYNTAX_HIGHLIGHTER, new ShaderHighlighter( this ) );
-	mPinShaderTessEval->registerInterface( IID_SYNTAX_HIGHLIGHTER, new ShaderHighlighter( this ) );
-	mPinShaderGeometry->registerInterface( IID_SYNTAX_HIGHLIGHTER, new ShaderHighlighter( this ) );
-	mPinShaderFragment->registerInterface( IID_SYNTAX_HIGHLIGHTER, new ShaderHighlighter( this ) );
+	mPinShaderVertex->registerInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE,   new ShaderHighlighter( this ) );
+	mPinShaderTessCtrl->registerInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE, new ShaderHighlighter( this ) );
+	mPinShaderTessEval->registerInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE, new ShaderHighlighter( this ) );
+	mPinShaderGeometry->registerInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE, new ShaderHighlighter( this ) );
+	mPinShaderFragment->registerInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE, new ShaderHighlighter( this ) );
 
 	mPinInputVaryings->registerPinInputType( PID_STRING );
 
@@ -144,7 +144,7 @@ void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, G
 					{
 						GLint			 Result;
 
-						QObject				*O = pPin->findInterface( IID_SYNTAX_HIGHLIGHTER );
+						QObject				*O = pPin->findInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE );
 						ShaderHighlighter	*H = qobject_cast<ShaderHighlighter *>( O );
 
 						glShaderSource( pShaderId, 1, &SourcePtr, 0 );

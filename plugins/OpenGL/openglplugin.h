@@ -13,6 +13,8 @@
 #include <fugio/plugin_interface.h>
 #include <fugio/device_factory_interface.h>
 
+#include <fugio/text/syntax_highlighter_factory_interface.h>
+
 //#define OPENGL_DEBUG_ENABLE
 
 #if defined( OPENGL_DEBUG_ENABLE )
@@ -27,10 +29,10 @@ using namespace fugio;
 
 class QWindow;
 
-class OpenGLPlugin : public QObject, public PluginInterface, public InterfaceOpenGL, public DeviceFactoryInterface
+class OpenGLPlugin : public QObject, public PluginInterface, public InterfaceOpenGL, public DeviceFactoryInterface, public fugio::SyntaxHighlighterFactoryInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::PluginInterface InterfaceOpenGL fugio::DeviceFactoryInterface )
+	Q_INTERFACES( fugio::PluginInterface InterfaceOpenGL fugio::DeviceFactoryInterface fugio::SyntaxHighlighterFactoryInterface )
 	Q_PLUGIN_METADATA( IID "com.bigfug.fugio.opengl.plugin" )
 
 public:
@@ -41,9 +43,9 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
 
-	virtual InitResult initialise( fugio::GlobalInterface *pApp, bool pLastChance );
+	virtual InitResult initialise( fugio::GlobalInterface *pApp, bool pLastChance ) Q_DECL_OVERRIDE;
 
-	virtual void deinitialise( void );
+	virtual void deinitialise( void ) Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// InterfaceOpenGL
@@ -56,38 +58,41 @@ public:
 	virtual void checkErrors( const QString &pContext, const char *file, int line );
 #endif
 
-	virtual void registerOutputWindowHook( QObject *pObject, const char *pMember );
+	virtual void registerOutputWindowHook( QObject *pObject, const char *pMember ) Q_DECL_OVERRIDE;
 
-	virtual int triangleCount( void ) const
+	virtual int triangleCount( void ) const Q_DECL_OVERRIDE
 	{
 		return( mTriangleCount );
 	}
 
-	virtual void resetTriangleCount( void )
+	virtual void resetTriangleCount( void ) Q_DECL_OVERRIDE
 	{
 		mTriangleCount = 0;
 	}
 
-	virtual void incrementTriangleCount( int pTriangleCount )
+	virtual void incrementTriangleCount( int pTriangleCount ) Q_DECL_OVERRIDE
 	{
 		mTriangleCount += pTriangleCount;
 	}
 
-	virtual bool hasContext( void );
+	virtual bool hasContext( void ) Q_DECL_OVERRIDE;
 
 	static QString framebufferError( GLenum pErrorCode );
 
 	//-------------------------------------------------------------------------
 	// fugio::DeviceFactoryInterface
 
-	virtual QString deviceConfigMenuText( void ) const
+	virtual QString deviceConfigMenuText( void ) const Q_DECL_OVERRIDE
 	{
 		return( "OpenGL Outputs" );
 	}
 
-	virtual void deviceConfigGui( QWidget *pParent );
+	virtual void deviceConfigGui( QWidget *pParent ) Q_DECL_OVERRIDE;
 
-	//-------------------------------------------------------------------------
+	//-------------------------------------------------------------------------	
+	// SyntaxHighlighterFactoryInterface interface
+public:
+	virtual SyntaxHighlighterInstanceInterface *syntaxHighlighterInstance() const Q_DECL_OVERRIDE;
 
 public:
 	static QMap<QString,int>				 mMapTargets;

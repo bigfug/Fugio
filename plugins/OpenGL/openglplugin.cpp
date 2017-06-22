@@ -8,6 +8,8 @@
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
+#include <fugio/text/syntax_highlighter_interface.h>
+
 #include <QCommandLineParser>
 #include <QApplication>
 #include <QThread>
@@ -163,7 +165,17 @@ OpenGLPlugin::~OpenGLPlugin( void )
 
 PluginInterface::InitResult OpenGLPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
-	Q_UNUSED( pLastChance )
+	fugio::SyntaxHighlighterInterface	*SyntaxHighlighter = qobject_cast<fugio::SyntaxHighlighterInterface *>( pApp->findInterface( IID_SYNTAX_HIGHLIGHTER ) );
+
+	if( !SyntaxHighlighter && !pLastChance )
+	{
+		return( INIT_DEFER );
+	}
+
+	if( SyntaxHighlighter )
+	{
+		SyntaxHighlighter->registerSyntaxHighlighter( SYNTAX_HIGHLIGHTER_GLSL, QStringLiteral( "GLSL" ), this );
+	}
 
 	mApp = pApp;
 
@@ -198,6 +210,13 @@ void OpenGLPlugin::deinitialise()
 	mApp->unregisterPinClasses( mPinClasses );
 
 	mApp->unregisterInterface( IID_OPENGL );
+
+	fugio::SyntaxHighlighterInterface	*SyntaxHighlighter = qobject_cast<fugio::SyntaxHighlighterInterface *>( mApp->findInterface( IID_SYNTAX_HIGHLIGHTER ) );
+
+	if( SyntaxHighlighter )
+	{
+		SyntaxHighlighter->unregisterSyntaxHighlighter( SYNTAX_HIGHLIGHTER_GLSL );
+	}
 
 	mApp = 0;
 
@@ -554,4 +573,9 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_COMPARE( GL_ALWAYS );
 		INSERT_COMPARE( GL_NEVER );
 	}
+}
+
+SyntaxHighlighterInstanceInterface *OpenGLPlugin::syntaxHighlighterInstance() const
+{
+	return( new ShaderHighlighter() );
 }
