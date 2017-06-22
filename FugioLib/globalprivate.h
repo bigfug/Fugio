@@ -272,6 +272,8 @@ private:
 
 #if defined( GLOBAL_THREADED )
 
+#include <QTimer>
+
 class GlobalThread : public QThread
 {
 	Q_OBJECT
@@ -286,24 +288,23 @@ public:
 protected:
 	virtual void run() Q_DECL_OVERRIDE
 	{
-		QElapsedTimer	ET;
+		QTimer			*Timer = new QTimer();
 
-		ET.start();
+		Timer->setTimerType( Qt::PreciseTimer );
 
-		while( true )
-		{
-			mGlobalPrivate->timeout();
+		connect( Timer, SIGNAL(timeout()), this, SLOT(timeout()) );
 
-			if( ET.elapsed() >= 500 )
-			{
-				if( isInterruptionRequested() )
-				{
-					break;
-				}
+		connect( this, SIGNAL(finished()), Timer, SLOT(deleteLater()) );
 
-				ET.restart();
-			}
-		}
+		Timer->start( 20 );
+
+		exec();
+	}
+
+protected slots:
+	void timeout( void )
+	{
+		mGlobalPrivate->timeout();
 	}
 
 private:

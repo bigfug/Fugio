@@ -736,7 +736,7 @@ void GlobalPrivate::start()
 void GlobalPrivate::stop()
 {
 #if defined( GLOBAL_THREADED )
-	mGlobalThread->requestInterruption();
+	mGlobalThread->quit();
 
 	mGlobalThread->wait();
 #endif
