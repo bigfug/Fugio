@@ -94,7 +94,7 @@ void TextEditorNode::checkHighlighter()
 
 					if( mHighlighter )
 					{
-						mHighlighter->moveToThread( TextPlugin::global()->thread() );
+//						mHighlighter->moveToThread( TextPlugin::global()->thread() );
 
 						if( mTextEdit )
 						{
