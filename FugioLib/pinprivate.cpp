@@ -5,6 +5,8 @@
 #include <QStringList>
 #include <QDateTime>
 
+#include <fugio.h>
+
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
 #include <fugio/pin_control_interface.h>
@@ -270,7 +272,7 @@ void PinPrivate::setValue( const QVariant &pVariant )
 
 		mUpdated = std::numeric_limits<qint64>::max();
 
-		mGlobalUpdated = mContext->global()->timestamp();
+		mGlobalUpdated = fugio::fugio()->timestamp();
 
 		emit valueChanged( mDefaultValue );
 	}
