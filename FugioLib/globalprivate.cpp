@@ -44,6 +44,10 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 
 	//-------------------------------------------------------------------------
 
+#if defined( GLOBAL_THREADED )
+	mGlobalThread = new GlobalThread( this );
+#endif
+
 	mGlobalTimer.start();
 
 	qDebug() << "Global Timer Monotonic:" << mGlobalTimer.isMonotonic();
@@ -548,18 +552,6 @@ void GlobalPrivate::timeout( void )
 #endif
 }
 
-#if defined( GLOBAL_THREADED )
-
-void GlobalPrivate::run()
-{
-	forever
-	{
-		timeout();
-	}
-}
-
-#endif
-
 QUuid GlobalPrivate::findNodeByClass( const QString &pClassName ) const
 {
 	for( UuidClassEntryMap::const_iterator it = mNodeMap.constBegin() ; it != mNodeMap.constEnd() ; it++ )
@@ -737,19 +729,15 @@ void GlobalPrivate::start()
 #if !defined( GLOBAL_THREADED )
 	QTimer::singleShot( 1000, this, SLOT(timeout()) );
 #else
-	moveToThread( &mWorkerThread );
-
-	connect( &mWorkerThread, SIGNAL(started()), this, SLOT(run()) );
-
-	mWorkerThread.start();
+	mGlobalThread->start();
 #endif
 }
 
 void GlobalPrivate::stop()
 {
 #if defined( GLOBAL_THREADED )
-	mWorkerThread.quit();
+	mGlobalThread->requestInterruption();
 
-	mWorkerThread.wait();
+	mGlobalThread->wait();
 #endif
 }

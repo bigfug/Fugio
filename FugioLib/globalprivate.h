@@ -33,6 +33,8 @@ class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public 
 
 	explicit GlobalPrivate( QObject *pParent = 0 );
 
+	friend class GlobalThread;
+
 public:
 	virtual ~GlobalPrivate( void );
 
@@ -89,7 +91,7 @@ public:
 	virtual QThread *thread( void ) Q_DECL_OVERRIDE
 	{
 #if defined( GLOBAL_THREADED )
-		return( &mWorkerThread );
+		return( mGlobalThread );
 #else
 		return( QApplication::instance()->thread() );
 #endif
@@ -227,10 +229,6 @@ signals:
 private slots:
 	void timeout( void );
 
-#if defined( GLOBAL_THREADED )
-	void run( void );
-#endif
-
 private:
 	static GlobalPrivate			*mInstance;
 
@@ -266,10 +264,53 @@ private:
 	bool							 mPause;
 
 #if defined( GLOBAL_THREADED )
-	QThread							 mWorkerThread;
+	QThread							*mGlobalThread;
 #endif
 
 	TimeSync						*mTimeSync;
 };
+
+#if defined( GLOBAL_THREADED )
+
+class GlobalThread : public QThread
+{
+	Q_OBJECT
+
+public:
+	GlobalThread( GlobalPrivate *pGlobalPrivate )
+		: QThread( pGlobalPrivate ), mGlobalPrivate( pGlobalPrivate )
+	{
+
+	}
+
+protected:
+	virtual void run() Q_DECL_OVERRIDE
+	{
+		QElapsedTimer	ET;
+
+		ET.start();
+
+		while( true )
+		{
+			mGlobalPrivate->timeout();
+
+			if( ET.elapsed() >= 500 )
+			{
+				if( isInterruptionRequested() )
+				{
+					break;
+				}
+
+				ET.restart();
+			}
+		}
+	}
+
+private:
+	GlobalPrivate	*mGlobalPrivate;
+};
+
+#endif
+
 
 #endif // GLOBAL_PRIVATE_H
