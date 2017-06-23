@@ -1,0 +1,97 @@
+#ifndef SYNTAXERRORPIN_H
+#define SYNTAXERRORPIN_H
+
+#include <QObject>
+
+#include <QByteArray>
+#include <QSettings>
+
+#include <fugio/pin_interface.h>
+#include <fugio/pin_control_interface.h>
+
+#include <fugio/core/array_interface.h>
+#include <fugio/core/list_interface.h>
+#include <fugio/core/size_interface.h>
+
+#include <fugio/pincontrolbase.h>
+
+#include <fugio/serialise_interface.h>
+
+using namespace fugio;
+
+#include <fugio/text/syntax_highlighter_instance_interface.h>
+
+class SyntaxErrorPin : public fugio::PinControlBase, public fugio::SerialiseInterface, public fugio::ListInterface, public fugio::SizeInterface
+{
+	Q_OBJECT
+	Q_INTERFACES( fugio::SerialiseInterface fugio::ListInterface fugio::SizeInterface )
+
+	Q_CLASSINFO( "Author", "Alex May" )
+	Q_CLASSINFO( "Version", "1.0" )
+	Q_CLASSINFO( "Description", "" )
+	Q_CLASSINFO( "URL", WIKI_PIN_URL( "Syntax_Error" ) )
+	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
+
+public:
+	Q_INVOKABLE explicit SyntaxErrorPin( QSharedPointer<fugio::PinInterface> pPin );
+
+	virtual ~SyntaxErrorPin( void ) {}
+
+	static void registerMetaType( void );
+
+	//-------------------------------------------------------------------------
+	// fugio::PinControlInterface
+
+	virtual QString toString( void ) const Q_DECL_OVERRIDE;
+
+	virtual QString description( void ) const Q_DECL_OVERRIDE
+	{
+		return( "Syntax Error" );
+	}
+
+	//-------------------------------------------------------------------------
+	// fugio::SerialiseInterface
+
+	virtual void serialise( QDataStream &pDataStream ) const  Q_DECL_OVERRIDE;
+	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE;
+
+	//-------------------------------------------------------------------------
+	// ListInterface interface
+
+	virtual int listSize() const Q_DECL_OVERRIDE;
+	virtual QUuid listPinControl() const Q_DECL_OVERRIDE;
+	virtual QVariant listIndex(int pIndex) const Q_DECL_OVERRIDE;
+	virtual void listSetIndex( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE;
+	virtual void listSetSize( int pSize ) Q_DECL_OVERRIDE;
+
+	virtual void listClear() Q_DECL_OVERRIDE
+	{
+		mSyntaxErrors.clear();
+	}
+
+	virtual void listAppend( const QVariant &pValue ) Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pValue )
+	}
+
+	virtual bool listIsEmpty() const Q_DECL_OVERRIDE
+	{
+		return( mSyntaxErrors.isEmpty() );
+	}
+
+	// SizeInterface interface
+public:
+	virtual int sizeDimensions() const Q_DECL_OVERRIDE;
+	virtual float size(int pDimension) const Q_DECL_OVERRIDE;
+	virtual float sizeWidth() const Q_DECL_OVERRIDE;
+	virtual float sizeHeight() const Q_DECL_OVERRIDE;
+	virtual float sizeDepth() const Q_DECL_OVERRIDE;
+	virtual QSizeF toSizeF() const Q_DECL_OVERRIDE;
+	virtual QVector3D toVector3D() const Q_DECL_OVERRIDE;
+
+private:
+	QList<fugio::SyntaxError>	mSyntaxErrors;
+};
+
+
+#endif // SYNTAXERRORPIN_H

@@ -11,6 +11,8 @@
 #include "stringjoinnode.h"
 #include "linebuffernode.h"
 
+#include "syntaxerrorpin.h"
+
 QList<QUuid>				NodeControlBase::PID_UUID;
 
 fugio::GlobalInterface	*TextPlugin::mApp = 0;
@@ -30,6 +32,7 @@ ClassEntry		mNodeClasses[] =
 
 ClassEntry		mPinClasses[] =
 {
+	ClassEntry( "Syntax Error",		"Text", PID_SYNTAX_ERROR, &SyntaxErrorPin::staticMetaObject ),
 	ClassEntry()
 };
 
@@ -46,6 +49,10 @@ TextPlugin::TextPlugin()
 	{
 		qApp->installTranslator( &Translator );
 	}
+
+	//-------------------------------------------------------------------------
+
+	SyntaxErrorPin::registerMetaType();
 }
 
 PluginInterface::InitResult TextPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
