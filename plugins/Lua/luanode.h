@@ -10,6 +10,7 @@
 #endif
 
 #include <fugio/lua/lua_interface.h>
+#include <fugio/text/syntax_error_interface.h>
 
 typedef QMap<QString,lua_CFunction>		LuaMap;
 
@@ -44,6 +45,8 @@ public:
 
 	static void registerFunctions( void );
 
+	void parseErrors( QString pErrorText );
+
 private:
 #if defined( LUA_SUPPORTED )
 	static int luaopen_fugio( lua_State *L );
@@ -60,7 +63,8 @@ private:
 #endif
 
 protected:
-	QSharedPointer<fugio::PinInterface>		 mPinSource;
+	QSharedPointer<fugio::PinInterface>		 mPinInputSource;
+	fugio::SyntaxErrorInterface				*mValInputSource;
 
 	lua_State								*mL;
 	int										 mCompileStatus;

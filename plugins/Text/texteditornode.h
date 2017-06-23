@@ -18,6 +18,8 @@
 
 #include <fugio/nodecontrolbase.h>
 
+#include <fugio/text/syntax_highlighter_instance_interface.h>
+
 class TextEditorForm;
 
 class TextEditorNode : public fugio::NodeControlBase
@@ -29,6 +31,13 @@ class TextEditorNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "Description", "Adds a text editor window" )
 	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Text_Editor_(GUI)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
+
+	typedef enum HighlighterType
+	{
+		HIGHLIGHT_NONE,
+		HIGHLIGHT_DEFAULT,
+		HIGHLIGHT_CUSTOM
+	} HighlighterType;
 
 public:
 	Q_INVOKABLE explicit TextEditorNode( QSharedPointer<fugio::NodeInterface> pNode );
@@ -74,21 +83,27 @@ private slots:
 
 	void textChanged( void );
 
+	void outputLinked( QSharedPointer<fugio::PinInterface> pPin );
+	void outputUninked( QSharedPointer<fugio::PinInterface> pPin );
+
+	void syntaxErrorsUpdated( QList<fugio::SyntaxError> pSyntaxErrors );
+
 private:
-	QSharedPointer<fugio::PinInterface>		 mPinInputBuffer;
+	QSharedPointer<fugio::PinInterface>				 mPinInputBuffer;
 
-	QSharedPointer<fugio::PinInterface>		 mPinOutputString;
-	fugio::VariantInterface					*mValOutputString;
+	QSharedPointer<fugio::PinInterface>				 mPinOutputString;
+	fugio::VariantInterface							*mValOutputString;
 
-	QDockWidget								*mDockWidget;
-	TextEditorForm							*mTextEdit;
+	QDockWidget										*mDockWidget;
+	TextEditorForm									*mTextEdit;
 
-	Qt::DockWidgetArea						 mDockArea;
-	bool									 mDockVisible;
+	Qt::DockWidgetArea								 mDockArea;
+	bool											 mDockVisible;
 
-	QUuid									 mPinUuid;
+	fugio::SyntaxHighlighterInstanceInterface		*mHighlighter;
 
-	QSyntaxHighlighter						*mHighlighter;
+	HighlighterType									 mHighlighterType;
+	QUuid											 mHighlighterUuid;
 };
 
 #endif // TEXTEDITORNODE_H

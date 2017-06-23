@@ -52,6 +52,8 @@
 #include "bufferentryproxypin.h"
 #include "vertexarrayobjectpin.h"
 
+#include "syntaxhighlighterglsl.h"
+
 #define INSERT_TARGET(x)		mMapTargets.insert(#x,x)
 #define INSERT_FORMAT(x)		mMapFormat.insert(#x,x)
 #define INSERT_INTERNAL(x)		mMapInternal.insert(#x,x)
@@ -161,6 +163,82 @@ OpenGLPlugin::OpenGLPlugin( void )
 OpenGLPlugin::~OpenGLPlugin( void )
 {
 	mInstance = nullptr;
+}
+
+void OpenGLPlugin::parseShaderErrors( QString pErrorText, QList<SyntaxError> &pErrorData )
+{
+	if( pErrorText.startsWith( '"' ) )
+	{
+		pErrorText.remove( 0, 1 );
+	}
+
+	if( pErrorText.endsWith( '"' ) )
+	{
+		pErrorText.chop( 1 );
+	}
+
+	QStringList			SL = pErrorText.split( '\n' );
+	fugio::SyntaxError	SE;
+
+	SE.mColumnStart = SE.mColumnEnd = -1;
+
+	for( QString S : SL )
+	{
+		S = S.trimmed();
+
+		if( S.isEmpty() )
+		{
+			continue;
+		}
+
+		QRegExp	P1( "^ERROR: (.+):(\\d+):\\s+(.+)" );
+
+		if( P1.indexIn( S ) > -1 )
+		{
+			SE.mLineStart = SE.mLineEnd = P1.cap( 2 ).toInt();
+
+			SE.mError = P1.cap( 3 );
+
+			pErrorData << SE;
+
+			continue;
+		}
+
+		QRegExp	P2( "^ERROR:\\s?(.+)" );
+
+		if( P2.indexIn( S ) > -1 )
+		{
+			SE.mLineStart = SE.mLineEnd = -1;
+
+			SE.mError = P2.cap( 1 );
+
+			pErrorData << SE;
+
+			continue;
+		}
+
+		QRegExp	P3( "^.+\\((\\d+)\\)\\s?:\\s?(.+):\\s?(.+)" );
+
+		if( P3.indexIn( S ) > -1 )
+		{
+			SE.mLineStart   = SE.mLineEnd = P3.cap( 1 ).toInt();
+
+			SE.mError = P3.cap( 3 );
+
+			pErrorData << SE;
+
+			continue;
+		}
+
+		SE.mLineStart = SE.mLineEnd   = -1;
+
+		SE.mError = S;
+
+		pErrorData << SE;
+
+		qDebug() << S;
+
+	}
 }
 
 PluginInterface::InitResult OpenGLPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
@@ -577,5 +655,5 @@ void OpenGLPlugin::initStaticData( void )
 
 SyntaxHighlighterInstanceInterface *OpenGLPlugin::syntaxHighlighterInstance() const
 {
-	return( new ShaderHighlighter() );
+	return( new SyntaxHighlighterGLSL() );
 }

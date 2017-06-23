@@ -26,6 +26,8 @@
 #include "luaexnode.h"
 #include "luaarray.h"
 
+#include "syntaxhighlighterlua.h"
+
 using namespace fugio;
 
 QList<QUuid>	NodeControlBase::PID_UUID;
@@ -505,8 +507,7 @@ QVariant LuaPlugin::popVariant( lua_State *L, int idx )
 
 #endif
 
-
 SyntaxHighlighterInstanceInterface *LuaPlugin::syntaxHighlighterInstance() const
 {
-	return( new LuaHighlighter() );
+	return( new SyntaxHighlighterLua() );
 }

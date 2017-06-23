@@ -4,7 +4,7 @@
 #include "linenumberarea.h"
 #include <fugio/text/syntax_highlighter_instance_interface.h>
 
-CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent), mHighlighter( 0 )
+CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
 {
 	lineNumberArea = new LineNumberArea(this);
 
@@ -68,18 +68,15 @@ void CodeEditor::highlightCurrentLine()
 
 		QColor lineColor = QColor( Qt::yellow ).lighter(160);
 
-		if( mHighlighter )
+		const int LineNumber = textCursor().blockNumber() + 1;
+
+		for( const fugio::SyntaxError &SE : mSyntaxErrors )
 		{
-			const int LineNumber = textCursor().blockNumber() + 1;
-
-			for( const fugio::SyntaxError &SE : mHighlighter->errorList() )
+			if( SE.mLineStart <= LineNumber && SE.mLineEnd >= LineNumber )
 			{
-				if( SE.mLineStart <= LineNumber && SE.mLineEnd >= LineNumber )
-				{
-					lineColor = QColor( Qt::red ).lighter(160);
+				lineColor = QColor( Qt::red ).lighter(160);
 
-					break;
-				}
+				break;
 			}
 		}
 

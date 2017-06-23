@@ -17,14 +17,15 @@
 
 #include <fugio/serialise_interface.h>
 
-using namespace fugio;
-
 #include <fugio/text/syntax_highlighter_instance_interface.h>
 
-class SyntaxErrorPin : public fugio::PinControlBase, public fugio::SerialiseInterface, public fugio::ListInterface, public fugio::SizeInterface
+#include <fugio/text/syntax_error_interface.h>
+#include <fugio/text/syntax_error_signals.h>
+
+class SyntaxErrorPin : public fugio::PinControlBase, public fugio::SyntaxErrorInterface, public fugio::SerialiseInterface, public fugio::ListInterface, public fugio::SizeInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::SerialiseInterface fugio::ListInterface fugio::SizeInterface )
+	Q_INTERFACES( fugio::SyntaxErrorInterface fugio::SerialiseInterface fugio::ListInterface fugio::SizeInterface )
 
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
@@ -89,8 +90,40 @@ public:
 	virtual QSizeF toSizeF() const Q_DECL_OVERRIDE;
 	virtual QVector3D toVector3D() const Q_DECL_OVERRIDE;
 
+	//-------------------------------------------------------------------------
+	// SyntaxErrorInterface interface
+public:
+	virtual fugio::SyntaxErrorSignals *syntaxErrorSignals() Q_DECL_OVERRIDE
+	{
+		return( &mSyntaxSignals );
+	}
+
+	virtual void setSyntaxErrors( QList<fugio::SyntaxError> pSyntaxErrors ) Q_DECL_OVERRIDE
+	{
+		mSyntaxErrors = pSyntaxErrors;
+
+		emit mSyntaxSignals.syntaxErrorsUpdated( mSyntaxErrors );
+	}
+
+	virtual void clearSyntaxErrors() Q_DECL_OVERRIDE
+	{
+		if( !mSyntaxErrors.isEmpty() )
+		{
+			mSyntaxErrors.clear();
+
+			emit mSyntaxSignals.syntaxErrorsUpdated( mSyntaxErrors );
+		}
+	}
+
+	virtual QList<fugio::SyntaxError> syntaxErrors( void ) Q_DECL_OVERRIDE
+	{
+		return( mSyntaxErrors );
+	}
+
 private:
 	QList<fugio::SyntaxError>	mSyntaxErrors;
+
+	fugio::SyntaxErrorSignals	mSyntaxSignals;
 };
 
 

@@ -12,7 +12,7 @@
 
 TextEditorForm::TextEditorForm(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::TextEditorForm), mHighlighter( 0 )
+	ui(new Ui::TextEditorForm)
 {
 	ui->setupUi(this);
 
@@ -112,13 +112,6 @@ QPlainTextEdit *TextEditorForm::textEdit( void )
 	return( ui->mTextEdit );
 }
 
-void TextEditorForm::setHighlighter( fugio::SyntaxHighlighterInstanceInterface *pHighlighter )
-{
-	mHighlighter = pHighlighter;
-
-	ui->mTextEdit->setHighlighter( pHighlighter );
-}
-
 void TextEditorForm::errorsUpdated()
 {
 	ui->mTextEdit->update();
@@ -209,28 +202,23 @@ void TextEditorForm::cursorPositionChanged()
 	QStringList			ErrLst;
 	QString				ErrMsg;
 
-	if( mHighlighter )
+	int		LinNum = ui->mTextEdit->textCursor().blockNumber() + 1;
+
+	for( fugio::SyntaxError SE : mSyntaxErrors )
 	{
-		int		LinNum = ui->mTextEdit->textCursor().blockNumber() + 1;
-
-		QList<fugio::SyntaxError>	ErrSrc = mHighlighter->errorList();
-
-		for( fugio::SyntaxError SE : ErrSrc )
+		if( SE.mLineStart <= LinNum && SE.mLineEnd >= LinNum )
 		{
-			if( SE.mLineStart <= LinNum && SE.mLineEnd >= LinNum )
+			ErrLst << SE.mError;
+		}
+	}
+
+	if( ErrLst.isEmpty() )
+	{
+		for( fugio::SyntaxError SE : mSyntaxErrors )
+		{
+			if( SE.mLineStart <= 0 )
 			{
 				ErrLst << SE.mError;
-			}
-		}
-
-		if( ErrLst.isEmpty() )
-		{
-			for( fugio::SyntaxError SE : ErrSrc )
-			{
-				if( SE.mLineStart <= 0 )
-				{
-					ErrLst << SE.mError;
-				}
 			}
 		}
 	}
@@ -251,15 +239,11 @@ void TextEditorForm::cursorPositionChanged()
 
 void TextEditorForm::setSyntaxNone()
 {
-	ui->mTextEdit->setHighlighter( nullptr );
-
 	update();
 }
 
 void TextEditorForm::setSyntaxDefault()
 {
-	ui->mTextEdit->setHighlighter( mHighlighter );
-
 	update();
 }
 
@@ -273,7 +257,7 @@ void TextEditorForm::setSyntax( const QUuid &pUuid )
 
 		if( Instance )
 		{
-			ui->mTextEdit->setHighlighter( Instance );
+
 		}
 	}
 }

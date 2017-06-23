@@ -45,6 +45,7 @@ public:
 	virtual void unregisterSyntaxHighlighter( const QUuid &pUuid ) Q_DECL_OVERRIDE;
 	virtual SyntaxHighlighterFactoryInterface *syntaxHighlighterFactory( const QUuid &pUuid ) const Q_DECL_OVERRIDE;
 	virtual QList<SyntaxHighlighterIdentity> syntaxHighlighters() const Q_DECL_OVERRIDE;
+	virtual SyntaxHighlighterInstanceInterface *syntaxHighlighterInstance(const QUuid &pUuid) const Q_DECL_OVERRIDE;
 
 private:
 	static fugio::GlobalInterface	*mApp;

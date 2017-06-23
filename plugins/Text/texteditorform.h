@@ -22,6 +22,11 @@ public:
 
 	void setHighlighter( fugio::SyntaxHighlighterInstanceInterface *pHighlighter );
 
+	void setSyntaxErrors( QList<fugio::SyntaxError> pSyntaxErrors )
+	{
+		mSyntaxErrors = pSyntaxErrors;
+	}
+
 signals:
 	void updateText( void );
 
@@ -48,9 +53,10 @@ private slots:
 	void setSyntax( const QUuid &pUuid );
 
 private:
-	Ui::TextEditorForm						*ui;
-	fugio::SyntaxHighlighterInstanceInterface		*mHighlighter;
-	QString									 mFileName;
+	Ui::TextEditorForm								*ui;
+//	fugio::SyntaxHighlighterInstanceInterface		*mHighlighter;
+	QString											 mFileName;
+	QList<fugio::SyntaxError>						 mSyntaxErrors;
 };
 
 #endif // TEXTEDITORFORM_H
