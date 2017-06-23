@@ -17,6 +17,8 @@ public:
 
 	virtual ~KeyboardPin( void ) {}
 
+	static void registerMetaType( void );
+
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
@@ -45,7 +47,7 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::SerialiseInterface
 
-	virtual void serialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE;
+	virtual void serialise( QDataStream &pDataStream ) const Q_DECL_OVERRIDE;
 	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE;
 
 private:

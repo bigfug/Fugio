@@ -23,6 +23,8 @@ public:
 
 	virtual ~MidiOutputPin( void ) {}
 
+	static void registerMetaType( void );
+
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
@@ -75,45 +77,13 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::SerialiseInterface
 
-	virtual void serialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE
-	{
-		pDataStream << qint32( mMessages.size() );
+	virtual void serialise( QDataStream &pDataStream ) const Q_DECL_OVERRIDE;
 
-		for( fugio::MidiEvent &PE : mMessages )
-		{
-			pDataStream << PE.message;
-			pDataStream << PE.timestamp;
-		}
-
-		pDataStream << mSysEx;
-	}
-
-	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE
-	{
-		fugio::MidiEvent		PE;
-		qint32					MsgCnt;
-
-		pDataStream >> MsgCnt;
-
-		clearData();
-
-		mMessages.reserve( MsgCnt );
-
-		for( qint32 i = 0 ; i < MsgCnt ; i++ )
-		{
-			pDataStream >> PE.message;
-			pDataStream >> PE.timestamp;
-
-			mMessages << PE;
-		}
-
-		pDataStream >> mSysEx;
-	}
+	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE;
 
 private:
 	QVector<fugio::MidiEvent>		mMessages;
 	QByteArray						mSysEx;
-
 };
 
 #endif // MIDIOUTPUTPIN_H
