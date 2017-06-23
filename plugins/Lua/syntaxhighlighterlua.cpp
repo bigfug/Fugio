@@ -81,9 +81,6 @@ SyntaxHighlighterLua::SyntaxHighlighterLua( QTextDocument *pDocument )
 	rule.format = singleLineCommentFormat;
 	highlightingRules.append(rule);
 
-	errorFormat.setBackground( QBrush( QColor( Qt::red ).lighter( 160 ) ) );
-	errorFormat.setProperty( QTextFormat::FullWidthSelection, true );
-
 	//	defineFormat.setForeground(Qt::darkMagenta);
 	//	rule.pattern = QRegExp("#[^\n]*");
 	//	rule.format = defineFormat;
@@ -224,18 +221,6 @@ void SyntaxHighlighterLua::highlightBlock( const QString &text )
 		setFormat(startIndex, commentLength, multiLineCommentFormat);
 
 		startIndex = commentStartExpression.indexIn(text, startIndex + commentLength);
-	}
-
-	const int LineNumber = currentBlock().firstLineNumber() + 1;
-
-	for( const fugio::SyntaxError &SE : mErrorData )
-	{
-		if( SE.mLineStart <= LineNumber && SE.mLineEnd >= LineNumber )
-		{
-			setFormat( 0, currentBlock().length(), errorFormat );
-
-			break;
-		}
 	}
 }
 

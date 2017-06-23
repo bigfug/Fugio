@@ -50,7 +50,6 @@ private:
 	QTextCharFormat multiLineCommentFormat;
 	QTextCharFormat quotationFormat;
 	QTextCharFormat functionFormat;
-	QTextCharFormat errorFormat;
 
 	QList<fugio::SyntaxError>		 mErrorData;
 };

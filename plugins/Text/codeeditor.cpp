@@ -66,12 +66,22 @@ void CodeEditor::highlightCurrentLine()
 	{
 		QTextEdit::ExtraSelection selection;
 
-		QColor lineColor = QColor(Qt::yellow).lighter(160);
+		QColor lineColor = QColor( Qt::yellow ).lighter(160);
 
-//		if( mHighlighter && !mHighlighter->errorList( textCursor().blockNumber() + 1 ).isEmpty() )
-//		{
-//			lineColor = QColor( Qt::red ).lighter(160);
-//		}
+		if( mHighlighter )
+		{
+			const int LineNumber = textCursor().blockNumber() + 1;
+
+			for( const fugio::SyntaxError &SE : mHighlighter->errorList() )
+			{
+				if( SE.mLineStart <= LineNumber && SE.mLineEnd >= LineNumber )
+				{
+					lineColor = QColor( Qt::red ).lighter(160);
+
+					break;
+				}
+			}
+		}
 
 		selection.format.setBackground(lineColor);
 		selection.format.setProperty(QTextFormat::FullWidthSelection, true);
