@@ -657,7 +657,7 @@ SyntaxHighlighterInstanceInterface *OpenGLPlugin::syntaxHighlighterInstance( QUu
 {
 	if( pUuid == SYNTAX_HIGHLIGHTER_GLSL )
 	{
-		return( new SyntaxHighlighterGLSL() );
+		return( new SyntaxHighlighterGLSL( OpenGLPlugin::instance() ) );
 	}
 
 	return( nullptr );
