@@ -16,7 +16,7 @@ class SyntaxHighlighterFactoryInterface
 public:
 	virtual ~SyntaxHighlighterFactoryInterface( void ) {}
 
-	virtual SyntaxHighlighterInstanceInterface *syntaxHighlighterInstance( void ) const = 0;
+	virtual SyntaxHighlighterInstanceInterface *syntaxHighlighterInstance( QUuid pUuid ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

@@ -13,6 +13,8 @@
 
 #include "syntaxerrorpin.h"
 
+#include <fugio/text/syntax_highlighter_factory_interface.h>
+
 QList<QUuid>				NodeControlBase::PID_UUID;
 
 fugio::GlobalInterface	*TextPlugin::mApp = 0;
@@ -106,4 +108,11 @@ QList<SyntaxHighlighterInterface::SyntaxHighlighterIdentity> TextPlugin::syntaxH
 	}
 
 	return( L );
+}
+
+SyntaxHighlighterInstanceInterface *TextPlugin::syntaxHighlighterInstance( const QUuid &pUuid ) const
+{
+	SyntaxHighlighterFactoryInterface	*Factory = syntaxHighlighterFactory( pUuid );
+
+	return( Factory ? Factory->syntaxHighlighterInstance( pUuid ) : nullptr );
 }

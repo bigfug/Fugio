@@ -2,9 +2,11 @@
 
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
+#include <fugio/text/uuid.h>
 
 #include <fugio/context_interface.h>
 #include <fugio/performance.h>
+#include <fugio/text/syntax_highlighter_interface.h>
 
 #include "syntaxhighlighterglsl.h"
 #include "shaderpin.h"
@@ -13,14 +15,21 @@
 ShaderCompilerNode::ShaderCompilerNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mLastShaderLoad( 0 )
 {
+	FUGID( PIN_INPUT_VERTEX, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_INPUT_TESSCTRL, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+	FUGID( PIN_INPUT_TESSEVAL, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
+	FUGID( PIN_INPUT_GEOMETRY, "249f2932-f483-422f-b811-ab679f006381" );
+	FUGID( PIN_INPUT_FRAGMENT, "ce8d578e-c5a4-422f-b3c4-a1bdf40facdb" );
+	FUGID( PIN_OUTPUT_SHADER, "e6bf944e-5f46-4994-bd51-13c2aa6415b7" );
+
 	FUGID( PIN_VARYINGS,	"de12f397-d3ba-4d2e-9f53-5da4ed4bff37" );
 	FUGID( PIN_BUFFER_MODE,	"0A134F4F-4A33-4E74-98AF-F89AFC4FB19D" );
 
-	mPinShaderVertex   = pinInput( "Vertex" );
-	mPinShaderTessCtrl = pinInput( "Tess Ctrl" );
-	mPinShaderTessEval = pinInput( "Tess Eval" );
-	mPinShaderGeometry = pinInput( "Geometry" );
-	mPinShaderFragment = pinInput( "Fragment" );
+	mValInputVertex   = pinInput<fugio::SyntaxErrorInterface *>( "Vertex", mPinShaderVertex, PID_SYNTAX_ERROR, PIN_INPUT_VERTEX );
+	mValInputTessCtrl = pinInput<fugio::SyntaxErrorInterface *>( "Tess Ctrl", mPinShaderTessCtrl, PID_SYNTAX_ERROR, PIN_INPUT_TESSCTRL );
+	mValInputTessEval = pinInput<fugio::SyntaxErrorInterface *>( "Tess Eval", mPinShaderTessEval, PID_SYNTAX_ERROR, PIN_INPUT_TESSEVAL );
+	mValInputGeometry = pinInput<fugio::SyntaxErrorInterface *>( "Geometry", mPinShaderGeometry, PID_SYNTAX_ERROR, PIN_INPUT_GEOMETRY );
+	mValInputFragment = pinInput<fugio::SyntaxErrorInterface *>( "Fragment", mPinShaderFragment, PID_SYNTAX_ERROR, PIN_INPUT_FRAGMENT );
 
 	mPinInputVaryings = pinInput( "Varyings", PIN_VARYINGS );
 
@@ -33,15 +42,9 @@ ShaderCompilerNode::ShaderCompilerNode( QSharedPointer<fugio::NodeInterface> pNo
 
 	mValInputBufferMode->setChoices( BufferModeChoices );
 
-	mPinShaderVertex->registerInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE,   new ShaderHighlighter( this ) );
-	mPinShaderTessCtrl->registerInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE, new ShaderHighlighter( this ) );
-	mPinShaderTessEval->registerInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE, new ShaderHighlighter( this ) );
-	mPinShaderGeometry->registerInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE, new ShaderHighlighter( this ) );
-	mPinShaderFragment->registerInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE, new ShaderHighlighter( this ) );
-
 	mPinInputVaryings->registerPinInputType( PID_STRING );
 
-	mOutputShader = pinOutput<OpenGLShaderInterface *>( "Shader", mOutputPinShader, PID_OPENGL_SHADER );
+	mOutputShader = pinOutput<OpenGLShaderInterface *>( "Shader", mOutputPinShader, PID_OPENGL_SHADER, PIN_OUTPUT_SHADER );
 
 	qobject_cast<ShaderPin *>( mOutputPinShader->control()->qobject() )->setParent( this );
 
@@ -52,6 +55,14 @@ ShaderCompilerNode::ShaderCompilerNode( QSharedPointer<fugio::NodeInterface> pNo
 	mPinShaderFragment->setDescription( tr( "The source code for an OpenGL fragment shader - use a Text Editor node, or load from a file" ) );
 
 	mOutputPinShader->setDescription( tr( "The compiled shader made from all of the source code inputs" ) );
+
+	// set the syntax highlighting hint
+
+	mValInputVertex->setHighlighterUuid( SYNTAX_HIGHLIGHTER_GLSL );
+	mValInputTessCtrl->setHighlighterUuid( SYNTAX_HIGHLIGHTER_GLSL );
+	mValInputTessEval->setHighlighterUuid( SYNTAX_HIGHLIGHTER_GLSL );
+	mValInputGeometry->setHighlighterUuid( SYNTAX_HIGHLIGHTER_GLSL );
+	mValInputFragment->setHighlighterUuid( SYNTAX_HIGHLIGHTER_GLSL );
 }
 
 ShaderCompilerNode::~ShaderCompilerNode( void )
@@ -144,8 +155,7 @@ void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, G
 					{
 						GLint			 Result;
 
-						QObject				*O = pPin->findInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE );
-						ShaderHighlighter	*H = qobject_cast<ShaderHighlighter *>( O );
+						fugio::SyntaxErrorInterface *SyntaxErrors = ( pPin->hasControl() ? qobject_cast<fugio::SyntaxErrorInterface *>( pPin->control()->qobject() ) : nullptr );
 
 						glShaderSource( pShaderId, 1, &SourcePtr, 0 );
 
@@ -168,13 +178,20 @@ void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, G
 						{
 							glGetShaderInfoLog( pShaderId, Result, &Result, Log.data() );
 
-							if( H )
+							if( SyntaxErrors )
 							{
-								H->setErrors( QString( Log.data() ) );
+								QList<fugio::SyntaxError>	SE;
 
-#if defined( OPENGL_DEBUG_ENABLE )
-								qWarning() << QString( Log.data() );
-#endif
+								OpenGLPlugin::parseShaderErrors( QString( Log.data() ), SE );
+
+								if( SE.isEmpty() )
+								{
+									SyntaxErrors->clearSyntaxErrors();
+								}
+								else
+								{
+									SyntaxErrors->setSyntaxErrors( SE );
+								}
 							}
 							else
 							{
@@ -188,7 +205,10 @@ void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, G
 						{
 							glAttachShader( pProgramId, pShaderId );
 
-							H->clearErrors();
+							if( SyntaxErrors )
+							{
+								 SyntaxErrors->clearSyntaxErrors();
+							}
 
 							pCompiled++;
 
@@ -435,32 +455,6 @@ void ShaderCompilerNode::loadShader()
 	CompilerData.clear();
 
 	pinUpdated( mOutputPinShader );
-}
-
-QSyntaxHighlighter *ShaderHighlighter::highlighter( QTextDocument *pDocument )
-{
-	if( !mHighlighter )
-	{
-		mHighlighter = new SyntaxHighlighterGLSL( pDocument );
-	}
-
-	return( mHighlighter );
-}
-
-void ShaderHighlighter::clearErrors()
-{
-	if( mHighlighter )
-	{
-		mHighlighter->clearErrors();
-	}
-}
-
-void ShaderHighlighter::setErrors( const QString &pErrorText )
-{
-	if( mHighlighter )
-	{
-		mHighlighter->setErrors( pErrorText );
-	}
 }
 
 void ShaderCompilerNode::ShaderCompilerData::process()

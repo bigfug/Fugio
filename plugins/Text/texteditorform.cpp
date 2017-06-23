@@ -12,7 +12,7 @@
 
 TextEditorForm::TextEditorForm(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::TextEditorForm), mHighlighter( 0 )
+	ui(new Ui::TextEditorForm)
 {
 	ui->setupUi(this);
 
@@ -112,11 +112,13 @@ QPlainTextEdit *TextEditorForm::textEdit( void )
 	return( ui->mTextEdit );
 }
 
-void TextEditorForm::setHighlighter( fugio::SyntaxHighlighterInstanceInterface *pHighlighter )
+void TextEditorForm::setSyntaxErrors(QList<SyntaxError> pSyntaxErrors)
 {
-	mHighlighter = pHighlighter;
+	mSyntaxErrors = pSyntaxErrors;
 
-	ui->mTextEdit->setHighlighter( pHighlighter );
+	ui->mTextEdit->setSyntaxErrors( pSyntaxErrors );
+
+	errorsUpdated();
 }
 
 void TextEditorForm::errorsUpdated()
@@ -209,28 +211,23 @@ void TextEditorForm::cursorPositionChanged()
 	QStringList			ErrLst;
 	QString				ErrMsg;
 
-	if( mHighlighter )
+	int		LinNum = ui->mTextEdit->textCursor().blockNumber() + 1;
+
+	for( fugio::SyntaxError SE : mSyntaxErrors )
 	{
-		int		LinNum = ui->mTextEdit->textCursor().blockNumber() + 1;
-
-		QList<fugio::SyntaxError>	ErrSrc = mHighlighter->errorList();
-
-		for( fugio::SyntaxError SE : ErrSrc )
+		if( SE.mLineStart <= LinNum && SE.mLineEnd >= LinNum )
 		{
-			if( SE.mLineStart <= LinNum && SE.mLineEnd >= LinNum )
+			ErrLst << SE.mError;
+		}
+	}
+
+	if( ErrLst.isEmpty() )
+	{
+		for( fugio::SyntaxError SE : mSyntaxErrors )
+		{
+			if( SE.mLineStart <= 0 )
 			{
 				ErrLst << SE.mError;
-			}
-		}
-
-		if( ErrLst.isEmpty() )
-		{
-			for( fugio::SyntaxError SE : ErrSrc )
-			{
-				if( SE.mLineStart <= 0 )
-				{
-					ErrLst << SE.mError;
-				}
 			}
 		}
 	}
@@ -251,29 +248,15 @@ void TextEditorForm::cursorPositionChanged()
 
 void TextEditorForm::setSyntaxNone()
 {
-	ui->mTextEdit->setHighlighter( nullptr );
-
-	update();
+	emit syntaxChanged( TextEditorNode::HIGHLIGHT_NONE, QUuid() );
 }
 
 void TextEditorForm::setSyntaxDefault()
 {
-	ui->mTextEdit->setHighlighter( mHighlighter );
-
-	update();
+	emit syntaxChanged( TextEditorNode::HIGHLIGHT_DEFAULT, QUuid() );
 }
 
 void TextEditorForm::setSyntax( const QUuid &pUuid )
 {
-	SyntaxHighlighterFactoryInterface *Factory = TextPlugin::instance()->syntaxHighlighterFactory( pUuid );
-
-	if( Factory )
-	{
-		fugio::SyntaxHighlighterInstanceInterface *Instance = Factory->syntaxHighlighterInstance();
-
-		if( Instance )
-		{
-			ui->mTextEdit->setHighlighter( Instance );
-		}
-	}
+	emit syntaxChanged( TextEditorNode::HIGHLIGHT_CUSTOM, pUuid );
 }

@@ -41,7 +41,9 @@ HEADERS += textplugin.h\
 	linebuffernode.h \
     ../../include/fugio/text/syntax_highlighter_instance_interface.h \
     ../../include/fugio/text/syntax_highlighter_factory_interface.h \
-    syntaxerrorpin.h
+    syntaxerrorpin.h \
+    ../../include/fugio/text/syntax_error_signals.h \
+    ../../include/fugio/text/syntax_error_interface.h
 	cmdtexteditorupdate.h
 
 FORMS += \

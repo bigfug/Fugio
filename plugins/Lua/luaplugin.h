@@ -14,7 +14,6 @@
 #include <fugio/text/syntax_highlighter_interface.h>
 #include <fugio/text/syntax_highlighter_factory_interface.h>
 #include <fugio/text/syntax_highlighter_instance_interface.h>
-#include "luahighlighter.h"
 
 class LuaPlugin : public QObject, public fugio::PluginInterface, public fugio::LuaInterface, public fugio::SyntaxHighlighterFactoryInterface
 {
@@ -107,7 +106,7 @@ public:
 	//-------------------------------------------------------------------------
 	// SyntaxHighlighterFactoryInterface interface
 public:
-	virtual fugio::SyntaxHighlighterInstanceInterface *syntaxHighlighterInstance() const Q_DECL_OVERRIDE;
+	virtual fugio::SyntaxHighlighterInstanceInterface *syntaxHighlighterInstance( QUuid pUuid ) const Q_DECL_OVERRIDE;
 
 public:
 #if defined( LUA_SUPPORTED )

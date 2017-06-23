@@ -19,6 +19,16 @@ QDataStream &operator >>( QDataStream &DS, fugio::SyntaxError &SE )
 	return( DS );
 }
 
+fugio::SyntaxErrorSignals::SyntaxErrorSignals( void )
+{
+
+}
+
+fugio::SyntaxErrorSignals::~SyntaxErrorSignals( void )
+{
+
+}
+
 SyntaxErrorPin::SyntaxErrorPin( QSharedPointer<fugio::PinInterface> pPin )
 	: PinControlBase( pPin )
 {

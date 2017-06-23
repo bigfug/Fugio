@@ -9,6 +9,7 @@
 
 FUGIO_NAMESPACE_BEGIN
 class SyntaxHighlighterFactoryInterface;
+class SyntaxHighlighterInstanceInterface;
 FUGIO_NAMESPACE_END
 
 FUGIO_NAMESPACE_BEGIN
@@ -23,6 +24,8 @@ public:
 	virtual void unregisterSyntaxHighlighter( const QUuid &pUuid ) = 0;
 
 	virtual SyntaxHighlighterFactoryInterface *syntaxHighlighterFactory( const QUuid &pUuid ) const = 0;
+
+	virtual SyntaxHighlighterInstanceInterface *syntaxHighlighterInstance( const QUuid &pUuid ) const = 0;
 
 	typedef QPair<QUuid,QString> SyntaxHighlighterIdentity;
 

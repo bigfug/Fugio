@@ -20,7 +20,6 @@ DEFINES += LUA_LIBRARY
 SOURCES += luaplugin.cpp \
 	luanode.cpp \
 	syntaxhighlighterlua.cpp \
-	luahighlighter.cpp \
 	luaexnode.cpp \
 	luaexpin.cpp \
 	luaarray.cpp
@@ -32,7 +31,6 @@ HEADERS += luaplugin.h \
 	../../include/fugio/lua/lua_interface.h \
 	luanode.h \
 	syntaxhighlighterlua.h \
-	luahighlighter.h \
 	luaexnode.h \
 	luaexpin.h \
 	luaarray.h

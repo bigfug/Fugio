@@ -14,6 +14,7 @@
 #include <fugio/device_factory_interface.h>
 
 #include <fugio/text/syntax_highlighter_factory_interface.h>
+#include <fugio/text/syntax_highlighter_instance_interface.h>
 
 //#define OPENGL_DEBUG_ENABLE
 
@@ -39,6 +40,9 @@ public:
 	explicit OpenGLPlugin( void );
 
 	virtual ~OpenGLPlugin( void );
+
+	static void parseShaderErrors( QString pErrorText, QList<fugio::SyntaxError> &pErrorData );
+
 
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
@@ -92,7 +96,7 @@ public:
 	//-------------------------------------------------------------------------	
 	// SyntaxHighlighterFactoryInterface interface
 public:
-	virtual SyntaxHighlighterInstanceInterface *syntaxHighlighterInstance() const Q_DECL_OVERRIDE;
+	virtual SyntaxHighlighterInstanceInterface *syntaxHighlighterInstance( QUuid pUuid ) const Q_DECL_OVERRIDE;
 
 public:
 	static QMap<QString,int>				 mMapTargets;

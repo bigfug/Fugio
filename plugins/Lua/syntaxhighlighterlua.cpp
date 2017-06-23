@@ -2,13 +2,8 @@
 
 #include <QDebug>
 
-SyntaxHighlighterLua::SyntaxHighlighterLua(QObject *parent) :
-	QSyntaxHighlighter(parent)
-{
-}
-
-SyntaxHighlighterLua::SyntaxHighlighterLua( QTextDocument *pDocument )
-	: QSyntaxHighlighter( pDocument )
+SyntaxHighlighterLua::SyntaxHighlighterLua( QObject *pParent ) :
+	QSyntaxHighlighter( pParent )
 {
 	HighlightingRule rule;
 
@@ -92,89 +87,6 @@ SyntaxHighlighterLua::SyntaxHighlighterLua( QTextDocument *pDocument )
 	commentEndExpression = QRegExp( "\\]\\]--" );
 }
 
-SyntaxHighlighterLua::~SyntaxHighlighterLua( void )
-{
-}
-
-void SyntaxHighlighterLua::clearErrors()
-{
-	mErrorData.clear();
-
-	emit errorsUpdated();
-
-	rehighlight();
-}
-
-void SyntaxHighlighterLua::setErrors( const QString &pErrorText)
-{
-	QString			EL = pErrorText;
-
-	mErrorData.clear();
-
-	if( EL.startsWith( '"' ) )
-	{
-		EL.remove( 0, 1 );
-	}
-
-	if( EL.endsWith( '"' ) )
-	{
-		EL.chop( 1 );
-	}
-
-	QStringList		SL = EL.trimmed().split( '\n' );
-
-	for( QString S : SL )
-	{
-		int				Line  = 0;
-
-		S = S.trimmed();
-
-		QRegExp	P( "^\\[string \"(.+)\"\\]:(\\d+):(.+)" );
-
-		if( P.indexIn( S ) > -1 )
-		{
-			Line = P.cap( 2 ).toInt();
-
-			if( Line > 0 )
-			{
-				fugio::SyntaxError	SE;
-
-				SE.mLineStart   = SE.mLineEnd   = Line;
-				SE.mColumnStart = SE.mColumnEnd = 0;
-
-				SE.mError = P.cap( 3 );
-
-				mErrorData << SE;
-			}
-		}
-		else
-		{
-			qDebug() << S;
-		}
-
-		if( !Line )
-		{
-			fugio::SyntaxError	SE;
-
-			SE.mLineStart   = SE.mLineEnd   = -1;
-			SE.mColumnStart = SE.mColumnEnd = -1;
-
-			SE.mError = S;
-
-			mErrorData << SE;
-		}
-	}
-
-	emit errorsUpdated();
-
-	rehighlight();
-}
-
-QList<fugio::SyntaxError> SyntaxHighlighterLua::errorList( void ) const
-{
-	return( mErrorData );
-}
-
 void SyntaxHighlighterLua::highlightBlock( const QString &text )
 {
 	for( const HighlightingRule &rule : highlightingRules )
@@ -224,3 +136,9 @@ void SyntaxHighlighterLua::highlightBlock( const QString &text )
 	}
 }
 
+void SyntaxHighlighterLua::updateErrors( QList<fugio::SyntaxError> pSyntaxErrors )
+{
+	mSyntaxErrors = pSyntaxErrors;
+
+	rehighlight();
+}

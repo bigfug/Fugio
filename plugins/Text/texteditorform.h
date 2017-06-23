@@ -9,6 +9,8 @@ namespace Ui {
 class TextEditorForm;
 }
 
+#include "texteditornode.h"
+
 class TextEditorForm : public QWidget
 {
 	Q_OBJECT
@@ -20,10 +22,12 @@ public:
 
 	QPlainTextEdit *textEdit( void );
 
-	void setHighlighter( fugio::SyntaxHighlighterInstanceInterface *pHighlighter );
+	void setSyntaxErrors( QList<fugio::SyntaxError> pSyntaxErrors );
 
 signals:
 	void updateText( void );
+
+	void syntaxChanged( TextEditorNode::HighlighterType pHighlighterType, QUuid pUuid );
 
 public slots:
 	void errorsUpdated( void );
@@ -48,9 +52,9 @@ private slots:
 	void setSyntax( const QUuid &pUuid );
 
 private:
-	Ui::TextEditorForm						*ui;
-	fugio::SyntaxHighlighterInstanceInterface		*mHighlighter;
-	QString									 mFileName;
+	Ui::TextEditorForm								*ui;
+	QString											 mFileName;
+	QList<fugio::SyntaxError>						 mSyntaxErrors;
 };
 
 #endif // TEXTEDITORFORM_H

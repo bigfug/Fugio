@@ -10,8 +10,11 @@
 
 #include <fugio/performance.h>
 
-#include "luahighlighter.h"
+#include <fugio/lua/uuid.h>
+
 #include "luaplugin.h"
+
+#include <fugio/text/uuid.h>
 
 using namespace fugio;
 
@@ -32,14 +35,79 @@ void LuaNode::registerFunctions()
 #endif
 }
 
+void LuaNode::parseErrors( QString EL )
+{
+	QList<fugio::SyntaxError>		 ErrorData;
+
+	if( EL.startsWith( '"' ) )
+	{
+		EL.remove( 0, 1 );
+	}
+
+	if( EL.endsWith( '"' ) )
+	{
+		EL.chop( 1 );
+	}
+
+	QStringList		SL = EL.trimmed().split( '\n' );
+
+	for( QString S : SL )
+	{
+		int				Line  = 0;
+
+		S = S.trimmed();
+
+		QRegExp	P( "^\\[string \"(.+)\"\\]:(\\d+):(.+)" );
+
+		if( P.indexIn( S ) > -1 )
+		{
+			Line = P.cap( 2 ).toInt();
+
+			if( Line > 0 )
+			{
+				fugio::SyntaxError	SE;
+
+				SE.mLineStart   = SE.mLineEnd   = Line;
+				SE.mColumnStart = SE.mColumnEnd = 0;
+
+				SE.mError = P.cap( 3 );
+
+				ErrorData << SE;
+			}
+		}
+		else
+		{
+			qDebug() << S;
+		}
+
+		if( !Line )
+		{
+			fugio::SyntaxError	SE;
+
+			SE.mLineStart   = SE.mLineEnd   = -1;
+			SE.mColumnStart = SE.mColumnEnd = -1;
+
+			SE.mError = S;
+
+			ErrorData << SE;
+		}
+	}
+
+	mValInputSource->setSyntaxErrors( ErrorData );
+}
+
 LuaNode::LuaNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mL( nullptr ), mCompileStatus( LUA_ERRERR ), mCallStatus( LUA_ERRERR )
 {
-	mPinSource = pinInput( "Source" );
+	FUGID( PIN_INPUT_SOURCE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 
-	mPinSource->setDescription( tr( "Lua source code" ) );
+	mValInputSource = pinInput<fugio::SyntaxErrorInterface *>( "Source", mPinInputSource, PID_SYNTAX_ERROR, PIN_INPUT_SOURCE );
 
-	mPinSource->registerInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE, new LuaHighlighter( this ) );
+	mPinInputSource->setDescription( tr( "Lua source code" ) );
+
+	// set the syntax highlighting hint
+
+	mValInputSource->setHighlighterUuid( SYNTAX_HIGHLIGHTER_LUA );
 }
 
 QList<QUuid> LuaNode::pinAddTypesInput() const
@@ -86,7 +154,7 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 #if defined( LUA_SUPPORTED )
 	fugio::Performance( node(), "inputsUpdated", pTimeStamp );
 
-	if( mPinSource->isUpdated( pTimeStamp ) )
+	if( mPinInputSource->isUpdated( pTimeStamp ) )
 	{
 		if( mL )
 		{
@@ -97,7 +165,7 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 			mCompileStatus = mCallStatus = LUA_ERRERR;
 		}
 
-		const QString	LuaSource = variant( mPinSource ).toString();
+		const QString	LuaSource = variant( mPinInputSource ).toString();
 
 		if( LuaSource.isEmpty() )
 		{
@@ -181,18 +249,13 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 			mNode->setStatusMessage( LuaErr );
 		}
 
-		QObject			*O = mPinSource->findInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE );
-
-		if( LuaHighlighter *H = qobject_cast<LuaHighlighter *>( O ) )
+		if( LuaErr.isEmpty() )
 		{
-			if( !LuaErr.isEmpty() )
-			{
-				H->setErrors( LuaErr );
-			}
-			else
-			{
-				H->clearErrors();
-			}
+			mValInputSource->clearSyntaxErrors();
+		}
+		else
+		{
+			parseErrors( LuaErr );
 		}
 
 		if( mCompileStatus == LUA_ERRMEM )
@@ -228,13 +291,7 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 					mNode->setStatus( fugio::NodeInterface::Error );
 					mNode->setStatusMessage( S );
 
-					QObject			*O = mPinSource->findInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE );
-					LuaHighlighter	*H = qobject_cast<LuaHighlighter *>( O );
-
-					if( H )
-					{
-						H->setErrors( S );
-					}
+					parseErrors( S );
 				}
 
 				lua_pop( mL, 1 );
@@ -270,19 +327,7 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 		{
 			QString		LuaErr( luaL_tolstring( mL, -1, 0 ) );
 
-			QObject			*O = mPinSource->findInterface( IID_SYNTAX_HIGHLIGHTER_INSTANCE );
-
-			if( LuaHighlighter *H = qobject_cast<LuaHighlighter *>( O ) )
-			{
-				if( !LuaErr.isEmpty() )
-				{
-					H->setErrors( LuaErr );
-				}
-				else
-				{
-					H->clearErrors();
-				}
-			}
+			parseErrors( LuaErr );
 		}
 
 		lua_pop( mL, 1 );

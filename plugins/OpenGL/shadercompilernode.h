@@ -14,39 +14,9 @@
 
 #include "vertexarrayobjectpin.h"
 
-#include "syntaxhighlighterglsl.h"
+#include <fugio/text/syntax_error_interface.h>
 
 using namespace fugio;
-
-class ShaderHighlighter : public QObject, public fugio::SyntaxHighlighterInstanceInterface
-{
-	Q_OBJECT
-	Q_INTERFACES( fugio::SyntaxHighlighterInstanceInterface )
-
-public:
-	ShaderHighlighter( QObject *pParent = 0 )
-		: QObject( pParent ), mHighlighter( 0 )
-	{
-
-	}
-
-	void clearErrors( void );
-
-	void setErrors( const QString &pErrorText );
-
-	//-------------------------------------------------------------------------
-	// fugio::InterfaceSyntaxHighlighter
-
-	virtual QSyntaxHighlighter *highlighter( QTextDocument *pDocument ) Q_DECL_OVERRIDE;
-
-	virtual QList<fugio::SyntaxError> errorList( void ) const Q_DECL_OVERRIDE
-	{
-		return( mHighlighter ? mHighlighter->errorList() : QList<fugio::SyntaxError>() );
-	}
-
-private:
-	QPointer<SyntaxHighlighterGLSL>				mHighlighter;
-};
 
 class ShaderCompilerNode : public fugio::NodeControlBase, public fugio::OpenGLShaderInterface
 {
@@ -109,6 +79,12 @@ protected:
 	QSharedPointer<fugio::PinInterface>		 mPinShaderTessEval;
 	QSharedPointer<fugio::PinInterface>		 mPinShaderFragment;
 	QSharedPointer<fugio::PinInterface>		 mPinInputBufferMode;
+
+	fugio::SyntaxErrorInterface				*mValInputVertex;
+	fugio::SyntaxErrorInterface				*mValInputTessCtrl;
+	fugio::SyntaxErrorInterface				*mValInputTessEval;
+	fugio::SyntaxErrorInterface				*mValInputGeometry;
+	fugio::SyntaxErrorInterface				*mValInputFragment;
 
 	fugio::ChoiceInterface					*mValInputBufferMode;
 

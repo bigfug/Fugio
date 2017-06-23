@@ -6,11 +6,6 @@
 SyntaxHighlighterGLSL::SyntaxHighlighterGLSL(QObject *parent) :
 	QSyntaxHighlighter(parent)
 {
-}
-
-SyntaxHighlighterGLSL::SyntaxHighlighterGLSL( QTextDocument *pDocument )
-	: QSyntaxHighlighter( pDocument )
-{
 	HighlightingRule rule;
 
 	keywordFormat.setForeground(Qt::darkBlue);
@@ -186,104 +181,6 @@ SyntaxHighlighterGLSL::~SyntaxHighlighterGLSL( void )
 {
 }
 
-void SyntaxHighlighterGLSL::clearErrors()
-{
-	mErrorData.clear();
-
-	emit errorsUpdated();
-
-	rehighlight();
-}
-
-void SyntaxHighlighterGLSL::setErrors( const QString &pErrorText)
-{
-	QString			EL = pErrorText;
-
-	mErrorData.clear();
-
-	if( EL.startsWith( '"' ) )
-	{
-		EL.remove( 0, 1 );
-	}
-
-	if( EL.endsWith( '"' ) )
-	{
-		EL.chop( 1 );
-	}
-
-	QStringList			SL = EL.split( '\n' );
-	fugio::SyntaxError	SE;
-
-	SE.mColumnStart = SE.mColumnEnd = -1;
-
-	for( QString S : SL )
-	{
-		S = S.trimmed();
-
-		if( S.isEmpty() )
-		{
-			continue;
-		}
-
-		QRegExp	P1( "^ERROR: (.+):(\\d+):\\s+(.+)" );
-
-		if( P1.indexIn( S ) > -1 )
-		{
-			SE.mLineStart = SE.mLineEnd = P1.cap( 2 ).toInt();
-
-			SE.mError = P1.cap( 3 );
-
-			mErrorData << SE;
-
-			continue;
-		}
-
-		QRegExp	P2( "^ERROR:\\s?(.+)" );
-
-		if( P2.indexIn( S ) > -1 )
-		{
-			SE.mLineStart = SE.mLineEnd = -1;
-
-			SE.mError = P2.cap( 1 );
-
-			mErrorData << SE;
-
-			continue;
-		}
-
-		QRegExp	P3( "^.+\\((\\d+)\\)\\s?:\\s?(.+):\\s?(.+)" );
-
-		if( P3.indexIn( S ) > -1 )
-		{
-			SE.mLineStart   = SE.mLineEnd = P3.cap( 1 ).toInt();
-
-			SE.mError = P3.cap( 3 );
-
-			mErrorData << SE;
-
-			continue;
-		}
-
-		SE.mLineStart = SE.mLineEnd   = -1;
-
-		SE.mError = S;
-
-		mErrorData << SE;
-
-		qDebug() << S;
-
-	}
-
-	emit errorsUpdated();
-
-	rehighlight();
-}
-
-QList<fugio::SyntaxError> SyntaxHighlighterGLSL::errorList( void ) const
-{
-	return( mErrorData );
-}
-
 void SyntaxHighlighterGLSL::highlightBlock( const QString &text )
 {
 	for( const HighlightingRule &rule : highlightingRules )
@@ -331,4 +228,11 @@ void SyntaxHighlighterGLSL::highlightBlock( const QString &text )
 
 		startIndex = commentStartExpression.indexIn(text, startIndex + commentLength);
 	}
+}
+
+void SyntaxHighlighterGLSL::updateErrors(QList<fugio::SyntaxError> pSyntaxErrors)
+{
+	mSyntaxErrors = pSyntaxErrors;
+
+	rehighlight();
 }
