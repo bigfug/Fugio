@@ -20,11 +20,12 @@ ShaderCompilerNode::ShaderCompilerNode( QSharedPointer<fugio::NodeInterface> pNo
 	FUGID( PIN_INPUT_TESSEVAL, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
 	FUGID( PIN_INPUT_GEOMETRY, "249f2932-f483-422f-b811-ab679f006381" );
 	FUGID( PIN_INPUT_FRAGMENT, "ce8d578e-c5a4-422f-b3c4-a1bdf40facdb" );
+	FUGID( PIN_OUTPUT_SHADER, "e6bf944e-5f46-4994-bd51-13c2aa6415b7" );
 
 	FUGID( PIN_VARYINGS,	"de12f397-d3ba-4d2e-9f53-5da4ed4bff37" );
 	FUGID( PIN_BUFFER_MODE,	"0A134F4F-4A33-4E74-98AF-F89AFC4FB19D" );
 
-	mValInputVertex = pinInput<fugio::SyntaxErrorInterface *>( "Vertex", mPinShaderVertex, PID_SYNTAX_ERROR, PIN_INPUT_VERTEX );
+	mValInputVertex   = pinInput<fugio::SyntaxErrorInterface *>( "Vertex", mPinShaderVertex, PID_SYNTAX_ERROR, PIN_INPUT_VERTEX );
 	mValInputTessCtrl = pinInput<fugio::SyntaxErrorInterface *>( "Tess Ctrl", mPinShaderTessCtrl, PID_SYNTAX_ERROR, PIN_INPUT_TESSCTRL );
 	mValInputTessEval = pinInput<fugio::SyntaxErrorInterface *>( "Tess Eval", mPinShaderTessEval, PID_SYNTAX_ERROR, PIN_INPUT_TESSEVAL );
 	mValInputGeometry = pinInput<fugio::SyntaxErrorInterface *>( "Geometry", mPinShaderGeometry, PID_SYNTAX_ERROR, PIN_INPUT_GEOMETRY );
@@ -43,7 +44,7 @@ ShaderCompilerNode::ShaderCompilerNode( QSharedPointer<fugio::NodeInterface> pNo
 
 	mPinInputVaryings->registerPinInputType( PID_STRING );
 
-	mOutputShader = pinOutput<OpenGLShaderInterface *>( "Shader", mOutputPinShader, PID_OPENGL_SHADER );
+	mOutputShader = pinOutput<OpenGLShaderInterface *>( "Shader", mOutputPinShader, PID_OPENGL_SHADER, PIN_OUTPUT_SHADER );
 
 	qobject_cast<ShaderPin *>( mOutputPinShader->control()->qobject() )->setParent( this );
 
