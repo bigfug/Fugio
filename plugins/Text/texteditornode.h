@@ -32,17 +32,17 @@ class TextEditorNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Text_Editor_(GUI)" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
+public:
+	Q_INVOKABLE explicit TextEditorNode( QSharedPointer<fugio::NodeInterface> pNode );
+
+	virtual ~TextEditorNode( void );
+
 	typedef enum HighlighterType
 	{
 		HIGHLIGHT_NONE,
 		HIGHLIGHT_DEFAULT,
 		HIGHLIGHT_CUSTOM
 	} HighlighterType;
-
-public:
-	Q_INVOKABLE explicit TextEditorNode( QSharedPointer<fugio::NodeInterface> pNode );
-
-	virtual ~TextEditorNode( void );
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface

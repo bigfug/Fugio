@@ -653,7 +653,12 @@ void OpenGLPlugin::initStaticData( void )
 	}
 }
 
-SyntaxHighlighterInstanceInterface *OpenGLPlugin::syntaxHighlighterInstance() const
+SyntaxHighlighterInstanceInterface *OpenGLPlugin::syntaxHighlighterInstance( QUuid pUuid ) const
 {
-	return( new SyntaxHighlighterGLSL() );
+	if( pUuid == SYNTAX_HIGHLIGHTER_GLSL )
+	{
+		return( new SyntaxHighlighterGLSL() );
+	}
+
+	return( nullptr );
 }

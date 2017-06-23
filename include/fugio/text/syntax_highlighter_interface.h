@@ -6,7 +6,6 @@
 #include <fugio/global.h>
 
 #define IID_SYNTAX_HIGHLIGHTER			(QUuid("{87253C53-28CA-4B8F-895E-AC513AE03335}"))
-#define PIN_SETTING_SYNTAX_HIGHLIGHTER	QStringLiteral( "syntax-highlighter" )
 
 FUGIO_NAMESPACE_BEGIN
 class SyntaxHighlighterFactoryInterface;

@@ -54,6 +54,14 @@ ShaderCompilerNode::ShaderCompilerNode( QSharedPointer<fugio::NodeInterface> pNo
 	mPinShaderFragment->setDescription( tr( "The source code for an OpenGL fragment shader - use a Text Editor node, or load from a file" ) );
 
 	mOutputPinShader->setDescription( tr( "The compiled shader made from all of the source code inputs" ) );
+
+	// set the syntax highlighting hint
+
+	mValInputVertex->setHighlighterUuid( SYNTAX_HIGHLIGHTER_GLSL );
+	mValInputTessCtrl->setHighlighterUuid( SYNTAX_HIGHLIGHTER_GLSL );
+	mValInputTessEval->setHighlighterUuid( SYNTAX_HIGHLIGHTER_GLSL );
+	mValInputGeometry->setHighlighterUuid( SYNTAX_HIGHLIGHTER_GLSL );
+	mValInputFragment->setHighlighterUuid( SYNTAX_HIGHLIGHTER_GLSL );
 }
 
 ShaderCompilerNode::~ShaderCompilerNode( void )
@@ -67,14 +75,6 @@ bool ShaderCompilerNode::initialise()
 	{
 		return( false );
 	}
-
-	// set the syntax highlighting hint
-
-	mPinShaderVertex->setSetting( PIN_SETTING_SYNTAX_HIGHLIGHTER, SYNTAX_HIGHLIGHTER_GLSL );
-	mPinShaderTessCtrl->setSetting( PIN_SETTING_SYNTAX_HIGHLIGHTER, SYNTAX_HIGHLIGHTER_GLSL );
-	mPinShaderTessEval->setSetting( PIN_SETTING_SYNTAX_HIGHLIGHTER, SYNTAX_HIGHLIGHTER_GLSL );
-	mPinShaderGeometry->setSetting( PIN_SETTING_SYNTAX_HIGHLIGHTER, SYNTAX_HIGHLIGHTER_GLSL );
-	mPinShaderFragment->setSetting( PIN_SETTING_SYNTAX_HIGHLIGHTER, SYNTAX_HIGHLIGHTER_GLSL );
 
 	if( !OpenGLPlugin::hasContextStatic() )
 	{

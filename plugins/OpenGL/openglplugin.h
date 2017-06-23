@@ -96,7 +96,7 @@ public:
 	//-------------------------------------------------------------------------	
 	// SyntaxHighlighterFactoryInterface interface
 public:
-	virtual SyntaxHighlighterInstanceInterface *syntaxHighlighterInstance() const Q_DECL_OVERRIDE;
+	virtual SyntaxHighlighterInstanceInterface *syntaxHighlighterInstance( QUuid pUuid ) const Q_DECL_OVERRIDE;
 
 public:
 	static QMap<QString,int>				 mMapTargets;

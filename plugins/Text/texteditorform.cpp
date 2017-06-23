@@ -112,6 +112,15 @@ QPlainTextEdit *TextEditorForm::textEdit( void )
 	return( ui->mTextEdit );
 }
 
+void TextEditorForm::setSyntaxErrors(QList<SyntaxError> pSyntaxErrors)
+{
+	mSyntaxErrors = pSyntaxErrors;
+
+	ui->mTextEdit->setSyntaxErrors( pSyntaxErrors );
+
+	errorsUpdated();
+}
+
 void TextEditorForm::errorsUpdated()
 {
 	ui->mTextEdit->update();
@@ -239,25 +248,15 @@ void TextEditorForm::cursorPositionChanged()
 
 void TextEditorForm::setSyntaxNone()
 {
-	update();
+	emit syntaxChanged( TextEditorNode::HIGHLIGHT_NONE, QUuid() );
 }
 
 void TextEditorForm::setSyntaxDefault()
 {
-	update();
+	emit syntaxChanged( TextEditorNode::HIGHLIGHT_DEFAULT, QUuid() );
 }
 
 void TextEditorForm::setSyntax( const QUuid &pUuid )
 {
-	SyntaxHighlighterFactoryInterface *Factory = TextPlugin::instance()->syntaxHighlighterFactory( pUuid );
-
-	if( Factory )
-	{
-		fugio::SyntaxHighlighterInstanceInterface *Instance = Factory->syntaxHighlighterInstance();
-
-		if( Instance )
-		{
-
-		}
-	}
+	emit syntaxChanged( TextEditorNode::HIGHLIGHT_CUSTOM, pUuid );
 }

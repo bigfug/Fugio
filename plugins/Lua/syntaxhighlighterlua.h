@@ -11,7 +11,7 @@ class SyntaxHighlighterLua : public QSyntaxHighlighter, public fugio::SyntaxHigh
 	Q_INTERFACES( fugio::SyntaxHighlighterInstanceInterface )
 
 public:
-	explicit SyntaxHighlighterLua( QObject *pParent = 0 );
+	explicit SyntaxHighlighterLua( QObject *pParent = nullptr );
 
 	virtual ~SyntaxHighlighterLua( void ) {}
 

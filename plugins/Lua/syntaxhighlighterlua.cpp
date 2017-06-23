@@ -87,15 +87,6 @@ SyntaxHighlighterLua::SyntaxHighlighterLua( QObject *pParent ) :
 	commentEndExpression = QRegExp( "\\]\\]--" );
 }
 
-//void SyntaxHighlighterLua::clearErrors()
-//{
-//	mErrorData.clear();
-
-//	emit errorsUpdated();
-
-//	rehighlight();
-//}
-
 void SyntaxHighlighterLua::highlightBlock( const QString &text )
 {
 	for( const HighlightingRule &rule : highlightingRules )

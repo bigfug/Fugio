@@ -114,5 +114,5 @@ SyntaxHighlighterInstanceInterface *TextPlugin::syntaxHighlighterInstance( const
 {
 	SyntaxHighlighterFactoryInterface	*Factory = syntaxHighlighterFactory( pUuid );
 
-	return( Factory ? Factory->syntaxHighlighterInstance() : nullptr );
+	return( Factory ? Factory->syntaxHighlighterInstance( pUuid ) : nullptr );
 }

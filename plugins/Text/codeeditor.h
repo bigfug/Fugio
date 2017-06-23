@@ -17,6 +17,8 @@ class CodeEditor : public QPlainTextEdit
 public:
 	explicit CodeEditor(QWidget *parent = 0);
 
+	void setSyntaxErrors( QList<fugio::SyntaxError> pSyntaxErrors );
+
 	void lineNumberAreaPaintEvent(QPaintEvent *event);
 	int lineNumberAreaWidth();
 

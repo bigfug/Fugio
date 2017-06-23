@@ -22,6 +22,10 @@ public:
 	virtual QList<fugio::SyntaxError> syntaxErrors( void ) = 0;
 
 	virtual fugio::SyntaxErrorSignals *syntaxErrorSignals( void ) = 0;
+
+	virtual void setHighlighterUuid( QUuid pUuid ) = 0;
+
+	virtual QUuid highlighterUuid( void ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

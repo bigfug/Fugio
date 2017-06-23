@@ -104,6 +104,10 @@ LuaNode::LuaNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mValInputSource = pinInput<fugio::SyntaxErrorInterface *>( "Source", mPinInputSource, PID_SYNTAX_ERROR, PIN_INPUT_SOURCE );
 
 	mPinInputSource->setDescription( tr( "Lua source code" ) );
+
+	// set the syntax highlighting hint
+
+	mValInputSource->setHighlighterUuid( SYNTAX_HIGHLIGHTER_LUA );
 }
 
 QList<QUuid> LuaNode::pinAddTypesInput() const
@@ -127,10 +131,6 @@ bool LuaNode::initialise()
 	{
 		return( false );
 	}
-
-	// set the syntax highlighting hint
-
-	mPinInputSource->setSetting( PIN_SETTING_SYNTAX_HIGHLIGHTER, SYNTAX_HIGHLIGHTER_LUA );
 
 	return( true );
 }

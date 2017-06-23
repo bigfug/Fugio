@@ -120,10 +120,22 @@ public:
 		return( mSyntaxErrors );
 	}
 
+	virtual void setHighlighterUuid(QUuid pUuid) Q_DECL_OVERRIDE
+	{
+		mHighlighterUuid = pUuid;
+	}
+
+	virtual QUuid highlighterUuid() const Q_DECL_OVERRIDE
+	{
+		return( mHighlighterUuid );
+	}
+
 private:
 	QList<fugio::SyntaxError>	mSyntaxErrors;
 
 	fugio::SyntaxErrorSignals	mSyntaxSignals;
+
+	QUuid						mHighlighterUuid;
 };
 
 

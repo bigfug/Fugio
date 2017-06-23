@@ -507,7 +507,12 @@ QVariant LuaPlugin::popVariant( lua_State *L, int idx )
 
 #endif
 
-SyntaxHighlighterInstanceInterface *LuaPlugin::syntaxHighlighterInstance() const
+SyntaxHighlighterInstanceInterface *LuaPlugin::syntaxHighlighterInstance( QUuid pUuid ) const
 {
-	return( new SyntaxHighlighterLua() );
+	if( pUuid == SYNTAX_HIGHLIGHTER_LUA )
+	{
+		return( new SyntaxHighlighterLua( LuaPlugin::instance() ) );
+	}
+
+	return( nullptr );
 }

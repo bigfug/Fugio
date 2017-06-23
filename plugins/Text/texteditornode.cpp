@@ -68,8 +68,7 @@ QWidget *TextEditorNode::gui()
 void TextEditorNode::checkHighlighter()
 {
 	fugio::SyntaxErrorInterface				*SEI = output<fugio::SyntaxErrorInterface *>( mPinOutputString );
-	QSharedPointer<fugio::PinInterface>		 StringOutput = mPinOutputString->connectedPin();
-	QUuid									 DefaultHighlighterUuid = ( StringOutput ? StringOutput->setting( PIN_SETTING_SYNTAX_HIGHLIGHTER, QUuid() ).toUuid() : QUuid() );
+	QUuid									 DefaultHighlighterUuid = ( SEI ? SEI->highlighterUuid() : QUuid() );
 
 	if( mHighlighter )
 	{
@@ -107,15 +106,15 @@ void TextEditorNode::checkHighlighter()
 			mHighlighter = TextPlugin::instance()->syntaxHighlighterInstance( mHighlighterUuid );
 		}
 
-		if( mHighlighter )
+		if( mHighlighter && SEI )
 		{
-			mHighlighter->highlighter()->setDocument( mTextEdit->textEdit()->document() );
-
-			if( SEI )
-			{
-				mHighlighter->updateErrors( SEI->syntaxErrors() );
-			}
+			mHighlighter->updateErrors( SEI->syntaxErrors() );
 		}
+	}
+
+	if( mHighlighter && mTextEdit && mHighlighter->highlighter()->document() != mTextEdit->textEdit()->document() )
+	{
+		mHighlighter->highlighter()->setDocument( mTextEdit->textEdit()->document() );
 	}
 }
 
@@ -381,6 +380,9 @@ void TextEditorNode::syntaxErrorsUpdated( QList<fugio::SyntaxError> pSyntaxError
 		mHighlighter->updateErrors( pSyntaxErrors );
 	}
 
-	mTextEdit->setSyntaxErrors( pSyntaxErrors );
+	if( mTextEdit )
+	{
+		mTextEdit->setSyntaxErrors( pSyntaxErrors );
+	}
 }
 

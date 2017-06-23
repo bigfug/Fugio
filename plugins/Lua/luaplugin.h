@@ -106,7 +106,7 @@ public:
 	//-------------------------------------------------------------------------
 	// SyntaxHighlighterFactoryInterface interface
 public:
-	virtual fugio::SyntaxHighlighterInstanceInterface *syntaxHighlighterInstance() const Q_DECL_OVERRIDE;
+	virtual fugio::SyntaxHighlighterInstanceInterface *syntaxHighlighterInstance( QUuid pUuid ) const Q_DECL_OVERRIDE;
 
 public:
 #if defined( LUA_SUPPORTED )
