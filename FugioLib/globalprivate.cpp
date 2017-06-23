@@ -137,7 +137,7 @@ void GlobalPrivate::initialisePlugins()
 			i++;
 		}
 
-		if( !LastChance )
+		if( !ResCnt && !LastChance )
 		{
 			ResCnt++;
 
