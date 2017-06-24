@@ -18,6 +18,7 @@ contains( DEFINES, FUGIOLIB_STATIC ) {
 }
 
 DEFINES += FUGIOLIB_LIBRARY
+DEFINES += GLOBAL_THREADED
 
 SOURCES += fugio.cpp \
 	contextprivate.cpp \
