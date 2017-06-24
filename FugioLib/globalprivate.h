@@ -22,10 +22,6 @@
 
 #include "timesync.h"
 
-//#define GLOBAL_THREADED
-
-//class IPlugin;
-
 class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public fugio::GlobalInterface
 {
 	Q_OBJECT

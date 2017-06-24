@@ -53,7 +53,7 @@ public:
 
 	typedef enum MetaInfo
 	{
-		Name, Author, Url, Description, Version, Filename,
+		Name, Author, Url, Description, Version, Filename, Created,
 		User = 1000
 	} MetaInfo;
 
