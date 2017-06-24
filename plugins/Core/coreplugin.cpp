@@ -62,6 +62,8 @@
 #include "variantlistpin.h"
 #include "arraylistpin.h"
 #include "rectpin.h"
+#include "bitarraypin.h"
+
 #include "loggernode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
@@ -110,6 +112,7 @@ ClassEntry		CorePlugin::mPinClasses[] =
 {
 	ClassEntry( "Array", PID_ARRAY, &ArrayPin::staticMetaObject ),
 	ClassEntry( "Array List", PID_ARRAY_LIST, &ArrayListPin::staticMetaObject ),
+	ClassEntry( "Bit Array", PID_BITARRAY, &BitArrayPin::staticMetaObject ),
 	ClassEntry( "Bool", PID_BOOL, &BoolPin::staticMetaObject ),
 	ClassEntry( "Byte Array", PID_BYTEARRAY, &ByteArrayPin::staticMetaObject ),
 	ClassEntry( "Byte Array List", PID_BYTEARRAY_LIST, &ByteArrayListPin::staticMetaObject ),
