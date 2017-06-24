@@ -24,7 +24,8 @@ SOURCES += textplugin.cpp \
 	numbertostringnode.cpp \
 	stringjoinnode.cpp \
 	linebuffernode.cpp \
-    syntaxerrorpin.cpp
+    syntaxerrorpin.cpp \
+    texteditorremotenode.cpp
 
 HEADERS += textplugin.h\
 	../../include/fugio/nodecontrolbase.h \
@@ -43,7 +44,8 @@ HEADERS += textplugin.h\
     ../../include/fugio/text/syntax_highlighter_factory_interface.h \
     syntaxerrorpin.h \
     ../../include/fugio/text/syntax_error_signals.h \
-    ../../include/fugio/text/syntax_error_interface.h
+    ../../include/fugio/text/syntax_error_interface.h \
+    texteditorremotenode.h
 	cmdtexteditorupdate.h
 
 FORMS += \
