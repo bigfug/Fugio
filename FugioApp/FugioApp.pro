@@ -322,11 +322,16 @@ INCLUDEPATH += $$PWD/../include
 
 win32:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugiod
-else:macx:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugio_debug
-else:unix: LIBS += -L$$DESTDIR -lfugio
+else:unix:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugio_debug
+else:unix:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugio
 
 INCLUDEPATH += $$PWD/../FugioLib
 DEPENDPATH += $$PWD/../FugioLib
+
+win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$DESTDIR/fugio.lib
+else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$DESTDIR/fugiod.lib
+else:unix:CONFIG(release, debug|release): PRE_TARGETDEPS += $$DESTDIR/libfugio.a
+else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$DESTDIR/libfugio_debug.a
 
 #------------------------------------------------------------------------------
 # General Unix/Linux/OS X (Brew) libs path
