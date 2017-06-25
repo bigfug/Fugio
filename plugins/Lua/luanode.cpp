@@ -101,6 +101,8 @@ LuaNode::LuaNode( QSharedPointer<fugio::NodeInterface> pNode )
 {
 	FUGID( PIN_INPUT_SOURCE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 
+	pinInput( "Trigger", PID_FUGIO_NODE_TRIGGER );
+
 	mValInputSource = pinInput<fugio::SyntaxErrorInterface *>( "Source", mPinInputSource, PID_SYNTAX_ERROR, PIN_INPUT_SOURCE );
 
 	mPinInputSource->setDescription( tr( "Lua source code" ) );
