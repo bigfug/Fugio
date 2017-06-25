@@ -24,7 +24,9 @@ SOURCES += \
 	serialinputnode.cpp \
 	deviceserialconfiguration.cpp \
 	serialoutputnode.cpp \
-	serialplugin.cpp
+	serialplugin.cpp \
+    serialencodernode.cpp \
+    serialdecodernode.cpp
 
 HEADERS += \
 	../../include/fugio/serial/uuid.h \
@@ -33,7 +35,9 @@ HEADERS += \
 	serialinputnode.h \
 	deviceserialconfiguration.h \
 	serialoutputnode.h \
-	serialplugin.h
+	serialplugin.h \
+    serialencodernode.h \
+    serialdecodernode.h
 
 FORMS += \
 	deviceserialconfiguration.ui
