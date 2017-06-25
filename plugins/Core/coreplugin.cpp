@@ -45,6 +45,8 @@
 #include "flipflopnode.h"
 #include "bitstoboolnode.h"
 #include "booltobitsnode.h"
+#include "packetencodenode.h"
+#include "packetdecodenode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -97,6 +99,8 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Number Range Map", NID_NUMBER_RANGE, &NumberRangeNode::staticMetaObject ),
 	ClassEntry( "Number Spread", NID_NUMBER_SPREAD, &NumberSpreadNode::staticMetaObject ),
 	ClassEntry( "Output Range", NID_OUTPUT_RANGE, &OutputRangeNode::staticMetaObject ),
+	ClassEntry( "Packet Decode", NID_PACKET_DECODE, &PacketDecodeNode::staticMetaObject ),
+	ClassEntry( "Packet Encode", NID_PACKET_ENCODE, &PacketEncodeNode::staticMetaObject ),
 	ClassEntry( "Random", "Number", NID_RANDOM_NUMBER, &RandomNumberNode::staticMetaObject ),
 	ClassEntry( "Rate Control", NID_RATE_CONTROL, &RateControlNode::staticMetaObject ),
 	ClassEntry( "Signal", "Number", NID_SIGNAL_NUMBER, &SignalNumberNode::staticMetaObject ),
