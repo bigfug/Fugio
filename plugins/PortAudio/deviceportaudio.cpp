@@ -404,7 +404,7 @@ void DevicePortAudio::deviceInputOpen( const PaDeviceInfo *DevInf )
 	qDebug() << "INPUT:" << deviceName( mDeviceIndex ) << StreamInfo->sampleRate << StreamInfo->inputLatency << mInputChannelCount;
 
 	mInputSampleRate   = StreamInfo->sampleRate;
-	mInputTimeLatency  = 0;//StreamInfo->inputLatency;
+	mInputTimeLatency  = StreamInfo->inputLatency;
 	mInputAudioOffset  = 0; //QDateTime::currentMSecsSinceEpoch() * qint64( mSampleRate / 1000.0 );
 	mInputSampleFormat = fugio::AudioSampleFormat::Format32FS;
 
@@ -567,7 +567,7 @@ int DevicePortAudio::streamCallbackInput( const void *input, unsigned long frame
 {
 	Q_UNUSED( statusFlags )
 
-	qint64		CurrTime = ( PortAudioPlugin::instance()->fugio()->timestamp() * qint64( mInputSampleRate ) ) / 1000;
+	qint64		CurrTime = ( ( PortAudioPlugin::instance()->fugio()->timestamp() * qint64( mInputSampleRate ) ) / 1000 ) - audioLatency();
 
 	if( !mInputAudioOffset )
 	{
@@ -620,7 +620,7 @@ int DevicePortAudio::streamCallbackInput( const void *input, unsigned long frame
 
 	memset( &AB, 0, sizeof( AB ) );
 
-	audioInput( AB, (const float **)input, frameCount, mInputChannelCount, mInputAudioOffset - audioLatency() );
+	audioInput( AB, (const float **)input, frameCount, mInputChannelCount, mInputAudioOffset );
 
 	mAudioBuffers.append( AB );
 
