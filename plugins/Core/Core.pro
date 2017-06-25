@@ -72,7 +72,9 @@ SOURCES += \
 	makearraynode.cpp \
 	flipflopnode.cpp \
 	loggernode.cpp \
-    bitarraypin.cpp
+    bitarraypin.cpp \
+    bitstoboolnode.cpp \
+    booltobitsnode.cpp
 
 HEADERS += \
 	stringpin.h \
@@ -140,7 +142,9 @@ HEADERS += \
 	makearraynode.h \
 	flipflopnode.h \
 	loggernode.h \
-    bitarraypin.h
+    bitarraypin.h \
+    bitstoboolnode.h \
+    booltobitsnode.h
 
 RESOURCES += \
     resources.qrc

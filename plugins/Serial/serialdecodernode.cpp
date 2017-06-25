@@ -28,6 +28,8 @@ void SerialDecoderNode::inputsUpdated( qint64 pTimeStamp )
 			QBitArray		SrcDat;
 			QByteArray		DstDat;
 
+			// Prepend any buffered data
+
 			if( !mBitBuf.isEmpty() )
 			{
 				int		InpSze = InpDat.size();
@@ -52,41 +54,56 @@ void SerialDecoderNode::inputsUpdated( qint64 pTimeStamp )
 				SrcDat.swap( InpDat );
 			}
 
-			int		SrcDif = SrcDat.size() % 10;
+			// Look for data
 
-			if( SrcDif )
+//			qDebug() << "R:" << SrcDat;
+
+			int SrcOff;
+
+			for( SrcOff = 0 ; SrcOff < SrcDat.size() - 9 ; )
 			{
-				int		SrcOff = SrcDat.size() - SrcDif;
-
-				mBitBuf.resize( SrcDif );
-
-				for( int i = 0 ; i < SrcDif ; i++ )
+				if( SrcDat.testBit( SrcOff ) || !SrcDat.testBit( SrcOff + 9 ) )
 				{
-					mBitBuf.setBit( i, SrcDat.testBit( SrcOff + i ) );
-				}
-
-				SrcDat.truncate( SrcOff );
-			}
-
-			for( int i = 0 ; i < SrcDat.size() - 10 ; )
-			{
-				if( SrcDat.testBit( i ) || !SrcDat.testBit( i + 9 ) )
-				{
-					i++;
+					SrcOff++;
 
 					continue;
 				}
+
+				QBitArray	T( 8 );
 
 				quint8		C = 0;
 
 				for( int j = 0 ; j < 8 ; j++ )
 				{
-					C |= ( SrcDat.testBit( i + 1 + j ) ? 0x01 : 0x00 ) << j;
+					C |= ( SrcDat.testBit( SrcOff + 1 + j ) ? 0x01 : 0x00 ) << j;
+
+					T.setBit( j, SrcDat.testBit( SrcOff + 1 + j ) );
 				}
+
+//				qDebug() << SrcOff << T;
 
 				DstDat.append( C );
 
-				i += 10;
+				SrcOff += 10;
+			}
+
+			if( SrcOff < SrcDat.size() )
+			{
+				if( SrcOff > 0 )
+				{
+					mBitBuf.resize( SrcDat.size() - SrcOff );
+
+					for( int i = 0 ; i < mBitBuf.size() ; i++ )
+					{
+						mBitBuf.setBit( i, SrcDat.testBit( SrcOff + i ) );
+					}
+				}
+				else
+				{
+					SrcDat.swap( mBitBuf );
+				}
+
+//				qDebug() << "B" << mBitBuf;
 			}
 
 			if( !DstDat.isEmpty() )

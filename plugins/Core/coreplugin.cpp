@@ -43,6 +43,8 @@
 #include "triggerbooleannode.h"
 #include "makearraynode.h"
 #include "flipflopnode.h"
+#include "bitstoboolnode.h"
+#include "booltobitsnode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -72,6 +74,8 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 {
 	ClassEntry( QT_TR_NOOP( "Any Trigger" ), NID_ANY_TRIGGER, &AnyTriggerNode::staticMetaObject ),
 	ClassEntry( "Auto Number Range", NID_AUTO_NUMBER_RANGE, &AutoRangeNode::staticMetaObject ),
+	ClassEntry( "Bits To Bool", NID_BITS_TO_BOOL, &BitsToBoolNode::staticMetaObject ),
+	ClassEntry( "Bool To Bits", NID_BOOL_TO_BITS, &BoolToBits::staticMetaObject ),
 	ClassEntry( "Bool Range", NID_BOOL_RANGE, &BoolRangeNode::staticMetaObject ),
 	ClassEntry( "Bool To Trigger", NID_BOOL_TO_TRIGGER, &BoolToTriggerNode::staticMetaObject ),
 	ClassEntry( "Counter", NID_COUNTER, &CounterNode::staticMetaObject ),
