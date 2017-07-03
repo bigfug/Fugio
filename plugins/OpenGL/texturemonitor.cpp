@@ -20,7 +20,7 @@ void TextureMonitor::setNode( TextureMonitorNode *pNode )
 
 void TextureMonitor::initializeGL()
 {
-#if defined( __GLEW_H_ )
+#if defined( __glew_h__ )
 	if( glewExperimental == GL_FALSE )
 	{
 		glewExperimental = GL_TRUE;
