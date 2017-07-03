@@ -37,7 +37,7 @@ public:
 	virtual QWidget *gui();
 
 protected slots:
-	void onContextFrame( void );
+	void onContextFrame( qint64 pTimeStamp );
 
 	void onReceiverName( const QString &pName );
 
