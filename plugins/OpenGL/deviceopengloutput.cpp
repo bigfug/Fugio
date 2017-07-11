@@ -57,7 +57,7 @@ QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( bool pContextO
 
 		if( !OpenGLPlugin::hasContextStatic() )
 		{
-			QCoreApplication::processEvents();
+//			QCoreApplication::processEvents();
 		}
 
 #if defined( OPENGL_DEBUG_ENABLE )
