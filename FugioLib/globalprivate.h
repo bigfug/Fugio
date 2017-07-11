@@ -292,7 +292,7 @@ protected:
 
 		connect( this, SIGNAL(finished()), Timer, SLOT(deleteLater()) );
 
-		Timer->start( 20 );
+		Timer->start( 1000 / 100 );
 
 		exec();
 	}
