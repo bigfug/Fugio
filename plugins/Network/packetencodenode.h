@@ -26,9 +26,9 @@ public:
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
 private:
-	void processVariant( QVariant &V );
+	void processVariant( QVariant V );
 
-	void processByteArray( QByteArray &A );
+	void processByteArray( QByteArray A );
 
 	typedef struct PktHdr
 	{

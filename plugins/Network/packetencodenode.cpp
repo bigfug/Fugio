@@ -31,7 +31,7 @@ void PacketEncodeNode::inputsUpdated( qint64 pTimeStamp )
 	}
 }
 
-void PacketEncodeNode::processVariant( QVariant &V )
+void PacketEncodeNode::processVariant( QVariant V )
 {
 	if( V.type() == QVariant::List )
 	{
@@ -48,7 +48,7 @@ void PacketEncodeNode::processVariant( QVariant &V )
 	}
 }
 
-void PacketEncodeNode::processByteArray( QByteArray &A )
+void PacketEncodeNode::processByteArray( QByteArray A )
 {
 	if( A.isEmpty() )
 	{

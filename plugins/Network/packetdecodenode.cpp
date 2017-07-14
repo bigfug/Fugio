@@ -31,7 +31,7 @@ void PacketDecodeNode::inputsUpdated( qint64 pTimeStamp )
 	}
 }
 
-void PacketDecodeNode::processVariant( QVariant &V )
+void PacketDecodeNode::processVariant( QVariant V )
 {
 	if( V.type() == QVariant::List )
 	{
@@ -48,7 +48,7 @@ void PacketDecodeNode::processVariant( QVariant &V )
 	}
 }
 
-void PacketDecodeNode::processByteArray( QByteArray &A )
+void PacketDecodeNode::processByteArray( QByteArray A )
 {
 	if( A.size() < sizeof( PktHdr ) )
 	{
