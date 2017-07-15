@@ -1506,8 +1506,19 @@ void MainWindow::registerSettings( fugio::SettingsInterface *pSetInt )
 	mSettingsInterfaces.append( pSetInt );
 }
 
-
 void MainWindow::unregisterSettings( fugio::SettingsInterface *pSetInt )
 {
 	mSettingsInterfaces.removeAll( pSetInt );
+}
+
+void MainWindow::on_actionSave_Patch_Image_triggered()
+{
+	ContextWidgetPrivate		*CV = qobject_cast<ContextWidgetPrivate *>( ui->mWorkArea->currentSubWindow()->widget() );
+
+	if( !CV )
+	{
+		return;
+	}
+
+	CV->userSaveImage();
 }
