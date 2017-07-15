@@ -65,7 +65,9 @@ public:
 	virtual qreal videoFrameTimeStamp( void ) const Q_DECL_OVERRIDE
 	{
 #if defined( FFMPEG_SUPPORTED )
-		return( mVideo.mPTS );
+		qreal	pts = mVideo.mCurrIdx != -1 ? mVidDat[ mVideo.mCurrIdx ].mPTS : mVideo.mPTS;
+
+		return( pts );
 #else
 		return( 0 );
 #endif
@@ -148,7 +150,9 @@ public:
 private:
 	bool readVideoFrame( qreal TargetPTS, bool pForce );
 
-	bool readAudioFrame(qreal TargetPTS , bool pForce );
+	bool readAudioFrame( qreal TargetPTS , bool pForce );
+
+	bool readSubtitleFrame( qreal TargetPTS , bool pForce );
 
 #if defined( FFMPEG_SUPPORTED )
 	static int is_realtime( AVFormatContext *s )
@@ -198,6 +202,8 @@ private:
 
 	void processAudioFrame( qreal TargetPTS, qreal PacketTS, bool pForce );
 
+	void processSubtitleFrame( qreal TargetPTS, qreal PacketTS, bool pForce );
+
 	void removeVideoFrames( void );
 
 	void removeAudioFrames( void );
@@ -219,6 +225,9 @@ private:
 	bool hasVideoFrame( qreal pPTS ) const;
 
 	bool ptsInRange( qreal pPTS, qreal pTarget, qreal Min, qreal Max) const;
+
+	void audioRange( qint64 &pMinPTS, qint64 &pMaxPTS ) const;
+	void videoRange( qreal &pMinPTS, qreal &pMaxPTS ) const;
 
 private:
 	class timeout_handler
@@ -254,6 +263,7 @@ private:
 
 	typedef struct Stream
 	{
+		AVStream		*mStream;
 		int				 mStreamId;
 		AVCodecContext	*mCodecContext;
 		AVCodec			*mCodec;
@@ -263,10 +273,15 @@ private:
 		AVRational		 mFrameRate;
 
 		Stream( void )
-			: mStreamId( -1 ), mCodecContext( nullptr ), mCodec( nullptr ), mFrame( 0 ), mPTS( -1 ),
+			: mStream( nullptr ), mStreamId( -1 ), mCodecContext( nullptr ), mCodec( nullptr ), mFrame( 0 ), mPTS( -1 ),
 			  mMaxPTS( 0 ), mMaxDur( 0 )
 		{
 
+		}
+
+		double duration( void ) const
+		{
+			return( mMaxDur );
 		}
 
 		bool open( AVStream *pStream, AVDictionary **pOpts )
@@ -313,6 +328,13 @@ private:
 				return( true );
 			}
 
+			mStream = pStream;
+
+			if( mStream->duration != AV_NOPTS_VALUE )
+			{
+				mMaxDur = qreal( mStream->duration ) * av_q2d( mStream->time_base );
+			}
+
 			return( true );
 		}
 
@@ -322,6 +344,7 @@ private:
 
 			mStreamId = -1;
 
+			mStream = nullptr;
 			mCodec = nullptr;
 
 			mPTS = -1;
@@ -359,9 +382,20 @@ private:
 
 	} AudioStream;
 
+
+	typedef struct SubtitleStream : public Stream
+	{
+		SubtitleStream( void )
+		{
+
+		}
+
+	} SubtitleStream;
+
 	qreal				 mPlayHead;
 	VideoStream			 mVideo;
 	AudioStream			 mAudio;
+	SubtitleStream		 mSubtitle;
 
 	AVPacket			 mPacket;
 
@@ -369,6 +403,8 @@ private:
 	int					 mVideoRecvResult;
 	int					 mAudioSendResult;
 	int					 mAudioRecvResult;
+	int					 mSubtitleSendResult;
+	int					 mSubtitleRecvResult;
 
 	timeout_handler		 mTimeoutHandler;
 

@@ -190,6 +190,7 @@ private:
 	void audio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, AudioInstanceData *pInstanceData ) const;
 
 	QString									mMediaFilename;
+	qreal									mImgPts;
 };
 
 #endif // MEDIANODE_H
