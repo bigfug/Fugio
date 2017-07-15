@@ -322,8 +322,8 @@ INCLUDEPATH += $$PWD/../include
 
 win32:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugiod
+else:unix:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
 else:unix:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugio_debug
-else:unix:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugio
 
 INCLUDEPATH += $$PWD/../FugioLib
 DEPENDPATH += $$PWD/../FugioLib
