@@ -22,9 +22,9 @@
 //#define DEBUG_MIX_AUDIO
 
 #define VIDEO_PTS_PLUS		(10.0)
-#define VIDEO_PTS_MINUS		(0.1)
+#define VIDEO_PTS_MINUS		(1.0)
 #define AUDIO_PTS_PLUS		(10.0)
-#define AUDIO_PTS_MINUS		(0.1)
+#define AUDIO_PTS_MINUS		(2.5)
 
 MediaSegment::MediaSegment( void )
 {
