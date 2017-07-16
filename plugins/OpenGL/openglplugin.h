@@ -43,6 +43,7 @@ public:
 
 	static void parseShaderErrors( QString pErrorText, QList<fugio::SyntaxError> &pErrorData );
 
+	static void initGLEW( void );
 
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface

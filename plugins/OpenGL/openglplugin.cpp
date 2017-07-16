@@ -653,6 +653,56 @@ void OpenGLPlugin::initStaticData( void )
 	}
 }
 
+void OpenGLPlugin::initGLEW()
+{
+	QOpenGLContext		*Context = QOpenGLContext::currentContext();
+
+	if( !Context )
+	{
+		return;
+	}
+
+	if( glewExperimental == GL_FALSE )
+	{
+		glewExperimental = GL_TRUE;
+
+		if( glewInit() != GLEW_OK )
+		{
+			qWarning() << "GLEW did not initialise";
+
+			return;
+		}
+
+		qDebug() << "GL_VENDOR" << QString( (const char *)glGetString( GL_VENDOR ) );
+
+		qDebug() << "GL_RENDERER" << QString( (const char *)glGetString( GL_RENDERER ) );
+
+		qDebug() << "GL_VERSION" << QString( (const char *)glGetString( GL_VERSION ) );
+
+		//qDebug() << context()->extensions();
+
+		switch( Context->format().profile() )
+		{
+			case QSurfaceFormat::NoProfile:
+				qInfo() << "Profile: None";
+				break;
+
+			case QSurfaceFormat::CoreProfile:
+				qInfo() << "Profile: Core";
+				break;
+
+			case QSurfaceFormat::CompatibilityProfile:
+				qInfo() << "Profile: Compatibility";
+				break;
+		}
+
+		qInfo() << "Samples:" << Context->format().samples();
+		qInfo() << "Alpha:" << Context->format().alphaBufferSize();
+		qInfo() << "Depth:" << Context->format().depthBufferSize();
+		qInfo() << "RGB:" << Context->format().redBufferSize() << Context->format().greenBufferSize() << Context->format().blueBufferSize();
+	}
+}
+
 SyntaxHighlighterInstanceInterface *OpenGLPlugin::syntaxHighlighterInstance( QUuid pUuid ) const
 {
 	if( pUuid == SYNTAX_HIGHLIGHTER_GLSL )
