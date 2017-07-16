@@ -68,7 +68,7 @@ bool WindowNode::initialise()
 
 	if( !mOutput )
 	{
-		if( ( mOutput = DeviceOpenGLOutput::newDevice( false ) ) == nullptr )
+		if( ( mOutput = DeviceOpenGLOutput::newDevice() ) == nullptr )
 		{
 			return( false );
 		}

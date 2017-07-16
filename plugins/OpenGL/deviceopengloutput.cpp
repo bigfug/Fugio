@@ -40,7 +40,7 @@ void DeviceOpenGLOutput::devicePacketEnd()
 
 #include <QApplication>
 
-QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( bool pContextOnly )
+QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( void )
 {
 	QSharedPointer<DeviceOpenGLOutput>	NewDev;
 
@@ -54,11 +54,6 @@ QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( bool pContextO
 		NewDev->setHeight( 480 );
 
 		NewDev->show();
-
-		if( !OpenGLPlugin::hasContextStatic() )
-		{
-//			QCoreApplication::processEvents();
-		}
 
 #if defined( OPENGL_DEBUG_ENABLE )
 		if( !mDebugLogger )
@@ -74,11 +69,6 @@ QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( bool pContextO
 			}
 		}
 #endif
-
-		if( pContextOnly )
-		{
-			NewDev->hide();
-		}
 	}
 
 	return( NewDev );
