@@ -1002,6 +1002,11 @@ void MediaSegment::updateVideoFrames( qreal pPTS )
 	{
 		mVideo.mNxt1Idx = mVideo.mNxt2Idx;
 	}
+
+	if( pPTS <= mVideo.mMaxDur && mVideo.mPrevIdx == -1 && mVideo.mCurrIdx == -1 && mVideo.mNxt1Idx != -1 )
+	{
+		mVideo.mPrevIdx = mVideo.mCurrIdx = mVideo.mNxt1Idx;
+	}
 #endif
 }
 
