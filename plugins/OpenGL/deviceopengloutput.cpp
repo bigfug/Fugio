@@ -354,49 +354,11 @@ void DeviceOpenGLOutput::exposeEvent( QExposeEvent * )
 	{
 		makeCurrent();
 
-		if( glewExperimental == GL_FALSE )
+		OpenGLPlugin::initGLEW();
+
+		if( OpenGLPlugin::instance()->openWindowFullScreen() )
 		{
-			glewExperimental = GL_TRUE;
-
-			if( glewInit() != GLEW_OK )
-			{
-				qWarning() << "GLEW did not initialise";
-
-				return;
-			}
-
-			qDebug() << "GL_VENDOR" << QString( (const char *)glGetString( GL_VENDOR ) );
-
-			qDebug() << "GL_RENDERER" << QString( (const char *)glGetString( GL_RENDERER ) );
-
-			qDebug() << "GL_VERSION" << QString( (const char *)glGetString( GL_VERSION ) );
-
-			//qDebug() << context()->extensions();
-
-			switch( context()->format().profile() )
-			{
-				case QSurfaceFormat::NoProfile:
-					qInfo() << "Profile: None";
-					break;
-
-				case QSurfaceFormat::CoreProfile:
-					qInfo() << "Profile: Core";
-					break;
-
-				case QSurfaceFormat::CompatibilityProfile:
-					qInfo() << "Profile: Compatibility";
-					break;
-			}
-
-			qInfo() << "Samples:" << context()->format().samples();
-			qInfo() << "Alpha:" << context()->format().alphaBufferSize();
-			qInfo() << "Depth:" << context()->format().depthBufferSize();
-			qInfo() << "RGB:" << context()->format().redBufferSize() << context()->format().greenBufferSize() << context()->format().blueBufferSize();
-
-			if( OpenGLPlugin::instance()->openWindowFullScreen() )
-			{
-				showFullScreen();
-			}
+			showFullScreen();
 		}
 
 		raise();
