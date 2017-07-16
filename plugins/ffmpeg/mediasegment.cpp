@@ -300,6 +300,8 @@ bool MediaSegment::loadMedia( const QString &pFileName, bool pProcess )
 	{
 	}
 
+	setPlayhead( 0 );
+
 	return( true );
 #else
 	return( false );
@@ -917,6 +919,8 @@ int MediaSegment::findFrameIndex( qreal pTimeStamp ) const
 #endif
 }
 
+#include <cmath>
+
 void MediaSegment::updateVideoFrames( qreal pPTS )
 {
 #if defined( FFMPEG_SUPPORTED )
@@ -961,9 +965,10 @@ void MediaSegment::updateVideoFrames( qreal pPTS )
 		return;
 	}
 
-	const double	FrameRate = 1.0 / StreamFrameRate;
+	const float	FrameRate = 1.0 / StreamFrameRate;
+	const float	FrameDiv  = float( pPTS ) / FrameRate;
 
-	int			CurrFrm = floor( pPTS / FrameRate );
+	int			CurrFrm = std::floor( FrameDiv );
 
 	double		PrevPTS = double( CurrFrm - 1 ) * FrameRate;
 	double		CurrPTS = double( CurrFrm + 0 ) * FrameRate;
@@ -1536,21 +1541,44 @@ void MediaSegment::readNext()
 		return;
 	}
 
+	if( VideoStream )
+	{
+		qreal	OldPlayHead = mPlayHead;
+
+		if( mVideo.mCurrIdx != -1 )
+		{
+			mPlayHead = mVidDat[ mVideo.mCurrIdx ].mPTS;
+		}
+
+		for( const VidDat &VD : mVidDat )
+		{
+			if( VD.mPTS <= mPlayHead )
+			{
+				continue;
+			}
+
+			mPlayHead = VD.mPTS;
+
+			break;
+		}
+
+		if( OldPlayHead == mPlayHead )
+		{
+			mPlayHead += mVideo.mMaxDur;
+		}
+	}
+	else if( AudioStream )
+	{
+	}
+
 	while( true )
 	{
-		if( AudioStream && !VideoStream )
+		const bool	HaveAudio = !AudioStream || mAudioProcessor->preloaded() || mAudio.mPTS >= mPlayHead;
+		const bool	HaveVideo = !VideoStream || mVideo.mPTS >= mPlayHead;
+
+		if( HaveAudio && HaveVideo )
 		{
-			if( !mAudDat.isEmpty() && mAudio.mPTS != mPlayHead )
-			{
-				break;
-			}
-		}
-		else
-		{
-			if( !mVidDat.isEmpty() && mVideo.mPTS != mPlayHead )
-			{
-				break;
-			}
+			break;
 		}
 
 		av_packet_unref( &mPacket );
@@ -1575,7 +1603,7 @@ void MediaSegment::readNext()
 				return;
 			}
 
-			if( mVideo.mStreamId != -1 )
+			if( VideoStream )
 			{
 				while( ( mVideoSendResult = avcodec_send_packet( mVideo.mCodecContext, NULL ) ) == 0 )
 				{
@@ -1583,7 +1611,7 @@ void MediaSegment::readNext()
 				}
 			}
 
-			if( mAudio.mStreamId != -1 )
+			if( AudioStream )
 			{
 				while( ( mAudioSendResult = avcodec_send_packet( mAudio.mCodecContext, NULL ) ) == 0 )
 				{
@@ -1611,54 +1639,38 @@ void MediaSegment::readNext()
 			{
 				readVideoFrame( mPlayHead, false );
 			}
-			else if( mPacket.stream_index == mAudio.mStreamId )
+		}
+		else if( mPacket.stream_index == mAudio.mStreamId )
+		{
+			if( ( mAudioSendResult = avcodec_send_packet( mAudio.mCodecContext, &mPacket ) ) == 0 )
 			{
-				if( ( mAudioSendResult = avcodec_send_packet( mAudio.mCodecContext, &mPacket ) ) == 0 )
+				while( ( mAudioRecvResult = avcodec_receive_frame( mAudio.mCodecContext, mAudio.mFrame ) ) == 0 )
 				{
-					while( ( mAudioRecvResult = avcodec_receive_frame( mAudio.mCodecContext, mAudio.mFrame ) ) == 0 )
-					{
-						processAudioFrame( mPlayHead, mPlayHead, false );
-					}
+					processAudioFrame( mPlayHead, mPlayHead, false );
 				}
 			}
-			else if( mPacket.stream_index == mSubtitle.mStreamId )
-			{
+		}
+		else if( mPacket.stream_index == mSubtitle.mStreamId )
+		{
 
-			}
 		}
 	}
 
 	if( VideoStream )
 	{
-		VidDat VD;
+		removeVideoFrames();
 
-		while( mVidDat.size() > 1 )
-		{
-			VD = mVidDat.takeFirst();
-
-			av_freep( &VD.mData[ 0 ] );
-		}
-
-		if( !mVidDat.isEmpty() )
-		{
-			mVideo.mPrevIdx = mVideo.mCurrIdx = mVideo.mNxt1Idx = mVideo.mNxt2Idx = mVidDat.size() - 1;
-
-			mVideo.mPTS = mVidDat.last().mPTS;
-
-			mPlayHead = videoFrameTimeStamp();
-		}
-		else
-		{
-			mVideo.mPrevIdx = mVideo.mCurrIdx = mVideo.mNxt1Idx = mVideo.mNxt2Idx = -1;
-
-			mVideo.mPTS = -1;
-
-			mPlayHead = 0;
-		}
+		updateVideoFrames( mPlayHead );
 	}
-	else
-	{
 
+	if( AudioStream )
+	{
+		if( !VideoStream && !mAudDat.isEmpty() )
+		{
+			mPlayHead = qreal( mAudDat.last().mAudPts ) / 48000.0;
+		}
+
+		removeAudioFrames();
 	}
 #endif
 }

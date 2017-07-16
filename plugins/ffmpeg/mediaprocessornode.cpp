@@ -38,7 +38,7 @@
 
 MediaProcessorNode::MediaProcessorNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mSegment( 0 ),
-	  mTimeOffset( 0 ), mTimePause( 0 ), mTimeLast( -1 )
+	  mTimeOffset( 0 ), mTimePause( 0 ), mTimeLast( -1 ), mLstPts( -1 )
 {
 	FUGID( PIN_FILENAME, "43d2824f-7967-4b22-8b0f-c51358b65d17" );
 	FUGID( PIN_REWIND, "ae66182c-d914-49cb-85d4-615db69cf3e2" );
@@ -125,25 +125,32 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 	if( mPinRewind->isUpdated( pTimeStamp ) )
 	{
 		mSegment->setPlayhead( 0 );
+
+		mLstPts = -1;
 	}
 
 	// process the next media state
 
 	fugio::Performance	Perf( mNode, "onContextFrame", pTimeStamp );
 
-	qreal	ImgPts = mSegment->videoFrameTimeStamp();
-
-	mSegment->readNext();
-
-	if( mSegment->videoFrameTimeStamp() == ImgPts )
+	if( mSegment->hasVideo() )
 	{
-		return;
-	}
+		const fugio::SegmentInterface::VidDat	*VD = mSegment->viddat();
 
-	const fugio::SegmentInterface::VidDat	*VD = mSegment->viddat();
+		if( !VD || mLstPts == VD->mPTS )
+		{
+			mSegment->readNext();
+		}
 
-	if( VD )
-	{
+		VD = mSegment->viddat();
+
+		if( !VD || VD->mPTS == mLstPts )
+		{
+			return;
+		}
+
+		mLstPts = VD->mPTS;
+
 		mValImage->setSize( mSegment->imageSize().width(), mSegment->imageSize().height() );
 
 		mValImage->setLineSizes( VD->mLineSizes );
@@ -229,10 +236,6 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 			pinUpdated( mPinImage );
 		}
 	}
-	else
-	{
-		mValImage->unsetBuffers();
-	}
 }
 
 bool MediaProcessorNode::loadMedia( const QString &pFileName )
@@ -293,7 +296,7 @@ void MediaProcessorNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int
 	if( !mSampleOffset )
 	{
 		// TODO: FIXME
-//		mSampleOffset = pSamplePosition + pLatency;
+		//		mSampleOffset = pSamplePosition + pLatency;
 	}
 
 	qreal				TimeCurr;
