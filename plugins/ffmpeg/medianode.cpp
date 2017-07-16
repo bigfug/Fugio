@@ -493,8 +493,6 @@ void MediaNode::updateVideo( qreal pTimeCurr )
 	{
 		mValImage->unsetBuffers();
 
-		mImgPts = -1;
-
 		return;
 	}
 

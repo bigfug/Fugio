@@ -15,14 +15,14 @@
 
 #include <fugio/performance.h>
 
-#define DEBUG_SEEK
-#define DEBUG_HAVE_FRAMES
+//#define DEBUG_SEEK
+//#define DEBUG_HAVE_FRAMES
 //#define DEBUG_VIDEO_STORE
 //#define DEBUG_AUDIO_STORE
 //#define DEBUG_MIX_AUDIO
 
 #define VIDEO_PTS_PLUS		(10.0)
-#define VIDEO_PTS_MINUS		(1.0)
+#define VIDEO_PTS_MINUS		(0.25)
 #define AUDIO_PTS_PLUS		(10.0)
 #define AUDIO_PTS_MINUS		(2.5)
 
@@ -1002,11 +1002,6 @@ void MediaSegment::updateVideoFrames( qreal pPTS )
 	{
 		mVideo.mNxt1Idx = mVideo.mNxt2Idx;
 	}
-
-	if( haveVideoFrames() )
-	{
-//		mVideo.mPTS = mVidDat[ mVideo.mCurrIdx ].mPTS;
-	}
 #endif
 }
 
@@ -1048,7 +1043,6 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 
 	// Check whether we need to seek to a new position in the media
 
-#if 0
 	if( mDuration > 0.25 )
 	{
 		const bool VideoNeedsSeek = ( mVideo.mStreamId == -1 || ( mVideo.mPTS != -1 && ( mVideo.mPTS + 0.50 < mPlayHead || mVideo.mPTS - 0.5 > mPlayHead ) && !VideoIsPicture ) || VideoIsPicture );
@@ -1100,17 +1094,9 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 			}
 		}
 	}
-#endif
-//	int	as = mAudDat.size();
-//	int vs = mVidDat.size();
 
 	removeVideoFrames();
 	removeAudioFrames();
-
-//	int ae = mAudDat.size();
-//	int ve = mVidDat.size();
-
-//	qDebug() << vs << ve << as << ae;
 
 	if( VideoStream )
 	{
@@ -1119,44 +1105,12 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 
 	// Read and process packets from the media file
 
-	static qint64	StartTime = QDateTime::currentMSecsSinceEpoch();
-	static qint64	LoopCount = 0;
-
 	while( true )
 	{
-//		qint64			CurrTime  = QDateTime::currentMSecsSinceEpoch();
-
-//		if( CurrTime - StartTime >= 1000 )
-//		{
-//			qint64	AudMin, AudMax;
-//			qreal	VidMin, VidMax;
-
-//			audioRange( AudMin, AudMax );
-
-//			videoRange( VidMin, VidMax );
-
-//			qDebug() << "Playhead:" << mPlayHead << "Loops:" << LoopCount << "Audio:" << mAudDat.size() << "(" << ( qreal( AudMin ) / 48000.0 ) << ( qreal( AudMax ) / 48000.0 )  << ") Video:" << mVidDat.size() << "(" << VidMin << VidMax << ")";
-
-//			qDebug() << mVideo.mPTS << mAudio.mPTS;
-
-//			StartTime += 1000;
-
-//			LoopCount = 0;
-//		}
-//		else
-//		{
-//			LoopCount++;
-//		}
-
 		if( AudioStream && !mAudioProcessor->preloaded() )
 		{
-//			qDebug() << "CHECK" << mPlayHead << mVideo.mPTS << mAudio.mPTS;
-
-			//if( mAudio.mPTS - qMin( mDuration * 0.5, AUDIO_PTS_PLUS ) >= mPlayHead && ( !VideoStream || mVideo.mPTS - qMin( mDuration * 0.5, VIDEO_PTS_PLUS ) >= mPlayHead ) )
 			if( mAudio.mPTS >= mPlayHead && ( !VideoStream || mVideo.mPTS >= mPlayHead ) )
 			{
-//				qDebug() << mAudio.mPTS << mVideo.mPTS;
-
 				if( VideoStream )
 				{
 					updateVideoFrames( mPlayHead );
@@ -1238,16 +1192,6 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 			break;
 		}
 
-//		if( true )
-//		{
-//			AVStream				*S = mFormatContext->streams[ mPacket.stream_index ];
-//			AVRational				 T = S->time_base;
-//			double					 d = av_q2d( T );
-//			AVCodecParameters		*CodPar = S->codecpar;
-
-//			qDebug() << av_get_media_type_string( CodPar->codec_type ) << d * mPacket.dts << d * mPacket.pts; // << d * mPacket.duration;
-//		}
-
 		// We have a new packet
 
 		int64_t		PacketTS = AV_NOPTS_VALUE;
@@ -1292,6 +1236,8 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 		}
 		else if( mPacket.stream_index == mSubtitle.mStreamId )
 		{
+			// untested
+#if 0
 			int	r, g;
 			AVSubtitle S;
 
@@ -1303,6 +1249,7 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 			{
 				avsubtitle_free( &S );
 			}
+#endif
 		}
 	}
 
@@ -1588,11 +1535,14 @@ void MediaSegment::readNext()
 	{
 		if( AudioStream && !VideoStream )
 		{
-
+			if( !mAudDat.isEmpty() && mAudio.mPTS != mPlayHead )
+			{
+				break;
+			}
 		}
 		else
 		{
-			if( !mVidDat.isEmpty() && mVidDat.last().mPTS != mPlayHead )
+			if( !mVidDat.isEmpty() && mVideo.mPTS != mPlayHead )
 			{
 				break;
 			}
@@ -1636,14 +1586,6 @@ void MediaSegment::readNext()
 				}
 			}
 
-			if( mSubtitle.mStreamId != -1 )
-			{
-				while( ( mSubtitleSendResult = avcodec_send_packet( mSubtitle.mCodecContext, NULL ) ) == 0 )
-				{
-					readSubtitleFrame( mPlayHead, true );
-				}
-			}
-
 			break;
 		}
 
@@ -1674,33 +1616,44 @@ void MediaSegment::readNext()
 					}
 				}
 			}
+			else if( mPacket.stream_index == mSubtitle.mStreamId )
+			{
+
+			}
 		}
 	}
 
-	VidDat VD;
-
-	while( mVidDat.size() > 1 )
+	if( VideoStream )
 	{
-		VD = mVidDat.takeFirst();
+		VidDat VD;
 
-		av_freep( &VD.mData[ 0 ] );
-	}
+		while( mVidDat.size() > 1 )
+		{
+			VD = mVidDat.takeFirst();
 
-	if( !mVidDat.isEmpty() )
-	{
-		mVideo.mPrevIdx = mVideo.mCurrIdx = mVideo.mNxt1Idx = mVideo.mNxt2Idx = mVidDat.size() - 1;
+			av_freep( &VD.mData[ 0 ] );
+		}
 
-		//mVideo.mPTS = mVidDat.last().mPTS;
+		if( !mVidDat.isEmpty() )
+		{
+			mVideo.mPrevIdx = mVideo.mCurrIdx = mVideo.mNxt1Idx = mVideo.mNxt2Idx = mVidDat.size() - 1;
 
-//		mPlayHead = videoFrameTimeStamp();
+			mVideo.mPTS = mVidDat.last().mPTS;
+
+			mPlayHead = videoFrameTimeStamp();
+		}
+		else
+		{
+			mVideo.mPrevIdx = mVideo.mCurrIdx = mVideo.mNxt1Idx = mVideo.mNxt2Idx = -1;
+
+			mVideo.mPTS = -1;
+
+			mPlayHead = 0;
+		}
 	}
 	else
 	{
-		mVideo.mPrevIdx = mVideo.mCurrIdx = mVideo.mNxt1Idx = mVideo.mNxt2Idx = -1;
 
-		//mVideo.mPTS = -1;
-
-//		mPlayHead = 0;
 	}
 #endif
 }
