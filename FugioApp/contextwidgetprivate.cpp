@@ -274,7 +274,7 @@ void ContextWidgetPrivate::userSaveImage()
 
 	QSize					 ImgMrg = ImgSze / 10;
 
-	ImgMrg.setWidth( qMax( ImgMrg.width(), ImgMrg.height() ) );
+	ImgMrg.setWidth( qMin( 20, qMax( ImgMrg.width(), ImgMrg.height() ) ) );
 	ImgMrg.setHeight( ImgMrg.width() );
 
 	QImage					 TmpImg( ImgMrg + ImgSze + ImgMrg, QImage::Format_ARGB32_Premultiplied );
