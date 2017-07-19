@@ -45,6 +45,8 @@
 
 #define	IID_OPENGL						(QUuid("{1dbaa75d-eeee-478a-94a8-ae1a5c1b7f12}"))
 
+#define SYNTAX_HIGHLIGHTER_GLSL			(QUuid("{69630335-9F83-4E45-BF88-1C28CBC2530B}"))
+
 class InterfaceOpenGL
 {
 public:

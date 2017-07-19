@@ -12,8 +12,6 @@
 
 #include <qmath.h>
 
-#define MAG_SMP	(48000/50)
-
 MagnitudeNode::MagnitudeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mMagnitude( 0 ), mSamplePosition( 0 ), mProducerInstance( nullptr )
 {
@@ -21,7 +19,7 @@ MagnitudeNode::MagnitudeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinSampleCount = pinInput( "Samples" );
 
-	mPinSampleCount->setValue( MAG_SMP );
+	mPinSampleCount->setValue( 48000/25 );
 
 	mValOutput = pinOutput<fugio::VariantInterface *>( "Magnitude", mPinOutput, PID_FLOAT );
 
@@ -53,6 +51,13 @@ bool MagnitudeNode::deinitialise()
 
 void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 {
+	const int		SampleCount = variant( mPinSampleCount ).toInt();
+
+	if( SampleCount <= 0 )
+	{
+		return;
+	}
+
 	if( mProducerInstance && !mProducerInstance->isValid() )
 	{
 		delete mProducerInstance;
@@ -86,25 +91,22 @@ void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 		return;
 	}
 
+	qint64	CurPos = ( pTimeStamp - API->audioLatency() ) * ( 48000 / 1000 );
+
 	if( !mSamplePosition )
 	{
-		mSamplePosition = pTimeStamp * ( 48000 / 1000 );
+		mSamplePosition = CurPos;
 	}
 
-	qint64	CurPos = pTimeStamp * ( 48000 / 1000 );
-
-	if( CurPos - mSamplePosition >= MAG_SMP )
+	if( CurPos - mSamplePosition >= SampleCount )
 	{
 		int			ChannelCount = 1;
 
-		if( ChannelCount != mAudDat.size() )
-		{
-			mAudDat.resize( ChannelCount );
+		mAudDat.resize( ChannelCount );
 
-			for( auto &V : mAudDat )
-			{
-				V.resize( 48000 );
-			}
+		for( auto &V : mAudDat )
+		{
+			V.resize( SampleCount );
 		}
 
 		QVector<float *>	AudPtr;
@@ -115,10 +117,10 @@ void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 		{
 			AudPtr[ i ] = mAudDat[ i ].data();
 
-			memset( AudPtr[ i ], 0, sizeof( float ) * MAG_SMP );
+			memset( AudPtr[ i ], 0, sizeof( float ) * SampleCount );
 		}
 
-		mProducerInstance->audio( mSamplePosition, MAG_SMP, 0, 1, (void **)AudPtr.data() );
+		mProducerInstance->audio( mSamplePosition, SampleCount, 0, 1, (void **)AudPtr.data() );
 
 		float		Mag = 0;
 
@@ -126,7 +128,7 @@ void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 		{
 			float	*S = AudPtr[ c ];
 
-			for( int i = 0 ; i < MAG_SMP ; i++, S++ )
+			for( int i = 0 ; i < SampleCount ; i++, S++ )
 			{
 				float	M = fabs( *S );
 
@@ -139,7 +141,7 @@ void MagnitudeNode::onContextProcess( qint64 pTimeStamp )
 
 		mMagnitude = Mag;
 
-		mSamplePosition += MAG_SMP;
+		mSamplePosition += SampleCount;
 	}
 
 	if( mMagnitude != mValOutput->variant().toFloat() )

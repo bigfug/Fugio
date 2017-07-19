@@ -30,7 +30,7 @@
 GlobalPrivate *GlobalPrivate::mInstance = 0;
 
 GlobalPrivate::GlobalPrivate( QObject * ) :
-	GlobalSignals( this ), mPause( false )
+	GlobalSignals( this ), mGlobalOffset( 0 ), mUniversalOffset( 0 ), mPause( false )
 {
 	//-------------------------------------------------------------------------
 	// Install translator
@@ -44,15 +44,23 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 
 	//-------------------------------------------------------------------------
 
+#if defined( GLOBAL_THREADED )
+	mGlobalThread = new GlobalThread( this );
+#endif
+
 	mGlobalTimer.start();
 
 	qDebug() << "Global Timer Monotonic:" << mGlobalTimer.isMonotonic();
+
+	updateUniversalTimestamp( 0 );
 
 	mLastTime   = 0;
 	mFrameCount = 0;
 
 	mCommandLineParser.addHelpOption();
 	mCommandLineParser.addVersionOption();
+
+	mTimeSync = new TimeSync( this );
 }
 
 GlobalPrivate::~GlobalPrivate( void )
@@ -129,7 +137,7 @@ void GlobalPrivate::initialisePlugins()
 			i++;
 		}
 
-		if( !LastChance )
+		if( !ResCnt && !LastChance )
 		{
 			ResCnt++;
 
@@ -153,19 +161,23 @@ void GlobalPrivate::loadPlugins( QDir pDir )
 	{
 		QDir		PlgDir = pDir.absoluteFilePath( dirName );
 
-		PlgDir.cd( "Contents" );
-		PlgDir.cd( "MacOS" );
-
-		for( QString fileName : PlgDir.entryList( QDir::Files ) )
+		if( PlgDir.cd( "Contents/MacOS" ) )
 		{
-			QFileInfo	File( PlgDir.absoluteFilePath( fileName ) );
-
-			if( !File.isReadable() )
+			for( QString fileName : PlgDir.entryList( QDir::Files ) )
 			{
-				continue;
-			}
+				QFileInfo	File( PlgDir.absoluteFilePath( fileName ) );
 
-			loadPlugin( pDir.absoluteFilePath( File.absoluteFilePath() ) );
+				if( !File.isReadable() )
+				{
+					continue;
+				}
+
+				loadPlugin( pDir.absoluteFilePath( File.absoluteFilePath() ) );
+			}
+		}
+		else
+		{
+			loadPlugins( PlgDir );
 		}
 	}
 #else
@@ -540,18 +552,6 @@ void GlobalPrivate::timeout( void )
 #endif
 }
 
-#if defined( GLOBAL_THREADED )
-
-void GlobalPrivate::run()
-{
-	forever
-	{
-		timeout();
-	}
-}
-
-#endif
-
 QUuid GlobalPrivate::findNodeByClass( const QString &pClassName ) const
 {
 	for( UuidClassEntryMap::const_iterator it = mNodeMap.constBegin() ; it != mNodeMap.constEnd() ; it++ )
@@ -729,19 +729,15 @@ void GlobalPrivate::start()
 #if !defined( GLOBAL_THREADED )
 	QTimer::singleShot( 1000, this, SLOT(timeout()) );
 #else
-	moveToThread( &mWorkerThread );
-
-	connect( &mWorkerThread, SIGNAL(started()), this, SLOT(run()) );
-
-	mWorkerThread.start();
+	mGlobalThread->start();
 #endif
 }
 
 void GlobalPrivate::stop()
 {
 #if defined( GLOBAL_THREADED )
-	mWorkerThread.quit();
+	mGlobalThread->quit();
 
-	mWorkerThread.wait();
+	mGlobalThread->wait();
 #endif
 }

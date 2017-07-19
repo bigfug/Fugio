@@ -12,11 +12,12 @@
 QMap<QString,SignalNumberNode::SignalType>		 SignalNumberNode::mSignalTypes;
 
 SignalNumberNode::SignalNumberNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mSignalType( SINE ), mFrequency( 440.0 ), mVolume( 1.0 ), mOffset( 0.5 )
+	: NodeControlBase( pNode ), mSignalType( SINE ), mFrequency( 440.0 ), mVolume( 1.0 ), mOffset( 0.5 ), mBias( 0 )
 {
 	static const QUuid	PID_SIGNAL_TYPE   = QUuid( "{0030CB72-CCAA-43FC-86C4-5CF225C97BCC}" );
 	static const QUuid	PID_SIGNAL_OFFSET = QUuid( "{496F6FA1-9DFB-4315-8186-EAAA643647EA}" );
 	static const QUuid	PID_OUTPUT_VALUE  = QUuid( "{9BAF0D8C-7034-4462-9C1A-44C7A9D44527}" );
+	FUGID( PIN_INPUT_BIAS, "51297977-7b4b-4e08-9dea-89a8add4abe0" )
 
 	if( mSignalTypes.isEmpty() )
 	{
@@ -43,6 +44,10 @@ SignalNumberNode::SignalNumberNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInputOffset = pinInput( tr( "Offset" ), PID_SIGNAL_OFFSET );
 
 	mPinInputOffset->setValue( 0.5 );
+
+	mPinInputBias = pinInput( tr( "Bias" ), PIN_INPUT_BIAS );
+
+	mPinInputBias->setValue( mBias );
 
 	mValOutputValue = pinOutput<fugio::VariantInterface *>( "Number", mPinOutputValue, PID_FLOAT, PID_OUTPUT_VALUE );
 
@@ -95,6 +100,8 @@ void SignalNumberNode::onContextFrame( qint64 pTimeStamp )
 		Value = 1.0f - qAbs( SmpPhs - 0.5f ) * 4.0f;
 	}
 
+	Value += mBias;
+
 	Value *= mVolume;
 
 	if( Value != mValOutputValue->variant().toFloat() )
@@ -116,5 +123,7 @@ void SignalNumberNode::inputsUpdated( qint64 pTimeStamp )
 	mVolume = std::max( 0.0, variant( mPinInputVolume ).toDouble() );
 
 	mOffset = qBound( 0.0, variant( mPinInputOffset ).toDouble(), 1.0 );
+
+	mBias = variant( mPinInputBias ).toDouble();
 }
 

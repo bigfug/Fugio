@@ -2,13 +2,8 @@
 
 #include <QDebug>
 
-SyntaxHighlighterLua::SyntaxHighlighterLua(QObject *parent) :
-	QSyntaxHighlighter(parent)
-{
-}
-
-SyntaxHighlighterLua::SyntaxHighlighterLua( QTextDocument *pDocument )
-	: QSyntaxHighlighter( pDocument )
+SyntaxHighlighterLua::SyntaxHighlighterLua( QObject *pParent ) :
+	QSyntaxHighlighter( pParent )
 {
 	HighlightingRule rule;
 
@@ -81,9 +76,6 @@ SyntaxHighlighterLua::SyntaxHighlighterLua( QTextDocument *pDocument )
 	rule.format = singleLineCommentFormat;
 	highlightingRules.append(rule);
 
-	errorFormat.setBackground( QBrush( QColor( Qt::red ).lighter( 160 ) ) );
-	errorFormat.setProperty( QTextFormat::FullWidthSelection, true );
-
 	//	defineFormat.setForeground(Qt::darkMagenta);
 	//	rule.pattern = QRegExp("#[^\n]*");
 	//	rule.format = defineFormat;
@@ -93,83 +85,6 @@ SyntaxHighlighterLua::SyntaxHighlighterLua( QTextDocument *pDocument )
 
 	commentStartExpression = QRegExp( "--\\[\\[" );
 	commentEndExpression = QRegExp( "\\]\\]--" );
-}
-
-SyntaxHighlighterLua::~SyntaxHighlighterLua( void )
-{
-}
-
-void SyntaxHighlighterLua::clearErrors()
-{
-	mErrorData.clear();
-
-	emit errorsUpdated();
-
-	rehighlight();
-}
-
-void SyntaxHighlighterLua::setErrors( const QString &pErrorText)
-{
-	QString			EL = pErrorText;
-
-	mErrorData.clear();
-
-	if( EL.startsWith( '"' ) )
-	{
-		EL.remove( 0, 1 );
-	}
-
-	if( EL.endsWith( '"' ) )
-	{
-		EL.chop( 1 );
-	}
-
-	QStringList		SL = EL.trimmed().split( '\n' );
-
-	for( QString S : SL )
-	{
-		S = S.trimmed();
-
-		QStringList		Parts = S.split( ':', QString::KeepEmptyParts );
-		int				Line  = 0;
-
-		if( Parts.size() >= 3 )
-		{
-			if( Parts.value( 0 ).startsWith( QStringLiteral( "[string " ) ) )
-			{
-				Line = Parts.value( 1 ).toInt();
-
-				if( Line > 0 )
-				{
-					Parts.takeFirst();
-					Parts.takeFirst();
-
-					mErrorData.insert( Line, Parts.join( ':' ).trimmed() );
-				}
-			}
-		}
-
-		if( !Line )
-		{
-			mErrorData.insert( 0, S );
-		}
-	}
-
-	emit errorsUpdated();
-
-	rehighlight();
-}
-
-QStringList SyntaxHighlighterLua::errorList( int pLineNumber ) const
-{
-	QStringList		SL;
-
-	if( mErrorData.contains( pLineNumber ) )
-	{
-		SL << mErrorData.values( pLineNumber );
-	}
-
-	return( SL );
 }
 
 void SyntaxHighlighterLua::highlightBlock( const QString &text )
@@ -219,12 +134,11 @@ void SyntaxHighlighterLua::highlightBlock( const QString &text )
 
 		startIndex = commentStartExpression.indexIn(text, startIndex + commentLength);
 	}
-
-	const int LineNumber = currentBlock().firstLineNumber() + 1;
-
-	if( mErrorData.contains( LineNumber ) )
-	{
-		setFormat( 0, currentBlock().length(), errorFormat );
-	}
 }
 
+void SyntaxHighlighterLua::updateErrors( QList<fugio::SyntaxError> pSyntaxErrors )
+{
+	mSyntaxErrors = pSyntaxErrors;
+
+	rehighlight();
+}

@@ -12,7 +12,7 @@ class SerialiseInterface
 public:
 	virtual ~SerialiseInterface( void ) {}
 
-	virtual void serialise( QDataStream &pDataStream ) = 0;
+	virtual void serialise( QDataStream &pDataStream ) const = 0;
 
 	virtual void deserialise( QDataStream &pDataStream ) = 0;
 };

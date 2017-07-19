@@ -24,6 +24,11 @@ public:
 
 	static QSharedPointer<DeviceOpenGLOutput> newDevice( bool pContextOnly );
 
+signals:
+	void cursorMove( const QPointF &pPos );
+
+	void resized( const QSize &pSize );
+
 protected:
 	explicit DeviceOpenGLOutput( void );
 

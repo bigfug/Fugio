@@ -387,6 +387,7 @@ void TexturePin::update()
 
 		if( mTexDsc.mFormat == GL_DEPTH_COMPONENT )
 		{
+#if defined( GL_TEXTURE_COMPARE_MODE ) && defined( GL_COMPARE_R_TO_TEXTURE )
 			if( mTexDsc.mCompare == GL_NONE )
 			{
 				glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_COMPARE_MODE, GL_NONE );
@@ -396,13 +397,11 @@ void TexturePin::update()
 				glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE );
 				glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_COMPARE_FUNC, mTexDsc.mCompare );
 			}
+#endif
 		}
 
-#if !defined( GL_ES_VERSION_2_0 )
-		if( GLEW_VERSION_1_2 )
-		{
-			glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_WRAP_R, mTexDsc.mWrapZ );
-		}
+#if defined( GL_TEXTURE_WRAP_R )
+		glTexParameteri( mTexDsc.mTarget, GL_TEXTURE_WRAP_R, mTexDsc.mWrapZ );
 #endif
 
 		OPENGL_DEBUG( mPin->node()->name() );

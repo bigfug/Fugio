@@ -64,7 +64,7 @@ const luaL_Reg LuaQtPlugin::mLuaFunctions[] =
 	{ "jsonarray", LuaJsonArray::luaNew },
 	{ "jsondocument", LuaJsonDocument::luaNew },
 	{ "jsonobject", LuaJsonObject::luaNew },
-	{ "matrix4x4", LuaMatrix4x4::luaNew },
+	{ "matrix4x4", LuaMatrix4x4::luaNewQt },
 	{ "pen", LuaPen::luaNew },
 	{ "point", LuaPointF::luaNew },
 //	{ "quaternion", LuaQuaternion::luaNew },
@@ -119,8 +119,8 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 #if defined( LUA_SUPPORTED )
 	LUA->luaRegisterLibrary( "qt", LuaQtPlugin::luaOpen );
 
-//	LUA->luaRegisterLibrary( "matrix4x4", LuaMatrix4x4::luaOpen );
-//	LUA->luaRegisterLibrary( "vector3d", LuaVector3D::luaOpen );
+	LUA->luaRegisterLibrary( "matrix4x4", LuaMatrix4x4::luaOpen );
+	LUA->luaRegisterLibrary( "vector3d", LuaVector3D::luaOpen );
 	LUA->luaRegisterLibrary( "quaternion", LuaQuaternion::luaOpen );
 
 	LUA->luaRegisterExtension( LuaBrush::luaOpen );
@@ -139,8 +139,8 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaRegisterExtension( LuaSizeF::luaOpen );
 	LUA->luaRegisterExtension( LuaTransform::luaOpen );
 	LUA->luaRegisterExtension( LuaRectF::luaOpen );
-	LUA->luaRegisterExtension( LuaMatrix4x4::luaOpen );
-	LUA->luaRegisterExtension( LuaVector3D::luaOpen );
+//	LUA->luaRegisterExtension( LuaMatrix4x4::luaOpen );
+//	LUA->luaRegisterExtension( LuaVector3D::luaOpen );
 
 	LUA->luaAddPinGet( PID_COLOUR, LuaColor::luaPinGet );
 	LUA->luaAddPinGet( PID_IMAGE, LuaImage::luaPinGet );
@@ -151,7 +151,9 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaAddPinGet( PID_SIZE, LuaSizeF::luaPinGet );
 	LUA->luaAddPinGet( PID_VECTOR3, LuaVector3D::luaPinGet );
 
+	LUA->luaAddPinSet( PID_MATRIX4, LuaMatrix4x4::luaPinSet );
 	LUA->luaAddPinSet( PID_QUATERNION, LuaQuaternion::luaPinSet );
+	LUA->luaAddPinSet( PID_VECTOR3, LuaVector3D::luaPinSet );
 #endif
 
 	return( INIT_OK );

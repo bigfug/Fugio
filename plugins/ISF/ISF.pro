@@ -29,8 +29,10 @@ HEADERS += \
     settingsform.h
 
 RESOURCES += \
-	resources.qrc \
-    resources.qrc
+	resources.qrc
+
+FORMS += \
+    settingsform.ui
 
 TRANSLATIONS = \
 	translations/fugio_isf_de.ts \
@@ -152,6 +154,3 @@ macx {
 
 	DEFINES += GLEW_SUPPORTED
 }
-
-FORMS += \
-    settingsform.ui

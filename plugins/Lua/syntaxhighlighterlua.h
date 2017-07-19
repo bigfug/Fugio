@@ -1,30 +1,31 @@
 #ifndef SYNTAXHIGHLIGHTERLUA_H
 #define SYNTAXHIGHLIGHTERLUA_H
 
+#include <fugio/text/syntax_highlighter_instance_interface.h>
+
 #include <QSyntaxHighlighter>
 
-class SyntaxHighlighterLua : public QSyntaxHighlighter
+class SyntaxHighlighterLua : public QSyntaxHighlighter, public fugio::SyntaxHighlighterInstanceInterface
 {
 	Q_OBJECT
+	Q_INTERFACES( fugio::SyntaxHighlighterInstanceInterface )
 
 public:
-	explicit SyntaxHighlighterLua( QObject *pParent = 0 );
+	explicit SyntaxHighlighterLua( QObject *pParent = nullptr );
 
-	explicit SyntaxHighlighterLua( QTextDocument *pDocument );
+	virtual ~SyntaxHighlighterLua( void ) {}
 
-	virtual ~SyntaxHighlighterLua( void );
+	// SyntaxHighlighterInstanceInterface interface
+public:
+	virtual QSyntaxHighlighter *highlighter() Q_DECL_OVERRIDE
+	{
+		return( this );
+	}
 
-	void clearErrors( void );
-
-	void setErrors( const QString &pErrorText );
-
-	QStringList errorList( int pLineNumber ) const;
-
-signals:
-	void errorsUpdated( void );
+	virtual void updateErrors( QList<fugio::SyntaxError> pSyntaxErrors ) Q_DECL_OVERRIDE;
 
 protected:
-	virtual void highlightBlock( const QString &pTextBlock );
+	virtual void highlightBlock( const QString &pTextBlock ) Q_DECL_OVERRIDE;
 
 private:
 	struct HighlightingRule
@@ -48,9 +49,8 @@ private:
 	QTextCharFormat multiLineCommentFormat;
 	QTextCharFormat quotationFormat;
 	QTextCharFormat functionFormat;
-	QTextCharFormat errorFormat;
 
-	QMultiMap<int,QString>			 mErrorData;
+	QList<fugio::SyntaxError>	mSyntaxErrors;
 };
 
 

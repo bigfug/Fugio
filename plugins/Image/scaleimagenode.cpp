@@ -28,11 +28,12 @@ ScaleImageNode::ScaleImageNode( QSharedPointer<fugio::NodeInterface> pNode )
 void ScaleImageNode::inputsUpdated( qint64 pTimeStamp )
 {
 	fugio::ImageInterface	*SRC = input<fugio::ImageInterface *>( mPinInputImage );
+	const QImage			 IMG = ( SRC ? SRC->image() : QImage() );
 
-	if( !SRC ||! SRC->isValid() )
+	if( !SRC || !SRC->isValid() || IMG.isNull() )
 	{
 		mNode->setStatus( fugio::NodeInterface::Warning );
-		mNode->setStatusMessage( "Image is not valid" );
+		mNode->setStatusMessage( tr( "Input image is not valid" ) );
 
 		return;
 	}

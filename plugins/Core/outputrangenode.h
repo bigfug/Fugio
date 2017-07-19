@@ -25,18 +25,19 @@ public:
 
 	// NodeControlInterface interface
 
-	virtual void inputsUpdated( qint64 pTimeStamp );
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
-	virtual bool canAcceptPin( fugio::PinInterface *pPin ) const;
+	virtual bool canAcceptPin( fugio::PinInterface *pPin ) const Q_DECL_OVERRIDE;
+
+	virtual bool pinShouldAutoRename(fugio::PinInterface *pPin) const Q_DECL_OVERRIDE;
 
 protected:
-	QSharedPointer<fugio::PinInterface>			 mPinInput;
+	QSharedPointer<fugio::PinInterface>			 mPinInputSource;
+	QSharedPointer<fugio::PinInterface>			 mPinInputRange;
+	QSharedPointer<fugio::PinInterface>			 mPinInputIndex;
 
-	QSharedPointer<fugio::PinInterface>			 mPinNumber;
-	fugio::VariantInterface						*mValNumber;
-
-	int										 mPinCnt;
-	int										 mPinIdx;
+	int											 mPinCnt;
+	int											 mPinIdx;
 };
 
 #endif // OUTPUTRANGENODE_H

@@ -224,6 +224,7 @@ void ContextWidgetPrivate::userSave( void )
 void ContextWidgetPrivate::userSaveAs( void )
 {
 	QSettings				 Settings;
+
 	const QString	DatDir = QStandardPaths::writableLocation( QStandardPaths::DocumentsLocation );
 
 	QString					 PatchDirectory = Settings.value( "patch-directory", QDir( DatDir ).absoluteFilePath( "Fugio" ) ).toString();
@@ -248,6 +249,69 @@ void ContextWidgetPrivate::userSaveAs( void )
 	undoStack()->setClean();
 
 	emit contextFilenameChanged( FileName );
+}
+
+void ContextWidgetPrivate::userSaveImage()
+{
+	QSettings				 Settings;
+
+	QRectF					 TmpRct;
+
+	for( const QGraphicsItem *I : mContextView->items() )
+	{
+		if( I->isVisible() )
+		{
+			TmpRct = TmpRct.united( I->sceneBoundingRect() );
+		}
+	}
+
+	QSize					 ImgSze = ( TmpRct.size() * 1.0 ).toSize();
+
+	if( ImgSze.isEmpty() )
+	{
+		return;
+	}
+
+	QSize					 ImgMrg = ImgSze / 10;
+
+	ImgMrg.setWidth( qMin( 20, qMax( ImgMrg.width(), ImgMrg.height() ) ) );
+	ImgMrg.setHeight( ImgMrg.width() );
+
+	QImage					 TmpImg( ImgMrg + ImgSze + ImgMrg, QImage::Format_ARGB32_Premultiplied );
+
+	if( true )
+	{
+		QPainter		Painter( &TmpImg );
+
+		Painter.setRenderHint( QPainter::Antialiasing );
+		Painter.setRenderHint( QPainter::TextAntialiasing );
+
+		Painter.fillRect( TmpImg.rect(), Qt::white );
+
+		mContextView->scene()->render( &Painter, QRectF( QPointF( ImgMrg.width(), ImgMrg.height() ), ImgSze ), TmpRct );
+	}
+
+	const QString	DatDir = QStandardPaths::writableLocation( QStandardPaths::PicturesLocation );
+
+	QString		ImageDirectory = Settings.value( "image-directory", DatDir ).toString();
+
+	QFileInfo	PatchInfo( mFileName );
+
+	QString		FileName = QFileDialog::getSaveFileName( this, tr( "Save Patch Image" ), QDir( DatDir ).absoluteFilePath( QString( "%1.png" ).arg( PatchInfo.completeBaseName() ) ), tr( "Image (*.jpg *.png)" ) );
+
+	if( FileName.isEmpty() )
+	{
+		return;
+	}
+
+	ImageDirectory = QFileInfo( FileName ).absoluteDir().path();
+
+	Settings.setValue( "image-directory", ImageDirectory );
+
+	if( !TmpImg.save( FileName, Q_NULLPTR ) )
+	{
+		qWarning() << "Error saving image";
+	}
 }
 
 void ContextWidgetPrivate::load(const QString &pFileName)

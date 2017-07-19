@@ -8,6 +8,8 @@
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
+#include <fugio/text/syntax_highlighter_interface.h>
+
 #include <QCommandLineParser>
 #include <QApplication>
 #include <QThread>
@@ -49,6 +51,8 @@
 #include "bufferentrypin.h"
 #include "bufferentryproxypin.h"
 #include "vertexarrayobjectpin.h"
+
+#include "syntaxhighlighterglsl.h"
 
 #define INSERT_TARGET(x)		mMapTargets.insert(#x,x)
 #define INSERT_FORMAT(x)		mMapFormat.insert(#x,x)
@@ -161,9 +165,95 @@ OpenGLPlugin::~OpenGLPlugin( void )
 	mInstance = nullptr;
 }
 
+void OpenGLPlugin::parseShaderErrors( QString pErrorText, QList<SyntaxError> &pErrorData )
+{
+	if( pErrorText.startsWith( '"' ) )
+	{
+		pErrorText.remove( 0, 1 );
+	}
+
+	if( pErrorText.endsWith( '"' ) )
+	{
+		pErrorText.chop( 1 );
+	}
+
+	QStringList			SL = pErrorText.split( '\n' );
+	fugio::SyntaxError	SE;
+
+	SE.mColumnStart = SE.mColumnEnd = -1;
+
+	for( QString S : SL )
+	{
+		S = S.trimmed();
+
+		if( S.isEmpty() )
+		{
+			continue;
+		}
+
+		QRegExp	P1( "^ERROR: (.+):(\\d+):\\s+(.+)" );
+
+		if( P1.indexIn( S ) > -1 )
+		{
+			SE.mLineStart = SE.mLineEnd = P1.cap( 2 ).toInt();
+
+			SE.mError = P1.cap( 3 );
+
+			pErrorData << SE;
+
+			continue;
+		}
+
+		QRegExp	P2( "^ERROR:\\s?(.+)" );
+
+		if( P2.indexIn( S ) > -1 )
+		{
+			SE.mLineStart = SE.mLineEnd = -1;
+
+			SE.mError = P2.cap( 1 );
+
+			pErrorData << SE;
+
+			continue;
+		}
+
+		QRegExp	P3( "^.+\\((\\d+)\\)\\s?:\\s?(.+):\\s?(.+)" );
+
+		if( P3.indexIn( S ) > -1 )
+		{
+			SE.mLineStart   = SE.mLineEnd = P3.cap( 1 ).toInt();
+
+			SE.mError = P3.cap( 3 );
+
+			pErrorData << SE;
+
+			continue;
+		}
+
+		SE.mLineStart = SE.mLineEnd   = -1;
+
+		SE.mError = S;
+
+		pErrorData << SE;
+
+		qDebug() << S;
+
+	}
+}
+
 PluginInterface::InitResult OpenGLPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
-	Q_UNUSED( pLastChance )
+	fugio::SyntaxHighlighterInterface	*SyntaxHighlighter = qobject_cast<fugio::SyntaxHighlighterInterface *>( pApp->findInterface( IID_SYNTAX_HIGHLIGHTER ) );
+
+	if( !SyntaxHighlighter && !pLastChance )
+	{
+		return( INIT_DEFER );
+	}
+
+	if( SyntaxHighlighter )
+	{
+		SyntaxHighlighter->registerSyntaxHighlighter( SYNTAX_HIGHLIGHTER_GLSL, QStringLiteral( "GLSL" ), this );
+	}
 
 	mApp = pApp;
 
@@ -198,6 +288,13 @@ void OpenGLPlugin::deinitialise()
 	mApp->unregisterPinClasses( mPinClasses );
 
 	mApp->unregisterInterface( IID_OPENGL );
+
+	fugio::SyntaxHighlighterInterface	*SyntaxHighlighter = qobject_cast<fugio::SyntaxHighlighterInterface *>( mApp->findInterface( IID_SYNTAX_HIGHLIGHTER ) );
+
+	if( SyntaxHighlighter )
+	{
+		SyntaxHighlighter->unregisterSyntaxHighlighter( SYNTAX_HIGHLIGHTER_GLSL );
+	}
 
 	mApp = 0;
 
@@ -376,8 +473,8 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_TARGET( GL_TEXTURE_1D );
 		INSERT_TARGET( GL_TEXTURE_3D );
 		INSERT_TARGET( GL_TEXTURE_RECTANGLE );
-		INSERT_TARGET( GL_TEXTURE_CUBE_MAP );
 #endif
+		INSERT_TARGET( GL_TEXTURE_CUBE_MAP );
 	}
 
 	if( mMapFormat.isEmpty() )
@@ -387,6 +484,8 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_FORMAT( GL_DEPTH_COMPONENT );
 
 		INSERT_FORMAT( GL_LUMINANCE );
+
+		INSERT_FORMAT( GL_STENCIL_INDEX );
 
 #if !defined( GL_ES_VERSION_2_0 )
 		INSERT_FORMAT( GL_RED );
@@ -399,7 +498,6 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_FORMAT( GL_BGR_INTEGER );
 		INSERT_FORMAT( GL_RGBA_INTEGER );
 		INSERT_FORMAT( GL_BGRA_INTEGER );
-		INSERT_FORMAT( GL_STENCIL_INDEX );
 		INSERT_FORMAT( GL_DEPTH_STENCIL );
 #endif
 	}
@@ -410,44 +508,28 @@ void OpenGLPlugin::initStaticData( void )
 
 		INSERT_INTERNAL( GL_DEPTH_COMPONENT );
 		INSERT_INTERNAL( GL_DEPTH_COMPONENT16 );
-		INSERT_INTERNAL( GL_DEPTH_COMPONENT24 );
-		INSERT_INTERNAL( GL_DEPTH_COMPONENT32 );
-		INSERT_INTERNAL( GL_DEPTH_COMPONENT32F );
 		INSERT_INTERNAL( GL_RGB );
 		INSERT_INTERNAL( GL_RGBA );
 		INSERT_INTERNAL( GL_RGBA4 );
 		INSERT_INTERNAL( GL_RGB5_A1 );
-
-#if !defined( GL_ES_VERSION_2_0 )
-		INSERT_INTERNAL( GL_LUMINANCE16 );
+		INSERT_INTERNAL( GL_DEPTH_COMPONENT24 );
+		INSERT_INTERNAL( GL_DEPTH_COMPONENT32F );
 		INSERT_INTERNAL( GL_DEPTH_STENCIL );
 		INSERT_INTERNAL( GL_RED );
 		INSERT_INTERNAL( GL_RG );
 		INSERT_INTERNAL( GL_R8 );
 		INSERT_INTERNAL( GL_R8_SNORM );
-		INSERT_INTERNAL( GL_R16 );
-		INSERT_INTERNAL( GL_R16_SNORM );
 		INSERT_INTERNAL( GL_RG8 );
 		INSERT_INTERNAL( GL_RG8_SNORM );
-		INSERT_INTERNAL( GL_RG16 );
-		INSERT_INTERNAL( GL_RG16_SNORM );
-		INSERT_INTERNAL( GL_R3_G3_B2 );
-		INSERT_INTERNAL( GL_RGB4 );
-		INSERT_INTERNAL( GL_RGB5 );
 		INSERT_INTERNAL( GL_RGB8 );
 		INSERT_INTERNAL( GL_RGB8_SNORM );
-		INSERT_INTERNAL( GL_RGB10 );
-		INSERT_INTERNAL( GL_RGB12 );
-		INSERT_INTERNAL( GL_RGB16_SNORM );
-		INSERT_INTERNAL( GL_RGBA2 );
 		INSERT_INTERNAL( GL_RGBA8 );
 		INSERT_INTERNAL( GL_RGBA8_SNORM );
 		INSERT_INTERNAL( GL_RGB10_A2 );
 #if defined( GL_RGB10_A2UI )
 		INSERT_INTERNAL( GL_RGB10_A2UI );
 #endif
-		INSERT_INTERNAL( GL_RGBA12 );
-		INSERT_INTERNAL( GL_RGBA16 );
+
 		INSERT_INTERNAL( GL_SRGB8 );
 		INSERT_INTERNAL( GL_SRGB8_ALPHA8 );
 		INSERT_INTERNAL( GL_R16F );
@@ -484,6 +566,23 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_INTERNAL( GL_RGBA16UI );
 		INSERT_INTERNAL( GL_RGBA32I );
 		INSERT_INTERNAL( GL_RGBA32UI );
+
+#if !defined( GL_ES_VERSION_3_1 )
+		INSERT_INTERNAL( GL_DEPTH_COMPONENT32 );
+		INSERT_INTERNAL( GL_LUMINANCE16 );
+		INSERT_INTERNAL( GL_R16 );
+		INSERT_INTERNAL( GL_R16_SNORM );
+		INSERT_INTERNAL( GL_RG16 );
+		INSERT_INTERNAL( GL_RG16_SNORM );
+		INSERT_INTERNAL( GL_R3_G3_B2 );
+		INSERT_INTERNAL( GL_RGB4 );
+		INSERT_INTERNAL( GL_RGB5 );
+		INSERT_INTERNAL( GL_RGB10 );
+		INSERT_INTERNAL( GL_RGB12 );
+		INSERT_INTERNAL( GL_RGB16_SNORM );
+		INSERT_INTERNAL( GL_RGBA2 );
+		INSERT_INTERNAL( GL_RGBA12 );
+		INSERT_INTERNAL( GL_RGBA16 );
 #endif
 	}
 
@@ -499,7 +598,7 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_TYPE( GL_UNSIGNED_SHORT_5_6_5 );
 		INSERT_TYPE( GL_UNSIGNED_SHORT_4_4_4_4 );
 		INSERT_TYPE( GL_UNSIGNED_SHORT_5_5_5_1 );
-#if !defined( GL_ES_VERSION_2_0 )
+#if !defined( GL_ES_VERSION_3_1 )
 		INSERT_TYPE( GL_UNSIGNED_BYTE_3_3_2 );
 		INSERT_TYPE( GL_UNSIGNED_BYTE_2_3_3_REV );
 		INSERT_TYPE( GL_UNSIGNED_SHORT_5_6_5_REV );
@@ -508,8 +607,8 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_TYPE( GL_UNSIGNED_INT_8_8_8_8 );
 		INSERT_TYPE( GL_UNSIGNED_INT_8_8_8_8_REV );
 		INSERT_TYPE( GL_UNSIGNED_INT_10_10_10_2 );
-		INSERT_TYPE( GL_UNSIGNED_INT_2_10_10_10_REV );
 #endif
+		INSERT_TYPE( GL_UNSIGNED_INT_2_10_10_10_REV );
 	}
 
 	if( mMapFilterMin.isEmpty() )
@@ -552,4 +651,64 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_COMPARE( GL_ALWAYS );
 		INSERT_COMPARE( GL_NEVER );
 	}
+}
+
+void OpenGLPlugin::initGLEW()
+{
+	QOpenGLContext		*Context = QOpenGLContext::currentContext();
+
+	if( !Context )
+	{
+		return;
+	}
+
+	if( glewExperimental == GL_FALSE )
+	{
+		glewExperimental = GL_TRUE;
+
+		if( glewInit() != GLEW_OK )
+		{
+			qWarning() << "GLEW did not initialise";
+
+			return;
+		}
+
+		qDebug() << "GL_VENDOR" << QString( (const char *)glGetString( GL_VENDOR ) );
+
+		qDebug() << "GL_RENDERER" << QString( (const char *)glGetString( GL_RENDERER ) );
+
+		qDebug() << "GL_VERSION" << QString( (const char *)glGetString( GL_VERSION ) );
+
+		//qDebug() << context()->extensions();
+
+		switch( Context->format().profile() )
+		{
+			case QSurfaceFormat::NoProfile:
+				qInfo() << "Profile: None";
+				break;
+
+			case QSurfaceFormat::CoreProfile:
+				qInfo() << "Profile: Core";
+				break;
+
+			case QSurfaceFormat::CompatibilityProfile:
+				qInfo() << "Profile: Compatibility";
+				break;
+		}
+
+		qInfo() << "Samples:" << Context->format().samples();
+		qInfo() << "Alpha:" << Context->format().alphaBufferSize();
+		qInfo() << "Depth:" << Context->format().depthBufferSize();
+		qInfo() << "RGB:" << Context->format().redBufferSize() << Context->format().greenBufferSize() << Context->format().blueBufferSize();
+	}
+}
+
+SyntaxHighlighterInstanceInterface *OpenGLPlugin::syntaxHighlighterInstance( QUuid pUuid ) const
+{
+	if( pUuid == SYNTAX_HIGHLIGHTER_GLSL )
+	{
+		return( new SyntaxHighlighterGLSL( OpenGLPlugin::instance() ) );
+	}
+
+	return( nullptr );
 }

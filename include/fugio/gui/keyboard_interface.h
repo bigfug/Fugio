@@ -3,6 +3,7 @@
 
 #include <QUuid>
 #include <QList>
+#include <QMetaObject>
 
 #include <fugio/global.h>
 
@@ -53,6 +54,8 @@ public:
 };
 
 FUGIO_NAMESPACE_END
+
+Q_DECLARE_METATYPE( fugio::KeyboardEvent )
 
 Q_DECLARE_INTERFACE( fugio::KeyboardInterface, "com.bigfug.fugio.keyboard/1.0" )
 

@@ -93,8 +93,6 @@ PluginInterface::InitResult ffmpegPlugin::initialise( fugio::GlobalInterface *pA
 	//-------------------------------------------------------------------------
 	// initialise ffmpeg
 
-	qInfo() << "Initialising ffmpeg";
-
 #if defined( FFMPEG_SUPPORTED )
 	av_log_set_flags( AV_LOG_SKIP_REPEATED );
 

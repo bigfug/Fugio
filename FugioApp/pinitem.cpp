@@ -17,6 +17,7 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QColorDialog>
+#include <QMetaClassInfo>
 
 #include <QDebug>
 

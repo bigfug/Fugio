@@ -95,7 +95,13 @@ public:
 
 	virtual void clear( void ) = 0;
 
-	virtual qint64 timestamp( void ) const = 0;
+	virtual qint64 timestamp( void ) const = 0;				// arbitrary global timestamp that always increases (only valid on local machine)
+	virtual qint64 universalTimestamp( void ) const = 0;	// can't be compared with timestamp(), can jump forward and back
+
+	// convert between global and universal timestamps
+
+	virtual qint64 universalToGlobal( qint64 pTimeStamp ) const = 0;
+	virtual qint64 globalToUniversal( qint64 pTimeStamp ) const = 0;
 
 	virtual void start( void ) = 0;
 	virtual void stop( void ) = 0;
@@ -193,7 +199,7 @@ Q_DECLARE_INTERFACE( fugio::GlobalInterface, "com.bigfug.fugio.global/1.0" )
 
 #if !defined(FUGIOLIB_LIBRARY)
 FUGIO_NAMESPACE_BEGIN
-Q_DECL_IMPORT fugio::GlobalInterface *fugio( void );
+FUGIOLIBSHARED_IMPORT fugio::GlobalInterface *fugio( void );
 FUGIO_NAMESPACE_END
 #endif
 

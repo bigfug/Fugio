@@ -18,6 +18,7 @@
 #include "subtractnode.h"
 #include "multiplynode.h"
 #include "dividenode.h"
+#include "modulusnode.h"
 
 #include "absnode.h"
 
@@ -97,6 +98,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Join", "Vector4", NID_JOIN_VECTOR4, &JoinVector4Node::staticMetaObject ),
 	ClassEntry( "Look At", "Matrix", NID_MATRIX_LOOKAT, &MatrixLookAtNode::staticMetaObject ),
 	ClassEntry( "MinMax", "Math", NID_MINMAX, &MinMaxNode::staticMetaObject ),
+	ClassEntry( "Modulus", "Math", NID_MODULUS, &ModulusNode::staticMetaObject ),
 	ClassEntry( "Multiply", "Math", NID_MULTIPLY, &MultiplyNode::staticMetaObject ),
 	ClassEntry( "NAND", "Logic", NID_NAND, &NandNode::staticMetaObject ),
 	ClassEntry( "NOT", "Logic", NID_NOT, &NotNode::staticMetaObject ),

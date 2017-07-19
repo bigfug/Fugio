@@ -82,6 +82,10 @@ MidiPlugin::MidiPlugin()
 	{
 		qApp->installTranslator( &Translator );
 	}
+
+	//-------------------------------------------------------------------------
+
+	MidiOutputPin::registerMetaType();
 }
 
 PluginInterface::InitResult MidiPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )

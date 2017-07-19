@@ -13,6 +13,9 @@
 #include <QtConcurrent/QtConcurrentRun>
 #include <QFile>
 #include <QDir>
+#include <QTemporaryDir>
+#include <QDateTime>
+#include <QCoreApplication>
 
 #include "nodeprivate.h"
 #include "pinprivate.h"
@@ -37,9 +40,12 @@ ContextPrivate::ContextPrivate( fugio::GlobalInterface *pApp, QObject *pParent )
 		mMetaNameMap.insert( fugio::ContextInterface::Name, "name" );
 		mMetaNameMap.insert( fugio::ContextInterface::Url, "url" );
 		mMetaNameMap.insert( fugio::ContextInterface::Version, "version" );
+		mMetaNameMap.insert( fugio::ContextInterface::Created, "created" );
 	}
 
 	mMetaInfoMap.insert( fugio::ContextInterface::Name, tr( "Untitled" ) );
+
+	mMetaInfoMap.insert( fugio::ContextInterface::Created, QDateTime::currentDateTime().toString( Qt::RFC2822Date ) );
 }
 
 ContextPrivate::~ContextPrivate( void )
@@ -359,133 +365,222 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 
 bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeList ) const
 {
-	QSettings				 CFG( pFileName, QSettings::IniFormat );
+	QTemporaryDir			 TmpDir;
+	QString					 TmpFileName = TmpDir.filePath( "save.fug" );
 
-	if( !CFG.isWritable() )
+	if( !TmpDir.isValid() )
 	{
 		return( false );
 	}
-
-	CFG.clear();
-
-	emit saveStart( CFG );
-
-	CFG.beginGroup( "fugio" );
-
-	CFG.setValue( "version", int( 2 ) );
-
-	CFG.setValue( "duration", double( duration() ) );
-
-	CFG.endGroup();
-
-	//-------------------------------------------------------------------------
-
-	CFG.beginGroup( "meta" );
-
-	for( auto it = mMetaInfoMap.begin() ; it != mMetaInfoMap.end() ; it++ )
+	else
 	{
-		const QString	K = mMetaNameMap.value( it.key() );
-		const QString	V = it.value();
+		QSettings				 CFG( TmpFileName, QSettings::IniFormat );
 
-		if( !K.isEmpty() && !V.isEmpty() )
+		if( !CFG.isWritable() )
 		{
-			CFG.setValue( K, V );
+			return( false );
 		}
-	}
 
-	CFG.endGroup();
+		CFG.clear();
 
-	//-------------------------------------------------------------------------
+		emit saveStart( CFG );
 
-	CFG.beginGroup( "nodes" );
+		CFG.beginGroup( "fugio" );
 
-	for( QSharedPointer<fugio::NodeInterface> N : mNodeHash.values() )
-	{
-		if( !pNodeList || pNodeList->contains( N->uuid() ) )
+		CFG.setValue( "version", int( 2 ) );
+
+		CFG.setValue( "duration", double( duration() ) );
+
+		CFG.endGroup();
+
+		//-------------------------------------------------------------------------
+
+		CFG.beginGroup( "meta" );
+
+		for( auto it = mMetaInfoMap.begin() ; it != mMetaInfoMap.end() ; it++ )
 		{
-			CFG.setValue( fugio::utils::uuid2string( N->uuid() ), fugio::utils::uuid2string( N->controlUuid() ) );
-		}
-	}
+			const QString	K = mMetaNameMap.value( it.key() );
+			const QString	V = it.value();
 
-	CFG.endGroup();
-
-	//-------------------------------------------------------------------------
-
-	CFG.beginGroup( "connections" );
-
-	for( QSharedPointer<fugio::NodeInterface> N : mNodeHash.values() )
-	{
-		if( !pNodeList || pNodeList->contains( N->uuid() ) )
-		{
-			for( QSharedPointer<fugio::PinInterface> P : N->enumInputPins() )
+			if( !K.isEmpty() && !V.isEmpty() )
 			{
-				if( !P->isConnected() )
-				{
-					continue;
-				}
+				CFG.setValue( K, V );
+			}
+		}
 
-				QSharedPointer<fugio::PinInterface>	ConPin = P->connectedPin();
+		CFG.endGroup();
 
-				if( !ConPin || !ConPin->node() )
-				{
-					continue;
-				}
+		//-------------------------------------------------------------------------
 
-				if( !pNodeList || pNodeList->contains( ConPin->node()->uuid() ) )
+		CFG.beginGroup( "nodes" );
+
+		for( QSharedPointer<fugio::NodeInterface> N : mNodeHash.values() )
+		{
+			if( !pNodeList || pNodeList->contains( N->uuid() ) )
+			{
+				CFG.setValue( fugio::utils::uuid2string( N->uuid() ), fugio::utils::uuid2string( N->controlUuid() ) );
+			}
+		}
+
+		CFG.endGroup();
+
+		//-------------------------------------------------------------------------
+
+		CFG.beginGroup( "connections" );
+
+		for( QSharedPointer<fugio::NodeInterface> N : mNodeHash.values() )
+		{
+			if( !pNodeList || pNodeList->contains( N->uuid() ) )
+			{
+				for( QSharedPointer<fugio::PinInterface> P : N->enumInputPins() )
 				{
-					CFG.setValue( fugio::utils::uuid2string( P->globalId() ), fugio::utils::uuid2string( ConPin->globalId() ) );
+					if( !P->isConnected() )
+					{
+						continue;
+					}
+
+					QSharedPointer<fugio::PinInterface>	ConPin = P->connectedPin();
+
+					if( !ConPin || !ConPin->node() )
+					{
+						continue;
+					}
+
+					if( !pNodeList || pNodeList->contains( ConPin->node()->uuid() ) )
+					{
+						CFG.setValue( fugio::utils::uuid2string( P->globalId() ), fugio::utils::uuid2string( ConPin->globalId() ) );
+					}
 				}
 			}
 		}
-	}
 
-	CFG.endGroup();
+		CFG.endGroup();
 
-	//-------------------------------------------------------------------------
+		//-------------------------------------------------------------------------
 
-	for( QSharedPointer<fugio::NodeInterface> N : mNodeHash.values() )
-	{
-		if( !pNodeList || pNodeList->contains( N->uuid() ) )
+		for( QSharedPointer<fugio::NodeInterface> N : mNodeHash.values() )
 		{
-			CFG.beginGroup( fugio::utils::uuid2string( N->uuid() ) );
-
-			N->saveSettings( CFG, false );
-
-			CFG.endGroup();
-
-			for( QSharedPointer<fugio::PinInterface> P : N->enumPins() )
+			if( !pNodeList || pNodeList->contains( N->uuid() ) )
 			{
-				CFG.beginGroup( fugio::utils::uuid2string( P->globalId() ) );
+				CFG.beginGroup( fugio::utils::uuid2string( N->uuid() ) );
 
-				P->saveSettings( CFG );
+				N->saveSettings( CFG, false );
 
 				CFG.endGroup();
+
+				for( QSharedPointer<fugio::PinInterface> P : N->enumPins() )
+				{
+					CFG.beginGroup( fugio::utils::uuid2string( P->globalId() ) );
+
+					P->saveSettings( CFG );
+
+					CFG.endGroup();
+				}
 			}
+		}
+
+		//-------------------------------------------------------------------------
+
+		CFG.beginGroup( "assets" );
+
+		for( auto it : mAssetMap.toStdMap() )
+		{
+			QFileInfo		FI( CFG.fileName() );
+			QDir			FD( FI.absolutePath() );
+			QString			AP = FD.absoluteFilePath( it.second );
+
+			qDebug() << AP;
+
+			CFG.setValue( fugio::utils::uuid2string( it.first ), AP );
+		}
+
+		CFG.endGroup();
+
+		//-------------------------------------------------------------------------
+
+		emit saving( CFG );
+
+		emit saveEnd( CFG );
+	}
+
+	QFileInfo	FI( pFileName );
+	QString		TmpOld;
+
+	if( FI.exists() )
+	{
+		TmpOld = FI.dir().absoluteFilePath( FI.completeBaseName() ).append( ".tmp" );
+
+		if( !QFile::rename( pFileName, TmpOld ) )
+		{
+			qWarning() << "Couldn't rename output file";
+
+			return( false );
 		}
 	}
 
-	//-------------------------------------------------------------------------
-
-	CFG.beginGroup( "assets" );
-
-	for( auto it : mAssetMap.toStdMap() )
+	if( true )
 	{
-		QFileInfo		FI( CFG.fileName() );
-		QDir			FD( FI.absolutePath() );
-		QString			AP = FD.absoluteFilePath( it.second );
+		QFile		SrcDat( TmpFileName );
+		QFile		DstDat( pFileName );
 
-		qDebug() << AP;
+		if( !SrcDat.open( QFile::ReadOnly ) )
+		{
+			qWarning() << "Couldn't open temporary file";
 
-		CFG.setValue( fugio::utils::uuid2string( it.first ), AP );
+			return( false );
+		}
+
+		if( !DstDat.open( QFile::WriteOnly ) )
+		{
+			qWarning() << "Couldn't open output file";
+
+			return( false );
+		}
+
+		QStringList	HdrLst;
+
+		HdrLst << QString( ";-----------------------------------------------------------------" );
+		HdrLst << QString( "; Created with Fugio %1" ).arg( QCoreApplication::applicationVersion() );
+
+		for( auto it = mMetaInfoMap.begin() ; it != mMetaInfoMap.end() ; it++ )
+		{
+			const QString	K = mMetaNameMap.value( it.key() );
+			const QString	V = it.value();
+
+			if( !K.isEmpty() && !V.isEmpty() )
+			{
+				HdrLst << QString( "; %1: %2" ).arg( K ).arg( V );
+			}
+		}
+
+		HdrLst << QString( ";-----------------------------------------------------------------" );
+		HdrLst << QString( "" );
+		HdrLst << QString( "" );
+
+		QByteArray	TmpDat;
+
+		TmpDat = HdrLst.join( "\n" ).toLatin1();
+
+		while( !TmpDat.isEmpty() )
+		{
+			if( DstDat.write( TmpDat ) != TmpDat.size() )
+			{
+				qWarning() << "Couldn't write output data";
+
+				return( false );
+			}
+
+			TmpDat = SrcDat.read( 1024 );
+		}
+
+		SrcDat.close();
+		DstDat.close();
 	}
 
-	CFG.endGroup();
-
-	//-------------------------------------------------------------------------
-
-	emit saving( CFG );
-
-	emit saveEnd( CFG );
+	if( !TmpOld.isEmpty() && !QFile::remove( TmpOld ) )
+	{
+		qWarning() << "Couldn't remove temporary file";
+	}
 
 	return( true );
 }
@@ -872,6 +967,11 @@ void ContextPrivate::connectPins( const QUuid &pUUID1, const QUuid &pUUID2 )
 
 	QSharedPointer<fugio::PinInterface>	P1 = mPinHash.value( pUUID1 );
 	QSharedPointer<fugio::PinInterface>	P2 = mPinHash.value( pUUID2 );
+
+	if( !P1 || !P2 )
+	{
+		return;
+	}
 
 	if( P1->direction() == PIN_INPUT )
 	{
@@ -1321,8 +1421,15 @@ void ContextPrivate::nodeInitialised( void )
 	mNodeDeferProcess = true;
 }
 
-void ContextPrivate::pinUpdated( QSharedPointer<fugio::PinInterface> pPin, bool pUpdatedConnectedNode )
+void ContextPrivate::pinUpdated( QSharedPointer<fugio::PinInterface> pPin, qint64 pGlobalTimestamp, bool pUpdatedConnectedNode )
 {
+	PinPrivate	*PP = qobject_cast<PinPrivate *>( pPin->qobject() );
+
+	if( PP )
+	{
+		PP->setGlobalTimestamp( pGlobalTimestamp >= 0 ? pGlobalTimestamp : global()->timestamp() );
+	}
+
 	emit pPin->qobject()->updated();
 
 //	if( !pPin->isConnectedToActiveNode() )

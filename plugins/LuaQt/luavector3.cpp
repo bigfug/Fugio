@@ -17,19 +17,26 @@ const char *LuaVector3D::UserData::TypeName = "qt.vector3d";
 
 #if defined( LUA_SUPPORTED )
 
-const luaL_Reg LuaVector3D::mLuaInstance[] =
+const luaL_Reg LuaVector3D::mLuaFunctions[] =
 {
 	{ "new",				LuaVector3D::luaNew },
 	{ 0, 0 }
 };
 
-const luaL_Reg LuaVector3D::mLuaMethods[] =
+const luaL_Reg LuaVector3D::mLuaMetaMethods[] =
 {
 //	{ "__add",				LuaVector3D::luaAdd },
 //	{ "__div",				LuaVector3D::luaDiv },
 //	{ "__eq",				LuaVector3D::luaEq },
 //	{ "__mul",				LuaVector3D::luaMul },
 	{ "__sub",				LuaVector3D::luaSub },
+	{ "__index",			LuaVector3D::luaIndex },
+	{ "__newindex",			LuaVector3D::luaNewIndex },
+	{ 0, 0 }
+};
+
+const luaL_Reg LuaVector3D::mLuaMethods[] =
+{
 	{ "crossProduct",		LuaVector3D::luaCrossProduct },
 	{ "dotProduct",			LuaVector3D::luaDotProduct },
 	{ "length",				LuaVector3D::luaLength },
@@ -44,14 +51,21 @@ const luaL_Reg LuaVector3D::mLuaMethods[] =
 
 int LuaVector3D::luaOpen (lua_State *L )
 {
+//	if( luaL_newmetatable( L, UserData::TypeName ) == 1 )
+//	{
+//		lua_pushvalue( L, -1 );
+//		lua_setfield( L, -2, "__index" );
+
+//		luaL_setfuncs( L, mLuaMethods, 0 );
+
+//		luaL_newlib( L, mLuaInstance );
+//	}
+
 	if( luaL_newmetatable( L, UserData::TypeName ) == 1 )
 	{
-		lua_pushvalue( L, -1 );
-		lua_setfield( L, -2, "__index" );
+		luaL_setfuncs( L, mLuaMetaMethods, 0 );
 
-		luaL_setfuncs( L, mLuaMethods, 0 );
-
-		luaL_newlib( L, mLuaInstance );
+		luaL_newlib( L, mLuaFunctions );
 	}
 
 	return( 1 );
@@ -134,6 +148,45 @@ int LuaVector3D::luaPinGet( const QUuid &pPinLocalId, lua_State *L )
 	return( pushvector3d( L, SrcVar->variant().value<QVector3D>() ) );
 }
 
+int LuaVector3D::luaPinSet(const QUuid &pPinLocalId, lua_State *L, int pIndex)
+{
+	fugio::LuaInterface						*Lua  = LuaQtPlugin::lua();
+	NodeInterface							*Node = Lua->node( L );
+	QSharedPointer<fugio::PinInterface>		 Pin = Node->findPinByLocalId( pPinLocalId );
+	UserData								*UD = checkuserdata( L, pIndex );
+
+	if( !Pin )
+	{
+		return( luaL_error( L, "No destination pin" ) );
+	}
+
+	if( Pin->direction() != PIN_OUTPUT )
+	{
+		return( luaL_error( L, "No destination pin" ) );
+	}
+
+	if( !Pin->hasControl() )
+	{
+		return( luaL_error( L, "No quaternion pin" ) );
+	}
+
+	fugio::VariantInterface			*DstVar = qobject_cast<fugio::VariantInterface *>( Pin->control()->qobject() );
+
+	if( !DstVar )
+	{
+		return( luaL_error( L, "Can't access quaternion" ) );
+	}
+
+	if( UD->mVector3D != DstVar->variant().value<QVector3D>() )
+	{
+		DstVar->setVariant( UD->mVector3D );
+
+		Pin->node()->context()->pinUpdated( Pin );
+	}
+
+	return( 0 );
+}
+
 int LuaVector3D::luaCrossProduct( lua_State *L )
 {
 	QVector3D		v1 = checkvector3d( L, 1 );
@@ -156,13 +209,13 @@ int LuaVector3D::luaDotProduct( lua_State *L )
 
 int LuaVector3D::luaSub( lua_State *L )
 {
-	UserData			*V1 = checkvector3duserdata( L );
+	UserData			*V1 = checkuserdata( L );
 
 	luaL_checkany( L, 2 );
 
 	if( isVector3D( L, 2 ) )
 	{
-		UserData			*V2 = checkvector3duserdata( L, 2 );
+		UserData			*V2 = checkuserdata( L, 2 );
 		QVector3D			 V3 = V1->mVector3D - V2->mVector3D;
 
 		pushvector3d( L, V3 );
@@ -173,9 +226,83 @@ int LuaVector3D::luaSub( lua_State *L )
 	return( 0 );
 }
 
+int LuaVector3D::luaIndex(lua_State *L)
+{
+	UserData	*UD = checkuserdata( L );
+	const char	*S = luaL_checkstring( L, 2 );
+
+	if( !strcmp( S, "x" ) )
+	{
+		lua_pushnumber( L, UD->mVector3D.x() );
+
+		return( 1 );
+	}
+
+	if( !strcmp( S, "y" ) )
+	{
+		lua_pushnumber( L, UD->mVector3D.y() );
+
+		return( 1 );
+	}
+
+	if( !strcmp( S, "z" ) )
+	{
+		lua_pushnumber( L, UD->mVector3D.z() );
+
+		return( 1 );
+	}
+
+	for( const luaL_Reg *R = mLuaMethods ; R->name ; R++ )
+	{
+		if( !strcmp( R->name, S ) )
+		{
+			lua_pushcfunction( L, R->func );
+
+			return( 1 );
+		}
+	}
+
+	return( luaL_error( L, "unknown field" ) );
+}
+
+int LuaVector3D::luaNewIndex(lua_State *L)
+{
+	UserData	*UD = checkuserdata( L );
+	const char	*S = luaL_checkstring( L, 2 );
+
+	if( !strcmp( S, "x" ) )
+	{
+		float	v = luaL_checknumber( L, 3 );
+
+		UD->mVector3D.setX( v );
+
+		return( 0 );
+	}
+
+	if( !strcmp( S, "y" ) )
+	{
+		float	v = luaL_checknumber( L, 3 );
+
+		UD->mVector3D.setY( v );
+
+		return( 0 );
+	}
+
+	if( !strcmp( S, "z" ) )
+	{
+		float	v = luaL_checknumber( L, 3 );
+
+		UD->mVector3D.setZ( v );
+
+		return( 0 );
+	}
+
+	return( luaL_error( L, "unknown field" ) );
+}
+
 int LuaVector3D::luaLength(lua_State *L)
 {
-	UserData			*Vector3Data = checkvector3duserdata( L );
+	UserData			*Vector3Data = checkuserdata( L );
 	const QVector3D		&V = Vector3Data->mVector3D;
 
 	lua_pushnumber( L, V.length() );
@@ -185,7 +312,7 @@ int LuaVector3D::luaLength(lua_State *L)
 
 int LuaVector3D::luaToArray( lua_State *L )
 {
-	UserData			*Vector3Data = checkvector3duserdata( L );
+	UserData			*Vector3Data = checkuserdata( L );
 	const QVector3D		&V = Vector3Data->mVector3D;
 
 	lua_newtable( L );
@@ -204,7 +331,7 @@ int LuaVector3D::luaToArray( lua_State *L )
 
 int LuaVector3D::luaNormalize(lua_State *L)
 {
-	UserData			*Vector3Data = checkvector3duserdata( L );
+	UserData			*Vector3Data = checkuserdata( L );
 
 	Vector3Data->mVector3D.normalize();
 
@@ -213,7 +340,7 @@ int LuaVector3D::luaNormalize(lua_State *L)
 
 int LuaVector3D::luaNormalized(lua_State *L)
 {
-	UserData			*Vector3Data = checkvector3duserdata( L );
+	UserData			*Vector3Data = checkuserdata( L );
 
 	pushvector3d( L, Vector3Data->mVector3D.normalized() );
 
@@ -222,7 +349,7 @@ int LuaVector3D::luaNormalized(lua_State *L)
 
 int LuaVector3D::luaX(lua_State *L)
 {
-	UserData			*Vector3Data = checkvector3duserdata( L );
+	UserData			*Vector3Data = checkuserdata( L );
 	const QVector3D		&V = Vector3Data->mVector3D;
 
 	lua_pushnumber( L, V.x() );
@@ -232,7 +359,7 @@ int LuaVector3D::luaX(lua_State *L)
 
 int LuaVector3D::luaY(lua_State *L)
 {
-	UserData			*Vector3Data = checkvector3duserdata( L );
+	UserData			*Vector3Data = checkuserdata( L );
 	const QVector3D		&V = Vector3Data->mVector3D;
 
 	lua_pushnumber( L, V.y() );
@@ -242,7 +369,7 @@ int LuaVector3D::luaY(lua_State *L)
 
 int LuaVector3D::luaZ(lua_State *L)
 {
-	UserData			*Vector3Data = checkvector3duserdata( L );
+	UserData			*Vector3Data = checkuserdata( L );
 	const QVector3D		&V = Vector3Data->mVector3D;
 
 	lua_pushnumber( L, V.z() );

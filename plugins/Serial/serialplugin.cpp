@@ -8,6 +8,9 @@
 #include "serialinputnode.h"
 #include "serialoutputnode.h"
 
+#include "serialencodernode.h"
+#include "serialdecodernode.h"
+
 #include <fugio/global_signals.h>
 
 QList<QUuid>				fugio::NodeControlBase::PID_UUID;
@@ -16,6 +19,8 @@ fugio::ClassEntry		SerialPlugin::mNodeClasses[] =
 {
 	fugio::ClassEntry( "Serial Input", "Serial", NID_SERIAL_INPUT, &SerialInputNode::staticMetaObject ),
 	fugio::ClassEntry( "Serial Output", "Serial", NID_SERIAL_OUTPUT, &SerialOutputNode::staticMetaObject ),
+	fugio::ClassEntry( "Serial Encoder", "Serial", NID_SERIAL_ENCODER, &SerialEncoderNode::staticMetaObject ),
+	fugio::ClassEntry( "Serial Decoder", "Serial", NID_SERIAL_DECODER, &SerialDecoderNode::staticMetaObject ),
 	fugio::ClassEntry()
 };
 

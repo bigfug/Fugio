@@ -71,7 +71,10 @@ SOURCES += \
 	triggerbooleannode.cpp \
 	makearraynode.cpp \
 	flipflopnode.cpp \
-	loggernode.cpp
+	loggernode.cpp \
+    bitarraypin.cpp \
+    bitstoboolnode.cpp \
+	booltobitsnode.cpp
 
 HEADERS += \
 	stringpin.h \
@@ -138,7 +141,10 @@ HEADERS += \
 	triggerbooleannode.h \
 	makearraynode.h \
 	flipflopnode.h \
-	loggernode.h
+	loggernode.h \
+    bitarraypin.h \
+    bitstoboolnode.h \
+	booltobitsnode.h
 
 RESOURCES += \
     resources.qrc

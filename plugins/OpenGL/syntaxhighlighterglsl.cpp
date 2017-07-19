@@ -6,11 +6,6 @@
 SyntaxHighlighterGLSL::SyntaxHighlighterGLSL(QObject *parent) :
 	QSyntaxHighlighter(parent)
 {
-}
-
-SyntaxHighlighterGLSL::SyntaxHighlighterGLSL( QTextDocument *pDocument )
-	: QSyntaxHighlighter( pDocument )
-{
 	HighlightingRule rule;
 
 	keywordFormat.setForeground(Qt::darkBlue);
@@ -171,9 +166,6 @@ SyntaxHighlighterGLSL::SyntaxHighlighterGLSL( QTextDocument *pDocument )
 	rule.format = singleLineCommentFormat;
 	highlightingRules.append(rule);
 
-	errorFormat.setBackground( QBrush( QColor( Qt::red ).lighter( 160 ) ) );
-	errorFormat.setProperty( QTextFormat::FullWidthSelection, true );
-
 	//	defineFormat.setForeground(Qt::darkMagenta);
 	//	rule.pattern = QRegExp("#[^\n]*");
 	//	rule.format = defineFormat;
@@ -187,97 +179,6 @@ SyntaxHighlighterGLSL::SyntaxHighlighterGLSL( QTextDocument *pDocument )
 
 SyntaxHighlighterGLSL::~SyntaxHighlighterGLSL( void )
 {
-}
-
-void SyntaxHighlighterGLSL::clearErrors()
-{
-	mErrorData.clear();
-
-	emit errorsUpdated();
-
-	rehighlight();
-}
-
-void SyntaxHighlighterGLSL::setErrors( const QString &pErrorText)
-{
-	QString			EL = pErrorText;
-
-	mErrorData.clear();
-
-	if( EL.startsWith( '"' ) )
-	{
-		EL.remove( 0, 1 );
-	}
-
-	if( EL.endsWith( '"' ) )
-	{
-		EL.chop( 1 );
-	}
-
-	QStringList		SL = EL.split( '\n' );
-
-	for( QString S : SL )
-	{
-		S = S.trimmed();
-
-		if( S.isEmpty() )
-		{
-			continue;
-		}
-
-		if( S.startsWith( "ERROR: " ) )
-		{
-			S.remove( 0, 7 );
-
-			QRegExp		RE( ":(\\d+):" );
-
-			int			LN = 0;
-
-			if( RE.indexIn( S ) )
-			{
-				LN = RE.cap( 1 ).toInt();
-			}
-
-			if( LN > 0 )
-			{
-				QStringList		SL2 = S.split( ": " );
-
-				SL2.removeFirst();
-
-				mErrorData.insert( LN, SL2.join( ": " ) );
-			}
-			else
-			{
-				mErrorData.insert( 0, S );
-			}
-		}
-		else
-		{
-//			QRegExp	R = QRegExp( "/\\(\\d+\\)\\s+:\\s+\\w+\\s+\\w+:\\s[\\s\\S]+/" );
-
-//			R.indexIn( S );
-
-//			QStringList		L = R.capturedTexts();
-
-			mErrorData.insert( 0, S );
-		}
-	}
-
-	emit errorsUpdated();
-
-	rehighlight();
-}
-
-QStringList SyntaxHighlighterGLSL::errorList( int pLineNumber ) const
-{
-	QStringList		SL;
-
-	if( mErrorData.contains( pLineNumber ) )
-	{
-		SL << mErrorData.values( pLineNumber );
-	}
-
-	return( SL );
 }
 
 void SyntaxHighlighterGLSL::highlightBlock( const QString &text )
@@ -327,11 +228,11 @@ void SyntaxHighlighterGLSL::highlightBlock( const QString &text )
 
 		startIndex = commentStartExpression.indexIn(text, startIndex + commentLength);
 	}
+}
 
-	const int LineNumber = currentBlock().firstLineNumber() + 1;
+void SyntaxHighlighterGLSL::updateErrors(QList<fugio::SyntaxError> pSyntaxErrors)
+{
+	mSyntaxErrors = pSyntaxErrors;
 
-	if( mErrorData.contains( LineNumber ) )
-	{
-		setFormat( 0, currentBlock().length(), errorFormat );
-	}
+	rehighlight();
 }

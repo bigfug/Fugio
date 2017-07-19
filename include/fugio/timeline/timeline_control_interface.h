@@ -11,6 +11,14 @@
 
 FUGIO_NAMESPACE_BEGIN
 
+typedef enum SnapType
+{
+	SNAP_NONE = 0,
+	SNAP_KEY = 1 << 0,
+	SNAP_MARKER = 1 << 1,
+	SNAP_VALUE = 1 << 2
+} SnapType;
+
 class TimelineControlInterface
 {
 public:
@@ -70,14 +78,6 @@ public:
 	virtual qreal selectionRange( void ) const = 0;
 	virtual qreal selectionStart( void ) const = 0;
 	virtual qreal selectionEnd( void ) const = 0;
-
-    enum SnapType
-    {
-        SNAP_NONE   = 0,
-        SNAP_KEY    = 1 << 0,
-        SNAP_MARKER = 1 << 1,
-        SNAP_VALUE  = 1 << 2
-    };
 
     virtual void setSnapType( SnapType pSnapType, bool pEnabled ) = 0;
     virtual void setSnapType( SnapType pSnapType ) = 0;

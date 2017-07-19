@@ -83,6 +83,8 @@ public slots:
 
     void userSaveAs( void );
 
+	void userSaveImage( void );
+
 	void load( const QString &pFileName );
 
     void cut( void );

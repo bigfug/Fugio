@@ -485,100 +485,95 @@ void MediaNode::unloadMedia( void )
 void MediaNode::updateVideo( qreal pTimeCurr )
 {
 #if defined( FFMPEG_SUPPORTED )
-	qreal	ImgPts = mSegment->videoFrameTimeStamp();
-
 	mSegment->setPlayhead( pTimeCurr );
 
-	if( mSegment->videoFrameTimeStamp() == ImgPts )
+	const fugio::SegmentInterface::VidDat	*VD = mSegment->viddat();
+
+	if( !VD )
 	{
-		if( !mSegment->viddat() )
-		{
-			mValImage->unsetBuffers();
-		}
+		mValImage->unsetBuffers();
 
 		return;
 	}
 
-	const fugio::SegmentInterface::VidDat	*VD = mSegment->viddat();
-
-	if( VD )
+	if( VD->mPTS == mImgPts )
 	{
-		mValImage->setSize( mSegment->imageSize().width(), mSegment->imageSize().height() );
+		return;
+	}
 
-		mValImage->setLineSizes( VD->mLineSizes );
+	mImgPts = VD->mPTS;
 
-		if( mSegment->imageIsHap() )
+	mValImage->setSize( mSegment->imageSize().width(), mSegment->imageSize().height() );
+
+	mValImage->setLineSizes( VD->mLineSizes );
+
+	if( mSegment->imageIsHap() )
+	{
+		switch( HapTextureFormat( mSegment->imageFormat() ) )
 		{
-			switch( HapTextureFormat( mSegment->imageFormat() ) )
-			{
-				case HapTextureFormat_RGB_DXT1:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_DXT1 );
-					break;
+			case HapTextureFormat_RGB_DXT1:
+				mValImage->setFormat( fugio::ImageInterface::FORMAT_DXT1 );
+				break;
 
-				case HapTextureFormat_RGBA_DXT5:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_DXT5 );
-					break;
+			case HapTextureFormat_RGBA_DXT5:
+				mValImage->setFormat( fugio::ImageInterface::FORMAT_DXT5 );
+				break;
 
-				case HapTextureFormat_YCoCg_DXT5:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_YCoCg_DXT5 );
-					break;
+			case HapTextureFormat_YCoCg_DXT5:
+				mValImage->setFormat( fugio::ImageInterface::FORMAT_YCoCg_DXT5 );
+				break;
 
-				default:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_UNKNOWN );
-					break;
-			}
-		}
-		else
-		{
-			mValImage->setInternalFormat( mSegment->imageFormat() );
-
-			switch( AVPixelFormat( mSegment->imageFormat() ) )
-			{
-				case AV_PIX_FMT_RGB24:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_RGB8 );
-					break;
-
-				case AV_PIX_FMT_RGBA:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_RGBA8 );
-					break;
-
-				case AV_PIX_FMT_BGR24:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_BGR8 );
-					break;
-
-				case AV_PIX_FMT_BGRA:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
-					break;
-
-				case AV_PIX_FMT_YUYV422:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_YUYV422 );
-					break;
-
-				case AV_PIX_FMT_GRAY8:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_GRAY8 );
-					break;
-
-				case AV_PIX_FMT_GRAY16:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_GRAY16 );
-					break;
-
-				default:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_INTERNAL );
-					break;
-			}
-		}
-
-		mValImage->setBuffers( VD->mData );
-		mValImage->setLineSizes( VD->mLineSizes );
-
-		if( mValImage->format() != fugio::ImageInterface::FORMAT_UNKNOWN )
-		{
-			pinUpdated( mPinImage );
+			default:
+				mValImage->setFormat( fugio::ImageInterface::FORMAT_UNKNOWN );
+				break;
 		}
 	}
 	else
 	{
-		mValImage->unsetBuffers();
+		mValImage->setInternalFormat( mSegment->imageFormat() );
+
+		switch( AVPixelFormat( mSegment->imageFormat() ) )
+		{
+			case AV_PIX_FMT_RGB24:
+				mValImage->setFormat( fugio::ImageInterface::FORMAT_RGB8 );
+				break;
+
+			case AV_PIX_FMT_RGBA:
+				mValImage->setFormat( fugio::ImageInterface::FORMAT_RGBA8 );
+				break;
+
+			case AV_PIX_FMT_BGR24:
+				mValImage->setFormat( fugio::ImageInterface::FORMAT_BGR8 );
+				break;
+
+			case AV_PIX_FMT_BGRA:
+				mValImage->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+				break;
+
+			case AV_PIX_FMT_YUYV422:
+				mValImage->setFormat( fugio::ImageInterface::FORMAT_YUYV422 );
+				break;
+
+			case AV_PIX_FMT_GRAY8:
+				mValImage->setFormat( fugio::ImageInterface::FORMAT_GRAY8 );
+				break;
+
+			case AV_PIX_FMT_GRAY16:
+				mValImage->setFormat( fugio::ImageInterface::FORMAT_GRAY16 );
+				break;
+
+			default:
+				mValImage->setFormat( fugio::ImageInterface::FORMAT_INTERNAL );
+				break;
+		}
+	}
+
+	mValImage->setBuffers( VD->mData );
+	mValImage->setLineSizes( VD->mLineSizes );
+
+	if( mValImage->format() != fugio::ImageInterface::FORMAT_UNKNOWN )
+	{
+		pinUpdated( mPinImage );
 	}
 #endif
 }

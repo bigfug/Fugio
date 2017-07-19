@@ -119,7 +119,7 @@ public:
 
 	virtual void nodeInitialised( void ) Q_DECL_OVERRIDE;
 
-	virtual void pinUpdated( QSharedPointer<fugio::PinInterface> pPin, bool pUpdatedConnectedNode = true ) Q_DECL_OVERRIDE;
+	virtual void pinUpdated( QSharedPointer<fugio::PinInterface> pPin, qint64 pGlobalTimestamp = -1, bool pUpdatedConnectedNode = true ) Q_DECL_OVERRIDE;
 
 	virtual void performance( QSharedPointer<fugio::NodeInterface> pNode, const QString &pName, qint64 pTimeStart, qint64 pTimeEnd ) Q_DECL_OVERRIDE;
 

@@ -20,9 +20,7 @@
 
 #include <fugio/global_signals.h>
 
-//#define GLOBAL_THREADED
-
-//class IPlugin;
+#include "timesync.h"
 
 class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public fugio::GlobalInterface
 {
@@ -30,6 +28,8 @@ class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public 
 	Q_INTERFACES( fugio::GlobalInterface )
 
 	explicit GlobalPrivate( QObject *pParent = 0 );
+
+	friend class GlobalThread;
 
 public:
 	virtual ~GlobalPrivate( void );
@@ -44,6 +44,15 @@ public:
 
 	void initialisePlugins( void );
 
+	void updateUniversalTimestamp( qint64 pTimeStamp )
+	{
+		mUniversalTimer.restart();
+
+		mUniversalOffset = pTimeStamp;
+
+		mGlobalOffset = mGlobalTimer.elapsed();
+	}
+
 	//-------------------------------------------------------------------------
 	// fugio::IGlobal
 
@@ -57,13 +66,28 @@ public:
 		return( mGlobalTimer.elapsed() );
 	}
 
+	virtual qint64 universalTimestamp( void ) const Q_DECL_OVERRIDE
+	{
+		return( mUniversalTimer.elapsed() + mUniversalOffset );
+	}
+
+	virtual qint64 universalToGlobal( qint64 pTimeStamp ) const Q_DECL_OVERRIDE
+	{
+		return( ( pTimeStamp - mUniversalOffset ) + mGlobalOffset );
+	}
+
+	virtual qint64 globalToUniversal( qint64 pTimeStamp ) const Q_DECL_OVERRIDE
+	{
+		return( ( pTimeStamp - mGlobalOffset ) + mUniversalOffset );
+	}
+
 	virtual void start() Q_DECL_OVERRIDE;
 	virtual void stop() Q_DECL_OVERRIDE;
 
 	virtual QThread *thread( void ) Q_DECL_OVERRIDE
 	{
 #if defined( GLOBAL_THREADED )
-		return( &mWorkerThread );
+		return( mGlobalThread );
 #else
 		return( QApplication::instance()->thread() );
 #endif
@@ -201,14 +225,13 @@ signals:
 private slots:
 	void timeout( void );
 
-#if defined( GLOBAL_THREADED )
-	void run( void );
-#endif
-
 private:
 	static GlobalPrivate			*mInstance;
 
 	QElapsedTimer					 mGlobalTimer;
+	qint64							 mGlobalOffset;		// convert from universal to global
+	QElapsedTimer					 mUniversalTimer;
+	qint64							 mUniversalOffset;
 
 	QNetworkAccessManager			*mNetworkManager;
 
@@ -237,8 +260,54 @@ private:
 	bool							 mPause;
 
 #if defined( GLOBAL_THREADED )
-	QThread							 mWorkerThread;
+	QThread							*mGlobalThread;
 #endif
+
+	TimeSync						*mTimeSync;
 };
+
+#if defined( GLOBAL_THREADED )
+
+#include <QTimer>
+
+class GlobalThread : public QThread
+{
+	Q_OBJECT
+
+public:
+	GlobalThread( GlobalPrivate *pGlobalPrivate )
+		: QThread( pGlobalPrivate ), mGlobalPrivate( pGlobalPrivate )
+	{
+
+	}
+
+protected:
+	virtual void run() Q_DECL_OVERRIDE
+	{
+		QTimer			*Timer = new QTimer();
+
+		Timer->setTimerType( Qt::PreciseTimer );
+
+		connect( Timer, SIGNAL(timeout()), this, SLOT(timeout()) );
+
+		connect( this, SIGNAL(finished()), Timer, SLOT(deleteLater()) );
+
+		Timer->start( 1000 / 100 );
+
+		exec();
+	}
+
+protected slots:
+	void timeout( void )
+	{
+		mGlobalPrivate->timeout();
+	}
+
+private:
+	GlobalPrivate	*mGlobalPrivate;
+};
+
+#endif
+
 
 #endif // GLOBAL_PRIVATE_H

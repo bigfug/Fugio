@@ -262,20 +262,21 @@ int main( int argc, char *argv[] )
 
 	QDir	PluginsDir = QDir( qApp->applicationDirPath() );
 
-#if defined( Q_OS_WIN )
-//	if( PluginsDir.dirName().toLower() == "debug" || PluginsDir.dirName().toLower() == "release" )
-//	{
-//		PluginsDir.cdUp();
-//	}
-#elif defined( Q_OS_MAC )
+#if defined( Q_OS_MAC )
 	PluginsDir.cdUp();
 	PluginsDir.cdUp();
 	PluginsDir.cdUp();
 #endif
 
-	PluginsDir.cd( "plugins" );
+	while( !PluginsDir.isRoot() && PluginsDir.isReadable() && !PluginsDir.cd( "plugins" ) )
+	{
+		PluginsDir.cdUp();
+	}
 
-	qInfo() << "Plugin Directory:" << PluginsDir.absolutePath();
+	if( !PluginsDir.isRoot() && PluginsDir.isReadable() )
+	{
+		qInfo() << "Plugin Directory:" << PluginsDir.absolutePath();
+	}
 
 	MainWindow	*WND = new MainWindow();
 
@@ -288,11 +289,14 @@ int main( int argc, char *argv[] )
 		WND->initBegin();
 
 #if defined( Q_OS_MACX )
-		PBG->loadPlugins( PluginsDir );
+		if( !PluginsDir.isRoot() && PluginsDir.isReadable())
+		{
+			PBG->loadPlugins( PluginsDir );
 
-		PBG->initialisePlugins();
+			PBG->initialisePlugins();
+		}
 #else
-		if( true )
+		if( !PluginsDir.isRoot() && PluginsDir.isReadable() )
 		{
 			QString		CurDir = QDir::currentPath();
 			QString		NxtDir = PluginsDir.absolutePath();

@@ -6,6 +6,8 @@
 #include <fugio/context_interface.h>
 #include <fugio/context_signals.h>
 
+#include <fugio/performance.h>
+
 #include "spoutplugin.h"
 #include "spoutpin.h"
 #include "spoutreceiverform.h"
@@ -31,11 +33,13 @@ void SpoutReceiverNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	mNode->context()->pinUpdated( mPinOutput );
+	pinUpdated( mPinOutput );
 }
 
-void SpoutReceiverNode::onContextFrame()
+void SpoutReceiverNode::onContextFrame( qint64 pTimeStamp )
 {
+	fugio::Performance	P( mNode, "contextFrame", pTimeStamp );
+
 	QSize		S;
 	QString		N = variant( mPinInputName ).toString();
 
@@ -92,14 +96,14 @@ bool SpoutReceiverNode::initialise()
 		return( false );
 	}
 
-	connect( mNode->context()->qobject(), SIGNAL(frameInitialise()), this, SLOT(onContextFrame()) );
+	connect( mNode->context()->qobject(), SIGNAL(frameInitialise(qint64)), this, SLOT(onContextFrame(qint64)) );
 
 	return( true );
 }
 
 bool SpoutReceiverNode::deinitialise()
 {
-	disconnect( mNode->context()->qobject(), SIGNAL(frameInitialise()), this, SLOT(onContextFrame()) );
+	disconnect( mNode->context()->qobject(), SIGNAL(frameInitialise(qint64)), this, SLOT(onContextFrame(qint64)) );
 
 	return( NodeControlBase::deinitialise() );
 }

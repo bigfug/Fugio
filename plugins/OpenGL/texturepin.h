@@ -64,9 +64,15 @@ public:
 		{
 			case GL_DEPTH_COMPONENT:
 			case GL_DEPTH_COMPONENT16:
+#if defined( GL_DEPTH_COMPONENT24 )
 			case GL_DEPTH_COMPONENT24:
+#endif
+#if defined( GL_DEPTH_COMPONENT32 )
 			case GL_DEPTH_COMPONENT32:
+#endif
+#if defined( GL_DEPTH_COMPONENT32F )
 			case GL_DEPTH_COMPONENT32F:
+#endif
 				return( true );
 		}
 

@@ -103,6 +103,8 @@ private:
 	qint64										 mTimePause;
 	qint64										 mTimeLast;
 
+	qreal										 mLstPts;
+
 	ProcessorAudioBuffer								 AB;
 
 	class AudioInstanceData : public fugio::AudioInstanceBase
