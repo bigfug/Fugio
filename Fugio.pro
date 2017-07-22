@@ -8,3 +8,4 @@ SUBDIRS += \
 
 FugioApp.depends = FugioLib plugins
 
+FugioTime.depends = FugioLib

@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect( timer, SIGNAL(timeout()), this, SLOT(sendTime()) );
 
 	connect( udpSocket, SIGNAL(readyRead()), this, SLOT(responseReady()) );
+	connect( udpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(sendError(QAbstractSocket::SocketError)) );
 }
 
 MainWindow::~MainWindow()
@@ -62,6 +63,8 @@ void MainWindow::responseReady()
 	{
 		QNetworkDatagram	DG = udpSocket->receiveDatagram();
 
+		qDebug() << "RECV" << DG.senderAddress() << DG.senderPort() << DG.data().size();
+
 		if( !DG.isValid() || DG.data().size() != sizeof( TimeDatagram ) )
 		{
 			continue;
@@ -69,7 +72,7 @@ void MainWindow::responseReady()
 
 		memcpy( &TDG, DG.data(), sizeof( TDG ) );
 
-//		qDebug() << "PING" << DG.senderAddress() << DG.senderPort() << qFromBigEndian<qint64>( TDG.mClientTimestamp );
+		qDebug() << "PING" << DG.senderAddress() << DG.senderPort() << qFromBigEndian<qint64>( TDG.mClientTimestamp );
 
 		TDG.mServerTimestamp = qToBigEndian<qint64>( mUniverseTimer.elapsed() );
 
@@ -78,4 +81,9 @@ void MainWindow::responseReady()
 			qWarning() << "Couldn't write packet";
 		}
 	}
+}
+
+void MainWindow::sendError( QAbstractSocket::SocketError pError )
+{
+	qWarning() << pError;
 }

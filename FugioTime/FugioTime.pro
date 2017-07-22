@@ -4,6 +4,8 @@
 #
 #-------------------------------------------------
 
+include( ../FugioGlobal.pri )
+
 QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -25,10 +27,30 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    clientconsole.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    clientconsole.h
 
 FORMS += \
         mainwindow.ui
+
+#------------------------------------------------------------------------------
+# API
+
+INCLUDEPATH += $$PWD/../include
+
+win32:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugiod
+else:unix:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
+else:unix:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugio_debug
+
+INCLUDEPATH += $$PWD/../FugioLib
+DEPENDPATH += $$PWD/../FugioLib
+
+win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$DESTDIR/fugio.lib
+else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$DESTDIR/fugiod.lib
+else:unix:CONFIG(release, debug|release): PRE_TARGETDEPS += $$DESTDIR/libfugio.a
+else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$DESTDIR/libfugio_debug.a

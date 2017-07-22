@@ -32,6 +32,8 @@ private slots:
 
 	void responseReady( void );
 
+	void sendError( QAbstractSocket::SocketError pError );
+
 private:
 	Ui::MainWindow		*ui;
 	int					 mPort;

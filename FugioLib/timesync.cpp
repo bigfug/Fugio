@@ -27,6 +27,8 @@ TimeSync::TimeSync( QObject *pParent )
 	{
 		connect( mSocket, SIGNAL(readyRead()), this, SLOT(responseReady()) );
 	}
+
+	qDebug() << "TimeSync port:" << mResponseSocket->localPort();
 }
 
 void TimeSync::processPendingDatagrams()
