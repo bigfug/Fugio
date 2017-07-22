@@ -3,12 +3,19 @@
 
 #include <QtEndian>
 #include <QNetworkDatagram>
+#include <QHostInfo>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow), mPort( 45454 )
 {
 	ui->setupUi(this);
+
+	mNetworkStatusLabel = new QLabel( "Initialising" );
+
+	ui->mStatusBar->addPermanentWidget( mNetworkStatusLabel );
+
+	connect( &mNAM, &QNetworkAccessManager::networkAccessibleChanged, this, &MainWindow::networkAccessibility );
 
 	mUniverseTimer.start();
 
@@ -22,6 +29,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect( udpSocket, SIGNAL(readyRead()), this, SLOT(responseReady()) );
 	connect( udpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(sendError(QAbstractSocket::SocketError)) );
+
+	QTimer::singleShot( 1000, this, SLOT(sendTime()) );
 }
 
 MainWindow::~MainWindow()
@@ -29,50 +38,152 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-void MainWindow::on_mButton_clicked( bool checked )
+void MainWindow::sendTime()
 {
-    if( checked )
+	if( ui->mButton->isChecked() )
 	{
-		timer->start( 1000 );
+		if( mNAM.networkAccessible() == QNetworkAccessManager::Accessible )
+		{
+			TimeDatagram		TDG;
+
+			TDG.mServerTimestamp = mUniverseTimer.elapsed();
+
+			mNetworkStatusLabel->setText( QString( "%1" ).arg( TDG.mServerTimestamp ) );
+
+//			qDebug() << "SEND" << TDG.mServerTimestamp;
+
+			TDG.mServerTimestamp = qToBigEndian<qint64>( TDG.mServerTimestamp );
+			TDG.mClientTimestamp = 0;
+
+			udpSocket->writeDatagram( reinterpret_cast<const char *>( &TDG ), sizeof( TDG ), groupAddress, mPort );
+
+			QPalette Palette;
+
+			Palette.setColor( QPalette::Window,     Qt::darkGreen );
+			Palette.setColor( QPalette::WindowText, Qt::white );
+
+			mNetworkStatusLabel->setPalette( Palette );
+			mNetworkStatusLabel->setAutoFillBackground( true );
+		}
+		else
+		{
+			QPalette Palette;
+
+			Palette.setColor( QPalette::Window,     Qt::red );
+			Palette.setColor( QPalette::WindowText, Qt::white );
+
+			mNetworkStatusLabel->setPalette( Palette );
+			mNetworkStatusLabel->setAutoFillBackground( true );
+			mNetworkStatusLabel->setText( "No Network" );
+		}
 	}
 	else
 	{
-		timer->stop();
+		QPalette Palette;
+
+		Palette.setColor( QPalette::Window,     Qt::gray );
+		Palette.setColor( QPalette::WindowText, Qt::black );
+
+		mNetworkStatusLabel->setPalette( Palette );
+		mNetworkStatusLabel->setAutoFillBackground( true );
+		mNetworkStatusLabel->setText( "Not Enabled" );
 	}
-}
 
-void MainWindow::sendTime()
-{
-	TimeDatagram		TDG;
+	quint64				TS = mUniverseTimer.elapsed();
 
-	TDG.mServerTimestamp = mUniverseTimer.elapsed();
+	for( SocketEntry &SE : mSocketEntries )
+	{
+		if( SE.mListItem && SE.mListItem->text() != SE.mName )
+		{
+			SE.mListItem->setText( SE.mName );
+		}
 
-//	qDebug() << TDG.mServerTimestamp;
+		if( TS - SE.mTimestamp >= 10000 )
+		{
+			ui->mClientList->removeItemWidget( SE.mListItem );
 
-	TDG.mServerTimestamp = qToBigEndian<qint64>( TDG.mServerTimestamp );
-	TDG.mClientTimestamp = 0;
+			delete SE.mListItem;
 
-	udpSocket->writeDatagram( reinterpret_cast<const char *>( &TDG ), sizeof( TDG ), groupAddress, mPort );
+			SE.mListItem = 0;
+		}
+		else if( TS - SE.mTimestamp >= 5000 )
+		{
+			SE.mListItem->setForeground( Qt::gray );
+		}
+		else if( SE.mListItem )
+		{
+			SE.mListItem->setForeground( Qt::black );
+		}
+		else
+		{
+			SE.mListItem = new QListWidgetItem( SE.mName );
+
+			ui->mClientList->addItem( SE.mListItem );
+		}
+	}
+
+	qint64	t = QDateTime::currentMSecsSinceEpoch();
+
+	QTimer::singleShot( qMax( 500LL, 1000LL - ( t % 1000LL ) ), this, SLOT(sendTime()) );
 }
 
 void MainWindow::responseReady()
 {
 	TimeDatagram		TDG;
+	quint64				TS = mUniverseTimer.elapsed();
 
 	while( udpSocket->hasPendingDatagrams() )
 	{
 		QNetworkDatagram	DG = udpSocket->receiveDatagram();
 
-		qDebug() << "RECV" << DG.senderAddress() << DG.senderPort() << DG.data().size();
-
 		if( !DG.isValid() || DG.data().size() != sizeof( TimeDatagram ) )
 		{
+			qDebug() << "RECV" << DG.senderAddress() << DG.senderPort() << DG.isValid() << DG.data().size();
+
 			continue;
 		}
 
 		memcpy( &TDG, DG.data(), sizeof( TDG ) );
 
-		qDebug() << "PING" << DG.senderAddress() << DG.senderPort() << qFromBigEndian<qint64>( TDG.mClientTimestamp );
+		QString			HostName;
+
+		// Record the client entry
+
+		bool			SocketEntryFound = false;
+
+		for( SocketEntry &SE : mSocketEntries )
+		{
+			if( SE.mAddress == DG.senderAddress() && SE.mPort == DG.senderPort() )
+			{
+				SE.mTimestamp = TS;
+
+				HostName = SE.mName;
+
+				SocketEntryFound = true;
+
+				break;
+			}
+		}
+
+		if( !SocketEntryFound )
+		{
+			SocketEntry		SE;
+
+			SE.mAddress   = DG.senderAddress();
+			SE.mPort      = DG.senderPort();
+			SE.mTimestamp = TS;
+			SE.mListItem  = 0;
+			SE.mName      = QString( "%1:%2" ).arg( SE.mAddress.toString() ).arg( SE.mPort );
+			SE.mLookupId  = QHostInfo::lookupHost( DG.senderAddress().toString(), this, SLOT(hostLookup(QHostInfo)) );
+
+			mSocketEntries << SE;
+
+			HostName = SE.mName;
+		}
+
+		qDebug() << "PING" << HostName << qFromBigEndian<qint64>( TDG.mClientTimestamp );
+
+		// Send the response packet
 
 		TDG.mServerTimestamp = qToBigEndian<qint64>( mUniverseTimer.elapsed() );
 
@@ -85,5 +196,34 @@ void MainWindow::responseReady()
 
 void MainWindow::sendError( QAbstractSocket::SocketError pError )
 {
-	qWarning() << pError;
+	qWarning() << "sendError" << pError;
+}
+
+void MainWindow::networkAccessibility( QNetworkAccessManager::NetworkAccessibility pNA )
+{
+	qDebug() << "networkAccessibility" << pNA;
+}
+
+void MainWindow::hostLookup( const QHostInfo &pHost )
+{
+	for( SocketEntry &SE : mSocketEntries )
+	{
+		if( SE.mLookupId != pHost.lookupId() )
+		{
+			continue;
+		}
+
+		if( pHost.error() != QHostInfo::NoError )
+		{
+			qDebug() << "Couldn't lookup:" << SE.mAddress.toString();
+
+			continue;
+		}
+
+		qDebug() << "Resolved:" << SE.mAddress.toString() << "to" << pHost.hostName();
+
+		SE.mName = QString( "%1:%2" ).arg( pHost.hostName() ).arg( SE.mPort );
+
+		break;
+	}
 }

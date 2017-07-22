@@ -6,6 +6,10 @@
 #include <QTimer>
 #include <QHostAddress>
 #include <QElapsedTimer>
+#include <QNetworkAccessManager>
+#include <QListWidgetItem>
+#include <QHostInfo>
+#include <QLabel>
 
 namespace Ui {
 class MainWindow;
@@ -26,21 +30,37 @@ public:
 	~MainWindow();
 
 private slots:
-	void on_mButton_clicked(bool checked);
-
 	void sendTime( void );
 
 	void responseReady( void );
 
 	void sendError( QAbstractSocket::SocketError pError );
 
+	void networkAccessibility( QNetworkAccessManager::NetworkAccessibility pNA );
+
+	void hostLookup( const QHostInfo &pHost );
+
 private:
-	Ui::MainWindow		*ui;
-	int					 mPort;
-	QUdpSocket			*udpSocket;
-	QTimer				*timer;
-	QHostAddress		 groupAddress;
-	QElapsedTimer		 mUniverseTimer;
+	Ui::MainWindow			*ui;
+	int						 mPort;
+	QUdpSocket				*udpSocket;
+	QTimer					*timer;
+	QHostAddress			 groupAddress;
+	QElapsedTimer			 mUniverseTimer;
+	QNetworkAccessManager	 mNAM;
+	QLabel					*mNetworkStatusLabel;
+
+	typedef struct SocketEntry
+	{
+		QHostAddress		 mAddress;
+		int					 mPort;
+		qint64				 mTimestamp;
+		QListWidgetItem		*mListItem;
+		QString				 mName;
+		int					 mLookupId;
+	} SocketEntry;
+
+	QList<SocketEntry>		 mSocketEntries;
 };
 
 #endif // MAINWINDOW_H
