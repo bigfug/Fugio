@@ -29,6 +29,9 @@ public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
 
+private:
+	static QString logtime( void );
+
 private slots:
 	void sendTime( void );
 

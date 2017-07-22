@@ -38,6 +38,11 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
+QString MainWindow::logtime()
+{
+	return( QDateTime::currentDateTimeUtc().toString( "HH:mm:ss.zzz" ) );
+}
+
 void MainWindow::sendTime()
 {
 	if( ui->mButton->isChecked() )
@@ -50,7 +55,7 @@ void MainWindow::sendTime()
 
 			mNetworkStatusLabel->setText( QString( "%1" ).arg( TDG.mServerTimestamp ) );
 
-//			qDebug() << "SEND" << TDG.mServerTimestamp;
+			qDebug() << logtime() << "SEND" << TDG.mServerTimestamp;
 
 			TDG.mServerTimestamp = qToBigEndian<qint64>( TDG.mServerTimestamp );
 			TDG.mClientTimestamp = 0;
@@ -98,21 +103,24 @@ void MainWindow::sendTime()
 			SE.mListItem->setText( SE.mName );
 		}
 
-		if( TS - SE.mTimestamp >= 10000 )
+		if( SE.mListItem )
 		{
-			ui->mClientList->removeItemWidget( SE.mListItem );
+			if( TS - SE.mTimestamp >= 10000 )
+			{
+				ui->mClientList->removeItemWidget( SE.mListItem );
 
-			delete SE.mListItem;
+				delete SE.mListItem;
 
-			SE.mListItem = 0;
-		}
-		else if( TS - SE.mTimestamp >= 5000 )
-		{
-			SE.mListItem->setForeground( Qt::gray );
-		}
-		else if( SE.mListItem )
-		{
-			SE.mListItem->setForeground( Qt::black );
+				SE.mListItem = 0;
+			}
+			else if( TS - SE.mTimestamp >= 5000 )
+			{
+				SE.mListItem->setForeground( Qt::gray );
+			}
+			else if( SE.mListItem )
+			{
+				SE.mListItem->setForeground( Qt::black );
+			}
 		}
 		else
 		{
@@ -124,7 +132,7 @@ void MainWindow::sendTime()
 
 	qint64	t = QDateTime::currentMSecsSinceEpoch();
 
-	QTimer::singleShot( qMax( 500LL, 1000LL - ( t % 1000LL ) ), this, SLOT(sendTime()) );
+	QTimer::singleShot( qMax( 500LL, 1000LL - ( t % 1000LL ) ) + 5000, this, SLOT(sendTime()) );
 }
 
 void MainWindow::responseReady()
@@ -138,7 +146,7 @@ void MainWindow::responseReady()
 
 		if( !DG.isValid() || DG.data().size() != sizeof( TimeDatagram ) )
 		{
-			qDebug() << "RECV" << DG.senderAddress() << DG.senderPort() << DG.isValid() << DG.data().size();
+			qDebug() << logtime() << "RECV" << DG.senderAddress() << DG.senderPort() << DG.isValid() << DG.data().size();
 
 			continue;
 		}
@@ -181,7 +189,7 @@ void MainWindow::responseReady()
 			HostName = SE.mName;
 		}
 
-		qDebug() << "PING" << HostName << qFromBigEndian<qint64>( TDG.mClientTimestamp );
+		qDebug() << logtime() << "PING" << HostName << qFromBigEndian<qint64>( TDG.mClientTimestamp );
 
 		// Send the response packet
 
@@ -189,19 +197,21 @@ void MainWindow::responseReady()
 
 		if( udpSocket->writeDatagram( (const char *)&TDG, sizeof( TDG ), DG.senderAddress(), DG.senderPort() ) != sizeof( TimeDatagram ) )
 		{
-			qWarning() << "Couldn't write packet";
+			qWarning() << logtime() << "Couldn't write packet";
 		}
 	}
+
+	udpSocket->flush();
 }
 
 void MainWindow::sendError( QAbstractSocket::SocketError pError )
 {
-	qWarning() << "sendError" << pError;
+	qWarning() << logtime() << "sendError" << pError;
 }
 
 void MainWindow::networkAccessibility( QNetworkAccessManager::NetworkAccessibility pNA )
 {
-	qDebug() << "networkAccessibility" << pNA;
+	qDebug() << logtime() << "networkAccessibility" << pNA;
 }
 
 void MainWindow::hostLookup( const QHostInfo &pHost )
@@ -215,12 +225,12 @@ void MainWindow::hostLookup( const QHostInfo &pHost )
 
 		if( pHost.error() != QHostInfo::NoError )
 		{
-			qDebug() << "Couldn't lookup:" << SE.mAddress.toString();
+			qDebug() << logtime() << "Couldn't lookup:" << SE.mAddress.toString();
 
 			continue;
 		}
 
-		qDebug() << "Resolved:" << SE.mAddress.toString() << "to" << pHost.hostName();
+		qDebug() << logtime() << "Resolved:" << SE.mAddress.toString() << "to" << pHost.hostName();
 
 		SE.mName = QString( "%1:%2" ).arg( pHost.hostName() ).arg( SE.mPort );
 

@@ -16,6 +16,9 @@ class TimeSync : public QObject
 public:
 	TimeSync( QObject *pParent = nullptr );
 
+private:
+	static QString logtime( void );
+
 private slots:
       void processPendingDatagrams( void );
 
@@ -27,6 +30,8 @@ private:
 	qint64			 mServerTimestamp;
 	qint64			 mClientTimestamp;
 	qint64			 mRTT;
+	QVector<qint64>	 mRTTArray;
+	QVector<qint64>	 mRTTSortedArray;
 };
 
 #endif // TIMESYNC_H
