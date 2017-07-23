@@ -32,11 +32,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    clientconsole.cpp
+    clientconsole.cpp \
+    timeserver.cpp \
+    timecast.cpp
 
 HEADERS += \
         mainwindow.h \
-    clientconsole.h
+    clientconsole.h \
+    timeserver.h \
+    timecast.h
 
 FORMS += \
         mainwindow.ui

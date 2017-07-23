@@ -7,7 +7,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
-	ui(new Ui::MainWindow), mPort( 45454 )
+	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
 
@@ -17,18 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect( &mNAM, &QNetworkAccessManager::networkAccessibleChanged, this, &MainWindow::networkAccessibility );
 
-	mUniverseTimer.start();
-
-	groupAddress = QHostAddress( "239.255.43.21" );
-
-	timer = new QTimer( this );
-
-	udpSocket = new QUdpSocket( this );
-
-	connect( timer, SIGNAL(timeout()), this, SLOT(sendTime()) );
-
-	connect( udpSocket, SIGNAL(readyRead()), this, SLOT(responseReady()) );
-	connect( udpSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(sendError(QAbstractSocket::SocketError)) );
+	connect( &mTimeServer, &TimeServer::clientResponse, this, &MainWindow::clientUpdate );
 
 	QTimer::singleShot( 1000, this, SLOT(sendTime()) );
 }
@@ -45,42 +34,32 @@ QString MainWindow::logtime()
 
 void MainWindow::sendTime()
 {
-	if( ui->mButton->isChecked() )
+	qint64				TS = mTimeServer.timestamp();
+
+	if( mNAM.networkAccessible() != QNetworkAccessManager::Accessible )
 	{
-		if( mNAM.networkAccessible() == QNetworkAccessManager::Accessible )
-		{
-			TimeDatagram		TDG;
+		QPalette Palette;
 
-			TDG.mServerTimestamp = mUniverseTimer.elapsed();
+		Palette.setColor( QPalette::Window,     Qt::red );
+		Palette.setColor( QPalette::WindowText, Qt::white );
 
-			mNetworkStatusLabel->setText( QString( "%1" ).arg( TDG.mServerTimestamp ) );
+		mNetworkStatusLabel->setPalette( Palette );
+		mNetworkStatusLabel->setAutoFillBackground( true );
+		mNetworkStatusLabel->setText( "No Network" );
+	}
+	else if( ui->mButton->isChecked() )
+	{
+		mNetworkStatusLabel->setText( QString( "%1" ).arg( TS ) );
 
-			qDebug() << logtime() << "SEND" << TDG.mServerTimestamp;
+		mTimeCast.sendTime( TS );
 
-			TDG.mServerTimestamp = qToBigEndian<qint64>( TDG.mServerTimestamp );
-			TDG.mClientTimestamp = 0;
+		QPalette Palette;
 
-			udpSocket->writeDatagram( reinterpret_cast<const char *>( &TDG ), sizeof( TDG ), groupAddress, mPort );
+		Palette.setColor( QPalette::Window,     Qt::darkGreen );
+		Palette.setColor( QPalette::WindowText, Qt::white );
 
-			QPalette Palette;
-
-			Palette.setColor( QPalette::Window,     Qt::darkGreen );
-			Palette.setColor( QPalette::WindowText, Qt::white );
-
-			mNetworkStatusLabel->setPalette( Palette );
-			mNetworkStatusLabel->setAutoFillBackground( true );
-		}
-		else
-		{
-			QPalette Palette;
-
-			Palette.setColor( QPalette::Window,     Qt::red );
-			Palette.setColor( QPalette::WindowText, Qt::white );
-
-			mNetworkStatusLabel->setPalette( Palette );
-			mNetworkStatusLabel->setAutoFillBackground( true );
-			mNetworkStatusLabel->setText( "No Network" );
-		}
+		mNetworkStatusLabel->setPalette( Palette );
+		mNetworkStatusLabel->setAutoFillBackground( true );
 	}
 	else
 	{
@@ -93,8 +72,6 @@ void MainWindow::sendTime()
 		mNetworkStatusLabel->setAutoFillBackground( true );
 		mNetworkStatusLabel->setText( "Not Enabled" );
 	}
-
-	quint64				TS = mUniverseTimer.elapsed();
 
 	for( SocketEntry &SE : mSocketEntries )
 	{
@@ -132,81 +109,7 @@ void MainWindow::sendTime()
 
 	qint64	t = QDateTime::currentMSecsSinceEpoch();
 
-	QTimer::singleShot( qMax( 500LL, 1000LL - ( t % 1000LL ) ) + 5000, this, SLOT(sendTime()) );
-}
-
-void MainWindow::responseReady()
-{
-	TimeDatagram		TDG;
-	quint64				TS = mUniverseTimer.elapsed();
-
-	while( udpSocket->hasPendingDatagrams() )
-	{
-		QNetworkDatagram	DG = udpSocket->receiveDatagram();
-
-		if( !DG.isValid() || DG.data().size() != sizeof( TimeDatagram ) )
-		{
-			qDebug() << logtime() << "RECV" << DG.senderAddress() << DG.senderPort() << DG.isValid() << DG.data().size();
-
-			continue;
-		}
-
-		memcpy( &TDG, DG.data(), sizeof( TDG ) );
-
-		QString			HostName;
-
-		// Record the client entry
-
-		bool			SocketEntryFound = false;
-
-		for( SocketEntry &SE : mSocketEntries )
-		{
-			if( SE.mAddress == DG.senderAddress() && SE.mPort == DG.senderPort() )
-			{
-				SE.mTimestamp = TS;
-
-				HostName = SE.mName;
-
-				SocketEntryFound = true;
-
-				break;
-			}
-		}
-
-		if( !SocketEntryFound )
-		{
-			SocketEntry		SE;
-
-			SE.mAddress   = DG.senderAddress();
-			SE.mPort      = DG.senderPort();
-			SE.mTimestamp = TS;
-			SE.mListItem  = 0;
-			SE.mName      = QString( "%1:%2" ).arg( SE.mAddress.toString() ).arg( SE.mPort );
-			SE.mLookupId  = QHostInfo::lookupHost( DG.senderAddress().toString(), this, SLOT(hostLookup(QHostInfo)) );
-
-			mSocketEntries << SE;
-
-			HostName = SE.mName;
-		}
-
-		qDebug() << logtime() << "PING" << HostName << qFromBigEndian<qint64>( TDG.mClientTimestamp );
-
-		// Send the response packet
-
-		TDG.mServerTimestamp = qToBigEndian<qint64>( mUniverseTimer.elapsed() );
-
-		if( udpSocket->writeDatagram( (const char *)&TDG, sizeof( TDG ), DG.senderAddress(), DG.senderPort() ) != sizeof( TimeDatagram ) )
-		{
-			qWarning() << logtime() << "Couldn't write packet";
-		}
-	}
-
-	udpSocket->flush();
-}
-
-void MainWindow::sendError( QAbstractSocket::SocketError pError )
-{
-	qWarning() << logtime() << "sendError" << pError;
+	QTimer::singleShot( qMax( 500LL, 1000LL - ( t % 1000LL ) ), this, SLOT(sendTime()) );
 }
 
 void MainWindow::networkAccessibility( QNetworkAccessManager::NetworkAccessibility pNA )
@@ -235,5 +138,38 @@ void MainWindow::hostLookup( const QHostInfo &pHost )
 		SE.mName = QString( "%1:%2" ).arg( pHost.hostName() ).arg( SE.mPort );
 
 		break;
+	}
+}
+
+void MainWindow::clientUpdate( const QHostAddress &pAddr, int pPort, qint64 pTimestamp )
+{
+	// Record the client entry
+
+	bool			SocketEntryFound = false;
+
+	for( SocketEntry &SE : mSocketEntries )
+	{
+		if( SE.mAddress == pAddr && SE.mPort == pPort )
+		{
+			SE.mTimestamp = pTimestamp;
+
+			SocketEntryFound = true;
+
+			break;
+		}
+	}
+
+	if( !SocketEntryFound )
+	{
+		SocketEntry		SE;
+
+		SE.mAddress   = pAddr;
+		SE.mPort      = pPort;
+		SE.mTimestamp = pTimestamp;
+		SE.mListItem  = 0;
+		SE.mName      = QString( "%1:%2" ).arg( SE.mAddress.toString() ).arg( SE.mPort );
+		SE.mLookupId  = QHostInfo::lookupHost( pAddr.toString(), this, SLOT(hostLookup(QHostInfo)) );
+
+		mSocketEntries << SE;
 	}
 }

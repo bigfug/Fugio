@@ -8,6 +8,8 @@
 ClientConsole::ClientConsole(QObject *parent)
 	: QObject(parent)
 {
+	fugio::fugio();
+
 	setTimer();
 }
 
@@ -22,7 +24,7 @@ void ClientConsole::timeout( void )
 {
 	fugio::GlobalInterface	*Global = fugio::fugio();
 
-	//qInfo() << "CLIENT:" << Global->timestamp() << Global->universalTimestamp();
+	qInfo() << "CLIENT:" << Global->timestamp() << Global->universalTimestamp();
 
 	setTimer();
 }

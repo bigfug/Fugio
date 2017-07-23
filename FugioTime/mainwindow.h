@@ -11,15 +11,12 @@
 #include <QHostInfo>
 #include <QLabel>
 
+#include "timecast.h"
+#include "timeserver.h"
+
 namespace Ui {
 class MainWindow;
 }
-
-typedef struct TimeDatagram
-{
-	qint64		mServerTimestamp;
-	qint64		mClientTimestamp;
-} TimeDatagram;
 
 class MainWindow : public QMainWindow
 {
@@ -35,21 +32,16 @@ private:
 private slots:
 	void sendTime( void );
 
-	void responseReady( void );
-
-	void sendError( QAbstractSocket::SocketError pError );
+//	void responseReady( void );
 
 	void networkAccessibility( QNetworkAccessManager::NetworkAccessibility pNA );
 
 	void hostLookup( const QHostInfo &pHost );
 
+	void clientUpdate( const QHostAddress &pAddr, int pPort, qint64 pTimestamp );
+
 private:
 	Ui::MainWindow			*ui;
-	int						 mPort;
-	QUdpSocket				*udpSocket;
-	QTimer					*timer;
-	QHostAddress			 groupAddress;
-	QElapsedTimer			 mUniverseTimer;
 	QNetworkAccessManager	 mNAM;
 	QLabel					*mNetworkStatusLabel;
 
@@ -64,6 +56,9 @@ private:
 	} SocketEntry;
 
 	QList<SocketEntry>		 mSocketEntries;
+
+	TimeCast				 mTimeCast;
+	TimeServer				 mTimeServer;
 };
 
 #endif // MAINWINDOW_H

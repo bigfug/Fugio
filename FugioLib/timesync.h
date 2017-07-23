@@ -2,6 +2,7 @@
 #define TIMESYNC_H
 
 #include <QUdpSocket>
+#include <QElapsedTimer>
 
 typedef struct TimeDatagram
 {
@@ -20,9 +21,11 @@ private:
 	static QString logtime( void );
 
 private slots:
-      void processPendingDatagrams( void );
+	void processPendingDatagrams( void );
 
-	  void responseReady( void );
+	void responseReady( void );
+
+	void sendPing( void );
 
 private:
 	QUdpSocket		*mSocket;
@@ -32,6 +35,8 @@ private:
 	qint64			 mRTT;
 	QVector<qint64>	 mRTTArray;
 	QVector<qint64>	 mRTTSortedArray;
+	QHostAddress	 mServerAddress;
+	quint16			 mServerPort;
 };
 
 #endif // TIMESYNC_H
