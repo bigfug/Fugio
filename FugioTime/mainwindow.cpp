@@ -80,9 +80,9 @@ void MainWindow::sendTime()
 			SE.mListItem->setText( SE.mName );
 		}
 
-		if( SE.mListItem )
+		if( TS - SE.mTimestamp >= 10000 )
 		{
-			if( TS - SE.mTimestamp >= 10000 )
+			if( SE.mListItem )
 			{
 				ui->mClientList->removeItemWidget( SE.mListItem );
 
@@ -90,20 +90,20 @@ void MainWindow::sendTime()
 
 				SE.mListItem = 0;
 			}
-			else if( TS - SE.mTimestamp >= 5000 )
-			{
-				SE.mListItem->setForeground( Qt::gray );
-			}
-			else if( SE.mListItem )
-			{
-				SE.mListItem->setForeground( Qt::black );
-			}
 		}
-		else
+		else if( !SE.mListItem )
 		{
 			SE.mListItem = new QListWidgetItem( SE.mName );
 
 			ui->mClientList->addItem( SE.mListItem );
+		}
+		else if( TS - SE.mTimestamp >= 5000 )
+		{
+			SE.mListItem->setForeground( Qt::gray );
+		}
+		else if( SE.mListItem )
+		{
+			SE.mListItem->setForeground( Qt::black );
 		}
 	}
 
@@ -144,6 +144,8 @@ void MainWindow::hostLookup( const QHostInfo &pHost )
 void MainWindow::clientUpdate( const QHostAddress &pAddr, int pPort, qint64 pTimestamp )
 {
 	// Record the client entry
+
+	pTimestamp = mTimeServer.timestamp();
 
 	bool			SocketEntryFound = false;
 
