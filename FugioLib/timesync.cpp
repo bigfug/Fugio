@@ -141,3 +141,9 @@ void TimeSync::sendPing()
 
 	QTimer::singleShot( qMax( 2500LL, 5000LL - ( QDateTime::currentMSecsSinceEpoch() % 5000LL ) ), this, SLOT(sendPing()) );
 }
+
+void TimeSync::setServer( const QString &pServer, int pPort )
+{
+	mServerAddress = pServer;
+	mServerPort    = pPort;
+}

@@ -66,6 +66,11 @@ public:
 		return( mGlobalTimer.elapsed() );
 	}
 
+	virtual void setUniversalTimeServer( const QString &pString, int pPort ) Q_DECL_OVERRIDE
+	{
+		mTimeSync->setServer( pString, pPort );
+	}
+
 	virtual qint64 universalTimestamp( void ) const Q_DECL_OVERRIDE
 	{
 		return( mUniversalTimer.elapsed() + mUniversalOffset );

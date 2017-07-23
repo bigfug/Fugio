@@ -27,6 +27,9 @@ private slots:
 
 	void sendPing( void );
 
+public slots:
+	void setServer( const QString &pServer, int pPort = 45456 );
+
 private:
 	QUdpSocket		*mSocket;
 	QUdpSocket		*mResponseSocket;

@@ -95,6 +95,8 @@ public:
 
 	virtual void clear( void ) = 0;
 
+	virtual void setUniversalTimeServer( const QString &pString, int pPort ) = 0;
+
 	virtual qint64 timestamp( void ) const = 0;				// arbitrary global timestamp that always increases (only valid on local machine)
 	virtual qint64 universalTimestamp( void ) const = 0;	// can't be compared with timestamp(), can jump forward and back
 
