@@ -154,6 +154,13 @@ void GlobalPrivate::initialisePlugins()
 	qDebug() << tr( "Nodes registered: %1" ).arg( mNodeMap.size() );
 }
 
+void GlobalPrivate::setUniversalTimeServer( const QString &pString, int pPort )
+{
+	QHostInfo::lookupHost( pString, this, SLOT(universalServerLookup(QHostInfo)) );
+
+	mTimeSyncPort = pPort;
+}
+
 void GlobalPrivate::loadPlugins( QDir pDir )
 {
 #if defined( Q_OS_MACX )
@@ -550,6 +557,20 @@ void GlobalPrivate::timeout( void )
 #if !defined( GLOBAL_THREADED )
 	QTimer::singleShot( 1, this, SLOT(timeout()) );
 #endif
+}
+
+void GlobalPrivate::universalServerLookup( const QHostInfo &pHost )
+{
+	if( pHost.error() != QHostInfo::NoError )
+	{
+		qWarning() << "Time server lookup failed:" << pHost.errorString();
+
+		return;
+	}
+
+	qInfo() << "Time server address:" << pHost.hostName() << pHost.addresses().first().toString();
+
+	mTimeSync->setServer( pHost.addresses().first().toString(), mTimeSyncPort );
 }
 
 QUuid GlobalPrivate::findNodeByClass( const QString &pClassName ) const

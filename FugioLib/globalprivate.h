@@ -11,6 +11,7 @@
 #include <QCommandLineParser>
 #include <QThread>
 #include <QApplication>
+#include <QHostInfo>
 
 #include <fugio/global.h>
 
@@ -66,10 +67,7 @@ public:
 		return( mGlobalTimer.elapsed() );
 	}
 
-	virtual void setUniversalTimeServer( const QString &pString, int pPort ) Q_DECL_OVERRIDE
-	{
-		mTimeSync->setServer( pString, pPort );
-	}
+	virtual void setUniversalTimeServer( const QString &pString, int pPort ) Q_DECL_OVERRIDE;
 
 	virtual qint64 universalTimestamp( void ) const Q_DECL_OVERRIDE
 	{
@@ -230,6 +228,8 @@ signals:
 private slots:
 	void timeout( void );
 
+	void universalServerLookup( const QHostInfo &pHost );
+
 private:
 	static GlobalPrivate			*mInstance;
 
@@ -269,6 +269,7 @@ private:
 #endif
 
 	TimeSync						*mTimeSync;
+	int								 mTimeSyncPort;
 };
 
 #if defined( GLOBAL_THREADED )
