@@ -11,9 +11,8 @@ class ClientConsole : public QObject
 public:
 	explicit ClientConsole(QObject *parent = nullptr);
 
+private:
 	void setTimer( void );
-
-signals:
 
 private slots:
 	void timeout( void );

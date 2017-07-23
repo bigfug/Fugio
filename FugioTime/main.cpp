@@ -5,6 +5,8 @@
 
 #include "clientconsole.h"
 
+#include <fugio/global_interface.h>
+
 int main( int argc, char *argv[] )
 {
 	bool gui = true;
@@ -34,7 +36,10 @@ int main( int argc, char *argv[] )
 	// A boolean option with a single name (--console)
 	QCommandLineOption OptionConsole( "console", QCoreApplication::translate( "main", "Console only" ) );
 
+	QCommandLineOption OptionServer( QStringList() << "s" << "server", "Server <address>.", "address" );
+
 	Parser.addOption( OptionConsole );
+	Parser.addOption( OptionServer );
 
 	Parser.process( *QCoreApplication::instance() );
 
@@ -48,6 +53,13 @@ int main( int argc, char *argv[] )
 	}
 
 	ClientConsole	c;
+
+	if( Parser.isSet( OptionServer ) )
+	{
+		fugio::GlobalInterface	*Global = fugio::fugio();
+
+		Global->setUniversalTimeServer( Parser.value( OptionServer ), 45456 );
+	}
 
 	return( a->exec() );
 }
