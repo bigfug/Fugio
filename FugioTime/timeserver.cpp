@@ -47,6 +47,7 @@ void TimeServer::responseReady( void )
 		memcpy( &TDG, DG.data(), sizeof( TDG ) );
 
 		qint64		ServerTimestamp = mUniverseTimer.elapsed();
+		qint64		RTT             = ServerTimestamp - qFromBigEndian<qint64>( TDG.mServerTimestamp );
 
 //		qDebug() << logtime() << "Received PING from" << DG.senderAddress().toString() << "RC:" << qFromBigEndian<qint64>( TDG.mClientTimestamp ) << "ST:" << ServerTimestamp;
 
@@ -61,6 +62,6 @@ void TimeServer::responseReady( void )
 			qWarning() << logtime() << "Couldn't write packet";
 		}
 
-		emit clientResponse( DG.senderAddress(), DG.senderPort(), ServerTimestamp );
+		emit clientResponse( DG.senderAddress(), DG.senderPort(), ServerTimestamp, RTT );
 	}
 }

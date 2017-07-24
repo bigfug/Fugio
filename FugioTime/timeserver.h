@@ -30,7 +30,7 @@ public:
 	}
 
 signals:
-	void clientResponse( const QHostAddress &pAddr, int pPort, qint64 pTimestamp );
+	void clientResponse( const QHostAddress &pAddr, int pPort, qint64 pTimestamp, qint64 pRTT );
 
 private slots:
 	void socketError( QAbstractSocket::SocketError pError );

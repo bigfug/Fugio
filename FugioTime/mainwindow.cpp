@@ -75,9 +75,11 @@ void MainWindow::sendTime()
 
 	for( SocketEntry &SE : mSocketEntries )
 	{
-		if( SE.mListItem && SE.mListItem->text() != SE.mName )
+		QString		Label = QString( "%1 - RTT min: %2 avg: %3 max: %4" ).arg( SE.mName ).arg( SE.mRTTMin ).arg( SE.mRTTAvg ).arg( SE.mRTTMax );
+
+		if( SE.mListItem && SE.mListItem->text() != Label )
 		{
-			SE.mListItem->setText( SE.mName );
+			SE.mListItem->setText( Label );
 		}
 
 		if( TS - SE.mTimestamp >= 10000 )
@@ -93,7 +95,7 @@ void MainWindow::sendTime()
 		}
 		else if( !SE.mListItem )
 		{
-			SE.mListItem = new QListWidgetItem( SE.mName );
+			SE.mListItem = new QListWidgetItem( Label );
 
 			ui->mClientList->addItem( SE.mListItem );
 		}
@@ -141,7 +143,7 @@ void MainWindow::hostLookup( const QHostInfo &pHost )
 	}
 }
 
-void MainWindow::clientUpdate( const QHostAddress &pAddr, int pPort, qint64 pTimestamp )
+void MainWindow::clientUpdate( const QHostAddress &pAddr, int pPort, qint64 pTimestamp, qint64 pRTT )
 {
 	// Record the client entry
 
@@ -154,6 +156,21 @@ void MainWindow::clientUpdate( const QHostAddress &pAddr, int pPort, qint64 pTim
 		if( SE.mAddress == pAddr && SE.mPort == pPort )
 		{
 			SE.mTimestamp = pTimestamp;
+
+			SE.mRTTEnt.append( pRTT );
+
+			if( SE.mRTTEnt.size() > 15 )
+			{
+				SE.mRTTEnt.removeFirst();
+			}
+
+			QList<qint64>	RTTSrt = SE.mRTTEnt;
+
+			std::sort( RTTSrt.begin(), RTTSrt.end() );
+
+			SE.mRTTAvg = RTTSrt[ RTTSrt.size() / 2 ];
+			SE.mRTTMin = RTTSrt.first();
+			SE.mRTTMax = RTTSrt.last();
 
 			SocketEntryFound = true;
 
@@ -171,6 +188,11 @@ void MainWindow::clientUpdate( const QHostAddress &pAddr, int pPort, qint64 pTim
 		SE.mListItem  = 0;
 		SE.mName      = QString( "%1:%2" ).arg( SE.mAddress.toString() ).arg( SE.mPort );
 		SE.mLookupId  = QHostInfo::lookupHost( pAddr.toString(), this, SLOT(hostLookup(QHostInfo)) );
+		SE.mRTTMin    = pRTT;
+		SE.mRTTMax    = pRTT;
+		SE.mRTTAvg    = pRTT;
+
+		SE.mRTTEnt << pRTT;
 
 		mSocketEntries << SE;
 	}

@@ -38,7 +38,7 @@ private slots:
 
 	void hostLookup( const QHostInfo &pHost );
 
-	void clientUpdate( const QHostAddress &pAddr, int pPort, qint64 pTimestamp );
+	void clientUpdate( const QHostAddress &pAddr, int pPort, qint64 pTimestamp, qint64 pRTT );
 
 private:
 	Ui::MainWindow			*ui;
@@ -53,6 +53,8 @@ private:
 		QListWidgetItem		*mListItem;
 		QString				 mName;
 		int					 mLookupId;
+		qint64				 mRTTMin, mRTTMax, mRTTAvg;
+		QList<qint64>		 mRTTEnt;
 	} SocketEntry;
 
 	QList<SocketEntry>		 mSocketEntries;

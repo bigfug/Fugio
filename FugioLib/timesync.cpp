@@ -125,17 +125,18 @@ void TimeSync::sendPing()
 	if( !mServerAddress.isNull() )
 	{
 		mClientTimestamp = GP->timestamp();
+		mServerTimestamp = GP->universalTimestamp();
 
 //		qDebug() << logtime() << "Sending PING to" << mServerAddress << mServerPort << "T:" << 0 << "LC:" << mClientTimestamp;
 
 		TimeDatagram	 TDG;
 
-		TDG.mServerTimestamp = 0;
+		TDG.mServerTimestamp = qToBigEndian<qint64>( mServerTimestamp );
 		TDG.mClientTimestamp = qToBigEndian<qint64>( mClientTimestamp );
 
 		if( mResponseSocket->writeDatagram( (const char *)&TDG, sizeof( TDG ), mServerAddress, mServerPort ) == sizeof( TDG ) )
 		{
-			mServerTimestamp = 0;
+//			mServerTimestamp = 0;
 		}
 	}
 
