@@ -61,6 +61,8 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 	mCommandLineParser.addVersionOption();
 
 	mTimeSync = new TimeSync( this );
+
+	connect( this, SIGNAL(frameEnd()), &mUniverse, SLOT(cast()) );
 }
 
 GlobalPrivate::~GlobalPrivate( void )
@@ -538,6 +540,8 @@ void GlobalPrivate::timeout( void )
 
 		emit frameEnd();
 		emit frameEnd( TimeStamp );
+
+		mUniverse.clearData( universalTimestamp() );
 
 		mFrameCount++;
 	}

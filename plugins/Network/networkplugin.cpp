@@ -36,6 +36,9 @@
 #include "packetencodenode.h"
 #include "packetdecodenode.h"
 
+#include "universesendnode.h"
+#include "universereceivenode.h"
+
 QList<QUuid>	NodeControlBase::PID_UUID;
 
 NetworkPlugin *NetworkPlugin::mInstance = 0;
@@ -55,6 +58,8 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "UDP Send Raw", "Network", NID_UDP_SEND_RAW, &UDPSendRawNode::staticMetaObject ),
 	ClassEntry( "SLIP Encode", "Network", NID_SLIP_ENCODE, &SLIPEncodeNode::staticMetaObject ),
 	ClassEntry( "SLIP Decode", "Network", NID_SLIP_DECODE, &SLIPDecodeNode::staticMetaObject ),
+	ClassEntry( "Universe Receieve", "Network", NID_UNIVERSE_SEND, &UniverseReceiveNode::staticMetaObject ),
+	ClassEntry( "Universe Send", "Network", NID_UNIVERSE_RECEIVE, &UniverseSendNode::staticMetaObject ),
 	ClassEntry( "WebSocket Data Server", "Network", NID_WEBSOCKET_DATA_SERVER, &WebSocketDataServerNode::staticMetaObject ),
 	ClassEntry( "WebSocket Client", "Network", NID_WEBSOCKET_CLIENT, &WebSocketClientNode::staticMetaObject ),
 	ClassEntry()

@@ -22,6 +22,7 @@
 #include <fugio/global_signals.h>
 
 #include "timesync.h"
+#include "universe.h"
 
 class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public fugio::GlobalInterface
 {
@@ -94,6 +95,21 @@ public:
 #else
 		return( QApplication::instance()->thread() );
 #endif
+	}
+
+	virtual void sendToUniverse( qint64 pTimeStamp, const QUuid &pUuid, const QString &pName, const QUuid &pType, const QByteArray &pByteArray ) Q_DECL_OVERRIDE
+	{
+		mUniverse.addData( pTimeStamp, pUuid, pName, pType, pByteArray );
+	}
+
+	virtual bool universeData( qint64 pTimeStamp, const QUuid &pUuid, QString &pName, QUuid &pType, QByteArray &pByteArray ) const Q_DECL_OVERRIDE
+	{
+		return( mUniverse.data( pTimeStamp, pUuid, pName, pType, pByteArray ) );
+	}
+
+	virtual QList<UniverseEntry> universeEntries( void ) const Q_DECL_OVERRIDE
+	{
+		return( mUniverse.entries() );
 	}
 
 	//-------------------------------------------------------------------------
@@ -270,6 +286,8 @@ private:
 
 	TimeSync						*mTimeSync;
 	int								 mTimeSyncPort;
+
+	Universe						 mUniverse;
 };
 
 #if defined( GLOBAL_THREADED )
