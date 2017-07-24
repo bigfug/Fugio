@@ -1474,6 +1474,10 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	glGetIntegerv( GL_VIEWPORT, Viewport );
 
+	GLint		FBOCur;
+
+	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
+
 	if( mStartTime == -1 )
 	{
 		mStartTime = pTimeStamp;
@@ -1595,7 +1599,7 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 			if( PassData.mFBO )
 			{
-				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+				glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
 
 				glViewport( Viewport[ 0 ], Viewport[ 1 ], Viewport[ 2 ], Viewport[ 3 ] );
 			}
@@ -1636,5 +1640,3 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		glBindVertexArray( 0 );
 	}
 }
-
-
