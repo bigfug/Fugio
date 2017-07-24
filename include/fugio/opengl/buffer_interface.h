@@ -18,9 +18,9 @@ public:
 
 	virtual void clear( void ) = 0;
 
-	virtual inline GLuint buffer( void ) const = 0;
+	virtual GLuint buffer( void ) const = 0;
 
-	virtual inline GLuint target( void ) const = 0;
+	virtual GLuint target( void ) const = 0;
 
 	virtual int count( void ) const = 0;
 

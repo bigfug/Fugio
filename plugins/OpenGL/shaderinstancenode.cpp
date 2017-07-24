@@ -374,7 +374,9 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 	glUseProgram( 0 );
 
+#if defined( glDrawBuffer )
 	glDrawBuffer( GL_BACK );
+#endif
 
 	//-------------------------------------------------------------------------
 
@@ -575,7 +577,7 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 #endif
 
 			case GL_TEXTURE_2D:
-#if !defined( GL_ES_VERSION_2_0 )
+#if defined( GL_TEXTURE_RECTANGLE )
 			case GL_TEXTURE_RECTANGLE:
 #endif
 				if( !OutTex->isDepthTexture() )
@@ -586,7 +588,7 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 				}
 				else
 				{
-					glFramebufferTexture( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, OutTex->dstTexId(), 0 );
+					glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, OutTex->target(), OutTex->dstTexId(), 0 );
 
 					Buffers.append( GL_DEPTH_ATTACHMENT );
 				}
@@ -595,19 +597,19 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 			case GL_TEXTURE_CUBE_MAP:
 				if( !OutTex->isDepthTexture() )
 				{
-					glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->dstTexId(), 0 );
+					glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
 
 					Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
 				}
 				else
 				{
-					glFramebufferTexture( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, OutTex->dstTexId(), 0 );
+					glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, OutTex->target(), OutTex->dstTexId(), 0 );
 
 					Buffers.append( GL_DEPTH_ATTACHMENT );
 				}
 				break;
 
-#if !defined( GL_ES_VERSION_2_0 )
+#if defined( glFramebufferTexture3D )
 			case GL_TEXTURE_3D:
 				if( true )
 				{

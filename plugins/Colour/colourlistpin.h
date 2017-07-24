@@ -93,7 +93,7 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::SerialiseInterface
 
-	virtual void serialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE
+	virtual void serialise( QDataStream &pDataStream ) const Q_DECL_OVERRIDE
 	{
 		pDataStream << mValue;
 	}

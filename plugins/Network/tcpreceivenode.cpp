@@ -114,6 +114,8 @@ void TCPReceiveNode::serverRead()
 				S->deserialise( *D );
 
 				pinUpdated( P );
+
+//				pinUpdated( P, fugio::fugio()->universalToGlobal( T ) );
 			}
 
 			mNode->setStatus( fugio::NodeInterface::Initialised );

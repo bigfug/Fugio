@@ -2,6 +2,8 @@
 
 #include "openglplugin.h"
 
+#include <QCoreApplication>
+
 ContextNode::ContextNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
@@ -14,31 +16,66 @@ bool ContextNode::initialise()
 		return( false );
 	}
 
-	if( !mOutput )
+	const bool isGuiThread = QThread::currentThread() == QCoreApplication::instance()->thread();
+
+	if( !isGuiThread )
 	{
-		if( ( mOutput = DeviceOpenGLOutput::newDevice( true ) ) == nullptr )
-		{
-			return( false );
-		}
+		qDebug() << "!isGuiThread()";
 
-		mOutput->setCurrentNode( mNode );
-
-		mNode->context()->nodeInitialised();
+		return( false );
 	}
+
+	if( !mSurface.isValid() )
+	{
+		mSurface.create();
+	}
+
+	if( !mSurface.isValid() )
+	{
+		qWarning() << "!mSurface.isValid()";
+
+		return( false );
+	}
+
+	if( !mContext.create() )
+	{
+		qWarning() << "!mContext.create()";
+
+		return( false );
+	}
+
+	if( !mContext.makeCurrent( &mSurface ) )
+	{
+		qWarning() << "!mContext.makeCurrent()";
+
+		return( false );
+	}
+
+	QOpenGLContext	*Context = QOpenGLContext::currentContext();
+
+	if( !Context )
+	{
+		qWarning() << "!Context";
+
+		return( false );
+	}
+
+	OpenGLPlugin::initGLEW();
 
 	if( !OpenGLPlugin::hasContextStatic() )
 	{
 		return( false );
 	}
 
-	mOutput->hide();
-
 	return( true );
 }
 
 bool ContextNode::deinitialise()
 {
-	mOutput.clear();
+	if( !mSurface.isValid() )
+	{
+		mSurface.destroy();
+	}
 
 	return( NodeControlBase::deinitialise() );
 }

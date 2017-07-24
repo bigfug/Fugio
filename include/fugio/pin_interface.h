@@ -61,6 +61,8 @@ public:
 
 	virtual qint64 updated( void ) const = 0;
 
+	virtual qint64 updatedGlobal( void ) const = 0;		// when the update actually took place in global time
+
 	virtual bool isConnected( void ) const = 0;
 
 	virtual bool isConnectedToActiveNode( void ) const = 0;

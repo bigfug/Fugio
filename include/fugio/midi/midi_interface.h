@@ -72,6 +72,8 @@ public:
 
 FUGIO_NAMESPACE_END
 
+Q_DECLARE_METATYPE( fugio::MidiEvent )
+
 Q_DECLARE_INTERFACE( fugio::MidiInterface, "com.bigfug.fugio.midi/1.0" )
 
 #endif // MIDI_INTERFACE_H

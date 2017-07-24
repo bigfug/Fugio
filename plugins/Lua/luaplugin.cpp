@@ -26,6 +26,8 @@
 #include "luaexnode.h"
 #include "luaarray.h"
 
+#include "syntaxhighlighterlua.h"
+
 using namespace fugio;
 
 QList<QUuid>	NodeControlBase::PID_UUID;
@@ -75,7 +77,17 @@ void LuaPlugin::registerNodeToState( NodeInterface *N, lua_State *L ) const
 
 PluginInterface::InitResult LuaPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
-	Q_UNUSED( pLastChance )
+	fugio::SyntaxHighlighterInterface	*SyntaxHighlighter = qobject_cast<fugio::SyntaxHighlighterInterface *>( pApp->findInterface( IID_SYNTAX_HIGHLIGHTER ) );
+
+	if( !SyntaxHighlighter && !pLastChance )
+	{
+		return( INIT_DEFER );
+	}
+
+	if( SyntaxHighlighter )
+	{
+		SyntaxHighlighter->registerSyntaxHighlighter( SYNTAX_HIGHLIGHTER_LUA, QStringLiteral( "Lua" ), this );
+	}
 
 	mApp = pApp;
 
@@ -108,6 +120,13 @@ void LuaPlugin::deinitialise( void )
 	mApp->unregisterPinClasses( PinClasses );
 
 	mApp->unregisterNodeClasses( NodeClasses );
+
+	fugio::SyntaxHighlighterInterface	*SyntaxHighlighter = qobject_cast<fugio::SyntaxHighlighterInterface *>( mApp->findInterface( IID_SYNTAX_HIGHLIGHTER ) );
+
+	if( SyntaxHighlighter )
+	{
+		SyntaxHighlighter->unregisterSyntaxHighlighter( SYNTAX_HIGHLIGHTER_LUA );
+	}
 
 	mApp = 0;
 }
@@ -487,3 +506,13 @@ QVariant LuaPlugin::popVariant( lua_State *L, int idx )
 }
 
 #endif
+
+SyntaxHighlighterInstanceInterface *LuaPlugin::syntaxHighlighterInstance( QUuid pUuid ) const
+{
+	if( pUuid == SYNTAX_HIGHLIGHTER_LUA )
+	{
+		return( new SyntaxHighlighterLua( LuaPlugin::instance() ) );
+	}
+
+	return( nullptr );
+}

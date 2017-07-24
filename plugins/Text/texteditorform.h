@@ -3,11 +3,13 @@
 
 #include <QWidget>
 #include "codeeditor.h"
-#include <fugio/text/syntax_highlighter_interface.h>
+#include <fugio/text/syntax_highlighter_instance_interface.h>
 
 namespace Ui {
 class TextEditorForm;
 }
+
+#include "texteditornode.h"
 
 class TextEditorForm : public QWidget
 {
@@ -20,10 +22,12 @@ public:
 
 	QPlainTextEdit *textEdit( void );
 
-	void setHighlighter( fugio::SyntaxHighlighterInterface *pHighlighter );
+	void setSyntaxErrors( QList<fugio::SyntaxError> pSyntaxErrors );
 
 signals:
 	void updateText( void );
+
+	void syntaxChanged( TextEditorNode::HighlighterType pHighlighterType, QUuid pUuid );
 
 public slots:
 	void errorsUpdated( void );
@@ -41,10 +45,16 @@ private slots:
 
 	void cursorPositionChanged( void );
 
+	void setSyntaxNone( void );
+
+	void setSyntaxDefault( void );
+
+	void setSyntax( const QUuid &pUuid );
+
 private:
-	Ui::TextEditorForm						*ui;
-	fugio::SyntaxHighlighterInterface		*mHighlighter;
-	QString									 mFileName;
+	Ui::TextEditorForm								*ui;
+	QString											 mFileName;
+	QList<fugio::SyntaxError>						 mSyntaxErrors;
 };
 
 #endif // TEXTEDITORFORM_H

@@ -25,7 +25,7 @@ public:
 	static void devicePacketStart( qint64 pTimeStamp );
 	static void devicePacketEnd( void );
 
-	static QSharedPointer<DeviceOpenGLOutput> newDevice( bool pContextOnly );
+	static QSharedPointer<DeviceOpenGLOutput> newDevice( void );
 
 protected:
 	explicit DeviceOpenGLOutput( void );

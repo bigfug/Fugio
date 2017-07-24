@@ -42,6 +42,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>		 mPinInputFrequency;
 	QSharedPointer<fugio::PinInterface>		 mPinInputVolume;
 	QSharedPointer<fugio::PinInterface>		 mPinInputOffset;
+	QSharedPointer<fugio::PinInterface>		 mPinInputBias;
 
 	QSharedPointer<fugio::PinInterface>		 mPinOutputValue;
 	fugio::VariantInterface					*mValOutputValue;
@@ -53,6 +54,7 @@ protected:
 	double									 mVolume;
 	double									 mOffset;
 	double									 mPhase;
+	double									 mBias;
 };
 
 

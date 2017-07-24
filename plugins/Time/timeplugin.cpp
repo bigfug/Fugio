@@ -20,8 +20,11 @@
 #include "timenode.h"
 #include "datenode.h"
 #include "playheadframesnode.h"
+#include "universetimenode.h"
 
 #include "inertianode.h"
+
+TimePlugin		*TimePlugin::mInstance = nullptr;
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
@@ -38,6 +41,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Playhead Control",	"Time", NID_PLAYHEAD_CONTROL, &PlayheadControlNode::staticMetaObject ),
 	ClassEntry( "Playhead Frames",	"Time", NID_PLAYHEAD_FRAMES, &PlayheadFramesNode::staticMetaObject ),
 	ClassEntry( "Time",				"Time", NID_TIME, &TimeNode::staticMetaObject ),
+	ClassEntry( "Universe Time",	"Time", NID_UNIVERSE_TIME, &UniverseTimeNode::staticMetaObject ),
 	ClassEntry()
 };
 
@@ -48,6 +52,8 @@ ClassEntry PinClasses[] =
 
 TimePlugin::TimePlugin() : mApp( 0 )
 {
+	mInstance = this;
+
 	//-------------------------------------------------------------------------
 	// Install translator
 

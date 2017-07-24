@@ -36,7 +36,12 @@ SOURCES += networkplugin.cpp \
 	websocketdataservernode.cpp \
 	cobsdecodenode.cpp \
 	cobsencodenode.cpp \
-	websocketclientnode.cpp
+	websocketclientnode.cpp \
+	packetencodenode.cpp \
+	crc32.cpp \
+	packetdecodenode.cpp \
+    universesendnode.cpp \
+    universereceivenode.cpp
 
 HEADERS += networkplugin.h\
 	../../include/fugio/network/uuid.h \
@@ -54,7 +59,12 @@ HEADERS += networkplugin.h\
 	websocketdataservernode.h \
 	cobsdecodenode.h \
 	cobsencodenode.h \
-	websocketclientnode.h
+	websocketclientnode.h \
+	packetencodenode.h \
+	crc32.h \
+	packetdecodenode.h \
+    universesendnode.h \
+    universereceivenode.h
 
 RESOURCES += \
     resources.qrc

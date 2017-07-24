@@ -1226,19 +1226,35 @@ void ISFNode::renderImports()
 				switch( ImportImage.format() )
 				{
 					case QImage::Format_ARGB32:
+#if defined( GL_BGRA )
 						glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+#else
+						glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+#endif
 						break;
 
 					case QImage::Format_RGB888:
+#if defined( GL_BGR )
 						glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, ImportImage.width(), ImportImage.height(), 0, GL_BGR, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+#else
+						glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, ImportImage.width(), ImportImage.height(), 0, GL_RGB, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+#endif
 						break;
 
 					case QImage::Format_RGBA8888:
+#if defined( GL_BGRA )
 						glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+#else
+						glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, ImportImage.constBits() );
+#endif
 						break;
 
 					default:
+#if defined( GL_BGRA )
 						glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr );
+#else
+						glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, ImportImage.width(), ImportImage.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr );
+#endif
 						break;
 				}
 
@@ -1283,7 +1299,7 @@ void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 			{
 				glBindFramebuffer( GL_FRAMEBUFFER, PassData.mFBO );
 
-				glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, 0, 0 );
+				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0 );
 
 				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
@@ -1327,7 +1343,7 @@ void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 
 		glBindFramebuffer( GL_FRAMEBUFFER, PassData.mFBO );
 
-		glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, PassData.mTextureId, 0 );
+		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, PassData.mTextureId, 0 );
 
 		GLenum DrawBuffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 
@@ -1408,15 +1424,15 @@ int ISFNode::calculateValue( int pValue, const QSize &pSize, QString pExpression
 		switch( InpDat.mType )
 		{
 			case BOOL:
-				VarMap.insert( QString( it.key() ).prepend( 'isf_' ).toStdString(), variant( P ).toBool() );
+				VarMap.insert( QString( it.key() ).prepend( "isf_" ).toStdString(), variant( P ).toBool() );
 				break;
 
 			case LONG:
-				VarMap.insert( QString( it.key() ).prepend( 'isf_' ).toStdString(), variant( P ).toInt() );
+				VarMap.insert( QString( it.key() ).prepend( "isf_" ).toStdString(), variant( P ).toInt() );
 				break;
 
 			case FLOAT:
-				VarMap.insert( QString( it.key() ).prepend( 'isf_' ).toStdString(), variant( P ).toFloat() );
+				VarMap.insert( QString( it.key() ).prepend( "isf_" ).toStdString(), variant( P ).toFloat() );
 				break;
 
 			default:
@@ -1463,7 +1479,7 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		mStartTime = pTimeStamp;
 	}
 
-	if( !mVAO && GLEW_ARB_vertex_array_object )
+	if( !mVAO )
 	{
 		glGenVertexArrays( 1, &mVAO );
 	}
@@ -1473,7 +1489,7 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		glBindVertexArray( mVAO );
 	}
 
-	if( !mBuffer && GLEW_VERSION_1_5 )
+	if( !mBuffer )
 	{
 		GLfloat		Verticies[][ 2 ] = {
 			{ -1,  1 },

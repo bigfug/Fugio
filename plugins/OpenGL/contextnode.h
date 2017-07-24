@@ -3,6 +3,8 @@
 
 #include "opengl_includes.h"
 
+#include <QOffscreenSurface>
+
 #include <fugio/nodecontrolbase.h>
 
 #if defined( Q_OS_RASPBERRY_PI )
@@ -34,7 +36,8 @@ public:
 	virtual bool deinitialise( void ) Q_DECL_OVERRIDE;
 
 private:
-	QSharedPointer<DeviceOpenGLOutput>	 mOutput;
+	QOffscreenSurface					 mSurface;
+	QOpenGLContext						 mContext;
 };
 
 

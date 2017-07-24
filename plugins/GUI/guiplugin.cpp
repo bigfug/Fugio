@@ -69,6 +69,10 @@ GuiPlugin::GuiPlugin( void )
 	{
 		qApp->installTranslator( &Translator );
 	}
+
+	//-------------------------------------------------------------------------
+
+	KeyboardPin::registerMetaType();
 }
 
 GuiPlugin::~GuiPlugin( void )

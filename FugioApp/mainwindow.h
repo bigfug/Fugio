@@ -181,6 +181,8 @@ private slots:
 
 	void on_actionImport_triggered();
 
+	void on_actionSave_Patch_Image_triggered();
+
 private:
 	Ui::MainWindow								*ui;
 

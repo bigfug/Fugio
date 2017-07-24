@@ -31,7 +31,7 @@
 GlobalPrivate *GlobalPrivate::mInstance = 0;
 
 GlobalPrivate::GlobalPrivate( QObject * ) :
-	GlobalSignals( this ), mPause( false )
+	GlobalSignals( this ), mGlobalOffset( 0 ), mUniversalOffset( 0 ), mPause( false )
 {
 	//-------------------------------------------------------------------------
 	// Install translator
@@ -45,15 +45,25 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 
 	//-------------------------------------------------------------------------
 
+#if defined( GLOBAL_THREADED )
+	mGlobalThread = new GlobalThread( this );
+#endif
+
 	mGlobalTimer.start();
 
 	qDebug() << "Global Timer Monotonic:" << mGlobalTimer.isMonotonic();
+
+	updateUniversalTimestamp( 0 );
 
 	mLastTime   = 0;
 	mFrameCount = 0;
 
 	mCommandLineParser.addHelpOption();
 	mCommandLineParser.addVersionOption();
+
+	mTimeSync = new TimeSync( this );
+
+	connect( this, SIGNAL(frameEnd()), &mUniverse, SLOT(cast()) );
 }
 
 GlobalPrivate::~GlobalPrivate( void )
@@ -130,7 +140,7 @@ void GlobalPrivate::initialisePlugins()
 			i++;
 		}
 
-		if( !LastChance )
+		if( !ResCnt && !LastChance )
 		{
 			ResCnt++;
 
@@ -145,6 +155,13 @@ void GlobalPrivate::initialisePlugins()
 	qDebug() << tr( "Plugins loaded: %1" ).arg( mPluginInstances.size() );
 
 	qDebug() << tr( "Nodes registered: %1" ).arg( mNodeMap.size() );
+}
+
+void GlobalPrivate::setUniversalTimeServer( const QString &pString, int pPort )
+{
+	QHostInfo::lookupHost( pString, this, SLOT(universalServerLookup(QHostInfo)) );
+
+	mTimeSyncPort = pPort;
 }
 
 void GlobalPrivate::loadPlugins( QDir pDir )
@@ -525,6 +542,8 @@ void GlobalPrivate::timeout( void )
 		emit frameEnd();
 		emit frameEnd( TimeStamp );
 
+		mUniverse.clearData( universalTimestamp() );
+
 		mFrameCount++;
 	}
 
@@ -545,17 +564,19 @@ void GlobalPrivate::timeout( void )
 #endif
 }
 
-#if defined( GLOBAL_THREADED )
-
-void GlobalPrivate::run()
+void GlobalPrivate::universalServerLookup( const QHostInfo &pHost )
 {
-	forever
+	if( pHost.error() != QHostInfo::NoError )
 	{
-		timeout();
-	}
-}
+		qWarning() << "Time server lookup failed:" << pHost.errorString();
 
-#endif
+		return;
+	}
+
+	qInfo() << "Time server address:" << pHost.hostName() << pHost.addresses().first().toString();
+
+	mTimeSync->setServer( pHost.addresses().first().toString(), mTimeSyncPort );
+}
 
 QUuid GlobalPrivate::findNodeByClass( const QString &pClassName ) const
 {
@@ -734,19 +755,15 @@ void GlobalPrivate::start()
 #if !defined( GLOBAL_THREADED )
 	QTimer::singleShot( 1000, this, SLOT(timeout()) );
 #else
-	moveToThread( &mWorkerThread );
-
-	connect( &mWorkerThread, SIGNAL(started()), this, SLOT(run()) );
-
-	mWorkerThread.start();
+	mGlobalThread->start();
 #endif
 }
 
 void GlobalPrivate::stop()
 {
 #if defined( GLOBAL_THREADED )
-	mWorkerThread.quit();
+	mGlobalThread->quit();
 
-	mWorkerThread.wait();
+	mGlobalThread->wait();
 #endif
 }

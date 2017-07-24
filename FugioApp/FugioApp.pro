@@ -200,7 +200,7 @@ macx {
 	CONFIG(release,debug|release) {
 		QMAKE_POST_LINK += && install_name_tool -change libfugio.1.dylib @executable_path/../../../libfugio.1.dylib $$APP_DIR/Contents/MacOS/Fugio
 
-		QMAKE_POST_LINK += && macdeployqt $$APP_DIR -always-overwrite -qmldir=../qml
+		QMAKE_POST_LINK += && macdeployqt $$APP_DIR -always-overwrite -qmldir=$$shell_path( $$FUGIO_BASE/qml )
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$APP_DIR ) CFBundleVersion \"$$FUGIO_VERSION\"
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$APP_DIR ) CFBundleGetInfoString \"$$FUGIO_VERSION\"
@@ -273,38 +273,38 @@ unix:!macx {
 
 	QMAKE_LFLAGS += "-Wl,-rpath '-Wl,$${DOLLAR}$${DOLLAR}ORIGIN'"
 
-#	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-#		target.path = Desktop/Fugio
+	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
+		target.path = Desktop/Fugio
 
-#		INSTALLS += target
+		INSTALLS += target
 
-#		examples.path  = Desktop/Fugio/examples
-#		examples.files = $$_PRO_FILE_PWD_/../examples/*
+		examples.path  = Desktop/Fugio/examples
+		examples.files = $$_PRO_FILE_PWD_/../examples/*
 
-#		INSTALLS += examples
+		INSTALLS += examples
 
-#		snippets.path  = Desktop/Fugio/snippets
-#		snippets.files = $$_PRO_FILE_PWD_/../snippets/*
+		snippets.path  = Desktop/Fugio/snippets
+		snippets.files = $$_PRO_FILE_PWD_/../snippets/*
 
-#		INSTALLS += snippets
+		INSTALLS += snippets
 
-#		share.path  = Desktop/Fugio/share
-#		share.files = $$_PRO_FILE_PWD_/../share/*
+		share.path  = Desktop/Fugio/share
+		share.files = $$_PRO_FILE_PWD_/../share/*
 
-#		INSTALLS += share
-#	}
+		INSTALLS += share
+	}
 }
 
 #------------------------------------------------------------------------------
 # Precompiled Headers
 
-CONFIG += precompile_header
+#CONFIG += precompile_header
 
-PRECOMPILED_HEADER = ../stable.h
+#PRECOMPILED_HEADER = ../stable.h
 
-precompile_header:!isEmpty(PRECOMPILED_HEADER) {
-	DEFINES += USING_PCH
-}
+#precompile_header:!isEmpty(PRECOMPILED_HEADER) {
+#	DEFINES += USING_PCH
+#}
 
 #------------------------------------------------------------------------------
 # Raspberry Pi
@@ -322,11 +322,16 @@ INCLUDEPATH += $$PWD/../include
 
 win32:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugiod
-else:macx:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugio_debug
-else:unix: LIBS += -L$$DESTDIR -lfugio
+else:unix:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
+else:unix:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugio_debug
 
 INCLUDEPATH += $$PWD/../FugioLib
 DEPENDPATH += $$PWD/../FugioLib
+
+win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$DESTDIR/fugio.lib
+else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$DESTDIR/fugiod.lib
+else:unix:CONFIG(release, debug|release): PRE_TARGETDEPS += $$DESTDIR/libfugio.a
+else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$DESTDIR/libfugio_debug.a
 
 #------------------------------------------------------------------------------
 # General Unix/Linux/OS X (Brew) libs path

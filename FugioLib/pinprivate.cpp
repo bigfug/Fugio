@@ -5,6 +5,8 @@
 #include <QStringList>
 #include <QDateTime>
 
+#include <fugio.h>
+
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
 #include <fugio/pin_control_interface.h>
@@ -14,7 +16,7 @@
 
 PinPrivate::PinPrivate( void )
 	: mContext( 0 ), mNode( 0 ), mGlobalId( QUuid::createUuid() ), mLocalId( QUuid::createUuid() ), mDirection( PIN_UNKNOWN ),
-	  mUpdated( 0 ), mOrder( -1 ), mFlags( Updatable )
+	  mUpdated( 0 ), mGlobalUpdated( 0 ), mOrder( -1 ), mFlags( Updatable )
 {
 }
 
@@ -158,6 +160,11 @@ qint64 PinPrivate::updated( void ) const
 	return( mUpdated );
 }
 
+qint64 PinPrivate::updatedGlobal() const
+{
+	return( mGlobalUpdated );
+}
+
 bool PinPrivate::isConnected( void ) const
 {
 	return( mContext ? mContext->isConnected( mGlobalId ) : false );
@@ -263,7 +270,9 @@ void PinPrivate::setValue( const QVariant &pVariant )
 	{
 		mDefaultValue = pVariant;
 
-		mUpdated = std::numeric_limits<qint64>::max(); //mContext->global()->timestamp();
+		mUpdated = std::numeric_limits<qint64>::max();
+
+		mGlobalUpdated = fugio::fugio()->timestamp();
 
 		emit valueChanged( mDefaultValue );
 	}

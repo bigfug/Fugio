@@ -121,12 +121,12 @@ windows {
 	}
 
 	exists( $$PORTAUDIO_PATH ) {
-		LIBS += -L$$PORTAUDIO_PATH/Release -l$$PORTAUDIO_LIB
+		LIBS += -L$$PORTAUDIO_PATH -l$$PORTAUDIO_LIB
 
 		DEFINES += PORTAUDIO_SUPPORTED
 
 		libraries.path  = $$INSTALLDEST
-		libraries.files = $$PORTAUDIO_PATH/Release/$${PORTAUDIO_LIB}.dll
+		libraries.files = $$PORTAUDIO_PATH/$${PORTAUDIO_LIB}.dll
 
 		INSTALLS += libraries
 	}

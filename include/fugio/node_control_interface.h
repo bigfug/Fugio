@@ -28,6 +28,7 @@ public:
 	virtual QWidget *gui( void ) = 0;
 
 	virtual QSharedPointer<fugio::NodeInterface> node( void ) = 0;
+	virtual QSharedPointer<fugio::NodeInterface> node( void ) const = 0;
 
 	virtual void inputsUpdated( qint64 pTimeStamp ) = 0;
 
@@ -43,25 +44,26 @@ public:
 	{
 		QString		mName;
 		QUuid		mType;
+		QUuid		mUuid;
 
-		AvailablePinEntry( const QString &pName, const QUuid &pUuid = QUuid() )
-			: mName( pName ), mType( pUuid )
+		AvailablePinEntry( const QString &pName, const QUuid &pType = QUuid(), const QUuid &pUuid = QUuid() )
+			: mName( pName ), mType( pType ), mUuid( pUuid )
 		{
 		}
 
-		bool operator < (const AvailablePinEntry& str) const
+		bool operator < ( const AvailablePinEntry &pAPE ) const
 		{
-			return ( mName < str.mName );
+			return ( mName < pAPE.mName );
 		}
 
-		bool operator == (const QString& str) const
+		bool operator == ( const QString &pString ) const
 		{
-			return ( mName == str );
+			return( mName == pString );
 		}
 
-		bool operator == (const AvailablePinEntry& str) const
+		bool operator == ( const AvailablePinEntry &pAPE ) const
 		{
-			return ( mName == str.mName );
+			return( mName == pAPE.mName );
 		}
 	} AvailablePinEntry;
 

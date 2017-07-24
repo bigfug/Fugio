@@ -74,6 +74,8 @@ public:
 
 	virtual qint64 updated( void ) const Q_DECL_OVERRIDE;
 
+	virtual qint64 updatedGlobal( void ) const Q_DECL_OVERRIDE;
+
 	virtual bool isConnected( void ) const Q_DECL_OVERRIDE;
 
 	virtual bool isConnectedToActiveNode( void ) const Q_DECL_OVERRIDE;
@@ -165,6 +167,11 @@ public:
 		mUpdated = pTimeStamp;
 	}
 
+	virtual void setGlobalTimestamp( qint64 pGlobalTimestamp )
+	{
+		mGlobalUpdated = pGlobalTimestamp;
+	}
+
 	void setContext( fugio::ContextInterface *pContext );
 
 	void setGlobalId( const QUuid &pUUID );
@@ -198,14 +205,15 @@ signals:
 private:
 	fugio::ContextInterface						*mContext;
 	fugio::NodeInterface						*mNode;
-	QUuid										 mGlobalId;		// Context PinMap - Globally unique
-	QUuid										 mLocalId;		// Node
+	QUuid										 mGlobalId;			// Context PinMap - Globally unique
+	QUuid										 mLocalId;			// Node
 	QUuid										 mControlId;		// PinControl PID_*
 	QUuid										 mPairedId;			// PinPair input <-> output
 	QString										 mName;
 	PinDirection								 mDirection;
 	QSharedPointer<fugio::PinControlInterface>	 mControl;
-	qint64										 mUpdated;
+	qint64										 mUpdated;			// Local timestamp
+	qint64										 mGlobalUpdated;	// Global timestamp
 	QVariant									 mDefaultValue;
 	QVariantHash								 mSettings;
 	int											 mOrder;

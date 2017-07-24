@@ -32,6 +32,7 @@ public:
 	static int luaNew( lua_State *L );
 
 	static int luaPinGet( const QUuid &pPinLocalId, lua_State *L );
+	static int luaPinSet( const QUuid &pPinLocalId, lua_State *L, int pIndex );
 
 	static int pushvector3d( lua_State *L, const QVector3D &pVector3D )
 	{
@@ -57,13 +58,13 @@ public:
 
 	static QVector3D checkvector3d( lua_State *L, int i = 1 )
 	{
-		UserData *UD = checkvector3duserdata( L, i );
+		UserData *UD = checkuserdata( L, i );
 
 		return( UD->mVector3D );
 	}
 
 private:
-	static UserData *checkvector3duserdata( lua_State *L, int i = 1 )
+	static UserData *checkuserdata( lua_State *L, int i = 1 )
 	{
 		UserData *UD = (UserData *)luaL_checkudata( L, i, UserData::TypeName );
 
@@ -81,6 +82,9 @@ private:
 //	static int luaMul( lua_State *L );
 	static int luaSub( lua_State *L );
 
+	static int luaIndex( lua_State *L );
+	static int luaNewIndex( lua_State *L );
+
 	static int luaLength( lua_State *L );
 	static int luaToArray( lua_State *L );
 	static int luaNormalize( lua_State *L );
@@ -90,7 +94,8 @@ private:
 	static int luaZ( lua_State *L );
 
 private:
-	static const luaL_Reg					mLuaInstance[];
+	static const luaL_Reg					mLuaFunctions[];
+	static const luaL_Reg					mLuaMetaMethods[];
 	static const luaL_Reg					mLuaMethods[];
 #endif
 };

@@ -18,6 +18,7 @@ contains( DEFINES, FUGIOLIB_STATIC ) {
 }
 
 DEFINES += FUGIOLIB_LIBRARY
+DEFINES += GLOBAL_THREADED
 
 SOURCES += fugio.cpp \
 	contextprivate.cpp \
@@ -28,7 +29,9 @@ SOURCES += fugio.cpp \
 	pin.cpp \
 	nodeprivate.cpp \
 	node.cpp \
-	interpolation.cpp
+	interpolation.cpp \
+    timesync.cpp \
+    universe.cpp
 
 HEADERS += fugio.h\
 	../include/fugio/global.h \
@@ -58,7 +61,9 @@ HEADERS += fugio.h\
 	../include/fugio/global_signals.h \
 	../include/fugio/utils.h \
 	../include/fugio/context_signals.h \
-	../include/fugio/paired_pins_helper_interface.h
+	../include/fugio/paired_pins_helper_interface.h \
+    timesync.h \
+    universe.h
 
 RESOURCES += \
     resources.qrc

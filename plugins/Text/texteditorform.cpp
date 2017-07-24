@@ -6,9 +6,13 @@
 #include <QToolButton>
 #include <QMenu>
 
+#include <fugio/text/syntax_highlighter_factory_interface.h>
+
+#include "textplugin.h"
+
 TextEditorForm::TextEditorForm(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::TextEditorForm), mHighlighter( 0 )
+	ui(new Ui::TextEditorForm)
 {
 	ui->setupUi(this);
 
@@ -20,6 +24,8 @@ TextEditorForm::TextEditorForm(QWidget *parent) :
 
 	ui->verticalLayout->insertWidget( 0, ToolBar );
 
+	//-------------------------------------------------------------------------
+
 	QMenu			*FileMenu = new QMenu();
 
 	QAction			*FileOpen   = new QAction( tr( "&Open..." ), this );
@@ -29,6 +35,8 @@ TextEditorForm::TextEditorForm(QWidget *parent) :
 	FileMenu->addAction( FileOpen );
 	FileMenu->addAction( FileSave );
 	FileMenu->addAction( FileSaveAs );
+
+	//-------------------------------------------------------------------------
 
 	QToolButton		*ButtonMenu = new QToolButton( ToolBar );
 
@@ -42,6 +50,8 @@ TextEditorForm::TextEditorForm(QWidget *parent) :
 	connect( FileSave,   SIGNAL(triggered(bool)), this, SLOT(textSave()) );
 	connect( FileSaveAs, SIGNAL(triggered(bool)), this, SLOT(textSaveAs()) );
 
+	//-------------------------------------------------------------------------
+
 	QToolButton		*ButtonUpdate = new QToolButton( ToolBar );
 
 	ButtonUpdate->setText( tr( "&Update" ) );
@@ -49,6 +59,47 @@ TextEditorForm::TextEditorForm(QWidget *parent) :
 	ToolBar->addWidget( ButtonUpdate );
 
 	connect( ButtonUpdate, SIGNAL(released()), this, SLOT(updateClicked()) );
+
+	//-------------------------------------------------------------------------
+
+#if 0 // TODO
+	QAction			*A = nullptr;
+
+	QList<SyntaxHighlighterInterface::SyntaxHighlighterIdentity>	HL = TextPlugin::instance()->syntaxHighlighters();
+
+	QMenu			*SyntaxMenu = new QMenu();
+
+	if( ( A = SyntaxMenu->addAction( tr( "None" ), this, SLOT(setSyntaxNone()) ) ) != nullptr )
+	{
+		A->setCheckable( true );
+	}
+
+	if( ( A = SyntaxMenu->addAction( tr( "Default" ), this, SLOT(setSyntaxDefault()) ) ) != nullptr )
+	{
+		A->setCheckable( true );
+	}
+
+	for( auto SH : HL )
+	{
+		QAction *A = SyntaxMenu->addAction( SH.second, [=]()
+		{
+			setSyntax( SH.first );
+		} );
+
+		A->setCheckable( true );
+		A->setData( SH.first );
+	}
+
+	//-------------------------------------------------------------------------
+
+	QToolButton		*SyntaxButton = new QToolButton( ToolBar );
+
+	SyntaxButton->setMenu( SyntaxMenu );
+	SyntaxButton->setPopupMode( QToolButton::InstantPopup );
+	SyntaxButton->setText( "Syntax" );
+
+	ToolBar->addWidget( SyntaxButton );
+#endif
 }
 
 TextEditorForm::~TextEditorForm()
@@ -61,11 +112,13 @@ QPlainTextEdit *TextEditorForm::textEdit( void )
 	return( ui->mTextEdit );
 }
 
-void TextEditorForm::setHighlighter( fugio::SyntaxHighlighterInterface *pHighlighter )
+void TextEditorForm::setSyntaxErrors(QList<SyntaxError> pSyntaxErrors)
 {
-	mHighlighter = pHighlighter;
+	mSyntaxErrors = pSyntaxErrors;
 
-	ui->mTextEdit->setHighlighter( pHighlighter );
+	ui->mTextEdit->setSyntaxErrors( pSyntaxErrors );
+
+	errorsUpdated();
 }
 
 void TextEditorForm::errorsUpdated()
@@ -155,20 +208,31 @@ void TextEditorForm::textSaveAs()
 
 void TextEditorForm::cursorPositionChanged()
 {
-	QStringList	ErrLst;
-	QString		ErrMsg;
+	QStringList			ErrLst;
+	QString				ErrMsg;
 
-	if( mHighlighter )
+	int		LinNum = ui->mTextEdit->textCursor().blockNumber() + 1;
+
+	for( fugio::SyntaxError SE : mSyntaxErrors )
 	{
-		if( !( ErrLst = mHighlighter->errorList( ui->mTextEdit->textCursor().blockNumber() + 1 ) ).isEmpty() )
+		if( SE.mLineStart <= LinNum && SE.mLineEnd >= LinNum )
 		{
-			ErrMsg = ErrLst.join( "\n" );
-		}
-		else if( !( ErrLst = mHighlighter->errorList( 0 ) ).isEmpty() )
-		{
-			ErrMsg = ErrLst.join( "\n" );
+			ErrLst << SE.mError;
 		}
 	}
+
+	if( ErrLst.isEmpty() )
+	{
+		for( fugio::SyntaxError SE : mSyntaxErrors )
+		{
+			if( SE.mLineStart <= 0 )
+			{
+				ErrLst << SE.mError;
+			}
+		}
+	}
+
+	ErrMsg = ErrLst.join( "\n" );
 
 	if( ErrMsg.isEmpty() )
 	{
@@ -180,4 +244,19 @@ void TextEditorForm::cursorPositionChanged()
 
 		ui->mErrorText->setText( ErrMsg );
 	}
+}
+
+void TextEditorForm::setSyntaxNone()
+{
+	emit syntaxChanged( TextEditorNode::HIGHLIGHT_NONE, QUuid() );
+}
+
+void TextEditorForm::setSyntaxDefault()
+{
+	emit syntaxChanged( TextEditorNode::HIGHLIGHT_DEFAULT, QUuid() );
+}
+
+void TextEditorForm::setSyntax( const QUuid &pUuid )
+{
+	emit syntaxChanged( TextEditorNode::HIGHLIGHT_CUSTOM, pUuid );
 }

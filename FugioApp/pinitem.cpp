@@ -18,6 +18,7 @@
 #include <QDesktopServices>
 #include <QMetaClassInfo>
 #include <QColorDialog>
+#include <QMetaClassInfo>
 
 #include <QDebug>
 
