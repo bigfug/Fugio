@@ -12,13 +12,13 @@
 TimeSync::TimeSync( QObject *pParent )
 	: QObject( pParent ), mSocket( nullptr ), mResponseSocket( nullptr ), mServerTimestamp( 0 ), mClientTimestamp( 0 ), mRTT( 0 )
 {
-	QHostAddress	groupAddress = QHostAddress( "239.255.43.21" );
+//	QHostAddress	groupAddress = QHostAddress( "226.0.0.1" );
 
 	mSocket = new QUdpSocket( this );
 
 	if( mSocket->bind( QHostAddress::AnyIPv4, 45454, QUdpSocket::ShareAddress ) )
 	{
-		mSocket->joinMulticastGroup( groupAddress );
+//		mSocket->joinMulticastGroup( groupAddress );
 
 		connect( mSocket, SIGNAL(readyRead()), this, SLOT(processPendingDatagrams()) );
 	}
