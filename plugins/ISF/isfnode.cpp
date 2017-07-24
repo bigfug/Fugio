@@ -1041,8 +1041,8 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 
 	glLinkProgram( Program );
 
-	glGetShaderiv( Program, GL_LINK_STATUS, &Result );
-	glGetShaderiv( Program, GL_INFO_LOG_LENGTH, &InfoLogLength );
+	glGetProgramiv( Program, GL_LINK_STATUS, &Result );
+	glGetProgramiv( Program, GL_INFO_LOG_LENGTH, &InfoLogLength );
 
 	if( Result == GL_FALSE )
 	{
@@ -1050,7 +1050,7 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 
 		InfoLogMessage.resize( InfoLogLength );
 
-		glGetShaderInfoLog( Program, InfoLogLength, NULL, InfoLogMessage.data() );
+		glGetProgramInfoLog( Program, InfoLogLength, NULL, InfoLogMessage.data() );
 
 		qWarning() << "Shader Link:" << QString::fromLatin1( InfoLogMessage );
 

@@ -198,7 +198,9 @@ void TextureMonitorNode::paintGL()
 
 		glLinkProgram( mProgram );
 
-		glGetShaderiv( mProgram, GL_LINK_STATUS, &status );
+		OPENGL_PLUGIN_DEBUG;
+
+		glGetProgramiv( mProgram, GL_LINK_STATUS, &status );
 
 		if( !status )
 		{
