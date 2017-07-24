@@ -572,11 +572,14 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 		DstDat.close();
 	}
 
-	QFile::remove( TmpFileName );
+	if( !QFile::remove( TmpFileName ) )
+	{
+		qWarning() << "Couldn't remove temporary file";
+	}
 
 	if( !TmpOld.isEmpty() && !QFile::remove( TmpOld ) )
 	{
-		qWarning() << "Couldn't remove temporary file";
+		qWarning() << "Couldn't remove old file";
 	}
 
 	return( true );
