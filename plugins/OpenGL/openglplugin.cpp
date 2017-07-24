@@ -42,6 +42,7 @@
 #include "viewportmatrixnode.h"
 #include "cubemaprendernode.h"
 #include "texturemonitornode.h"
+#include "rendertotexturenode.h"
 
 #include "texturepin.h"
 #include "renderpin.h"
@@ -93,6 +94,7 @@ ClassEntry		OpenGLPlugin::mNodeClasses[] =
 	ClassEntry( "Shader Compiler", "OpenGL", NID_OPENGL_SHADER_COMPILER, &ShaderCompilerNode::staticMetaObject ),
 	ClassEntry( "State", "OpenGL", NID_OPENGL_STATE, &StateNode::staticMetaObject ),
 	ClassEntry( "Render", "OpenGL", NID_OPENGL_RENDER, &RenderNode::staticMetaObject ),
+	ClassEntry( "Render To Texture", "OpenGL", NID_OPENGL_RENDER_TO_TEXTURE, &RenderToTextureNode::staticMetaObject ),
 	ClassEntry( "Shader Instance", "OpenGL", NID_OPENGL_SHADER_INSTANCE, &ShaderInstanceNode::staticMetaObject ),
 	ClassEntry( "Texture", "OpenGL", NID_OPENGL_TEXTURE, &TextureNode::staticMetaObject ),
 	ClassEntry( "Texture To Image", "OpenGL", NID_OPENGL_TEXTURE_TO_IMAGE, &TextureToImageNode::staticMetaObject ),
