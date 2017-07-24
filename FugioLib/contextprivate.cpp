@@ -366,7 +366,7 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeList ) const
 {
 	QFileInfo				 FileInfo( pFileName );
-	QString					 TmpFileName = FileInfo.absoluteDir().absoluteFilePath( FileInfo.completeBaseName().append( ".tmp" ) );
+	QString					 TmpFileName = FileInfo.absoluteFilePath().append( ".out" );
 
 	if( true )
 	{
