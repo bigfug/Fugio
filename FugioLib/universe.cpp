@@ -23,7 +23,7 @@ Universe::Universe( QObject *pParent )
 	QTimer::singleShot( 100, this, SLOT(updateCasters()) );
 }
 
-bool Universe::data( qint64 pTime, const QUuid &pUuid, QString &pName, QUuid &pType, QByteArray &pData ) const
+qint64 Universe::data( qint64 pTime, const QUuid &pUuid, QString &pName, QUuid &pType, QByteArray &pData ) const
 {
 	QMutexLocker	 L( &mMutex );
 	int				 DataIndex = -1;
@@ -54,7 +54,7 @@ bool Universe::data( qint64 pTime, const QUuid &pUuid, QString &pName, QUuid &pT
 
 	if( DataIndex < 0 )
 	{
-		return( false );
+		return( -1 );
 	}
 
 	const DataCast	&DC = mData[ DataIndex ];
@@ -63,7 +63,7 @@ bool Universe::data( qint64 pTime, const QUuid &pUuid, QString &pName, QUuid &pT
 	pName = DC.mName;
 	pType = DC.mType;
 
-	return( true );
+	return( DataTime );
 }
 
 void Universe::addData( qint64 pTime, const QUuid &pUuid, const QString &pName, const QUuid &pType, const QByteArray &pData )
@@ -115,7 +115,7 @@ void Universe::clearData( qint64 pTime )
 
 	for( int i = 0 ; i < mData.size() ; )
 	{
-		if( mData[ i ].mTime > pTime )
+		if( mData[ i ].mTime > pTime - 500 )
 		{
 			i++;
 
@@ -211,6 +211,8 @@ void Universe::readyRead()
 		DS >> DC.mName;
 		DS >> DC.mType;
 		DS >> DC.mData;
+
+//		qDebug() << DC.mName;
 
 		if( !DC.isValid() )
 		{

@@ -102,7 +102,7 @@ public:
 		mUniverse.addData( pTimeStamp, pUuid, pName, pType, pByteArray );
 	}
 
-	virtual bool universeData( qint64 pTimeStamp, const QUuid &pUuid, QString &pName, QUuid &pType, QByteArray &pByteArray ) const Q_DECL_OVERRIDE
+	virtual qint64 universeData( qint64 pTimeStamp, const QUuid &pUuid, QString &pName, QUuid &pType, QByteArray &pByteArray ) const Q_DECL_OVERRIDE
 	{
 		return( mUniverse.data( pTimeStamp, pUuid, pName, pType, pByteArray ) );
 	}

@@ -33,6 +33,9 @@ public:
 
 private slots:
 	void contextFrame( void );
+
+private:
+	QMap<QUuid,qint64>		mDataTime;
 };
 
 #endif // UNIVERSERECEIVENODE_H

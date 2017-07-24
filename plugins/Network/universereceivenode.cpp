@@ -64,8 +64,9 @@ void UniverseReceiveNode::contextFrame()
 		QString		Name;
 		QByteArray	Data;
 		QUuid		Type;
+		qint64		Time;
 
-		if( !Global->universeData( Global->universalTimestamp(), P->localId(), Name, Type, Data ) )
+		if( ( Time = Global->universeData( Global->universalTimestamp(), P->localId(), Name, Type, Data ) ) < 0 )
 		{
 			continue;
 		}
@@ -74,6 +75,13 @@ void UniverseReceiveNode::contextFrame()
 		{
 			P->setName( Name );
 		}
+
+		if( mDataTime.value( P->localId(), -1 ) == Time )
+		{
+			continue;
+		}
+
+		mDataTime.insert( P->localId(), Time );
 
 		fugio::SerialiseInterface		*SI = qobject_cast<fugio::SerialiseInterface *>( P->hasControl() ? P->control()->qobject() : nullptr );
 
@@ -89,7 +97,7 @@ void UniverseReceiveNode::contextFrame()
 			SI->deserialise( DS );
 		}
 
-		pinUpdated( P );
+		pinUpdated( P, Global->universalToGlobal( Time ) );
 	}
 }
 

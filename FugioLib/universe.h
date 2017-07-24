@@ -18,7 +18,7 @@ class Universe : public QObject
 public:
 	explicit Universe( QObject *pParent = nullptr );
 
-	bool data( qint64 pTime, const QUuid &pUuid, QString &pName, QUuid &pType, QByteArray &pData ) const;
+	qint64 data( qint64 pTime, const QUuid &pUuid, QString &pName, QUuid &pType, QByteArray &pData ) const;
 
 	QList<fugio::GlobalInterface::UniverseEntry> entries( void ) const
 	{
