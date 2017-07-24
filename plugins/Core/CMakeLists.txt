@@ -67,6 +67,12 @@ set( SOURCE_FILES
     ../../include/fugio/core/array_list_interface.h
     arraylistpin.h
     arraylistentry.h
+	bitstoboolnode.cpp
+	bitstoboolnode.h
+	booltobitsnode.cpp
+	booltobitsnode.h
+	bitarraypin.cpp
+	bitarraypin.h
 )
 
 set( QRC_FILES

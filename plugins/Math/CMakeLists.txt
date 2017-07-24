@@ -57,6 +57,8 @@ set( SOURCE_FILES
 	matrixtranslatenode.h
 	minmaxnode.cpp
 	minmaxnode.h
+	modulusnode.cpp
+	modulusnode.h
 	multiplynode.cpp
 	multiplynode.h
 	nandnode.cpp

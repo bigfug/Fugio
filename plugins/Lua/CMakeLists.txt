@@ -10,14 +10,12 @@ set( SOURCE_FILES
 	luaplugin.h
 	luanode.h
 	syntaxhighlighterlua.h
-	luahighlighter.h
 	luaexnode.h
 	luaexpin.h
 	luaarray.h
 	luaplugin.cpp
 	luanode.cpp
 	syntaxhighlighterlua.cpp
-	luahighlighter.cpp
 	luaexnode.cpp
 	luaexpin.cpp
 	luaarray.cpp

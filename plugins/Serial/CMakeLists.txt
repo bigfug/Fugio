@@ -12,6 +12,10 @@ set( SOURCE_FILES
 	deviceserial.h
 	deviceserialconfiguration.cpp
 	deviceserialconfiguration.h
+	serialdecodernode.cpp
+	serialdecodernode.h
+	serialencodernode.cpp
+	serialencodernode.h
 	serialinputnode.cpp
 	serialinputnode.h
 	serialoutputnode.cpp

@@ -13,9 +13,15 @@ set( SOURCE_FILES
 	cobsdecodenode.h
 	cobsencodenode.cpp
 	cobsencodenode.h
+	crc32.cpp
+	crc32.h
 	getnode.cpp
 	getnode.h
 	networkplugin.cpp
+	packetdecodenode.cpp
+	packetdecodenode.h
+	packetencodenode.cpp
+	packetencodenode.h
 	slipdecodenode.cpp
 	slipdecodenode.h
 	slipencodenode.cpp
@@ -32,6 +38,10 @@ set( SOURCE_FILES
 	udpreceiverawnode.h
 	udpsendrawnode.cpp
 	udpsendrawnode.h
+	universereceivenode.cpp
+	universereceivenode.h
+	universesendnode.cpp
+	universesendnode.h
 	websocketclientnode.cpp
 	websocketclientnode.h
 	websocketdataservernode.cpp

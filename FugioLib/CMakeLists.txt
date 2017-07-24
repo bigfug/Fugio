@@ -26,6 +26,10 @@ set( SOURCE_FILES
 	globalprivate.h
 	pinprivate.h
 	nodeprivate.h
+	timesync.cpp
+	timesync.h
+	universe.cpp
+	universe.h
 	../include/fugio/interpolation.h
 	../include/fugio/performance.h
 	../stable.h

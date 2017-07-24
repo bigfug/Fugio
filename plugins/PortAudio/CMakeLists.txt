@@ -46,11 +46,14 @@ endif( PortAudio_FOUND )
 # Install
 
 if( WIN32 )
-	string( REPLACE ".lib" ".dll" PORTAUDIO_DLL ${PORTAUDIO_LIBRARY} )
+	if( PortAudio_FOUND )
+		string( REPLACE ".lib" ".dll" PORTAUDIO_DLL ${PORTAUDIO_LIBRARY} )
 
+		install( FILES ${PORTAUDIO_DLL} DESTINATION plugins/portaudio )
+	endif()
+	
 	install( TARGETS ${PROJECT_NAME} DESTINATION plugins/portaudio )
 
-	install( FILES ${PORTAUDIO_DLL} DESTINATION plugins/portaudio )
 else( WIN32 )
 	install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
 endif( WIN32 )

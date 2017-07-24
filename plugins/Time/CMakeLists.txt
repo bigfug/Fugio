@@ -32,7 +32,9 @@ set( SOURCE_FILES
 	timenode.h
 	timeplugin.cpp
 	timeplugin.h
-	
+	universetimenode.cpp
+	universetimenode.h
+
 	cronform.ui
 )
 

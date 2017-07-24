@@ -7,6 +7,8 @@ set( SOURCE_FILES
 	../../include/fugio/pincontrolbase.h
 	
 	../../include/fugio/text/syntax_highlighter_interface.h
+	../../include/fugio/text/syntax_error_interface.h
+	../../include/fugio/text/syntax_error_signals.h
 	../../include/fugio/text/uuid.h
 
 	cmdtexteditorupdate.h
@@ -21,10 +23,14 @@ set( SOURCE_FILES
 	regexpnode.h
 	stringjoinnode.cpp
 	stringjoinnode.h
+	syntaxerrorpin.cpp
+	syntaxerrorpin.h
 	texteditorform.cpp
 	texteditorform.h
 	texteditornode.cpp
 	texteditornode.h
+	texteditorremotenode.cpp
+	texteditorremotenode.h
 	textplugin.cpp
 	textplugin.h
 
