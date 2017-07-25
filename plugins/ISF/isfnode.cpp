@@ -76,7 +76,7 @@ void checkErrors( const char *file, int line )
 
 ISFNode::ISFNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mVAO( 0 ), mBuffer( 0 ), mProgram( 0 ), mFrameCounter( 0 ), mUniformTime( -1 ),
-	  mStartTime( -1 ), mLastRenderTime( 0 )
+	  mTextureIndexCount( 0 ), mStartTime( -1 ), mLastRenderTime( 0 )
 {
 	FUGID( PIN_INPUT_SOURCE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 	FUGID( PIN_INPUT_FILENAME, "DFEBA477-4933-4C85-9B3B-24CE71053B1F" );
@@ -324,6 +324,8 @@ void ISFNode::contextProcess( qint64 pTimeStamp )
 
 				glBindTexture( GL_TEXTURE_2D, 0 );
 
+				glActiveTexture( GL_TEXTURE0 );
+
 				OPENGL_PLUGIN_DEBUG;
 			}
 
@@ -472,6 +474,8 @@ void ISFNode::inputsUpdated( qint64 pTimeStamp )
 				glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, FFT.size(), 1, GL_RED, GL_FLOAT, FFT.constData() );
 
 				glBindTexture( GL_TEXTURE_2D, 0 );
+
+				glActiveTexture( GL_TEXTURE0 );
 
 				OPENGL_PLUGIN_DEBUG;
 			}
@@ -1191,6 +1195,8 @@ void ISFNode::renderInputs()
 				break;
 		}
 	}
+
+	glActiveTexture( GL_TEXTURE0 );
 }
 
 void ISFNode::renderImports()
@@ -1267,6 +1273,8 @@ void ISFNode::renderImports()
 
 		glBindTexture( GL_TEXTURE_2D, ImpDat.mTextureId );
 	}
+
+	glActiveTexture( GL_TEXTURE0 );
 }
 
 void ISFNode::renderPasses( GLint Viewport[ 4 ] )
@@ -1332,7 +1340,11 @@ void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+			glBindTexture( GL_TEXTURE_2D, 0 );
 		}
+
+		glActiveTexture( GL_TEXTURE0 );
 
 		if( !PassData.mTextureId )
 		{
@@ -1478,6 +1490,14 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
 
+	GLint		VAOCur;
+
+	glGetIntegerv( GL_VERTEX_ARRAY_BINDING, &VAOCur );
+
+	GLint		PRGCur;
+
+	glGetIntegerv( GL_CURRENT_PROGRAM, &PRGCur );
+
 	if( mStartTime == -1 )
 	{
 		mStartTime = pTimeStamp;
@@ -1495,7 +1515,8 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	if( !mBuffer )
 	{
-		GLfloat		Verticies[][ 2 ] = {
+		GLfloat		Verticies[][ 2 ] =
+		{
 			{ -1,  1 },
 			{ -1, -1 },
 			{  1,  1 },
@@ -1505,6 +1526,7 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		glGenBuffers( 1, &mBuffer );
 		glBindBuffer( GL_ARRAY_BUFFER, mBuffer );
 		glBufferData( GL_ARRAY_BUFFER, sizeof( Verticies ), Verticies, GL_STATIC_DRAW );
+		glBindBuffer( GL_ARRAY_BUFFER, 0 );
 	}
 
 	if( mProgram )
@@ -1628,15 +1650,20 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 			glBindTexture( GL_TEXTURE_2D, 0 );
 		}
 
+		glActiveTexture( GL_TEXTURE0 );
+
 		glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 
-		mLastRenderTime = pTimeStamp;
+		if( mLastRenderTime != pTimeStamp )
+		{
+			mLastRenderTime = pTimeStamp;
 
-		mFrameCounter++;
+			mFrameCounter++;
+		}
 	}
 
 	if( mVAO )
 	{
-		glBindVertexArray( 0 );
+		glBindVertexArray( VAOCur );
 	}
 }
