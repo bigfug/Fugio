@@ -1517,10 +1517,10 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 	{
 		GLfloat		Verticies[][ 2 ] =
 		{
-			{ -1,  1 },
 			{ -1, -1 },
-			{  1,  1 },
-			{  1, -1 }
+			{ -1,  1 },
+			{  1, -1 },
+			{  1,  1 }
 		};
 
 		glGenBuffers( 1, &mBuffer );
