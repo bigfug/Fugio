@@ -35,9 +35,10 @@ void MatrixRotateNode::inputsUpdated( qint64 pTimeStamp )
 	MatRot.rotate( y, 0, 1, 0 );
 	MatRot.rotate( z, 0, 0, 1 );
 
-	QVariant		MatVar = MatRot;
+	if( MatRot != mValue->variant().value<QMatrix4x4>() )
+	{
+		mValue->setVariant( MatRot );
 
-	mValue->setVariant( MatVar );
-
-	pinUpdated( mPinValue );
+		pinUpdated( mPinValue );
+	}
 }
