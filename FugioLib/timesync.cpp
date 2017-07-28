@@ -2,43 +2,54 @@
 
 #include <QtEndian>
 #include <QNetworkDatagram>
+#include <QDateTime>
+#include <QTimer>
 
 #include "fugio.h"
 
 #include "globalprivate.h"
 
 TimeSync::TimeSync( QObject *pParent )
-	: QObject( pParent ), mSocket( nullptr ), mResponseSocket( nullptr ), mServerTimestamp( 0 ), mRTT( 0 )
+	: QObject( pParent ), mSocket( nullptr ), mResponseSocket( nullptr ), mServerTimestamp( 0 ), mClientTimestamp( 0 ), mRTT( 0 )
 {
-	QHostAddress	groupAddress = QHostAddress( "239.255.43.21" );
+//	QHostAddress	groupAddress = QHostAddress( "226.0.0.1" );
 
 	mSocket = new QUdpSocket( this );
 
 	if( mSocket->bind( QHostAddress::AnyIPv4, 45454, QUdpSocket::ShareAddress ) )
 	{
-		mSocket->joinMulticastGroup( groupAddress );
+//		mSocket->joinMulticastGroup( groupAddress );
 
 		connect( mSocket, SIGNAL(readyRead()), this, SLOT(processPendingDatagrams()) );
+	}
+	else
+	{
+		qWarning() << "Couldn't bind socket";
 	}
 
 	mResponseSocket = new QUdpSocket( this );
 
 	if( mResponseSocket->bind() )
 	{
-		connect( mSocket, SIGNAL(readyRead()), this, SLOT(responseReady()) );
+		connect( mResponseSocket, SIGNAL(readyRead()), this, SLOT(responseReady()) );
 	}
+	else
+	{
+		qWarning() << "Couldn't bind response socket";
+	}
+
+//	qDebug() << logtime() << "TimeSync port:" << mResponseSocket->localPort();
+
+	QTimer::singleShot( 1000, this, SLOT(sendPing()) );
+}
+
+QString TimeSync::logtime()
+{
+	return( QDateTime::currentDateTimeUtc().toString( "HH:mm:ss.zzz" ) );
 }
 
 void TimeSync::processPendingDatagrams()
 {
-//	qDebug() << "TimeSync::processPendingDatagrams()";
-
-	GlobalPrivate	*GP = qobject_cast<GlobalPrivate *>( fugio::fugio()->qobject() );
-	qint64			 t  = -1;
-	QHostAddress	 ServerAddress;
-	quint16			 ServerPort;
-	bool			 NeedPing = false;
-
 	TimeDatagram	 TDG;
 
 	while( mSocket->hasPendingDatagrams() )
@@ -47,52 +58,23 @@ void TimeSync::processPendingDatagrams()
 
 		if( !DG.isValid() || DG.data().size() != sizeof( TDG ) )
 		{
+			qDebug() << logtime() << "RECV FAIL" << DG.senderAddress() << DG.senderPort() << DG.data().size() << qFromBigEndian<qint64>( TDG.mServerTimestamp ) << qFromBigEndian<qint64>( TDG.mClientTimestamp );
+
 			continue;
 		}
 
 		memcpy( &TDG, DG.data(), sizeof( TDG ) );
 
-//		qDebug() << DG.senderAddress() << DG.senderPort() << DG.data().size() << qFromBigEndian<qint64>( TDG.mServerTimestamp ) << qFromBigEndian<qint64>( TDG.mClientTimestamp );
+//		qDebug() << logtime() << "RECV" << "RS:" << qFromBigEndian<qint64>( TDG.mServerTimestamp ) << "RC:" << qFromBigEndian<qint64>( TDG.mClientTimestamp );
 
-		t = qFromBigEndian<qint64>( TDG.mServerTimestamp );
-
-		if( qAbs( t - mServerTimestamp ) >= 1000 )
-		{
-			 ServerAddress = DG.senderAddress();
-			 ServerPort    = DG.senderPort();
-
-			 NeedPing = true;
-		}
-	}
-
-	qDebug() << "t =" << t;
-
-	if( t >= 0 )
-	{
-		GP->updateUniversalTimestamp( t + mRTT );
-
-		if( NeedPing && !ServerAddress.isNull() )
-		{
-			mClientTimestamp = GP->timestamp();
-
-//			qDebug() << "Sending PING to" << ServerAddress << ServerPort << t << mClientTimestamp;
-
-			TDG.mServerTimestamp = qToBigEndian<qint64>( t );
-			TDG.mClientTimestamp = qToBigEndian<qint64>( mClientTimestamp );
-
-			if( mResponseSocket->writeDatagram( (const char *)&TDG, sizeof( TDG ), ServerAddress, ServerPort ) == sizeof( TDG ) )
-			{
-				mServerTimestamp = t;
-			}
-		}
+		mServerAddress = DG.senderAddress();
+		mServerPort    = 45456;
 	}
 }
 
 void TimeSync::responseReady()
 {
 	GlobalPrivate	*GP = qobject_cast<GlobalPrivate *>( fugio::fugio()->qobject() );
-
-//	qDebug() << "TimeSync::responseReady()";
 
 	TimeDatagram	 TDG;
 
@@ -102,6 +84,8 @@ void TimeSync::responseReady()
 
 		if( !DG.isValid() || DG.data().size() != sizeof( TDG ) )
 		{
+			qWarning() << DG.isValid() << DG.data().size();
+
 			continue;
 		}
 
@@ -110,13 +94,57 @@ void TimeSync::responseReady()
 		TDG.mServerTimestamp = qFromBigEndian<qint64>( TDG.mServerTimestamp );
 		TDG.mClientTimestamp = qFromBigEndian<qint64>( TDG.mClientTimestamp );
 
-		qDebug() << "PONG" << DG.senderAddress() << DG.data().size() << TDG.mServerTimestamp << TDG.mClientTimestamp << mClientTimestamp;
+//		qDebug() << logtime() << "PONG" << DG.senderAddress() << "RS:" << TDG.mServerTimestamp << "RC:" << TDG.mClientTimestamp << "LC:" << mClientTimestamp;
 
 		if( TDG.mClientTimestamp == mClientTimestamp )
 		{
 			mRTT = GP->timestamp() - TDG.mClientTimestamp;
 
-			qDebug() << "RTT:" << mRTT;
+			if( mRTTArray.size() >= 7 )
+			{
+				mRTTArray.removeFirst();
+			}
+
+			mRTTArray << mRTT;
+
+			mRTTSortedArray = mRTTArray;
+
+			std::sort( mRTTSortedArray.begin(), mRTTSortedArray.end() );
+
+			GP->updateUniversalTimestamp( TDG.mServerTimestamp + ( mRTT / 2 ) ); //( qMax( mRTT, mRTTArray[ mRTTArray.size() / 2 ] ) / 2 ) );
+
+//			qDebug() << logtime() << "RTT:" << mRTT << mRTTSortedArray << GP->universalTimestamp();
 		}
 	}
+}
+
+void TimeSync::sendPing()
+{
+	GlobalPrivate	*GP = qobject_cast<GlobalPrivate *>( fugio::fugio()->qobject() );
+
+	if( !mServerAddress.isNull() )
+	{
+		mClientTimestamp = GP->timestamp();
+		mServerTimestamp = GP->universalTimestamp();
+
+//		qDebug() << logtime() << "Sending PING to" << mServerAddress << mServerPort << "T:" << 0 << "LC:" << mClientTimestamp;
+
+		TimeDatagram	 TDG;
+
+		TDG.mServerTimestamp = qToBigEndian<qint64>( mServerTimestamp );
+		TDG.mClientTimestamp = qToBigEndian<qint64>( mClientTimestamp );
+
+		if( mResponseSocket->writeDatagram( (const char *)&TDG, sizeof( TDG ), mServerAddress, mServerPort ) == sizeof( TDG ) )
+		{
+//			mServerTimestamp = 0;
+		}
+	}
+
+	QTimer::singleShot( qMax( 2500LL, 5000LL - ( QDateTime::currentMSecsSinceEpoch() % 5000LL ) ), this, SLOT(sendPing()) );
+}
+
+void TimeSync::setServer( const QString &pServer, int pPort )
+{
+	mServerAddress = pServer;
+	mServerPort    = pPort;
 }

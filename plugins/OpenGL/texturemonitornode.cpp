@@ -120,11 +120,12 @@ void TextureMonitorNode::paintGL()
 
 	if( !mVBO )
 	{
-		float Vertices[] = {
+		float Vertices[] =
+		{
 			-1, -1,
-			-1, 1,
-			1, -1,
-			1, 1
+			-1,  1,
+			 1, -1,
+			 1,  1
 		};
 
 		glGenBuffers( 1, &mVBO );
@@ -146,7 +147,6 @@ void TextureMonitorNode::paintGL()
 				"{\n"
 				"	gl_Position = vec4( position, 0.0, 1.0 );\n"
 				"	tpos = ( position * 0.5 ) + 0.5;\n"
-				"	tpos.y = 1.0 - tpos.y;\n"
 				"}\n";
 
 		GLuint vertexShader = glCreateShader( GL_VERTEX_SHADER );
@@ -198,7 +198,9 @@ void TextureMonitorNode::paintGL()
 
 		glLinkProgram( mProgram );
 
-		glGetShaderiv( mProgram, GL_LINK_STATUS, &status );
+		OPENGL_PLUGIN_DEBUG;
+
+		glGetProgramiv( mProgram, GL_LINK_STATUS, &status );
 
 		if( !status )
 		{

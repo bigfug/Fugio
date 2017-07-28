@@ -11,6 +11,7 @@
 #include <QCommandLineParser>
 #include <QThread>
 #include <QApplication>
+#include <QHostInfo>
 
 #include <fugio/global.h>
 
@@ -21,6 +22,7 @@
 #include <fugio/global_signals.h>
 
 #include "timesync.h"
+#include "universe.h"
 
 class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public fugio::GlobalInterface
 {
@@ -66,6 +68,8 @@ public:
 		return( mGlobalTimer.elapsed() );
 	}
 
+	virtual void setUniversalTimeServer( const QString &pString, int pPort ) Q_DECL_OVERRIDE;
+
 	virtual qint64 universalTimestamp( void ) const Q_DECL_OVERRIDE
 	{
 		return( mUniversalTimer.elapsed() + mUniversalOffset );
@@ -91,6 +95,21 @@ public:
 #else
 		return( QApplication::instance()->thread() );
 #endif
+	}
+
+	virtual void sendToUniverse( qint64 pTimeStamp, const QUuid &pUuid, const QString &pName, const QUuid &pType, const QByteArray &pByteArray ) Q_DECL_OVERRIDE
+	{
+		mUniverse.addData( pTimeStamp, pUuid, pName, pType, pByteArray );
+	}
+
+	virtual qint64 universeData( qint64 pTimeStamp, const QUuid &pUuid, QString &pName, QUuid &pType, QByteArray &pByteArray ) const Q_DECL_OVERRIDE
+	{
+		return( mUniverse.data( pTimeStamp, pUuid, pName, pType, pByteArray ) );
+	}
+
+	virtual QList<UniverseEntry> universeEntries( void ) const Q_DECL_OVERRIDE
+	{
+		return( mUniverse.entries() );
 	}
 
 	//-------------------------------------------------------------------------
@@ -225,6 +244,8 @@ signals:
 private slots:
 	void timeout( void );
 
+	void universalServerLookup( const QHostInfo &pHost );
+
 private:
 	static GlobalPrivate			*mInstance;
 
@@ -264,6 +285,9 @@ private:
 #endif
 
 	TimeSync						*mTimeSync;
+	int								 mTimeSyncPort;
+
+	Universe						 mUniverse;
 };
 
 #if defined( GLOBAL_THREADED )

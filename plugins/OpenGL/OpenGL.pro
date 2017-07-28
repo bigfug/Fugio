@@ -61,7 +61,8 @@ SOURCES += openglplugin.cpp \
 	cubemaprendernode.cpp \
 	textureclonenode.cpp \
     texturemonitornode.cpp \
-    texturemonitor.cpp
+    texturemonitor.cpp \
+    rendertotexturenode.cpp
 
 HEADERS +=\
 	texturenode.h \
@@ -119,7 +120,8 @@ HEADERS +=\
 	cubemaprendernode.h \
 	textureclonenode.h \
     texturemonitornode.h \
-    texturemonitor.h
+    texturemonitor.h \
+    rendertotexturenode.h
 
 FORMS += \
 	texturenodeform.ui \

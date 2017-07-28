@@ -3,24 +3,23 @@
 
 #include <QtEndian>
 #include <QNetworkDatagram>
+#include <QHostInfo>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
-	ui(new Ui::MainWindow), mPort( 45454 )
+	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
 
-	mUniverseTimer.start();
+	mNetworkStatusLabel = new QLabel( "Initialising" );
 
-	groupAddress = QHostAddress( "239.255.43.21" );
+	ui->mStatusBar->addPermanentWidget( mNetworkStatusLabel );
 
-	timer = new QTimer( this );
+	connect( &mNAM, &QNetworkAccessManager::networkAccessibleChanged, this, &MainWindow::networkAccessibility );
 
-	udpSocket = new QUdpSocket( this );
+	connect( &mTimeServer, &TimeServer::clientResponse, this, &MainWindow::clientUpdate );
 
-	connect( timer, SIGNAL(timeout()), this, SLOT(sendTime()) );
-
-	connect( udpSocket, SIGNAL(readyRead()), this, SLOT(responseReady()) );
+	QTimer::singleShot( 1000, this, SLOT(sendTime()) );
 }
 
 MainWindow::~MainWindow()
@@ -28,54 +27,173 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
-void MainWindow::on_mButton_clicked( bool checked )
+QString MainWindow::logtime()
 {
-    if( checked )
-	{
-		timer->start( 1000 );
-	}
-	else
-	{
-		timer->stop();
-	}
+	return( QDateTime::currentDateTimeUtc().toString( "HH:mm:ss.zzz" ) );
 }
 
 void MainWindow::sendTime()
 {
-	TimeDatagram		TDG;
+	qint64				TS = mTimeServer.timestamp();
 
-	TDG.mServerTimestamp = mUniverseTimer.elapsed();
+	if( mNAM.networkAccessible() != QNetworkAccessManager::Accessible )
+	{
+		QPalette Palette;
 
-//	qDebug() << TDG.mServerTimestamp;
+		Palette.setColor( QPalette::Window,     Qt::red );
+		Palette.setColor( QPalette::WindowText, Qt::white );
 
-	TDG.mServerTimestamp = qToBigEndian<qint64>( TDG.mServerTimestamp );
-	TDG.mClientTimestamp = 0;
+		mNetworkStatusLabel->setPalette( Palette );
+		mNetworkStatusLabel->setAutoFillBackground( true );
+		mNetworkStatusLabel->setText( "No Network" );
+	}
+	else if( ui->mButton->isChecked() )
+	{
+		mNetworkStatusLabel->setText( QString( "%1" ).arg( TS ) );
 
-	udpSocket->writeDatagram( reinterpret_cast<const char *>( &TDG ), sizeof( TDG ), groupAddress, mPort );
+		mTimeCast.sendTime( TS );
+
+		QPalette Palette;
+
+		Palette.setColor( QPalette::Window,     Qt::darkGreen );
+		Palette.setColor( QPalette::WindowText, Qt::white );
+
+		mNetworkStatusLabel->setPalette( Palette );
+		mNetworkStatusLabel->setAutoFillBackground( true );
+	}
+	else
+	{
+		QPalette Palette;
+
+		Palette.setColor( QPalette::Window,     Qt::gray );
+		Palette.setColor( QPalette::WindowText, Qt::black );
+
+		mNetworkStatusLabel->setPalette( Palette );
+		mNetworkStatusLabel->setAutoFillBackground( true );
+		mNetworkStatusLabel->setText( "Not Enabled" );
+	}
+
+	for( SocketEntry &SE : mSocketEntries )
+	{
+		QString		Label = QString( "%1 - RTT min: %2 avg: %3 max: %4" ).arg( SE.mName ).arg( SE.mRTTMin ).arg( SE.mRTTAvg ).arg( SE.mRTTMax );
+
+		if( SE.mListItem && SE.mListItem->text() != Label )
+		{
+			SE.mListItem->setText( Label );
+		}
+
+		if( TS - SE.mTimestamp >= 10000 )
+		{
+			if( SE.mListItem )
+			{
+				ui->mClientList->removeItemWidget( SE.mListItem );
+
+				delete SE.mListItem;
+
+				SE.mListItem = 0;
+			}
+		}
+		else if( !SE.mListItem )
+		{
+			SE.mListItem = new QListWidgetItem( Label );
+
+			ui->mClientList->addItem( SE.mListItem );
+		}
+		else if( TS - SE.mTimestamp >= 5000 )
+		{
+			SE.mListItem->setForeground( Qt::gray );
+		}
+		else if( SE.mListItem )
+		{
+			SE.mListItem->setForeground( Qt::black );
+		}
+	}
+
+	qint64	t = QDateTime::currentMSecsSinceEpoch();
+
+	QTimer::singleShot( qMax( 500LL, 1000LL - ( t % 1000LL ) ), this, SLOT(sendTime()) );
 }
 
-void MainWindow::responseReady()
+void MainWindow::networkAccessibility( QNetworkAccessManager::NetworkAccessibility pNA )
 {
-	TimeDatagram		TDG;
+	qDebug() << logtime() << "networkAccessibility" << pNA;
+}
 
-	while( udpSocket->hasPendingDatagrams() )
+void MainWindow::hostLookup( const QHostInfo &pHost )
+{
+	for( SocketEntry &SE : mSocketEntries )
 	{
-		QNetworkDatagram	DG = udpSocket->receiveDatagram();
-
-		if( !DG.isValid() || DG.data().size() != sizeof( TimeDatagram ) )
+		if( SE.mLookupId != pHost.lookupId() )
 		{
 			continue;
 		}
 
-		memcpy( &TDG, DG.data(), sizeof( TDG ) );
-
-//		qDebug() << "PING" << DG.senderAddress() << DG.senderPort() << qFromBigEndian<qint64>( TDG.mClientTimestamp );
-
-		TDG.mServerTimestamp = qToBigEndian<qint64>( mUniverseTimer.elapsed() );
-
-		if( udpSocket->writeDatagram( (const char *)&TDG, sizeof( TDG ), DG.senderAddress(), DG.senderPort() ) != sizeof( TimeDatagram ) )
+		if( pHost.error() != QHostInfo::NoError )
 		{
-			qWarning() << "Couldn't write packet";
+			qDebug() << logtime() << "Couldn't lookup:" << SE.mAddress.toString();
+
+			continue;
 		}
+
+		qDebug() << logtime() << "Resolved:" << SE.mAddress.toString() << "to" << pHost.hostName();
+
+		SE.mName = QString( "%1:%2" ).arg( pHost.hostName() ).arg( SE.mPort );
+
+		break;
+	}
+}
+
+void MainWindow::clientUpdate( const QHostAddress &pAddr, int pPort, qint64 pTimestamp, qint64 pRTT )
+{
+	// Record the client entry
+
+	pTimestamp = mTimeServer.timestamp();
+
+	bool			SocketEntryFound = false;
+
+	for( SocketEntry &SE : mSocketEntries )
+	{
+		if( SE.mAddress == pAddr && SE.mPort == pPort )
+		{
+			SE.mTimestamp = pTimestamp;
+
+			SE.mRTTEnt.append( pRTT );
+
+			if( SE.mRTTEnt.size() > 15 )
+			{
+				SE.mRTTEnt.removeFirst();
+			}
+
+			QList<qint64>	RTTSrt = SE.mRTTEnt;
+
+			std::sort( RTTSrt.begin(), RTTSrt.end() );
+
+			SE.mRTTAvg = RTTSrt[ RTTSrt.size() / 2 ];
+			SE.mRTTMin = RTTSrt.first();
+			SE.mRTTMax = RTTSrt.last();
+
+			SocketEntryFound = true;
+
+			break;
+		}
+	}
+
+	if( !SocketEntryFound )
+	{
+		SocketEntry		SE;
+
+		SE.mAddress   = pAddr;
+		SE.mPort      = pPort;
+		SE.mTimestamp = pTimestamp;
+		SE.mListItem  = 0;
+		SE.mName      = QString( "%1:%2" ).arg( SE.mAddress.toString() ).arg( SE.mPort );
+		SE.mLookupId  = QHostInfo::lookupHost( pAddr.toString(), this, SLOT(hostLookup(QHostInfo)) );
+		SE.mRTTMin    = pRTT;
+		SE.mRTTMax    = pRTT;
+		SE.mRTTAvg    = pRTT;
+
+		SE.mRTTEnt << pRTT;
+
+		mSocketEntries << SE;
 	}
 }

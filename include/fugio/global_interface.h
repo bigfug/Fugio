@@ -96,6 +96,17 @@ public:
 	virtual void clear( void ) = 0;
 
 	virtual qint64 timestamp( void ) const = 0;				// arbitrary global timestamp that always increases (only valid on local machine)
+
+	virtual void start( void ) = 0;
+	virtual void stop( void ) = 0;
+
+	virtual QThread *thread( void ) = 0;
+
+	//-------------------------------------------------------------------------
+	// Universe
+
+	virtual void setUniversalTimeServer( const QString &pString, int pPort ) = 0;
+
 	virtual qint64 universalTimestamp( void ) const = 0;	// can't be compared with timestamp(), can jump forward and back
 
 	// convert between global and universal timestamps
@@ -103,10 +114,18 @@ public:
 	virtual qint64 universalToGlobal( qint64 pTimeStamp ) const = 0;
 	virtual qint64 globalToUniversal( qint64 pTimeStamp ) const = 0;
 
-	virtual void start( void ) = 0;
-	virtual void stop( void ) = 0;
+	virtual void sendToUniverse( qint64 pTimeStamp, const QUuid &pUuid, const QString &pName, const QUuid &pType, const QByteArray &pByteArray ) = 0;
 
-	virtual QThread *thread( void ) = 0;
+	virtual qint64 universeData( qint64 pTimeStamp, const QUuid &pUuid, QString &pName, QUuid &pType, QByteArray &pByteArray ) const = 0;
+
+	typedef struct UniverseEntry
+	{
+		QString				mName;
+		QUuid				mUuid;
+		QUuid				mType;
+	} UniverseEntry;
+
+	virtual QList<UniverseEntry> universeEntries( void ) const = 0;
 
 	//-------------------------------------------------------------------------
 	// Pause global execution

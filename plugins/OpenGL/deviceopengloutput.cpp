@@ -54,21 +54,6 @@ QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( void )
 		NewDev->setHeight( 480 );
 
 		NewDev->show();
-
-#if defined( OPENGL_DEBUG_ENABLE )
-		if( !mDebugLogger )
-		{
-			if( ( mDebugLogger = new QOpenGLDebugLogger( NewDev.data() ) ) != nullptr )
-			{
-				if( mDebugLogger->initialize() )
-				{
-					connect( mDebugLogger, &QOpenGLDebugLogger::messageLogged, NewDev.data(), &DeviceOpenGLOutput::handleLoggedMessage );
-
-					mDebugLogger->startLogging( QOpenGLDebugLogger::SynchronousLogging );
-				}
-			}
-		}
-#endif
 	}
 
 	return( NewDev );
@@ -345,6 +330,21 @@ void DeviceOpenGLOutput::exposeEvent( QExposeEvent * )
 		makeCurrent();
 
 		OpenGLPlugin::initGLEW();
+
+#if defined( OPENGL_DEBUG_ENABLE )
+		if( !mDebugLogger )
+		{
+			if( ( mDebugLogger = new QOpenGLDebugLogger( this ) ) != nullptr )
+			{
+				if( mDebugLogger->initialize() )
+				{
+					connect( mDebugLogger, &QOpenGLDebugLogger::messageLogged, this, &DeviceOpenGLOutput::handleLoggedMessage );
+
+					mDebugLogger->startLogging( QOpenGLDebugLogger::SynchronousLogging );
+				}
+			}
+		}
+#endif
 
 		if( OpenGLPlugin::instance()->openWindowFullScreen() )
 		{

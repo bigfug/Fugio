@@ -365,12 +365,12 @@ void NodeItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 
 	Menu.addAction( tr( "Set Colour..." ), this, SLOT(menuSetColour()) );
 
-	if( NODE && !NODE->control()->pinAddTypesInput().isEmpty() && ( Action = Menu.addAction( tr( "Add Input Pin..." ) ) ) )
+	if( NODE && ( NODE->control()->mustChooseNamedInputPin() || !NODE->control()->pinAddTypesInput().isEmpty() ) && ( Action = Menu.addAction( tr( "Add Input Pin..." ) ) ) )
 	{
 		connect( Action, SIGNAL(triggered()), this, SLOT(menuAddInputPin()) );
 	}
 
-	if( NODE && !NODE->control()->pinAddTypesOutput().isEmpty() && ( Action = Menu.addAction( tr( "Add Output Pin..." ) ) ) )
+	if( NODE && ( NODE->control()->mustChooseNamedOutputPin() || !NODE->control()->pinAddTypesOutput().isEmpty() ) && ( Action = Menu.addAction( tr( "Add Output Pin..." ) ) ) )
 	{
 		connect( Action, SIGNAL(triggered()), this, SLOT(menuAddOutputPin()) );
 	}
@@ -1166,7 +1166,8 @@ void NodeItem::menuAddOutputPin()
 	}
 
 	QString		PIN_NAME;
-	QUuid		PIN_UUID;
+	QUuid		Type;
+	QUuid		Uuid = QUuid::createUuid();
 	bool		OK;
 
 	if( !PinLst.isEmpty() )
@@ -1184,7 +1185,7 @@ void NodeItem::menuAddOutputPin()
 
 		if( PinLstOut.size() == 1 )
 		{
-			PIN_UUID = PinLstOut.first();
+			Type = PinLstOut.first();
 		}
 		else
 		{
@@ -1192,13 +1193,13 @@ void NodeItem::menuAddOutputPin()
 			{
 				if( PinEnt.mName == PIN_NAME )
 				{
-					PIN_UUID = PinEnt.mType;
+					Type = PinEnt.mType;
 
 					break;
 				}
 			}
 
-			if( PIN_UUID.isNull() )
+			if( Type.isNull() )
 			{
 				QMap<QUuid,QString>		PinIds = gApp->global().pinIds();
 				QStringList				PinTypes;
@@ -1214,7 +1215,7 @@ void NodeItem::menuAddOutputPin()
 
 				if( OK )
 				{
-					PIN_UUID = gApp->global().findPinByClass( PinType );
+					Type = gApp->global().findPinByClass( PinType );
 				}
 			}
 		}
@@ -1222,7 +1223,20 @@ void NodeItem::menuAddOutputPin()
 
 	if( OK )
 	{
-		QSharedPointer<fugio::PinInterface>	PIN = mContextView->context()->createPin( PIN_NAME, QUuid::createUuid(), QUuid::createUuid(), PIN_OUTPUT, PIN_UUID );
+		for( const fugio::NodeControlInterface::AvailablePinEntry &APE : PinLst )
+		{
+			if( APE.mName == PIN_NAME )
+			{
+				if( !APE.mUuid.isNull() )
+				{
+					Uuid = APE.mUuid;
+				}
+
+				break;
+			}
+		}
+
+		QSharedPointer<fugio::PinInterface>	PIN = mContextView->context()->createPin( PIN_NAME, QUuid::createUuid(), Uuid, PIN_OUTPUT, Type );
 
 		if( PIN )
 		{
@@ -1234,7 +1248,6 @@ void NodeItem::menuAddOutputPin()
 			}
 		}
 	}
-
 }
 
 void NodeItem::menuDelete()

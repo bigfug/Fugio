@@ -108,6 +108,11 @@ public:
 		return( mNode );
 	}
 
+	virtual QSharedPointer<fugio::NodeInterface> node( void ) const Q_DECL_OVERRIDE
+	{
+		return( mNode );
+	}
+
 	virtual void inputsUpdated( qint64 ) Q_DECL_OVERRIDE
 	{
 	}

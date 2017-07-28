@@ -19,6 +19,7 @@ class ColourPin : public fugio::PinControlBase, public fugio::ColourInterface, p
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::ColourInterface fugio::VariantInterface fugio::SerialiseInterface )
+	Q_PROPERTY( QColor mColour READ colour WRITE setColour NOTIFY colourChanged )
 
 public:
 	Q_INVOKABLE explicit ColourPin( QSharedPointer<fugio::PinInterface> pPin );
@@ -41,12 +42,17 @@ public:
 	//-------------------------------------------------------------------------
 	// InterfaceColour
 
-	virtual void setColour( const QColor &pColour ) Q_DECL_OVERRIDE
+	Q_INVOKABLE virtual void setColour( const QColor &pColour ) Q_DECL_OVERRIDE
 	{
-		mColour = pColour;
+		if( pColour != mColour )
+		{
+			mColour = pColour;
+
+			emit colourChanged( mColour );
+		}
 	}
 
-	virtual QColor colour( void ) const Q_DECL_OVERRIDE
+	Q_INVOKABLE virtual QColor colour( void ) const Q_DECL_OVERRIDE
 	{
 		return( mColour );
 	}
@@ -96,8 +102,15 @@ public:
 
 	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE
 	{
-		pDataStream >> mColour;
+		QColor	C;
+
+		pDataStream >> C;
+
+		setColour( C );
 	}
+
+signals:
+	void colourChanged( const QColor &pColour );
 
 private:
 	QColor			mColour;

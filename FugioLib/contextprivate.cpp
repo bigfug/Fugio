@@ -365,14 +365,10 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 
 bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeList ) const
 {
-	QTemporaryDir			 TmpDir;
-	QString					 TmpFileName = TmpDir.filePath( "save.fug" );
+	QFileInfo				 FileInfo( pFileName );
+	QString					 TmpFileName = FileInfo.absoluteFilePath().append( ".out" );
 
-	if( !TmpDir.isValid() )
-	{
-		return( false );
-	}
-	else
+	if( true )
 	{
 		QSettings				 CFG( TmpFileName, QSettings::IniFormat );
 
@@ -503,12 +499,11 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 		emit saveEnd( CFG );
 	}
 
-	QFileInfo	FI( pFileName );
 	QString		TmpOld;
 
-	if( FI.exists() )
+	if( FileInfo.exists() )
 	{
-		TmpOld = FI.dir().absoluteFilePath( FI.completeBaseName() ).append( ".tmp" );
+		TmpOld = FileInfo.dir().absoluteFilePath( FileInfo.completeBaseName() ).append( ".old" );
 
 		if( !QFile::rename( pFileName, TmpOld ) )
 		{
@@ -577,9 +572,14 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 		DstDat.close();
 	}
 
-	if( !TmpOld.isEmpty() && !QFile::remove( TmpOld ) )
+	if( !QFile::remove( TmpFileName ) )
 	{
 		qWarning() << "Couldn't remove temporary file";
+	}
+
+	if( !TmpOld.isEmpty() && !QFile::remove( TmpOld ) )
+	{
+		qWarning() << "Couldn't remove old file";
 	}
 
 	return( true );

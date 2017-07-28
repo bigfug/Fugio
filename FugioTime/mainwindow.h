@@ -6,16 +6,17 @@
 #include <QTimer>
 #include <QHostAddress>
 #include <QElapsedTimer>
+#include <QNetworkAccessManager>
+#include <QListWidgetItem>
+#include <QHostInfo>
+#include <QLabel>
+
+#include "timecast.h"
+#include "timeserver.h"
 
 namespace Ui {
 class MainWindow;
 }
-
-typedef struct TimeDatagram
-{
-	qint64		mServerTimestamp;
-	qint64		mClientTimestamp;
-} TimeDatagram;
 
 class MainWindow : public QMainWindow
 {
@@ -25,20 +26,41 @@ public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
 
-private slots:
-	void on_mButton_clicked(bool checked);
+private:
+	static QString logtime( void );
 
+private slots:
 	void sendTime( void );
 
-	void responseReady( void );
+//	void responseReady( void );
+
+	void networkAccessibility( QNetworkAccessManager::NetworkAccessibility pNA );
+
+	void hostLookup( const QHostInfo &pHost );
+
+	void clientUpdate( const QHostAddress &pAddr, int pPort, qint64 pTimestamp, qint64 pRTT );
 
 private:
-	Ui::MainWindow		*ui;
-	int					 mPort;
-	QUdpSocket			*udpSocket;
-	QTimer				*timer;
-	QHostAddress		 groupAddress;
-	QElapsedTimer		 mUniverseTimer;
+	Ui::MainWindow			*ui;
+	QNetworkAccessManager	 mNAM;
+	QLabel					*mNetworkStatusLabel;
+
+	typedef struct SocketEntry
+	{
+		QHostAddress		 mAddress;
+		int					 mPort;
+		qint64				 mTimestamp;
+		QListWidgetItem		*mListItem;
+		QString				 mName;
+		int					 mLookupId;
+		qint64				 mRTTMin, mRTTMax, mRTTAvg;
+		QList<qint64>		 mRTTEnt;
+	} SocketEntry;
+
+	QList<SocketEntry>		 mSocketEntries;
+
+	TimeCast				 mTimeCast;
+	TimeServer				 mTimeServer;
 };
 
 #endif // MAINWINDOW_H
