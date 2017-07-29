@@ -67,9 +67,10 @@ void CodeEditor::highlightCurrentLine()
 	{
 		QTextEdit::ExtraSelection selection;
 
-		QColor lineColor = QColor( Qt::yellow ).lighter(160);
+		//QColor lineColor = QColor( Qt::yellow ).lighter(160);
 
-		selection.format.setBackground(lineColor);
+		selection.format.setBackground( palette().highlight() );
+		selection.format.setForeground( palette().highlightedText() );
 		selection.format.setProperty(QTextFormat::FullWidthSelection, true);
 		selection.cursor = textCursor();
 		selection.cursor.clearSelection();
@@ -82,7 +83,8 @@ void CodeEditor::highlightCurrentLine()
 void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
 {
 	QPainter painter( lineNumberArea );
-	painter.fillRect(event->rect(), Qt::lightGray);
+	//painter.fillRect(event->rect(), Qt::lightGray);
+	painter.fillRect( event->rect(), lineNumberArea->palette().base() );
 
 	QTextBlock block = firstVisibleBlock();
 	int blockNumber = block.blockNumber();
@@ -95,7 +97,7 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
 		{
 			QString number = QString::number( blockNumber + 1 );
 
-			painter.setPen( Qt::black );
+			painter.setPen( lineNumberArea->palette().text().color() );
 
 			for( const fugio::SyntaxError &SE : mSyntaxErrors )
 			{

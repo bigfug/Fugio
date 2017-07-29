@@ -9,8 +9,15 @@ class LineNumberArea : public QWidget
 	Q_OBJECT
 
 public:
-	LineNumberArea(CodeEditor *editor) : QWidget(editor) {
+	LineNumberArea(CodeEditor *editor) : QWidget(editor)
+	{
 		codeEditor = editor;
+
+		QPalette	P = palette();
+
+		P.setColor( QPalette::Base, QColor( "darkgray" ) );
+
+		setPalette( P );
 	}
 
 	QSize sizeHint() const {
