@@ -195,6 +195,25 @@ int LuaArray::luaSet( lua_State *L )
 
 void LuaArray::setArrayIndex( lua_State *L, fugio::ArrayInterface *ArrInt, int LstIdx, int ValIdx )
 {
+	if( ArrInt->type() == QMetaType::QLineF )
+	{
+		QLineF		*A = (QLineF *)ArrInt->array();
+
+		if( A && ArrInt->stride() == sizeof( QLineF ) )
+		{
+			QVariant	V = LuaPlugin::popVariant( L, ValIdx );
+
+			if( QMetaType::Type( V.type() ) == ArrInt->type() )
+			{
+				QLineF	L = V.toLineF();
+
+				memcpy( &A[ LstIdx ], &L, sizeof( QLineF ) );
+			}
+		}
+
+		return;
+	}
+
 	if( ArrInt->type() == QMetaType::Float )
 	{
 		float		*A = (float *)ArrInt->array();
@@ -224,6 +243,8 @@ void LuaArray::setArrayIndex( lua_State *L, fugio::ArrayInterface *ArrInt, int L
 				}
 			}
 		}
+
+		return;
 	}
 
 	if( ArrInt->type() == QMetaType::Int )
@@ -264,7 +285,7 @@ void LuaArray::setArrayIndex( lua_State *L, fugio::ArrayInterface *ArrInt, int L
 	{
 		pushFloatArray( L, (float *)ArrInt->array(), LstIdx, 3 );
 	}
-	else if( ArrInt->type() == QMetaType::QVector4D || ArrInt->type() == QMetaType::QColor )
+	else if( ArrInt->type() == QMetaType::QVector4D || ArrInt->type() == QMetaType::QColor || ArrInt->type() == QMetaType::QLineF )
 	{
 		pushFloatArray( L, (float *)ArrInt->array(), LstIdx, 4 );
 	}
@@ -488,6 +509,58 @@ int LuaArray::luaToArray( lua_State *L )
 
 			return( 1 );
 		}
+
+		if( ArrInt->type() == QMetaType::QLine )
+		{
+			const int	*A = (const int *)ArrInt->array();
+
+			lua_newtable( L );
+
+			if( ArrInt->size() == 1 )
+			{
+				for( int i = 0 ; i < ArrInt->count() ; i++ )
+				{
+					lua_newtable( L );
+
+					for( int j = 0 ; j < 4 ; j++ )
+					{
+						lua_pushinteger( L, A[ ( i * 4 ) + j ] );
+
+						lua_rawseti( L, -2, j + 1 );
+					}
+
+					lua_rawseti( L, -2, i + 1 );
+				}
+			}
+
+			return( 1 );
+		}
+
+		if( ArrInt->type() == QMetaType::QLineF )
+		{
+			const float	*A = (const float *)ArrInt->array();
+
+			lua_newtable( L );
+
+			if( ArrInt->size() == 1 )
+			{
+				for( int i = 0 ; i < ArrInt->count() ; i++ )
+				{
+					lua_newtable( L );
+
+					for( int j = 0 ; j < 4 ; j++ )
+					{
+						lua_pushnumber( L, A[ ( i * 4 ) + j ] );
+
+						lua_rawseti( L, -2, j + 1 );
+					}
+
+					lua_rawseti( L, -2, i + 1 );
+				}
+			}
+
+			return( 1 );
+		}
 	}
 
 	fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( ArrDat->mObject );
@@ -521,13 +594,6 @@ int LuaArray::luaResize( lua_State *L )
 		return( luaL_error( L, "Can't resize array list (yet)" ) );
 	}
 
-	fugio::ArrayInterface		*LstInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
-
-	if( !LstInt )
-	{
-		return( luaL_error( L, "No list" ) );
-	}
-
 	if( LstDat->mReadOnly )
 	{
 		return( luaL_error( L, "Can't resize input list" ) );
@@ -538,14 +604,30 @@ int LuaArray::luaResize( lua_State *L )
 		return( luaL_error( L, "Invalid list size: %d", LstSiz ) );
 	}
 
-	if( LstInt->type() == QMetaType::UnknownType )
+	fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
+
+	if( ArrInt )
 	{
-		return( luaL_error( L, "Array has unknown type" ) );
+		if( ArrInt->type() == QMetaType::UnknownType )
+		{
+			return( luaL_error( L, "Array has unknown type" ) );
+		}
+
+		if( ArrInt->count() != LstSiz )
+		{
+			ArrInt->setCount( LstSiz );
+		}
+
+		return( 0 );
 	}
 
-	if( LstInt->count() != LstSiz )
+	fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( LstDat->mObject );
+
+	if( LstInt )
 	{
-		LstInt->setCount( LstSiz );
+		LstInt->listSetSize( LstSiz );
+
+		return( 0 );
 	}
 
 	return( 0 );
@@ -590,7 +672,7 @@ int LuaArray::luaReserve( lua_State *L )
 	return( 0 );
 }
 
-int LuaArray::luaSetCount(lua_State *L)
+int LuaArray::luaSetCount( lua_State *L )
 {
 	LuaArrayUserData		*LstDat = checkarray( L );
 	const int				 LstCnt = lua_tointeger( L, 2 );
@@ -631,75 +713,87 @@ int LuaArray::luaSetType( lua_State *L )
 		return( luaL_error( L, "Can't setType on array list" ) );
 	}
 
-	fugio::ArrayInterface		*LstInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
-
-	if( !LstInt )
-	{
-		return( luaL_error( L, "No array" ) );
-	}
-
 	if( LstDat->mReadOnly )
 	{
 		return( luaL_error( L, "Can't set type on input array" ) );
 	}
 
-	if( strcmp( LstTyp, "float" ) == 0 )
+	fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
+
+	if( ArrInt )
 	{
-		LstInt->setType( QMetaType::Float );
-		LstInt->setStride( sizeof( float ) );
-		LstInt->setSize( 1 );
-	}
-	else if( strcmp( LstTyp, "int" ) == 0 )
-	{
-		LstInt->setType( QMetaType::Int );
-		LstInt->setStride( sizeof( int ) );
-		LstInt->setSize( 1 );
-	}
-	else if( strcmp( LstTyp, "point" ) == 0 )
-	{
-		LstInt->setType( QMetaType::QPointF );
-		LstInt->setStride( sizeof( float ) * 2 );
-		LstInt->setSize( 1 );
-	}
-	else if( strcmp( LstTyp, "vec2" ) == 0 )
-	{
-		LstInt->setType( QMetaType::QVector2D );
-		LstInt->setStride( sizeof( float ) * 2 );
-		LstInt->setSize( 1 );
-	}
-	else if( strcmp( LstTyp, "vec3" ) == 0 )
-	{
-		LstInt->setType( QMetaType::QVector3D );
-		LstInt->setStride( sizeof( float ) * 3 );
-		LstInt->setSize( 1 );
-	}
-	else if( strcmp( LstTyp, "vec4" ) == 0 )
-	{
-		LstInt->setType( QMetaType::QVector4D );
-		LstInt->setStride( sizeof( float ) * 4 );
-		LstInt->setSize( 1 );
-	}
-	else if( strcmp( LstTyp, "mat4" ) == 0 )
-	{
-		LstInt->setType( QMetaType::QMatrix4x4 );
-		LstInt->setStride( sizeof( float ) * 4 * 4 );
-		LstInt->setSize( 1 );
-	}
-	else if( strcmp( LstTyp, "rect" ) == 0 )
-	{
-		LstInt->setType( QMetaType::QRect );
-		LstInt->setStride( sizeof( QRect ) );
-		LstInt->setSize( 1 );
-	}
-	else if( strcmp( LstTyp, "rectf" ) == 0 )
-	{
-		LstInt->setType( QMetaType::QRectF );
-		LstInt->setStride( sizeof( QRectF ) );
-		LstInt->setSize( 1 );
-	}
-	else
-	{
-		return( luaL_error( L, "Unknown list type: %s", LstTyp ) );
+		if( strcmp( LstTyp, "float" ) == 0 )
+		{
+			ArrInt->setType( QMetaType::Float );
+			ArrInt->setStride( sizeof( float ) );
+			ArrInt->setSize( 1 );
+		}
+		else if( strcmp( LstTyp, "int" ) == 0 )
+		{
+			ArrInt->setType( QMetaType::Int );
+			ArrInt->setStride( sizeof( int ) );
+			ArrInt->setSize( 1 );
+		}
+		else if( strcmp( LstTyp, "point" ) == 0 )
+		{
+			ArrInt->setType( QMetaType::QPointF );
+			ArrInt->setStride( sizeof( float ) * 2 );
+			ArrInt->setSize( 1 );
+		}
+		else if( strcmp( LstTyp, "vec2" ) == 0 )
+		{
+			ArrInt->setType( QMetaType::QVector2D );
+			ArrInt->setStride( sizeof( float ) * 2 );
+			ArrInt->setSize( 1 );
+		}
+		else if( strcmp( LstTyp, "vec3" ) == 0 )
+		{
+			ArrInt->setType( QMetaType::QVector3D );
+			ArrInt->setStride( sizeof( float ) * 3 );
+			ArrInt->setSize( 1 );
+		}
+		else if( strcmp( LstTyp, "vec4" ) == 0 )
+		{
+			ArrInt->setType( QMetaType::QVector4D );
+			ArrInt->setStride( sizeof( float ) * 4 );
+			ArrInt->setSize( 1 );
+		}
+		else if( strcmp( LstTyp, "mat4" ) == 0 )
+		{
+			ArrInt->setType( QMetaType::QMatrix4x4 );
+			ArrInt->setStride( sizeof( float ) * 4 * 4 );
+			ArrInt->setSize( 1 );
+		}
+		else if( strcmp( LstTyp, "rect" ) == 0 )
+		{
+			ArrInt->setType( QMetaType::QRect );
+			ArrInt->setStride( sizeof( QRect ) );
+			ArrInt->setSize( 1 );
+		}
+		else if( strcmp( LstTyp, "rectf" ) == 0 )
+		{
+			ArrInt->setType( QMetaType::QRectF );
+			ArrInt->setStride( sizeof( QRectF ) );
+			ArrInt->setSize( 1 );
+		}
+		else if( strcmp( LstTyp, "line" ) == 0 )
+		{
+			ArrInt->setType( QMetaType::QLine );
+			ArrInt->setStride( sizeof( QLine ) );
+			ArrInt->setSize( 1 );
+		}
+		else if( strcmp( LstTyp, "linef" ) == 0 )
+		{
+			ArrInt->setType( QMetaType::QLineF );
+			ArrInt->setStride( sizeof( QLineF ) );
+			ArrInt->setSize( 1 );
+		}
+		else
+		{
+			return( luaL_error( L, "Unknown list type: %s", LstTyp ) );
+		}
+
+		return( 0 );
 	}
 
 	return( 0 );

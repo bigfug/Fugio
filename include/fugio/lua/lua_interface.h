@@ -39,6 +39,8 @@ class LuaInterface
 public:
 	typedef int (*luaPinGetFunc)( const QUuid &pPinLocalId, lua_State *L );
 	typedef int (*luaPinSetFunc)( const QUuid &pPinLocalId, lua_State *L, int pIndex );
+	typedef int (*luaPushVariantFunc)( lua_State *L, const QVariant &V );
+	typedef QVariant (*luaPopVariantFunc)( lua_State *L, int pIndex );
 
 	virtual ~LuaInterface( void ) {}
 
@@ -57,6 +59,9 @@ public:
 	virtual void luaAddPinGet( const QUuid &pPID, luaPinGetFunc pFunction ) = 0;
 
 	virtual void luaAddPinSet( const QUuid &pPID, luaPinSetFunc pFunction ) = 0;
+
+	virtual void luaAddPushVariantFunction( QMetaType::Type pType, luaPushVariantFunc pFunction ) = 0;
+	virtual void luaAddPopVariantFunction( QString pTypeName, luaPopVariantFunc pFunction ) = 0;
 
 	// methods callable from static Lua functions
 
