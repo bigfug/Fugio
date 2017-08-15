@@ -23,5 +23,6 @@
 #define NID_OPENCV_CONVERT_TO			(QUuid("{953d806b-2121-4da8-a4ef-8bd8b29863c7}"))
 #define NID_OPENCV_ADD					(QUuid("{cfbea28c-51af-4c64-9240-c146931eb0d3}"))
 #define NID_OPENCV_HOUGH_LINES			(QUuid("{de93c65a-ba82-4d13-85c6-ef7b37b25caa}"))
+#define	NID_OPENCV_SIMPLE_BLOB_DETECTOR	(QUuid("{a1d01129-bd7d-4c2a-b018-bbd814db060a}"))
 
 #endif // FUGIO_OPENCV_H

@@ -25,6 +25,7 @@
 #include "addnode.h"
 #include "flipnode.h"
 #include "houghlinesnode.h"
+#include "simpleblobdetectornode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -50,6 +51,7 @@ ClassEntry	OpenCVPlugin::mNodeEntries[] =
 	ClassEntry( "Background Subtraction", "OpenCV", NID_OPENCV_BACKGROUND_SUBTRACTION, &BackgroundSubtractionNode::staticMetaObject ),
 	ClassEntry( "Resize", "OpenCV", ClassEntry::Deprecated, NID_OPENCV_RESIZE, &ResizeNode::staticMetaObject ),
 	ClassEntry( "Moments", "OpenCV", NID_OPENCV_MOMENTS, &MomentsNode::staticMetaObject ),
+	ClassEntry( "Simple Blob Detector", "OpenCV", NID_OPENCV_SIMPLE_BLOB_DETECTOR, &SimpleBlobDetectorNode::staticMetaObject ),
 	ClassEntry()
 };
 
