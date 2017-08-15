@@ -24,6 +24,7 @@
 #include "converttonode.h"
 #include "addnode.h"
 #include "flipnode.h"
+#include "houghlinesnode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -39,6 +40,7 @@ ClassEntry	OpenCVPlugin::mNodeEntries[] =
 	ClassEntry( "Find Contours", "OpenCV", NID_OPENCV_FIND_CONTOURS, &FindContoursNode::staticMetaObject ),
 	ClassEntry( "Flip", "OpenCV", NID_OPENCV_FLIP, &FlipNode::staticMetaObject ),
 	ClassEntry( "Grayscale", "OpenCV", NID_OPENCV_GRAYSCALE, &GrayscaleNode::staticMetaObject ),
+	ClassEntry( "Hough Lines", "OpenCV", NID_OPENCV_HOUGH_LINES, &HoughLinesNode::staticMetaObject ),
 	ClassEntry( "Threshold (Image)", "OpenCV", NID_OPENCV_IMAGE_THRESHOLD, &ImageThresholdNode::staticMetaObject ),
 	ClassEntry( "InPaint", "OpenCV", NID_OPENCV_INPAINT, &InPaintNode::staticMetaObject ),
 	ClassEntry( "InRange", "OpenCV", NID_OPENCV_INRANGE, &InRangeNode::staticMetaObject ),

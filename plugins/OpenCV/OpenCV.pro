@@ -36,7 +36,8 @@ SOURCES += \
 	distancetransformnode.cpp \
 	converttonode.cpp \
 	addnode.cpp \
-	flipnode.cpp
+	flipnode.cpp \
+    houghlinesnode.cpp
 
 HEADERS +=\
 	../../include/fugio/nodecontrolbase.h \
@@ -61,7 +62,8 @@ HEADERS +=\
 	distancetransformnode.h \
 	converttonode.h \
 	addnode.h \
-	flipnode.h
+	flipnode.h \
+    houghlinesnode.h
 
 RESOURCES += \
     resources.qrc
