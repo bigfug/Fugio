@@ -161,8 +161,10 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaAddPinSet( PID_LINE, LuaLine::luaPinSet );
 
 	LUA->luaAddPushVariantFunction( QMetaType::QLineF, LuaLine::pushVariant );
+	LUA->luaAddPushVariantFunction( QMetaType::QPointF, LuaPointF::pushVariant );
 
 	LUA->luaAddPopVariantFunction( LuaLine::mTypeName, LuaLine::popVariant );
+	LUA->luaAddPopVariantFunction( LuaPointF::mTypeName, LuaPointF::popVariant );
 #endif
 
 	return( INIT_OK );

@@ -109,6 +109,10 @@ QVariant ArrayPin::listIndex( int pIndex ) const
 			V = static_cast<const QLineF *>( A )[ pIndex ];
 			break;
 
+		case QMetaType::QPointF:
+			V = static_cast<const QPointF *>( A )[ pIndex ];
+			break;
+
 		default:
 			break;
 	}

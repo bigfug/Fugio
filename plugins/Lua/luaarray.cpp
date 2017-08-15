@@ -214,6 +214,25 @@ void LuaArray::setArrayIndex( lua_State *L, fugio::ArrayInterface *ArrInt, int L
 		return;
 	}
 
+	if( ArrInt->type() == QMetaType::QPointF )
+	{
+		QPointF		*A = (QPointF *)ArrInt->array();
+
+		if( A && ArrInt->stride() == sizeof( QPointF ) )
+		{
+			QVariant	V = LuaPlugin::popVariant( L, ValIdx );
+
+			if( QMetaType::Type( V.type() ) == ArrInt->type() )
+			{
+				QPointF	P = V.toPointF();
+
+				memcpy( &A[ LstIdx ], &P, sizeof( QPointF ) );
+			}
+		}
+
+		return;
+	}
+
 	if( ArrInt->type() == QMetaType::Float )
 	{
 		float		*A = (float *)ArrInt->array();
