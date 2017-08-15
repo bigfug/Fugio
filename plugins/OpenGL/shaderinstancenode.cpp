@@ -6,6 +6,11 @@
 #include <QVector2D>
 #include <QVector3D>
 #include <QVector4D>
+#include <QOpenGLVertexArrayObject>
+
+#include <QOpenGLFunctions_2_0>
+#include <QOpenGLFunctions_3_0>
+#include <QOpenGLFunctions_3_2_Core>
 
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
@@ -90,6 +95,15 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 	if( !OpenGLPlugin::hasContextStatic() )
 	{
 		return;
+	}
+
+	initializeOpenGLFunctions();
+
+	QOpenGLFunctions_3_0			*GL30 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_0>();
+
+	if( GL30 && !GL30->initializeOpenGLFunctions() )
+	{
+		GL30 = Q_NULLPTR;
 	}
 
 	OpenGLShaderInterface	*Shader = input<OpenGLShaderInterface *>( mPinShader );
@@ -183,17 +197,15 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 	OPENGL_DEBUG( mNode->name() );
 
-#if !defined( GL_ES_VERSION_2_0 )
 	//-------------------------------------------------------------------------
 	// Bind our Vertex Array Object (if supported)
 
 	fugio::VertexArrayObjectInterface	*VAO = input<fugio::VertexArrayObjectInterface *>( mPinInputVAO );
 
-	if( VAO && VAO->vao() )
+	if( VAO )
 	{
-		glBindVertexArray( VAO->vao() );
+		VAO->vao().bind();
 	}
-#endif
 
 	//-------------------------------------------------------------------------
 
@@ -249,9 +261,9 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 				{
 					glDrawBuffer( GL_NONE );
 				}
-				else
+				else if( GL30 )
 				{
-					glDrawBuffers( Buffers.size(), Buffers.data() );
+					GL30->glDrawBuffers( Buffers.size(), Buffers.data() );
 				}
 
 				OPENGL_DEBUG( mNode->name() );
@@ -264,9 +276,9 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 					glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-					if( GLEW_ARB_vertex_array_object )
+					if( VAO )
 					{
-						glBindVertexArray( 0 );
+						VAO->vao().release();
 					}
 
 					mNode->setStatus( fugio::NodeInterface::Error );
@@ -374,18 +386,19 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 	glUseProgram( 0 );
 
-#if defined( glDrawBuffer )
-	glDrawBuffer( GL_BACK );
-#endif
+	QOpenGLFunctions_2_0	*GL20 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_2_0>();
+
+	if( GL20 && GL20->initializeOpenGLFunctions() )
+	{
+		GL20->glDrawBuffer( GL_BACK );
+	}
 
 	//-------------------------------------------------------------------------
 
-#if !defined( GL_ES_VERSION_2_0 )
-	if( GLEW_ARB_vertex_array_object )
+	if( VAO )
 	{
-		glBindVertexArray( 0 );
+		VAO->vao().release();
 	}
-#endif
 
 	OPENGL_DEBUG( mNode->name() );
 
@@ -511,7 +524,7 @@ int ShaderInstanceNode::activeBufferCount( QList< QSharedPointer<fugio::PinInter
 
 		fugio::OpenGLBufferInterface	*OutBuf = output<fugio::OpenGLBufferInterface *>( OutPin );
 
-		if( OutBuf && OutBuf->buffer() )
+		if( OutBuf && OutBuf->buffer().isCreated() )
 		{
 			ActiveBufferCount++;
 
@@ -524,6 +537,20 @@ int ShaderInstanceNode::activeBufferCount( QList< QSharedPointer<fugio::PinInter
 
 void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSharedPointer<fugio::PinInterface> > &OutPinLst, int &W, int &H, int &D )
 {
+	QOpenGLFunctions_3_0			*GL30 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_0>();
+
+	if( GL30 && !GL30->initializeOpenGLFunctions() )
+	{
+		GL30 = Q_NULLPTR;
+	}
+
+	QOpenGLFunctions_3_2_Core		*GL32 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_2_Core>();
+
+	if( GL32 && !GL32->initializeOpenGLFunctions() )
+	{
+		GL32 = Q_NULLPTR;
+	}
+
 	for( QSharedPointer<fugio::PinInterface> &OutPin : OutPinLst )
 	{
 		OpenGLTextureInterface		*OutTex = output<OpenGLTextureInterface *>( OutPin );
@@ -564,66 +591,74 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 
 		glBindFramebuffer( GL_FRAMEBUFFER, mFrameBufferId );
 
-		switch( OutTex->target() )
+		if( GL32 )
 		{
-#if !defined( GL_ES_VERSION_2_0 )
-			case GL_TEXTURE_1D:
-				{
-					glFramebufferTexture1D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
-
-					Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
-				}
-				break;
-#endif
-
-			case GL_TEXTURE_2D:
-#if defined( GL_TEXTURE_RECTANGLE )
-			case GL_TEXTURE_RECTANGLE:
-#endif
-				if( !OutTex->isDepthTexture() )
-				{
-					glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
-
-					Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
-				}
-				else
-				{
-					glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, OutTex->target(), OutTex->dstTexId(), 0 );
-
-					Buffers.append( GL_DEPTH_ATTACHMENT );
-				}
-				break;
-
-			case GL_TEXTURE_CUBE_MAP:
-				if( !OutTex->isDepthTexture() )
-				{
-					glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
-
-					Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
-				}
-				else
-				{
-					glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, OutTex->target(), OutTex->dstTexId(), 0 );
-
-					Buffers.append( GL_DEPTH_ATTACHMENT );
-				}
-				break;
-
-#if defined( glFramebufferTexture3D )
-			case GL_TEXTURE_3D:
-				if( true )
-				{
-					glFramebufferTexture3D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0, 0 );
-				}
-
-				if( false )
-				{
-					glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->dstTexId(), 0 );
-				}
+			if( !OutTex->isDepthTexture() )
+			{
+				GL32->glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->dstTexId(), 0 );
 
 				Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
-				break;
-#endif
+			}
+			else
+			{
+				GL32->glFramebufferTexture( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, OutTex->dstTexId(), 0 );
+
+				Buffers.append( GL_DEPTH_ATTACHMENT );
+			}
+		}
+		else
+		{
+			switch( OutTex->target() )
+			{
+				case GL_TEXTURE_1D:
+					if( GL30 )
+					{
+						GL30->glFramebufferTexture1D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
+
+						Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
+					}
+					break;
+
+				case GL_TEXTURE_2D:
+				case GL_TEXTURE_RECTANGLE:
+					if( !OutTex->isDepthTexture() )
+					{
+						glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
+
+						Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
+					}
+					else
+					{
+						glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, OutTex->target(), OutTex->dstTexId(), 0 );
+
+						Buffers.append( GL_DEPTH_ATTACHMENT );
+					}
+					break;
+
+				case GL_TEXTURE_CUBE_MAP:
+					if( !OutTex->isDepthTexture() )
+					{
+						glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
+
+						Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
+					}
+					else
+					{
+						glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, OutTex->target(), OutTex->dstTexId(), 0 );
+
+						Buffers.append( GL_DEPTH_ATTACHMENT );
+					}
+					break;
+
+				case GL_TEXTURE_3D:
+					if( GL30 )
+					{
+						GL30->glFramebufferTexture3D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0, 0 );
+
+						Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
+					}
+					break;
+			}
 		}
 
 		OPENGL_DEBUG( mNode->name() );
@@ -641,6 +676,8 @@ void ShaderInstanceNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		return;
 	}
 
+	initializeOpenGLFunctions();
+
 	OpenGLShaderInterface	*Shader = input<OpenGLShaderInterface *>( mPinShader );
 
 	if( !Shader || !Shader->isLinked() )
@@ -656,17 +693,15 @@ void ShaderInstanceNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	QList< QSharedPointer<fugio::PinInterface> >	InpPinLst = mNode->enumInputPins();
 
-#if !defined( GL_ES_VERSION_2_0 )
 	//-------------------------------------------------------------------------
 	// Bind our Vertex Array Object (if supported)
 
 	fugio::VertexArrayObjectInterface	*VAO = input<fugio::VertexArrayObjectInterface *>( mPinInputVAO );
 
-	if( VAO && VAO->vao() )
+	if( VAO )
 	{
-		glBindVertexArray( VAO->vao() );
+		VAO->vao().bind();
 	}
-#endif
 
 	//-------------------------------------------------------------------------
 
@@ -747,12 +782,10 @@ void ShaderInstanceNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	releaseInputTextures( Bindings );
 
-#if !defined( GL_ES_VERSION_2_0 )
-	if( GLEW_ARB_vertex_array_object )
+	if( VAO )
 	{
-		glBindVertexArray( 0 );
+		VAO->vao().release();
 	}
-#endif
 
 	OPENGL_DEBUG( mNode->name() );
 }
@@ -774,6 +807,13 @@ void ShaderInstanceNode::releaseInputTextures( QList<ShaderBindData> &Bindings )
 void ShaderInstanceNode::bindUniforms( QList<ShaderBindData> &Bindings )
 {
 	bool		NumberOK;
+
+	QOpenGLFunctions_3_0			*GL30 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_0>();
+
+	if( GL30 && !GL30->initializeOpenGLFunctions() )
+	{
+		GL30 = Q_NULLPTR;
+	}
 
 	OpenGLShaderInterface					*Shader = input<OpenGLShaderInterface *>( mPinShader );
 	fugio::NodeInterface					*CompilerNode = mPinShader->connectedNode();
@@ -979,13 +1019,11 @@ void ShaderInstanceNode::bindUniforms( QList<ShaderBindData> &Bindings )
 				{
 					GLboolean		NewVal = PinVar.toBool();
 
-#if !defined( GL_ES_VERSION_2_0 )
-					if( GL_VERSION_3_0 )
+					if( GL30 )
 					{
-						glUniform1ui( UniformData.mLocation, NewVal );
+						GL30->glUniform1ui( UniformData.mLocation, NewVal );
 					}
 					else
-#endif
 					{
 						glUniform1i( UniformData.mLocation, NewVal );
 					}

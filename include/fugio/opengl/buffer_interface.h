@@ -3,6 +3,8 @@
 
 #include <fugio/global.h>
 
+#include <QOpenGLBuffer>
+
 FUGIO_NAMESPACE_BEGIN
 
 class OpenGLBufferInterface
@@ -18,9 +20,11 @@ public:
 
 	virtual void clear( void ) = 0;
 
-	virtual GLuint buffer( void ) const = 0;
+	virtual const QOpenGLBuffer &buffer( void ) const = 0;
 
-	virtual GLuint target( void ) const = 0;
+	virtual QOpenGLBuffer &buffer( void ) = 0;
+
+	virtual QOpenGLBuffer::Type target( void ) const = 0;
 
 	virtual int count( void ) const = 0;
 
@@ -36,7 +40,7 @@ public:
 
 	virtual void setInstanced( bool pInstanced ) = 0;
 
-	virtual void setTarget( GLuint pTarget ) = 0;
+	virtual void setTarget( QOpenGLBuffer::Type pTarget ) = 0;
 
 	virtual void setDoubleBuffered( bool pDoubleBuffered ) = 0;
 
@@ -46,9 +50,9 @@ public:
 
 	virtual void swapBuffers( void ) = 0;
 
-	virtual GLuint srcBuf( void ) const = 0;
+	virtual const QOpenGLBuffer &srcBuf( void ) const = 0;
 
-	virtual GLuint dstBuf( void ) const = 0;
+	virtual const QOpenGLBuffer &dstBuf( void ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

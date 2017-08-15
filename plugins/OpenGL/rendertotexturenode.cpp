@@ -47,6 +47,8 @@ void RenderToTextureNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+	initializeOpenGLFunctions();
+
 	fugio::RenderInterface			*Render = input<fugio::RenderInterface *>( mPinInputRender );
 	fugio::OpenGLTextureInterface	*Texture = output<fugio::OpenGLTextureInterface *>( mPinOutputTexture );
 

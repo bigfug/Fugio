@@ -6,6 +6,7 @@
 #include <fugio/core/uuid.h>
 
 #include <QObject>
+#include <QOpenGLVertexArrayObject>
 
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
@@ -24,11 +25,6 @@ public:
 
 	virtual ~VertexArrayObjectPin( void ) {}
 
-	void setVAO( GLuint pVAO )
-	{
-		mVAO = pVAO;
-	}
-
 	// PinControlInterface interface
 public:
 	virtual QString toString() const Q_DECL_OVERRIDE;
@@ -36,10 +32,13 @@ public:
 
 	// VertexArrayObjectInterface interface
 public:
-	virtual GLuint vao() const Q_DECL_OVERRIDE;
+	virtual QOpenGLVertexArrayObject &vao() Q_DECL_OVERRIDE
+	{
+		return( mVAO );
+	}
 
 private:
-	GLuint			mVAO;
+	QOpenGLVertexArrayObject	 mVAO;
 };
 
 #endif // VERTEX_ARRAY_OBJECT_PIN_H

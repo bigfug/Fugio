@@ -90,7 +90,7 @@ quint32 SpoutPin::internalFormat() const
 
 quint32 SpoutPin::type() const
 {
-	return( GL_UNSIGNED_BYTE );
+	return( QOpenGLTexture::UInt8 );
 }
 
 int SpoutPin::filterMin( void ) const

@@ -35,6 +35,8 @@ void TextureToImageNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::Performance		Perf( mNode, "inputsUpdated", pTimeStamp );
 
+	initializeOpenGLFunctions();
+
 	const QVector3D	TexSze = TexInf->size();
 
 	if( mValOutputImage->size() != QSize( TexSze.x(), TexSze.y() ) )

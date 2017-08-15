@@ -55,36 +55,24 @@ quint32 SyphonPin::dstTexId() const
 	return( 0 );
 }
 
-quint32 SyphonPin::target() const
+QOpenGLTexture::Target SyphonPin::target() const
 {
-#if defined( SYPHON_SUPPORTED )
-	return( GL_TEXTURE_RECTANGLE );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::TargetRectangle );
 }
 
-quint32 SyphonPin::format() const
+QOpenGLTexture::PixelFormat SyphonPin::format() const
 {
-#if defined( SYPHON_SUPPORTED )
-	return( GL_BGRA );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::BGRA );
 }
 
-quint32 SyphonPin::internalFormat() const
+QOpenGLTexture::TextureFormat SyphonPin::internalFormat() const
 {
-#if defined( SYPHON_SUPPORTED )
-	return( GL_RGBA8 );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::RGBA8_UNorm );
 }
 
-quint32 SyphonPin::type() const
+QOpenGLTexture::PixelType SyphonPin::type() const
 {
-	return( GL_UNSIGNED_BYTE );
+	return( QOpenGLTexture::UInt8 );
 }
 
 int SyphonPin::filterMin( void ) const
@@ -139,19 +127,19 @@ void SyphonPin::setSize( const QVector3D & )
 
 }
 
-void SyphonPin::setTarget( quint32 )
+void SyphonPin::setTarget( QOpenGLTexture::Target )
 {
 }
 
-void SyphonPin::setFormat( quint32 )
+void SyphonPin::setFormat( QOpenGLTexture::PixelFormat )
 {
 }
 
-void SyphonPin::setType( quint32 )
+void SyphonPin::setType( QOpenGLTexture::PixelType )
 {
 }
 
-void SyphonPin::setInternalFormat( quint32 )
+void SyphonPin::setInternalFormat( QOpenGLTexture::TextureFormat )
 {
 }
 
@@ -164,11 +152,11 @@ void SyphonPin::update( const unsigned char *, int, int, int )
 {
 }
 
-void SyphonPin::setFilter( quint32, quint32 )
+void SyphonPin::setFilter( QOpenGLTexture::Filter, QOpenGLTexture::Filter )
 {
 }
 
-void SyphonPin::setWrap( quint32, quint32, quint32 )
+void SyphonPin::setWrap( QOpenGLTexture::WrapMode, QOpenGLTexture::WrapMode, QOpenGLTexture::WrapMode )
 {
 }
 

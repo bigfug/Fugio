@@ -133,6 +133,8 @@ void PreviewNode::render( qint64 pTimeStamp )
 		return;
 	}
 
+	initializeOpenGLFunctions();
+
 	OPENGL_PLUGIN_DEBUG;
 
 //	mOutput->renderStart();
@@ -214,7 +216,7 @@ void PreviewNode::render( qint64 pTimeStamp )
 			mTexture->setInternalFormat( GL_RGBA );
 			mTexture->setSize( mOutput->size().width(), mOutput->size().height() );
 			mTexture->setTarget( GL_TEXTURE_2D );
-			mTexture->setType( GL_UNSIGNED_BYTE );
+			mTexture->setType( QOpenGLTexture::UInt8 );
 //			mTexture->setWrap( GL_CLAMP, GL_CLAMP, GL_CLAMP );
 
 			mTexture->update();

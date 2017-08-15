@@ -56,13 +56,13 @@ public:
 	virtual quint32 srcTexId( void ) const Q_DECL_OVERRIDE;
 	virtual quint32 dstTexId( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 target( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::Target target( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 format( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::PixelFormat format( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 internalFormat( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::TextureFormat internalFormat( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 type( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::PixelType type( void ) const Q_DECL_OVERRIDE;
 
 	virtual int filterMin( void ) const Q_DECL_OVERRIDE;
 	virtual int filterMag( void ) const Q_DECL_OVERRIDE;
@@ -75,13 +75,13 @@ public:
 
 	virtual void setSize( const QVector3D &pSize ) Q_DECL_OVERRIDE;
 
-	virtual void setTarget( quint32 pTarget ) Q_DECL_OVERRIDE;
+	virtual void setTarget( QOpenGLTexture::Target pTarget ) Q_DECL_OVERRIDE;
 
-	virtual void setFormat( quint32 pFormat ) Q_DECL_OVERRIDE;
+	virtual void setFormat( QOpenGLTexture::PixelFormat pFormat ) Q_DECL_OVERRIDE;
 
-	virtual void setType( quint32 pType ) Q_DECL_OVERRIDE;
+	virtual void setType( QOpenGLTexture::PixelType pType ) Q_DECL_OVERRIDE;
 
-	virtual void setInternalFormat( quint32 pInternalFormat ) Q_DECL_OVERRIDE;
+	virtual void setInternalFormat( QOpenGLTexture::TextureFormat pInternalFormat ) Q_DECL_OVERRIDE;
 
 	virtual void update( void ) Q_DECL_OVERRIDE;
 

@@ -4,6 +4,7 @@
 #include "opengl_includes.h"
 
 #include <QObject>
+#include <QOpenGLBuffer>
 
 #include <QSettings>
 
@@ -32,7 +33,7 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString::number( mBuffer1 ) );
+		return( QString::number( mBuffer1.bufferId() ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
@@ -54,14 +55,19 @@ public:
 
 	virtual void clear( void ) Q_DECL_OVERRIDE;
 
-	virtual inline GLuint buffer( void ) const Q_DECL_OVERRIDE
+	virtual inline QOpenGLBuffer &buffer( void ) Q_DECL_OVERRIDE
 	{
 		return( mBuffer1 );
 	}
 
-	virtual inline GLuint target( void ) const Q_DECL_OVERRIDE
+	virtual inline const QOpenGLBuffer &buffer( void ) const Q_DECL_OVERRIDE
 	{
-		return( mIndex ? GL_ELEMENT_ARRAY_BUFFER : mTarget );
+		return( mBuffer1 );
+	}
+
+	virtual inline QOpenGLBuffer::Type target( void ) const Q_DECL_OVERRIDE
+	{
+		return( mIndex ? QOpenGLBuffer::IndexBuffer : mTarget );
 	}
 
 	virtual int count( void ) const Q_DECL_OVERRIDE
@@ -99,7 +105,7 @@ public:
 		mInstanced = pInstanced;
 	}
 
-	virtual void setTarget( GLuint pTarget ) Q_DECL_OVERRIDE
+	virtual void setTarget( QOpenGLBuffer::Type pTarget ) Q_DECL_OVERRIDE
 	{
 		mTarget = pTarget;
 	}
@@ -121,12 +127,12 @@ public:
 
 	virtual void swapBuffers( void ) Q_DECL_OVERRIDE;
 
-	virtual GLuint srcBuf( void ) const Q_DECL_OVERRIDE
+	virtual const QOpenGLBuffer &srcBuf( void ) const Q_DECL_OVERRIDE
 	{
 		return( mBuffer1 );
 	}
 
-	virtual GLuint dstBuf( void ) const Q_DECL_OVERRIDE
+	virtual const QOpenGLBuffer &dstBuf( void ) const Q_DECL_OVERRIDE
 	{
 		return( mBuffer2 );
 	}
@@ -146,15 +152,16 @@ signals:
 	void instancedUpdated( bool pValue );
 
 private:
-	GLuint					 mBuffer1;
-	GLuint					 mBuffer2;
+	QOpenGLBuffer			 mBuffer1;
+	QOpenGLBuffer			 mBuffer2;
+
 	QMetaType::Type			 mType;
 	int						 mStride;
 	int						 mCount;
 	int						 mSize;
 	bool					 mIndex;
 	bool					 mInstanced;
-	GLuint					 mTarget;
+	QOpenGLBuffer::Type		 mTarget;
 	//GLuint					 mBufferOffset;
 	bool					 mDoubleBuffered;
 };

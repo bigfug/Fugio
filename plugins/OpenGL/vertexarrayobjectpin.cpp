@@ -15,8 +15,3 @@ QString VertexArrayObjectPin::description() const
 {
 	return( QString() );
 }
-
-GLuint VertexArrayObjectPin::vao() const
-{
-	return( mVAO );
-}

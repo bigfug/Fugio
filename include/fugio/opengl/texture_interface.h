@@ -6,6 +6,7 @@
 #include <QVector>
 #include <QVector2D>
 #include <QVector3D>
+#include <QOpenGLTexture>
 
 #include <fugio/global.h>
 
@@ -15,8 +16,8 @@ FUGIO_NAMESPACE_BEGIN
 
 typedef struct OpenGLTextureDescription
 {
-	GLenum			mFormat;
-	GLenum			mInternalFormat;
+	QOpenGLTexture::PixelFormat			mFormat;
+	QOpenGLTexture::TextureFormat		mInternalFormat;
 
 	GLsizei			mTexWidth;
 	GLsizei			mTexHeight;
@@ -26,21 +27,21 @@ typedef struct OpenGLTextureDescription
 	GLsizei			mImgHeight;
 	GLsizei			mImgDepth;
 
-	quint32			mTarget;
-	GLenum			mType;
+	QOpenGLTexture::Target				mTarget;
+	QOpenGLTexture::PixelType			mType;
 
-	GLenum			mMinFilter;
-	GLenum			mMagFilter;
+	QOpenGLTexture::Filter				mMinFilter;
+	QOpenGLTexture::Filter				mMagFilter;
 
-	GLint			mWrapX;
-	GLint			mWrapY;
-	GLint			mWrapZ;
+	QOpenGLTexture::WrapMode			mWrapX;
+	QOpenGLTexture::WrapMode			mWrapY;
+	QOpenGLTexture::WrapMode			mWrapZ;
 
 	bool			mGenerateMipMaps;
 
 	bool			mDoubleBuffered;
 
-	GLint			mCompare;
+	QOpenGLTexture::ComparisonFunction	mCompare;
 } OpenGLTextureDescription;
 
 class OpenGLTextureInterface
@@ -64,15 +65,15 @@ public:
 
 	virtual quint32 dstTexId( void ) const = 0;
 
-	virtual quint32 target( void ) const = 0;
+	virtual QOpenGLTexture::Target target( void ) const = 0;
 
-	virtual quint32 format( void ) const = 0;
+	virtual QOpenGLTexture::PixelFormat format( void ) const = 0;
 
-	virtual quint32 internalFormat( void ) const = 0;
+	virtual QOpenGLTexture::TextureFormat internalFormat( void ) const = 0;
 
-	virtual quint32 type( void ) const = 0;
+	virtual QOpenGLTexture::PixelType type( void ) const = 0;
 
-	virtual qint32 compare( void ) const = 0;
+	virtual QOpenGLTexture::ComparisonFunction compare( void ) const = 0;
 
 	virtual int filterMin( void ) const = 0;
 	virtual int filterMag( void ) const = 0;
@@ -81,27 +82,27 @@ public:
 	virtual int wrapR( void ) const = 0;
 	virtual bool genMipMaps( void ) const = 0;
 
-	virtual void setCompare( qint32 pCompare ) = 0;
+	virtual void setCompare( QOpenGLTexture::ComparisonFunction pCompare ) = 0;
 
-	virtual void setTarget( quint32 pTarget ) = 0;
+	virtual void setTarget( QOpenGLTexture::Target pTarget ) = 0;
 
 	virtual void setSize( qint32 pWidth, qint32 pHeight = 0, qint32 pDepth = 0 ) = 0;
 
 	virtual void setSize( const QVector3D &pSize ) = 0;
 
-	virtual void setFormat( quint32 pFormat ) = 0;
+	virtual void setFormat( QOpenGLTexture::PixelFormat pFormat ) = 0;
 
-	virtual void setType( quint32 pType ) = 0;
+	virtual void setType( QOpenGLTexture::PixelType pType ) = 0;
 
-	virtual void setInternalFormat( quint32 pInternalFormat ) = 0;
+	virtual void setInternalFormat( QOpenGLTexture::TextureFormat pInternalFormat ) = 0;
 
 	virtual void update( void ) = 0;
 
 	virtual void update( const unsigned char *pData, int pDataSize, int pLineSize, int pCubeFaceIndex = 0 ) = 0;
 
-	virtual void setFilter( quint32 pMin, quint32 pMag ) = 0;
+	virtual void setFilter( QOpenGLTexture::Filter pMin, QOpenGLTexture::Filter pMag ) = 0;
 
-	virtual void setWrap( quint32 pX, quint32 pY, quint32 pZ ) = 0;
+	virtual void setWrap( QOpenGLTexture::WrapMode pX, QOpenGLTexture::WrapMode pY, QOpenGLTexture::WrapMode pZ ) = 0;
 
 	virtual void setGenMipMaps( bool pGenMipMaps ) = 0;
 

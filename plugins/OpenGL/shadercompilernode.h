@@ -18,7 +18,7 @@
 
 using namespace fugio;
 
-class ShaderCompilerNode : public fugio::NodeControlBase, public fugio::OpenGLShaderInterface
+class ShaderCompilerNode : public fugio::NodeControlBase, public fugio::OpenGLShaderInterface, protected QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::OpenGLShaderInterface )

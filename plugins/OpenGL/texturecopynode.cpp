@@ -6,6 +6,9 @@
 
 #include <QSurfaceFormat>
 
+#include <QOpenGLFunctions_3_0>
+#include <QOpenGLFunctions_4_3_Core>
+
 #include "openglplugin.h"
 
 TextureCopyNode::TextureCopyNode( QSharedPointer<fugio::NodeInterface> pNode )
@@ -41,6 +44,8 @@ void TextureCopyNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+	initializeOpenGLFunctions();
+
 	fugio::OpenGLTextureInterface	*TexSrc = input<fugio::OpenGLTextureInterface *>( mPinTexSrc );
 	fugio::OpenGLTextureInterface	*TexDst = mTexDst;
 
@@ -63,38 +68,53 @@ void TextureCopyNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		const QVector3D		TexSze = TexSrc->size();
 
-#if !defined( GL_ES_VERSION_2_0 )
-		if( glCopyImageSubData )
+		QOpenGLFunctions_4_3_Core	*GL43 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
+
+		if( GL43 && !GL43->initializeOpenGLFunctions() )
 		{
-			glCopyImageSubData( TexSrc->srcTexId(), TexSrc->target(), 0, 0, 0, 0,
-								TexDst->dstTexId(), TexDst->target(), 0, 0, 0, 0,
-								TexSze.x(), TexSze.y(), qMax<GLsizei>( TexSze.z(), 1 ) );
+			GL43 = Q_NULLPTR;
+		}
+
+		if( GL43 )
+		{
+			GL43->glCopyImageSubData( TexSrc->srcTexId(), TexSrc->target(), 0, 0, 0, 0,
+									  TexDst->dstTexId(), TexDst->target(), 0, 0, 0, 0,
+									  TexSze.x(), TexSze.y(), qMax<GLsizei>( TexSze.z(), 1 ) );
 		}
 		else
 		{
-			if( !mFBO )
+			QOpenGLFunctions_3_0		*GL30 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_0>();
+
+			if( GL30 && !GL30->initializeOpenGLFunctions() )
 			{
-				glGenFramebuffers( 1, &mFBO );
+				GL30 = Q_NULLPTR;
 			}
 
-			if( mFBO )
+			if( GL30 )
 			{
-				glBindFramebuffer( GL_FRAMEBUFFER, mFBO );
+				if( !mFBO )
+				{
+					glGenFramebuffers( 1, &mFBO );
+				}
 
-				glFramebufferTexture2D( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TexSrc->target(), TexSrc->srcTexId(), 0 );
+				if( mFBO )
+				{
+					glBindFramebuffer( GL_FRAMEBUFFER, mFBO );
 
-				glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, TexDst->target(), TexDst->dstTexId(), 0 );
+					glFramebufferTexture2D( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TexSrc->target(), TexSrc->srcTexId(), 0 );
 
-				GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT1 };
+					glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, TexDst->target(), TexDst->dstTexId(), 0 );
 
-				glDrawBuffers( 1, drawBuffers );
+					GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT1 };
 
-				glBlitFramebuffer( 0, 0, TexSze.x(), TexSze.y(), 0, 0, TexSze.x(), TexSze.y(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
+					GL30->glDrawBuffers( 1, drawBuffers );
 
-				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+					GL30->glBlitFramebuffer( 0, 0, TexSze.x(), TexSze.y(), 0, 0, TexSze.x(), TexSze.y(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
+
+					glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+				}
 			}
 		}
-#endif
 
 		pinUpdated( mPinTexDst );
 	}

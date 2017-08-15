@@ -1,5 +1,7 @@
 #include "buffertoarraynode.h"
 
+#include <QOpenGLFunctions_4_5_Core>
+
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
 
@@ -42,7 +44,7 @@ void BufferToArrayNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::OpenGLBufferInterface	*BufInt = input<fugio::OpenGLBufferInterface *>( mPinBuffer );
 
-	if( !BufInt || !BufInt->buffer() )
+	if( !BufInt || !BufInt->buffer().isCreated() )
 	{
 		return;
 	}
@@ -72,22 +74,18 @@ void BufferToArrayNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-#if !defined( Q_OS_RASPBERRY_PI )
+	QOpenGLFunctions_4_5_Core	*GL45 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
 
-#if defined( GLEW_VERSION_4_5 )
-	if( GLEW_VERSION_4_5 )
+	if( GL45 && GL45->initializeOpenGLFunctions() )
 	{
-		glGetNamedBufferSubData( BufInt->buffer(), 0, ArrLen, ArrPtr );
+		GL45->glGetNamedBufferSubData( BufInt->buffer().bufferId(), 0, ArrLen, ArrPtr );
 	}
-	else
-#endif
-	if( BufInt->bind() )
+	else if( BufInt->bind() )
 	{
-		glGetBufferSubData( BufInt->target(), 0, ArrLen, ArrPtr );
+		BufInt->buffer().write( 0, ArrPtr, ArrLen );
 
 		BufInt->release();
 	}
-#endif
 
 	GLfloat		feedback[ 16 ];
 

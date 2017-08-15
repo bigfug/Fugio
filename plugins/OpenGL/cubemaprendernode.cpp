@@ -61,12 +61,14 @@ void CubeMapRenderNode::inputsUpdated( qint64 pTimeStamp )
 		{
 			fugio::RenderInterface		*Render = input<fugio::RenderInterface *>( mPinInputRender );
 
-			if( Render )
+			if( Render && QOpenGLContext::currentContext() )
 			{
 				GLuint		TexId = Texture->dstTexId();
 
 				if( TexId )
 				{
+					initializeOpenGLFunctions();
+
 					GLint		FBOCur, RBCur;
 
 					glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );

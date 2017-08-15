@@ -16,7 +16,7 @@ FUGIO_NAMESPACE_BEGIN
 class OpenGLTextureInterface;
 FUGIO_NAMESPACE_END
 
-class PreviewNode : public fugio::NodeControlBase, public fugio::RenderInterface
+class PreviewNode : public fugio::NodeControlBase, public fugio::RenderInterface, public QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::RenderInterface )

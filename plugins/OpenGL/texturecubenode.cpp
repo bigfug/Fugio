@@ -41,7 +41,7 @@ void TextureCubeNode::processTexture( QSharedPointer<fugio::PinInterface> pPin, 
 	{
 		mTexDst->free();
 
-		mTexDst->setType( GL_UNSIGNED_BYTE );
+		mTexDst->setType( QOpenGLTexture::UInt8 );
 
 		switch( I->format() )
 		{

@@ -1,5 +1,7 @@
 #include "transformfeedbacknode.h"
 
+#include <QOpenGLFunctions_4_0_Core>
+
 #include "openglplugin.h"
 
 #include <fugio/opengl/buffer_entry_interface.h>
@@ -90,13 +92,13 @@ bool TransformFeedbackNode::initialise()
 		return( false );
 	}
 
-#if !defined( GL_ES_VERSION_2_0 )
-	if( GLEW_ARB_transform_feedback2 )
+	QOpenGLFunctions_4_0_Core	*GL40 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_0_Core>();
+
+	if( GL40 && GL40->initializeOpenGLFunctions() )
 	{
-		glGenTransformFeedbacks( 2, mTrnFbkId );
+		GL40->glGenTransformFeedbacks( 2, mTrnFbkId );
 	}
 	else
-#endif
 	{
 		return( false );
 	}
@@ -106,12 +108,12 @@ bool TransformFeedbackNode::initialise()
 
 bool TransformFeedbackNode::deinitialise()
 {
-#if !defined( GL_ES_VERSION_2_0 )
-	if( GLEW_ARB_transform_feedback2 )
+	QOpenGLFunctions_4_0_Core	*GL40 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_0_Core>();
+
+	if( GL40 && GL40->initializeOpenGLFunctions() )
 	{
-		glDeleteTransformFeedbacks( 2, mTrnFbkId );
+		GL40->glDeleteTransformFeedbacks( 2, mTrnFbkId );
 	}
-#endif
 
 	return( NodeControlBase::deinitialise() );
 }
@@ -119,6 +121,15 @@ bool TransformFeedbackNode::deinitialise()
 void TransformFeedbackNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
+
+	initializeOpenGLFunctions();
+
+	QOpenGLFunctions_4_0_Core	*GL40 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_0_Core>();
+
+	if( GL40 && !GL40->initializeOpenGLFunctions() )
+	{
+		GL40 = Q_NULLPTR;
+	}
 
 	// The transform mode is a sub-set of the draw modes
 
@@ -198,26 +209,24 @@ void TransformFeedbackNode::inputsUpdated( qint64 pTimeStamp )
 				return;
 			}
 
-#if !defined( GL_ES_VERSION_2_0 )
-			if( GLEW_ARB_transform_feedback2 )
+			if( GL40 )
 			{
 				// Set up the first TF destination buffer
 
-				glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mTrnFbkId[ 0 ] );
+				GL40->glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mTrnFbkId[ 0 ] );
 
-				glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, XFIndex, BufO->dstBuf() );
+				GL40->glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, XFIndex, BufO->dstBuf().bufferId() );
 
 				// Set up the second TF destination buffer
 
-				glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mTrnFbkId[ 1 ] );
+				GL40->glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mTrnFbkId[ 1 ] );
 
-				glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, XFIndex, BufO->srcBuf() );
+				GL40->glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, XFIndex, BufO->srcBuf().bufferId() );
 
 				// Reset the TF bind
 
-				glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
+				GL40->glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
 			}
-#endif
 
 			// We'll use the first TF buffer, with dstBuf() as our target
 
@@ -263,7 +272,15 @@ void TransformFeedbackNode::render1( qint64 pTimeStamp )
 {
 	Q_UNUSED( pTimeStamp )
 
-#if !defined( GL_ES_VERSION_2_0 )
+	initializeOpenGLFunctions();
+
+	QOpenGLFunctions_4_0_Core	*GL40 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_0_Core>();
+
+	if( GL40 && !GL40->initializeOpenGLFunctions() )
+	{
+		GL40 = Q_NULLPTR;
+	}
+
 	glEnable( GL_RASTERIZER_DISCARD );
 
 #if defined( TF_QUERY )
@@ -274,13 +291,13 @@ void TransformFeedbackNode::render1( qint64 pTimeStamp )
 	glBeginQuery( GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, query );
 #endif
 
-	if( GLEW_ARB_transform_feedback2 )
+	if( GL40 )
 	{
-		glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mTrnFbkId[ currTFB() ] );
+		GL40->glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mTrnFbkId[ currTFB() ] );
 
 		// Draw the buffers (using the previous buffer as the primitive count if !mFirstTransform)
 
-		glBeginTransformFeedback( mTransformMode );
+		GL40->glBeginTransformFeedback( mTransformMode );
 
 		if( mFirstTransform )
 		{
@@ -290,14 +307,14 @@ void TransformFeedbackNode::render1( qint64 pTimeStamp )
 		}
 		else
 		{
-			glDrawTransformFeedback( mDrawMode, mTrnFbkId[ nextTFB() ] );
+			GL40->glDrawTransformFeedback( mDrawMode, mTrnFbkId[ nextTFB() ] );
 		}
 
-		glEndTransformFeedback();
+		GL40->glEndTransformFeedback();
 
 		// Clear our TF binding and turn off GL_RASTERIZER_DISCARD
 
-		glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
+		GL40->glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
 	}
 
 #if defined( TF_QUERY )
@@ -318,7 +335,6 @@ void TransformFeedbackNode::render1( qint64 pTimeStamp )
 #endif
 
 	glDisable( GL_RASTERIZER_DISCARD );
-#endif
 
 	// Increment the TF buffer index so we'll use the next one for the next call
 
@@ -356,17 +372,17 @@ void TransformFeedbackNode::render2( qint64 pTimeStamp )
 {
 	Q_UNUSED( pTimeStamp )
 
-#if !defined( GL_ES_VERSION_2_0 )
-	if( GLEW_ARB_transform_feedback2 )
+	if( !mFirstTransform )
 	{
-		if( !mFirstTransform )
+		QOpenGLFunctions_4_0_Core	*GL40 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_0_Core>();
+
+		if( GL40 && GL40->initializeOpenGLFunctions() )
 		{
-			glDrawTransformFeedback( mDrawMode, mTrnFbkId[ nextTFB() ] );
+			GL40->glDrawTransformFeedback( mDrawMode, mTrnFbkId[ nextTFB() ] );
 		}
 	}
 
 	OPENGL_DEBUG( mNode->name() );
-#endif
 }
 
 QList<QUuid> TransformFeedbackNode::pinAddTypesInput() const

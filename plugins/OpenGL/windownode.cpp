@@ -111,7 +111,7 @@ bool WindowNode::initialise()
 	mTexture->setInternalFormat( GL_RGBA );
 #endif
 	mTexture->setTarget( GL_TEXTURE_2D );
-	mTexture->setType( GL_UNSIGNED_BYTE );
+	mTexture->setType( QOpenGLTexture::UInt8 );
 	mTexture->setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
 #endif
 
@@ -206,11 +206,9 @@ void WindowNode::render( qint64 pTimeStamp )
 		return;
 	}
 
-#if !defined( GL_ES_VERSION_2_0 )
-	const int OutputSamples = mOutput->context()->format().samples();
-#else
-	const int OutputSamples = 1;
-#endif
+	initializeOpenGLFunctions();
+
+//	const int OutputSamples = mOutput->context()->format().samples();
 
 	OPENGL_DEBUG( mNode->name() );
 
@@ -416,7 +414,6 @@ void WindowNode::render( qint64 pTimeStamp )
 	}
 */
 
-#if !defined( GL_ES_VERSION_2_0 )
 	if( !mGrabFileNames.isEmpty() )
 	{
 		mBufferImage = mOutput->grabFramebuffer();
@@ -440,7 +437,6 @@ void WindowNode::render( qint64 pTimeStamp )
 
 		mGrabFileNames.clear();
 	}
-#endif
 
 	OPENGL_DEBUG( mNode->name() );
 }

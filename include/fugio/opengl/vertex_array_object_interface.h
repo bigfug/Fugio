@@ -3,6 +3,8 @@
 
 #include <fugio/global.h>
 
+class QOpenGLVertexArrayObject;
+
 FUGIO_NAMESPACE_BEGIN
 
 class VertexArrayObjectInterface
@@ -10,7 +12,7 @@ class VertexArrayObjectInterface
 public:
 	virtual ~VertexArrayObjectInterface( void ) {}
 
-	virtual GLuint vao( void ) const = 0;
+	virtual QOpenGLVertexArrayObject &vao( void ) = 0;
 };
 
 FUGIO_NAMESPACE_END

@@ -405,14 +405,11 @@ QString OpenGLPlugin::framebufferError( GLenum pErrorCode )
 		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:	return( "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT" );
 		case GL_FRAMEBUFFER_UNSUPPORTED:	return( "GL_FRAMEBUFFER_UNSUPPORTED" );
 		case GL_FRAMEBUFFER_COMPLETE:	return( "GL_FRAMEBUFFER_COMPLETE" );
-
-#if !defined( GL_ES_VERSION_2_0 )
 		case GL_FRAMEBUFFER_UNDEFINED:	return( "GL_FRAMEBUFFER_UNDEFINED" );
 		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:	return( "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER" );
 		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:	return( "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER" );
 		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:	return( "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE" );
 		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:	return( "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS" );
-#endif
 	}
 
 	return( QString::number( pErrorCode, 16 ) );
@@ -425,11 +422,7 @@ void OpenGLPlugin::deviceConfigGui( QWidget *pParent )
 
 bool OpenGLPlugin::hasContextStatic()
 {
-#if defined( GL_ES_VERSION_2_0 )
-	return( eglGetCurrentContext() != 0 );
-#else
-	return( QOpenGLContext::currentContext() && glewExperimental == GL_TRUE );
-#endif
+	return( QOpenGLContext::currentContext() );
 }
 
 bool OpenGLPlugin::openWindowFullScreen() const
@@ -664,16 +657,11 @@ void OpenGLPlugin::initGLEW()
 		return;
 	}
 
-	if( glewExperimental == GL_FALSE )
+	static bool Initialised = false;
+
+	if( !Initialised )
 	{
-		glewExperimental = GL_TRUE;
-
-		if( glewInit() != GLEW_OK )
-		{
-			qWarning() << "GLEW did not initialise";
-
-			return;
-		}
+		Initialised = GL_TRUE;
 
 		qDebug() << "GL_VENDOR" << QString( (const char *)glGetString( GL_VENDOR ) );
 

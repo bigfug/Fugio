@@ -246,11 +246,10 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		mTexture->free();
 
-		mTexture->setType( GL_UNSIGNED_BYTE );
+		mTexture->setType( QOpenGLTexture::UInt8 );
 
 		switch( I->format() )
 		{
-#if !defined( GL_ES_VERSION_2_0 )
 			case fugio::ImageInterface::FORMAT_BGR8:
 				mTexture->setFormat( GL_BGR );
 
@@ -278,7 +277,7 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 			case fugio::ImageInterface::FORMAT_GRAY16:
 				mTexture->setType( GL_UNSIGNED_SHORT );
 
-				if( GLEW_VERSION_3_0 )
+				if( true )//GLEW_VERSION_3_0 )
 				{
 					mTexture->setFormat( GL_RED_INTEGER );
 
@@ -293,7 +292,7 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 				break;
 
 			case fugio::ImageInterface::FORMAT_GRAY8:
-				if( GLEW_VERSION_3_0 )
+				if( true )//GLEW_VERSION_3_0 )
 				{
 					mTexture->setFormat( GL_RED_INTEGER );
 
@@ -350,7 +349,7 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 
 				mTexture->setInternalFormat( GL_COMPRESSED_RGBA_S3TC_DXT5_EXT );
 				break;
-#endif
+
 			default:
 				return;
 		}

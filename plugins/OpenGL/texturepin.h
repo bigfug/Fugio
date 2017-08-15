@@ -4,6 +4,7 @@
 #include "opengl_includes.h"
 
 #include <QObject>
+#include <QOpenGLTexture>
 
 #include <fugio/pin_control_interface.h>
 #include <fugio/opengl/texture_interface.h>
@@ -15,7 +16,7 @@
 
 using namespace fugio;
 
-class TexturePin : public fugio::PinControlBase, public fugio::OpenGLTextureInterface, public fugio::SizeInterface
+class TexturePin : public fugio::PinControlBase, public fugio::OpenGLTextureInterface, public fugio::SizeInterface, protected QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::OpenGLTextureInterface fugio::SizeInterface )
@@ -30,16 +31,13 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString( "%1" ).arg( mDstTexId ) );
+		return( QString( "%1" ).arg( mDstTex ? mDstTex->textureId() : -1 ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
 	{
 		return( "Texture" );
 	}
-
-	virtual void loadSettings( QSettings & ) Q_DECL_OVERRIDE;
-	virtual void saveSettings( QSettings & ) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// InterfaceTexture
@@ -105,7 +103,7 @@ public:
 
 	virtual void setFormat( quint32 pFormat ) Q_DECL_OVERRIDE;
 
-	virtual void setType( quint32 pType ) Q_DECL_OVERRIDE;
+	virtual void setType( QOpenGLTexture::PixelType pType ) Q_DECL_OVERRIDE;
 
 	virtual void setInternalFormat( quint32 pInternalFormat ) Q_DECL_OVERRIDE;
 
@@ -178,8 +176,8 @@ private:
 
 	bool			mDefinitionChanged;
 
-	GLuint			mSrcTexId;
-	GLuint			mDstTexId;
+	QOpenGLTexture	*mSrcTex;
+	QOpenGLTexture	*mDstTex;
 
 	GLuint			mFBOId;
 	GLuint			mFBODepthRBId;

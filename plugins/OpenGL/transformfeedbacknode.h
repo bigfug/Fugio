@@ -15,7 +15,7 @@
 #include <fugio/paired_pins_helper_interface.h>
 #include <fugio/opengl/node_render_interface.h>
 
-class TransformFeedbackNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface, public fugio::PairedPinsHelperInterface
+class TransformFeedbackNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface, public fugio::PairedPinsHelperInterface, protected QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::NodeRenderInterface fugio::PairedPinsHelperInterface )

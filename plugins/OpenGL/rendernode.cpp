@@ -106,7 +106,6 @@ void RenderNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 	}
 }
 
-
 void RenderNode::inputsUpdated( qint64 pTimeStamp )
 {
 	Q_UNUSED( pTimeStamp )

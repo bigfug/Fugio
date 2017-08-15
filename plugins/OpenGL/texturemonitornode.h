@@ -10,7 +10,7 @@
 
 #include "texturemonitor.h"
 
-class TextureMonitorNode : public fugio::NodeControlBase
+class TextureMonitorNode : public fugio::NodeControlBase, public QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_CLASSINFO( "Author", "Alex May" )

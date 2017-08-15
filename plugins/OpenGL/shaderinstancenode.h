@@ -13,7 +13,7 @@
 
 using namespace fugio;
 
-class ShaderInstanceNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface
+class ShaderInstanceNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface, protected QOpenGLFunctions
 {
     Q_OBJECT
     Q_INTERFACES( fugio::NodeRenderInterface )

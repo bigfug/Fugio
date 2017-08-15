@@ -91,6 +91,8 @@ void StatePin::saveSettings( QSettings &pSettings ) const
 
 void StatePin::stateBegin()
 {
+	initializeOpenGLFunctions();
+
 #if !defined( GL_ES_VERSION_2_0 )
 //	QMatrix4x4		MatPrj = mPinMatPrj ? variant( mPinMatPrj ).value<QMatrix4x4>() : mProjection;
 //	QMatrix4x4		MatMod = mPinMatMod ? variant( mPinMatMod ).value<QMatrix4x4>() : mModelView;
@@ -128,6 +130,8 @@ void StatePin::stateBegin()
 
 void StatePin::stateEnd()
 {
+	initializeOpenGLFunctions();
+
 	for( QList<int>::const_iterator it = mFlags.begin() ; it != mFlags.end() ; it++ )
 	{
 		glDisable( *it );

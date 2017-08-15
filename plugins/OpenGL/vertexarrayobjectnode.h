@@ -7,7 +7,7 @@
 
 #include "vertexarrayobjectpin.h"
 
-class VertexArrayObjectNode : public fugio::NodeControlBase
+class VertexArrayObjectNode : public fugio::NodeControlBase, protected QOpenGLFunctions
 {
 	Q_OBJECT
 
@@ -42,8 +42,6 @@ protected:
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputVAO;
 	VertexArrayObjectPin						*mValOutputVAO;
-
-	GLuint										 mVAO;
 
 	typedef struct BindInfo
 	{
