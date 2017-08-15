@@ -7,6 +7,7 @@
 #include <QApplication>
 #include <QStandardPaths>
 #include <QMainWindow>
+#include <QFileInfo>
 
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
@@ -267,6 +268,39 @@ void GlobalPrivate::unloadPlugins()
 
 bool GlobalPrivate::loadPlugin( const QString &pFileName )
 {
+	QFileInfo		FileInfo( pFileName );
+	QString			BaseName = FileInfo.baseName();
+
+	if( !mEnabledPlugins.isEmpty() )
+	{
+		bool		PluginFound = false;
+
+		for( QString S : mEnabledPlugins )
+		{
+			if( BaseName.contains( S ) )
+			{
+				PluginFound = true;
+
+				break;
+			}
+		}
+
+		if( !PluginFound )
+		{
+			return( false );
+		}
+	}
+
+	for( QString S : mDisabledPlugins )
+	{
+		if( BaseName.contains( S ) )
+		{
+			qInfo() << "Skipping" << pFileName;
+
+			return( false );
+		}
+	}
+
 	QPluginLoader	Loader( pFileName );
 
 	if( !Loader.load() )
@@ -299,6 +333,8 @@ bool GlobalPrivate::loadPlugin( const QString &pFileName )
 	qDebug() << "Loading plugin:" << pFileName;
 
 	registerPlugin( PluginInstance );
+
+	mLoadedPlugins << FileInfo.baseName();
 
 	return( true );
 }

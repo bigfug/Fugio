@@ -55,6 +55,31 @@ public:
 		mGlobalOffset = mGlobalTimer.elapsed();
 	}
 
+	virtual QStringList loadedPluginNames( void ) const Q_DECL_OVERRIDE
+	{
+		return( mLoadedPlugins );
+	}
+
+	virtual void setEnabledPlugins( QStringList pEnabledPlugins ) Q_DECL_OVERRIDE
+	{
+		mEnabledPlugins = pEnabledPlugins;
+	}
+
+	virtual void setDisabledPlugins( QStringList pDisabledPlugins )
+	{
+		mDisabledPlugins = pDisabledPlugins;
+	}
+
+	virtual void enablePlugin( QString pPluginName )
+	{
+		mEnabledPlugins << pPluginName;
+	}
+
+	virtual void disablePlugin( QString pPluginName )
+	{
+		mDisabledPlugins << pPluginName;
+	}
+
 	//-------------------------------------------------------------------------
 	// fugio::IGlobal
 
@@ -288,6 +313,10 @@ private:
 	int								 mTimeSyncPort;
 
 	Universe						 mUniverse;
+
+	QStringList						 mEnabledPlugins;
+	QStringList						 mDisabledPlugins;
+	QStringList						 mLoadedPlugins;
 };
 
 #if defined( GLOBAL_THREADED )

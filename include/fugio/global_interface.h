@@ -103,6 +103,16 @@ public:
 	virtual QThread *thread( void ) = 0;
 
 	//-------------------------------------------------------------------------
+
+	virtual QStringList loadedPluginNames( void ) const = 0;
+
+	virtual void setEnabledPlugins( QStringList pEnabledPlugins ) = 0;
+	virtual void setDisabledPlugins( QStringList pEnabledPlugins ) = 0;
+
+	virtual void enablePlugin( QString pPluginName ) = 0;
+	virtual void disablePlugin( QString pPluginName ) = 0;
+
+	//-------------------------------------------------------------------------
 	// Universe
 
 	virtual void setUniversalTimeServer( const QString &pString, int pPort ) = 0;
