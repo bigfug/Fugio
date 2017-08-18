@@ -160,6 +160,10 @@ macx {
 		exists( $$OPENCV_PATH/lib/libopencv_highgui.* ) {
 			LIBS += -lopencv_highgui
 		}
+
+		exists( $$OPENCV_PATH/lib/libopencv_features2d.* ) {
+			LIBS += -lopencv_features2d
+		}
 	}
 }
 

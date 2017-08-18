@@ -8,6 +8,8 @@
 
 #include "opencvplugin.h"
 
+#include <cmath>
+
 #if defined( OPENCV_SUPPORTED )
 #include <opencv2/imgproc.hpp>
 #endif
@@ -36,7 +38,7 @@ HoughLinesNode::HoughLinesNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInputMaxLineGap    = pinInput( "Max Line Gap", PIN_INPUT_MAX_LINE_GAP );
 
 	mPinInputRho->setValue( 1 );
-	mPinInputTheta->setValue( CV_PI/180 );
+	mPinInputTheta->setValue( M_PI/180 );
 	mPinInputThreshold->setValue( 100 );
 	mPinInputMinLineLength->setValue( 0 );
 	mPinInputMaxLineGap->setValue( 0 );
