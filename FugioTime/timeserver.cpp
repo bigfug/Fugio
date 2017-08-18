@@ -32,17 +32,19 @@ void TimeServer::responseReady( void )
 {
 	TimeDatagram	TDG;
 	QByteArray		DatagramBuffer;
+	QHostAddress	ServerAddress;
+	quint16			ServerPort;
 
 	while( mSocket->hasPendingDatagrams() )
 	{
-		DatagramBuffer.resize( mResponseSocket->pendingDatagramSize() );
+		DatagramBuffer.resize( mSocket->pendingDatagramSize() );
 
-		if( DatagramBuffer.size() != mResponseSocket->pendingDatagramSize() )
+		if( DatagramBuffer.size() != mSocket->pendingDatagramSize() )
 		{
 			break;
 		}
 
-		mResponseSocket->readDatagram( DatagramBuffer.data(), DatagramBuffer.size() );
+		mSocket->readDatagram( DatagramBuffer.data(), DatagramBuffer.size(), &ServerAddress, &ServerPort );
 
 		if( DatagramBuffer.size() != sizeof( TDG ) )
 		{
@@ -62,11 +64,11 @@ void TimeServer::responseReady( void )
 
 //		qDebug() << logtime() << "PONG" << DG.senderAddress() << DG.senderPort();
 
-		if( mSocket->writeDatagram( (const char *)&TDG, sizeof( TDG ), DG.senderAddress(), DG.senderPort() ) != sizeof( TimeDatagram ) )
+		if( mSocket->writeDatagram( (const char *)&TDG, sizeof( TDG ), ServerAddress, ServerPort ) != sizeof( TimeDatagram ) )
 		{
 			qWarning() << logtime() << "Couldn't write packet";
 		}
 
-		emit clientResponse( DG.senderAddress(), DG.senderPort(), ServerTimestamp, RTT );
+		emit clientResponse( ServerAddress, ServerPort, ServerTimestamp, RTT );
 	}
 }
