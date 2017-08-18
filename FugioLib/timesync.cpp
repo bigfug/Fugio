@@ -1,7 +1,6 @@
 #include "timesync.h"
 
 #include <QtEndian>
-#include <QNetworkDatagram>
 #include <QDateTime>
 #include <QTimer>
 
@@ -51,23 +50,28 @@ QString TimeSync::logtime()
 void TimeSync::processPendingDatagrams()
 {
 	TimeDatagram	 TDG;
+	QByteArray		 DatagramBuffer;
+	QHostAddress	 ServerAddress;
 
 	while( mSocket->hasPendingDatagrams() )
 	{
-		QNetworkDatagram	DG = mSocket->receiveDatagram();
+		DatagramBuffer.resize( mResponseSocket->pendingDatagramSize() );
 
-		if( !DG.isValid() || DG.data().size() != sizeof( TDG ) )
+		if( DatagramBuffer.size() != mResponseSocket->pendingDatagramSize() )
 		{
-			qDebug() << logtime() << "RECV FAIL" << DG.senderAddress() << DG.senderPort() << DG.data().size() << qFromBigEndian<qint64>( TDG.mServerTimestamp ) << qFromBigEndian<qint64>( TDG.mClientTimestamp );
+			break;
+		}
 
+		mResponseSocket->readDatagram( DatagramBuffer.data(), DatagramBuffer.size(), &ServerAddress );
+
+		if( DatagramBuffer.size() != sizeof( TDG ) )
+		{
 			continue;
 		}
 
-		memcpy( &TDG, DG.data(), sizeof( TDG ) );
+		memcpy( &TDG, DatagramBuffer.data(), sizeof( TDG ) );
 
-//		qDebug() << logtime() << "RECV" << "RS:" << qFromBigEndian<qint64>( TDG.mServerTimestamp ) << "RC:" << qFromBigEndian<qint64>( TDG.mClientTimestamp );
-
-		mServerAddress = DG.senderAddress();
+		mServerAddress = ServerAddress;
 		mServerPort    = 45456;
 	}
 }
@@ -77,19 +81,25 @@ void TimeSync::responseReady()
 	GlobalPrivate	*GP = qobject_cast<GlobalPrivate *>( fugio::fugio()->qobject() );
 
 	TimeDatagram	 TDG;
+	QByteArray		 DatagramBuffer;
 
 	while( mResponseSocket->hasPendingDatagrams() )
 	{
-		QNetworkDatagram	DG = mResponseSocket->receiveDatagram();
+		DatagramBuffer.resize( mResponseSocket->pendingDatagramSize() );
 
-		if( !DG.isValid() || DG.data().size() != sizeof( TDG ) )
+		if( DatagramBuffer.size() != mResponseSocket->pendingDatagramSize() )
 		{
-			qWarning() << DG.isValid() << DG.data().size();
+			break;
+		}
 
+		mResponseSocket->readDatagram( DatagramBuffer.data(), DatagramBuffer.size() );
+
+		if( DatagramBuffer.size() != sizeof( TDG ) )
+		{
 			continue;
 		}
 
-		memcpy( &TDG, DG.data(), sizeof( TDG ) );
+		memcpy( &TDG, DatagramBuffer.data(), sizeof( TDG ) );
 
 		TDG.mServerTimestamp = qFromBigEndian<qint64>( TDG.mServerTimestamp );
 		TDG.mClientTimestamp = qFromBigEndian<qint64>( TDG.mClientTimestamp );

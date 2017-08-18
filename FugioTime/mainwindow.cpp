@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 
 #include <QtEndian>
-#include <QNetworkDatagram>
 #include <QHostInfo>
 
 MainWindow::MainWindow(QWidget *parent) :

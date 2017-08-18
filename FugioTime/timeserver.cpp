@@ -1,6 +1,5 @@
 #include "timeserver.h"
 
-#include <QNetworkDatagram>
 #include <QtEndian>
 
 TimeServer::TimeServer( QObject *pParent )
@@ -31,20 +30,26 @@ void TimeServer::socketError( QAbstractSocket::SocketError pError )
 
 void TimeServer::responseReady( void )
 {
-	TimeDatagram		TDG;
+	TimeDatagram	TDG;
+	QByteArray		DatagramBuffer;
 
 	while( mSocket->hasPendingDatagrams() )
 	{
-		QNetworkDatagram	DG = mSocket->receiveDatagram();
+		DatagramBuffer.resize( mResponseSocket->pendingDatagramSize() );
 
-		if( !DG.isValid() || DG.data().size() != sizeof( TimeDatagram ) )
+		if( DatagramBuffer.size() != mResponseSocket->pendingDatagramSize() )
 		{
-			qDebug() << logtime() << "RECV" << DG.senderAddress() << DG.senderPort() << DG.isValid() << DG.data().size();
+			break;
+		}
 
+		mResponseSocket->readDatagram( DatagramBuffer.data(), DatagramBuffer.size() );
+
+		if( DatagramBuffer.size() != sizeof( TDG ) )
+		{
 			continue;
 		}
 
-		memcpy( &TDG, DG.data(), sizeof( TDG ) );
+		memcpy( &TDG, DatagramBuffer.constData(), sizeof( TDG ) );
 
 		qint64		ServerTimestamp = mUniverseTimer.elapsed();
 		qint64		RTT             = ServerTimestamp - qFromBigEndian<qint64>( TDG.mServerTimestamp );
