@@ -65,17 +65,17 @@ public:
 		mEnabledPlugins = pEnabledPlugins;
 	}
 
-	virtual void setDisabledPlugins( QStringList pDisabledPlugins )
+	virtual void setDisabledPlugins( QStringList pDisabledPlugins ) Q_DECL_OVERRIDE
 	{
 		mDisabledPlugins = pDisabledPlugins;
 	}
 
-	virtual void enablePlugin( QString pPluginName )
+	virtual void enablePlugin( QString pPluginName ) Q_DECL_OVERRIDE
 	{
 		mEnabledPlugins << pPluginName;
 	}
 
-	virtual void disablePlugin( QString pPluginName )
+	virtual void disablePlugin( QString pPluginName ) Q_DECL_OVERRIDE
 	{
 		mDisabledPlugins << pPluginName;
 	}
