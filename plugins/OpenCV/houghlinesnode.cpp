@@ -8,8 +8,6 @@
 
 #include "opencvplugin.h"
 
-#include <cmath>
-
 #if defined( OPENCV_SUPPORTED )
 #include <opencv2/imgproc.hpp>
 #endif

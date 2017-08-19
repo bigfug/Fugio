@@ -1,6 +1,10 @@
 #ifndef HOUGHLINESNODE_H
 #define HOUGHLINESNODE_H
 
+#define _USE_MATH_DEFINES
+
+#include <cmath>
+
 #include <QObject>
 #include <QLineF>
 
