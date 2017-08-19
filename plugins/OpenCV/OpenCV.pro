@@ -36,7 +36,9 @@ SOURCES += \
 	distancetransformnode.cpp \
 	converttonode.cpp \
 	addnode.cpp \
-	flipnode.cpp
+	flipnode.cpp \
+    houghlinesnode.cpp \
+    simpleblobdetectornode.cpp
 
 HEADERS +=\
 	../../include/fugio/nodecontrolbase.h \
@@ -61,7 +63,9 @@ HEADERS +=\
 	distancetransformnode.h \
 	converttonode.h \
 	addnode.h \
-	flipnode.h
+	flipnode.h \
+    houghlinesnode.h \
+    simpleblobdetectornode.h
 
 RESOURCES += \
     resources.qrc
@@ -156,6 +160,10 @@ macx {
 		exists( $$OPENCV_PATH/lib/libopencv_highgui.* ) {
 			LIBS += -lopencv_highgui
 		}
+
+		exists( $$OPENCV_PATH/lib/libopencv_features2d.* ) {
+			LIBS += -lopencv_features2d
+		}
 	}
 }
 
@@ -171,9 +179,9 @@ windows:contains( QT_ARCH, i386 ) {
 		INCLUDEPATH += $$OPENCV_DIR/build/include
 
 		CONFIG(debug,debug|release) {
-			LIBS += -L$$OPENCV_DIR/build/lib/Debug -lopencv_core$${OPENCV_VER}d -lopencv_imgproc$${OPENCV_VER}d -lopencv_photo$${OPENCV_VER}d -lopencv_highgui$${OPENCV_VER}d -lopencv_video$${OPENCV_VER}d -lopencv_videoio$${OPENCV_VER}d -lopencv_objdetect$${OPENCV_VER}d
+			LIBS += -L$$OPENCV_DIR/build/lib/Debug -lopencv_core$${OPENCV_VER}d -lopencv_imgproc$${OPENCV_VER}d  -lopencv_features2d$${OPENCV_VER}d -lopencv_photo$${OPENCV_VER}d -lopencv_highgui$${OPENCV_VER}d -lopencv_video$${OPENCV_VER}d -lopencv_videoio$${OPENCV_VER}d -lopencv_objdetect$${OPENCV_VER}d
 		} else {
-			LIBS += -L$$OPENCV_DIR/build/lib/Release -lopencv_core$${OPENCV_VER} -lopencv_imgproc$${OPENCV_VER} -lopencv_photo$${OPENCV_VER} -lopencv_highgui$${OPENCV_VER} -lopencv_video$${OPENCV_VER} -lopencv_videoio$${OPENCV_VER} -lopencv_objdetect$${OPENCV_VER}
+			LIBS += -L$$OPENCV_DIR/build/lib/Release -lopencv_core$${OPENCV_VER} -lopencv_imgproc$${OPENCV_VER} -lopencv_features2d$${OPENCV_VER} -lopencv_photo$${OPENCV_VER} -lopencv_highgui$${OPENCV_VER} -lopencv_video$${OPENCV_VER} -lopencv_videoio$${OPENCV_VER} -lopencv_objdetect$${OPENCV_VER}
 		}
 
 		DEFINES += OPENCV_SUPPORTED
@@ -189,13 +197,13 @@ linux:!macx {
 	exists( $$[QT_SYSROOT]/usr/include/opencv2 ) {
 		INCLUDEPATH += $$[QT_SYSROOT]/usr/include
 
-		LIBS += -lopencv_core -lopencv_imgproc -lopencv_photo -lopencv_highgui -lopencv_video -lopencv_objdetect
+		LIBS += -lopencv_core -lopencv_imgproc -lopencv_photo -lopencv_highgui -lopencv_video -lopencv_objdetect -lopencv_features2d
 
 		DEFINES += OPENCV_SUPPORTED
 	} else:exists( /usr/include/opencv2 ) {
 		INCLUDEPATH += /usr/include
 
-		LIBS += -L/usr/lib -lopencv_core -lopencv_imgproc -lopencv_photo -lopencv_highgui -lopencv_video -lopencv_objdetect
+		LIBS += -L/usr/lib -lopencv_core -lopencv_imgproc -lopencv_photo -lopencv_highgui -lopencv_video -lopencv_objdetect -lopencv_features2d
 
 		DEFINES += OPENCV_SUPPORTED
 	}

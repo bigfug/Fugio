@@ -74,7 +74,8 @@ SOURCES += \
 	loggernode.cpp \
     bitarraypin.cpp \
     bitstoboolnode.cpp \
-	booltobitsnode.cpp
+	booltobitsnode.cpp \
+    linepin.cpp
 
 HEADERS += \
 	stringpin.h \
@@ -144,7 +145,8 @@ HEADERS += \
 	loggernode.h \
     bitarraypin.h \
     bitstoboolnode.h \
-	booltobitsnode.h
+	booltobitsnode.h \
+    linepin.h
 
 RESOURCES += \
     resources.qrc

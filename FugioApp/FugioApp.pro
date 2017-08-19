@@ -320,18 +320,18 @@ contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 
 INCLUDEPATH += $$PWD/../include
 
-win32:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugiod
-else:unix:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
-else:unix:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugio_debug
+#win32:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugiod
+#else:unix:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
+#else:unix:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugio_debug
+
+LIBS += -L$$DESTDIR -l$$qtLibraryTarget( fugio )
 
 INCLUDEPATH += $$PWD/../FugioLib
 DEPENDPATH += $$PWD/../FugioLib
 
-win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$DESTDIR/fugio.lib
-else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$DESTDIR/fugiod.lib
-else:unix:CONFIG(release, debug|release): PRE_TARGETDEPS += $$DESTDIR/libfugio.a
-else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$DESTDIR/libfugio_debug.a
+win32: PRE_TARGETDEPS += $$DESTDIR/$$qtLibraryTarget( fugio ).lib
+else:  PRE_TARGETDEPS += $$DESTDIR/$$qtLibraryTarget( fugio ).a
 
 #------------------------------------------------------------------------------
 # General Unix/Linux/OS X (Brew) libs path

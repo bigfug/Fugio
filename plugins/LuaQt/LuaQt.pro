@@ -34,7 +34,8 @@ SOURCES += \
 	luajsonarray.cpp \
 	luajsonobject.cpp \
 	luavector3.cpp \
-	luaquaternion.cpp
+	luaquaternion.cpp \
+    lualine.cpp
 
 HEADERS +=\
 	../../include/fugio/luaqt/uuid.h \
@@ -58,7 +59,8 @@ HEADERS +=\
 	luajsonarray.h \
 	luajsonobject.h \
 	luavector3.h \
-	luaquaternion.h
+	luaquaternion.h \
+    lualine.h
 
 RESOURCES += \
     resources.qrc

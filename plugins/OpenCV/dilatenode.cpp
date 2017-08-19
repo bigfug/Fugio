@@ -18,11 +18,19 @@
 DilateNode::DilateNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
-	mPinInputImage = pinInput( "Image" );
+	FUGID( PIN_INPUT_IMAGE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_INPUT_ITERATIONS, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
+	FUGID( PIN_OUTPUT_IMAGE, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+
+	mPinInputImage = pinInput( "Image", PIN_INPUT_IMAGE );
 
 	mPinInputImage->registerPinInputType( PID_IMAGE );
 
-	mOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE );
+	mPinInputIterations = pinInput( "Iterations", PIN_INPUT_ITERATIONS );
+
+	mPinInputIterations->setValue( 1 );
+
+	mOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 }
 
 void DilateNode::inputsUpdated( qint64 pTimeStamp )
@@ -60,7 +68,7 @@ void DilateNode::conversion( DilateNode *pNode )
 
 	cv::Mat						 MatSrc = OpenCVPlugin::image2mat( SrcImg );
 
-	cv::dilate( MatSrc, pNode->mMatImg, cv::Mat() );
+	cv::dilate( MatSrc, pNode->mMatImg, cv::Mat(), cv::Point( -1, -1 ), pNode->variant( pNode->mPinInputIterations ).toReal() );
 
 	OpenCVPlugin::mat2image( pNode->mMatImg, pNode->mOutputImage );
 

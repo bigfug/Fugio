@@ -40,6 +40,11 @@ void SyphonReceiver::setServerName( const std::string &pServerName )
 		mClient = 0;
 	}
 
+	if( pServerName.empty() )
+	{
+		return;
+	}
+
 	for( NSDictionary *Server in [[SyphonServerDirectory sharedDirectory] servers] )
 	{
 		NSString		*UUID = [Server objectForKey:SyphonServerDescriptionUUIDKey];
@@ -73,6 +78,11 @@ void SyphonReceiver::setServerUuid( const std::string &pServerUuid )
 		[(SyphonClient *)mClient release];
 
 		mClient = 0;
+	}
+
+	if( pServerUuid.empty() )
+	{
+		return;
 	}
 
 	for( NSDictionary *Server in [[SyphonServerDirectory sharedDirectory] servers] )

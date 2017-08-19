@@ -3,9 +3,6 @@ TEMPLATE = subdirs
 SUBDIRS += \
     FugioLib \
     FugioApp \
-    plugins \
-    FugioTime
+    plugins
 
 FugioApp.depends = FugioLib plugins
-
-FugioTime.depends = FugioLib

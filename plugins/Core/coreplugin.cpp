@@ -65,6 +65,7 @@
 #include "arraylistpin.h"
 #include "rectpin.h"
 #include "bitarraypin.h"
+#include "linepin.h"
 
 #include "loggernode.h"
 
@@ -123,6 +124,7 @@ ClassEntry		CorePlugin::mPinClasses[] =
 	ClassEntry( "Choice", PID_CHOICE, &ChoicePin::staticMetaObject ),
 	ClassEntry( "Float", PID_FLOAT, &FloatPin::staticMetaObject ),
 	ClassEntry( "Integer", PID_INTEGER, &IntegerPin::staticMetaObject ),
+	ClassEntry( "Line", PID_LINE, &LinePin::staticMetaObject ),
 	ClassEntry( "List", PID_LIST, &ListPin::staticMetaObject ),
 	ClassEntry( "Point", PID_POINT, &PointPin::staticMetaObject ),
 	ClassEntry( "Rect", PID_RECT, &RectPin::staticMetaObject ),

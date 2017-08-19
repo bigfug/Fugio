@@ -7,14 +7,13 @@
 
 #include <QUuid>
 #include <QPointF>
+#include <QVariant>
 
 class LuaPointF
 {
 private:
 	typedef struct PointFUserData
 	{
-		static const char *TypeName;
-
 		qreal	x, y;
 
 		operator QPointF( void ) const
@@ -33,6 +32,8 @@ private:
 	} QPointFUserData;
 
 public:
+	static const char *mTypeName;
+
 	LuaPointF( void ) {}
 
 	virtual ~LuaPointF( void ) {}
@@ -53,7 +54,7 @@ public:
 			return( 0 );
 		}
 
-		luaL_getmetatable( L, PointFUserData::TypeName );
+		luaL_getmetatable( L, LuaPointF::mTypeName );
 		lua_setmetatable( L, -2 );
 
 		UD->x = pPoint.x();
@@ -64,7 +65,7 @@ public:
 
 	static bool isPointF( lua_State *L, int i = 1 )
 	{
-		return( luaL_testudata( L, i, PointFUserData::TypeName ) != nullptr );
+		return( luaL_testudata( L, i, LuaPointF::mTypeName ) != nullptr );
 	}
 
 	static QPointF checkpointf( lua_State *L, int i = 1 )
@@ -74,10 +75,22 @@ public:
 		return( *UD );
 	}
 
+	static int pushVariant( lua_State *L, const QVariant &V )
+	{
+		return( pushpointf( L, V.toPointF() ) );
+	}
+
+	static QVariant popVariant( lua_State *L, int pIndex )
+	{
+		PointFUserData *UD = checkpointfuserdata( L, pIndex );
+
+		return( UD ? QPointF( UD->x, UD->y ) : QVariant() );
+	}
+
 private:
 	static PointFUserData *checkpointfuserdata( lua_State *L, int i = 1 )
 	{
-		PointFUserData *UD = (PointFUserData *)luaL_checkudata( L, i, PointFUserData::TypeName );
+		PointFUserData *UD = (PointFUserData *)luaL_checkudata( L, i, LuaPointF::mTypeName );
 
 		luaL_argcheck( L, UD != NULL, i, "Point expected" );
 

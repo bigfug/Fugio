@@ -258,6 +258,13 @@ int LuaPlugin::luaTimestamp( lua_State *L )
 
 int LuaPlugin::pushVariant( lua_State *L, const QVariant &V )
 {
+	luaPushVariantFunc	F = instance()->mPushFunctions.value( QMetaType::Type( V.type() ), Q_NULLPTR );
+
+	if( F )
+	{
+		return( F( L, V ) );
+	}
+
 	switch( QMetaType::Type( V.type() ) )
 	{
 		case QMetaType::QVariantList:
@@ -448,6 +455,48 @@ int LuaPlugin::pushVariant( lua_State *L, const QVariant &V )
 				return( 1 );
 			}
 
+		case QMetaType::QLineF:
+			{
+				lua_newtable( L );
+
+				const QLineF			Data = V.value<QLineF>();
+
+				lua_pushnumber( L, Data.p1().x() );
+				lua_rawseti( L, -2, 1 );
+
+				lua_pushnumber( L, Data.p1().y() );
+				lua_rawseti( L, -2, 2 );
+
+				lua_pushnumber( L, Data.p2().x() );
+				lua_rawseti( L, -2, 3 );
+
+				lua_pushnumber( L, Data.p2().y() );
+				lua_rawseti( L, -2, 4 );
+
+				return( 1 );
+			}
+
+		case QMetaType::QLine:
+			{
+				lua_newtable( L );
+
+				const QLine				Data = V.value<QLine>();
+
+				lua_pushinteger( L, Data.p1().x() );
+				lua_rawseti( L, -2, 1 );
+
+				lua_pushinteger( L, Data.p1().y() );
+				lua_rawseti( L, -2, 2 );
+
+				lua_pushinteger( L, Data.p2().x() );
+				lua_rawseti( L, -2, 3 );
+
+				lua_pushinteger( L, Data.p2().y() );
+				lua_rawseti( L, -2, 4 );
+
+				return( 1 );
+			}
+
 		default:
 			break;
 	}
@@ -457,6 +506,31 @@ int LuaPlugin::pushVariant( lua_State *L, const QVariant &V )
 
 QVariant LuaPlugin::popVariant( lua_State *L, int idx )
 {
+	QString		TypeName;
+
+	if( lua_type( L, idx ) == LUA_TUSERDATA )
+	{
+		if( lua_getmetatable( L, idx ) )
+		{
+			lua_pushstring( L, "__name" );
+			lua_rawget( L, -2 );
+
+			TypeName = QString::fromLatin1( lua_tostring( L, -1 ) );
+
+			lua_pop( L, 2 );
+		}
+	}
+
+	if( !TypeName.isEmpty() )
+	{
+		luaPopVariantFunc	F = instance()->mPopFunctions.value( TypeName, Q_NULLPTR );
+
+		if( F )
+		{
+			return( F( L, idx ) );
+		}
+	}
+
 	if( lua_type( L, idx ) == LUA_TTABLE )
 	{
 		QVariantList		VL;
@@ -515,4 +589,14 @@ SyntaxHighlighterInstanceInterface *LuaPlugin::syntaxHighlighterInstance( QUuid 
 	}
 
 	return( nullptr );
+}
+
+void LuaPlugin::luaAddPushVariantFunction( QMetaType::Type pType, luaPushVariantFunc pFunction )
+{
+	mPushFunctions.insert( pType, pFunction );
+}
+
+void LuaPlugin::luaAddPopVariantFunction( QString pTypeName, luaPopVariantFunc pFunction )
+{
+	mPopFunctions.insert( pTypeName, pFunction );
 }
