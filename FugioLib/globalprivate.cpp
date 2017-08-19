@@ -31,7 +31,7 @@
 GlobalPrivate *GlobalPrivate::mInstance = 0;
 
 GlobalPrivate::GlobalPrivate( QObject * ) :
-	GlobalSignals( this ), mGlobalOffset( 0 ), mUniversalOffset( 0 ), mPause( false )
+	GlobalSignals( this ), mPause( false )
 {
 	//-------------------------------------------------------------------------
 	// Install translator
@@ -45,23 +45,17 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 
 	//-------------------------------------------------------------------------
 
+	mTimeSync = new fugio::TimeSync( this );
+
 #if defined( GLOBAL_THREADED )
 	mGlobalThread = new GlobalThread( this );
 #endif
-
-	mGlobalTimer.start();
-
-	qDebug() << "Global Timer Monotonic:" << mGlobalTimer.isMonotonic();
-
-	updateUniversalTimestamp( 0 );
 
 	mLastTime   = 0;
 	mFrameCount = 0;
 
 	mCommandLineParser.addHelpOption();
 	mCommandLineParser.addVersionOption();
-
-	mTimeSync = new TimeSync( this );
 
 	connect( this, SIGNAL(frameEnd()), &mUniverse, SLOT(cast()) );
 }
@@ -157,12 +151,7 @@ void GlobalPrivate::initialisePlugins()
 	qDebug() << tr( "Nodes registered: %1" ).arg( mNodeMap.size() );
 }
 
-void GlobalPrivate::setUniversalTimeServer( const QString &pString, int pPort )
-{
-	QHostInfo::lookupHost( pString, this, SLOT(universalServerLookup(QHostInfo)) );
 
-	mTimeSyncPort = pPort;
-}
 
 void GlobalPrivate::loadPlugins( QDir pDir )
 {
@@ -597,20 +586,6 @@ void GlobalPrivate::timeout( void )
 #if !defined( GLOBAL_THREADED )
 	QTimer::singleShot( 1, this, SLOT(timeout()) );
 #endif
-}
-
-void GlobalPrivate::universalServerLookup( const QHostInfo &pHost )
-{
-	if( pHost.error() != QHostInfo::NoError )
-	{
-		qWarning() << "Time server lookup failed:" << pHost.errorString();
-
-		return;
-	}
-
-	qInfo() << "Time server address:" << pHost.hostName() << pHost.addresses().first().toString();
-
-	mTimeSync->setServer( pHost.addresses().first().toString(), mTimeSyncPort );
 }
 
 QUuid GlobalPrivate::findNodeByClass( const QString &pClassName ) const

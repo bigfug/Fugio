@@ -30,7 +30,7 @@ SOURCES += fugio.cpp \
 	nodeprivate.cpp \
 	node.cpp \
 	interpolation.cpp \
-    timesync.cpp \
+    ../libs/FugioTime/lib/timesync.cpp
     universe.cpp
 
 HEADERS += fugio.h\
@@ -62,8 +62,8 @@ HEADERS += fugio.h\
 	../include/fugio/utils.h \
 	../include/fugio/context_signals.h \
 	../include/fugio/paired_pins_helper_interface.h \
-    timesync.h \
-    universe.h
+    universe.h \
+    ../libs/FugioTime/lib/timesync.h
 
 RESOURCES += \
     resources.qrc

@@ -11,7 +11,6 @@
 #include <QCommandLineParser>
 #include <QThread>
 #include <QApplication>
-#include <QHostInfo>
 
 #include <fugio/global.h>
 
@@ -21,7 +20,7 @@
 
 #include <fugio/global_signals.h>
 
-#include "timesync.h"
+#include "../libs/FugioTime/lib/timesync.h"
 #include "universe.h"
 
 class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public fugio::GlobalInterface
@@ -45,15 +44,6 @@ public:
 	void registerPlugin( QObject *pPluginInstance );
 
 	void initialisePlugins( void );
-
-	void updateUniversalTimestamp( qint64 pTimeStamp )
-	{
-		mUniversalTimer.restart();
-
-		mUniversalOffset = pTimeStamp;
-
-		mGlobalOffset = mGlobalTimer.elapsed();
-	}
 
 	virtual QStringList loadedPluginNames( void ) const Q_DECL_OVERRIDE
 	{
@@ -90,24 +80,27 @@ public:
 
 	virtual qint64 timestamp( void ) const Q_DECL_OVERRIDE
 	{
-		return( mGlobalTimer.elapsed() );
+		return( mTimeSync->timestamp() );
 	}
 
-	virtual void setUniversalTimeServer( const QString &pString, int pPort ) Q_DECL_OVERRIDE;
+	virtual void setUniversalTimeServer( const QString &pString, int pPort ) Q_DECL_OVERRIDE
+	{
+		mTimeSync->setTimeServer( pString, pPort );
+	}
 
 	virtual qint64 universalTimestamp( void ) const Q_DECL_OVERRIDE
 	{
-		return( mUniversalTimer.elapsed() + mUniversalOffset );
+		return( mTimeSync->universalTimestamp() );
 	}
 
 	virtual qint64 universalToGlobal( qint64 pTimeStamp ) const Q_DECL_OVERRIDE
 	{
-		return( ( pTimeStamp - mUniversalOffset ) + mGlobalOffset );
+		return( mTimeSync->universalToGlobal( pTimeStamp ) );
 	}
 
 	virtual qint64 globalToUniversal( qint64 pTimeStamp ) const Q_DECL_OVERRIDE
 	{
-		return( ( pTimeStamp - mGlobalOffset ) + mUniversalOffset );
+		return( mTimeSync->globalToUniversal( pTimeStamp ) );
 	}
 
 	virtual void start() Q_DECL_OVERRIDE;
@@ -269,15 +262,8 @@ signals:
 private slots:
 	void timeout( void );
 
-	void universalServerLookup( const QHostInfo &pHost );
-
 private:
 	static GlobalPrivate			*mInstance;
-
-	QElapsedTimer					 mGlobalTimer;
-	qint64							 mGlobalOffset;		// convert from universal to global
-	QElapsedTimer					 mUniversalTimer;
-	qint64							 mUniversalOffset;
 
 	QNetworkAccessManager			*mNetworkManager;
 
@@ -309,8 +295,7 @@ private:
 	QThread							*mGlobalThread;
 #endif
 
-	TimeSync						*mTimeSync;
-	int								 mTimeSyncPort;
+	fugio::TimeSync					*mTimeSync;
 
 	Universe						 mUniverse;
 
