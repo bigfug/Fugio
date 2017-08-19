@@ -30,8 +30,8 @@ SOURCES += fugio.cpp \
 	nodeprivate.cpp \
 	node.cpp \
 	interpolation.cpp \
-    ../libs/FugioTime/lib/timesync.cpp
-    universe.cpp
+	universe.cpp \
+	../libs/FugioTime/lib/timesync.cpp
 
 HEADERS += fugio.h\
 	../include/fugio/global.h \
