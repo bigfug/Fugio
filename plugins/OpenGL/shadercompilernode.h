@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QOpenGLShaderProgram>
 
 #include <fugio/nodecontrolbase.h>
 #include <fugio/opengl/shader_interface.h>
@@ -48,7 +49,7 @@ public:
 
 	virtual bool isLinked( void ) const
 	{
-		return( mShaderCompilerData.mProgramLinked );
+		return( mShaderCompilerData.mProgram->isLinked() );
 	}
 
 	virtual const fugio::ShaderUniformMap &uniformMap( void ) const
@@ -63,11 +64,11 @@ public:
 
 	virtual GLuint programId( void ) const
 	{
-		return( mShaderCompilerData.mProgramId );
+		return( mShaderCompilerData.mProgram->programId() );
 	}
 
 private:
-	void loadShader( QSharedPointer<fugio::PinInterface> pPin, GLuint pProgramId, GLuint &pShaderId, GLenum pShaderType, int &pCompiled, int &pFailed );
+	void loadShader( QSharedPointer<fugio::PinInterface> pPin, QOpenGLShaderProgram &pProgram, QOpenGLShader::ShaderType pShaderType, int &pCompiled, int &pFailed );
 
 	void loadShader();
 
@@ -101,11 +102,10 @@ protected:
 		QStringList								 mUniformNames;
 		QStringList								 mAttributeNames;
 
-		GLuint									 mProgramId;
-		GLboolean								 mProgramLinked;
+		QOpenGLShaderProgram					*mProgram;
 
 		ShaderCompilerData( void )
-			: mProgramId( 0 ), mProgramLinked( false )
+			: mProgram( new QOpenGLShaderProgram() )
 		{
 
 		}
@@ -118,15 +118,15 @@ protected:
 		~ShaderCompilerData( void )
 		{
 			clear();
+
+			mProgram->deleteLater();
 		}
 
 		ShaderCompilerData &operator = ( ShaderCompilerData && other )
 		{
-			mProgramId = other.mProgramId;
-			mProgramLinked = other.mProgramLinked;
+			mProgram       = other.mProgram;
 
-			other.mProgramId = 0;
-			other.mProgramLinked = false;
+			other.mProgram = new QOpenGLShaderProgram();
 
 			mShaderUniformTypes = std::move( other.mShaderUniformTypes );
 			mShaderAttributeTypes = std::move( other.mShaderAttributeTypes );

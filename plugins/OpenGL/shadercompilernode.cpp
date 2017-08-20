@@ -132,142 +132,88 @@ void ShaderCompilerNode::inputsUpdated( qint64 pTimeStamp )
 //	return( pPin->direction() == PIN_OUTPUT );
 //}
 
-void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, GLuint pProgramId, GLuint &pShaderId, GLenum pShaderType, int &pCompiled, int &pFailed )
+void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, QOpenGLShaderProgram &pProgram, QOpenGLShader::ShaderType pShaderType, int &pCompiled, int &pFailed )
 {
-	QSharedPointer<fugio::PinInterface>	DstPin = pPin->connectedPin();
+	fugio::SyntaxErrorInterface *SyntaxErrors = input<fugio::SyntaxErrorInterface *>( pPin );
 
-	if( DstPin )
+	QString			Source = variant( pPin ).toString();
+
+	if( Source.isEmpty() )
 	{
-		QSharedPointer<PinControlInterface>		DstCtl = DstPin->control();
-
-		if( DstCtl )
+		if( SyntaxErrors )
 		{
-			VariantInterface	*DstVar = qobject_cast<VariantInterface *>( DstCtl->qobject() );
+			SyntaxErrors->clearSyntaxErrors();
+		}
 
-			if( DstVar )
+		return;
+	}
+
+	if( !pProgram.addCacheableShaderFromSourceCode( pShaderType, Source ) )
+	{
+		QString		Log = pProgram.log();
+
+		if( !Log.isEmpty() )
+		{
+			qWarning() << Log;
+		}
+
+		if( SyntaxErrors )
+		{
+			QList<fugio::SyntaxError>	SE;
+
+			OpenGLPlugin::parseShaderErrors( Log, SE );
+
+			if( SE.isEmpty() )
 			{
-				QByteArray		 Source    = DstVar->variant().toByteArray();
-				const GLchar	*SourcePtr = Source.data();
-
-				if( !Source.isEmpty() )
-				{
-					if( ( pShaderId = glCreateShader( pShaderType ) ) != 0 )
-					{
-						GLint			 Result;
-
-						fugio::SyntaxErrorInterface *SyntaxErrors = ( pPin->hasControl() ? qobject_cast<fugio::SyntaxErrorInterface *>( pPin->control()->qobject() ) : nullptr );
-
-						glShaderSource( pShaderId, 1, &SourcePtr, 0 );
-
-						glCompileShader( pShaderId );
-
-						glGetShaderiv( pShaderId, GL_INFO_LOG_LENGTH, &Result );
-
-						QVector<GLchar>	Log( Result + 1 );
-
-						if( Result > 0 )
-						{
-							glGetShaderInfoLog( pShaderId, Result, &Result, Log.data() );
-
-							if( SyntaxErrors )
-							{
-								QList<fugio::SyntaxError>	SE;
-
-								OpenGLPlugin::parseShaderErrors( QString( Log.data() ), SE );
-
-								if( SE.isEmpty() )
-								{
-									SyntaxErrors->clearSyntaxErrors();
-								}
-								else
-								{
-									SyntaxErrors->setSyntaxErrors( SE );
-								}
-							}
-							else
-							{
-								qWarning() << QString( Log.data() );
-							}
-						}
-
-						glGetShaderiv( pShaderId, GL_COMPILE_STATUS, &Result );
-
-						if( Result == GL_TRUE )
-						{
-							glAttachShader( pProgramId, pShaderId );
-
-							if( SyntaxErrors )
-							{
-								 SyntaxErrors->clearSyntaxErrors();
-							}
-
-							pCompiled++;
-
-							return;
-						}
-
-						//if( !QOpenGLContext::currentContext()->format().testOption( QSurfaceFormat::DebugContext ) )
-						{
-							//qWarning() << pPin->node()->name() << QString( Log.data() );
-						}
-
-						glDeleteShader( pShaderId );
-
-						pShaderId = 0;
-
-						pFailed++;
-					}
-				}
+				SyntaxErrors->clearSyntaxErrors();
+			}
+			else
+			{
+				SyntaxErrors->setSyntaxErrors( SE );
 			}
 		}
+
+		pFailed++;
+
+		return;
 	}
+
+	pCompiled++;
 }
 
 void ShaderCompilerNode::loadShader()
 {
 	ShaderCompilerData		CompilerData;
 
-	GLuint					ShaderVertId = 0;
-	GLuint					ShaderGeomId = 0;
-	GLuint					ShaderTessCtrlId = 0;
-	GLuint					ShaderTessEvalId = 0;
-	GLuint					ShaderFragId = 0;
-
 	GLint					Compiled = 0;
 	GLint					Failed   = 0;
 
 	//clearShader();
 
-	if( ( CompilerData.mProgramId = glCreateProgram() ) == 0 )
+	if( !CompilerData.mProgram->create() )
 	{
 		return;
 	}
 
 	OPENGL_PLUGIN_DEBUG;
 
-	loadShader( mPinShaderVertex, CompilerData.mProgramId, ShaderVertId, GL_VERTEX_SHADER, Compiled, Failed );
+	loadShader( mPinShaderVertex, *CompilerData.mProgram, QOpenGLShader::Vertex, Compiled, Failed );
 
 	OPENGL_PLUGIN_DEBUG;
 
-#if defined( GL_TESS_CONTROL_SHADER )
-	loadShader( mPinShaderTessCtrl, CompilerData.mProgramId, ShaderTessCtrlId, GL_TESS_CONTROL_SHADER, Compiled, Failed );
-
-	OPENGL_PLUGIN_DEBUG;
-#endif
-
-#if defined( GL_TESS_EVALUATION_SHADER )
-	loadShader( mPinShaderTessEval, CompilerData.mProgramId, ShaderTessEvalId, GL_TESS_EVALUATION_SHADER, Compiled, Failed );
-
-	OPENGL_PLUGIN_DEBUG;
-#endif
-
-#if defined( GL_GEOMETRY_SHADER )
-	loadShader( mPinShaderGeometry, CompilerData.mProgramId, ShaderGeomId, GL_GEOMETRY_SHADER, Compiled, Failed );
-#endif
+	loadShader( mPinShaderTessCtrl, *CompilerData.mProgram, QOpenGLShader::TessellationControl, Compiled, Failed );
 
 	OPENGL_PLUGIN_DEBUG;
 
-	loadShader( mPinShaderFragment, CompilerData.mProgramId, ShaderFragId, GL_FRAGMENT_SHADER, Compiled, Failed );
+	loadShader( mPinShaderTessEval, *CompilerData.mProgram, QOpenGLShader::TessellationEvaluation, Compiled, Failed );
+
+	OPENGL_PLUGIN_DEBUG;
+
+	loadShader( mPinShaderGeometry, *CompilerData.mProgram, QOpenGLShader::Geometry, Compiled, Failed );
+
+	OPENGL_PLUGIN_DEBUG;
+
+	loadShader( mPinShaderFragment, *CompilerData.mProgram, QOpenGLShader::Fragment, Compiled, Failed );
 
 	OPENGL_PLUGIN_DEBUG;
 
@@ -353,44 +299,6 @@ void ShaderCompilerNode::loadShader()
 	}
 
 	OPENGL_PLUGIN_DEBUG;
-
-	//-------------------------------------------------------------------------
-	// we don't need to keep these around...
-
-	if( ShaderFragId )
-	{
-		glDeleteShader( ShaderFragId );
-
-		ShaderFragId = 0;
-	}
-
-	if( ShaderGeomId )
-	{
-		glDeleteShader( ShaderGeomId );
-
-		ShaderGeomId = 0;
-	}
-
-	if( ShaderTessEvalId )
-	{
-		glDeleteShader( ShaderTessEvalId );
-
-		ShaderTessEvalId = 0;
-	}
-
-	if( ShaderTessCtrlId )
-	{
-		glDeleteShader( ShaderTessCtrlId );
-
-		ShaderTessCtrlId = 0;
-	}
-
-	if( ShaderVertId )
-	{
-		glDeleteShader( ShaderVertId );
-
-		ShaderVertId = 0;
-	}
 
 	//-------------------------------------------------------------------------
 

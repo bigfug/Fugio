@@ -72,27 +72,27 @@ int TextureNodeForm::target() const
 
 QOpenGLTexture::PixelFormat TextureNodeForm::format() const
 {
-	return( OpenGLPlugin::mMapFormat.value( ui->mComboFormat->currentText() ) );
+	return( QOpenGLTexture::PixelFormat( OpenGLPlugin::mMapFormat.value( ui->mComboFormat->currentText() ) ) );
 }
 
 QOpenGLTexture::TextureFormat TextureNodeForm::internal() const
 {
-	return( OpenGLPlugin::mMapInternal.value( ui->mComboInternalFormat->currentText() ) );
+	return( QOpenGLTexture::TextureFormat( OpenGLPlugin::mMapInternal.value( ui->mComboInternalFormat->currentText() ) ) );
 }
 
 QOpenGLTexture::PixelType TextureNodeForm::type() const
 {
-	return( OpenGLPlugin::mMapType.value( ui->mComboType->currentText() ) );
+	return( QOpenGLTexture::PixelType( OpenGLPlugin::mMapType.value( ui->mComboType->currentText() ) ) );
 }
 
 QOpenGLTexture::Filter TextureNodeForm::filterMin() const
 {
-	return( OpenGLPlugin::mMapFilterMin.value( ui->mFilterMin->currentText() ) );
+	return( QOpenGLTexture::Filter( OpenGLPlugin::mMapFilterMin.value( ui->mFilterMin->currentText() ) ) );
 }
 
 QOpenGLTexture::Filter TextureNodeForm::filterMag() const
 {
-	return( OpenGLPlugin::mMapFilterMag.value( ui->mFilterMag->currentText() ) );
+	return( QOpenGLTexture::Filter( OpenGLPlugin::mMapFilterMag.value( ui->mFilterMag->currentText() ) ) );
 }
 
 QOpenGLTexture::WrapMode TextureNodeForm::wrapS() const

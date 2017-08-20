@@ -98,7 +98,7 @@ void ImageToTextureNode::loadSettings( QSettings &pSettings )
 	CurVal = pSettings.value( "Internal", CurVal ).toString();
 	CurInt = OpenGLPlugin::mMapInternal.value( CurVal, mTexture->internalFormat() );
 
-	mTexture->setInternalFormat( CurInt );
+	mTexture->setInternalFormat( QOpenGLTexture::TextureFormat( CurInt ) );
 
 	CurVal = OpenGLPlugin::mMapType.key( mTexture->type() );
 	CurVal = pSettings.value( "Type", CurVal ).toString();
