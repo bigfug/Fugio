@@ -331,7 +331,7 @@ INCLUDEPATH += $$PWD/../FugioLib
 DEPENDPATH += $$PWD/../FugioLib
 
 win32: PRE_TARGETDEPS += $$DESTDIR/$$qtLibraryTarget( fugio ).lib
-else:  PRE_TARGETDEPS += $$DESTDIR/$$qtLibraryTarget( fugio ).a
+else:  PRE_TARGETDEPS += $$DESTDIR/lib$$qtLibraryTarget( fugio ).a
 
 #------------------------------------------------------------------------------
 # General Unix/Linux/OS X (Brew) libs path
