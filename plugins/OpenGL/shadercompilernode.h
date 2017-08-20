@@ -67,6 +67,11 @@ public:
 		return( mShaderCompilerData.mProgram->programId() );
 	}
 
+	virtual QOpenGLShaderProgram *program( void )
+	{
+		return( mShaderCompilerData.mProgram );
+	}
+
 private:
 	void loadShader( QSharedPointer<fugio::PinInterface> pPin, QOpenGLShaderProgram &pProgram, QOpenGLShader::ShaderType pShaderType, int &pCompiled, int &pFailed );
 

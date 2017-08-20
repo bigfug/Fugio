@@ -21,7 +21,7 @@ public:
 
 	virtual ~TextureNodeForm();
 
-	int target( void ) const;
+	QOpenGLTexture::Target target( void ) const;
 	QOpenGLTexture::PixelFormat format( void ) const;
 	QOpenGLTexture::TextureFormat internal( void ) const;
 	QOpenGLTexture::PixelType type( void ) const;

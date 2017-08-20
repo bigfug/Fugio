@@ -272,7 +272,7 @@ void ShaderCompilerNode::loadShader()
 			BufMod = GL_SEPARATE_ATTRIBS;
 		}
 
-		glTransformFeedbackVaryings( CompilerData.mProgramId, VarLst.size(), (const GLchar **)VarLst.constData(), BufMod );
+		glTransformFeedbackVaryings( CompilerData.mProgram->programId(), VarLst.size(), (const GLchar **)VarLst.constData(), BufMod );
 
 		OPENGL_PLUGIN_DEBUG;
 	}
@@ -281,62 +281,18 @@ void ShaderCompilerNode::loadShader()
 	//-------------------------------------------------------------------------
 	// Link
 
-	glLinkProgram( CompilerData.mProgramId );
-
-	OPENGL_PLUGIN_DEBUG;
-
-	GLint			LinkLogLength = 0;
-
-	glGetProgramiv( CompilerData.mProgramId, GL_INFO_LOG_LENGTH, &LinkLogLength );
-
-	if( LinkLogLength > 0 )
+	if( !CompilerData.mProgram->link() )
 	{
-		QVector<GLchar>	Log( LinkLogLength + 1 );
+		QString		LogDat = CompilerData.mProgram->log();
 
-		glGetProgramInfoLog( CompilerData.mProgramId, LinkLogLength, &LinkLogLength, Log.data() );
-
-		mNode->setStatusMessage( QString( Log.constData() ) );
-	}
-
-	OPENGL_PLUGIN_DEBUG;
-
-	//-------------------------------------------------------------------------
-
-	GLint			LinkStatus = GL_FALSE;
-
-	glGetProgramiv( CompilerData.mProgramId, GL_LINK_STATUS, &LinkStatus );
-
-	if( LinkStatus != GL_TRUE )
-	{
-		mNode->setStatus( fugio::NodeInterface::Error );
-
-		if( LinkLogLength <= 0 )
-		{
-#if !defined( GL_ES_VERSION_2_0 )
-			if( !VaryingList.isEmpty() )
-			{
-				// NVIDIA cards fail to link but don't report anything!
-
-				mNode->setStatusMessage( "Shader Linking Failed - Check Varyings" );
-			}
-			else
-#endif
-			{
-				mNode->setStatusMessage( "Shader Linking Failed" );
-			}
-		}
+		mNode->setStatusMessage( LogDat );
 
 		return;
 	}
 
 	mNode->setStatus( fugio::NodeInterface::Initialised );
 
-	if( LinkLogLength <= 0 )
-	{
-		mNode->setStatusMessage( "Shader Linked" );
-	}
-
-	CompilerData.mProgramLinked = true;
+	mNode->setStatusMessage( "Shader Linked" );
 
 	//-------------------------------------------------------------------------
 
@@ -355,6 +311,8 @@ void ShaderCompilerNode::loadShader()
 
 void ShaderCompilerNode::ShaderCompilerData::process()
 {
+	QOpenGLFunctions	*GL = QOpenGLContext::currentContext()->functions();
+
 	ShaderUniformData	UniformData;
 
 	memset( &UniformData, 0, sizeof( UniformData ) );
@@ -369,13 +327,13 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 
 	GLint		ActiveUniforms = 0;
 
-	glGetProgramiv( mProgramId, GL_ACTIVE_UNIFORMS, &ActiveUniforms );
+	GL->glGetProgramiv( mProgram->programId(), GL_ACTIVE_UNIFORMS, &ActiveUniforms );
 
 	if( ActiveUniforms > 0 )
 	{
 		GLint		ActiveUniformsMaxLength;
 
-		glGetProgramiv( mProgramId, GL_ACTIVE_UNIFORM_MAX_LENGTH, &ActiveUniformsMaxLength );
+		GL->glGetProgramiv( mProgram->programId(), GL_ACTIVE_UNIFORM_MAX_LENGTH, &ActiveUniformsMaxLength );
 
 		std::vector<GLchar>		Name( ActiveUniformsMaxLength );
 
@@ -383,11 +341,11 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 		{
 			GLsizei		NameLength;
 
-			glGetActiveUniform( mProgramId, i, Name.size(), &NameLength, &UniformData.mSize, &UniformData.mType, &Name[ 0 ] );
+			GL->glGetActiveUniform( mProgram->programId(), i, Name.size(), &NameLength, &UniformData.mSize, &UniformData.mType, &Name[ 0 ] );
 
 			QString		UniformName = QString::fromLocal8Bit( &Name[ 0 ] );
 
-			UniformData.mLocation = glGetUniformLocation( mProgramId, Name.data() );
+			UniformData.mLocation = mProgram->uniformLocation( Name.data() );
 
 			if( UniformData.mLocation == -1 )
 			{
@@ -407,7 +365,6 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 
 			switch( UniformData.mType )
 			{
-#if !defined( GL_ES_VERSION_2_0 )
 				case GL_SAMPLER_1D:
 				case GL_SAMPLER_1D_ARRAY:
 				case GL_SAMPLER_1D_ARRAY_SHADOW:
@@ -418,17 +375,10 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 				case GL_SAMPLER_2D_RECT:
 				case GL_SAMPLER_2D_SHADOW:
 				case GL_SAMPLER_3D:
-#endif
 				case GL_SAMPLER_2D:
 				case GL_SAMPLER_CUBE:
-#if defined( GL_SAMPLER_CUBE_MAP_ARRAY )
 				case GL_SAMPLER_CUBE_MAP_ARRAY:
-#endif
-#if defined( GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW )
 				case GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW:
-#endif
-
-#if !defined( GL_ES_VERSION_2_0 )
 				case GL_SAMPLER_CUBE_SHADOW:
 				case GL_INT_SAMPLER_1D:
 				case GL_INT_SAMPLER_2D:
@@ -456,7 +406,6 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 				case GL_INT_SAMPLER_CUBE_MAP_ARRAY:
 				case GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY:
 				case GL_SAMPLER:
-#endif
 					UniformData.mSampler = true;
 					UniformData.mTextureBinding = ++TextureBinding;
 
@@ -490,13 +439,13 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 
 	GLint		ActiveAtrributes = 0;
 
-	glGetProgramiv( mProgramId, GL_ACTIVE_ATTRIBUTES, &ActiveAtrributes );
+	GL->glGetProgramiv( mProgram->programId(), GL_ACTIVE_ATTRIBUTES, &ActiveAtrributes );
 
 	if( ActiveAtrributes > 0 )
 	{
 		GLint		ActiveUniformsMaxLength;
 
-		glGetProgramiv( mProgramId, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &ActiveUniformsMaxLength );
+		GL->glGetProgramiv( mProgram->programId(), GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &ActiveUniformsMaxLength );
 
 		std::vector<GLchar>		Name( ActiveUniformsMaxLength );
 
@@ -504,11 +453,11 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 		{
 			GLsizei		NameLength;
 
-			glGetActiveAttrib( mProgramId, i, Name.size(), &NameLength, &UniformData.mSize, &UniformData.mType, &Name[ 0 ] );
+			GL->glGetActiveAttrib( mProgram->programId(), i, Name.size(), &NameLength, &UniformData.mSize, &UniformData.mType, &Name[ 0 ] );
 
 			QString		AttributeName = QString::fromLocal8Bit( &Name[ 0 ] );
 
-			UniformData.mLocation = glGetAttribLocation( mProgramId, Name.data() );
+			UniformData.mLocation = mProgram->attributeLocation( Name.data() );
 
 			if( UniformData.mLocation == -1 )
 			{
@@ -528,18 +477,11 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 
 void ShaderCompilerNode::ShaderCompilerData::clear()
 {
-	if( mProgramId )
-	{
-		glDeleteProgram( mProgramId );
-
-		mProgramId = 0;
-	}
+	mProgram->removeAllShaders();
 
 	mShaderAttributeTypes.clear();
 	mShaderUniformTypes.clear();
 
 	mUniformNames.clear();
 	mAttributeNames.clear();
-
-	mProgramLinked = false;
 }

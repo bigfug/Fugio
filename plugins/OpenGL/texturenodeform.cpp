@@ -65,9 +65,9 @@ TextureNodeForm::~TextureNodeForm()
 	delete ui;
 }
 
-int TextureNodeForm::target() const
+QOpenGLTexture::Target TextureNodeForm::target() const
 {
-	return( OpenGLPlugin::mMapTargets.value( ui->mComboTarget->currentText() ) );
+	return( QOpenGLTexture::Target( OpenGLPlugin::mMapTargets.value( ui->mComboTarget->currentText() ) ) );
 }
 
 QOpenGLTexture::PixelFormat TextureNodeForm::format() const
@@ -122,7 +122,7 @@ bool TextureNodeForm::doubleBuffer() const
 
 QOpenGLTexture::ComparisonFunction TextureNodeForm::compare() const
 {
-	return( OpenGLPlugin::mMapCompare.value( ui->mCompare->currentText() ) );
+	return( QOpenGLTexture::ComparisonFunction( OpenGLPlugin::mMapCompare.value( ui->mCompare->currentText() ) ) );
 }
 
 void TextureNodeForm::updateInternalFormat()
