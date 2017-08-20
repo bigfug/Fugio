@@ -22,17 +22,17 @@ public:
 	virtual ~TextureNodeForm();
 
 	int target( void ) const;
-	int format( void ) const;
-	int internal( void ) const;
-	int type( void ) const;
-	int filterMin( void ) const;
-	int filterMag( void ) const;
-	int wrapS( void ) const;
-	int wrapT( void ) const;
-	int wrapR( void ) const;
+	QOpenGLTexture::PixelFormat format( void ) const;
+	QOpenGLTexture::TextureFormat internal( void ) const;
+	QOpenGLTexture::PixelType type( void ) const;
+	QOpenGLTexture::Filter filterMin( void ) const;
+	QOpenGLTexture::Filter filterMag( void ) const;
+	QOpenGLTexture::WrapMode wrapS( void ) const;
+	QOpenGLTexture::WrapMode wrapT( void ) const;
+	QOpenGLTexture::WrapMode wrapR( void ) const;
 	bool genMipMaps( void ) const;
 	bool doubleBuffer( void ) const;
-	int compare( void ) const;
+	QOpenGLTexture::ComparisonFunction compare( void ) const;
 
 private slots:
 

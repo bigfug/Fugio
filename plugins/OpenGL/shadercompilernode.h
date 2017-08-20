@@ -67,7 +67,7 @@ public:
 	}
 
 private:
-	static void loadShader( QSharedPointer<fugio::PinInterface> pPin, GLuint pProgramId, GLuint &pShaderId, GLenum pShaderType, int &pCompiled, int &pFailed );
+	void loadShader( QSharedPointer<fugio::PinInterface> pPin, GLuint pProgramId, GLuint &pShaderId, GLenum pShaderType, int &pCompiled, int &pFailed );
 
 	void loadShader();
 

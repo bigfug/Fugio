@@ -627,11 +627,7 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_WRAP( GL_REPEAT );
 		INSERT_WRAP( GL_CLAMP_TO_EDGE );
 		INSERT_WRAP( GL_MIRRORED_REPEAT );
-#if !defined( GL_ES_VERSION_2_0 )
 		INSERT_WRAP( GL_CLAMP_TO_BORDER );
-		INSERT_WRAP( GL_CLAMP );
-		INSERT_WRAP( GL_MIRROR_CLAMP_TO_EDGE );
-#endif
 	}
 
 	if( mMapCompare.isEmpty() )

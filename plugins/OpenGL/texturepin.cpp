@@ -14,23 +14,23 @@ TexturePin::TexturePin( QSharedPointer<fugio::PinInterface> pPin )
 {
 	memset( &mTexDsc, 0, sizeof( mTexDsc ) );
 
-	mTexDsc.mFormat = GL_RGBA;
-	mTexDsc.mInternalFormat = QOpenGLTexture::RGBA;
+	mTexDsc.mFormat         = QOpenGLTexture::RGBA;
+	mTexDsc.mInternalFormat = QOpenGLTexture::RGBA8_UNorm;
 
 	mTexDsc.mType = QOpenGLTexture::UInt8;
 
-	mTexDsc.mMinFilter = GL_NEAREST;
-	mTexDsc.mMagFilter = GL_NEAREST;
+	mTexDsc.mMinFilter = QOpenGLTexture::Nearest;
+	mTexDsc.mMagFilter = QOpenGLTexture::Nearest;
 
 	mTexDsc.mWrapX = QOpenGLTexture::Repeat;
-	mTexDsc.mWrapY = GL_REPEAT;
-	mTexDsc.mWrapZ = GL_REPEAT;
+	mTexDsc.mWrapY = QOpenGLTexture::Repeat;
+	mTexDsc.mWrapZ = QOpenGLTexture::Repeat;
 
 	mTexDsc.mGenerateMipMaps = false;
 
 	mTexDsc.mDoubleBuffered = false;
 
-	mTexDsc.mCompare = GL_NONE;
+	mTexDsc.mCompare = QOpenGLTexture::CompareNever;
 
 	mDefinitionChanged = true;
 
@@ -68,47 +68,47 @@ quint32 TexturePin::dstTexId() const
 	return( mDstTex->textureId() );
 }
 
-quint32 TexturePin::target() const
+QOpenGLTexture::Target TexturePin::target() const
 {
 	return( mTexDsc.mTarget );
 }
 
-quint32 TexturePin::format() const
+QOpenGLTexture::PixelFormat TexturePin::format() const
 {
 	return( mTexDsc.mFormat );
 }
 
-quint32 TexturePin::internalFormat() const
+QOpenGLTexture::TextureFormat TexturePin::internalFormat() const
 {
 	return( mTexDsc.mInternalFormat );
 }
 
-quint32 TexturePin::type() const
+QOpenGLTexture::PixelType TexturePin::type() const
 {
 	return( mTexDsc.mType );
 }
 
-int TexturePin::filterMin( void ) const
+QOpenGLTexture::Filter TexturePin::filterMin( void ) const
 {
 	return( mTexDsc.mMinFilter );
 }
 
-int TexturePin::filterMag( void ) const
+QOpenGLTexture::Filter TexturePin::filterMag( void ) const
 {
 	return( mTexDsc.mMagFilter );
 }
 
-int TexturePin::wrapS( void ) const
+QOpenGLTexture::WrapMode TexturePin::wrapS( void ) const
 {
 	return( mTexDsc.mWrapX );
 }
 
-int TexturePin::wrapT( void ) const
+QOpenGLTexture::WrapMode TexturePin::wrapT( void ) const
 {
 	return( mTexDsc.mWrapY );
 }
 
-int TexturePin::wrapR() const
+QOpenGLTexture::WrapMode TexturePin::wrapR() const
 {
 	return( mTexDsc.mWrapZ );
 }
@@ -163,7 +163,7 @@ void TexturePin::setSize( const QVector3D &pSize )
 	}
 }
 
-void TexturePin::setTarget( quint32 pTarget )
+void TexturePin::setTarget( QOpenGLTexture::Target pTarget )
 {
 	if( pTarget != mTexDsc.mTarget )
 	{
@@ -173,7 +173,7 @@ void TexturePin::setTarget( quint32 pTarget )
 	}
 }
 
-void TexturePin::setFormat( quint32 pFormat )
+void TexturePin::setFormat( QOpenGLTexture::PixelFormat pFormat )
 {
 	if( pFormat != mTexDsc.mFormat )
 	{
@@ -193,7 +193,7 @@ void TexturePin::setType( QOpenGLTexture::PixelType pType )
 	}
 }
 
-void TexturePin::setInternalFormat( quint32 pInternalFormat )
+void TexturePin::setInternalFormat( QOpenGLTexture::TextureFormat pInternalFormat )
 {
 	if( mTexDsc.mInternalFormat != pInternalFormat )
 	{
@@ -203,15 +203,28 @@ void TexturePin::setInternalFormat( quint32 pInternalFormat )
 	}
 }
 
-bool TexturePin::isCompressedFormat( GLenum pFormat )
+bool TexturePin::isCompressedFormat( QOpenGLTexture::TextureFormat pFormat )
 {
 	switch( pFormat )
 	{
-		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
-		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
-		case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
-		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+		case QOpenGLTexture::RGB_DXT1:
+		case QOpenGLTexture::RGBA_DXT1:
+		case QOpenGLTexture::RGBA_DXT3:
+		case QOpenGLTexture::RGBA_DXT5:
+
+		case QOpenGLTexture::R_ATI1N_UNorm:
+		case QOpenGLTexture::R_ATI1N_SNorm:
+		case QOpenGLTexture::RG_ATI2N_UNorm:
+		case QOpenGLTexture::RG_ATI2N_SNorm:
+		case QOpenGLTexture::RGB_BP_UNSIGNED_FLOAT:
+		case QOpenGLTexture::RGB_BP_SIGNED_FLOAT:
+		case QOpenGLTexture::RGB_BP_UNorm:
+		case QOpenGLTexture::R11_EAC_UNorm:
+		case QOpenGLTexture::R11_EAC_SNorm:
 			return( true );
+
+		default:
+			break;
 	}
 
 	return( false );
@@ -248,7 +261,7 @@ void TexturePin::update()
 
 		if( !isCompressedFormat( mTexDsc.mInternalFormat ) )
 		{
-			mDstTex->allocateStorage( mTexDsc.mInternalFormat, mTexDsc.mType );
+			mDstTex->allocateStorage( mTexDsc.mFormat, mTexDsc.mType );
 		}
 
 		if( !isCompressedFormat( mTexDsc.mInternalFormat ) )
@@ -360,11 +373,7 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 
 		glPixelStorei( GL_UNPACK_ALIGNMENT, 4 );
 
-#if !defined( GL_ES_VERSION_2_0 )
-		if( mTexDsc.mGenerateMipMaps && GLEW_ARB_framebuffer_object && ( mTexDsc.mTarget == GL_TEXTURE_2D || mTexDsc.mTarget == GL_TEXTURE_CUBE_MAP ) )
-#else
 		if( mTexDsc.mGenerateMipMaps && ( mTexDsc.mTarget == GL_TEXTURE_2D || mTexDsc.mTarget == GL_TEXTURE_CUBE_MAP ) )
-#endif
 		{
 			glGenerateMipmap( mTexDsc.mTarget );
 		}
@@ -373,13 +382,13 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 	release();
 }
 
-void TexturePin::setFilter( quint32 pMin, quint32 pMag )
+void TexturePin::setFilter( QOpenGLTexture::Filter pMin, QOpenGLTexture::Filter pMag )
 {
 	mTexDsc.mMinFilter = pMin;
 	mTexDsc.mMagFilter = pMag;
 }
 
-void TexturePin::setWrap( quint32 pX, quint32 pY, quint32 pZ )
+void TexturePin::setWrap( QOpenGLTexture::WrapMode pX, QOpenGLTexture::WrapMode pY, QOpenGLTexture::WrapMode pZ )
 {
 	mTexDsc.mWrapX = pX;
 	mTexDsc.mWrapY = pY;
@@ -454,11 +463,7 @@ quint32 TexturePin::fbo( bool pUseDepth )
 
 	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
 
-#if defined( GL_ES_VERSION_2_0 )
-	if( !mFBOId && mDstTexId && mTexDsc.mTexWidth )
-#else
-	if( !mFBOId && mDstTexId && mTexDsc.mTexWidth && GLEW_ARB_framebuffer_object )
-#endif
+	if( !mFBOId && mDstTex && mTexDsc.mTexWidth )
 	{
 		glGenFramebuffers( 1, &mFBOId );
 		glBindFramebuffer( GL_FRAMEBUFFER, mFBOId );
@@ -480,15 +485,11 @@ quint32 TexturePin::fbo( bool pUseDepth )
 		glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
 	}
 
-#if defined( GL_ES_VERSION_2_0 )
-	if( mFBOId && mDstTexId && mTexDsc.mTexWidth )
-#else
-	if( mFBOId && mDstTexId && mDstTexId != mFBOBoundTexId && mTexDsc.mTexWidth && GLEW_ARB_framebuffer_object )
-#endif
+	if( mFBOId && mDstTex && mDstTex->textureId() != mFBOBoundTexId && mTexDsc.mTexWidth )
 	{
 		glBindFramebuffer( GL_FRAMEBUFFER, mFBOId );
 
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mTexDsc.mTarget, mDstTexId, 0 );
+		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mTexDsc.mTarget, mDstTex->textureId(), 0 );
 
 		GLenum	FBOStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
 
@@ -500,7 +501,7 @@ quint32 TexturePin::fbo( bool pUseDepth )
 		}
 		else
 		{
-			mFBOBoundTexId = mDstTexId;
+			mFBOBoundTexId = mDstTex->textureId();
 		}
 
 		glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
@@ -567,8 +568,7 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 
 	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
 
-#if !defined( GL_ES_VERSION_2_0 )
-	if( !mFBOMSId && mTexDsc.mTexWidth && GLEW_ARB_framebuffer_object )
+	if( !mFBOMSId && mTexDsc.mTexWidth )
 	{
 		GLint		FBOCur, RBCur;
 
@@ -607,7 +607,6 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 
 		glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
 	}
-#endif
 
 	return( mFBOMSId );
 }
@@ -678,12 +677,12 @@ QVector3D TexturePin::toVector3D() const
 	return( textureSize() );
 }
 
-qint32 TexturePin::compare() const
+QOpenGLTexture::ComparisonFunction TexturePin::compare() const
 {
 	return( mTexDsc.mCompare );
 }
 
-void TexturePin::setCompare( qint32 pCompare )
+void TexturePin::setCompare( QOpenGLTexture::ComparisonFunction pCompare )
 {
 	if( mTexDsc.mCompare != pCompare )
 	{

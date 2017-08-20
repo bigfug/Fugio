@@ -17,7 +17,7 @@ StatePin::StatePin( QSharedPointer<fugio::PinInterface> pPin )
 	INSERT_FLAG( GL_PROGRAM_POINT_SIZE );
 #endif
 
-	INSERT_FLAG( GL_PRIMITIVE_RESTART_FIXED_INDEX );
+//	INSERT_FLAG( GL_PRIMITIVE_RESTART_FIXED_INDEX );
 
 	mBlendRgbSrc = GL_SRC_ALPHA;
 	mBlendAlphaSrc = GL_SRC_ALPHA;

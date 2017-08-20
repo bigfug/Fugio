@@ -210,12 +210,12 @@ void PreviewNode::render( qint64 pTimeStamp )
 
 		if( !mTexture->dstTexId() || mOutput->size() != QSize( TexSze.x(), TexSze.y() ) )
 		{
-			mTexture->setFilter( GL_LINEAR, GL_LINEAR );
-			mTexture->setFormat( GL_RGBA );
+			mTexture->setFilter( QOpenGLTexture::Linear, QOpenGLTexture::Linear );
+			mTexture->setFormat( QOpenGLTexture::RGBA );
 			mTexture->setGenMipMaps( false );
-			mTexture->setInternalFormat( GL_RGBA );
+			mTexture->setInternalFormat( QOpenGLTexture::RGBA8_UNorm );
 			mTexture->setSize( mOutput->size().width(), mOutput->size().height() );
-			mTexture->setTarget( GL_TEXTURE_2D );
+			mTexture->setTarget( QOpenGLTexture::Target2D );
 			mTexture->setType( QOpenGLTexture::UInt8 );
 //			mTexture->setWrap( GL_CLAMP, GL_CLAMP, GL_CLAMP );
 

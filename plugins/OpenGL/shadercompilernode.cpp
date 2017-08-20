@@ -159,16 +159,7 @@ void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, G
 
 						glShaderSource( pShaderId, 1, &SourcePtr, 0 );
 
-#if !defined( GL_ES_VERSION_2_0 )
-						if( GLEW_ARB_shading_language_include )
-						{
-							glCompileShaderIncludeARB( pShaderId, 0, NULL, NULL );
-						}
-						else
-#endif
-						{
-							glCompileShader( pShaderId );
-						}
+						glCompileShader( pShaderId );
 
 						glGetShaderiv( pShaderId, GL_INFO_LOG_LENGTH, &Result );
 
@@ -335,12 +326,9 @@ void ShaderCompilerNode::loadShader()
 			BufMod = GL_SEPARATE_ATTRIBS;
 		}
 
-		if( GLEW_VERSION_3_0 )
-		{
-			glTransformFeedbackVaryings( CompilerData.mProgramId, VarLst.size(), (const GLchar **)VarLst.constData(), BufMod );
+		glTransformFeedbackVaryings( CompilerData.mProgramId, VarLst.size(), (const GLchar **)VarLst.constData(), BufMod );
 
-			OPENGL_PLUGIN_DEBUG;
-		}
+		OPENGL_PLUGIN_DEBUG;
 	}
 #endif
 

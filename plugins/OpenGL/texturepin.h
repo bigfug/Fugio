@@ -72,6 +72,9 @@ public:
 			case GL_DEPTH_COMPONENT32F:
 #endif
 				return( true );
+
+			default:
+				break;
 		}
 
 		return( false );
@@ -80,32 +83,32 @@ public:
 	virtual quint32 srcTexId( void ) const Q_DECL_OVERRIDE;
 	virtual quint32 dstTexId( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 target( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::Target target( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 format( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::PixelFormat format( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 internalFormat( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::TextureFormat internalFormat( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 type( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::PixelType type( void ) const Q_DECL_OVERRIDE;
 
-	virtual int filterMin( void ) const Q_DECL_OVERRIDE;
-	virtual int filterMag( void ) const Q_DECL_OVERRIDE;
-	virtual int wrapS( void ) const Q_DECL_OVERRIDE;
-	virtual int wrapT( void ) const Q_DECL_OVERRIDE;
-	virtual int wrapR( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::Filter filterMin( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::Filter filterMag( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::WrapMode wrapS( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::WrapMode wrapT( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::WrapMode wrapR( void ) const Q_DECL_OVERRIDE;
 	virtual bool genMipMaps( void ) const Q_DECL_OVERRIDE;
 
 	virtual void setSize( qint32 pWidth, qint32 pHeight, qint32 pDepth ) Q_DECL_OVERRIDE;
 
 	virtual void setSize( const QVector3D &pSize ) Q_DECL_OVERRIDE;
 
-	virtual void setTarget( quint32 pTarget ) Q_DECL_OVERRIDE;
+	virtual void setTarget( QOpenGLTexture::Target pTarget ) Q_DECL_OVERRIDE;
 
-	virtual void setFormat( quint32 pFormat ) Q_DECL_OVERRIDE;
+	virtual void setFormat( QOpenGLTexture::PixelFormat pFormat ) Q_DECL_OVERRIDE;
 
 	virtual void setType( QOpenGLTexture::PixelType pType ) Q_DECL_OVERRIDE;
 
-	virtual void setInternalFormat( quint32 pInternalFormat ) Q_DECL_OVERRIDE;
+	virtual void setInternalFormat( QOpenGLTexture::TextureFormat pInternalFormat ) Q_DECL_OVERRIDE;
 
 	virtual void update( void ) Q_DECL_OVERRIDE;
 
@@ -113,9 +116,9 @@ public:
 
 	//virtual QOpenGLFramebufferObject *fbo( const QOpenGLFramebufferObjectFormat &pFormat ) Q_DECL_OVERRIDE;
 
-	virtual void setFilter( quint32 pMin, quint32 pMag ) Q_DECL_OVERRIDE;
+	virtual void setFilter( QOpenGLTexture::Filter pMin, QOpenGLTexture::Filter pMag ) Q_DECL_OVERRIDE;
 
-	virtual void setWrap( quint32 pX, quint32 pY, quint32 pZ ) Q_DECL_OVERRIDE;
+	virtual void setWrap( QOpenGLTexture::WrapMode pX, QOpenGLTexture::WrapMode pY, QOpenGLTexture::WrapMode pZ ) Q_DECL_OVERRIDE;
 
 	virtual void setGenMipMaps( bool pGenMipMaps ) Q_DECL_OVERRIDE;
 
@@ -136,8 +139,8 @@ public:
 
 	virtual void swapTexture( void ) Q_DECL_OVERRIDE;
 
-	virtual qint32 compare() const Q_DECL_OVERRIDE;
-	virtual void setCompare( qint32 pCompare ) Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::ComparisonFunction compare() const Q_DECL_OVERRIDE;
+	virtual void setCompare( QOpenGLTexture::ComparisonFunction pCompare ) Q_DECL_OVERRIDE;
 
 	virtual OpenGLTextureDescription textureDescription() const Q_DECL_OVERRIDE
 	{
@@ -167,7 +170,7 @@ public:
 	virtual QVector3D toVector3D() const Q_DECL_OVERRIDE;
 
 protected:
-	static bool isCompressedFormat( GLenum pFormat );
+	static bool isCompressedFormat( QOpenGLTexture::TextureFormat pFormat );
 
 	void checkDefinition();
 

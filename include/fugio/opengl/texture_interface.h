@@ -75,11 +75,11 @@ public:
 
 	virtual QOpenGLTexture::ComparisonFunction compare( void ) const = 0;
 
-	virtual int filterMin( void ) const = 0;
-	virtual int filterMag( void ) const = 0;
-	virtual int wrapS( void ) const = 0;
-	virtual int wrapT( void ) const = 0;
-	virtual int wrapR( void ) const = 0;
+	virtual QOpenGLTexture::Filter filterMin( void ) const = 0;
+	virtual QOpenGLTexture::Filter filterMag( void ) const = 0;
+	virtual QOpenGLTexture::WrapMode wrapS( void ) const = 0;
+	virtual QOpenGLTexture::WrapMode wrapT( void ) const = 0;
+	virtual QOpenGLTexture::WrapMode wrapR( void ) const = 0;
 	virtual bool genMipMaps( void ) const = 0;
 
 	virtual void setCompare( QOpenGLTexture::ComparisonFunction pCompare ) = 0;

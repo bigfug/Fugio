@@ -27,7 +27,7 @@ TextureCloneNode::TextureCloneNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinTexDst->setDescription( tr( "The destination OpenGL Texture" ) );
 
-	mValTexDst->setTarget( GL_TEXTURE_2D );
+	mValTexDst->setTarget( QOpenGLTexture::Target2D );
 
 	mPinTexSrc->setControl( mPinTexDst->control() );
 }

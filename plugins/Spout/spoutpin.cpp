@@ -65,125 +65,54 @@ quint32 SpoutPin::dstTexId( void ) const
 	return( 0 );
 }
 
-quint32 SpoutPin::target() const
+QOpenGLTexture::Target SpoutPin::target() const
 {
-	return( GL_TEXTURE_2D );
+	return( QOpenGLTexture::Target2D );
 }
 
-quint32 SpoutPin::format() const
+QOpenGLTexture::PixelFormat SpoutPin::format() const
 {
-#if defined( SPOUT_SUPPORTED )
-	return( GL_BGRA );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::BGRA );
 }
 
-quint32 SpoutPin::internalFormat() const
+QOpenGLTexture::TextureFormat SpoutPin::internalFormat() const
 {
-#if defined( SPOUT_SUPPORTED )
-	return( GL_RGBA8 );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::RGBA8_UNorm );
 }
 
-quint32 SpoutPin::type() const
+QOpenGLTexture::PixelType SpoutPin::type() const
 {
 	return( QOpenGLTexture::UInt8 );
 }
 
-int SpoutPin::filterMin( void ) const
+QOpenGLTexture::Filter SpoutPin::filterMin( void ) const
 {
-	return( GL_LINEAR );
+	return( QOpenGLTexture::Linear );
 }
 
-int SpoutPin::filterMag( void ) const
+QOpenGLTexture::Filter SpoutPin::filterMag( void ) const
 {
-#if defined( SPOUT_SUPPORTED )
-	return( GL_LINEAR );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::Linear );
 }
 
-int SpoutPin::wrapS( void ) const
+QOpenGLTexture::WrapMode SpoutPin::wrapS( void ) const
 {
-#if defined( SPOUT_SUPPORTED )
-	return( GL_CLAMP );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::ClampToEdge );
 }
 
-int SpoutPin::wrapT( void ) const
+QOpenGLTexture::WrapMode SpoutPin::wrapT( void ) const
 {
-#if defined( SPOUT_SUPPORTED )
-	return( GL_CLAMP );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::ClampToEdge );
 }
 
-int SpoutPin::wrapR( void ) const
+QOpenGLTexture::WrapMode SpoutPin::wrapR( void ) const
 {
-#if defined( SPOUT_SUPPORTED )
-	return( GL_CLAMP );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::ClampToEdge );
 }
 
 bool SpoutPin::genMipMaps( void ) const
 {
 	return( false );
-}
-
-void SpoutPin::setSize( qint32, qint32, qint32 )
-{
-
-}
-
-void SpoutPin::setSize( const QVector3D & )
-{
-
-}
-
-void SpoutPin::setTarget( quint32 )
-{
-}
-
-void SpoutPin::setFormat( quint32 )
-{
-}
-
-void SpoutPin::setType( quint32 )
-{
-}
-
-void SpoutPin::setInternalFormat( quint32 )
-{
-}
-
-void SpoutPin::update()
-{
-
-}
-
-void SpoutPin::update( const unsigned char *, int, int, int )
-{
-}
-
-void SpoutPin::setFilter( quint32, quint32 )
-{
-}
-
-void SpoutPin::setWrap( quint32, quint32, quint32 )
-{
-}
-
-void SpoutPin::setGenMipMaps( bool )
-{
 }
 
 void SpoutPin::free()
@@ -195,9 +124,7 @@ void SpoutPin::free()
 
 QImage SpoutPin::image()
 {
-	QImage		Image;
-
-	return( Image );
+	return( QImage() );
 }
 
 void SpoutPin::srcBind()
@@ -205,11 +132,6 @@ void SpoutPin::srcBind()
 #if defined( SPOUT_SUPPORTED )
 	mReceiver.BindSharedTexture();
 #endif
-}
-
-void SpoutPin::dstBind()
-{
-
 }
 
 void SpoutPin::release()

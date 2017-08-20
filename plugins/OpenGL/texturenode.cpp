@@ -117,7 +117,7 @@ void TextureNode::loadSettings( QSettings &pSettings )
 	CurVal = pSettings.value( "FilterMag", CurVal ).toString();
 	CurMag = OpenGLPlugin::mMapFilterMin.value( CurVal, CurMag );
 
-	mTexture->setFilter( CurMin, CurMag );
+	mTexture->setFilter( QOpenGLTexture::Filter( CurMin ), QOpenGLTexture::Filter( CurMag ) );
 
 	int		CurWPS = mTexture->wrapS();
 	int		CurWPT = mTexture->wrapT();
@@ -135,7 +135,7 @@ void TextureNode::loadSettings( QSettings &pSettings )
 	CurVal = pSettings.value( "WrapR", CurVal ).toString();
 	CurWPR = OpenGLPlugin::mMapWrap.value( CurVal, CurWPR );
 
-	mTexture->setWrap( CurWPS, CurWPT, CurWPR );
+	mTexture->setWrap( QOpenGLTexture::WrapMode( CurWPS ), QOpenGLTexture::WrapMode( CurWPT ), QOpenGLTexture::WrapMode( CurWPR ) );
 
 	CurVal = OpenGLPlugin::mMapCompare.key( mTexture->compare() );
 	CurVal = pSettings.value( "Compare", CurVal ).toString();

@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QThread>
 #include <QCommandLineOption>
+#include <QOpenGLTexture>
 
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
