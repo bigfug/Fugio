@@ -12,7 +12,11 @@ class VertexArrayObjectInterface
 public:
 	virtual ~VertexArrayObjectInterface( void ) {}
 
-	virtual QOpenGLVertexArrayObject &vao( void ) = 0;
+	//virtual QOpenGLVertexArrayObject &vao( void ) = 0;
+
+	virtual void vaoBind( void ) = 0;
+
+	virtual void vaoRelease( void ) = 0;
 };
 
 FUGIO_NAMESPACE_END

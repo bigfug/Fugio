@@ -32,13 +32,21 @@ public:
 
 	// VertexArrayObjectInterface interface
 public:
-	virtual QOpenGLVertexArrayObject &vao() Q_DECL_OVERRIDE
-	{
-		return( mVAO );
-	}
+//	virtual QOpenGLVertexArrayObject &vao() Q_DECL_OVERRIDE
+//	{
+//		return( mVAO );
+//	}
 
 private:
-	QOpenGLVertexArrayObject	 mVAO;
+	fugio::VertexArrayObjectInterface *vaoParent( void );
+
+private:
+//	QOpenGLVertexArrayObject	 mVAO;
+
+	// VertexArrayObjectInterface interface
+public:
+	virtual void vaoBind() Q_DECL_OVERRIDE;
+	virtual void vaoRelease() Q_DECL_OVERRIDE;
 };
 
 #endif // VERTEX_ARRAY_OBJECT_PIN_H

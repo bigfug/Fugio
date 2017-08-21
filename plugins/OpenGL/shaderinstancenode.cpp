@@ -204,7 +204,7 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( VAO )
 	{
-		VAO->vao().bind();
+		VAO->vaoBind();
 	}
 
 	//-------------------------------------------------------------------------
@@ -278,7 +278,7 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 					if( VAO )
 					{
-						VAO->vao().release();
+						VAO->vaoRelease();
 					}
 
 					mNode->setStatus( fugio::NodeInterface::Error );
@@ -397,7 +397,7 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( VAO )
 	{
-		VAO->vao().release();
+		VAO->vaoRelease();
 	}
 
 	OPENGL_DEBUG( mNode->name() );
@@ -700,7 +700,7 @@ void ShaderInstanceNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	if( VAO )
 	{
-		VAO->vao().bind();
+		VAO->vaoBind();
 	}
 
 	//-------------------------------------------------------------------------
@@ -784,7 +784,7 @@ void ShaderInstanceNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	if( VAO )
 	{
-		VAO->vao().release();
+		VAO->vaoRelease();
 	}
 
 	OPENGL_DEBUG( mNode->name() );

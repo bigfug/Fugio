@@ -39,7 +39,7 @@ bool VertexArrayObjectNode::initialise()
 
 void VertexArrayObjectNode::freeVAO()
 {
-	mValOutputVAO->vao().destroy();
+	mVAO.destroy();
 
 	mBindInfo.clear();
 }
@@ -53,43 +53,21 @@ bool VertexArrayObjectNode::deinitialise()
 
 void VertexArrayObjectNode::inputsUpdated( qint64 pTimeStamp )
 {
-	OpenGLShaderInterface		*Shader = input<OpenGLShaderInterface *>( mPinInputShader );
-
-	initializeOpenGLFunctions();
-
-	QOpenGLFunctions_3_0		*GL30 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_0>();
-
-	if( GL30 && !GL30->initializeOpenGLFunctions() )
-	{
-		GL30 = Q_NULLPTR;
-	}
-
-	QOpenGLFunctions_3_3_Core	*GL33 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_3_Core>();
-
-	if( GL33 && !GL33->initializeOpenGLFunctions() )
-	{
-		GL33 = Q_NULLPTR;
-	}
-
-	if( Shader )
-	{
-		if( mPinInputShader->isUpdated( pTimeStamp ) )
-		{
-			freeVAO();
-		}
-	}
-
 	bool			UpdateAll = false;
 
-	if( !mValOutputVAO->vao().isCreated() )
+	if( !mVAO.isCreated() )
 	{
-		if( !mValOutputVAO->vao().create() )
-		{
-			return;
-		}
+		mVAO.create();
 
 		UpdateAll = true;
 	}
+
+	if( mPinInputShader->isUpdated( pTimeStamp ) )
+	{
+		UpdateAll = true;
+	}
+
+	OpenGLShaderInterface		*Shader = input<OpenGLShaderInterface *>( mPinInputShader );
 
 	for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
 	{
@@ -152,180 +130,12 @@ void VertexArrayObjectNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		mValOutputVAO->vao().bind();
+		mVAO.bind();
 
-		if( true )
-		{
-			BindInfo		NewBI;
-
-			NewBI.mLocation = UniformData.mLocation;
-			NewBI.mMetaType     = ( Buffer ? Buffer->type() : QMetaType::UnknownType );
-
-			mBindInfo.insert( P->name(), NewBI );
-		}
-
-		fugio::OpenGLBufferEntryInterface	*BufEnt = qobject_cast<fugio::OpenGLBufferEntryInterface *>( PinControl->qobject() );
-
-		if( BufEnt )
-		{
-			BufEnt->bind( UniformData.mLocation );
-
-			continue;
-		}
-
-		if( Buffer )
-		{
-			switch( Buffer->type() )
-			{
-				case QMetaType::Int:
-					if( Buffer->bind() )
-					{
-						if( mValOutputVAO->vao().isCreated() && GL30 )
-						{
-							GL30->glVertexAttribIPointer( UniformData.mLocation, 1, GL_INT, 0, BUFFER_OFFSET( 0 ) );
-
-							glEnableVertexAttribArray( UniformData.mLocation );
-						}
-
-						if( Buffer->instanced() && GL33 )
-						{
-							GL33->glVertexAttribDivisor( UniformData.mLocation, 1 );
-						}
-					}
-					break;
-
-				case QMetaType::Float:
-					if( Buffer->bind() )
-					{
-						glVertexAttribPointer( UniformData.mLocation, 1, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
-
-						glEnableVertexAttribArray( UniformData.mLocation );
-
-						if( Buffer->instanced() && GL33 )
-						{
-							GL33->glVertexAttribDivisor( UniformData.mLocation, 1 );
-						}
-					}
-					break;
-
-				case QMetaType::QPoint:
-					if( Buffer->bind() )
-					{
-						if( GL30 )
-						{
-							GL30->glVertexAttribIPointer( UniformData.mLocation, 2, GL_INT, 0, BUFFER_OFFSET( 0 ) );
-
-							glEnableVertexAttribArray( UniformData.mLocation );
-						}
-						else
-						{
-							//glVertexAttribPointer( UniformData.mLocation, 2, GL_FLOAT, GL_FALSE, 0, Buffer-> );
-						}
-
-						if( Buffer->instanced() && GL33 )
-						{
-							GL33->glVertexAttribDivisor( UniformData.mLocation, 1 );
-						}
-					}
-					break;
-
-				case QMetaType::QVector2D:
-				case QMetaType::QPointF:
-					if( Buffer->bind() )
-					{
-						if( mValOutputVAO->vao().isCreated() && GL30 )
-						{
-							glVertexAttribPointer( UniformData.mLocation, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
-
-							glEnableVertexAttribArray( UniformData.mLocation );
-						}
-						else
-						{
-							//glVertexAttribPointer( UniformData.mLocation, 2, GL_FLOAT, GL_FALSE, 0, Buffer-> );
-						}
-
-						if( Buffer->instanced() && GL33 )
-						{
-							glVertexAttribDivisor( UniformData.mLocation, 1 );
-						}
-					}
-					break;
-
-				case QMetaType::QVector3D:
-					if( Buffer->bind() )
-					{
-						if( mValOutputVAO->vao().isCreated() )
-						{
-							OPENGL_DEBUG( mNode->name() );
-
-							glVertexAttribPointer( UniformData.mLocation, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
-
-							OPENGL_DEBUG( mNode->name() );
-
-							glEnableVertexAttribArray( UniformData.mLocation );
-
-							OPENGL_DEBUG( mNode->name() );
-						}
-						else
-						{
-
-						}
-
-						if( Buffer->instanced() && GL33 )
-						{
-							glVertexAttribDivisor( UniformData.mLocation, 1 );
-						}
-
-						OPENGL_DEBUG( mNode->name() );
-					}
-					break;
-
-				case QMetaType::QVector4D:
-					if( Buffer->bind() )
-					{
-						glVertexAttribPointer( UniformData.mLocation, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
-
-						glEnableVertexAttribArray( UniformData.mLocation );
-
-						if( Buffer->instanced() && GL33 )
-						{
-							glVertexAttribDivisor( UniformData.mLocation, 1 );
-						}
-					}
-					break;
-
-				case QMetaType::QMatrix4x4:
-					if( Buffer->bind() )
-					{
-						for( int i = 0 ; i < 4 ; i++ )
-						{
-							glVertexAttribPointer( UniformData.mLocation + i, 4, GL_FLOAT, GL_FALSE, sizeof( GLfloat ) * 4 * 4, BUFFER_OFFSET( sizeof( GLfloat ) * 4 * i ) );
-
-							glEnableVertexAttribArray( UniformData.mLocation + i );
-
-							if( Buffer->instanced() && GL33 )
-							{
-								glVertexAttribDivisor( UniformData.mLocation + i, 1 );
-							}
-						}
-					}
-					break;
-
-				default:
-					//qWarning() << "Unknown meta type for VAO:" << QString( QMetaType::typeName( Buffer->type() ) ) << QString::number( Buffer->type() );
-					break;
-			}
-
-			if( !Buffer->instanced() && GL33 )
-			{
-				GL33->glVertexAttribDivisor( UniformData.mLocation, 0 );
-			}
-		}
+		bindPin( P.data(), PinControl, Buffer, UniformData );
 	}
 
-#if !defined( Q_OS_RASPBERRY_PI )
-	glBindVertexArray( 0 );
-#endif
+	mVAO.release();
 
 	pinUpdated( mPinOutputVAO );
 }
@@ -367,4 +177,232 @@ QStringList VertexArrayObjectNode::availableInputPins() const
 	qSort( PinLst );
 
 	return( PinLst );
+}
+
+
+void VertexArrayObjectNode::vaoBind()
+{
+	bool			UpdateAll = false;
+
+	if( !mVAO.isCreated() )
+	{
+		mVAO.create();
+
+		UpdateAll = true;
+	}
+
+	if( mVAO.isCreated() )
+	{
+		mVAO.bind();
+	}
+
+	if( UpdateAll )
+	{
+		OpenGLShaderInterface		*Shader = input<OpenGLShaderInterface *>( mPinInputShader );
+
+		for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
+		{
+			if( P == mPinInputShader )
+			{
+				continue;
+			}
+
+			ShaderUniformMap::const_iterator it = Shader->attributeMap().find( P->name() );
+
+			if( it == Shader->attributeMap().end() )
+			{
+				continue;
+			}
+
+			fugio::PinControlInterface	*PinControl = input<fugio::PinControlInterface *>( P );
+
+			if( !PinControl )
+			{
+				continue;
+			}
+
+			fugio::OpenGLBufferInterface		*Buffer = qobject_cast<fugio::OpenGLBufferInterface *>( PinControl->qobject() );
+
+			const ShaderUniformData				&UniformData = it.value();
+
+			bindPin( P.data(), PinControl, Buffer, UniformData );
+		}
+	}
+}
+
+void VertexArrayObjectNode::vaoRelease()
+{
+	mVAO.release();
+}
+
+void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlInterface *PinControl , fugio::OpenGLBufferInterface *Buffer , const ShaderUniformData &UniformData)
+{
+	QOpenGLFunctions_3_0		*GL30 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_0>();
+
+	if( GL30 && !GL30->initializeOpenGLFunctions() )
+	{
+		GL30 = Q_NULLPTR;
+	}
+
+	QOpenGLFunctions_3_3_Core	*GL33 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_3_Core>();
+
+	if( GL33 && !GL33->initializeOpenGLFunctions() )
+	{
+		GL33 = Q_NULLPTR;
+	}
+
+	if( true )
+	{
+		BindInfo		NewBI;
+
+		NewBI.mLocation = UniformData.mLocation;
+		NewBI.mMetaType     = ( Buffer ? Buffer->type() : QMetaType::UnknownType );
+
+		mBindInfo.insert( P->name(), NewBI );
+	}
+
+	fugio::OpenGLBufferEntryInterface	*BufEnt = qobject_cast<fugio::OpenGLBufferEntryInterface *>( PinControl->qobject() );
+
+	if( BufEnt )
+	{
+		BufEnt->bind( UniformData.mLocation );
+
+		return;
+	}
+
+	if( Buffer )
+	{
+		switch( Buffer->type() )
+		{
+			case QMetaType::Int:
+				if( Buffer->bind() )
+				{
+					if( GL30 )
+					{
+						GL30->glVertexAttribIPointer( UniformData.mLocation, 1, GL_INT, 0, BUFFER_OFFSET( 0 ) );
+
+						glEnableVertexAttribArray( UniformData.mLocation );
+					}
+
+					if( Buffer->instanced() && GL33 )
+					{
+						GL33->glVertexAttribDivisor( UniformData.mLocation, 1 );
+					}
+				}
+				break;
+
+			case QMetaType::Float:
+				if( Buffer->bind() )
+				{
+					glVertexAttribPointer( UniformData.mLocation, 1, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+
+					glEnableVertexAttribArray( UniformData.mLocation );
+
+					if( Buffer->instanced() && GL33 )
+					{
+						GL33->glVertexAttribDivisor( UniformData.mLocation, 1 );
+					}
+				}
+				break;
+
+			case QMetaType::QPoint:
+				if( Buffer->bind() )
+				{
+					if( GL30 )
+					{
+						GL30->glVertexAttribIPointer( UniformData.mLocation, 2, GL_INT, 0, BUFFER_OFFSET( 0 ) );
+
+						glEnableVertexAttribArray( UniformData.mLocation );
+					}
+					else
+					{
+						//glVertexAttribPointer( UniformData.mLocation, 2, GL_FLOAT, GL_FALSE, 0, Buffer-> );
+					}
+
+					if( Buffer->instanced() && GL33 )
+					{
+						GL33->glVertexAttribDivisor( UniformData.mLocation, 1 );
+					}
+				}
+				break;
+
+			case QMetaType::QVector2D:
+			case QMetaType::QPointF:
+				if( Buffer->bind() )
+				{
+					if( GL30 )
+					{
+						glVertexAttribPointer( UniformData.mLocation, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+
+						glEnableVertexAttribArray( UniformData.mLocation );
+					}
+					else
+					{
+						//glVertexAttribPointer( UniformData.mLocation, 2, GL_FLOAT, GL_FALSE, 0, Buffer-> );
+					}
+
+					if( Buffer->instanced() && GL33 )
+					{
+						glVertexAttribDivisor( UniformData.mLocation, 1 );
+					}
+				}
+				break;
+
+			case QMetaType::QVector3D:
+				if( Buffer->bind() )
+				{
+					glVertexAttribPointer( UniformData.mLocation, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+
+					glEnableVertexAttribArray( UniformData.mLocation );
+
+					if( Buffer->instanced() && GL33 )
+					{
+						glVertexAttribDivisor( UniformData.mLocation, 1 );
+					}
+
+					OPENGL_DEBUG( mNode->name() );
+				}
+				break;
+
+			case QMetaType::QVector4D:
+				if( Buffer->bind() )
+				{
+					glVertexAttribPointer( UniformData.mLocation, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+
+					glEnableVertexAttribArray( UniformData.mLocation );
+
+					if( Buffer->instanced() && GL33 )
+					{
+						glVertexAttribDivisor( UniformData.mLocation, 1 );
+					}
+				}
+				break;
+
+			case QMetaType::QMatrix4x4:
+				if( Buffer->bind() )
+				{
+					for( int i = 0 ; i < 4 ; i++ )
+					{
+						glVertexAttribPointer( UniformData.mLocation + i, 4, GL_FLOAT, GL_FALSE, sizeof( GLfloat ) * 4 * 4, BUFFER_OFFSET( sizeof( GLfloat ) * 4 * i ) );
+
+						glEnableVertexAttribArray( UniformData.mLocation + i );
+
+						if( Buffer->instanced() && GL33 )
+						{
+							glVertexAttribDivisor( UniformData.mLocation + i, 1 );
+						}
+					}
+				}
+				break;
+
+			default:
+				//qWarning() << "Unknown meta type for VAO:" << QString( QMetaType::typeName( Buffer->type() ) ) << QString::number( Buffer->type() );
+				break;
+		}
+
+		if( !Buffer->instanced() && GL33 )
+		{
+			GL33->glVertexAttribDivisor( UniformData.mLocation, 0 );
+		}
+	}
 }
