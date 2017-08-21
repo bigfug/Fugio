@@ -99,6 +99,13 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 	initializeOpenGLFunctions();
 
+	QOpenGLFunctions_2_0			*GL20 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_2_0>();
+
+	if( GL20 && !GL20->initializeOpenGLFunctions() )
+	{
+		GL20 = Q_NULLPTR;
+	}
+
 	QOpenGLFunctions_3_0			*GL30 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_0>();
 
 	if( GL30 && !GL30->initializeOpenGLFunctions() )
@@ -259,7 +266,10 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 				if( Buffers.isEmpty() )
 				{
-					glDrawBuffer( GL_NONE );
+					if( GL20 )
+					{
+						GL20->glDrawBuffer( GL_NONE );
+					}
 				}
 				else if( GL30 )
 				{
@@ -385,13 +395,6 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 	//-------------------------------------------------------------------------
 
 	glUseProgram( 0 );
-
-	QOpenGLFunctions_2_0	*GL20 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_2_0>();
-
-	if( GL20 && GL20->initializeOpenGLFunctions() )
-	{
-		GL20->glDrawBuffer( GL_BACK );
-	}
 
 	//-------------------------------------------------------------------------
 

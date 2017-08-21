@@ -358,7 +358,7 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 
 					if( Buffer->instanced() && GL33 )
 					{
-						glVertexAttribDivisor( UniformData.mLocation, 1 );
+						GL33->glVertexAttribDivisor( UniformData.mLocation, 1 );
 					}
 				}
 				break;
@@ -372,7 +372,7 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 
 					if( Buffer->instanced() && GL33 )
 					{
-						glVertexAttribDivisor( UniformData.mLocation, 1 );
+						GL33->glVertexAttribDivisor( UniformData.mLocation, 1 );
 					}
 
 					OPENGL_DEBUG( mNode->name() );
@@ -388,7 +388,7 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 
 					if( Buffer->instanced() && GL33 )
 					{
-						glVertexAttribDivisor( UniformData.mLocation, 1 );
+						GL33->glVertexAttribDivisor( UniformData.mLocation, 1 );
 					}
 				}
 				break;
@@ -404,7 +404,7 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 
 						if( Buffer->instanced() && GL33 )
 						{
-							glVertexAttribDivisor( UniformData.mLocation + i, 1 );
+							GL33->glVertexAttribDivisor( UniformData.mLocation + i, 1 );
 						}
 					}
 				}

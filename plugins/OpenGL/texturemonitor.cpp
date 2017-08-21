@@ -22,7 +22,7 @@ void TextureMonitor::initializeGL()
 {
 	initializeOpenGLFunctions();
 
-	OpenGLPlugin::initGLEW();
+	OpenGLPlugin::instance()->initGLEW();
 }
 
 void TextureMonitor::resizeGL( int w, int h )

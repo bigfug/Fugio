@@ -657,6 +657,8 @@ void OpenGLPlugin::initGLEW()
 
 	if( !Initialised )
 	{
+		initializeOpenGLFunctions();
+
 		Initialised = GL_TRUE;
 
 		qDebug() << "GL_VENDOR" << QString( (const char *)glGetString( GL_VENDOR ) );

@@ -1,5 +1,6 @@
 #include "statepin.h"
 #include <QSettings>
+#include <QOpenGLFunctions_2_0>
 
 #define INSERT_FLAG(x)		mMapFlags.insert(#x,x)
 
@@ -93,6 +94,13 @@ void StatePin::stateBegin()
 {
 	initializeOpenGLFunctions();
 
+	QOpenGLFunctions_2_0	*GL20 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_2_0>();
+
+	if( GL20 && !GL20->initializeOpenGLFunctions() )
+	{
+		GL20 = Q_NULLPTR;
+	}
+
 #if !defined( GL_ES_VERSION_2_0 )
 //	QMatrix4x4		MatPrj = mPinMatPrj ? variant( mPinMatPrj ).value<QMatrix4x4>() : mProjection;
 //	QMatrix4x4		MatMod = mPinMatMod ? variant( mPinMatMod ).value<QMatrix4x4>() : mModelView;
@@ -121,16 +129,24 @@ void StatePin::stateBegin()
 		glDepthFunc( mDepthFunc );
 	}
 
-#if !defined( GL_ES_VERSION_2_0 )
 //	glColor4f( 1, 1, 1, 1 );
 
-	glPolygonMode( GL_FRONT_AND_BACK, mPolygonMode );
-#endif
+	if( GL20 )
+	{
+		GL20->glPolygonMode( GL_FRONT_AND_BACK, mPolygonMode );
+	}
 }
 
 void StatePin::stateEnd()
 {
 	initializeOpenGLFunctions();
+
+	QOpenGLFunctions_2_0	*GL20 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_2_0>();
+
+	if( GL20 && !GL20->initializeOpenGLFunctions() )
+	{
+		GL20 = Q_NULLPTR;
+	}
 
 	for( QList<int>::const_iterator it = mFlags.begin() ; it != mFlags.end() ; it++ )
 	{
@@ -149,11 +165,12 @@ void StatePin::stateEnd()
 		glDepthFunc( GL_LESS );
 	}
 
-#if !defined( GL_ES_VERSION_2_0 )
 //	glColor4f( 1, 1, 1, 1 );
 
-	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-#endif
+	if( GL20 )
+	{
+		GL20->glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+	}
 }
 
 void StatePin::setFlag( int pFlag, bool pValue )

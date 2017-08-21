@@ -1,5 +1,7 @@
 #include "shadercompilernode.h"
 
+#include <QOpenGLFunctions_3_0>
+
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
 #include <fugio/text/uuid.h>
@@ -200,6 +202,13 @@ void ShaderCompilerNode::loadShader()
 		return;
 	}
 
+	QOpenGLFunctions_3_0	*GL30 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_0>();
+
+	if( GL30 && !GL30->initializeOpenGLFunctions() )
+	{
+		GL30 = Q_NULLPTR;
+	}
+
 	OPENGL_PLUGIN_DEBUG;
 
 	loadShader( mPinShaderVertex, *CompilerData.mProgram, QOpenGLShader::Vertex, Compiled, Failed );
@@ -277,7 +286,10 @@ void ShaderCompilerNode::loadShader()
 			BufMod = GL_SEPARATE_ATTRIBS;
 		}
 
-		glTransformFeedbackVaryings( CompilerData.mProgram->programId(), VarLst.size(), (const GLchar **)VarLst.constData(), BufMod );
+		if( GL30 )
+		{
+			GL30->glTransformFeedbackVaryings( CompilerData.mProgram->programId(), VarLst.size(), (const GLchar **)VarLst.constData(), BufMod );
+		}
 
 		OPENGL_PLUGIN_DEBUG;
 	}

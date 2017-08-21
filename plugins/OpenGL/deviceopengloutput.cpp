@@ -329,7 +329,7 @@ void DeviceOpenGLOutput::exposeEvent( QExposeEvent * )
 	{
 		makeCurrent();
 
-		OpenGLPlugin::initGLEW();
+		OpenGLPlugin::instance()->initGLEW();
 
 #if defined( OPENGL_DEBUG_ENABLE )
 		if( !mDebugLogger )
