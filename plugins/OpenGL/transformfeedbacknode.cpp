@@ -215,13 +215,13 @@ void TransformFeedbackNode::inputsUpdated( qint64 pTimeStamp )
 
 				GL40->glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mTrnFbkId[ 0 ] );
 
-				GL40->glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, XFIndex, BufO->dstBuf().bufferId() );
+				GL40->glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, XFIndex, BufO->dstBuf()->bufferId() );
 
 				// Set up the second TF destination buffer
 
 				GL40->glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mTrnFbkId[ 1 ] );
 
-				GL40->glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, XFIndex, BufO->srcBuf().bufferId() );
+				GL40->glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, XFIndex, BufO->srcBuf()->bufferId() );
 
 				// Reset the TF bind
 

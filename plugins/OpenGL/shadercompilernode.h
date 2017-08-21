@@ -116,6 +116,7 @@ protected:
 		}
 
 		ShaderCompilerData( ShaderCompilerData &&other )
+			: mProgram( Q_NULLPTR ) //new QOpenGLShaderProgram() )
 		{
 			*this = std::move( other );
 		}
@@ -124,19 +125,25 @@ protected:
 		{
 			clear();
 
-			mProgram->deleteLater();
+			if( mProgram )
+			{
+				mProgram->deleteLater();
+			}
 		}
 
 		ShaderCompilerData &operator = ( ShaderCompilerData && other )
 		{
-			mProgram       = other.mProgram;
+			std::swap( mProgram, other.mProgram );
 
-			other.mProgram = new QOpenGLShaderProgram();
+			if( other.mProgram )
+			{
+				other.mProgram->removeAllShaders();
+			}
 
-			mShaderUniformTypes = std::move( other.mShaderUniformTypes );
+			mShaderUniformTypes   = std::move( other.mShaderUniformTypes );
 			mShaderAttributeTypes = std::move( other.mShaderAttributeTypes );
-			mUniformNames = std::move( other.mUniformNames );
-			mAttributeNames = std::move( other.mAttributeNames );
+			mUniformNames         = std::move( other.mUniformNames );
+			mAttributeNames       = std::move( other.mAttributeNames );
 
 			return( *this );
 		}
@@ -145,7 +152,10 @@ protected:
 
 		void clear( void );
 
-	} ShaderCompilerData;
+	private:
+		Q_DISABLE_COPY( ShaderCompilerData )
+
+	  } ShaderCompilerData;
 
 	ShaderCompilerData						 mShaderCompilerData;
 };

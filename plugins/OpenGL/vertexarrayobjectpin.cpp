@@ -11,7 +11,7 @@ VertexArrayObjectPin::VertexArrayObjectPin( QSharedPointer<fugio::PinInterface> 
 
 QString VertexArrayObjectPin::toString() const
 {
-	return( QString() );
+	return( QString::number( vaoId() ) );
 }
 
 QString VertexArrayObjectPin::description() const
@@ -29,6 +29,15 @@ fugio::VertexArrayObjectInterface *VertexArrayObjectPin::vaoParent()
 	return( qobject_cast<fugio::VertexArrayObjectInterface *>( mPin->node()->control()->qobject() ) );
 }
 
+fugio::VertexArrayObjectInterface *VertexArrayObjectPin::vaoParent() const
+{
+	if( !mPin->node()->hasControl() )
+	{
+		return( Q_NULLPTR );
+	}
+
+	return( qobject_cast<fugio::VertexArrayObjectInterface *>( mPin->node()->control()->qobject() ) );
+}
 
 void VertexArrayObjectPin::vaoBind()
 {
@@ -48,4 +57,11 @@ void VertexArrayObjectPin::vaoRelease()
 	{
 		IG->vaoRelease();
 	}
+}
+
+GLuint VertexArrayObjectPin::vaoId() const
+{
+	fugio::VertexArrayObjectInterface	*IG = vaoParent();
+
+	return( IG ? IG->vaoId() : -1 );
 }

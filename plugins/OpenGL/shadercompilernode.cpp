@@ -92,6 +92,11 @@ bool ShaderCompilerNode::deinitialise()
 
 void ShaderCompilerNode::inputsUpdated( qint64 pTimeStamp )
 {
+	if( !pTimeStamp )
+	{
+		return;
+	}
+
 	fugio::Performance	Perf( mNode, "inputsUpdated", pTimeStamp );
 
 	OPENGL_PLUGIN_DEBUG;
@@ -148,7 +153,7 @@ void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, Q
 		return;
 	}
 
-	if( !pProgram.addCacheableShaderFromSourceCode( pShaderType, Source ) )
+	if( !pProgram.addShaderFromSourceCode( pShaderType, Source ) )
 	{
 		QString		Log = pProgram.log();
 
@@ -477,7 +482,10 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 
 void ShaderCompilerNode::ShaderCompilerData::clear()
 {
-	mProgram->removeAllShaders();
+	if( mProgram )
+	{
+		mProgram->removeAllShaders();
+	}
 
 	mShaderAttributeTypes.clear();
 	mShaderUniformTypes.clear();

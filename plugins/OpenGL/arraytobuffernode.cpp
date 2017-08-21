@@ -44,9 +44,14 @@ bool ArrayToBufferNode::initialise()
 
 void ArrayToBufferNode::inputsUpdated( qint64 pTimeStamp )
 {
-	fugio::Performance	Perf( mNode, "inputsUpdated", pTimeStamp );
-
 	NodeControlBase::inputsUpdated( pTimeStamp );
+
+	if( !pTimeStamp )
+	{
+		return;
+	}
+
+	fugio::Performance	Perf( mNode, "inputsUpdated", pTimeStamp );
 
 	if( !OpenGLPlugin::hasContextStatic() )
 	{
@@ -76,7 +81,7 @@ void ArrayToBufferNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( BufO->buffer().isCreated() && ( A->type() != BufO->type() || A->size() != BufO->size() || A->stride() != BufO->stride() || A->count() != BufO->count() ) )
+		if( BufO->buffer() && BufO->buffer()->isCreated() && ( A->type() != BufO->type() || A->size() != BufO->size() || A->stride() != BufO->stride() || A->count() != BufO->count() ) )
 		{
 			BufO->clear();
 		}
@@ -86,7 +91,7 @@ void ArrayToBufferNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( !BufO->buffer().isCreated() && !BufO->alloc( A->type(), A->size(), A->stride(), A->count() ) )
+		if( ( !BufO->buffer() || !BufO->buffer()->isCreated() ) && !BufO->alloc( A->type(), A->size(), A->stride(), A->count() ) )
 		{
 			BufO->clear();
 
@@ -97,7 +102,7 @@ void ArrayToBufferNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		BufO->buffer().write( 0, A->array(), A->stride() * A->count() );
+		BufO->buffer()->write( 0, A->array(), A->stride() * A->count() );
 
 		BufO->release();
 

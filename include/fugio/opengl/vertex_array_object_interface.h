@@ -17,6 +17,8 @@ public:
 	virtual void vaoBind( void ) = 0;
 
 	virtual void vaoRelease( void ) = 0;
+
+	virtual GLuint vaoId( void ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

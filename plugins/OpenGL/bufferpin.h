@@ -33,7 +33,7 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString::number( mBuffer1.bufferId() ) );
+		return( QString::number( mBuffer1 ? mBuffer1->bufferId() : 0 ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
@@ -55,12 +55,12 @@ public:
 
 	virtual void clear( void ) Q_DECL_OVERRIDE;
 
-	virtual inline QOpenGLBuffer &buffer( void ) Q_DECL_OVERRIDE
+	virtual inline QOpenGLBuffer *buffer( void ) Q_DECL_OVERRIDE
 	{
 		return( mBuffer1 );
 	}
 
-	virtual inline const QOpenGLBuffer &buffer( void ) const Q_DECL_OVERRIDE
+	virtual inline const QOpenGLBuffer *buffer( void ) const Q_DECL_OVERRIDE
 	{
 		return( mBuffer1 );
 	}
@@ -127,12 +127,12 @@ public:
 
 	virtual void swapBuffers( void ) Q_DECL_OVERRIDE;
 
-	virtual const QOpenGLBuffer &srcBuf( void ) const Q_DECL_OVERRIDE
+	virtual const QOpenGLBuffer *srcBuf( void ) const Q_DECL_OVERRIDE
 	{
 		return( mBuffer1 );
 	}
 
-	virtual const QOpenGLBuffer &dstBuf( void ) const Q_DECL_OVERRIDE
+	virtual const QOpenGLBuffer *dstBuf( void ) const Q_DECL_OVERRIDE
 	{
 		return( mBuffer2 );
 	}
@@ -152,8 +152,8 @@ signals:
 	void instancedUpdated( bool pValue );
 
 private:
-	QOpenGLBuffer			 mBuffer1;
-	QOpenGLBuffer			 mBuffer2;
+	QOpenGLBuffer			*mBuffer1;
+	QOpenGLBuffer			*mBuffer2;
 
 	QMetaType::Type			 mType;
 	int						 mStride;

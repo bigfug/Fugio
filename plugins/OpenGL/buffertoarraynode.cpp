@@ -44,15 +44,15 @@ void BufferToArrayNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::OpenGLBufferInterface	*BufInt = input<fugio::OpenGLBufferInterface *>( mPinBuffer );
 
-	if( !BufInt || !BufInt->buffer().isCreated() )
+	if( !BufInt || !BufInt->buffer() || !BufInt->buffer()->isCreated() )
 	{
 		return;
 	}
 
 	if( BufInt->type() != mValArray->type() ||
-			BufInt->size() != mValArray->size() ||
-			BufInt->count() != mValArray->count() ||
-			BufInt->stride() != mValArray->stride() )
+		BufInt->size() != mValArray->size() ||
+		BufInt->count() != mValArray->count() ||
+		BufInt->stride() != mValArray->stride() )
 	{
 		mValArray->setCount( BufInt->count() );
 		mValArray->setSize( BufInt->size() );
@@ -78,11 +78,11 @@ void BufferToArrayNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( GL45 && GL45->initializeOpenGLFunctions() )
 	{
-		GL45->glGetNamedBufferSubData( BufInt->buffer().bufferId(), 0, ArrLen, ArrPtr );
+		GL45->glGetNamedBufferSubData( BufInt->buffer()->bufferId(), 0, ArrLen, ArrPtr );
 	}
 	else if( BufInt->bind() )
 	{
-		BufInt->buffer().write( 0, ArrPtr, ArrLen );
+		BufInt->buffer()->write( 0, ArrPtr, ArrLen );
 
 		BufInt->release();
 	}

@@ -524,7 +524,7 @@ int ShaderInstanceNode::activeBufferCount( QList< QSharedPointer<fugio::PinInter
 
 		fugio::OpenGLBufferInterface	*OutBuf = output<fugio::OpenGLBufferInterface *>( OutPin );
 
-		if( OutBuf && OutBuf->buffer().isCreated() )
+		if( OutBuf && OutBuf->buffer() && OutBuf->buffer()->isCreated() )
 		{
 			ActiveBufferCount++;
 
@@ -824,7 +824,7 @@ void ShaderInstanceNode::bindUniforms( QList<ShaderBindData> &Bindings )
 		QSharedPointer<fugio::PinInterface>	 PIN = mNode->findPinByName( it.key() );
 		QSharedPointer<PinControlInterface>	 PinControl;
 
-		if( PIN && PIN ->isConnected() )
+		if( PIN && PIN->isConnected() )
 		{
 			PinControl = PIN->connectedPin()->control();
 		}

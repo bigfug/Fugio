@@ -3,8 +3,9 @@
 #include "openglplugin.h"
 
 BufferPin::BufferPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mType( QMetaType::UnknownType ), mStride( 0 ), mCount( 0 ), mSize( 0 ),
-	  mIndex( false ), mInstanced( false ), mTarget( QOpenGLBuffer::VertexBuffer ), mDoubleBuffered( false )
+	: PinControlBase( pPin ), mBuffer1( Q_NULLPTR ), mBuffer2( Q_NULLPTR ), mType( QMetaType::UnknownType ),
+	  mStride( 0 ), mCount( 0 ), mSize( 0 ), mIndex( false ), mInstanced( false ),
+	  mTarget( QOpenGLBuffer::VertexBuffer ), mDoubleBuffered( false )
 {
 }
 
@@ -15,19 +16,19 @@ BufferPin::~BufferPin()
 
 bool BufferPin::bind()
 {
-	if( !mBuffer1.isCreated() )
+	if( !mBuffer1 || !mBuffer1->isCreated() )
 	{
 		return( false );
 	}
 
-	return( mBuffer1.bind() );
+	return( mBuffer1->bind() );
 }
 
 void BufferPin::release()
 {
-	if( mBuffer1.isCreated() )
+	if( mBuffer1 && mBuffer1->isCreated() )
 	{
-		mBuffer1.release();
+		mBuffer1->release();
 	}
 }
 
@@ -45,16 +46,22 @@ bool BufferPin::alloc( QMetaType::Type pType, int pSize, int pStride, int pCount
 		return( false );
 	}
 
-	mBuffer1 = QOpenGLBuffer( mTarget );
-
-	mBuffer1.setUsagePattern( QOpenGLBuffer::StreamDraw );
-
-	if( !mBuffer1.create() )
+	if( !mBuffer1 )
 	{
-		return( false );
+		if( !( mBuffer1 = new QOpenGLBuffer( mTarget ) ) )
+		{
+			return( false );
+		}
+
+		mBuffer1->setUsagePattern( QOpenGLBuffer::StreamDraw );
+
+		if( !mBuffer1->create() )
+		{
+			return( false );
+		}
 	}
 
-	if( !mBuffer1.bind() )
+	if( !mBuffer1->bind() )
 	{
 		return( false );
 	}
@@ -63,14 +70,14 @@ bool BufferPin::alloc( QMetaType::Type pType, int pSize, int pStride, int pCount
 
 	if( pData )
 	{
-		mBuffer1.allocate( pData, ByteSize );
+		mBuffer1->allocate( pData, ByteSize );
 	}
 	else
 	{
-		mBuffer1.allocate( ByteSize );
+		mBuffer1->allocate( ByteSize );
 	}
 
-	mBuffer1.release();
+	mBuffer1->release();
 
 	mType   = pType;
 	mStride = pStride;
@@ -81,28 +88,34 @@ bool BufferPin::alloc( QMetaType::Type pType, int pSize, int pStride, int pCount
 
 	if( mDoubleBuffered )
 	{
-		mBuffer2 = QOpenGLBuffer( mTarget );
-
-		if( !mBuffer2.create() )
+		if( !mBuffer2 )
 		{
-			return( false );
+			if( !( mBuffer2 = new QOpenGLBuffer( mTarget ) ) )
+			{
+				return( false );
+			}
+
+			if( !mBuffer2->create() )
+			{
+				return( false );
+			}
 		}
 
-		if( !mBuffer2.bind() )
+		if( !mBuffer2->bind() )
 		{
 			return( false );
 		}
 
 		if( pData )
 		{
-			mBuffer2.allocate( pData, ByteSize );
+			mBuffer2->allocate( pData, ByteSize );
 		}
 		else
 		{
-			mBuffer2.allocate( ByteSize );
+			mBuffer2->allocate( ByteSize );
 		}
 
-		mBuffer2.release();
+		mBuffer2->release();
 	}
 
 	return( true );
@@ -110,9 +123,19 @@ bool BufferPin::alloc( QMetaType::Type pType, int pSize, int pStride, int pCount
 
 void BufferPin::clear()
 {
-	mBuffer1.destroy();
+	if( mBuffer1 )
+	{
+		delete mBuffer1;
 
-	mBuffer2.destroy();
+		mBuffer1 = Q_NULLPTR;
+	}
+
+	if( mBuffer2 )
+	{
+		delete mBuffer2;
+
+		mBuffer2 = Q_NULLPTR;
+	}
 }
 
 void BufferPin::swapBuffers()

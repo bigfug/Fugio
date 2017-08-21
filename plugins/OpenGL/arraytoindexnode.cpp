@@ -81,7 +81,7 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( BufO->buffer().isCreated() && ( A->type() != BufO->type() || A->size() != BufO->size() || A->stride() != BufO->stride() || A->count() != BufO->count() ) )
+		if( BufO->buffer() && BufO->buffer()->isCreated() && ( A->type() != BufO->type() || A->size() != BufO->size() || A->stride() != BufO->stride() || A->count() != BufO->count() ) )
 		{
 			BufO->clear();
 		}
@@ -91,7 +91,7 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( !BufO->buffer().isCreated() && !BufO->alloc( A->type(), A->size(), A->stride(), A->count() ) )
+		if( BufO->buffer() && !BufO->buffer()->isCreated() && !BufO->alloc( A->type(), A->size(), A->stride(), A->count() ) )
 		{
 			BufO->clear();
 
@@ -104,7 +104,7 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 
 		BufO->setIndex( true );
 
-		BufO->buffer().write( 0, A->array(), A->stride() * A->count() );
+		BufO->buffer()->write( 0, A->array(), A->stride() * A->count() );
 
 		BufO->release();
 

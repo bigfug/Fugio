@@ -53,7 +53,17 @@ bool VertexArrayObjectNode::deinitialise()
 
 void VertexArrayObjectNode::inputsUpdated( qint64 pTimeStamp )
 {
+	if( !pTimeStamp )
+	{
+		return;
+	}
+
 	bool			UpdateAll = false;
+
+	if( !QOpenGLContext::currentContext() )
+	{
+		return;
+	}
 
 	if( !mVAO.isCreated() )
 	{
@@ -182,7 +192,12 @@ QStringList VertexArrayObjectNode::availableInputPins() const
 
 void VertexArrayObjectNode::vaoBind()
 {
-	bool			UpdateAll = false;
+	bool			UpdateAll = true;
+
+	if( !QOpenGLContext::currentContext() )
+	{
+		return;
+	}
 
 	if( !mVAO.isCreated() )
 	{
@@ -405,4 +420,10 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 			GL33->glVertexAttribDivisor( UniformData.mLocation, 0 );
 		}
 	}
+}
+
+
+GLuint VertexArrayObjectNode::vaoId() const
+{
+	return( mVAO.objectId() );
 }

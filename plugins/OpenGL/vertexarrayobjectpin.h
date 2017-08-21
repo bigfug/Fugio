@@ -39,6 +39,7 @@ public:
 
 private:
 	fugio::VertexArrayObjectInterface *vaoParent( void );
+	fugio::VertexArrayObjectInterface *vaoParent( void ) const;
 
 private:
 //	QOpenGLVertexArrayObject	 mVAO;
@@ -47,6 +48,7 @@ private:
 public:
 	virtual void vaoBind() Q_DECL_OVERRIDE;
 	virtual void vaoRelease() Q_DECL_OVERRIDE;
+	virtual GLuint vaoId() const Q_DECL_OVERRIDE;
 };
 
 #endif // VERTEX_ARRAY_OBJECT_PIN_H

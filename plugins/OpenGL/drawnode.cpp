@@ -119,7 +119,7 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	if( ( B = input<fugio::OpenGLBufferInterface *>( mPinInputIndex ) ) != nullptr )
 	{
-		if( B->buffer().isCreated() && B->isIndex() )
+		if( B->buffer() && B->buffer()->isCreated() && B->isIndex() )
 		{
 			Count = B->count();
 

@@ -47,6 +47,7 @@ public:
 public:
 	virtual void vaoBind() Q_DECL_OVERRIDE;
 	virtual void vaoRelease() Q_DECL_OVERRIDE;
+	virtual GLuint vaoId() const Q_DECL_OVERRIDE;
 
 private:
 	void bindPin( fugio::PinInterface *P, fugio::PinControlInterface *PinControl, fugio::OpenGLBufferInterface *Buffer, const fugio::ShaderUniformData &UniformData );
