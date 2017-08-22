@@ -89,7 +89,7 @@ ClassEntry		OpenGLPlugin::mNodeClasses[] =
 	ClassEntry( "Draw", "OpenGL", NID_OPENGL_DRAW, &DrawNode::staticMetaObject ),
 	ClassEntry( "Image to Texture", "OpenGL", NID_OPENGL_IMAGE_TO_TEXTURE, &ImageToTextureNode::staticMetaObject ),
 	ClassEntry( "Instance Buffer", "OpenGL", NID_OPENGL_INSTANCE_BUFFER, &InstanceBufferNode::staticMetaObject ),
-//	ClassEntry( "Preview", "OpenGL", NID_OPENGL_PREVIEW, &PreviewNode::staticMetaObject ),
+	ClassEntry( "Preview", "OpenGL", NID_OPENGL_PREVIEW, &PreviewNode::staticMetaObject ),
 	ClassEntry( "Window", "OpenGL", NID_OPENGL_WINDOW, &WindowNode::staticMetaObject ),
 	ClassEntry( "Shader Compiler", "OpenGL", NID_OPENGL_SHADER_COMPILER, &ShaderCompilerNode::staticMetaObject ),
 	ClassEntry( "State", "OpenGL", NID_OPENGL_STATE, &StateNode::staticMetaObject ),

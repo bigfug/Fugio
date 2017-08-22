@@ -118,7 +118,7 @@ void DeviceOpenGLOutput::unsetCurrentNode( QSharedPointer<NodeInterface> pNode )
 
 void DeviceOpenGLOutput::setGeometry( QRect pRect )
 {
-
+	Q_UNUSED( pRect )
 }
 
 bool DeviceOpenGLOutput::event( QEvent *pEvent )
