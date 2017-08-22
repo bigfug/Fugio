@@ -36,9 +36,11 @@ void BufferEntryPin::setType( GLenum pType )
 			mTypeSize = 4;
 			break;
 
+#if !defined( QT_OPENGL_ES_2 )
 		case GL_DOUBLE:
 			mTypeSize = 8;
 			break;
+#endif
 
 		default:
 			mTypeSize = 0;
@@ -54,6 +56,7 @@ const GLvoid *BufferEntryPin::bind( GLuint pIndex, GLsizei pStride, const GLvoid
 
 	glEnableVertexAttribArray( pIndex );
 
+#if !defined( QT_OPENGL_ES_2 )
 	if( mType == GL_DOUBLE )
 	{
 		QOpenGLFunctions_4_1_Core	*GL41 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_1_Core>();
@@ -65,6 +68,7 @@ const GLvoid *BufferEntryPin::bind( GLuint pIndex, GLsizei pStride, const GLvoid
 
 		return( NextBuff );
 	}
+#endif
 
 	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 

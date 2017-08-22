@@ -340,7 +340,7 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 //					break;
 
 				case GL_TEXTURE_2D:
-				case GL_TEXTURE_RECTANGLE:
+				case QOpenGLTexture::TargetRectangle:
 					glCompressedTexImage2D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, mTexDsc.mImgHeight, 0, pDataSize, pData );
 					break;
 
@@ -372,7 +372,7 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 //				break;
 
 			case GL_TEXTURE_2D:
-			case GL_TEXTURE_RECTANGLE:
+			case QOpenGLTexture::TargetRectangle:
 				glTexSubImage2D( mTexDsc.mTarget, 0, 0, 0, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mFormat, mTexDsc.mType, pData );
 				break;
 
@@ -446,6 +446,7 @@ QImage TexturePin::image()
 
 	if( !mSrcTex || !mSrcTex->isCreated() )
 	{
+#if !defined( QT_OPENGL_ES_2 )
 		QOpenGLFunctions_2_0	*GL20 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_2_0>();
 
 		if( GL20 && !GL20->initializeOpenGLFunctions() )
@@ -457,6 +458,7 @@ QImage TexturePin::image()
 		{
 			GL20->glGetTexImage( mTexDsc.mTarget, 0, GL_RGBA, GL_UNSIGNED_BYTE, Image.bits() );
 		}
+#endif
 	}
 
 	OPENGL_PLUGIN_DEBUG
@@ -632,7 +634,7 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mFBOMSDepthRBId );
 		}
 
-		GLenum	FBOStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER_EXT );
+		GLenum	FBOStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
 
 		glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
 		glBindRenderbuffer( GL_RENDERBUFFER, RBCur );
@@ -662,19 +664,17 @@ int TexturePin::sizeDimensions() const
 {
 	switch( mTexDsc.mTarget )
 	{
-#if !defined( GL_ES_VERSION_2_0 )
-		case GL_TEXTURE_1D:
+		case QOpenGLTexture::Target1D:
 			return( 1 );
 			break;
 
-	case GL_TEXTURE_3D:
-		return( 3 );
-		break;
-#endif
+		case QOpenGLTexture::Target3D:
+			return( 3 );
+			break;
 
-		case GL_TEXTURE_2D:
-		case GL_TEXTURE_RECTANGLE:
-		case GL_TEXTURE_CUBE_MAP:
+		case QOpenGLTexture::Target2D:
+		case QOpenGLTexture::TargetRectangle:
+		case QOpenGLTexture::TargetCubeMap:
 			return( 2 );
 			break;
 	}

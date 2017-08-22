@@ -74,13 +74,16 @@ void BufferToArrayNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+#if !defined( QT_OPENGL_ES_2 )
 	QOpenGLFunctions_4_5_Core	*GL45 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
 
 	if( GL45 && GL45->initializeOpenGLFunctions() )
 	{
 		GL45->glGetNamedBufferSubData( BufInt->buffer()->bufferId(), 0, ArrLen, ArrPtr );
 	}
-	else if( BufInt->bind() )
+	else
+#endif
+		if( BufInt->bind() )
 	{
 		BufInt->buffer()->write( 0, ArrPtr, ArrLen );
 

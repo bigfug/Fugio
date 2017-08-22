@@ -272,12 +272,14 @@ void TransformFeedbackNode::render1( qint64 pTimeStamp )
 
 	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
+#if !defined( QT_OPENGL_ES_2 )
 	QOpenGLFunctions_4_0_Core	*GL40 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_0_Core>();
 
 	if( GL40 && !GL40->initializeOpenGLFunctions() )
 	{
 		GL40 = Q_NULLPTR;
 	}
+#endif
 
 	glEnable( GL_RASTERIZER_DISCARD );
 
@@ -303,10 +305,12 @@ void TransformFeedbackNode::render1( qint64 pTimeStamp )
 
 			mFirstTransform = false;
 		}
+#if !defined( QT_OPENGL_ES_2 )
 		else if( GL40 )
 		{
 			GL40->glDrawTransformFeedback( mDrawMode, mTrnFbkId[ nextTFB() ] );
 		}
+#endif
 
 		GLEX->glEndTransformFeedback();
 
@@ -372,12 +376,14 @@ void TransformFeedbackNode::render2( qint64 pTimeStamp )
 
 	if( !mFirstTransform )
 	{
+#if !defined( QT_OPENGL_ES_2 )
 		QOpenGLFunctions_4_0_Core	*GL40 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_0_Core>();
 
 		if( GL40 && GL40->initializeOpenGLFunctions() )
 		{
 			GL40->glDrawTransformFeedback( mDrawMode, mTrnFbkId[ nextTFB() ] );
 		}
+#endif
 	}
 
 	OPENGL_DEBUG( mNode->name() );

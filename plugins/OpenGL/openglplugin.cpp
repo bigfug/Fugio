@@ -311,13 +311,6 @@ void OpenGLPlugin::checkErrors( void )
 		return;
 	}
 
-#if defined( Q_OS_RASPBERRY_PI )
-	for( GLenum e = eglGetError() ; e != EGL_SUCCESS ; e = eglGetError() )
-	{
-		qDebug() << "EGL" << QString::number( e, 16 );
-	}
-#endif
-
 	for( GLenum e = glGetError() ; e != GL_NO_ERROR ; e = glGetError() )
 	{
 #if defined( GLU_VERSION )
@@ -340,13 +333,6 @@ void OpenGLPlugin::checkErrors( const char *file, int line )
 		return;
 	}
 
-#if defined( Q_OS_RASPBERRY_PI )
-	for( GLenum e = eglGetError() ; e != EGL_SUCCESS ; e = eglGetError() )
-	{
-		qDebug() << "EGL" << file << line << ":" << QString::number( e, 16 );
-	}
-#endif
-
 	for( GLenum e = glGetError() ; e != GL_NO_ERROR ; e = glGetError() )
 	{
 #if defined( GLU_VERSION )
@@ -368,13 +354,6 @@ void OpenGLPlugin::checkErrors(const QString &pContext, const char *file, int li
 	{
 		return;
 	}
-
-#if defined( Q_OS_RASPBERRY_PI )
-	for( GLenum e = eglGetError() ; e != EGL_SUCCESS ; e = eglGetError() )
-	{
-		qDebug() << "EGL" << file << line << ":" << QString::number( e, 16 );
-	}
-#endif
 
 	for( GLenum e = glGetError() ; e != GL_NO_ERROR ; e = glGetError() )
 	{
@@ -406,10 +385,12 @@ QString OpenGLPlugin::framebufferError( GLenum pErrorCode )
 		case GL_FRAMEBUFFER_UNSUPPORTED:	return( "GL_FRAMEBUFFER_UNSUPPORTED" );
 		case GL_FRAMEBUFFER_COMPLETE:	return( "GL_FRAMEBUFFER_COMPLETE" );
 		case GL_FRAMEBUFFER_UNDEFINED:	return( "GL_FRAMEBUFFER_UNDEFINED" );
+		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:	return( "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE" );
+#if !defined( Q_OS_RASPBERRY_PI )
+		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:	return( "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS" );
 		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:	return( "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER" );
 		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:	return( "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER" );
-		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:	return( "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE" );
-		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:	return( "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS" );
+#endif
 	}
 
 	return( QString::number( pErrorCode, 16 ) );
@@ -627,7 +608,9 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_WRAP( GL_REPEAT );
 		INSERT_WRAP( GL_CLAMP_TO_EDGE );
 		INSERT_WRAP( GL_MIRRORED_REPEAT );
+#if !defined( Q_OS_RASPBERRY_PI )
 		INSERT_WRAP( GL_CLAMP_TO_BORDER );
+#endif
 	}
 
 	if( mMapCompare.isEmpty() )

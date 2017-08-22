@@ -68,6 +68,7 @@ void TextureCopyNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		const QVector3D		TexSze = TexSrc->size();
 
+#if !defined( QT_OPENGL_ES_2 )
 		QOpenGLFunctions_4_3_Core	*GL43 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_3_Core>();
 
 		if( GL43 && !GL43->initializeOpenGLFunctions() )
@@ -82,6 +83,7 @@ void TextureCopyNode::inputsUpdated( qint64 pTimeStamp )
 									  TexSze.x(), TexSze.y(), qMax<GLsizei>( TexSze.z(), 1 ) );
 		}
 		else
+#endif
 		{
 			QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 

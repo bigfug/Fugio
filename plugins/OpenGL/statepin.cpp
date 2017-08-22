@@ -95,12 +95,14 @@ void StatePin::stateBegin()
 {
 	initializeOpenGLFunctions();
 
+#if !defined( QT_OPENGL_ES_2 )
 	QOpenGLFunctions_2_0	*GL20 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_2_0>();
 
 	if( GL20 && !GL20->initializeOpenGLFunctions() )
 	{
 		GL20 = Q_NULLPTR;
 	}
+#endif
 
 #if !defined( GL_ES_VERSION_2_0 )
 //	QMatrix4x4		MatPrj = mPinMatPrj ? variant( mPinMatPrj ).value<QMatrix4x4>() : mProjection;
@@ -131,23 +133,27 @@ void StatePin::stateBegin()
 	}
 
 //	glColor4f( 1, 1, 1, 1 );
+#if !defined( QT_OPENGL_ES_2 )
 
 	if( GL20 )
 	{
 		GL20->glPolygonMode( GL_FRONT_AND_BACK, mPolygonMode );
 	}
+#endif
 }
 
 void StatePin::stateEnd()
 {
 	initializeOpenGLFunctions();
 
+#if !defined( QT_OPENGL_ES_2 )
 	QOpenGLFunctions_2_0	*GL20 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_2_0>();
 
 	if( GL20 && !GL20->initializeOpenGLFunctions() )
 	{
 		GL20 = Q_NULLPTR;
 	}
+#endif
 
 	for( QList<int>::const_iterator it = mFlags.begin() ; it != mFlags.end() ; it++ )
 	{
@@ -168,10 +174,12 @@ void StatePin::stateEnd()
 
 //	glColor4f( 1, 1, 1, 1 );
 
+#if !defined( QT_OPENGL_ES_2 )
 	if( GL20 )
 	{
 		GL20->glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 	}
+#endif
 }
 
 void StatePin::setFlag( int pFlag, bool pValue )

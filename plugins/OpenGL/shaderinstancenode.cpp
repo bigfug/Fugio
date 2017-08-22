@@ -525,12 +525,14 @@ int ShaderInstanceNode::activeBufferCount( QList< QSharedPointer<fugio::PinInter
 
 void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSharedPointer<fugio::PinInterface> > &OutPinLst, int &W, int &H, int &D )
 {
+#if !defined( QT_OPENGL_ES_2 )
 	QOpenGLFunctions_3_2_Core	*GL32 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_2_Core>();
 
 	if( GL32 && !GL32->initializeOpenGLFunctions() )
 	{
 		GL32 = Q_NULLPTR;
 	}
+#endif
 
 	for( QSharedPointer<fugio::PinInterface> &OutPin : OutPinLst )
 	{
@@ -574,17 +576,19 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 
 		switch( OutTex->target() )
 		{
-			case GL_TEXTURE_1D:
+			case QOpenGLTexture::Target1D:
+#if !defined( QT_OPENGL_ES_2 )
 				if( GL32 )
 				{
 					GL32->glFramebufferTexture1D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
-
-					Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
 				}
+#endif
+
+				Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
 				break;
 
 			case GL_TEXTURE_2D:
-			case GL_TEXTURE_RECTANGLE:
+			case QOpenGLTexture::TargetRectangle:
 				if( !OutTex->isDepthTexture() )
 				{
 					glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
@@ -615,12 +619,14 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 				break;
 
 			case GL_TEXTURE_3D:
+#if !defined( QT_OPENGL_ES_2 )
 				if( GL32 )
 				{
 					GL32->glFramebufferTexture3D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0, 0 );
-
-					Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
 				}
+#endif
+
+				Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
 				break;
 		}
 	}
