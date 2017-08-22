@@ -141,6 +141,8 @@ unsigned int roundUpToNextPowerOfTwo(unsigned int x)
 
 void TexturePin::setSize( const QVector3D &pSize )
 {
+	initializeOpenGLFunctions();
+
 	if( pSize != size() )
 	{
 		mTexDsc.mImgWidth  = pSize.x();
@@ -251,56 +253,83 @@ void TexturePin::update()
 		return;
 	}
 
-	if( !mDstTex )
+	if( mDstTex )
 	{
-		mDstTex = new QOpenGLTexture( QOpenGLTexture::Target( mTexDsc.mTarget ) );
+		return;
+	}
 
-		if( !mDstTex )
-		{
-			return;
-		}
+	if( !( mDstTex = new QOpenGLTexture( QOpenGLTexture::Target( mTexDsc.mTarget ) ) ) )
+	{
+		return;
+	}
 
-		mDstTex->setSize( mTexDsc.mTexWidth, mTexDsc.mTexHeight, mTexDsc.mTexDepth );
+	switch( sizeDimensions() )
+	{
+		case 1:
+			mDstTex->setSize( mTexDsc.mTexWidth );
+			break;
 
-		if( !isCompressedFormat( mTexDsc.mInternalFormat ) )
-		{
-			mDstTex->allocateStorage( mTexDsc.mFormat, mTexDsc.mType );
-		}
+		case 2:
+			mDstTex->setSize( mTexDsc.mTexWidth, mTexDsc.mTexHeight );
+			break;
 
-		if( !isCompressedFormat( mTexDsc.mInternalFormat ) )
-		{
-			mDstTex->setMinMagFilters( ( mTexDsc.mMinFilter ), QOpenGLTexture::Filter( mTexDsc.mMagFilter ) );
-		}
-		else
-		{
-			mDstTex->setMinMagFilters( QOpenGLTexture::Linear, QOpenGLTexture::Linear );
-		}
+		case 3:
+			mDstTex->setSize( mTexDsc.mTexWidth, mTexDsc.mTexHeight, mTexDsc.mTexDepth );
+			break;
+	}
 
-		mDstTex->setWrapMode( QOpenGLTexture::DirectionS, mTexDsc.mWrapX );
-		mDstTex->setWrapMode( QOpenGLTexture::DirectionT, mTexDsc.mWrapY );
-		mDstTex->setWrapMode( QOpenGLTexture::DirectionR, mTexDsc.mWrapZ );
+	mDstTex->setFormat( mTexDsc.mInternalFormat );
 
-		if( mTexDsc.mFormat == GL_DEPTH_COMPONENT )
-		{
-			if( mTexDsc.mCompare == GL_NONE )
-			{
-				mDstTex->setComparisonMode( QOpenGLTexture::CompareNone );
-			}
-			else
-			{
-				mDstTex->setComparisonMode( QOpenGLTexture::CompareRefToTexture );
-				mDstTex->setComparisonFunction( mTexDsc.mCompare );
-			}
-		}
+	if( !isCompressedFormat( mTexDsc.mInternalFormat ) )
+	{
+		mDstTex->setAutoMipMapGenerationEnabled( mTexDsc.mGenerateMipMaps );
 
-		OPENGL_DEBUG( mPin->node()->name() );
+		mDstTex->allocateStorage( mTexDsc.mFormat, mTexDsc.mType );
 
-		if( !mDstTex->isStorageAllocated() && !isCompressedFormat( mTexDsc.mInternalFormat ) )
+		if( !mDstTex->isStorageAllocated() )
 		{
 			qDebug() << "Couldn't allocate texture";
 
 			return;
 		}
+
+		mDstTex->setMinMagFilters( mTexDsc.mMinFilter, mTexDsc.mMagFilter );
+	}
+	else
+	{
+		mDstTex->setMinMagFilters( QOpenGLTexture::Linear, QOpenGLTexture::Linear );
+	}
+
+	switch( sizeDimensions() )
+	{
+		case 3:
+			mDstTex->setWrapMode( QOpenGLTexture::DirectionR, mTexDsc.mWrapZ );
+		case 2:
+			mDstTex->setWrapMode( QOpenGLTexture::DirectionT, mTexDsc.mWrapY );
+		case 1:
+			mDstTex->setWrapMode( QOpenGLTexture::DirectionS, mTexDsc.mWrapX );
+	}
+
+	if( mTexDsc.mFormat == GL_DEPTH_COMPONENT )
+	{
+		if( mTexDsc.mCompare == GL_NONE )
+		{
+			mDstTex->setComparisonMode( QOpenGLTexture::CompareNone );
+		}
+		else
+		{
+			mDstTex->setComparisonMode( QOpenGLTexture::CompareRefToTexture );
+			mDstTex->setComparisonFunction( mTexDsc.mCompare );
+		}
+	}
+
+	OPENGL_DEBUG( mPin->node()->name() );
+
+	if( !mDstTex->isStorageAllocated() && !isCompressedFormat( mTexDsc.mInternalFormat ) )
+	{
+		qDebug() << "Couldn't allocate texture";
+
+		return;
 	}
 }
 

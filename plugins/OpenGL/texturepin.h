@@ -60,17 +60,13 @@ public:
 	{
 		switch( mTexDsc.mInternalFormat )
 		{
-			case GL_DEPTH_COMPONENT:
-			case GL_DEPTH_COMPONENT16:
-#if defined( GL_DEPTH_COMPONENT24 )
-			case GL_DEPTH_COMPONENT24:
-#endif
-#if defined( GL_DEPTH_COMPONENT32 )
-			case GL_DEPTH_COMPONENT32:
-#endif
-#if defined( GL_DEPTH_COMPONENT32F )
-			case GL_DEPTH_COMPONENT32F:
-#endif
+			case QOpenGLTexture::D16:
+			case QOpenGLTexture::D24:
+			case QOpenGLTexture::D24S8:
+			case QOpenGLTexture::D32:
+			case QOpenGLTexture::D32F:
+			case QOpenGLTexture::D32FS8X24:
+			case QOpenGLTexture::DepthFormat:
 				return( true );
 
 			default:
