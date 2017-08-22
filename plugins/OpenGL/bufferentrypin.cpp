@@ -1,6 +1,6 @@
 #include "bufferentrypin.h"
 
-#include <QOpenGLFunctions_3_0>
+#include <QOpenGLExtraFunctions>
 #include <QOpenGLFunctions_4_1_Core>
 
 BufferEntryPin::BufferEntryPin( QSharedPointer<fugio::PinInterface> pPin )
@@ -54,21 +54,21 @@ const GLvoid *BufferEntryPin::bind( GLuint pIndex, GLsizei pStride, const GLvoid
 
 	glEnableVertexAttribArray( pIndex );
 
-	QOpenGLFunctions_4_1_Core	*GL41 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_1_Core>();
-
-	if( GL41 && GL41->initializeOpenGLFunctions() )
+	if( mType == GL_DOUBLE )
 	{
-		switch( mType )
+		QOpenGLFunctions_4_1_Core	*GL41 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_1_Core>();
+
+		if( GL41 && GL41->initializeOpenGLFunctions() )
 		{
-			case GL_DOUBLE:
-				GL41->glVertexAttribLPointer( pIndex, mSize, mType, pStride, pPointer );
-				return( NextBuff );
+			GL41->glVertexAttribLPointer( pIndex, mSize, mType, pStride, pPointer );
 		}
+
+		return( NextBuff );
 	}
 
-	QOpenGLFunctions_3_0		*GL30 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_0>();
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
-	if( GL30 && GL30->initializeOpenGLFunctions() )
+	if( GLEX )
 	{
 		switch( mType )
 		{
@@ -78,7 +78,7 @@ const GLvoid *BufferEntryPin::bind( GLuint pIndex, GLsizei pStride, const GLvoid
 			case GL_UNSIGNED_SHORT:
 			case GL_INT:
 			case GL_UNSIGNED_INT:
-				GL30->glVertexAttribIPointer( pIndex, mSize, mType, pStride, pPointer );
+				GLEX->glVertexAttribIPointer( pIndex, mSize, mType, pStride, pPointer );
 				return( NextBuff );
 		}
 	}
