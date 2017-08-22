@@ -58,7 +58,8 @@ SOURCES += openglplugin.cpp \
 	textureclonenode.cpp \
     texturemonitornode.cpp \
     texturemonitor.cpp \
-    rendertotexturenode.cpp
+    rendertotexturenode.cpp \
+	deviceopengloutput.cpp
 
 HEADERS +=\
 	texturenode.h \
@@ -117,7 +118,8 @@ HEADERS +=\
 	textureclonenode.h \
     texturemonitornode.h \
     texturemonitor.h \
-    rendertotexturenode.h
+    rendertotexturenode.h \
+	deviceopengloutput.h
 
 FORMS += \
 	texturenodeform.ui \
@@ -130,14 +132,6 @@ TRANSLATIONS = \
 	translations/fugio_opengl_de.ts \
 	translations/fugio_opengl_es.ts \
 	translations/fugio_opengl_fr.ts
-
-#contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-#	SOURCES += deviceopengloutputrpi.cpp
-#	HEADERS += deviceopengloutputrpi.h
-#} else {
-	SOURCES += deviceopengloutput.cpp
-	HEADERS += deviceopengloutput.h
-#}
 
 #windows {
 #	QMAKE_LFLAGS_DEBUG += /INCREMENTAL:NO
