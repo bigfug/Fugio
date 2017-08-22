@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QDockWidget>
+#include <QOpenGLVertexArrayObject>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -44,8 +45,8 @@ protected:
 	QDockWidget					*mDockWidget;
 	TextureMonitor				*mWidget;
 	Qt::DockWidgetArea			 mDockArea;
+	QOpenGLVertexArrayObject	 mVAO;
 
-	GLuint						 mVAO;
 	GLuint						 mProgram;
 	GLuint						 mVBO;
 };

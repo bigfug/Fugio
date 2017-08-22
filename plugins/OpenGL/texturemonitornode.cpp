@@ -1,7 +1,7 @@
 #include "texturemonitornode.h"
 
 #include <QMainWindow>
-#include <QOpenGLFunctions_3_0>
+#include <QOpenGLExtraFunctions>
 
 #include "openglplugin.h"
 
@@ -103,12 +103,7 @@ void TextureMonitorNode::paintGL()
 
 	initializeOpenGLFunctions();
 
-	QOpenGLFunctions_3_0	*GL30 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_0>();
-
-	if( GL30 && !GL30->initializeOpenGLFunctions() )
-	{
-		GL30 = Q_NULLPTR;
-	}
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
 	glClearColor( 0, 0, 0, 0 );
 
@@ -116,14 +111,9 @@ void TextureMonitorNode::paintGL()
 
 	OPENGL_PLUGIN_DEBUG;
 
-	if( !mVAO && GL30 )
+	if( !mVAO.isCreated() )
 	{
-		GL30->glGenVertexArrays( 1, &mVAO );
-	}
-
-	if( mVAO )
-	{
-		GL30->glBindVertexArray( mVAO );
+		mVAO.create();
 	}
 
 	OPENGL_PLUGIN_DEBUG;
@@ -276,10 +266,7 @@ void TextureMonitorNode::paintGL()
 		glUseProgram( 0 );
 	}
 
-	if( mVAO )
-	{
-		GL30->glBindVertexArray( 0 );
-	}
+	mVAO.release();
 
 	OPENGL_PLUGIN_DEBUG;
 }

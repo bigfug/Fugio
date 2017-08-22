@@ -6,7 +6,7 @@
 #include <QByteArray>
 
 #include <QOpenGLFunctions_2_0>
-#include <QOpenGLFunctions_3_0>
+#include <QOpenGLExtraFunctions>
 
 #include <fugio/node_interface.h>
 
@@ -313,6 +313,10 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 		return;
 	}
 
+	initializeOpenGLFunctions();
+
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+
 	OPENGL_PLUGIN_DEBUG
 
 	update();
@@ -324,23 +328,16 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 
 	dstBind();
 
-	QOpenGLFunctions_2_0	*GL20 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_2_0>();
-
-	if( GL20 && !GL20->initializeOpenGLFunctions() )
-	{
-		GL20 = Q_NULLPTR;
-	}
-
 	if( isCompressedFormat( mTexDsc.mInternalFormat ) )
 	{
 			switch( mTexDsc.mTarget )
 			{
-				case GL_TEXTURE_1D:
-					if( GL20 )
-					{
-						GL20->glCompressedTexImage1D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, 0, pDataSize, pData );
-					}
-					break;
+//				case GL_TEXTURE_1D:
+//					if( GLEX )
+//					{
+//						GL20->glCompressedTexImage1D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, 0, pDataSize, pData );
+//					}
+//					break;
 
 				case GL_TEXTURE_2D:
 				case GL_TEXTURE_RECTANGLE:
@@ -352,9 +349,9 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 					break;
 
 				case GL_TEXTURE_3D:
-					if( GL20 )
+					if( GLEX )
 					{
-						GL20->glCompressedTexImage3D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mImgDepth, 0, pDataSize, pData );
+						GLEX->glCompressedTexImage3D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mImgDepth, 0, pDataSize, pData );
 					}
 					break;
 			}
@@ -367,12 +364,12 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 
 		switch( mTexDsc.mTarget )
 		{
-			case GL_TEXTURE_1D:
-				if( GL20 )
-				{
-					GL20->glTexSubImage1D( mTexDsc.mTarget, 0, 0, mTexDsc.mImgWidth, mTexDsc.mFormat, mTexDsc.mType, pData );
-				}
-				break;
+//			case GL_TEXTURE_1D:
+//				if( GL20 )
+//				{
+//					glTexSubImage1D( mTexDsc.mTarget, 0, 0, mTexDsc.mImgWidth, mTexDsc.mFormat, mTexDsc.mType, pData );
+//				}
+//				break;
 
 			case GL_TEXTURE_2D:
 			case GL_TEXTURE_RECTANGLE:
@@ -384,9 +381,9 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 				break;
 
 			case GL_TEXTURE_3D:
-				if( GL20 )
+				if( GLEX )
 				{
-					GL20->glTexSubImage3D( mTexDsc.mTarget, 0, 0, 0, 0, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mImgDepth, mTexDsc.mFormat, mTexDsc.mType, pData );
+					GLEX->glTexSubImage3D( mTexDsc.mTarget, 0, 0, 0, 0, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mImgDepth, mTexDsc.mFormat, mTexDsc.mType, pData );
 				}
 				break;
 		}
@@ -596,12 +593,7 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 {
 	checkDefinition();
 
-	QOpenGLFunctions_3_0	*GL30 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_0>();
-
-	if( GL30 && !GL30->initializeOpenGLFunctions() )
-	{
-		GL30 = Q_NULLPTR;
-	}
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
 	GLint		FBOCur;
 
@@ -620,9 +612,9 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 		glGenRenderbuffers( 1, &mFBOMSColourRBId );
 		glBindRenderbuffer( GL_RENDERBUFFER, mFBOMSColourRBId );
 
-		if( GL30 )
+		if( GLEX )
 		{
-			GL30->glRenderbufferStorageMultisample( GL_RENDERBUFFER, pSamples, GL_RGBA, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
+			GLEX->glRenderbufferStorageMultisample( GL_RENDERBUFFER, pSamples, GL_RGBA, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
 		}
 
 		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, mFBOMSColourRBId );
@@ -632,9 +624,9 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 			glGenRenderbuffers( 1, &mFBOMSDepthRBId );
 			glBindRenderbuffer( GL_RENDERBUFFER, mFBOMSDepthRBId );
 
-			if( GL30 )
+			if( GLEX )
 			{
-				GL30->glRenderbufferStorageMultisample( GL_RENDERBUFFER, pSamples, GL_DEPTH_COMPONENT24, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
+				GLEX->glRenderbufferStorageMultisample( GL_RENDERBUFFER, pSamples, GL_DEPTH_COMPONENT24, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
 			}
 
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mFBOMSDepthRBId );

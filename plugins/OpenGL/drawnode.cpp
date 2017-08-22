@@ -2,7 +2,7 @@
 
 #include <QMatrix4x4>
 #include <QTime>
-#include <QOpenGLFunctions_3_1>
+#include <QOpenGLExtraFunctions>
 
 #include <qmath.h>
 
@@ -108,12 +108,7 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		Count = std::numeric_limits<int>::max();
 	}
 
-	QOpenGLFunctions_3_1	*GL31 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_1>();
-
-	if( GL31 && !GL31->initializeOpenGLFunctions() )
-	{
-		GL31 = Q_NULLPTR;
-	}
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
 	fugio::OpenGLBufferInterface	*B;
 
@@ -129,9 +124,9 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 				if( Instances > 0 )
 				{
-					if( GL31 )
+					if( GLEX )
 					{
-						GL31->glDrawElementsInstanced( Mode, Count, GL_UNSIGNED_INT, 0, Instances );
+						GLEX->glDrawElementsInstanced( Mode, Count, GL_UNSIGNED_INT, 0, Instances );
 					}
 				}
 				else
@@ -145,9 +140,9 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 	}
 	else if( Instances > 0 )
 	{
-		if( GL31 )
+		if( GLEX )
 		{
-			GL31->glDrawArraysInstanced( Mode, 0, Count, Instances );
+			GLEX->glDrawArraysInstanced( Mode, 0, Count, Instances );
 		}
 	}
 	else if( Count > 0 && Count < std::numeric_limits<int>::max() )

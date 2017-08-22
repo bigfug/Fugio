@@ -6,7 +6,7 @@
 
 #include <QSurfaceFormat>
 
-#include <QOpenGLFunctions_3_0>
+#include <QOpenGLExtraFunctions>
 #include <QOpenGLFunctions_4_3_Core>
 
 #include "openglplugin.h"
@@ -83,14 +83,9 @@ void TextureCopyNode::inputsUpdated( qint64 pTimeStamp )
 		}
 		else
 		{
-			QOpenGLFunctions_3_0		*GL30 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_0>();
+			QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
-			if( GL30 && !GL30->initializeOpenGLFunctions() )
-			{
-				GL30 = Q_NULLPTR;
-			}
-
-			if( GL30 )
+			if( GLEX )
 			{
 				if( !mFBO )
 				{
@@ -107,9 +102,9 @@ void TextureCopyNode::inputsUpdated( qint64 pTimeStamp )
 
 					GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT1 };
 
-					GL30->glDrawBuffers( 1, drawBuffers );
+					GLEX->glDrawBuffers( 1, drawBuffers );
 
-					GL30->glBlitFramebuffer( 0, 0, TexSze.x(), TexSze.y(), 0, 0, TexSze.x(), TexSze.y(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
+					GLEX->glBlitFramebuffer( 0, 0, TexSze.x(), TexSze.y(), 0, 0, TexSze.x(), TexSze.y(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
 
 					glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 				}

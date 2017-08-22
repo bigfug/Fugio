@@ -1,6 +1,6 @@
 #include "shadercompilernode.h"
 
-#include <QOpenGLFunctions_3_0>
+#include <QOpenGLExtraFunctions>
 
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
@@ -202,12 +202,7 @@ void ShaderCompilerNode::loadShader()
 		return;
 	}
 
-	QOpenGLFunctions_3_0	*GL30 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_0>();
-
-	if( GL30 && !GL30->initializeOpenGLFunctions() )
-	{
-		GL30 = Q_NULLPTR;
-	}
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
 	OPENGL_PLUGIN_DEBUG;
 
@@ -286,9 +281,9 @@ void ShaderCompilerNode::loadShader()
 			BufMod = GL_SEPARATE_ATTRIBS;
 		}
 
-		if( GL30 )
+		if( GLEX )
 		{
-			GL30->glTransformFeedbackVaryings( CompilerData.mProgram->programId(), VarLst.size(), (const GLchar **)VarLst.constData(), BufMod );
+			GLEX->glTransformFeedbackVaryings( CompilerData.mProgram->programId(), VarLst.size(), (const GLchar **)VarLst.constData(), BufMod );
 		}
 
 		OPENGL_PLUGIN_DEBUG;
@@ -298,11 +293,13 @@ void ShaderCompilerNode::loadShader()
 	//-------------------------------------------------------------------------
 	// Link
 
-	if( !CompilerData.mProgram->link() )
-	{
-		QString		LogDat = CompilerData.mProgram->log();
+	bool	LinkResult = CompilerData.mProgram->link();
 
-		mNode->setStatusMessage( LogDat );
+	mNode->setStatusMessage( CompilerData.mProgram->log() );
+
+	if( !LinkResult )
+	{
+		mNode->setStatus( fugio::NodeInterface::Error );
 
 		return;
 	}

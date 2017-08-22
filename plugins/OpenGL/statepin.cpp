@@ -1,5 +1,6 @@
 #include "statepin.h"
 #include <QSettings>
+
 #include <QOpenGLFunctions_2_0>
 
 #define INSERT_FLAG(x)		mMapFlags.insert(#x,x)
