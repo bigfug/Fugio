@@ -58,24 +58,7 @@ bool ISFPlugin::hasContext()
 {
 	InterfaceOpenGL		*OGL = qobject_cast<InterfaceOpenGL *>( mApp->findInterface( IID_OPENGL ) );
 
-	if( !OGL || !OGL->hasContext() )
-	{
-		return( false );
-	}
-
-#if defined( GLEW_SUPPORTED )
-	if( glewExperimental == GL_FALSE )
-	{
-		glewExperimental = GL_TRUE;
-
-		if( glewInit() != GLEW_OK )
-		{
-			return( false );
-		}
-	}
-#endif
-
-	return( true );
+	return( OGL && OGL->hasContext() );
 }
 
 bool ISFPlugin::hasContextStatic()

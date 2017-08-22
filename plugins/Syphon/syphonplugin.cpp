@@ -84,23 +84,6 @@ bool SyphonPlugin::hasOpenGLContext()
 {
 	InterfaceOpenGL		*OGL = qobject_cast<InterfaceOpenGL *>( mApp->findInterface( IID_OPENGL ) );
 
-	if( !OGL || !OGL->hasContext() )
-	{
-		return( false );
-	}
-
-#if !defined( Q_OS_RASPBERRY_PI )
-	if( glewExperimental == GL_FALSE )
-	{
-		glewExperimental = GL_TRUE;
-
-		if( glewInit() != GLEW_OK )
-		{
-			return( false );
-		}
-	}
-#endif
-
-	return( true );
+	return( OGL && OGL->hasContext() );
 }
 

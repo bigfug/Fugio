@@ -93,8 +93,6 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 {
 	OPENGL_DEBUG( mNode->name() );
 
-//	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
-
 	OpenGLShaderInterface	*Shader = input<OpenGLShaderInterface *>( mPinShader );
 
 	if( !Shader || !Shader->isLinked() )
@@ -217,6 +215,10 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 	}
 
 	//-------------------------------------------------------------------------
+
+#if !defined( GL_ES_VERSION_2_0 )
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+#endif
 
 	GLint PassVarLocation = glGetUniformLocation( Shader->programId(), variant( mPinInputPassVar ).toString().toLatin1().constData() );
 
