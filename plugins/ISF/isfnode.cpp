@@ -1407,6 +1407,7 @@ int ISFNode::calculateValue( int pValue, const QSize &pSize, QString pExpression
 		return( pValue );
 	}
 
+#if defined( INCLUDE_EXPRTK_HPP )
 	typedef qreal						        exprtk_type;
 	typedef exprtk::symbol_table<exprtk_type>   symbol_table_t;
 	typedef exprtk::expression<exprtk_type>		expression_t;
@@ -1469,6 +1470,7 @@ int ISFNode::calculateValue( int pValue, const QSize &pSize, QString pExpression
 	{
 		pValue = expression.value();
 	}
+#endif
 
 	return( pValue );
 }

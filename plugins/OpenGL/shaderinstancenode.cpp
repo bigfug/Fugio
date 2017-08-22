@@ -91,14 +91,9 @@ bool ShaderInstanceNode::initialise()
 
 void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( !OpenGLPlugin::hasContextStatic() )
-	{
-		return;
-	}
+	OPENGL_DEBUG( mNode->name() );
 
-	initializeOpenGLFunctions();
-
-	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+//	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
 	OpenGLShaderInterface	*Shader = input<OpenGLShaderInterface *>( mPinShader );
 
@@ -120,8 +115,6 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		return;
 	}
-
-	OPENGL_DEBUG( mNode->name() );
 
 	//-------------------------------------------------------------------------
 
@@ -150,6 +143,13 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		return;
 	}
+
+	if( !OpenGLPlugin::hasContextStatic() )
+	{
+		return;
+	}
+
+	initializeOpenGLFunctions();
 
 	//-------------------------------------------------------------------------
 

@@ -64,11 +64,11 @@ void VertexArrayObjectNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	initializeOpenGLFunctions();
-
 	if( !mVAO.isCreated() )
 	{
+#if !defined( QT_OPENGL_ES_2 )
 		mVAO.create();
+#endif
 
 		UpdateAll = true;
 	}
@@ -77,6 +77,13 @@ void VertexArrayObjectNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		UpdateAll = true;
 	}
+
+	if( !mVAO.isCreated() )
+	{
+		return;
+	}
+
+	initializeOpenGLFunctions();
 
 	OpenGLShaderInterface		*Shader = input<OpenGLShaderInterface *>( mPinInputShader );
 
@@ -202,7 +209,9 @@ void VertexArrayObjectNode::vaoBind()
 
 	if( !mVAO.isCreated() )
 	{
+#if !defined( QT_OPENGL_ES_2 )
 		mVAO.create();
+#endif
 
 		UpdateAll = true;
 	}

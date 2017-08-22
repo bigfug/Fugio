@@ -473,12 +473,22 @@ QImage TexturePin::image()
 
 void TexturePin::srcBind()
 {
-	mSrcTex->bind();
+	if( mSrcTex )
+	{
+		mSrcTex->bind();
+	}
+	else if( mDstTex )
+	{
+		mDstTex->bind();
+	}
 }
 
 void TexturePin::dstBind()
 {
-	mDstTex->bind();
+	if( mDstTex )
+	{
+		mDstTex->bind();
+	}
 }
 
 void TexturePin::release()
