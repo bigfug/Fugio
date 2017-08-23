@@ -52,10 +52,6 @@ SyphonPlugin::SyphonPlugin() : mApp( 0 )
 	{
 		qApp->installTranslator( &Translator );
 	}
-
-#if defined( SYPHON_SUPPORTED )
-	glewExperimental = GL_FALSE;
-#endif
 }
 
 fugio::PluginInterface::InitResult SyphonPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
