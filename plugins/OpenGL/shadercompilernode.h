@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QOpenGLShaderProgram>
 
 #include <fugio/nodecontrolbase.h>
 #include <fugio/opengl/shader_interface.h>
@@ -18,7 +19,7 @@
 
 using namespace fugio;
 
-class ShaderCompilerNode : public fugio::NodeControlBase, public fugio::OpenGLShaderInterface
+class ShaderCompilerNode : public fugio::NodeControlBase, public fugio::OpenGLShaderInterface, protected QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::OpenGLShaderInterface )
@@ -48,7 +49,7 @@ public:
 
 	virtual bool isLinked( void ) const
 	{
-		return( mShaderCompilerData.mProgramLinked );
+		return( mShaderCompilerData.mProgram->isLinked() );
 	}
 
 	virtual const fugio::ShaderUniformMap &uniformMap( void ) const
@@ -63,11 +64,16 @@ public:
 
 	virtual GLuint programId( void ) const
 	{
-		return( mShaderCompilerData.mProgramId );
+		return( mShaderCompilerData.mProgram->programId() );
+	}
+
+	virtual QOpenGLShaderProgram *program( void )
+	{
+		return( mShaderCompilerData.mProgram );
 	}
 
 private:
-	static void loadShader( QSharedPointer<fugio::PinInterface> pPin, GLuint pProgramId, GLuint &pShaderId, GLenum pShaderType, int &pCompiled, int &pFailed );
+	void loadShader( QSharedPointer<fugio::PinInterface> pPin, QOpenGLShaderProgram &pProgram, QOpenGLShader::ShaderType pShaderType, int &pCompiled, int &pFailed );
 
 	void loadShader();
 
@@ -101,16 +107,16 @@ protected:
 		QStringList								 mUniformNames;
 		QStringList								 mAttributeNames;
 
-		GLuint									 mProgramId;
-		GLboolean								 mProgramLinked;
+		QOpenGLShaderProgram					*mProgram;
 
 		ShaderCompilerData( void )
-			: mProgramId( 0 ), mProgramLinked( false )
+			: mProgram( new QOpenGLShaderProgram() )
 		{
 
 		}
 
 		ShaderCompilerData( ShaderCompilerData &&other )
+			: mProgram( Q_NULLPTR ) //new QOpenGLShaderProgram() )
 		{
 			*this = std::move( other );
 		}
@@ -118,20 +124,26 @@ protected:
 		~ShaderCompilerData( void )
 		{
 			clear();
+
+			if( mProgram )
+			{
+				mProgram->deleteLater();
+			}
 		}
 
 		ShaderCompilerData &operator = ( ShaderCompilerData && other )
 		{
-			mProgramId = other.mProgramId;
-			mProgramLinked = other.mProgramLinked;
+			std::swap( mProgram, other.mProgram );
 
-			other.mProgramId = 0;
-			other.mProgramLinked = false;
+			if( other.mProgram )
+			{
+				other.mProgram->removeAllShaders();
+			}
 
-			mShaderUniformTypes = std::move( other.mShaderUniformTypes );
+			mShaderUniformTypes   = std::move( other.mShaderUniformTypes );
 			mShaderAttributeTypes = std::move( other.mShaderAttributeTypes );
-			mUniformNames = std::move( other.mUniformNames );
-			mAttributeNames = std::move( other.mAttributeNames );
+			mUniformNames         = std::move( other.mUniformNames );
+			mAttributeNames       = std::move( other.mAttributeNames );
 
 			return( *this );
 		}
@@ -140,7 +152,10 @@ protected:
 
 		void clear( void );
 
-	} ShaderCompilerData;
+	private:
+		Q_DISABLE_COPY( ShaderCompilerData )
+
+	  } ShaderCompilerData;
 
 	ShaderCompilerData						 mShaderCompilerData;
 };

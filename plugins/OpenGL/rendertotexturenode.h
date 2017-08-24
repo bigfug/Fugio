@@ -10,7 +10,7 @@
 #include <fugio/render_interface.h>
 #include <fugio/opengl/node_render_interface.h>
 
-class RenderToTextureNode : public fugio::NodeControlBase
+class RenderToTextureNode : public fugio::NodeControlBase, protected QOpenGLFunctions
 {
 	Q_OBJECT
 

@@ -3,11 +3,13 @@
 
 #include <QObject>
 
+#include "opengl_includes.h"
+
 #include <fugio/nodecontrolbase.h>
 
 #include <fugio/image/image_interface.h>
 
-class TextureToImageNode : public fugio::NodeControlBase
+class TextureToImageNode : public fugio::NodeControlBase, protected QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_CLASSINFO( "Author", "Alex May" )

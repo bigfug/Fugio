@@ -129,12 +129,7 @@ bool MakeArrayNode::canAcceptPin( fugio::PinInterface *pPin ) const
 
 	fugio::VariantInterface	*V = qobject_cast<fugio::VariantInterface *>( pPin->control()->qobject() );
 
-	if( !V )
-	{
-		return( false );
-	}
-
-	return( QMetaType::Type( V->variant().type() ) == mType );
+	return( V );
 }
 
 void MakeArrayNode::setType( int pIndex )

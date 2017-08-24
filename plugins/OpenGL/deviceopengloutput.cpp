@@ -118,7 +118,7 @@ void DeviceOpenGLOutput::unsetCurrentNode( QSharedPointer<NodeInterface> pNode )
 
 void DeviceOpenGLOutput::setGeometry( QRect pRect )
 {
-
+	Q_UNUSED( pRect )
 }
 
 bool DeviceOpenGLOutput::event( QEvent *pEvent )
@@ -329,7 +329,7 @@ void DeviceOpenGLOutput::exposeEvent( QExposeEvent * )
 	{
 		makeCurrent();
 
-		OpenGLPlugin::initGLEW();
+		OpenGLPlugin::instance()->initGLEW();
 
 #if defined( OPENGL_DEBUG_ENABLE )
 		if( !mDebugLogger )

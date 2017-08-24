@@ -5,6 +5,8 @@
 
 #include <QMap>
 
+class QOpenGLShaderProgram;
+
 FUGIO_NAMESPACE_BEGIN
 
 class OpenGLTextureInterface;
@@ -38,6 +40,8 @@ public:
 	virtual const fugio::ShaderUniformMap &attributeMap( void ) const = 0;
 
 	virtual GLuint programId( void ) const = 0;
+
+	virtual QOpenGLShaderProgram *program( void ) = 0;
 };
 
 FUGIO_NAMESPACE_END

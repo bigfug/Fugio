@@ -32,12 +32,12 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
-	virtual QString toString( void ) const
+	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
 		return( QString() );
 	}
 
-	virtual QString description( void ) const
+	virtual QString description( void ) const Q_DECL_OVERRIDE
 	{
 		return( "Shader" );
 	}
@@ -45,28 +45,33 @@ public:
 	//-------------------------------------------------------------------------
 	// InterfaceOpenGLShader
 
-	virtual bool isLinked( void ) const
+	virtual bool isLinked( void ) const Q_DECL_OVERRIDE
 	{
 		return( mShader ? mShader->isLinked() : false );
 	}
 
-	virtual const fugio::ShaderUniformMap &uniformMap( void ) const
+	virtual const fugio::ShaderUniformMap &uniformMap( void ) const Q_DECL_OVERRIDE
 	{
 		static const fugio::ShaderUniformMap	EmptyMap;
 
 		return( mShader ? mShader->uniformMap() : EmptyMap );
 	}
 
-	virtual const fugio::ShaderUniformMap &attributeMap( void ) const
+	virtual const fugio::ShaderUniformMap &attributeMap( void ) const Q_DECL_OVERRIDE
 	{
 		static const fugio::ShaderUniformMap	EmptyMap;
 
 		return( mShader ? mShader->attributeMap() : EmptyMap );
 	}
 
-	virtual GLuint programId( void ) const
+	virtual GLuint programId( void ) const Q_DECL_OVERRIDE
 	{
 		return( mShader ? mShader->programId() : 0 );
+	}
+
+	virtual QOpenGLShaderProgram *program( void ) Q_DECL_OVERRIDE
+	{
+		return( mShader ? mShader->program() : Q_NULLPTR );
 	}
 
 private:

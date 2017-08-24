@@ -28,7 +28,7 @@ public:
 //	virtual bool canAcceptPin( fugio::PinInterface *pPin ) const;
 
 protected:
-	QSharedPointer<fugio::PinInterface>			 mPinOutput;
+	QSharedPointer<fugio::PinInterface>			 mPinInputList;
 };
 
 

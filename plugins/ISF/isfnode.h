@@ -1,7 +1,9 @@
 #ifndef ISFNODE_H
 #define ISFNODE_H
 
+#if !defined( Q_OS_RASPBERRY_PI )
 #include "../libs/exprtk/exprtk.hpp"
+#endif
 
 #include "opengl_includes.h"
 
@@ -9,6 +11,8 @@
 #include <QColor>
 #include <QDir>
 #include <QSize>
+
+#include <QOpenGLVertexArrayObject>
 
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
@@ -27,7 +31,7 @@
 
 #include <fugio/file/filename_interface.h>
 
-class ISFNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface
+class ISFNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface, private QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::NodeRenderInterface )
@@ -163,7 +167,7 @@ private:
 	QMap<QString,ISFImport>						 mISFImports;
 	QList<ISFPass>								 mISFPasses;
 
-	GLuint										 mVAO;
+	QOpenGLVertexArrayObject					 mVAO;
 	GLuint										 mBuffer;
 	GLuint										 mProgram;
 	GLuint										 mFrameCounter;

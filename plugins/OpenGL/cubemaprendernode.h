@@ -2,6 +2,7 @@
 #define CUBEMAPRENDERNODE_H
 
 #include <QObject>
+#include <QOpenGLFramebufferObject>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -11,7 +12,7 @@
 
 #include <fugio/opengl/texture_interface.h>
 
-class CubeMapRenderNode : public fugio::NodeControlBase
+class CubeMapRenderNode : public fugio::NodeControlBase, public QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_CLASSINFO( "Author", "Alex May" )

@@ -3,8 +3,9 @@
 #include "openglplugin.h"
 
 BufferPin::BufferPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mBuffer1( 0 ), mBuffer2( 0 ), mType( QMetaType::UnknownType ), mStride( 0 ), mCount( 0 ), mSize( 0 ),
-	  mIndex( false ), mInstanced( false ), mTarget( GL_ARRAY_BUFFER ), mDoubleBuffered( false )
+	: PinControlBase( pPin ), mBuffer1( Q_NULLPTR ), mBuffer2( Q_NULLPTR ), mType( QMetaType::UnknownType ),
+	  mStride( 0 ), mCount( 0 ), mSize( 0 ), mIndex( false ), mInstanced( false ),
+	  mTarget( QOpenGLBuffer::VertexBuffer ), mDoubleBuffered( false )
 {
 }
 
@@ -15,24 +16,23 @@ BufferPin::~BufferPin()
 
 bool BufferPin::bind()
 {
-	if( !mBuffer1 )
+	if( !mBuffer1 || !mBuffer1->isCreated() )
 	{
 		return( false );
 	}
 
-	glBindBuffer( target(), mBuffer1 );
-
-	OPENGL_DEBUG( mPin->name() );
-
-	return( true );
+	return( mBuffer1->bind() );
 }
 
 void BufferPin::release()
 {
-	glBindBuffer( target(), 0 );
+	if( mBuffer1 && mBuffer1->isCreated() )
+	{
+		mBuffer1->release();
+	}
 }
 
-bool BufferPin::alloc(QMetaType::Type pType, int pSize, int pStride, int pCount, const void *pData )
+bool BufferPin::alloc( QMetaType::Type pType, int pSize, int pStride, int pCount, const void *pData )
 {
 	clear();
 
@@ -46,37 +46,38 @@ bool BufferPin::alloc(QMetaType::Type pType, int pSize, int pStride, int pCount,
 		return( false );
 	}
 
-	glGenBuffers( 1, &mBuffer1 );
-
 	if( !mBuffer1 )
+	{
+		if( !( mBuffer1 = new QOpenGLBuffer( mTarget ) ) )
+		{
+			return( false );
+		}
+
+		mBuffer1->setUsagePattern( QOpenGLBuffer::StreamDraw );
+
+		if( !mBuffer1->create() )
+		{
+			return( false );
+		}
+	}
+
+	if( !mBuffer1->bind() )
 	{
 		return( false );
 	}
 
 	const int			ByteSize = pStride * pCount;
 
-	QVector<GLubyte>		MemClr;
-
 	if( pData )
 	{
-		glBindBuffer( target(), mBuffer1 );
-
-		glBufferData( target(), ByteSize, pData, GL_STREAM_DRAW );
-
-		glBindBuffer( target(), 0 );
+		mBuffer1->allocate( pData, ByteSize );
 	}
 	else
 	{
-		MemClr.resize( ByteSize );
-
-		memset( MemClr.data(), 0, ByteSize );
-
-		glBindBuffer( target(), mBuffer1 );
-
-		glBufferData( target(), ByteSize, MemClr.constData(), GL_STREAM_DRAW );
-
-		glBindBuffer( target(), 0 );
+		mBuffer1->allocate( ByteSize );
 	}
+
+	mBuffer1->release();
 
 	mType   = pType;
 	mStride = pStride;
@@ -87,29 +88,34 @@ bool BufferPin::alloc(QMetaType::Type pType, int pSize, int pStride, int pCount,
 
 	if( mDoubleBuffered )
 	{
-		glGenBuffers( 1, &mBuffer2 );
-
 		if( !mBuffer2 )
+		{
+			if( !( mBuffer2 = new QOpenGLBuffer( mTarget ) ) )
+			{
+				return( false );
+			}
+
+			if( !mBuffer2->create() )
+			{
+				return( false );
+			}
+		}
+
+		if( !mBuffer2->bind() )
 		{
 			return( false );
 		}
 
 		if( pData )
 		{
-			glBindBuffer( target(), mBuffer2 );
-
-			glBufferData( target(), ByteSize, pData, GL_STREAM_DRAW );
-
-			glBindBuffer( target(), 0 );
+			mBuffer2->allocate( pData, ByteSize );
 		}
 		else
 		{
-			glBindBuffer( target(), mBuffer2 );
-
-			glBufferData( target(), ByteSize, MemClr.constData(), GL_STREAM_DRAW );
-
-			glBindBuffer( target(), 0 );
+			mBuffer2->allocate( ByteSize );
 		}
+
+		mBuffer2->release();
 	}
 
 	return( true );
@@ -119,16 +125,16 @@ void BufferPin::clear()
 {
 	if( mBuffer1 )
 	{
-		glDeleteBuffers( 1, &mBuffer1 );
+		delete mBuffer1;
 
-		mBuffer1 = 0;
+		mBuffer1 = Q_NULLPTR;
 	}
 
 	if( mBuffer2 )
 	{
-		glDeleteBuffers( 1, &mBuffer2 );
+		delete mBuffer2;
 
-		mBuffer2 = 0;
+		mBuffer2 = Q_NULLPTR;
 	}
 }
 

@@ -69,20 +69,19 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( BufO->target() != GL_ELEMENT_ARRAY_BUFFER )
+		if( BufO->target() != QOpenGLBuffer::IndexBuffer )
 		{
-			BufO->setTarget( GL_ELEMENT_ARRAY_BUFFER );
+			BufO->setTarget( QOpenGLBuffer::IndexBuffer );
 		}
 
 		fugio::ArrayInterface			*A;
-		bool							 Update = false;
 
 		if( ( A = input<fugio::ArrayInterface *>( PinI ) ) == nullptr )
 		{
 			continue;
 		}
 
-		if( BufO->buffer() && ( A->type() != BufO->type() || A->size() != BufO->size() || A->stride() != BufO->stride() || A->count() != BufO->count() ) )
+		if( BufO->buffer() && BufO->buffer()->isCreated() && ( A->type() != BufO->type() || A->size() != BufO->size() || A->stride() != BufO->stride() || A->count() != BufO->count() ) )
 		{
 			BufO->clear();
 		}
@@ -92,7 +91,7 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( !BufO->buffer() && !BufO->alloc( A->type(), A->size(), A->stride(), A->count() ) )
+		if( BufO->buffer() && !BufO->buffer()->isCreated() && !BufO->alloc( A->type(), A->size(), A->stride(), A->count() ) )
 		{
 			BufO->clear();
 
@@ -105,38 +104,13 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 
 		BufO->setIndex( true );
 
-#if defined( glBufferSubData )
-		if( GLEW_VERSION_1_5 )
-		{
-			glBufferSubData( BufO->target(), 0, A->stride() * A->count(), A->array() );
-
-			Update = true;
-		}
-		else
-#endif
-		{
-#if !defined( Q_OS_RASPBERRY_PI )
-			GLfloat	*P = (GLfloat *)glMapBuffer( BufO->target(), GL_WRITE_ONLY );
-
-			if( P )
-			{
-				memcpy( P, A->array(), A->stride() * A->count() );
-
-				glUnmapBuffer( BufO->target() );
-
-				Update = true;
-			}
-#endif
-		}
+		BufO->buffer()->write( 0, A->array(), A->stride() * A->count() );
 
 		BufO->release();
 
 		OPENGL_DEBUG( mNode->name() );
 
-		if( BufO->buffer() && Update )
-		{
-			pinUpdated( PinO );
-		}
+		pinUpdated( PinO );
 	}
 }
 

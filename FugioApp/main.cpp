@@ -152,6 +152,7 @@ int main( int argc, char *argv[] )
 
 	//-------------------------------------------------------------------------
 
+#if !defined( QT_OPENGL_ES_2 )
 	QSurfaceFormat	SurfaceFormat;
 
 	SurfaceFormat.setDepthBufferSize( 24 );
@@ -159,7 +160,12 @@ int main( int argc, char *argv[] )
 	SurfaceFormat.setSamples( 4 );
 	SurfaceFormat.setVersion( 4, 5 );
 
+#if defined( QT_DEBUG )
+	SurfaceFormat.setOption( QSurfaceFormat::DebugContext );
+#endif
+
 	QSurfaceFormat::setDefaultFormat( SurfaceFormat );
+#endif
 
 	//-------------------------------------------------------------------------
 

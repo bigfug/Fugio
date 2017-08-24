@@ -8,7 +8,7 @@
 
 class TextureMonitorNode;
 
-class TextureMonitor : public QOpenGLWidget
+class TextureMonitor : public QOpenGLWidget, private QOpenGLFunctions
 {
 	Q_OBJECT
 

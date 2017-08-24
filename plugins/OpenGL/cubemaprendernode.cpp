@@ -19,7 +19,7 @@ CubeMapRenderNode::CubeMapRenderNode( QSharedPointer<fugio::NodeInterface> pNode
 	FUGID( PIN_INPUT_RENDER,	"9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 	FUGID( PIN_INPUT_MATCAM,	"55524cac-94a0-47e9-883b-b10b8a967c64" );
 	FUGID( PIN_OUTPUT_TEXTURE,	"1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
-	FUGID( PIN_OUTPUT_DEPTH,	"b0489356-7f56-424f-8adb-04b88c456839" );
+//	FUGID( PIN_OUTPUT_DEPTH,	"b0489356-7f56-424f-8adb-04b88c456839" );
 	FUGID( PIN_OUTPUT_MATCAM,	"5528b401-5b97-4f76-a8c0-ba9336a3aff6" );
 
 	mPinInputTrigger = pinInput( "Trigger", PID_FUGIO_NODE_TRIGGER );
@@ -61,12 +61,14 @@ void CubeMapRenderNode::inputsUpdated( qint64 pTimeStamp )
 		{
 			fugio::RenderInterface		*Render = input<fugio::RenderInterface *>( mPinInputRender );
 
-			if( Render )
+			if( Render && QOpenGLContext::currentContext() )
 			{
 				GLuint		TexId = Texture->dstTexId();
 
 				if( TexId )
 				{
+					initializeOpenGLFunctions();
+
 					GLint		FBOCur, RBCur;
 
 					glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
@@ -89,7 +91,6 @@ void CubeMapRenderNode::inputsUpdated( qint64 pTimeStamp )
 					{
 						glGenFramebuffers( 1, &mFBO );
 					}
-
 
 					glViewport( 0, 0, Texture->size().x(), Texture->size().y() );
 

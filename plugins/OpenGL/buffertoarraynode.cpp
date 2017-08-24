@@ -1,5 +1,7 @@
 #include "buffertoarraynode.h"
 
+#include <QOpenGLFunctions_4_5_Core>
+
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
 
@@ -42,15 +44,15 @@ void BufferToArrayNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::OpenGLBufferInterface	*BufInt = input<fugio::OpenGLBufferInterface *>( mPinBuffer );
 
-	if( !BufInt || !BufInt->buffer() )
+	if( !BufInt || !BufInt->buffer() || !BufInt->buffer()->isCreated() )
 	{
 		return;
 	}
 
 	if( BufInt->type() != mValArray->type() ||
-			BufInt->size() != mValArray->size() ||
-			BufInt->count() != mValArray->count() ||
-			BufInt->stride() != mValArray->stride() )
+		BufInt->size() != mValArray->size() ||
+		BufInt->count() != mValArray->count() ||
+		BufInt->stride() != mValArray->stride() )
 	{
 		mValArray->setCount( BufInt->count() );
 		mValArray->setSize( BufInt->size() );
@@ -58,7 +60,7 @@ void BufferToArrayNode::inputsUpdated( qint64 pTimeStamp )
 		mValArray->setType( BufInt->type() );
 	}
 
-	int			 ArrLen = mValArray->size() * mValArray->count();
+	int			 ArrLen = mValArray->stride() * mValArray->count();
 
 	if( !ArrLen )
 	{
@@ -72,26 +74,21 @@ void BufferToArrayNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-#if !defined( Q_OS_RASPBERRY_PI )
+#if !defined( QT_OPENGL_ES_2 )
+	QOpenGLFunctions_4_5_Core	*GL45 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_5_Core>();
 
-#if defined( GLEW_VERSION_4_5 )
-	if( GLEW_VERSION_4_5 )
+	if( GL45 && GL45->initializeOpenGLFunctions() )
 	{
-		glGetNamedBufferSubData( BufInt->buffer(), 0, ArrLen, ArrPtr );
+		GL45->glGetNamedBufferSubData( BufInt->buffer()->bufferId(), 0, ArrLen, ArrPtr );
 	}
 	else
 #endif
-	if( BufInt->bind() )
+		if( BufInt->bind() )
 	{
-		glGetBufferSubData( BufInt->target(), 0, ArrLen, ArrPtr );
+		BufInt->buffer()->read( 0, ArrPtr, ArrLen );
 
 		BufInt->release();
 	}
-#endif
-
-	GLfloat		feedback[ 16 ];
-
-	memcpy( feedback, ArrPtr, std::min<size_t>( sizeof( feedback ), ArrLen ) );
 
 	OPENGL_DEBUG( mNode->name() );
 

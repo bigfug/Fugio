@@ -60,7 +60,7 @@ bool ContextNode::initialise()
 		return( false );
 	}
 
-	OpenGLPlugin::initGLEW();
+	OpenGLPlugin::instance()->initGLEW();
 
 	if( !OpenGLPlugin::hasContextStatic() )
 	{

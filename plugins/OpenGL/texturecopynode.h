@@ -3,6 +3,7 @@
 
 #include "opengl_includes.h"
 
+
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
 #include <fugio/pin_interface.h>
@@ -13,7 +14,7 @@
 
 #include <fugio/nodecontrolbase.h>
 
-class TextureCopyNode : public fugio::NodeControlBase
+class TextureCopyNode : public fugio::NodeControlBase, protected QOpenGLFunctions
 {
 	Q_OBJECT
 

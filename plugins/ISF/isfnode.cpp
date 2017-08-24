@@ -10,6 +10,8 @@
 #include <QImage>
 #include <QDateTime>
 
+#include <QOpenGLExtraFunctions>
+
 #include <fugio/core/uuid.h>
 #include <fugio/colour/uuid.h>
 #include <fugio/opengl/uuid.h>
@@ -121,10 +123,7 @@ bool ISFNode::deinitialise()
 
 	if( ISFPlugin::hasContextStatic() )
 	{
-		if( mVAO )
-		{
-			glDeleteVertexArrays( 1, &mVAO );
-		}
+		mVAO.destroy();
 
 		if( mBuffer )
 		{
@@ -183,8 +182,6 @@ bool ISFNode::deinitialise()
 			InpDat.mAudioInstance = nullptr;
 		}
 	}
-
-	mVAO = 0;
 
 	mBuffer = 0;
 
@@ -1279,6 +1276,8 @@ void ISFNode::renderImports()
 
 void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 {
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+
 	for( ISFPass &PassData : mISFPasses )
 	{
 		if( PassData.mTarget.isEmpty() )
@@ -1359,7 +1358,10 @@ void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 
 		GLenum DrawBuffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 
-		glDrawBuffers( 1, DrawBuffers );
+		if( GLEX )
+		{
+			GLEX->glDrawBuffers( 1, DrawBuffers );
+		}
 
 		if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
 		{
@@ -1407,6 +1409,7 @@ int ISFNode::calculateValue( int pValue, const QSize &pSize, QString pExpression
 		return( pValue );
 	}
 
+#if defined( INCLUDE_EXPRTK_HPP )
 	typedef qreal						        exprtk_type;
 	typedef exprtk::symbol_table<exprtk_type>   symbol_table_t;
 	typedef exprtk::expression<exprtk_type>		expression_t;
@@ -1469,6 +1472,7 @@ int ISFNode::calculateValue( int pValue, const QSize &pSize, QString pExpression
 	{
 		pValue = expression.value();
 	}
+#endif
 
 	return( pValue );
 }
@@ -1503,14 +1507,14 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		mStartTime = pTimeStamp;
 	}
 
-	if( !mVAO )
+	if( !mVAO.isCreated() )
 	{
-		glGenVertexArrays( 1, &mVAO );
+		mVAO.create();
 	}
 
-	if( mVAO )
+	if( !mVAO.isCreated() )
 	{
-		glBindVertexArray( mVAO );
+		mVAO.bind();
 	}
 
 	if( !mBuffer )
@@ -1662,8 +1666,5 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		}
 	}
 
-	if( mVAO )
-	{
-		glBindVertexArray( VAOCur );
-	}
+	mVAO.release();
 }

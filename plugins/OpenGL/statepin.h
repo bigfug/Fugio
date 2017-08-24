@@ -13,7 +13,7 @@
 #include <fugio/pincontrolbase.h>
 #include <fugio/core/variant_interface.h>
 
-class StatePin : public fugio::PinControlBase, public fugio::OpenGLStateInterface
+class StatePin : public fugio::PinControlBase, public fugio::OpenGLStateInterface, protected QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::OpenGLStateInterface )

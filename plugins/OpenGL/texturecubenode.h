@@ -47,7 +47,7 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinImgBack;
 
 	QSharedPointer<fugio::PinInterface>			 mPinTexDst;
-	fugio::OpenGLTextureInterface						*mTexDst;
+	fugio::OpenGLTextureInterface				*mTexDst;
 };
 
 #endif // TEXTURECUBENODE_H
