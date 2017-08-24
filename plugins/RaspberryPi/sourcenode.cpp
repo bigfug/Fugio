@@ -4,10 +4,12 @@
 
 #include <fugio/context_interface.h>
 
+#if defined( Q_OS_RASPBERRY_PI )
 #include <IL/OMX_Broadcom.h>
 #include <IL/OMX_Component.h>
 
 OMX_CALLBACKTYPE	SourceNode::mOMXCallbacks;
+#endif
 
 SourceNode::SourceNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -140,6 +142,7 @@ bool SourceNode::deinitialise()
 	return( NodeControlBase::deinitialise() );
 }
 
+#if defined( Q_OS_RASPBERRY_PI )
 OMX_ERRORTYPE SourceNode::OMXEventHandler( OMX_HANDLETYPE hComponent, OMX_PTR pAppData, OMX_EVENTTYPE eEvent, OMX_U32 nData1, OMX_U32 nData2, OMX_PTR pEventData)
 {
 	qDebug() << "OMXEventHandler" << hComponent << pAppData << eEvent << nData1 << nData2 << pEventData;
@@ -160,6 +163,7 @@ OMX_ERRORTYPE SourceNode::OMXFillBufferDone(OMX_HANDLETYPE hComponent, OMX_PTR p
 
 	return( OMX_ErrorNone );
 }
+#endif
 
 void SourceNode::inputsUpdated( qint64 pTimeStamp )
 {
