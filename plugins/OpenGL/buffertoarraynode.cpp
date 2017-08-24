@@ -60,7 +60,7 @@ void BufferToArrayNode::inputsUpdated( qint64 pTimeStamp )
 		mValArray->setType( BufInt->type() );
 	}
 
-	int			 ArrLen = mValArray->size() * mValArray->count();
+	int			 ArrLen = mValArray->stride() * mValArray->count();
 
 	if( !ArrLen )
 	{
@@ -85,14 +85,10 @@ void BufferToArrayNode::inputsUpdated( qint64 pTimeStamp )
 #endif
 		if( BufInt->bind() )
 	{
-		BufInt->buffer()->write( 0, ArrPtr, ArrLen );
+		BufInt->buffer()->read( 0, ArrPtr, ArrLen );
 
 		BufInt->release();
 	}
-
-	GLfloat		feedback[ 16 ];
-
-	memcpy( feedback, ArrPtr, std::min<size_t>( sizeof( feedback ), ArrLen ) );
 
 	OPENGL_DEBUG( mNode->name() );
 
