@@ -20,7 +20,7 @@
 
 #define OPENGL_DEBUG_ENABLE
 
-#if defined( OPENGL_DEBUG_ENABLE )
+#if 0 //defined( OPENGL_DEBUG_ENABLE )
 #define OPENGL_PLUGIN_DEBUG 	OpenGLPlugin::instance()->checkErrors( __FILE__, __LINE__ );
 #define OPENGL_DEBUG(x) 	OpenGLPlugin::instance()->checkErrors( x, __FILE__, __LINE__ );
 #else
