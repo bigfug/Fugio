@@ -161,6 +161,12 @@ linux:exists( /usr/local/include/libavformat/avformat.h ) {
 	#DEFINES += FFMPEG_SUPPORTED
 }
 
+unix:exists( /usr/include/arm-linux-gnueabihf/libavformat/avformat.h ) {
+#    INCLUDEPATH += -l/usr/include/arm-linux-gnueabihf
+
+    DEFINES += FFMPEG_SUPPORTED
+}
+
 windows:contains( DEFINES, FFMPEG_SUPPORTED ) {
 	LIBS += -L$$FFMPEGDIR/lib
 	LIBS += -L$$FFMPEGDIR/bin

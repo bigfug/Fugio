@@ -9,7 +9,7 @@
 #include "opencvplugin.h"
 
 #if defined( OPENCV_SUPPORTED )
-#include <opencv2/imgproc.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #endif
 
 HoughLinesNode::HoughLinesNode( QSharedPointer<fugio::NodeInterface> pNode )

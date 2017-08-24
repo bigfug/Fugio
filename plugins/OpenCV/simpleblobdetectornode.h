@@ -10,7 +10,7 @@
 
 #if defined( OPENCV_SUPPORTED )
 #include <opencv2/core/core.hpp>
-#include <opencv2/features2d.hpp>
+#include <opencv2/features2d/features2d.hpp>
 #endif
 
 class SimpleBlobDetectorNode : public fugio::NodeControlBase

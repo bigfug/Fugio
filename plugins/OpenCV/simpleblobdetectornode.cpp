@@ -53,7 +53,11 @@ SimpleBlobDetectorNode::SimpleBlobDetectorNode( QSharedPointer<fugio::NodeInterf
 
 	BlbPrm.minDistBetweenBlobs = 0.1f;
 
+#if defined( Q_OS_RASPBERRY_PI )
+	mDetector = Q_NULLPTR;
+#else
 	mDetector = cv::SimpleBlobDetector::create( BlbPrm );
+#endif
 }
 
 void SimpleBlobDetectorNode::inputsUpdated( qint64 pTimeStamp )

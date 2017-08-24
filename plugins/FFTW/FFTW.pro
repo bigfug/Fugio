@@ -153,7 +153,7 @@ macx {
 
 unix:!macx {
 	exists( $$[QT_SYSROOT]/usr/include/fftw3.h ) {
-		INCLUDEPATH += $$[QT_SYSROOT]/usr/include
+#		INCLUDEPATH += $$[QT_SYSROOT]/usr/include
 
 		LIBS += -lfftw3f
 

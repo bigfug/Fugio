@@ -195,7 +195,7 @@ windows:contains( QT_ARCH, i386 ) {
 
 linux:!macx {
 	exists( $$[QT_SYSROOT]/usr/include/opencv2 ) {
-		INCLUDEPATH += $$[QT_SYSROOT]/usr/include
+#		INCLUDEPATH += $$[QT_SYSROOT]/usr/include
 
 		LIBS += -lopencv_core -lopencv_imgproc -lopencv_photo -lopencv_highgui -lopencv_video -lopencv_objdetect -lopencv_features2d
 

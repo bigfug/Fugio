@@ -154,9 +154,9 @@ unix:!macx {
 	exists( $$[QT_SYSROOT]/usr/include/portaudio.h ) {
 #        INCLUDEPATH += $$[QT_SYSROOT]/usr/include
 
-#        LIBS += -lportaudio
+        LIBS += -lportaudio
 
-#        DEFINES += PORTAUDIO_SUPPORTED
+        DEFINES += PORTAUDIO_SUPPORTED
 
 	} else:exists( /usr/local/include/portaudio.h ) {
 		LIBS += -lportaudio
