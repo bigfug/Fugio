@@ -109,9 +109,9 @@ contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 #------------------------------------------------------------------------------
 # pigpio
 
-unix:exists( $$[QT_SYSROOT]/usr/local/include/pigpio.h ) {
-	INCLUDEPATH += $$[QT_SYSROOT]/usr/local/include
-	LIBS += -L$$[QT_SYSROOT]/usr/local/lib -lpigpiod_if2
+unix:exists( $$[QT_SYSROOT]/usr/include/pigpio.h ) {
+#	INCLUDEPATH += $$[QT_SYSROOT]/usr/local/include
+        LIBS += -lpigpiod_if2
 	DEFINES += PIGPIO_SUPPORTED
 }
 

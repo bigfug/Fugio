@@ -58,21 +58,22 @@ PluginInterface::InitResult RasperryPiPlugin::initialise( fugio::GlobalInterface
 
 	//-------------------------------------------------------------------------
 
-#if defined( QT_DEBUG ) && defined( PIGPIO_SUPPORTED )
-	int		PiId = pigpio_start( NULL, NULL );
+#if defined( PIGPIO_SUPPORTED )
+	mPigPioInit = pigpio_start( NULL, NULL );
 
-	if( PiId < 0 )
+	if( mPigPioInit >= 0 )
 	{
-		return( INIT_FAILED );
+#if defined( QT_DEBUG )
+		for( unsigned p = 0 ; p <= 53 ; p++ )
+		{
+			qDebug() << p << get_mode( mPigPioInit, p );
+		}
+#endif
 	}
-
-	for( unsigned p = 0 ; p <= 53 ; p++ )
+	else
 	{
-		qDebug() << p << get_mode( PiId, p );
+		qWarning() << "pigpio didn't start";
 	}
-
-	pigpio_stop( PiId );
-
 #endif
 
 	return( INIT_OK );
@@ -81,6 +82,10 @@ PluginInterface::InitResult RasperryPiPlugin::initialise( fugio::GlobalInterface
 void RasperryPiPlugin::deinitialise( void )
 {
 #if defined( PIGPIO_SUPPORTED )
+	if( mPigPioInit >= 0 )
+	{
+		pigpio_stop( mPigPioInit );
+	}
 #endif
 
 	mApp->unregisterPinClasses( PinClasses );
