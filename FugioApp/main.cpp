@@ -266,6 +266,9 @@ int main( int argc, char *argv[] )
 
 	GlobalPrivate	*PBG = &APP->global();
 
+#if defined( Q_OS_LINUX )
+	QDir	PluginsDir = QDir( "/usr/lib/fugio" );
+#else
 	QDir	PluginsDir = QDir( qApp->applicationDirPath() );
 
 #if defined( Q_OS_MAC )
@@ -278,6 +281,7 @@ int main( int argc, char *argv[] )
 	{
 		PluginsDir.cdUp();
 	}
+#endif
 
 	if( !PluginsDir.isRoot() && PluginsDir.isReadable() )
 	{
@@ -294,7 +298,14 @@ int main( int argc, char *argv[] )
 
 		WND->initBegin();
 
-#if defined( Q_OS_MACX )
+#if defined( QT_DEBUG )
+		PBG->setEnabledPlugins(
+			QStringList() <<
+			"fugio-core" <<
+			"fugio-raspberrypi" );
+#endif
+
+#if defined( Q_OS_MACX ) or defined( Q_OS_LINUX )
 		if( !PluginsDir.isRoot() && PluginsDir.isReadable())
 		{
 			PBG->loadPlugins( PluginsDir );

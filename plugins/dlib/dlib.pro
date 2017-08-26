@@ -84,6 +84,15 @@ windows {
 }
 
 #------------------------------------------------------------------------------
+# Linux
+
+unix:!macx {
+    target.path = $$INSTALLBASE/usr/lib/fugio
+
+    INSTALLS += target
+}
+
+#------------------------------------------------------------------------------
 # dlib
 
 linux:!macx:exists( /usr/include/dlib ) {

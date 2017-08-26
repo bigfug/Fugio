@@ -30,11 +30,6 @@ TRANSLATIONS = \
 	translations/fugio_xinput_es.ts \
 	translations/fugio_xinput_fr.ts
 
-windows:contains( QMAKE_CC, cl ) {
-	LIBS += -lXinput9_1_0
-	DEFINES += XINPUT_SUPPORTED
-}
-
 #------------------------------------------------------------------------------
 # OSX plugin bundle
 
@@ -77,6 +72,22 @@ windows {
 	plugin.files = $$DESTDIR/$$TARGET".dll"
 
 	INSTALLS += plugin
+}
+
+#------------------------------------------------------------------------------
+# Linux
+
+unix:!macx {
+    target.path = $$INSTALLBASE/usr/lib/fugio
+
+    INSTALLS += target
+}
+
+#------------------------------------------------------------------------------
+
+windows:contains( QMAKE_CC, cl ) {
+        LIBS += -lXinput9_1_0
+        DEFINES += XINPUT_SUPPORTED
 }
 
 !contains( DEFINES, XINPUT_SUPPORTED ) {

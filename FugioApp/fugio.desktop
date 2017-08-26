@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Fugio
+Exec=fugio %f
+Icon=fugio
+Type=Application
+Categories=Fugio;Development;IDE;
