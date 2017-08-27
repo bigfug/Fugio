@@ -86,7 +86,7 @@ endif( WIN32 )
 #—————————————————————————————————-
 # Install
 
-install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 #—————————————————————————————————-
 # Qt5

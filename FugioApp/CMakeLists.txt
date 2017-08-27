@@ -139,8 +139,8 @@ if( APPLE )
 endif()
 
 install( TARGETS Fugio
-	RUNTIME DESTINATION .
-	BUNDLE DESTINATION .
+	RUNTIME DESTINATION ${PATH_APP}
+	BUNDLE DESTINATION ${PATH_APP}
 )
 
 #------------------------------------------------------------------------------

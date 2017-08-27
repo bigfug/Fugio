@@ -80,10 +80,10 @@ endif( LUA_FOUND )
 #—————————————————————————————————-
 # Install
 
-install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 if( WIN32 )
 	string( REPLACE ".lib" ".dll" LUA_DLL ${LUA_LIBRARIES} )
 
-	install( FILES ${LUA_DLL} DESTINATION . )
+	install( FILES ${LUA_DLL} DESTINATION ${PATH_APP} )
 endif( WIN32 )

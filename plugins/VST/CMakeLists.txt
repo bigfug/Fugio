@@ -40,7 +40,7 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 #------------------------------------------------------------------------------
 # Install
 
-install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 #------------------------------------------------------------------------------
 # VST3SDK

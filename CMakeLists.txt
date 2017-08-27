@@ -13,6 +13,96 @@ set( CMAKE_AUTORCC ON )
 
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 
+if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+    message(STATUS "*** Have SIZEOF void * = 8, so 64-bit")
+    set( IS_64_BIT 1 )
+else ()
+    message(STATUS "*** SIZEOF void * != 8, so not 64-bit")
+endif ()
+
+#------------------------------------------------------------------------------
+
+file( READ FugioApp/version.txt FUGIO_VERSION )
+
+string( STRIP ${FUGIO_VERSION} FUGIO_VERSION )
+
+#------------------------------------------------------------------------------
+
+set( FUGIO_INSTALL_TYPE "Normal" CACHE STRING "Type of build" )
+
+set_property( CACHE FUGIO_INSTALL_TYPE PROPERTY STRINGS Normal QtIFW Debian )
+
+message( STATUS "FUGIO_INSTALL_TYPE=’${FUGIO_INSTALL_TYPE}'" )
+
+set( PATH_APP . )
+set( PATH_INCLUDE . )
+set( PATH_SHARE . )
+set( PATH_PLUGIN . )
+
+if( FUGIO_INSTALL_TYPE STREQUAL "Normal" )
+	message( STATUS "Normal Install" )
+endif()
+
+if( FUGIO_INSTALL_TYPE STREQUAL "QtIFW" )
+	message( STATUS "QtIFW Installer" )
+	
+	set( PATH_BASE		packages/com.bigfug.fugio/data )
+
+	set( PATH_APP		${PATH_BASE} )
+	set( PATH_INCLUDE	${PATH_BASE}/include )
+	set( PATH_SHARE		${PATH_BASE} )
+	set( PATH_PLUGIN	${PATH_BASE}/plugins )
+
+	if( WIN32 )
+		if( IS_64_BIT )
+			set( FUGIO_REPOSITORY_URL "http://www.bigfug.com/packages/fugio-win64" )
+		else()
+			set( FUGIO_REPOSITORY_URL "http://www.bigfug.com/packages/fugio-win32" )
+		endif()
+	elseif( APPLE )
+		set( FUGIO_REPOSITORY_URL "http://www.bigfug.com/packages/fugio-osx" )
+	endif()
+	
+	configure_file( qtifw_config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/qtifw_config.cmake @ONLY ) 
+	
+	add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/package.xml 
+		COMMAND ${CMAKE_COMMAND} -P 
+			${CMAKE_CURRENT_BINARY_DIR}/qtifw_config.cmake 
+		DEPENDS 
+			${CMAKE_CURRENT_BINARY_DIR}/qtifw_config.cmake 
+			${CMAKE_CURRENT_SOURCE_DIR}/config.cmake.xml 
+			${CMAKE_CURRENT_SOURCE_DIR}/package.cmake.xml 
+		COMMENT "Configuring QtIFW..." 
+			VERBATIM ) 
+  
+	add_custom_target( configure_qtifw ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/package.xml ${CMAKE_CURRENT_BINARY_DIR}/config.xml ) 
+	
+	install( FILES ${CMAKE_CURRENT_BINARY_DIR}/package.xml	DESTINATION meta )
+	install( FILES ${CMAKE_CURRENT_BINARY_DIR}/config.xml	DESTINATION config )
+endif()
+
+if( FUGIO_INSTALL_TYPE STREQUAL "Debian" )
+	message( STATUS "Debian Package" )
+
+	set( PATH_APP		usr/bin )
+	set( PATH_INCLUDE	usr/include )
+	set( PATH_SHARE		usr/share/fugio )
+	set( PATH_PLUGIN	usr/lib/fugio )
+	
+	install( FILES FugioApp/control			DESTINATION DEBIAN )
+	install( FILES FugioApp/fugio.desktop	DESTINATION usr/share/applications )
+	install( FILES FugioApp/fugio.png		DESTINATION usr/share/icons/hicolor/256x256/apps )
+endif()
+
+#------------------------------------------------------------------------------
+
 add_subdirectory( FugioLib )
 add_subdirectory( FugioApp )
 add_subdirectory( plugins )
+
+#------------------------------------------------------------------------------
+
+install( DIRECTORY include/fugio DESTINATION ${PATH_INCLUDE} )
+install( DIRECTORY examples DESTINATION ${PATH_SHARE} )
+install( DIRECTORY snippets DESTINATION ${PATH_SHARE} )
+install( DIRECTORY FugioApp/stylesheets DESTINATION ${PATH_SHARE} )

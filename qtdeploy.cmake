@@ -7,7 +7,7 @@ if( WIN32 )
 
 find_program( WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}" )
 
-install( CODE "execute_process( COMMAND \"${WINDEPLOYQT_EXECUTABLE}\" --force --no-angle --no-opengl-sw --verbose 2 --qmldir \"${CMAKE_SOURCE_DIR}/qml\" \"${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}.exe\" )"
+install( CODE "execute_process( COMMAND \"${WINDEPLOYQT_EXECUTABLE}\" --force --verbose 2 --qmldir \"${CMAKE_SOURCE_DIR}/qml\" \"${CMAKE_INSTALL_PREFIX}/${PATH_APP}/${PROJECT_NAME}.exe\" )"
     COMMENT "Running windeployqt..."
 )
 

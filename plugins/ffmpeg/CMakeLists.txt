@@ -68,7 +68,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 #—————————————————————————————————-
 # Install
 
-install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/ffmpeg )
 
 #—————————————————————————————————-
 # Qt5
@@ -150,6 +150,11 @@ if( FFMPEG_FOUND )
 		SET(CMAKE_MODULE_LINKER_FLAGS_MINSIZEREL "${CMAKE_MODULE_LINKER_FLAGS_MINSIZEREL} /SAFESEH:NO")
 		SET(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /SAFESEH:NO")
 		SET(CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO} /SAFESEH:NO")
+		
+		file( GLOB dlls "${FFMPEG_LIBRARIES}/../bin/*.dll" )
+		
+		install( FILES ${dlls} DESTINATION "${PATH_PLUGIN}/ffmpeg" )
+
 	endif( WIN32 )
 else()
 	message( "FFmpeg is not configured" )

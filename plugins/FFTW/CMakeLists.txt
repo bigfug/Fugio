@@ -25,7 +25,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 #—————————————————————————————————-
 # Install
 
-install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/fftw )
 
 #—————————————————————————————————-
 # Qt5
@@ -43,6 +43,13 @@ if( FFTW_FOUND )
 	target_link_libraries( ${PROJECT_NAME} ${FFTW_F_LIB} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE FFTW_SUPPORTED )
+
+	if( WIN32 )
+		string( REPLACE ".lib" ".dll" FFTW_DLL ${FFTW_F_LIB} )
+
+		install( FILES ${FFTW_DLL} DESTINATION ${PATH_PLUGIN}/fftw )
+	endif( WIN32 )
+
 else()
 	message( "FFTW not configured" )
 endif()
