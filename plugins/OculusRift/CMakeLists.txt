@@ -36,9 +36,9 @@ install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
 #—————————————————————————————————-
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Gui Widgets REQUIRED )
+find_package( Qt5 COMPONENTS Core Gui OpenGL Widgets REQUIRED )
 
-target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
+target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::OpenGL Qt5::Widgets )
 
 #—————————————————————————————————-
 # Oculus Rift
@@ -58,20 +58,3 @@ if( WIN32 )
 else()
 	message( "Oculus Rift is not supported on this platform" )
 endif()
-
-#------------------------------------------------------------------------------
-# OpenGL
-
-find_package( OpenGL REQUIRED )
-
-target_include_directories( ${PROJECT_NAME} PRIVATE ${OPENGL_INCLUDE_DIR} )
-
-target_link_libraries( ${PROJECT_NAME} ${OPENGL_LIBRARIES} )
-
-#------------------------------------------------------------------------------
-# GLEW
-
-find_package( GLEW REQUIRED )
-
-target_link_libraries( ${PROJECT_NAME} GLEW::GLEW )
-

@@ -32,6 +32,8 @@ set( SOURCE_FILES
 	flipnode.h
 	grayscalenode.cpp
 	grayscalenode.h
+	houghlinesnode.cpp
+	houghlinesnode.h
 	imageconvertnode.cpp
 	imageconvertnode.h
 	imagehomographynode.cpp
@@ -77,10 +79,10 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 #—————————————————————————————————-
 # OpenCV
 
-find_package( OpenCV OPTIONAL_COMPONENTS core highgui imgproc objdetect photo video videoio QUIET )
+find_package( OpenCV COMPONENTS core highgui imgproc objdetect photo video videoio )
 
 if( OpenCV_FOUND )
-	target_link_libraries( ${PROJECT_NAME} OpenCV )
+	target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE OPENCV_SUPPORTED )
 else()

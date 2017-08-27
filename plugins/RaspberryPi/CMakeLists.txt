@@ -10,6 +10,8 @@ set( SOURCE_FILES
 	
 	raspberrypiplugin.cpp
 	raspberrypiplugin.h
+	sourcenode.cpp
+	sourcenode.h
 )
 
 set( QRC_FILES

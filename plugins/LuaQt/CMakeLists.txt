@@ -28,6 +28,8 @@ set( SOURCE_FILES
 	luajsonobject.h
 	luamatrix4x4.cpp
 	luamatrix4x4.h
+	lualine.cpp
+	lualine.h
 	luapainter.cpp
 	luapainter.h
 	luapen.cpp

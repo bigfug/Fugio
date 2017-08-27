@@ -15,5 +15,4 @@ set( CMAKE_INCLUDE_CURRENT_DIR ON )
 
 add_subdirectory( FugioLib )
 add_subdirectory( FugioApp )
-add_subdirectory( FugioTime )
 add_subdirectory( plugins )

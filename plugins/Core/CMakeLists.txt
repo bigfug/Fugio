@@ -73,6 +73,8 @@ set( SOURCE_FILES
 	booltobitsnode.h
 	bitarraypin.cpp
 	bitarraypin.h
+	linepin.cpp
+	linepin.h
 )
 
 set( QRC_FILES

@@ -61,6 +61,8 @@ set( SOURCE_FILES
 	rendernode.h
 	renderpin.cpp
 	renderpin.h
+	rendertotexturenode.cpp
+	rendertotexturenode.h
 	shadercompilernode.cpp
 	shadercompilernode.h
 	shaderinstancenode.cpp
@@ -130,23 +132,7 @@ install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
 #------------------------------------------------------------------------------
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Concurrent Widgets REQUIRED )
+find_package( Qt5 COMPONENTS Core Concurrent OpenGL Widgets REQUIRED )
 
-target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Concurrent Qt5::Widgets )
-
-#------------------------------------------------------------------------------
-# OpenGL
-
-find_package( OpenGL REQUIRED )
-
-target_include_directories( ${PROJECT_NAME} PRIVATE ${OPENGL_INCLUDE_DIR} )
-
-target_link_libraries( ${PROJECT_NAME} ${OPENGL_LIBRARIES} )
-
-#------------------------------------------------------------------------------
-# GLEW
-
-find_package( GLEW REQUIRED )
-
-target_link_libraries( ${PROJECT_NAME} GLEW::GLEW )
+target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Concurrent Qt5::OpenGL Qt5::Widgets )
 

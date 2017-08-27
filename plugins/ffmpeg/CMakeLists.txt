@@ -115,9 +115,9 @@ endif( WIN32 )
 
 include( FindPkgConfig )
 
-if( PKG_CONFIG_FOUND )
+if( NOT PKG_CONFIG_FOUND )
 	pkg_search_module( snappy REQUIRED snappy )
-endif( PKG_CONFIG_FOUND )
+endif( NOT PKG_CONFIG_FOUND )
 
 if( snappy_FOUND )
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${snappy_INCLUDE_DIRS} )
