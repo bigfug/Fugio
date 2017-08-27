@@ -6,6 +6,8 @@
 #include <QObject>
 #include <QThread>
 #include <QCommandLineOption>
+#include <QOpenGLTexture>
+#include <QOpenGLFunctions>
 
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
@@ -16,9 +18,9 @@
 #include <fugio/text/syntax_highlighter_factory_interface.h>
 #include <fugio/text/syntax_highlighter_instance_interface.h>
 
-//#define OPENGL_DEBUG_ENABLE
+#define OPENGL_DEBUG_ENABLE
 
-#if defined( OPENGL_DEBUG_ENABLE )
+#if 0 //defined( OPENGL_DEBUG_ENABLE )
 #define OPENGL_PLUGIN_DEBUG 	OpenGLPlugin::instance()->checkErrors( __FILE__, __LINE__ );
 #define OPENGL_DEBUG(x) 	OpenGLPlugin::instance()->checkErrors( x, __FILE__, __LINE__ );
 #else
@@ -30,7 +32,7 @@ using namespace fugio;
 
 class QWindow;
 
-class OpenGLPlugin : public QObject, public PluginInterface, public InterfaceOpenGL, public DeviceFactoryInterface, public fugio::SyntaxHighlighterFactoryInterface
+class OpenGLPlugin : public QObject, public PluginInterface, public InterfaceOpenGL, public DeviceFactoryInterface, public fugio::SyntaxHighlighterFactoryInterface, protected QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::PluginInterface InterfaceOpenGL fugio::DeviceFactoryInterface fugio::SyntaxHighlighterFactoryInterface )
@@ -43,7 +45,7 @@ public:
 
 	static void parseShaderErrors( QString pErrorText, QList<fugio::SyntaxError> &pErrorData );
 
-	static void initGLEW( void );
+	void initGLEW( void );
 
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface

@@ -7,7 +7,9 @@
 
 #include <fugio/core/variant_interface.h>
 
+#if !defined( Q_OS_RASPBERRY_PI )
 #include "../libs/exprtk/exprtk.hpp"
+#endif
 
 class MathExpressionNode : public fugio::NodeControlBase
 {
@@ -34,6 +36,7 @@ public:
 	virtual bool canAcceptPin(fugio::PinInterface *pPin) const Q_DECL_OVERRIDE;
 
 private:
+#if defined( INCLUDE_EXPRTK_HPP )
 	typedef qreal								 exprtk_type;
 	typedef exprtk::symbol_table<exprtk_type>	 symbol_table_t;
 	typedef exprtk::expression<exprtk_type>		 expression_t;
@@ -71,10 +74,11 @@ private:
 
 	void expUpdateOutputs();
 
+	ExpDat										*mExpDat;
+
+#endif
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputExpression;
-
-	ExpDat										*mExpDat;
 };
 
 

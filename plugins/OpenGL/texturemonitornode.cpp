@@ -1,6 +1,7 @@
 #include "texturemonitornode.h"
 
 #include <QMainWindow>
+#include <QOpenGLExtraFunctions>
 
 #include "openglplugin.h"
 
@@ -100,31 +101,31 @@ void TextureMonitorNode::paintGL()
 		return;
 	}
 
+	initializeOpenGLFunctions();
+
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+
 	glClearColor( 0, 0, 0, 0 );
 
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	OPENGL_PLUGIN_DEBUG;
 
-	if( !mVAO )
+	if( !mVAO.isCreated() )
 	{
-		glGenVertexArrays( 1, &mVAO );
-	}
-
-	if( mVAO )
-	{
-		glBindVertexArray( mVAO );
+		mVAO.create();
 	}
 
 	OPENGL_PLUGIN_DEBUG;
 
 	if( !mVBO )
 	{
-		float Vertices[] = {
+		float Vertices[] =
+		{
 			-1, -1,
-			-1, 1,
-			1, -1,
-			1, 1
+			-1,  1,
+			 1, -1,
+			 1,  1
 		};
 
 		glGenBuffers( 1, &mVBO );
@@ -146,7 +147,6 @@ void TextureMonitorNode::paintGL()
 				"{\n"
 				"	gl_Position = vec4( position, 0.0, 1.0 );\n"
 				"	tpos = ( position * 0.5 ) + 0.5;\n"
-				"	tpos.y = 1.0 - tpos.y;\n"
 				"}\n";
 
 		GLuint vertexShader = glCreateShader( GL_VERTEX_SHADER );
@@ -198,7 +198,9 @@ void TextureMonitorNode::paintGL()
 
 		glLinkProgram( mProgram );
 
-		glGetShaderiv( mProgram, GL_LINK_STATUS, &status );
+		OPENGL_PLUGIN_DEBUG;
+
+		glGetProgramiv( mProgram, GL_LINK_STATUS, &status );
 
 		if( !status )
 		{
@@ -264,10 +266,7 @@ void TextureMonitorNode::paintGL()
 		glUseProgram( 0 );
 	}
 
-	if( mVAO )
-	{
-		glBindVertexArray( 0 );
-	}
+	mVAO.release();
 
 	OPENGL_PLUGIN_DEBUG;
 }

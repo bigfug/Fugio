@@ -1,6 +1,8 @@
 #include "statepin.h"
 #include <QSettings>
 
+#include <QOpenGLFunctions_2_0>
+
 #define INSERT_FLAG(x)		mMapFlags.insert(#x,x)
 
 QMap<QString,int>				 StatePin::mMapFlags;
@@ -17,7 +19,7 @@ StatePin::StatePin( QSharedPointer<fugio::PinInterface> pPin )
 	INSERT_FLAG( GL_PROGRAM_POINT_SIZE );
 #endif
 
-	INSERT_FLAG( GL_PRIMITIVE_RESTART_FIXED_INDEX );
+//	INSERT_FLAG( GL_PRIMITIVE_RESTART_FIXED_INDEX );
 
 	mBlendRgbSrc = GL_SRC_ALPHA;
 	mBlendAlphaSrc = GL_SRC_ALPHA;
@@ -91,6 +93,17 @@ void StatePin::saveSettings( QSettings &pSettings ) const
 
 void StatePin::stateBegin()
 {
+	initializeOpenGLFunctions();
+
+#if !defined( QT_OPENGL_ES_2 )
+	QOpenGLFunctions_2_0	*GL20 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_2_0>();
+
+	if( GL20 && !GL20->initializeOpenGLFunctions() )
+	{
+		GL20 = Q_NULLPTR;
+	}
+#endif
+
 #if !defined( GL_ES_VERSION_2_0 )
 //	QMatrix4x4		MatPrj = mPinMatPrj ? variant( mPinMatPrj ).value<QMatrix4x4>() : mProjection;
 //	QMatrix4x4		MatMod = mPinMatMod ? variant( mPinMatMod ).value<QMatrix4x4>() : mModelView;
@@ -119,15 +132,29 @@ void StatePin::stateBegin()
 		glDepthFunc( mDepthFunc );
 	}
 
-#if !defined( GL_ES_VERSION_2_0 )
 //	glColor4f( 1, 1, 1, 1 );
+#if !defined( QT_OPENGL_ES_2 )
 
-	glPolygonMode( GL_FRONT_AND_BACK, mPolygonMode );
+	if( GL20 )
+	{
+		GL20->glPolygonMode( GL_FRONT_AND_BACK, mPolygonMode );
+	}
 #endif
 }
 
 void StatePin::stateEnd()
 {
+	initializeOpenGLFunctions();
+
+#if !defined( QT_OPENGL_ES_2 )
+	QOpenGLFunctions_2_0	*GL20 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_2_0>();
+
+	if( GL20 && !GL20->initializeOpenGLFunctions() )
+	{
+		GL20 = Q_NULLPTR;
+	}
+#endif
+
 	for( QList<int>::const_iterator it = mFlags.begin() ; it != mFlags.end() ; it++ )
 	{
 		glDisable( *it );
@@ -145,10 +172,13 @@ void StatePin::stateEnd()
 		glDepthFunc( GL_LESS );
 	}
 
-#if !defined( GL_ES_VERSION_2_0 )
 //	glColor4f( 1, 1, 1, 1 );
 
-	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+#if !defined( QT_OPENGL_ES_2 )
+	if( GL20 )
+	{
+		GL20->glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+	}
 #endif
 }
 

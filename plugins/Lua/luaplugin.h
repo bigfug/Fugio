@@ -3,6 +3,7 @@
 
 #include <QMultiMap>
 #include <QVector>
+#include <QMap>
 
 #if defined( LUA_SUPPORTED )
 #include <lua.hpp>
@@ -66,6 +67,10 @@ public:
 
 	virtual void luaAddPinSet( const QUuid &pPID, luaPinSetFunc pFunction ) Q_DECL_OVERRIDE;
 
+	virtual void luaAddPushVariantFunction( QMetaType::Type pType, luaPushVariantFunc pFunction ) Q_DECL_OVERRIDE;
+
+	virtual void luaAddPopVariantFunction( QString pTypeName, luaPopVariantFunc pFunction ) Q_DECL_OVERRIDE;
+
 	virtual fugio::NodeInterface *node( lua_State *L ) Q_DECL_OVERRIDE;
 
 	virtual QUuid checkpin( lua_State *L, int i = 1 ) Q_DECL_OVERRIDE;
@@ -123,17 +128,19 @@ private:
 #endif
 
 private:
-	static LuaPlugin						*mInstance;
+	static LuaPlugin							*mInstance;
 
-	fugio::GlobalInterface					*mApp;
+	fugio::GlobalInterface						*mApp;
 
-	QList<lua_CFunction>					 mExtensions;
+	QList<lua_CFunction>						 mExtensions;
 
-	QVector<luaL_Reg>						 mFunctions;
-	QMultiMap<QUuid,luaL_Reg>				 mPinFunctions;
-	QMap<const char *,lua_CFunction>		 mLibFunctions;
-	QMap<QUuid,luaPinGetFunc>				 mGetFunctions;
-	QMap<QUuid,luaPinSetFunc>				 mSetFunctions;
+	QVector<luaL_Reg>							 mFunctions;
+	QMultiMap<QUuid,luaL_Reg>					 mPinFunctions;
+	QMap<const char *,lua_CFunction>			 mLibFunctions;
+	QMap<QUuid,luaPinGetFunc>					 mGetFunctions;
+	QMap<QUuid,luaPinSetFunc>					 mSetFunctions;
+	QMap<QMetaType::Type,luaPushVariantFunc>	 mPushFunctions;
+	QMap<QString,luaPopVariantFunc>				 mPopFunctions;
 };
 
 #endif // LUAPLUGIN_H

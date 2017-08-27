@@ -20,7 +20,7 @@ TextureCubeNode::TextureCubeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mTexDst = pinOutput<OpenGLTextureInterface *>( "Texture", mPinTexDst, PID_OPENGL_TEXTURE );
 
-	mTexDst->setTarget( GL_TEXTURE_CUBE_MAP );
+	mTexDst->setTarget( QOpenGLTexture::TargetCubeMap );
 
 	mPinTexDst->setDescription( tr( "The destination OpenGL Texture to copy the source texture into" ) );
 }
@@ -41,80 +41,80 @@ void TextureCubeNode::processTexture( QSharedPointer<fugio::PinInterface> pPin, 
 	{
 		mTexDst->free();
 
-		mTexDst->setType( GL_UNSIGNED_BYTE );
+		mTexDst->setType( QOpenGLTexture::UInt8 );
 
 		switch( I->format() )
 		{
 #if !defined( GL_ES_VERSION_2_0 )
 			case fugio::ImageInterface::FORMAT_BGR8:
-				mTexDst->setFormat( GL_BGR );
+				mTexDst->setFormat( QOpenGLTexture::BGR );
 
-				mTexDst->setInternalFormat( GL_RGB8 );
+				mTexDst->setInternalFormat( QOpenGLTexture::RGB8_UNorm );
 				break;
 
 			case fugio::ImageInterface::FORMAT_RGB8:
-				mTexDst->setFormat( GL_RGB );
+				mTexDst->setFormat( QOpenGLTexture::RGB );
 
-				mTexDst->setInternalFormat( GL_RGB8 );
+				mTexDst->setInternalFormat( QOpenGLTexture::RGB8_UNorm );
 				break;
 
 			case fugio::ImageInterface::FORMAT_RGBA8:
-				mTexDst->setFormat( GL_RGBA );
+				mTexDst->setFormat( QOpenGLTexture::RGBA );
 
-				mTexDst->setInternalFormat( GL_RGBA8 );
+				mTexDst->setInternalFormat( QOpenGLTexture::RGBA8_UNorm );
 				break;
 
 			case fugio::ImageInterface::FORMAT_BGRA8:
-				mTexDst->setFormat( GL_BGRA );
+				mTexDst->setFormat( QOpenGLTexture::BGRA );
 
-				mTexDst->setInternalFormat( GL_RGBA8 );
+				mTexDst->setInternalFormat( QOpenGLTexture::RGBA8_UNorm );
 				break;
 
 			case fugio::ImageInterface::FORMAT_GRAY16:
-				mTexDst->setType( GL_UNSIGNED_SHORT );
+				mTexDst->setType( QOpenGLTexture::UInt16 );
 
-//				if( QOpenGLContext::currentContext()->format().version().first >= 3 )
-//				{
-//					mTexDst->setFormat( GL_RED );
-
-//					mTexDst->setInternalFormat( GL_R16 );
-//				}
-//				else
+				if( QOpenGLContext::currentContext()->isOpenGLES() )
 				{
-					mTexDst->setFormat( GL_LUMINANCE );
+					mTexDst->setFormat( QOpenGLTexture::Luminance );
 
-					mTexDst->setInternalFormat( GL_LUMINANCE16 );
+					mTexDst->setInternalFormat( QOpenGLTexture::LuminanceFormat );
+				}
+				else
+				{
+					mTexDst->setFormat( QOpenGLTexture::Red );
+
+					mTexDst->setInternalFormat( QOpenGLTexture::R16_UNorm );
 				}
 				break;
 
 			case fugio::ImageInterface::FORMAT_GRAY8:
-//				if( QOpenGLContext::currentContext()->format().version().first >= 3 )
-//				{
-//					mTexDst->setFormat( GL_RED );
-
-//					mTexDst->setInternalFormat( GL_R8 );
-//				}
-//				else
+				if( QOpenGLContext::currentContext()->isOpenGLES() )
 				{
-					mTexDst->setFormat( GL_LUMINANCE );
+					mTexDst->setFormat( QOpenGLTexture::Luminance );
 
-					mTexDst->setInternalFormat( GL_LUMINANCE8 );
+					mTexDst->setInternalFormat( QOpenGLTexture::LuminanceFormat );
+				}
+				else
+				{
+					mTexDst->setFormat( QOpenGLTexture::Red );
+
+					mTexDst->setInternalFormat( QOpenGLTexture::R8_UNorm );
 				}
 				break;
 
 			case fugio::ImageInterface::FORMAT_YUYV422:
 			case fugio::ImageInterface::FORMAT_UYVY422:
-				mTexDst->setFormat( GL_RG );
+				mTexDst->setFormat( QOpenGLTexture::RG );
 
-				mTexDst->setInternalFormat( GL_RG8 );
+				mTexDst->setInternalFormat( QOpenGLTexture::RG8_UNorm );
 				break;
 
 			case fugio::ImageInterface::FORMAT_RG32:
-				mTexDst->setFormat( GL_RG );
+				mTexDst->setFormat( QOpenGLTexture::RG );
 
-				mTexDst->setType( GL_FLOAT );
+				mTexDst->setType( QOpenGLTexture::Float32 );
 
-				mTexDst->setInternalFormat( GL_RG32F );
+				mTexDst->setInternalFormat( QOpenGLTexture::R32F );
 				break;
 #endif
 
@@ -122,9 +122,9 @@ void TextureCubeNode::processTexture( QSharedPointer<fugio::PinInterface> pPin, 
 				return;
 		}
 
-		mTexDst->setFilter( GL_LINEAR, GL_LINEAR );
+		mTexDst->setFilter( QOpenGLTexture::Linear, QOpenGLTexture::Linear );
 
-		mTexDst->setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
+		mTexDst->setWrap( QOpenGLTexture::ClampToEdge, QOpenGLTexture::ClampToEdge, QOpenGLTexture::ClampToEdge );
 
 		mTexDst->setSize( S );
 	}

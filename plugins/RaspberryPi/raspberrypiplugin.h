@@ -25,6 +25,10 @@ public:
 
 private:
 	GlobalInterface			*mApp;
+
+#if defined( PIGPIO_SUPPORTED )
+	int						 mPigPioInit;
+#endif
 };
 
 #endif // RASPBERRYPIPLUGIN_H

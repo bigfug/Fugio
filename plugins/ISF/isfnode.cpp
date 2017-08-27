@@ -10,6 +10,8 @@
 #include <QImage>
 #include <QDateTime>
 
+#include <QOpenGLExtraFunctions>
+
 #include <fugio/core/uuid.h>
 #include <fugio/colour/uuid.h>
 #include <fugio/opengl/uuid.h>
@@ -76,7 +78,7 @@ void checkErrors( const char *file, int line )
 
 ISFNode::ISFNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mVAO( 0 ), mBuffer( 0 ), mProgram( 0 ), mFrameCounter( 0 ), mUniformTime( -1 ),
-	  mStartTime( -1 ), mLastRenderTime( 0 )
+	  mTextureIndexCount( 0 ), mStartTime( -1 ), mLastRenderTime( 0 )
 {
 	FUGID( PIN_INPUT_SOURCE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 	FUGID( PIN_INPUT_FILENAME, "DFEBA477-4933-4C85-9B3B-24CE71053B1F" );
@@ -121,10 +123,7 @@ bool ISFNode::deinitialise()
 
 	if( ISFPlugin::hasContextStatic() )
 	{
-		if( mVAO )
-		{
-			glDeleteVertexArrays( 1, &mVAO );
-		}
+		mVAO.destroy();
 
 		if( mBuffer )
 		{
@@ -183,8 +182,6 @@ bool ISFNode::deinitialise()
 			InpDat.mAudioInstance = nullptr;
 		}
 	}
-
-	mVAO = 0;
 
 	mBuffer = 0;
 
@@ -323,6 +320,8 @@ void ISFNode::contextProcess( qint64 pTimeStamp )
 				glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, InpDat.mAudioMax, ChannelCount, GL_RED, GL_FLOAT, InpDat.mAudioData.constData() );
 
 				glBindTexture( GL_TEXTURE_2D, 0 );
+
+				glActiveTexture( GL_TEXTURE0 );
 
 				OPENGL_PLUGIN_DEBUG;
 			}
@@ -472,6 +471,8 @@ void ISFNode::inputsUpdated( qint64 pTimeStamp )
 				glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, FFT.size(), 1, GL_RED, GL_FLOAT, FFT.constData() );
 
 				glBindTexture( GL_TEXTURE_2D, 0 );
+
+				glActiveTexture( GL_TEXTURE0 );
 
 				OPENGL_PLUGIN_DEBUG;
 			}
@@ -1041,8 +1042,8 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 
 	glLinkProgram( Program );
 
-	glGetShaderiv( Program, GL_LINK_STATUS, &Result );
-	glGetShaderiv( Program, GL_INFO_LOG_LENGTH, &InfoLogLength );
+	glGetProgramiv( Program, GL_LINK_STATUS, &Result );
+	glGetProgramiv( Program, GL_INFO_LOG_LENGTH, &InfoLogLength );
 
 	if( Result == GL_FALSE )
 	{
@@ -1050,7 +1051,7 @@ bool ISFNode::loadShaders( const QString &pShaderSource )
 
 		InfoLogMessage.resize( InfoLogLength );
 
-		glGetShaderInfoLog( Program, InfoLogLength, NULL, InfoLogMessage.data() );
+		glGetProgramInfoLog( Program, InfoLogLength, NULL, InfoLogMessage.data() );
 
 		qWarning() << "Shader Link:" << QString::fromLatin1( InfoLogMessage );
 
@@ -1191,6 +1192,8 @@ void ISFNode::renderInputs()
 				break;
 		}
 	}
+
+	glActiveTexture( GL_TEXTURE0 );
 }
 
 void ISFNode::renderImports()
@@ -1267,10 +1270,14 @@ void ISFNode::renderImports()
 
 		glBindTexture( GL_TEXTURE_2D, ImpDat.mTextureId );
 	}
+
+	glActiveTexture( GL_TEXTURE0 );
 }
 
 void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 {
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+
 	for( ISFPass &PassData : mISFPasses )
 	{
 		if( PassData.mTarget.isEmpty() )
@@ -1332,7 +1339,11 @@ void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+			glBindTexture( GL_TEXTURE_2D, 0 );
 		}
+
+		glActiveTexture( GL_TEXTURE0 );
 
 		if( !PassData.mTextureId )
 		{
@@ -1347,7 +1358,10 @@ void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 
 		GLenum DrawBuffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 
-		glDrawBuffers( 1, DrawBuffers );
+		if( GLEX )
+		{
+			GLEX->glDrawBuffers( 1, DrawBuffers );
+		}
 
 		if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
 		{
@@ -1395,6 +1409,7 @@ int ISFNode::calculateValue( int pValue, const QSize &pSize, QString pExpression
 		return( pValue );
 	}
 
+#if defined( INCLUDE_EXPRTK_HPP )
 	typedef qreal						        exprtk_type;
 	typedef exprtk::symbol_table<exprtk_type>   symbol_table_t;
 	typedef exprtk::expression<exprtk_type>		expression_t;
@@ -1457,6 +1472,7 @@ int ISFNode::calculateValue( int pValue, const QSize &pSize, QString pExpression
 	{
 		pValue = expression.value();
 	}
+#endif
 
 	return( pValue );
 }
@@ -1474,33 +1490,47 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	glGetIntegerv( GL_VIEWPORT, Viewport );
 
+	GLint		FBOCur;
+
+	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
+
+	GLint		VAOCur;
+
+	glGetIntegerv( GL_VERTEX_ARRAY_BINDING, &VAOCur );
+
+	GLint		PRGCur;
+
+	glGetIntegerv( GL_CURRENT_PROGRAM, &PRGCur );
+
 	if( mStartTime == -1 )
 	{
 		mStartTime = pTimeStamp;
 	}
 
-	if( !mVAO )
+	if( !mVAO.isCreated() )
 	{
-		glGenVertexArrays( 1, &mVAO );
+		mVAO.create();
 	}
 
-	if( mVAO )
+	if( !mVAO.isCreated() )
 	{
-		glBindVertexArray( mVAO );
+		mVAO.bind();
 	}
 
 	if( !mBuffer )
 	{
-		GLfloat		Verticies[][ 2 ] = {
-			{ -1,  1 },
+		GLfloat		Verticies[][ 2 ] =
+		{
 			{ -1, -1 },
-			{  1,  1 },
-			{  1, -1 }
+			{ -1,  1 },
+			{  1, -1 },
+			{  1,  1 }
 		};
 
 		glGenBuffers( 1, &mBuffer );
 		glBindBuffer( GL_ARRAY_BUFFER, mBuffer );
 		glBufferData( GL_ARRAY_BUFFER, sizeof( Verticies ), Verticies, GL_STATIC_DRAW );
+		glBindBuffer( GL_ARRAY_BUFFER, 0 );
 	}
 
 	if( mProgram )
@@ -1595,7 +1625,7 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 			if( PassData.mFBO )
 			{
-				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+				glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
 
 				glViewport( Viewport[ 0 ], Viewport[ 1 ], Viewport[ 2 ], Viewport[ 3 ] );
 			}
@@ -1624,17 +1654,17 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 			glBindTexture( GL_TEXTURE_2D, 0 );
 		}
 
+		glActiveTexture( GL_TEXTURE0 );
+
 		glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 
-		mLastRenderTime = pTimeStamp;
+		if( mLastRenderTime != pTimeStamp )
+		{
+			mLastRenderTime = pTimeStamp;
 
-		mFrameCounter++;
+			mFrameCounter++;
+		}
 	}
 
-	if( mVAO )
-	{
-		glBindVertexArray( 0 );
-	}
+	mVAO.release();
 }
-
-

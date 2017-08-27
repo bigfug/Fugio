@@ -18,7 +18,12 @@ qtHaveModule( websockets ) {
 	QT += websockets
 }
 
-TARGET = Fugio
+unix:!macx: {
+    TARGET = fugio
+} else {
+    TARGET = Fugio
+}
+
 TEMPLATE = app
 CONFIG += c++11
 
@@ -160,7 +165,9 @@ DISTFILES += \
 	about.html \
 	version.txt \
 	../installer/brew_install_update \
-    ../installer/install_fugio
+    ../installer/install_fugio \
+    control \
+    fugio.desktop
 
 RESOURCES += \
 	fugio.qrc
@@ -168,22 +175,25 @@ RESOURCES += \
 #------------------------------------------------------------------------------
 
 CONFIG(release,debug|release) {
-	examples.path = $$INSTALLDATA/examples
-	examples.files = ../examples/*
+    examples.path = $$INSTALLDATA
+    examples.files = ../examples
 
-	share.path = $$INSTALLDATA/share
-	share.files = ../share/*
+    share.path = $$INSTALLDATA
+    share.files = ../share
 
-	snippets.path = $$INSTALLDATA/snippets
-	snippets.files = ../snippets/*
+    snippets.path = $$INSTALLDATA
+    snippets.files = ../snippets
 
-	includes.path = $$INSTALLDATA/include
-	includes.files = ../include/fugio
+    includes.path = $$INSTALLDATA/include
+    includes.files = ../include/fugio
 
-	shared_libs.path = $$INSTALLDATA
-	shared_libs.files = $$DESTDIR/libs
+    shared_libs.path = $$INSTALLDATA
+    shared_libs.files = $$DESTDIR/libs
 
-	INSTALLS += examples includes share shared_libs snippets
+    stylesheets.path = $$INSTALLDATA
+    stylesheets.files = stylesheets
+
+    INSTALLS += examples includes share shared_libs snippets stylesheets
 }
 
 macx {
@@ -269,30 +279,51 @@ windows {
 }
 
 unix:!macx {
-	DOLLAR = $
+    target.path  = $$INSTALLBASE/usr/bin
 
-	QMAKE_LFLAGS += "-Wl,-rpath '-Wl,$${DOLLAR}$${DOLLAR}ORIGIN'"
+    INSTALLS += target
 
-	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-		target.path = Desktop/Fugio
+    includes.path = $$INSTALLBASE/usr/include
 
-		INSTALLS += target
+    control.path = $$INSTALLBASE/DEBIAN
+    control.files = control
 
-		examples.path  = Desktop/Fugio/examples
-		examples.files = $$_PRO_FILE_PWD_/../examples/*
+    INSTALLS += control
 
-		INSTALLS += examples
+    desktop.path  = $$INSTALLBASE/usr/share/applications
+    desktop.files = fugio.desktop
 
-		snippets.path  = Desktop/Fugio/snippets
-		snippets.files = $$_PRO_FILE_PWD_/../snippets/*
+    INSTALLS += desktop
 
-		INSTALLS += snippets
+    icon.path  = $$INSTALLBASE/usr/share/icons/hicolor/256x256/apps
+    icon.files = fugio.png
 
-		share.path  = Desktop/Fugio/share
-		share.files = $$_PRO_FILE_PWD_/../share/*
+    INSTALLS += icon
 
-		INSTALLS += share
-	}
+    DOLLAR = $
+
+    QMAKE_LFLAGS += "-Wl,-rpath '-Wl,$${DOLLAR}$${DOLLAR}ORIGIN'"
+
+#	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
+#		target.path = Desktop/Fugio
+
+#		INSTALLS += target
+
+#                examples.path  = $$INSTALLDATA/examples
+#		examples.files = $$_PRO_FILE_PWD_/../examples/*
+
+#		INSTALLS += examples
+
+#                snippets.path  = $$INSTALLDATA/snippets
+#		snippets.files = $$_PRO_FILE_PWD_/../snippets/*
+
+#		INSTALLS += snippets
+
+#                share.path  = $$INSTALLDATA/share
+#		share.files = $$_PRO_FILE_PWD_/../share/*
+
+#		INSTALLS += share
+#	}
 }
 
 #------------------------------------------------------------------------------
@@ -320,18 +351,18 @@ contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 
 INCLUDEPATH += $$PWD/../include
 
-win32:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugiod
-else:unix:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
-else:unix:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugio_debug
+#win32:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
+#else:win32:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugiod
+#else:unix:CONFIG(release, debug|release): LIBS += -L$$DESTDIR -lfugio
+#else:unix:CONFIG(debug, debug|release): LIBS += -L$$DESTDIR -lfugio_debug
+
+LIBS += -L$$DESTDIR -l$$qtLibraryTarget( fugio )
 
 INCLUDEPATH += $$PWD/../FugioLib
 DEPENDPATH += $$PWD/../FugioLib
 
-win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$DESTDIR/fugio.lib
-else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$DESTDIR/fugiod.lib
-else:unix:CONFIG(release, debug|release): PRE_TARGETDEPS += $$DESTDIR/libfugio.a
-else:unix:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$DESTDIR/libfugio_debug.a
+win32: PRE_TARGETDEPS += $$DESTDIR/$$qtLibraryTarget( fugio ).lib
+else:  PRE_TARGETDEPS += $$DESTDIR/lib$$qtLibraryTarget( fugio ).a
 
 #------------------------------------------------------------------------------
 # General Unix/Linux/OS X (Brew) libs path

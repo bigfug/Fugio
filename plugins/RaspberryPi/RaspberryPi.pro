@@ -15,12 +15,14 @@ CONFIG += plugin c++11
 
 DESTDIR = $$DESTDIR/plugins
 
-SOURCES += raspberrypiplugin.cpp
+SOURCES += raspberrypiplugin.cpp \
+    sourcenode.cpp
 
 HEADERS += raspberrypiplugin.h \
 	../../include/fugio/raspberrypi/uuid.h \
 	../../include/fugio/nodecontrolbase.h \
-	../../include/fugio/pincontrolbase.h
+	../../include/fugio/pincontrolbase.h \
+    sourcenode.h
 
 RESOURCES += \
     resources.qrc
@@ -81,15 +83,9 @@ windows {
 # Linux
 
 unix:!macx {
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+    target.path = $$INSTALLBASE/usr/lib/fugio
 
-	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-		target.path = Desktop/Fugio/plugins
-	} else {
-		target.path = $$shell_path( $$INSTALLDIR/data/plugins )
-	}
-
-	INSTALLS += target
+    INSTALLS += target
 }
 
 #------------------------------------------------------------------------------
@@ -103,15 +99,15 @@ INCLUDEPATH += $$PWD/../../include
 contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 	INCLUDEPATH += $$[QT_SYSROOT]/opt/vc/include $$[QT_SYSROOT]/opt/vc/include/interface/vcos/pthreads $$[QT_SYSROOT]/opt/vc/include/interface/vmcs_host/linux
 
-	LIBS += -L$$[QT_SYSROOT]/opt/vc/lib -lbcm_host
+        LIBS += -L$$[QT_SYSROOT]/opt/vc/lib -lbcm_host -lopenmaxil
 }
 
 #------------------------------------------------------------------------------
 # pigpio
 
-unix:exists( $$[QT_SYSROOT]/usr/local/include/pigpio.h ) {
-	INCLUDEPATH += $$[QT_SYSROOT]/usr/local/include
-	LIBS += -L$$[QT_SYSROOT]/usr/local/lib -lpigpiod_if2
+unix:exists( $$[QT_SYSROOT]/usr/include/pigpio.h ) {
+#	INCLUDEPATH += $$[QT_SYSROOT]/usr/local/include
+        LIBS += -lpigpiod_if2
 	DEFINES += PIGPIO_SUPPORTED
 }
 

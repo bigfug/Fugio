@@ -4,6 +4,7 @@
 
 #include <QRect>
 #include <QRectF>
+#include <QLineF>
 
 ArrayPin::ArrayPin( QSharedPointer<fugio::PinInterface> pPin )
 	: PinControlBase( pPin ), mData( nullptr ),
@@ -102,6 +103,14 @@ QVariant ArrayPin::listIndex( int pIndex ) const
 
 		case QMetaType::QRectF:
 			V = static_cast<const QRectF *>( A )[ pIndex ];
+			break;
+
+		case QMetaType::QLineF:
+			V = static_cast<const QLineF *>( A )[ pIndex ];
+			break;
+
+		case QMetaType::QPointF:
+			V = static_cast<const QPointF *>( A )[ pIndex ];
 			break;
 
 		default:

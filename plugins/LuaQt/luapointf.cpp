@@ -11,7 +11,7 @@
 
 #include "luaqtplugin.h"
 
-const char *LuaPointF::PointFUserData::TypeName = "qt.pointf";
+const char *LuaPointF::mTypeName = "qt.pointf";
 
 #if defined( LUA_SUPPORTED )
 
@@ -40,7 +40,7 @@ const luaL_Reg LuaPointF::mLuaMethods[] =
 
 int LuaPointF::luaOpen(lua_State *L)
 {
-	luaL_newmetatable( L, PointFUserData::TypeName );
+	luaL_newmetatable( L, LuaPointF::mTypeName );
 
 	lua_pushvalue( L, -1 );
 	lua_setfield( L, -2, "__index" );

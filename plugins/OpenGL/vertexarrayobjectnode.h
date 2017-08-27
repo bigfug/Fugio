@@ -7,9 +7,15 @@
 
 #include "vertexarrayobjectpin.h"
 
-class VertexArrayObjectNode : public fugio::NodeControlBase
+FUGIO_NAMESPACE_BEGIN
+class OpenGLBufferInterface;
+struct ShaderUniformData;
+FUGIO_NAMESPACE_END
+
+class VertexArrayObjectNode : public fugio::NodeControlBase, public fugio::VertexArrayObjectInterface, protected QOpenGLFunctions
 {
 	Q_OBJECT
+	Q_INTERFACES( fugio::VertexArrayObjectInterface )
 
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
@@ -37,13 +43,20 @@ public:
 
 	virtual QStringList availableInputPins() const Q_DECL_OVERRIDE;
 
+	// VertexArrayObjectInterface interface
+public:
+	virtual void vaoBind() Q_DECL_OVERRIDE;
+	virtual void vaoRelease() Q_DECL_OVERRIDE;
+	virtual GLuint vaoId() const Q_DECL_OVERRIDE;
+
+private:
+	void bindPin( fugio::PinInterface *P, fugio::PinControlInterface *PinControl, fugio::OpenGLBufferInterface *Buffer, const fugio::ShaderUniformData &UniformData );
+
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputShader;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputVAO;
 	VertexArrayObjectPin						*mValOutputVAO;
-
-	GLuint										 mVAO;
 
 	typedef struct BindInfo
 	{
@@ -54,6 +67,7 @@ protected:
 	typedef QMap<QString,BindInfo> BindInfoMap;
 
 	BindInfoMap									 mBindInfo;
+	QOpenGLVertexArrayObject					 mVAO;
 };
 
 #endif // VERTEXARRAYOBJECTNODE_H

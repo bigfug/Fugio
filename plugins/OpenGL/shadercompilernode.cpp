@@ -1,5 +1,7 @@
 #include "shadercompilernode.h"
 
+#include <QOpenGLExtraFunctions>
+
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
 #include <fugio/text/uuid.h>
@@ -92,6 +94,11 @@ bool ShaderCompilerNode::deinitialise()
 
 void ShaderCompilerNode::inputsUpdated( qint64 pTimeStamp )
 {
+	if( !pTimeStamp )
+	{
+		return;
+	}
+
 	fugio::Performance	Perf( mNode, "inputsUpdated", pTimeStamp );
 
 	OPENGL_PLUGIN_DEBUG;
@@ -132,151 +139,90 @@ void ShaderCompilerNode::inputsUpdated( qint64 pTimeStamp )
 //	return( pPin->direction() == PIN_OUTPUT );
 //}
 
-void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, GLuint pProgramId, GLuint &pShaderId, GLenum pShaderType, int &pCompiled, int &pFailed )
+void ShaderCompilerNode::loadShader( QSharedPointer<fugio::PinInterface> pPin, QOpenGLShaderProgram &pProgram, QOpenGLShader::ShaderType pShaderType, int &pCompiled, int &pFailed )
 {
-	QSharedPointer<fugio::PinInterface>	DstPin = pPin->connectedPin();
+	fugio::SyntaxErrorInterface *SyntaxErrors = input<fugio::SyntaxErrorInterface *>( pPin );
 
-	if( DstPin )
+	QString			Source = variant( pPin ).toString();
+
+	if( Source.isEmpty() )
 	{
-		QSharedPointer<PinControlInterface>		DstCtl = DstPin->control();
-
-		if( DstCtl )
+		if( SyntaxErrors )
 		{
-			VariantInterface	*DstVar = qobject_cast<VariantInterface *>( DstCtl->qobject() );
+			SyntaxErrors->clearSyntaxErrors();
+		}
 
-			if( DstVar )
+		return;
+	}
+
+	if( !pProgram.addShaderFromSourceCode( pShaderType, Source ) )
+	{
+		QString		Log = pProgram.log();
+
+		if( !Log.isEmpty() )
+		{
+			qWarning() << Log;
+		}
+
+		if( SyntaxErrors )
+		{
+			QList<fugio::SyntaxError>	SE;
+
+			OpenGLPlugin::parseShaderErrors( Log, SE );
+
+			if( SE.isEmpty() )
 			{
-				QByteArray		 Source    = DstVar->variant().toByteArray();
-				const GLchar	*SourcePtr = Source.data();
-
-				if( !Source.isEmpty() )
-				{
-					if( ( pShaderId = glCreateShader( pShaderType ) ) != 0 )
-					{
-						GLint			 Result;
-
-						fugio::SyntaxErrorInterface *SyntaxErrors = ( pPin->hasControl() ? qobject_cast<fugio::SyntaxErrorInterface *>( pPin->control()->qobject() ) : nullptr );
-
-						glShaderSource( pShaderId, 1, &SourcePtr, 0 );
-
-#if !defined( GL_ES_VERSION_2_0 )
-						if( GLEW_ARB_shading_language_include )
-						{
-							glCompileShaderIncludeARB( pShaderId, 0, NULL, NULL );
-						}
-						else
-#endif
-						{
-							glCompileShader( pShaderId );
-						}
-
-						glGetShaderiv( pShaderId, GL_INFO_LOG_LENGTH, &Result );
-
-						QVector<GLchar>	Log( Result + 1 );
-
-						if( Result > 0 )
-						{
-							glGetShaderInfoLog( pShaderId, Result, &Result, Log.data() );
-
-							if( SyntaxErrors )
-							{
-								QList<fugio::SyntaxError>	SE;
-
-								OpenGLPlugin::parseShaderErrors( QString( Log.data() ), SE );
-
-								if( SE.isEmpty() )
-								{
-									SyntaxErrors->clearSyntaxErrors();
-								}
-								else
-								{
-									SyntaxErrors->setSyntaxErrors( SE );
-								}
-							}
-							else
-							{
-								qWarning() << QString( Log.data() );
-							}
-						}
-
-						glGetShaderiv( pShaderId, GL_COMPILE_STATUS, &Result );
-
-						if( Result == GL_TRUE )
-						{
-							glAttachShader( pProgramId, pShaderId );
-
-							if( SyntaxErrors )
-							{
-								 SyntaxErrors->clearSyntaxErrors();
-							}
-
-							pCompiled++;
-
-							return;
-						}
-
-						//if( !QOpenGLContext::currentContext()->format().testOption( QSurfaceFormat::DebugContext ) )
-						{
-							//qWarning() << pPin->node()->name() << QString( Log.data() );
-						}
-
-						glDeleteShader( pShaderId );
-
-						pShaderId = 0;
-
-						pFailed++;
-					}
-				}
+				SyntaxErrors->clearSyntaxErrors();
+			}
+			else
+			{
+				SyntaxErrors->setSyntaxErrors( SE );
 			}
 		}
+
+		pFailed++;
+
+		return;
 	}
+
+	pCompiled++;
 }
 
 void ShaderCompilerNode::loadShader()
 {
 	ShaderCompilerData		CompilerData;
 
-	GLuint					ShaderVertId = 0;
-	GLuint					ShaderGeomId = 0;
-	GLuint					ShaderTessCtrlId = 0;
-	GLuint					ShaderTessEvalId = 0;
-	GLuint					ShaderFragId = 0;
-
 	GLint					Compiled = 0;
 	GLint					Failed   = 0;
 
 	//clearShader();
 
-	if( ( CompilerData.mProgramId = glCreateProgram() ) == 0 )
+	if( !CompilerData.mProgram->create() )
 	{
 		return;
 	}
 
-	OPENGL_PLUGIN_DEBUG;
-
-	loadShader( mPinShaderVertex, CompilerData.mProgramId, ShaderVertId, GL_VERTEX_SHADER, Compiled, Failed );
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
 	OPENGL_PLUGIN_DEBUG;
 
-#if defined( GL_TESS_CONTROL_SHADER )
-	loadShader( mPinShaderTessCtrl, CompilerData.mProgramId, ShaderTessCtrlId, GL_TESS_CONTROL_SHADER, Compiled, Failed );
-
-	OPENGL_PLUGIN_DEBUG;
-#endif
-
-#if defined( GL_TESS_EVALUATION_SHADER )
-	loadShader( mPinShaderTessEval, CompilerData.mProgramId, ShaderTessEvalId, GL_TESS_EVALUATION_SHADER, Compiled, Failed );
-
-	OPENGL_PLUGIN_DEBUG;
-#endif
-
-#if defined( GL_GEOMETRY_SHADER )
-	loadShader( mPinShaderGeometry, CompilerData.mProgramId, ShaderGeomId, GL_GEOMETRY_SHADER, Compiled, Failed );
-#endif
+	loadShader( mPinShaderVertex, *CompilerData.mProgram, QOpenGLShader::Vertex, Compiled, Failed );
 
 	OPENGL_PLUGIN_DEBUG;
 
-	loadShader( mPinShaderFragment, CompilerData.mProgramId, ShaderFragId, GL_FRAGMENT_SHADER, Compiled, Failed );
+	loadShader( mPinShaderTessCtrl, *CompilerData.mProgram, QOpenGLShader::TessellationControl, Compiled, Failed );
+
+	OPENGL_PLUGIN_DEBUG;
+
+	loadShader( mPinShaderTessEval, *CompilerData.mProgram, QOpenGLShader::TessellationEvaluation, Compiled, Failed );
+
+	OPENGL_PLUGIN_DEBUG;
+
+	loadShader( mPinShaderGeometry, *CompilerData.mProgram, QOpenGLShader::Geometry, Compiled, Failed );
+
+	OPENGL_PLUGIN_DEBUG;
+
+	loadShader( mPinShaderFragment, *CompilerData.mProgram, QOpenGLShader::Fragment, Compiled, Failed );
 
 	OPENGL_PLUGIN_DEBUG;
 
@@ -335,112 +281,32 @@ void ShaderCompilerNode::loadShader()
 			BufMod = GL_SEPARATE_ATTRIBS;
 		}
 
-		if( GLEW_VERSION_3_0 )
+		if( GLEX )
 		{
-			glTransformFeedbackVaryings( CompilerData.mProgramId, VarLst.size(), (const GLchar **)VarLst.constData(), BufMod );
-
-			OPENGL_PLUGIN_DEBUG;
+			GLEX->glTransformFeedbackVaryings( CompilerData.mProgram->programId(), VarLst.size(), (const GLchar **)VarLst.constData(), BufMod );
 		}
+
+		OPENGL_PLUGIN_DEBUG;
 	}
 #endif
 
 	//-------------------------------------------------------------------------
 	// Link
 
-	glLinkProgram( CompilerData.mProgramId );
+	bool	LinkResult = CompilerData.mProgram->link();
 
-	OPENGL_PLUGIN_DEBUG;
+	mNode->setStatusMessage( CompilerData.mProgram->log() );
 
-	GLint			LinkLogLength = 0;
-
-	glGetProgramiv( CompilerData.mProgramId, GL_INFO_LOG_LENGTH, &LinkLogLength );
-
-	if( LinkLogLength > 0 )
-	{
-		QVector<GLchar>	Log( LinkLogLength + 1 );
-
-		glGetProgramInfoLog( CompilerData.mProgramId, LinkLogLength, &LinkLogLength, Log.data() );
-
-		mNode->setStatusMessage( QString( Log.constData() ) );
-	}
-
-	OPENGL_PLUGIN_DEBUG;
-
-	//-------------------------------------------------------------------------
-	// we don't need to keep these around...
-
-	if( ShaderFragId )
-	{
-		glDeleteShader( ShaderFragId );
-
-		ShaderFragId = 0;
-	}
-
-	if( ShaderGeomId )
-	{
-		glDeleteShader( ShaderGeomId );
-
-		ShaderGeomId = 0;
-	}
-
-	if( ShaderTessEvalId )
-	{
-		glDeleteShader( ShaderTessEvalId );
-
-		ShaderTessEvalId = 0;
-	}
-
-	if( ShaderTessCtrlId )
-	{
-		glDeleteShader( ShaderTessCtrlId );
-
-		ShaderTessCtrlId = 0;
-	}
-
-	if( ShaderVertId )
-	{
-		glDeleteShader( ShaderVertId );
-
-		ShaderVertId = 0;
-	}
-
-	//-------------------------------------------------------------------------
-
-	GLint			LinkStatus = GL_FALSE;
-
-	glGetProgramiv( CompilerData.mProgramId, GL_LINK_STATUS, &LinkStatus );
-
-	if( LinkStatus != GL_TRUE )
+	if( !LinkResult )
 	{
 		mNode->setStatus( fugio::NodeInterface::Error );
-
-		if( LinkLogLength <= 0 )
-		{
-#if !defined( GL_ES_VERSION_2_0 )
-			if( !VaryingList.isEmpty() )
-			{
-				// NVIDIA cards fail to link but don't report anything!
-
-				mNode->setStatusMessage( "Shader Linking Failed - Check Varyings" );
-			}
-			else
-#endif
-			{
-				mNode->setStatusMessage( "Shader Linking Failed" );
-			}
-		}
 
 		return;
 	}
 
 	mNode->setStatus( fugio::NodeInterface::Initialised );
 
-	if( LinkLogLength <= 0 )
-	{
-		mNode->setStatusMessage( "Shader Linked" );
-	}
-
-	CompilerData.mProgramLinked = true;
+	mNode->setStatusMessage( "Shader Linked" );
 
 	//-------------------------------------------------------------------------
 
@@ -459,6 +325,8 @@ void ShaderCompilerNode::loadShader()
 
 void ShaderCompilerNode::ShaderCompilerData::process()
 {
+	QOpenGLFunctions	*GL = QOpenGLContext::currentContext()->functions();
+
 	ShaderUniformData	UniformData;
 
 	memset( &UniformData, 0, sizeof( UniformData ) );
@@ -473,13 +341,13 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 
 	GLint		ActiveUniforms = 0;
 
-	glGetProgramiv( mProgramId, GL_ACTIVE_UNIFORMS, &ActiveUniforms );
+	GL->glGetProgramiv( mProgram->programId(), GL_ACTIVE_UNIFORMS, &ActiveUniforms );
 
 	if( ActiveUniforms > 0 )
 	{
 		GLint		ActiveUniformsMaxLength;
 
-		glGetProgramiv( mProgramId, GL_ACTIVE_UNIFORM_MAX_LENGTH, &ActiveUniformsMaxLength );
+		GL->glGetProgramiv( mProgram->programId(), GL_ACTIVE_UNIFORM_MAX_LENGTH, &ActiveUniformsMaxLength );
 
 		std::vector<GLchar>		Name( ActiveUniformsMaxLength );
 
@@ -487,11 +355,11 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 		{
 			GLsizei		NameLength;
 
-			glGetActiveUniform( mProgramId, i, Name.size(), &NameLength, &UniformData.mSize, &UniformData.mType, &Name[ 0 ] );
+			GL->glGetActiveUniform( mProgram->programId(), i, Name.size(), &NameLength, &UniformData.mSize, &UniformData.mType, &Name[ 0 ] );
 
 			QString		UniformName = QString::fromLocal8Bit( &Name[ 0 ] );
 
-			UniformData.mLocation = glGetUniformLocation( mProgramId, Name.data() );
+			UniformData.mLocation = mProgram->uniformLocation( Name.data() );
 
 			if( UniformData.mLocation == -1 )
 			{
@@ -511,56 +379,49 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 
 			switch( UniformData.mType )
 			{
-#if !defined( GL_ES_VERSION_2_0 )
+#if !defined( QT_OPENGL_ES_2 )
 				case GL_SAMPLER_1D:
 				case GL_SAMPLER_1D_ARRAY:
 				case GL_SAMPLER_1D_ARRAY_SHADOW:
 				case GL_SAMPLER_1D_SHADOW:
-				case GL_SAMPLER_2D_ARRAY:
-				case GL_SAMPLER_2D_ARRAY_SHADOW:
-				case GL_SAMPLER_2D_MULTISAMPLE:
 				case GL_SAMPLER_2D_RECT:
-				case GL_SAMPLER_2D_SHADOW:
-				case GL_SAMPLER_3D:
-#endif
-				case GL_SAMPLER_2D:
-				case GL_SAMPLER_CUBE:
-#if defined( GL_SAMPLER_CUBE_MAP_ARRAY )
 				case GL_SAMPLER_CUBE_MAP_ARRAY:
-#endif
-#if defined( GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW )
 				case GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW:
-#endif
-
-#if !defined( GL_ES_VERSION_2_0 )
-				case GL_SAMPLER_CUBE_SHADOW:
 				case GL_INT_SAMPLER_1D:
-				case GL_INT_SAMPLER_2D:
-				case GL_INT_SAMPLER_3D:
-				case GL_INT_SAMPLER_CUBE:
 				case GL_INT_SAMPLER_1D_ARRAY:
-				case GL_INT_SAMPLER_2D_ARRAY:
 				case GL_UNSIGNED_INT_SAMPLER_1D:
-				case GL_UNSIGNED_INT_SAMPLER_2D:
-				case GL_UNSIGNED_INT_SAMPLER_3D:
-				case GL_UNSIGNED_INT_SAMPLER_CUBE:
 				case GL_UNSIGNED_INT_SAMPLER_1D_ARRAY:
-				case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
 				case GL_SAMPLER_2D_RECT_SHADOW:
 				case GL_SAMPLER_BUFFER:
 				case GL_INT_SAMPLER_2D_RECT:
 				case GL_INT_SAMPLER_BUFFER:
 				case GL_UNSIGNED_INT_SAMPLER_2D_RECT:
 				case GL_UNSIGNED_INT_SAMPLER_BUFFER:
-				case GL_INT_SAMPLER_2D_MULTISAMPLE:
-				case GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:
 				case GL_SAMPLER_2D_MULTISAMPLE_ARRAY:
 				case GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
 				case GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY:
 				case GL_INT_SAMPLER_CUBE_MAP_ARRAY:
 				case GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY:
-				case GL_SAMPLER:
 #endif
+				case GL_SAMPLER_2D_ARRAY:
+				case GL_SAMPLER_2D_ARRAY_SHADOW:
+				case GL_SAMPLER_2D_MULTISAMPLE:
+				case GL_SAMPLER_2D_SHADOW:
+				case GL_SAMPLER_3D:
+				case GL_SAMPLER_2D:
+				case GL_SAMPLER_CUBE:
+				case GL_SAMPLER_CUBE_SHADOW:
+				case GL_INT_SAMPLER_2D:
+				case GL_INT_SAMPLER_3D:
+				case GL_INT_SAMPLER_CUBE:
+				case GL_INT_SAMPLER_2D_ARRAY:
+				case GL_UNSIGNED_INT_SAMPLER_2D:
+				case GL_UNSIGNED_INT_SAMPLER_3D:
+				case GL_UNSIGNED_INT_SAMPLER_CUBE:
+				case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
+				case GL_INT_SAMPLER_2D_MULTISAMPLE:
+				case GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:
+				case GL_SAMPLER:
 					UniformData.mSampler = true;
 					UniformData.mTextureBinding = ++TextureBinding;
 
@@ -594,13 +455,13 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 
 	GLint		ActiveAtrributes = 0;
 
-	glGetProgramiv( mProgramId, GL_ACTIVE_ATTRIBUTES, &ActiveAtrributes );
+	GL->glGetProgramiv( mProgram->programId(), GL_ACTIVE_ATTRIBUTES, &ActiveAtrributes );
 
 	if( ActiveAtrributes > 0 )
 	{
 		GLint		ActiveUniformsMaxLength;
 
-		glGetProgramiv( mProgramId, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &ActiveUniformsMaxLength );
+		GL->glGetProgramiv( mProgram->programId(), GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &ActiveUniformsMaxLength );
 
 		std::vector<GLchar>		Name( ActiveUniformsMaxLength );
 
@@ -608,11 +469,11 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 		{
 			GLsizei		NameLength;
 
-			glGetActiveAttrib( mProgramId, i, Name.size(), &NameLength, &UniformData.mSize, &UniformData.mType, &Name[ 0 ] );
+			GL->glGetActiveAttrib( mProgram->programId(), i, Name.size(), &NameLength, &UniformData.mSize, &UniformData.mType, &Name[ 0 ] );
 
 			QString		AttributeName = QString::fromLocal8Bit( &Name[ 0 ] );
 
-			UniformData.mLocation = glGetAttribLocation( mProgramId, Name.data() );
+			UniformData.mLocation = mProgram->attributeLocation( Name.data() );
 
 			if( UniformData.mLocation == -1 )
 			{
@@ -632,11 +493,9 @@ void ShaderCompilerNode::ShaderCompilerData::process()
 
 void ShaderCompilerNode::ShaderCompilerData::clear()
 {
-	if( mProgramId )
+	if( mProgram )
 	{
-		glDeleteProgram( mProgramId );
-
-		mProgramId = 0;
+		mProgram->removeAllShaders();
 	}
 
 	mShaderAttributeTypes.clear();
@@ -644,6 +503,4 @@ void ShaderCompilerNode::ShaderCompilerData::clear()
 
 	mUniformNames.clear();
 	mAttributeNames.clear();
-
-	mProgramLinked = false;
 }

@@ -2,6 +2,8 @@
 
 #include <QMatrix4x4>
 #include <QTime>
+#include <QOpenGLExtraFunctions>
+
 #include <qmath.h>
 
 #include <fugio/core/uuid.h>
@@ -31,7 +33,7 @@ DrawNode::DrawNode( QSharedPointer<fugio::NodeInterface> pNode )
 		INSERT_MODE( GL_TRIANGLE_STRIP );
 		INSERT_MODE( GL_TRIANGLE_FAN );
 		INSERT_MODE( GL_TRIANGLES );
-#if !defined( GL_ES_VERSION_2_0 )
+#if !defined( QT_OPENGL_ES_2 )
 		INSERT_MODE( GL_LINE_STRIP_ADJACENCY );
 		INSERT_MODE( GL_LINES_ADJACENCY );
 		INSERT_MODE( GL_TRIANGLE_STRIP_ADJACENCY );
@@ -77,13 +79,6 @@ bool DrawNode::initialise()
 		return( false );
 	}
 
-#if !defined( GL_ES_VERSION_2_0 )
-	if( !GLEW_VERSION_2_0 )
-	{
-		return( false );
-	}
-#endif
-
 	return( true );
 }
 
@@ -104,6 +99,8 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		return;
 	}
 
+	initializeOpenGLFunctions();
+
 	GLenum		Mode		= mModeMap.value( variant( mPinMode ).toString(), GL_TRIANGLES );
 	int			Count		= variant( mPinCount ).toInt();
 	int			Instances	= variant( mPinInstances ).toInt();
@@ -113,11 +110,13 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		Count = std::numeric_limits<int>::max();
 	}
 
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+
 	fugio::OpenGLBufferInterface	*B;
 
 	if( ( B = input<fugio::OpenGLBufferInterface *>( mPinInputIndex ) ) != nullptr )
 	{
-		if( B->buffer() && B->isIndex() )
+		if( B->buffer() && B->buffer()->isCreated() && B->isIndex() )
 		{
 			Count = B->count();
 
@@ -127,9 +126,10 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 				if( Instances > 0 )
 				{
-#if defined( glDrawElementsInstanced )
-					glDrawElementsInstanced( Mode, Count, GL_UNSIGNED_INT, 0, Instances );
-#endif
+					if( GLEX )
+					{
+						GLEX->glDrawElementsInstanced( Mode, Count, GL_UNSIGNED_INT, 0, Instances );
+					}
 				}
 				else
 				{
@@ -142,9 +142,10 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 	}
 	else if( Instances > 0 )
 	{
-#if defined( glDrawArraysInstanced )
-		glDrawArraysInstanced( Mode, 0, Count, Instances );
-#endif
+		if( GLEX )
+		{
+			GLEX->glDrawArraysInstanced( Mode, 0, Count, Instances );
+		}
 	}
 	else if( Count > 0 && Count < std::numeric_limits<int>::max() )
 	{

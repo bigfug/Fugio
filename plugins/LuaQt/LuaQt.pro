@@ -34,7 +34,8 @@ SOURCES += \
 	luajsonarray.cpp \
 	luajsonobject.cpp \
 	luavector3.cpp \
-	luaquaternion.cpp
+	luaquaternion.cpp \
+    lualine.cpp
 
 HEADERS +=\
 	../../include/fugio/luaqt/uuid.h \
@@ -58,7 +59,8 @@ HEADERS +=\
 	luajsonarray.h \
 	luajsonobject.h \
 	luavector3.h \
-	luaquaternion.h
+	luaquaternion.h \
+    lualine.h
 
 RESOURCES += \
     resources.qrc
@@ -117,15 +119,9 @@ windows {
 # Linux
 
 unix:!macx {
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+    target.path = $$INSTALLBASE/usr/lib/fugio
 
-	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-		target.path = Desktop/Fugio/plugins
-	} else {
-		target.path = $$shell_path( $$INSTALLDIR/data/plugins )
-	}
-
-	INSTALLS += target
+    INSTALLS += target
 }
 
 #------------------------------------------------------------------------------

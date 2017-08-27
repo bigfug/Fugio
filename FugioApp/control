@@ -1,0 +1,11 @@
+Package: fugio
+Architecture: armhf
+Priority: optional
+Depends: libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
+    libgles2-mesa, libicu57, libavcodec57, libavdevice57, libavformat57, libavutil55, libswscale4,
+    libswresample2, libavfilter6, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2, pigpio,
+    libqt5serialport5
+Description: a free, node-based, cross-platform, visual programming system
+Homepage: https://www.bigfug.com/software/fugio
+Maintainer: alex@bigfug.com
+Version: 2.13.0

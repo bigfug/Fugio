@@ -55,125 +55,54 @@ quint32 SyphonPin::dstTexId() const
 	return( 0 );
 }
 
-quint32 SyphonPin::target() const
+QOpenGLTexture::Target SyphonPin::target() const
 {
-#if defined( SYPHON_SUPPORTED )
-	return( GL_TEXTURE_RECTANGLE );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::TargetRectangle );
 }
 
-quint32 SyphonPin::format() const
+QOpenGLTexture::PixelFormat SyphonPin::format() const
 {
-#if defined( SYPHON_SUPPORTED )
-	return( GL_BGRA );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::BGRA );
 }
 
-quint32 SyphonPin::internalFormat() const
+QOpenGLTexture::TextureFormat SyphonPin::internalFormat() const
 {
-#if defined( SYPHON_SUPPORTED )
-	return( GL_RGBA8 );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::RGBA8_UNorm );
 }
 
-quint32 SyphonPin::type() const
+QOpenGLTexture::PixelType SyphonPin::type() const
 {
-	return( GL_UNSIGNED_BYTE );
+	return( QOpenGLTexture::UInt8 );
 }
 
-int SyphonPin::filterMin( void ) const
+QOpenGLTexture::Filter SyphonPin::filterMin( void ) const
 {
-	return( GL_LINEAR );
+	return( QOpenGLTexture::Linear );
 }
 
-int SyphonPin::filterMag( void ) const
+QOpenGLTexture::Filter SyphonPin::filterMag( void ) const
 {
-	return( GL_LINEAR );
+	return( QOpenGLTexture::Linear );
 }
 
-int SyphonPin::wrapS( void ) const
+QOpenGLTexture::WrapMode SyphonPin::wrapS( void ) const
 {
-#if defined( SYPHON_SUPPORTED )
-	return( GL_CLAMP );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::ClampToEdge );
 }
 
-int SyphonPin::wrapT( void ) const
+QOpenGLTexture::WrapMode SyphonPin::wrapT( void ) const
 {
-#if defined( SYPHON_SUPPORTED )
-	return( GL_CLAMP );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::ClampToEdge );
 }
 
-int SyphonPin::wrapR( void ) const
+QOpenGLTexture::WrapMode SyphonPin::wrapR( void ) const
 {
-#if defined( SYPHON_SUPPORTED )
-	return( GL_CLAMP );
-#else
-	return( 0 );
-#endif
+	return( QOpenGLTexture::ClampToEdge );
 }
 
 bool SyphonPin::genMipMaps( void ) const
 {
 	return( false );
-}
-
-void SyphonPin::setSize( qint32, qint32, qint32 )
-{
-
-}
-
-void SyphonPin::setSize( const QVector3D & )
-{
-
-}
-
-void SyphonPin::setTarget( quint32 )
-{
-}
-
-void SyphonPin::setFormat( quint32 )
-{
-}
-
-void SyphonPin::setType( quint32 )
-{
-}
-
-void SyphonPin::setInternalFormat( quint32 )
-{
-}
-
-void SyphonPin::update()
-{
-
-}
-
-void SyphonPin::update( const unsigned char *, int, int, int )
-{
-}
-
-void SyphonPin::setFilter( quint32, quint32 )
-{
-}
-
-void SyphonPin::setWrap( quint32, quint32, quint32 )
-{
-}
-
-void SyphonPin::setGenMipMaps( bool )
-{
 }
 
 void SyphonPin::free()

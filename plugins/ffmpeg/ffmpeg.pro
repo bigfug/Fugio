@@ -148,6 +148,15 @@ windows {
 }
 
 #------------------------------------------------------------------------------
+# Linux
+
+unix:!macx {
+    target.path = $$INSTALLBASE/usr/lib/fugio
+
+    INSTALLS += target
+}
+
+#------------------------------------------------------------------------------
 # API
 
 INCLUDEPATH += $$PWD/../../include
@@ -159,6 +168,12 @@ linux:exists( /usr/local/include/libavformat/avformat.h ) {
 	LIBS += -L/usr/local/lib
 
 	#DEFINES += FFMPEG_SUPPORTED
+}
+
+unix:exists( /usr/include/arm-linux-gnueabihf/libavformat/avformat.h ) {
+#    INCLUDEPATH += -l/usr/include/arm-linux-gnueabihf
+
+    DEFINES += FFMPEG_SUPPORTED
 }
 
 windows:contains( DEFINES, FFMPEG_SUPPORTED ) {

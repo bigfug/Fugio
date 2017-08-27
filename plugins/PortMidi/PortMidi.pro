@@ -93,15 +93,9 @@ windows {
 # Linux
 
 unix:!macx {
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+    target.path = $$INSTALLBASE/usr/lib/fugio
 
-	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-		target.path = Desktop/Fugio/plugins
-	} else {
-		target.path = $$shell_path( $$INSTALLDIR/data/plugins )
-	}
-
-	INSTALLS += target
+    INSTALLS += target
 }
 
 #------------------------------------------------------------------------------
@@ -151,12 +145,12 @@ macx {
 
 unix:!macx {
 	exists( $$[QT_SYSROOT]/usr/include/portmidi.h ) {
-		INCLUDEPATH += $$[QT_SYSROOT]/usr/include
-		LIBS += -L$$[QT_SYSROOT]/usr/lib -lportmidi
+#		INCLUDEPATH += $$[QT_SYSROOT]/usr/include
+                LIBS += -lportmidi
 		DEFINES += PORTMIDI_SUPPORTED
 
 	} else:exists( /usr/include/portmidi.h ) {
-		INCLUDEPATH += /usr/include
+#		INCLUDEPATH += /usr/include
 		LIBS += -L/usr/lib -lportmidi
 		DEFINES += PORTMIDI_SUPPORTED
 	}

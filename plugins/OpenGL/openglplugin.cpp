@@ -42,6 +42,7 @@
 #include "viewportmatrixnode.h"
 #include "cubemaprendernode.h"
 #include "texturemonitornode.h"
+#include "rendertotexturenode.h"
 
 #include "texturepin.h"
 #include "renderpin.h"
@@ -88,11 +89,12 @@ ClassEntry		OpenGLPlugin::mNodeClasses[] =
 	ClassEntry( "Draw", "OpenGL", NID_OPENGL_DRAW, &DrawNode::staticMetaObject ),
 	ClassEntry( "Image to Texture", "OpenGL", NID_OPENGL_IMAGE_TO_TEXTURE, &ImageToTextureNode::staticMetaObject ),
 	ClassEntry( "Instance Buffer", "OpenGL", NID_OPENGL_INSTANCE_BUFFER, &InstanceBufferNode::staticMetaObject ),
-//	ClassEntry( "Preview", "OpenGL", NID_OPENGL_PREVIEW, &PreviewNode::staticMetaObject ),
+	ClassEntry( "Preview", "OpenGL", NID_OPENGL_PREVIEW, &PreviewNode::staticMetaObject ),
 	ClassEntry( "Window", "OpenGL", NID_OPENGL_WINDOW, &WindowNode::staticMetaObject ),
 	ClassEntry( "Shader Compiler", "OpenGL", NID_OPENGL_SHADER_COMPILER, &ShaderCompilerNode::staticMetaObject ),
 	ClassEntry( "State", "OpenGL", NID_OPENGL_STATE, &StateNode::staticMetaObject ),
 	ClassEntry( "Render", "OpenGL", NID_OPENGL_RENDER, &RenderNode::staticMetaObject ),
+	ClassEntry( "Render To Texture", "OpenGL", NID_OPENGL_RENDER_TO_TEXTURE, &RenderToTextureNode::staticMetaObject ),
 	ClassEntry( "Shader Instance", "OpenGL", NID_OPENGL_SHADER_INSTANCE, &ShaderInstanceNode::staticMetaObject ),
 	ClassEntry( "Texture", "OpenGL", NID_OPENGL_TEXTURE, &TextureNode::staticMetaObject ),
 	ClassEntry( "Texture To Image", "OpenGL", NID_OPENGL_TEXTURE_TO_IMAGE, &TextureToImageNode::staticMetaObject ),
@@ -309,13 +311,6 @@ void OpenGLPlugin::checkErrors( void )
 		return;
 	}
 
-#if defined( Q_OS_RASPBERRY_PI )
-	for( GLenum e = eglGetError() ; e != EGL_SUCCESS ; e = eglGetError() )
-	{
-		qDebug() << "EGL" << QString::number( e, 16 );
-	}
-#endif
-
 	for( GLenum e = glGetError() ; e != GL_NO_ERROR ; e = glGetError() )
 	{
 #if defined( GLU_VERSION )
@@ -338,13 +333,6 @@ void OpenGLPlugin::checkErrors( const char *file, int line )
 		return;
 	}
 
-#if defined( Q_OS_RASPBERRY_PI )
-	for( GLenum e = eglGetError() ; e != EGL_SUCCESS ; e = eglGetError() )
-	{
-		qDebug() << "EGL" << file << line << ":" << QString::number( e, 16 );
-	}
-#endif
-
 	for( GLenum e = glGetError() ; e != GL_NO_ERROR ; e = glGetError() )
 	{
 #if defined( GLU_VERSION )
@@ -366,13 +354,6 @@ void OpenGLPlugin::checkErrors(const QString &pContext, const char *file, int li
 	{
 		return;
 	}
-
-#if defined( Q_OS_RASPBERRY_PI )
-	for( GLenum e = eglGetError() ; e != EGL_SUCCESS ; e = eglGetError() )
-	{
-		qDebug() << "EGL" << file << line << ":" << QString::number( e, 16 );
-	}
-#endif
 
 	for( GLenum e = glGetError() ; e != GL_NO_ERROR ; e = glGetError() )
 	{
@@ -403,13 +384,12 @@ QString OpenGLPlugin::framebufferError( GLenum pErrorCode )
 		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:	return( "GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT" );
 		case GL_FRAMEBUFFER_UNSUPPORTED:	return( "GL_FRAMEBUFFER_UNSUPPORTED" );
 		case GL_FRAMEBUFFER_COMPLETE:	return( "GL_FRAMEBUFFER_COMPLETE" );
-
-#if !defined( GL_ES_VERSION_2_0 )
 		case GL_FRAMEBUFFER_UNDEFINED:	return( "GL_FRAMEBUFFER_UNDEFINED" );
+		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:	return( "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE" );
+#if !defined( Q_OS_RASPBERRY_PI )
+		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:	return( "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS" );
 		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:	return( "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER" );
 		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:	return( "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER" );
-		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:	return( "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE" );
-		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:	return( "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS" );
 #endif
 	}
 
@@ -423,11 +403,7 @@ void OpenGLPlugin::deviceConfigGui( QWidget *pParent )
 
 bool OpenGLPlugin::hasContextStatic()
 {
-#if defined( GL_ES_VERSION_2_0 )
-	return( eglGetCurrentContext() != 0 );
-#else
-	return( QOpenGLContext::currentContext() && glewExperimental == GL_TRUE );
-#endif
+	return( QOpenGLContext::currentContext() );
 }
 
 bool OpenGLPlugin::openWindowFullScreen() const
@@ -632,10 +608,8 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_WRAP( GL_REPEAT );
 		INSERT_WRAP( GL_CLAMP_TO_EDGE );
 		INSERT_WRAP( GL_MIRRORED_REPEAT );
-#if !defined( GL_ES_VERSION_2_0 )
+#if !defined( Q_OS_RASPBERRY_PI )
 		INSERT_WRAP( GL_CLAMP_TO_BORDER );
-		INSERT_WRAP( GL_CLAMP );
-		INSERT_WRAP( GL_MIRROR_CLAMP_TO_EDGE );
 #endif
 	}
 
@@ -662,16 +636,13 @@ void OpenGLPlugin::initGLEW()
 		return;
 	}
 
-	if( glewExperimental == GL_FALSE )
+	static bool Initialised = false;
+
+	if( !Initialised )
 	{
-		glewExperimental = GL_TRUE;
+		initializeOpenGLFunctions();
 
-		if( glewInit() != GLEW_OK )
-		{
-			qWarning() << "GLEW did not initialise";
-
-			return;
-		}
+		Initialised = GL_TRUE;
 
 		qDebug() << "GL_VENDOR" << QString( (const char *)glGetString( GL_VENDOR ) );
 

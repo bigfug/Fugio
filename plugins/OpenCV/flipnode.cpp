@@ -44,7 +44,7 @@ void FlipNode::inputsUpdated( qint64 pTimeStamp )
 
 	cv::flip( MatSrc, mMatImg, 0 );
 
-	OpenCVPlugin::mat2image( mMatImg, mOutputImage );
+	OpenCVPlugin::mat2image( mMatImg, mOutputImage, SrcImg->format() );
 
 	pinUpdated( mPinOutputImage );
 #endif

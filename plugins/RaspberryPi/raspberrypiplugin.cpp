@@ -13,16 +13,21 @@
 #if defined( Q_OS_RASPBERRY_PI )
 #include <bcm_host.h>
 #include <unistd.h>
+
+#include <IL/OMX_Core.h>
 #endif
 
 #if defined( PIGPIO_SUPPORTED )
 #include <pigpiod_if2.h>
 #endif
 
+#include "sourcenode.h"
+
 QList<QUuid>	NodeControlBase::PID_UUID;
 
 ClassEntry	NodeClasses[] =
 {
+	ClassEntry( "Source", "OMX", NID_OMX_SOURCE, &SourceNode::staticMetaObject ),
 	ClassEntry()
 };
 
@@ -58,21 +63,45 @@ PluginInterface::InitResult RasperryPiPlugin::initialise( fugio::GlobalInterface
 
 	//-------------------------------------------------------------------------
 
-#if defined( QT_DEBUG ) && defined( PIGPIO_SUPPORTED )
-	int		PiId = pigpio_start( NULL, NULL );
-
-	if( PiId < 0 )
+#if defined( Q_OS_RASPBERRY_PI )
+	if( OMX_Init() != OMX_ErrorNone )
 	{
-		return( INIT_FAILED );
+		qWarning() << "OMX_Init failed";
 	}
 
-	for( unsigned p = 0 ; p <= 53 ; p++ )
+#if defined( QT_DEBUG )
+	OMX_ERRORTYPE	OMXErr = OMX_ErrorNone;
+	char			OMXStr[ 256 ];
+
+	for( int i = 0 ; OMXErr == OMX_ErrorNone ; i++ )
 	{
-		qDebug() << p << get_mode( PiId, p );
+		OMXErr = OMX_ComponentNameEnum( OMXStr, sizeof( OMXStr ), i );
+
+		if( OMXErr == OMX_ErrorNone )
+		{
+			qDebug() << QString::fromLatin1( OMXStr );
+		}
 	}
+#endif
 
-	pigpio_stop( PiId );
+#endif
 
+#if defined( PIGPIO_SUPPORTED )
+	mPigPioInit = pigpio_start( NULL, NULL );
+
+	if( mPigPioInit >= 0 )
+	{
+#if defined( QT_DEBUG )
+		for( unsigned p = 0 ; p <= 53 ; p++ )
+		{
+			qDebug() << p << get_mode( mPigPioInit, p );
+		}
+#endif
+	}
+	else
+	{
+		qWarning() << "pigpio didn't start - is the daemon running?";
+	}
 #endif
 
 	return( INIT_OK );
@@ -81,6 +110,14 @@ PluginInterface::InitResult RasperryPiPlugin::initialise( fugio::GlobalInterface
 void RasperryPiPlugin::deinitialise( void )
 {
 #if defined( PIGPIO_SUPPORTED )
+	if( mPigPioInit >= 0 )
+	{
+		pigpio_stop( mPigPioInit );
+	}
+#endif
+
+#if defined( Q_OS_RASPBERRY_PI )
+	OMX_Deinit();
 #endif
 
 	mApp->unregisterPinClasses( PinClasses );

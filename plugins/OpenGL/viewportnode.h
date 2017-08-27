@@ -11,7 +11,7 @@
 #include <fugio/render_interface.h>
 #include <fugio/opengl/node_render_interface.h>
 
-class ViewportNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface
+class ViewportNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface, private QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::NodeRenderInterface )

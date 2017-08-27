@@ -6,6 +6,10 @@
 #include <QVector2D>
 #include <QVector3D>
 #include <QVector4D>
+#include <QOpenGLVertexArrayObject>
+
+#include <QOpenGLExtraFunctions>
+#include <QOpenGLFunctions_3_2_Core>
 
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
@@ -87,10 +91,7 @@ bool ShaderInstanceNode::initialise()
 
 void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( !OpenGLPlugin::hasContextStatic() )
-	{
-		return;
-	}
+	OPENGL_DEBUG( mNode->name() );
 
 	OpenGLShaderInterface	*Shader = input<OpenGLShaderInterface *>( mPinShader );
 
@@ -112,8 +113,6 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		return;
 	}
-
-	OPENGL_DEBUG( mNode->name() );
 
 	//-------------------------------------------------------------------------
 
@@ -142,6 +141,13 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		return;
 	}
+
+	if( !OpenGLPlugin::hasContextStatic() )
+	{
+		return;
+	}
+
+	initializeOpenGLFunctions();
 
 	//-------------------------------------------------------------------------
 
@@ -183,17 +189,15 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 	OPENGL_DEBUG( mNode->name() );
 
-#if !defined( GL_ES_VERSION_2_0 )
 	//-------------------------------------------------------------------------
 	// Bind our Vertex Array Object (if supported)
 
 	fugio::VertexArrayObjectInterface	*VAO = input<fugio::VertexArrayObjectInterface *>( mPinInputVAO );
 
-	if( VAO && VAO->vao() )
+	if( VAO )
 	{
-		glBindVertexArray( VAO->vao() );
+		VAO->vaoBind();
 	}
-#endif
 
 	//-------------------------------------------------------------------------
 
@@ -211,6 +215,10 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 	}
 
 	//-------------------------------------------------------------------------
+
+#if !defined( GL_ES_VERSION_2_0 )
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+#endif
 
 	GLint PassVarLocation = glGetUniformLocation( Shader->programId(), variant( mPinInputPassVar ).toString().toLatin1().constData() );
 
@@ -247,11 +255,12 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 				if( Buffers.isEmpty() )
 				{
-					glDrawBuffer( GL_NONE );
+					Buffers.append( GL_NONE );
 				}
-				else
+
+				if( GLEX )
 				{
-					glDrawBuffers( Buffers.size(), Buffers.data() );
+					GLEX->glDrawBuffers( Buffers.size(), Buffers.data() );
 				}
 
 				OPENGL_DEBUG( mNode->name() );
@@ -264,9 +273,9 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 					glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-					if( GLEW_ARB_vertex_array_object )
+					if( VAO )
 					{
-						glBindVertexArray( 0 );
+						VAO->vaoRelease();
 					}
 
 					mNode->setStatus( fugio::NodeInterface::Error );
@@ -374,18 +383,12 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 	glUseProgram( 0 );
 
-#if defined( glDrawBuffer )
-	glDrawBuffer( GL_BACK );
-#endif
-
 	//-------------------------------------------------------------------------
 
-#if !defined( GL_ES_VERSION_2_0 )
-	if( GLEW_ARB_vertex_array_object )
+	if( VAO )
 	{
-		glBindVertexArray( 0 );
+		VAO->vaoRelease();
 	}
-#endif
 
 	OPENGL_DEBUG( mNode->name() );
 
@@ -511,7 +514,7 @@ int ShaderInstanceNode::activeBufferCount( QList< QSharedPointer<fugio::PinInter
 
 		fugio::OpenGLBufferInterface	*OutBuf = output<fugio::OpenGLBufferInterface *>( OutPin );
 
-		if( OutBuf && OutBuf->buffer() )
+		if( OutBuf && OutBuf->buffer() && OutBuf->buffer()->isCreated() )
 		{
 			ActiveBufferCount++;
 
@@ -524,6 +527,15 @@ int ShaderInstanceNode::activeBufferCount( QList< QSharedPointer<fugio::PinInter
 
 void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSharedPointer<fugio::PinInterface> > &OutPinLst, int &W, int &H, int &D )
 {
+#if !defined( QT_OPENGL_ES_2 )
+	QOpenGLFunctions_3_2_Core	*GL32 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_2_Core>();
+
+	if( GL32 && !GL32->initializeOpenGLFunctions() )
+	{
+		GL32 = Q_NULLPTR;
+	}
+#endif
+
 	for( QSharedPointer<fugio::PinInterface> &OutPin : OutPinLst )
 	{
 		OpenGLTextureInterface		*OutTex = output<OpenGLTextureInterface *>( OutPin );
@@ -566,20 +578,19 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 
 		switch( OutTex->target() )
 		{
-#if !defined( GL_ES_VERSION_2_0 )
-			case GL_TEXTURE_1D:
+			case QOpenGLTexture::Target1D:
+#if !defined( QT_OPENGL_ES_2 )
+				if( GL32 )
 				{
-					glFramebufferTexture1D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
-
-					Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
+					GL32->glFramebufferTexture1D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
 				}
-				break;
 #endif
+
+				Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
+				break;
 
 			case GL_TEXTURE_2D:
-#if defined( GL_TEXTURE_RECTANGLE )
-			case GL_TEXTURE_RECTANGLE:
-#endif
+			case QOpenGLTexture::TargetRectangle:
 				if( !OutTex->isDepthTexture() )
 				{
 					glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0 );
@@ -609,25 +620,20 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 				}
 				break;
 
-#if defined( glFramebufferTexture3D )
 			case GL_TEXTURE_3D:
-				if( true )
+#if !defined( QT_OPENGL_ES_2 )
+				if( GL32 )
 				{
-					glFramebufferTexture3D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0, 0 );
+					GL32->glFramebufferTexture3D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->target(), OutTex->dstTexId(), 0, 0 );
 				}
-
-				if( false )
-				{
-					glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + Buffers.size(), OutTex->dstTexId(), 0 );
-				}
+#endif
 
 				Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
 				break;
-#endif
 		}
-
-		OPENGL_DEBUG( mNode->name() );
 	}
+
+	OPENGL_DEBUG( mNode->name() );
 }
 
 void ShaderInstanceNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
@@ -640,6 +646,8 @@ void ShaderInstanceNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 	{
 		return;
 	}
+
+	initializeOpenGLFunctions();
 
 	OpenGLShaderInterface	*Shader = input<OpenGLShaderInterface *>( mPinShader );
 
@@ -656,17 +664,15 @@ void ShaderInstanceNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	QList< QSharedPointer<fugio::PinInterface> >	InpPinLst = mNode->enumInputPins();
 
-#if !defined( GL_ES_VERSION_2_0 )
 	//-------------------------------------------------------------------------
 	// Bind our Vertex Array Object (if supported)
 
 	fugio::VertexArrayObjectInterface	*VAO = input<fugio::VertexArrayObjectInterface *>( mPinInputVAO );
 
-	if( VAO && VAO->vao() )
+	if( VAO )
 	{
-		glBindVertexArray( VAO->vao() );
+		VAO->vaoBind();
 	}
-#endif
 
 	//-------------------------------------------------------------------------
 
@@ -747,12 +753,10 @@ void ShaderInstanceNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	releaseInputTextures( Bindings );
 
-#if !defined( GL_ES_VERSION_2_0 )
-	if( GLEW_ARB_vertex_array_object )
+	if( VAO )
 	{
-		glBindVertexArray( 0 );
+		VAO->vaoRelease();
 	}
-#endif
 
 	OPENGL_DEBUG( mNode->name() );
 }
@@ -775,6 +779,8 @@ void ShaderInstanceNode::bindUniforms( QList<ShaderBindData> &Bindings )
 {
 	bool		NumberOK;
 
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+
 	OpenGLShaderInterface					*Shader = input<OpenGLShaderInterface *>( mPinShader );
 	fugio::NodeInterface					*CompilerNode = mPinShader->connectedNode();
 
@@ -784,7 +790,7 @@ void ShaderInstanceNode::bindUniforms( QList<ShaderBindData> &Bindings )
 		QSharedPointer<fugio::PinInterface>	 PIN = mNode->findPinByName( it.key() );
 		QSharedPointer<PinControlInterface>	 PinControl;
 
-		if( PIN && PIN ->isConnected() )
+		if( PIN && PIN->isConnected() )
 		{
 			PinControl = PIN->connectedPin()->control();
 		}
@@ -979,13 +985,11 @@ void ShaderInstanceNode::bindUniforms( QList<ShaderBindData> &Bindings )
 				{
 					GLboolean		NewVal = PinVar.toBool();
 
-#if !defined( GL_ES_VERSION_2_0 )
-					if( GL_VERSION_3_0 )
+					if( GLEX )
 					{
-						glUniform1ui( UniformData.mLocation, NewVal );
+						GLEX->glUniform1ui( UniformData.mLocation, NewVal );
 					}
 					else
-#endif
 					{
 						glUniform1i( UniformData.mLocation, NewVal );
 					}
