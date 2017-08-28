@@ -46,12 +46,13 @@ endif()
 if( FUGIO_INSTALL_TYPE STREQUAL "QtIFW" )
 	message( STATUS "QtIFW Installer" )
 	
-	set( PATH_BASE		packages/com.bigfug.fugio/data )
+	set( PATH_BASE		packages/com.bigfug.fugio )
+	set( PATH_DATA		${PATH_BASE}/data )
 
-	set( PATH_APP		${PATH_BASE} )
-	set( PATH_INCLUDE	${PATH_BASE}/include )
-	set( PATH_SHARE		${PATH_BASE} )
-	set( PATH_PLUGIN	${PATH_BASE}/plugins )
+	set( PATH_APP		${PATH_DATA} )
+	set( PATH_INCLUDE	${PATH_DATA}/include )
+	set( PATH_SHARE		${PATH_DATA} )
+	set( PATH_PLUGIN	${PATH_DATA}/plugins )
 
 	if( WIN32 )
 		if( IS_64_BIT )
@@ -77,7 +78,7 @@ if( FUGIO_INSTALL_TYPE STREQUAL "QtIFW" )
   
 	add_custom_target( configure_qtifw ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/package.xml ${CMAKE_CURRENT_BINARY_DIR}/config.xml ) 
 	
-	install( FILES ${CMAKE_CURRENT_BINARY_DIR}/package.xml	DESTINATION meta )
+	install( FILES ${CMAKE_CURRENT_BINARY_DIR}/package.xml	DESTINATION ${PATH_BASE}/meta )
 	install( FILES ${CMAKE_CURRENT_BINARY_DIR}/config.xml	DESTINATION config )
 endif()
 

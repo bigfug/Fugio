@@ -50,12 +50,12 @@ if( WIN32 )
 		target_compile_definitions( ${PROJECT_NAME} PRIVATE DLIB_SUPPORTED )
 	endif( DLIB_DIR AND DLIB_LIB )
 else( WIN32 )
-#find_package( dlib )
-#
-#if( dlib_LIBS )
-#	target_link_libraries( ${PROJECT_NAME} ${dlib_LIBS} )
-#
-#	add_definitions( -DDLIB_SUPPORTED )
-#endif()
+	find_package( dlib )
+
+	if( dlib_LIBS )
+		target_link_libraries( ${PROJECT_NAME} ${dlib_LIBS} )
+
+		add_definitions( -DDLIB_SUPPORTED )
+	endif()
 endif( WIN32 )
 

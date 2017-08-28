@@ -68,7 +68,11 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 #—————————————————————————————————-
 # Install
 
-install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/ffmpeg )
+if( WIN32 )
+	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/ffmpeg )
+else( WIN32 )
+	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+endif( WIN32 )
 
 #—————————————————————————————————-
 # Qt5
@@ -113,20 +117,12 @@ endif( WIN32 )
 #—————————————————————————————————-
 # snappy
 
-include( FindPkgConfig )
+find_package( SNAPPY QUIET )
 
-if( NOT PKG_CONFIG_FOUND )
-	pkg_search_module( snappy REQUIRED snappy )
-endif( NOT PKG_CONFIG_FOUND )
+if( SNAPPY_FOUND )
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${SNAPPY_INCLUDE_DIR} )
 
-if( snappy_FOUND )
-	target_include_directories( ${PROJECT_NAME} PRIVATE ${snappy_INCLUDE_DIRS} )
-
-	find_library( snappy_LIBRARY NAMES ${snappy_LIBRARIES} PATHS ${snappy_LIBRARY_DIRS} )
-
-	message( ${snappy_LIBRARY} )
-
-	target_link_libraries( ${PROJECT_NAME} ${snappy_LIBRARY} )
+	target_link_libraries( ${PROJECT_NAME} ${SNAPPY_LIBRARIES} )
 else()
 	message( "snappy not found" )
 endif()

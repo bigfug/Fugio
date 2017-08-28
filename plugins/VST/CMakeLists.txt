@@ -47,11 +47,35 @@ install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 find_package( vst3sdk QUIET )
 
-if( vst3sdk_FOUND )
-	target_link_libraries( ${PROJECT_NAME} vst3sdk )
+#LIBS += -F/Library/Frameworks
 
-	target_compile_definitions( ${PROJECT_NAME} PRIVATE VST_SUPPORTED )
+#LIBS += -framework CoreFoundation
+
+#SOURCES += "$$(LIBS)/VST3 SDK/public.sdk/source/common/memorystream.cpp"
+
+#HEADERS += "$$(LIBS)/VST3 SDK/public.sdk/source/common/memorystream.h"
+
+if( VST3SDK_FOUND )
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${VST3SDK_INCLUDE_DIR} )
+
+	target_link_libraries( ${PROJECT_NAME} ${VST3SDK_LIBRARIES} )
+
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE VST_SUPPORTED RELEASE )
+
+	target_sources( ${PROJECT_NAME} PRIVATE
+		"${VST3SDK_INCLUDE_DIR}/public.sdk/source/common/memorystream.h"
+		"${VST3SDK_INCLUDE_DIR}/public.sdk/source/common/memorystream.cpp"
+		)
+
 else()
 	message( "VST is not configured" )
 endif()
 
+if( APPLE )
+	find_library( CoreFoundation_LIBRARY CoreFoundation )
+
+	target_link_libraries( ${PROJECT_NAME}
+		${CoreFoundation_LIBRARY}
+		)
+
+endif( APPLE )

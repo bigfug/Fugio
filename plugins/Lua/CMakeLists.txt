@@ -56,7 +56,7 @@ endif()
 #—————————————————————————————————-
 # Install
 
-install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 if( WIN32 )
 	string( REPLACE ".lib" ".dll" LUA_DLL ${LUA_LIBRARIES} )

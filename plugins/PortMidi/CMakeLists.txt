@@ -38,15 +38,17 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 #------------------------------------------------------------------------------
 # Install
 
-install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 #------------------------------------------------------------------------------
 # PortMidi
 
-find_package( PortMidi QUIET )
+find_package( PORTMIDI QUIET )
 
-if( PortMidi_FOUND )
-	target_link_libraries( ${PROJECT_NAME} PortMidi )
+if( PORTMIDI_FOUND )
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${PORTMIDI_INCLUDE_DIR} )
+
+	target_link_libraries( ${PROJECT_NAME} ${PORTMIDI_LIBRARIES} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE PORTMIDI_SUPPORTED )
 else()

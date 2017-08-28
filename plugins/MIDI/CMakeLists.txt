@@ -63,7 +63,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 #—————————————————————————————————-
 # Install
 
-install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 #—————————————————————————————————-
 # Qt5

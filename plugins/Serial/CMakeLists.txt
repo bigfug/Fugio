@@ -52,5 +52,9 @@ endif( Qt5SerialPort_DIR )
 #------------------------------------------------------------------------------
 # Install
 
-install( TARGETS ${PROJECT_NAME} DESTINATION plugins )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+
+#------------------------------------------------------------------------------
+
+include( ../../qtdeploy.cmake )
 

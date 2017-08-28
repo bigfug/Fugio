@@ -45,8 +45,10 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 
 find_package( videocapture QUIET )
 
-if( videocapture_FOUND )
-	target_link_libraries( ${PROJECT_NAME} videocapture )
+if( VIDEOCAPTURE_FOUND )
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${VIDEOCAPTURE_INCLUDE_DIR} )
+
+	target_link_libraries( ${PROJECT_NAME} ${VIDEOCAPTURE_LIBRARIES} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE VIDEOCAPTURE_SUPPORTED )
 else()
@@ -54,3 +56,19 @@ else()
 endif()
 
 
+if( APPLE )
+	find_library( Cocoa_LIBRARY Cocoa )
+	find_library( Carbon_LIBRARY Carbon )
+	find_library( CoreMedia_LIBRARY CoreMedia )
+	find_library( CoreVideo_LIBRARY CoreVideo )
+	find_library( AVFoundation_LIBRARY AVFoundation )
+
+	target_link_libraries( ${PROJECT_NAME}
+		${Cocoa_LIBRARY}
+		${Carbon_LIBRARY}
+		${CoreMedia_LIBRARY}
+		${CoreVideo_LIBRARY}
+		${AVFoundation_LIBRARY}
+		)
+
+endif( APPLE )
