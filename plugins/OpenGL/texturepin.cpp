@@ -68,7 +68,7 @@ quint32 TexturePin::srcTexId() const
 
 quint32 TexturePin::dstTexId() const
 {
-	return( mDstTex->textureId() );
+	return( mDstTex ? mDstTex->textureId() : 0 );
 }
 
 QOpenGLTexture::Target TexturePin::target() const
