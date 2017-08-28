@@ -55,6 +55,9 @@ else()
 	message( "videocapture is not configured" )
 endif()
 
+if( WIN32 )
+	target_link_libraries( ${PROJECT_NAME} Shlwapi Ole32 Mfplat Mf Mfuuid Mfreadwrite )
+endif( WIN32 )
 
 if( APPLE )
 	find_library( Cocoa_LIBRARY Cocoa )

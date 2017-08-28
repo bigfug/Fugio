@@ -72,11 +72,17 @@ if( FUGIO_INSTALL_TYPE STREQUAL "QtIFW" )
 		DEPENDS 
 			${CMAKE_CURRENT_BINARY_DIR}/qtifw_config.cmake 
 			${CMAKE_CURRENT_SOURCE_DIR}/config.cmake.xml 
-			${CMAKE_CURRENT_SOURCE_DIR}/package.cmake.xml 
+			${CMAKE_CURRENT_SOURCE_DIR}/package.cmake.xml
+			FugioApp/version.txt
 		COMMENT "Configuring QtIFW..." 
 			VERBATIM ) 
   
-	add_custom_target( configure_qtifw ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/package.xml ${CMAKE_CURRENT_BINARY_DIR}/config.xml ) 
+	add_custom_target( configure_qtifw ALL
+		DEPENDS
+			${CMAKE_CURRENT_BINARY_DIR}/package.xml
+			${CMAKE_CURRENT_BINARY_DIR}/config.xml
+			FugioApp/version.txt
+	) 
 	
 	install( FILES ${CMAKE_CURRENT_BINARY_DIR}/package.xml	DESTINATION ${PATH_BASE}/meta )
 	install( FILES ${CMAKE_CURRENT_BINARY_DIR}/config.xml	DESTINATION config )

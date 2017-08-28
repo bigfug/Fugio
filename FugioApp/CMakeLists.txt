@@ -157,9 +157,9 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE FUGIO_VERSION=${FUGIO_VERSIO
 
 find_package( Qt5
 	COMPONENTS Core Concurrent Gui OpenGL Network Widgets
-	OPTIONAL_COMPONENTS SerialPort WebSockets )
+	OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml )
 
-target_link_libraries( Fugio Qt5::Core Qt5::Concurrent Qt5::Network Qt5::OpenGL Qt5::WebSockets Qt5::Widgets libfugio )
+target_link_libraries( Fugio Qt5::Core Qt5::Concurrent Qt5::Gui Qt5::Network Qt5::OpenGL Qt5::Qml Qt5::Quick Qt5::QuickControls2 Qt5::QuickWidgets Qt5::SerialPort Qt5::WebSockets Qt5::Widgets libfugio )
 
 include( ../qtdeploy.cmake )
 

@@ -33,7 +33,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 
 find_package( ARToolKit )
 
-if( ARTOOKIT_FOUND )
+if( ARTOOLKIT_FOUND )
 	target_link_libraries( ${PROJECT_NAME} ARToolKit )
 
 	if( MSVC14 )
