@@ -110,6 +110,84 @@ void checkLocale( App *APP )
 	}
 }
 
+void setOpenGLType( int argc, char *argv[] )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
+	QCoreApplication::setAttribute( Qt::AA_ShareOpenGLContexts );
+#endif
+
+	//-------------------------------------------------------------------------
+
+	typedef enum OpenGLType
+	{
+		GLT_DEFAULT,
+		GLT_DESKTOP,
+		GLT_ES,
+		GLT_SOFTWARE
+	} OpenGLType;
+
+	OpenGLType		GLType = GLT_DEFAULT;
+
+	for( int i = 1 ; i < argc ; i++ )
+	{
+		if( !strcmp( argv[ i ], "--opengl" ) )
+		{
+			GLType = GLT_DESKTOP;
+
+			continue;
+		}
+
+		if( !strcmp( argv[ i ], "--gles" ) )
+		{
+			GLType = GLT_ES;
+
+			continue;
+		}
+
+
+		if( !strcmp( argv[ i ], "--glsw" ) )
+		{
+			GLType = GLT_SOFTWARE;
+
+			continue;
+		}
+	}
+
+	QSurfaceFormat	SurfaceFormat;
+
+	if( GLType == GLT_DESKTOP )
+	{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 3, 0 )
+		QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
+#endif
+
+#if !defined( QT_OPENGL_ES_2 )
+		SurfaceFormat.setDepthBufferSize( 24 );
+		SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
+		SurfaceFormat.setSamples( 4 );
+		SurfaceFormat.setVersion( 4, 5 );
+#endif
+	}
+	else if( GLType == GLT_ES )
+	{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 3, 0 )
+		QCoreApplication::setAttribute( Qt::AA_UseOpenGLES );
+#endif
+	}
+	else if( GLType == GLT_SOFTWARE )
+	{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
+		QCoreApplication::setAttribute( Qt::AA_UseSoftwareOpenGL );
+#endif
+	}
+
+#if defined( QT_DEBUG )
+	SurfaceFormat.setOption( QSurfaceFormat::DebugContext );
+#endif
+
+	QSurfaceFormat::setDefaultFormat( SurfaceFormat );
+}
+
 int main( int argc, char *argv[] )
 {
 #if defined( Q_OS_RASPBERRY_PI )
@@ -144,28 +222,7 @@ int main( int argc, char *argv[] )
 
 	//-------------------------------------------------------------------------
 
-	QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
-
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
-	QCoreApplication::setAttribute( Qt::AA_ShareOpenGLContexts );
-#endif
-
-	//-------------------------------------------------------------------------
-
-#if !defined( QT_OPENGL_ES_2 )
-	QSurfaceFormat	SurfaceFormat;
-
-	SurfaceFormat.setDepthBufferSize( 24 );
-	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
-	SurfaceFormat.setSamples( 4 );
-	SurfaceFormat.setVersion( 4, 5 );
-
-#if defined( QT_DEBUG )
-	SurfaceFormat.setOption( QSurfaceFormat::DebugContext );
-#endif
-
-	QSurfaceFormat::setDefaultFormat( SurfaceFormat );
-#endif
+	setOpenGLType( argc, argv );
 
 	//-------------------------------------------------------------------------
 
@@ -254,12 +311,16 @@ int main( int argc, char *argv[] )
 	CLP.setApplicationDescription( "Fugio Editor" );
 
 	QCommandLineOption		ClearSettingsOption( "clear-settings", "Clear all settings (mainly for testing purposes)" );
+	QCommandLineOption		SetLocaleOption( "locale", "Set default locale", "locale", QLocale().bcp47Name() );
+	QCommandLineOption		OpenGLDesktop( "opengl", "Use Desktop OpenGL" );
+	QCommandLineOption		OpenGLES( "gles", "Use OpenGL ES" );
+	QCommandLineOption		OpenGLSW( "glsw", "Use OpenGL Software" );
 
 	CLP.addOption( ClearSettingsOption );
-
-	QCommandLineOption		SetLocaleOption( "locale", "Set default locale", "locale", QLocale().bcp47Name() );
-
 	CLP.addOption( SetLocaleOption );
+	CLP.addOption( OpenGLDesktop );
+	CLP.addOption( OpenGLES );
+	CLP.addOption( OpenGLSW );
 
 	//-------------------------------------------------------------------------
 	// Register and load plugins
