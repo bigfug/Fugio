@@ -8,6 +8,7 @@
 #include <QCommandLineOption>
 #include <QOpenGLTexture>
 #include <QOpenGLFunctions>
+#include <QOpenGLShaderProgram>
 
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
@@ -46,6 +47,8 @@ public:
 	static void parseShaderErrors( QString pErrorText, QList<fugio::SyntaxError> &pErrorData );
 
 	void initGLEW( void );
+
+	static void loadShader( QSharedPointer<fugio::PinInterface> pPin, QOpenGLShaderProgram &pProgram, QOpenGLShader::ShaderType pShaderType, int &pCompiled, int &pFailed );
 
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface

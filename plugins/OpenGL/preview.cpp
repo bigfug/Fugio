@@ -29,6 +29,8 @@ void Preview::initializeGL()
 	{
 		NI->context()->nodeInitialised();
 	}
+
+	OpenGLPlugin::instance()->initGLEW();
 }
 
 void Preview::resizeGL( int w, int h )

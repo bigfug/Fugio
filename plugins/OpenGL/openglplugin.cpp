@@ -8,6 +8,8 @@
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
+#include <fugio/text/syntax_error_interface.h>
+
 #include <fugio/text/syntax_highlighter_interface.h>
 
 #include <QCommandLineParser>
@@ -43,6 +45,7 @@
 #include "cubemaprendernode.h"
 #include "texturemonitornode.h"
 #include "rendertotexturenode.h"
+#include "easyshader2dnode.h"
 
 #include "texturepin.h"
 #include "renderpin.h"
@@ -87,6 +90,7 @@ ClassEntry		OpenGLPlugin::mNodeClasses[] =
 	ClassEntry( "Context", "OpenGL", NID_OPENGL_CONTEXT, &ContextNode::staticMetaObject ),
 	ClassEntry( "CubeMap Render", "OpenGL", NID_OPENGL_CUBEMAP_RENDER, &CubeMapRenderNode::staticMetaObject ),
 	ClassEntry( "Draw", "OpenGL", NID_OPENGL_DRAW, &DrawNode::staticMetaObject ),
+	ClassEntry( "Easy Shader 2D", "OpenGL", NID_OPENGL_EASY_SHADER_2D, &EasyShader2DNode::staticMetaObject ),
 	ClassEntry( "Image to Texture", "OpenGL", NID_OPENGL_IMAGE_TO_TEXTURE, &ImageToTextureNode::staticMetaObject ),
 	ClassEntry( "Instance Buffer", "OpenGL", NID_OPENGL_INSTANCE_BUFFER, &InstanceBufferNode::staticMetaObject ),
 	ClassEntry( "Preview", "OpenGL", NID_OPENGL_PREVIEW, &PreviewNode::staticMetaObject ),
@@ -672,6 +676,71 @@ void OpenGLPlugin::initGLEW()
 		qInfo() << "Depth:" << Context->format().depthBufferSize();
 		qInfo() << "RGB:" << Context->format().redBufferSize() << Context->format().greenBufferSize() << Context->format().blueBufferSize();
 	}
+}
+
+void OpenGLPlugin::loadShader( QSharedPointer<PinInterface> pPin, QOpenGLShaderProgram &pProgram, QOpenGLShader::ShaderType pShaderType, int &pCompiled, int &pFailed )
+{
+	fugio::SyntaxErrorInterface *SyntaxErrors = Q_NULLPTR;
+
+	if( pPin->isConnected() && !pPin->connectedPin()->hasControl() )
+	{
+		SyntaxErrors = qobject_cast<fugio::SyntaxErrorInterface *>( pPin->connectedPin()->control()->qobject() );
+	}
+
+	QString			Source;
+
+	if( !pPin->isConnected() || !pPin->connectedPin()->hasControl() )
+	{
+		Source = pPin->value().toString();
+	}
+	else
+	{
+		fugio::VariantInterface	*V = qobject_cast<fugio::VariantInterface *>( pPin->connectedPin()->control()->qobject() );
+
+		Source = ( V ? V->variant().toString() : pPin->value().toString() );
+	}
+
+	if( Source.isEmpty() )
+	{
+		if( SyntaxErrors )
+		{
+			SyntaxErrors->clearSyntaxErrors();
+		}
+
+		return;
+	}
+
+	if( !pProgram.addShaderFromSourceCode( pShaderType, Source ) )
+	{
+		QString		Log = pProgram.log();
+
+		if( !Log.isEmpty() )
+		{
+			qWarning() << Log;
+		}
+
+		if( SyntaxErrors )
+		{
+			QList<fugio::SyntaxError>	SE;
+
+			OpenGLPlugin::parseShaderErrors( Log, SE );
+
+			if( SE.isEmpty() )
+			{
+				SyntaxErrors->clearSyntaxErrors();
+			}
+			else
+			{
+				SyntaxErrors->setSyntaxErrors( SE );
+			}
+		}
+
+		pFailed++;
+
+		return;
+	}
+
+	pCompiled++;
 }
 
 SyntaxHighlighterInstanceInterface *OpenGLPlugin::syntaxHighlighterInstance( QUuid pUuid ) const

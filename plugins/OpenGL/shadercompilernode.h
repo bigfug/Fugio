@@ -13,9 +13,9 @@
 #include <fugio/choice_interface.h>
 #include <fugio/opengl/vertex_array_object_interface.h>
 
-#include "vertexarrayobjectpin.h"
-
 #include <fugio/text/syntax_error_interface.h>
+
+#include "shadercompilerdata.h"
 
 using namespace fugio;
 
@@ -73,8 +73,6 @@ public:
 	}
 
 private:
-	void loadShader( QSharedPointer<fugio::PinInterface> pPin, QOpenGLShaderProgram &pProgram, QOpenGLShader::ShaderType pShaderType, int &pCompiled, int &pFailed );
-
 	void loadShader();
 
 protected:
@@ -98,64 +96,6 @@ protected:
 	OpenGLShaderInterface					*mOutputShader;
 
 	qint64									 mLastShaderLoad;
-
-	typedef struct ShaderCompilerData
-	{
-		ShaderUniformMap						 mShaderUniformTypes;
-		ShaderUniformMap						 mShaderAttributeTypes;
-
-		QStringList								 mUniformNames;
-		QStringList								 mAttributeNames;
-
-		QOpenGLShaderProgram					*mProgram;
-
-		ShaderCompilerData( void )
-			: mProgram( new QOpenGLShaderProgram() )
-		{
-
-		}
-
-		ShaderCompilerData( ShaderCompilerData &&other )
-			: mProgram( Q_NULLPTR ) //new QOpenGLShaderProgram() )
-		{
-			*this = std::move( other );
-		}
-
-		~ShaderCompilerData( void )
-		{
-			clear();
-
-			if( mProgram )
-			{
-				mProgram->deleteLater();
-			}
-		}
-
-		ShaderCompilerData &operator = ( ShaderCompilerData && other )
-		{
-			std::swap( mProgram, other.mProgram );
-
-			if( other.mProgram )
-			{
-				other.mProgram->removeAllShaders();
-			}
-
-			mShaderUniformTypes   = std::move( other.mShaderUniformTypes );
-			mShaderAttributeTypes = std::move( other.mShaderAttributeTypes );
-			mUniformNames         = std::move( other.mUniformNames );
-			mAttributeNames       = std::move( other.mAttributeNames );
-
-			return( *this );
-		}
-
-		void process( void );
-
-		void clear( void );
-
-	private:
-		Q_DISABLE_COPY( ShaderCompilerData )
-
-	  } ShaderCompilerData;
 
 	ShaderCompilerData						 mShaderCompilerData;
 };

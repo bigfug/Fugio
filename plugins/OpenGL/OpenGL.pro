@@ -59,7 +59,9 @@ SOURCES += openglplugin.cpp \
     texturemonitornode.cpp \
     texturemonitor.cpp \
     rendertotexturenode.cpp \
-	deviceopengloutput.cpp
+	deviceopengloutput.cpp \
+    easyshader2dnode.cpp \
+    shadercompilerdata.cpp
 
 HEADERS +=\
 	texturenode.h \
@@ -119,7 +121,9 @@ HEADERS +=\
     texturemonitornode.h \
     texturemonitor.h \
     rendertotexturenode.h \
-	deviceopengloutput.h
+	deviceopengloutput.h \
+    easyshader2dnode.h \
+    shadercompilerdata.h
 
 FORMS += \
 	texturenodeform.ui \
