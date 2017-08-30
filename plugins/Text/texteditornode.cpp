@@ -359,6 +359,16 @@ void TextEditorNode::outputLinked( QSharedPointer<PinInterface> pPin )
 	}
 
 	checkHighlighter();
+
+	if( mValOutputString->variant().toString().isEmpty() )
+	{
+		mValOutputString->setVariant( pPin->value().toString() );
+
+		if( mTextEdit )
+		{
+			mTextEdit->textEdit()->document()->setPlainText( mValOutputString->variant().toString() );
+		}
+	}
 }
 
 void TextEditorNode::outputUninked( QSharedPointer<PinInterface> pPin )
