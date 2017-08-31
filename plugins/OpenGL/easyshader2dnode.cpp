@@ -362,7 +362,10 @@ void EasyShader2DNode::updateInputPins()
 {
 	initializeOpenGLFunctions();
 
-	mShaderCompilerData.mProgram->bind();
+	if( !mShaderCompilerData.mProgram->bind() )
+	{
+		return;
+	}
 
 	for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
 	{
