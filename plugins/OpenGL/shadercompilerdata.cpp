@@ -136,7 +136,7 @@ void ShaderCompilerData::process()
 				case GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE:
 				case GL_SAMPLER:
 					UniformData.mSampler = true;
-					UniformData.mTextureBinding = ++TextureBinding;
+					UniformData.mTextureBinding = TextureBinding++;
 
 					// fall through...
 

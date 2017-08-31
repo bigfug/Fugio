@@ -39,8 +39,8 @@ EasyShader2DNode::EasyShader2DNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinOutputTexture = pinOutput( "Texture", PIN_OUTPUT_TEXTURE );
 
 	mPinInputShaderVertex->setValue(
-		"attribute highp vec2 vertex;\n"
-		"varying highp vec2 TextureCoords;\n"
+		"attribute highp vec2 vertex;\n\n"
+		"varying highp vec2 TextureCoords;\n\n"
 		"void main( void )\n"
 		"{\n"
 		"	gl_Position = vec4( vertex, 0, 1 );\n"
@@ -48,7 +48,7 @@ EasyShader2DNode::EasyShader2DNode( QSharedPointer<fugio::NodeInterface> pNode )
 		"}\n" );
 
 	mPinInputShaderFragment->setValue(
-		"varying highp vec2 TextureCoords;\n"
+		"varying highp vec2 TextureCoords;\n\n"
 		"void main( void )\n"
 		"{\n"
 		"	gl_FragColor = vec4( TextureCoords, 0.5, 1 );\n"
@@ -100,14 +100,11 @@ void EasyShader2DNode::inputsUpdated( qint64 pTimeStamp )
 
 	pinUpdated( mPinOutputRender );
 
-	if( mPinInputTrigger->isUpdated( pTimeStamp ) )
+	if( mPinOutputTexture->isConnected() && QOpenGLContext::currentContext() )
 	{
-		if( mPinOutputTexture->isConnected() && QOpenGLContext::currentContext() )
-		{
-			renderToTexture( pTimeStamp );
+		renderToTexture( pTimeStamp );
 
-			pinUpdated( mPinOutputTexture );
-		}
+		pinUpdated( mPinOutputTexture );
 	}
 }
 
@@ -129,6 +126,35 @@ void EasyShader2DNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		return;
 	}
 
+	for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
+	{
+		if( P == mPinInputTrigger || P == mPinInputShaderVertex || P == mPinInputShaderFragment )
+		{
+			continue;
+		}
+
+		int		UniIdx = mShaderCompilerData.mUniformNames.indexOf( P->name() );
+
+		if( UniIdx < 0 )
+		{
+			continue;
+		}
+
+		ShaderUniformData	UniDat = mShaderCompilerData.mShaderUniformTypes.value( P->name() );
+
+		if( UniDat.mSampler )
+		{
+			fugio::OpenGLTextureInterface	*TexInf = input<fugio::OpenGLTextureInterface *>( P );
+
+			if( TexInf )
+			{
+				glActiveTexture( GL_TEXTURE0 + UniDat.mTextureBinding );
+
+				TexInf->srcBind();
+			}
+		}
+	}
+
 	GLint	VertexLocation = mShaderCompilerData.mProgram->attributeLocation( "vertex" );
 
 	static const GLfloat Verticies[] =
@@ -141,9 +167,9 @@ void EasyShader2DNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	if( !mVAO.isCreated() )
 	{
-		mShaderCompilerData.mProgram->setAttributeArray( VertexLocation, Verticies, 2 );
+		glVertexAttribPointer( VertexLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
 
-		mShaderCompilerData.mProgram->enableAttributeArray( VertexLocation );
+		glEnableVertexAttribArray( VertexLocation );
 	}
 	else
 	{
@@ -175,7 +201,7 @@ void EasyShader2DNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 	}
 	else
 	{
-		mShaderCompilerData.mProgram->disableAttributeArray( VertexLocation );
+		glDisableVertexAttribArray( VertexLocation );
 	}
 
 	mShaderCompilerData.mProgram->release();
@@ -336,6 +362,8 @@ void EasyShader2DNode::updateInputPins()
 {
 	initializeOpenGLFunctions();
 
+	mShaderCompilerData.mProgram->bind();
+
 	for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
 	{
 		if( P == mPinInputTrigger || P == mPinInputShaderVertex || P == mPinInputShaderFragment )
@@ -354,14 +382,7 @@ void EasyShader2DNode::updateInputPins()
 
 		if( UniDat.mSampler )
 		{
-			fugio::OpenGLTextureInterface	*TexInf = input<fugio::OpenGLTextureInterface *>( P );
-
-			if( TexInf )
-			{
-				glActiveTexture( GL_TEXTURE0 + UniDat.mTextureBinding );
-
-				TexInf->srcBind();
-			}
+			mShaderCompilerData.mProgram->setUniformValue( UniDat.mLocation, UniDat.mTextureBinding );
 
 			continue;
 		}
@@ -443,5 +464,7 @@ void EasyShader2DNode::updateInputPins()
 				break;
 		}
 	}
+
+	mShaderCompilerData.mProgram->release();
 }
 
