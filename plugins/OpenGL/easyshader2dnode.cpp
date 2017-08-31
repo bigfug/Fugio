@@ -37,22 +37,6 @@ EasyShader2DNode::EasyShader2DNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mValOutputRender = pinOutput<fugio::RenderInterface *>( "Render", mPinOutputRender, PID_RENDER, PIN_OUTPUT_RENDER );
 
 	mPinOutputTexture = pinOutput( "Texture", PIN_OUTPUT_TEXTURE );
-
-	mPinInputShaderVertex->setValue(
-		"attribute highp vec2 vertex;\n\n"
-		"varying highp vec2 TextureCoords;\n\n"
-		"void main( void )\n"
-		"{\n"
-		"	gl_Position = vec4( vertex, 0, 1 );\n"
-		"	TextureCoords = ( vertex * 0.5 ) + 0.5;\n"
-		"}\n" );
-
-	mPinInputShaderFragment->setValue(
-		"varying highp vec2 TextureCoords;\n\n"
-		"void main( void )\n"
-		"{\n"
-		"	gl_FragColor = vec4( TextureCoords, 0.5, 1 );\n"
-		"}\n" );
 }
 
 bool EasyShader2DNode::initialise( void )
@@ -65,6 +49,61 @@ bool EasyShader2DNode::initialise( void )
 	if( !QOpenGLContext::currentContext() )
 	{
 		return( false );
+	}
+
+	if( mPinInputShaderVertex->value().toString().isEmpty() )
+	{
+		if( !QOpenGLContext::currentContext()->isOpenGLES() && QOpenGLContext::currentContext()->format().majorVersion() >= 3 )
+		{
+			const char *vertexSource =
+					"#version 330\n\n"
+					"in vec2 vertex;\n\n"
+					"out vec2 TextureCoords;\n\n"
+					"void main()\n"
+					"{\n"
+					"	gl_Position = vec4( vertex, 0.0, 1.0 );\n"
+					"	TextureCoords = ( vertex * 0.5 ) + 0.5;\n"
+					"}\n";
+
+			mPinInputShaderVertex->setValue( vertexSource );
+		}
+		else
+		{
+			mPinInputShaderVertex->setValue(
+				"attribute highp vec2 vertex;\n\n"
+				"varying highp vec2 TextureCoords;\n\n"
+				"void main( void )\n"
+				"{\n"
+				"	gl_Position = vec4( vertex, 0, 1 );\n"
+				"	TextureCoords = ( vertex * 0.5 ) + 0.5;\n"
+				"}\n" );
+		}
+	}
+
+	if( mPinInputShaderFragment->value().toString().isEmpty() )
+	{
+		if( !QOpenGLContext::currentContext()->isOpenGLES() && QOpenGLContext::currentContext()->format().majorVersion() >= 3 )
+		{
+			const char *fragmentSource =
+					"#version 330\n"
+					"in vec2 TextureCoords;\n"
+					"out vec4 outColor;\n\n"
+					"void main()\n"
+					"{\n"
+					"	outColor = vec4( TextureCoords, 0.5, 1 );\n"
+					"}\n";
+
+			mPinInputShaderFragment->setValue( fragmentSource );
+		}
+		else
+		{
+			mPinInputShaderFragment->setValue(
+				"varying highp vec2 TextureCoords;\n\n"
+				"void main( void )\n"
+				"{\n"
+				"	gl_FragColor = vec4( TextureCoords, 0.5, 1 );\n"
+				"}\n" );
+		}
 	}
 
 	if( !mVAO.isCreated() )
