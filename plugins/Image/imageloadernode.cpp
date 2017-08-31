@@ -15,13 +15,12 @@
 ImageLoaderNode::ImageLoaderNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
-	mPinFileName = pinInput( "Filename" );
+	FUGID( PIN_INPUT_FILENAME, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_OUTPUT_IMAGE, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
 
-	mImage = pinOutput<fugio::ImageInterface *>( "Image", mPinImage, PID_IMAGE );
-}
+	mValInputFilename = pinInput<fugio::FilenameInterface *>( "Filename", mPinFileName, PID_FILENAME, PIN_INPUT_FILENAME );
 
-ImageLoaderNode::~ImageLoaderNode( void )
-{
+	mImage = pinOutput<fugio::ImageInterface *>( "Image", mPinImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 }
 
 QWidget *ImageLoaderNode::gui( void )
@@ -71,7 +70,7 @@ void ImageLoaderNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( ImageUrl.isEmpty() )
 	{
-		ImageUrl = QUrl( ImageFileName );
+		ImageUrl = QUrl::fromLocalFile( ImageFileName );
 	}
 
 	if( !ImageUrl.isLocalFile() )

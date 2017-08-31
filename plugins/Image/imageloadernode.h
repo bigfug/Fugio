@@ -13,6 +13,7 @@
 #include <fugio/pin_control_interface.h>
 
 #include <fugio/image/image_interface.h>
+#include <fugio/file/filename_interface.h>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -29,7 +30,7 @@ class ImageLoaderNode : public fugio::NodeControlBase
 public:
 	Q_INVOKABLE explicit ImageLoaderNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~ImageLoaderNode( void );
+	virtual ~ImageLoaderNode( void ) {}
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
@@ -43,6 +44,7 @@ signals:
 
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinFileName;
+	fugio::FilenameInterface					*mValInputFilename;
 
 	QSharedPointer<fugio::PinInterface>			 mPinImage;
 	fugio::ImageInterface							*mImage;
