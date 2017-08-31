@@ -7,6 +7,7 @@
 #include <QDockWidget>
 #include <QOpenGLVertexArrayObject>
 #include <QOpenGLShaderProgram>
+#include <QOpenGLBuffer>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -48,9 +49,8 @@ protected:
 	Qt::DockWidgetArea			 mDockArea;
 	QOpenGLVertexArrayObject	 mVAO;
 	QOpenGLShaderProgram		 mShader;
-
-	GLuint						 mProgram;
-	GLuint						 mVBO;
+	QOpenGLBuffer				 mBuffer;
+	GLint						 mVertexAttribLocation;
 };
 
 #endif // TEXTUREMONITORNODE_H

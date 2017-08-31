@@ -13,7 +13,7 @@
 
 TextureMonitorNode::TextureMonitorNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mDockWidget( nullptr ), mWidget( nullptr ), mDockArea( Qt::BottomDockWidgetArea ),
-	  mVAO( 0 ), mProgram( 0 ), mVBO( 0 )
+	  mBuffer( QOpenGLBuffer::VertexBuffer )
 {
 	FUGID( PIN_INPUT_TEXTURE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 
@@ -128,20 +128,9 @@ void TextureMonitorNode::paintGL()
 		 1,  1
 	};
 
-	if( mVAO.isCreated() )
+	if( !mShader.isLinked() )
 	{
-		if( !mVBO )
-		{
-			glGenBuffers( 1, &mVBO );
-
-			glBindBuffer( GL_ARRAY_BUFFER, mVBO );
-
-			glBufferData( GL_ARRAY_BUFFER, sizeof( Vertices ), Vertices, GL_STATIC_DRAW );
-		}
-
-		OPENGL_PLUGIN_DEBUG;
-
-		if( !mProgram )
+		if( !QOpenGLContext::currentContext()->isOpenGLES() && QOpenGLContext::currentContext()->format().majorVersion() >= 3 )
 		{
 			const char *vertexSource =
 					"#version 330\n"
@@ -153,23 +142,6 @@ void TextureMonitorNode::paintGL()
 					"	tpos = ( position * 0.5 ) + 0.5;\n"
 					"}\n";
 
-			GLuint vertexShader = glCreateShader( GL_VERTEX_SHADER );
-
-			glShaderSource( vertexShader, 1, &vertexSource, NULL );
-
-			glCompileShader( vertexShader );
-
-			GLint status;
-
-			glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
-
-			if( !status )
-			{
-				mNode->setStatus( fugio::NodeInterface::Error );
-
-				return;
-			}
-
 			const char *fragmentSource =
 					"#version 330\n"
 					"uniform sampler2D tex;"
@@ -180,57 +152,17 @@ void TextureMonitorNode::paintGL()
 					"	outColor = vec4( texture( tex, tpos ).rgb, 1.0 );\n"
 					"}\n";
 
-			GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+			mShader.addShaderFromSourceCode( QOpenGLShader::Vertex, vertexSource );
 
-			glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
+			mShader.addShaderFromSourceCode( QOpenGLShader::Fragment, fragmentSource );
 
-			glCompileShader(fragmentShader);
-
-			glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
-
-			if( !status )
-			{
-				mNode->setStatus( fugio::NodeInterface::Error );
-
-				return;
-			}
-
-			mProgram = glCreateProgram();
-
-			glAttachShader( mProgram, vertexShader);
-			glAttachShader( mProgram, fragmentShader);
-
-			glLinkProgram( mProgram );
-
-			OPENGL_PLUGIN_DEBUG;
-
-			glGetProgramiv( mProgram, GL_LINK_STATUS, &status );
-
-			if( !status )
-			{
-				mNode->setStatus( fugio::NodeInterface::Error );
-
-				return;
-			}
-
-			glUseProgram( mProgram );
-
-			GLint posAttrib = glGetAttribLocation( mProgram, "position" );
-
-			glVertexAttribPointer( posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0 );
-
-			glEnableVertexAttribArray( posAttrib );
+			mShader.link();
 		}
 
-		if( mProgram )
-		{
-			glUseProgram( mProgram );
-		}
-	}
-	else
-	{
 		if( !mShader.isLinked() )
 		{
+			mShader.removeAllShaders();
+
 			mShader.addShaderFromSourceCode( QOpenGLShader::Vertex,
 				 "attribute highp vec2 position;\n"
 				 "varying highp vec2 tpos;\n"
@@ -248,17 +180,41 @@ void TextureMonitorNode::paintGL()
 				 "	gl_FragColor = vec4( texture2D( tex, tpos ).rgb, 1.0 );\n"
 				 "}\n" );
 
-			if( !mShader.link() )
-			{
-				return;
-			}
+			mShader.link();
 		}
 
-		mShader.bind();
-
-		mShader.setAttributeArray( "position", GL_FLOAT, Vertices, 2 );
-		mShader.enableAttributeArray( "position" );
+		mVertexAttribLocation = mShader.attributeLocation( "position" );
 	}
+
+	if( mVAO.isCreated() )
+	{
+		mVAO.bind();
+
+		if( !mBuffer.isCreated() )
+		{
+			if( mBuffer.create() )
+			{
+				if( mBuffer.bind() )
+				{
+					mBuffer.allocate( Vertices, sizeof( Vertices ) );
+
+					glVertexAttribPointer( mVertexAttribLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+
+					glEnableVertexAttribArray( mVertexAttribLocation );
+
+					mBuffer.release();
+				}
+			}
+		}
+	}
+	else
+	{
+		glVertexAttribPointer( mVertexAttribLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+
+		glEnableVertexAttribArray( mVertexAttribLocation );
+	}
+
+	mShader.bind();
 
 	QList<fugio::OpenGLTextureInterface *>	TexLst;
 
@@ -294,15 +250,15 @@ void TextureMonitorNode::paintGL()
 
 	OPENGL_PLUGIN_DEBUG;
 
+	mShader.release();
+
 	if( mVAO.isCreated() )
 	{
-		glUseProgram( 0 );
-
 		mVAO.release();
 	}
 	else
 	{
-		mShader.disableAttributeArray( "position" );
+		glDisableVertexAttribArray( mVertexAttribLocation );
 	}
 
 	OPENGL_PLUGIN_DEBUG;
