@@ -10,6 +10,7 @@
 #include <QTranslator>
 #include <QMessageBox>
 #include <QSurfaceFormat>
+#include <QSplashScreen>
 
 #include "contextprivate.h"
 #include "contextsubwindow.h"
@@ -22,7 +23,9 @@
 #include <bcm_host.h>
 #endif
 
-QString LogNam;
+QSplashScreen	*SplashScreen = Q_NULLPTR;
+
+QString			LogNam;
 
 void log_file( const QString &pLogDat )
 {
@@ -234,6 +237,15 @@ int main( int argc, char *argv[] )
 		return( -1 );
 	}
 
+	QPixmap pixmap( ":/icons/fugio-splash.png" );
+
+	if( ( SplashScreen = new QSplashScreen( pixmap, Qt::WindowStaysOnTopHint ) ) )
+	{
+		SplashScreen->show();
+
+		APP->processEvents();
+	}
+
 	//-------------------------------------------------------------------------
 
 	checkLocale( APP );
@@ -415,6 +427,12 @@ int main( int argc, char *argv[] )
 		}
 
 		WND->initEnd();
+
+		WND->show();
+
+		QTimer::singleShot( 500, WND, SLOT(stylesApply()) );
+
+		SplashScreen->finish( WND );
 
 		// Load patches that were specified on the command line
 
