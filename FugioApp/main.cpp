@@ -126,7 +126,7 @@ void setOpenGLType( int argc, char *argv[] )
 		GLT_SOFTWARE
 	} OpenGLType;
 
-	OpenGLType		GLType = GLT_DEFAULT;
+	OpenGLType		GLType = GLT_DESKTOP;
 
 	for( int i = 1 ; i < argc ; i++ )
 	{
@@ -360,10 +360,10 @@ int main( int argc, char *argv[] )
 		WND->initBegin();
 
 #if defined( QT_DEBUG )
-		PBG->setEnabledPlugins(
-			QStringList() <<
-			"fugio-core" <<
-			"fugio-raspberrypi" );
+//		PBG->setEnabledPlugins(
+//			QStringList() <<
+//			"fugio-core" <<
+//			"fugio-raspberrypi" );
 #endif
 
 #if defined( Q_OS_MACX ) or defined( Q_OS_LINUX )
