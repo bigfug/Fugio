@@ -522,6 +522,8 @@ void TexturePin::dstBind()
 
 void TexturePin::release()
 {
+	initializeOpenGLFunctions();
+
 	glBindTexture( mTexDsc.mTarget, 0 );
 }
 
