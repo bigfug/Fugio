@@ -360,14 +360,13 @@ void TextEditorNode::outputLinked( QSharedPointer<PinInterface> pPin )
 
 	checkHighlighter();
 
-	if( mValOutputString->variant().toString().isEmpty() )
+	if( mTextEdit && mTextEdit->textEdit()->document()->isEmpty() )
 	{
-		mValOutputString->setVariant( pPin->value().toString() );
+		QString		NewTxt = pPin->value().toString();
 
-		if( mTextEdit )
-		{
-			mTextEdit->textEdit()->document()->setPlainText( mValOutputString->variant().toString() );
-		}
+		mValOutputString->setVariant( NewTxt );
+
+		mTextEdit->textEdit()->document()->setPlainText( NewTxt );
 	}
 }
 
