@@ -201,7 +201,7 @@ void OpenGLPlugin::parseShaderErrors( QString pErrorText, QList<SyntaxError> &pE
 
 		if( P1.indexIn( S ) > -1 )
 		{
-			SE.mLineStart = SE.mLineEnd = P1.cap( 2 ).toInt();
+			SE.mLineStart = SE.mLineEnd = P1.cap( 2 ).toInt() + 1;
 
 			SE.mError = P1.cap( 3 );
 
@@ -236,14 +236,13 @@ void OpenGLPlugin::parseShaderErrors( QString pErrorText, QList<SyntaxError> &pE
 			continue;
 		}
 
-		SE.mLineStart = SE.mLineEnd   = -1;
+		SE.mLineStart = SE.mLineEnd = -1;
 
 		SE.mError = S;
 
 		pErrorData << SE;
 
 		qDebug() << S;
-
 	}
 }
 
@@ -682,9 +681,9 @@ void OpenGLPlugin::loadShader( QSharedPointer<PinInterface> pPin, QOpenGLShaderP
 {
 	fugio::SyntaxErrorInterface *SyntaxErrors = Q_NULLPTR;
 
-	if( pPin->isConnected() && !pPin->connectedPin()->hasControl() )
+	if( pPin->hasControl() )
 	{
-		SyntaxErrors = qobject_cast<fugio::SyntaxErrorInterface *>( pPin->connectedPin()->control()->qobject() );
+		SyntaxErrors = qobject_cast<fugio::SyntaxErrorInterface *>( pPin->control()->qobject() );
 	}
 
 	QString			Source;
@@ -738,6 +737,10 @@ void OpenGLPlugin::loadShader( QSharedPointer<PinInterface> pPin, QOpenGLShaderP
 		pFailed++;
 
 		return;
+	}
+	else if( SyntaxErrors )
+	{
+		SyntaxErrors->clearSyntaxErrors();
 	}
 
 	pCompiled++;
