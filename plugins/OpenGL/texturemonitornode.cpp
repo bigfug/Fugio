@@ -13,7 +13,7 @@
 
 TextureMonitorNode::TextureMonitorNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mDockWidget( nullptr ), mWidget( nullptr ), mDockArea( Qt::BottomDockWidgetArea ),
-	  mBuffer( QOpenGLBuffer::VertexBuffer )
+	  mBuffer( QOpenGLBuffer::VertexBuffer ), mVertexAttribLocation( -1 )
 {
 	FUGID( PIN_INPUT_TEXTURE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 
@@ -118,9 +118,9 @@ void TextureMonitorNode::paintGL()
 
 	glClearColor( 0, 0, 0, 0 );
 
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	glClear( GL_COLOR_BUFFER_BIT );
 
-	static const float Vertices[] =
+	static const GLfloat Vertices[] =
 	{
 		-1, -1,
 		-1,  1,
@@ -222,7 +222,7 @@ void TextureMonitorNode::paintGL()
 	{
 		fugio::OpenGLTextureInterface	*T = input<fugio::OpenGLTextureInterface *>( P );
 
-		if( T )
+		if( T && T->target() == QOpenGLTexture::Target2D )
 		{
 			TexLst << T;
 		}
