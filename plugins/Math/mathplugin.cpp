@@ -77,6 +77,15 @@
 
 #include "inttobitsnode.h"
 #include "multiplexornode.h"
+#include "bitstopinsnode.h"
+
+#include "notbitsnode.h"
+#include "nandbitsnode.h"
+#include "andbitsnode.h"
+#include "orbitsnode.h"
+#include "xorbitsnode.h"
+
+#include "flipflopnode.h"
 
 MathPlugin *MathPlugin::mInstance = nullptr;
 
@@ -87,7 +96,9 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Abs", "Number", NID_ABS, &AbsNode::staticMetaObject ),
 	ClassEntry( "Add", "Math", NID_ADD, &AddNode::staticMetaObject ),
 	ClassEntry( "AND", "Logic", NID_AND, &AndNode::staticMetaObject ),
+	ClassEntry( "AND Bits", "Logic", NID_AND_BITS, &AndBitsNode::staticMetaObject ),
 	ClassEntry( "ArcCos", "Number", NID_ARCCOS, &ArcCosNode::staticMetaObject ),
+	ClassEntry( "Bits To Pins", "Math", NID_BITS_TO_PINS, &BitsToPinsNode::staticMetaObject ),
 	ClassEntry( "Compare", "Number", NID_COMPARE_NUMBERS, &CompareNumbersNode::staticMetaObject ),
 	ClassEntry( "Cross Product", "Vector3", NID_CROSS_PRODUCT, &CrossProductNode::staticMetaObject ),
 	ClassEntry( "Radians to Degrees", "Number", NID_RADIANS_TO_DEGREES, &RadiansToDegreesNode::staticMetaObject ),
@@ -95,6 +106,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Ceil", "Math", NID_CEIL, &CeilNode::staticMetaObject ),
 	ClassEntry( "Divide", "Math", NID_DIVIDE, &DivideNode::staticMetaObject ),
 	ClassEntry( "Expression", "Math", NID_MATH_EXPRESSION, &MathExpressionNode::staticMetaObject ),
+	ClassEntry( "FlipFlop", "Logic", NID_FLIP_FLOP_LOGIC, &FlipFlopNode::staticMetaObject ),
 	ClassEntry( "Floor", "Math", NID_FLOOR, &FloorNode::staticMetaObject ),
 	ClassEntry( "IntToBits", "Math", NID_INT_TO_BITS, &IntToBitsNode::staticMetaObject ),
 	ClassEntry( "Inverse", "Matrix", NID_MATRIX_INVERSE, &MatrixInverseNode::staticMetaObject ),
@@ -106,10 +118,13 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Multiply", "Math", NID_MULTIPLY, &MultiplyNode::staticMetaObject ),
 	ClassEntry( "Multiplexor", "Math", NID_MULTIPLEXOR, &MultiplexorNode::staticMetaObject ),
 	ClassEntry( "NAND", "Logic", NID_NAND, &NandNode::staticMetaObject ),
+	ClassEntry( "NAND Bits", "Logic", NID_NAND_BITS, &NandBitsNode::staticMetaObject ),
 	ClassEntry( "NOT", "Logic", NID_NOT, &NotNode::staticMetaObject ),
+	ClassEntry( "NOT Bits", "Logic", NID_NOT_BITS, &NotBitsNode::staticMetaObject ),
 	ClassEntry( "NOR", "Logic", NID_NOR, &NorNode::staticMetaObject ),
 	ClassEntry( "Normalise", "Vector3", NID_NORMALISE, &NormaliseNode::staticMetaObject ),
 	ClassEntry( "OR", "Logic", NID_OR, &OrNode::staticMetaObject ),
+	ClassEntry( "OR Bits", "Logic", NID_OR_BITS, &OrBitsNode::staticMetaObject ),
 	ClassEntry( "Orthographic", "Matrix", NID_MATRIX_ORTHOGRAPHIC, &MatrixOrthographicNode::staticMetaObject ),
 	ClassEntry( "Perspective", "Matrix", NID_MATRIX_PERSPECTIVE, &MatrixPerspectiveNode::staticMetaObject ),
 	ClassEntry( "Pi", "Number", NID_PI, &PiNode::staticMetaObject ),
@@ -126,6 +141,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Vector3", "GUI", NID_VECTOR3, &Vector3Node::staticMetaObject ),
 	ClassEntry( "XNOR", "Logic", NID_XNOR, &XnorNode::staticMetaObject ),
 	ClassEntry( "XOR", "Logic", NID_XOR, &XorNode::staticMetaObject ),
+	ClassEntry( "XOR Bits", "Logic", NID_XOR_BITS, &XorBitsNode::staticMetaObject ),
 	ClassEntry()
 };
 
