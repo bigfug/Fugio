@@ -75,6 +75,9 @@
 
 #include "mathexpressionnode.h"
 
+#include "inttobitsnode.h"
+#include "multiplexornode.h"
+
 MathPlugin *MathPlugin::mInstance = nullptr;
 
 QList<QUuid>	NodeControlBase::PID_UUID;
@@ -93,6 +96,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Divide", "Math", NID_DIVIDE, &DivideNode::staticMetaObject ),
 	ClassEntry( "Expression", "Math", NID_MATH_EXPRESSION, &MathExpressionNode::staticMetaObject ),
 	ClassEntry( "Floor", "Math", NID_FLOOR, &FloorNode::staticMetaObject ),
+	ClassEntry( "IntToBits", "Math", NID_INT_TO_BITS, &IntToBitsNode::staticMetaObject ),
 	ClassEntry( "Inverse", "Matrix", NID_MATRIX_INVERSE, &MatrixInverseNode::staticMetaObject ),
 	ClassEntry( "Join", "Vector3", NID_JOIN_VECTOR3, &JoinVector3Node::staticMetaObject ),
 	ClassEntry( "Join", "Vector4", NID_JOIN_VECTOR4, &JoinVector4Node::staticMetaObject ),
@@ -100,6 +104,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "MinMax", "Math", NID_MINMAX, &MinMaxNode::staticMetaObject ),
 	ClassEntry( "Modulus", "Math", NID_MODULUS, &ModulusNode::staticMetaObject ),
 	ClassEntry( "Multiply", "Math", NID_MULTIPLY, &MultiplyNode::staticMetaObject ),
+	ClassEntry( "Multiplexor", "Math", NID_MULTIPLEXOR, &MultiplexorNode::staticMetaObject ),
 	ClassEntry( "NAND", "Logic", NID_NAND, &NandNode::staticMetaObject ),
 	ClassEntry( "NOT", "Logic", NID_NOT, &NotNode::staticMetaObject ),
 	ClassEntry( "NOR", "Logic", NID_NOR, &NorNode::staticMetaObject ),
