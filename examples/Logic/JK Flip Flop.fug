@@ -17,6 +17,7 @@ direction=1
 name=Q
 order=2
 removable=true
+updatable=false
 uuid=d2c8935b-6d98-42f2-ad37-58de429983be
 version=2
 
@@ -24,6 +25,7 @@ version=2
 direction=1
 name=J
 order=1
+updatable=false
 uuid=608ac771-490b-4ae6-9c81-12b9af526d09
 version=2
 
@@ -40,6 +42,7 @@ version=2
 direction=1
 name=K
 order=1
+updatable=false
 uuid=608ac771-490b-4ae6-9c81-12b9af526d09
 version=2
 
@@ -184,6 +187,7 @@ version=2
 direction=1
 name=_Q
 order=0
+updatable=false
 uuid=c13a41c6-544b-46bb-a9f2-19dd156d236c
 version=2
 
@@ -342,7 +346,7 @@ uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
 version=2
 
 [d40e0338-3e1e-40f3-ac52-af5856c2908c]
-control\toggle=false
+control\toggle=true
 inputs\size=0
 name=Clock
 outputs\1\50d42a83-914b-4d25-b77d-d5291fe9a422=9f47ca6a-f8b8-4029-8dee-98caa049374e
@@ -436,7 +440,7 @@ version=2
 60f00329-1a61-4183-bd6f-a64a8fb472f7="-580,160"
 61b5ba4d-5baf-46cb-a90a-80e79c321ced="-380,-180"
 8272de7c-6751-445e-9979-7ae4a333c1ab="-380,0"
-9fd9512b-b194-46d9-b186-866d1957d32e="280,80"
+9fd9512b-b194-46d9-b186-866d1957d32e="280,40"
 a32089bb-de49-45aa-8f4e-38a1b1389c65="-180,100"
 b6fc2da6-75c9-4729-a765-3570e76facc6="-60,180"
 d0a0b03d-1b2e-4ae2-8fc9-468b71ad1d8f="60,80"
