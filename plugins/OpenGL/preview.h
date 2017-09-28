@@ -25,6 +25,9 @@ protected:
 	virtual void resizeGL(int w, int h) Q_DECL_OVERRIDE;
 	virtual void paintGL() Q_DECL_OVERRIDE;
 
+signals:
+	void resized( const QSize &pSize );
+
 private:
 	QWeakPointer<fugio::NodeInterface>	 mNode;
 };

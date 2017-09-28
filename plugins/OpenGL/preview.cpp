@@ -35,6 +35,7 @@ void Preview::initializeGL()
 
 void Preview::resizeGL( int w, int h )
 {
+	emit resized( QSize( w, h ) );
 }
 
 void Preview::paintGL()

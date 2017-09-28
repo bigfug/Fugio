@@ -20,9 +20,12 @@ PreviewNode::PreviewNode( QSharedPointer<fugio::NodeInterface> pNode ) :
 {
 	FUGID( PIN_INPUT_STATE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 	FUGID( PIN_INPUT_RENDER, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+	FUGID( PIN_OUTPUT_SIZE, "5c8f8f4e-58ce-4e47-9e1e-4168d17e1863" );
 
 	mPinInputState  = pinInput( "State", PIN_INPUT_STATE );
 	mPinInputRender = pinInput( "Render", PIN_INPUT_RENDER );
+
+	mValOutputSize = pinOutput<fugio::VariantInterface *>( "Size", mPinOutputSize, PID_SIZE, PIN_OUTPUT_SIZE );
 
 	mPinInputState->setDescription( tr( "The OpenGL rendering state to apply" ) );
 
@@ -54,6 +57,8 @@ bool PreviewNode::initialise()
 			if( mOutput )
 			{
 				mDockWidget->setWidget( mOutput );
+
+				connect( mOutput, &Preview::resized, this, &PreviewNode::sizeChanged );
 			}
 
 			EI->mainWindow()->addDockWidget( mDockArea, mDockWidget );
@@ -106,6 +111,13 @@ void PreviewNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( mOutput )
 	{
+		if( mOutput->size() != mValOutputSize->variant().toSize() )
+		{
+			mValOutputSize->setVariant( mOutput->size() );
+
+			pinUpdated( mPinOutputSize );
+		}
+
 		mOutput->update();
 	}
 }
@@ -137,4 +149,11 @@ void PreviewNode::render( qint64 pTimeStamp )
 	}
 
 	OPENGL_PLUGIN_DEBUG;
+}
+
+void PreviewNode::sizeChanged( const QSize &pSize )
+{
+	Q_UNUSED( pSize )
+
+	mNode->context()->updateNode( mNode );
 }
