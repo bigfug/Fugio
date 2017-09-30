@@ -103,6 +103,11 @@ public:
 	virtual QThread *thread( void ) = 0;
 
 	//-------------------------------------------------------------------------
+	// Paths
+
+	virtual QString sharedDataPath( void ) const = 0;
+
+	//-------------------------------------------------------------------------
 
 	virtual QStringList loadedPluginNames( void ) const = 0;
 
@@ -224,7 +229,7 @@ public:
 
 FUGIO_NAMESPACE_END
 
-Q_DECLARE_INTERFACE( fugio::GlobalInterface, "com.bigfug.fugio.global/1.0" )
+Q_DECLARE_INTERFACE( fugio::GlobalInterface, "com.bigfug.fugio.global/1.1" )
 
 #if !defined(FUGIOLIB_LIBRARY)
 FUGIO_NAMESPACE_BEGIN

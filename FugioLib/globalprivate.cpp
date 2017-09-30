@@ -151,7 +151,16 @@ void GlobalPrivate::initialisePlugins()
 	qDebug() << tr( "Nodes registered: %1" ).arg( mNodeMap.size() );
 }
 
-
+QString GlobalPrivate::sharedDataPath() const
+{
+#if defined( QT_DEBUG )
+	return( QDir::current().absoluteFilePath( "../Fugio" ) );
+#elif defined( Q_OS_LINUX )
+	return( "/usr/share/fugio" );
+#else
+	return( QDir::current().absolutePath() );
+#endif
+}
 
 void GlobalPrivate::loadPlugins( QDir pDir )
 {

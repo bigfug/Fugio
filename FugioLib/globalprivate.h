@@ -78,6 +78,13 @@ public:
 		return( this );
 	}
 
+	//-------------------------------------------------------------------------
+	// Paths
+
+	virtual QString sharedDataPath( void ) const Q_DECL_OVERRIDE;
+
+	//-------------------------------------------------------------------------
+
 	virtual qint64 timestamp( void ) const Q_DECL_OVERRIDE
 	{
 		return( mTimeSync->timestamp() );
