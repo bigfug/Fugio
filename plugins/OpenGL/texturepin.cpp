@@ -63,7 +63,7 @@ QVector3D TexturePin::size() const
 
 quint32 TexturePin::srcTexId() const
 {
-	return( mTexDsc.mDoubleBuffered ? mSrcTex->textureId() : mDstTex->textureId() );
+	return( mTexDsc.mDoubleBuffered ? ( mSrcTex ? mSrcTex->textureId() : 0 ) : ( mDstTex ? mDstTex->textureId() : 0 ) );
 }
 
 quint32 TexturePin::dstTexId() const
@@ -428,6 +428,16 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 	}
 
 	release();
+
+	if( isDoubleBuffered() )
+	{
+		if( dstTexId() && !srcTexId() )
+		{
+			swapTexture();
+
+			update();
+		}
+	}
 }
 
 void TexturePin::setFilter( QOpenGLTexture::Filter pMin, QOpenGLTexture::Filter pMag )
