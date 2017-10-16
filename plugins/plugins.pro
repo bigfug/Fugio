@@ -1,7 +1,6 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-	Example \
 	ARToolKit \
 	Audio \
 	Colour \
