@@ -66,6 +66,8 @@ ContextView::ContextView( QWidget *pParent ) :
 	resetPasteOffset();
 
 	mGroupState.insert( QUuid(), GroupStateEntry() );
+
+	setNodeColour( QColor( Qt::cyan ).lighter( 180 ) );
 }
 
 ContextView::~ContextView( void )
