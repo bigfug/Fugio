@@ -46,6 +46,7 @@
 
 #include "sindegreenode.h"
 #include "sinradiannode.h"
+#include "cosinedegreesnode.h"
 
 #include "pinode.h"
 
@@ -106,6 +107,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Radians to Degrees", "Number", NID_RADIANS_TO_DEGREES, &RadiansToDegreesNode::staticMetaObject ),
 	ClassEntry( "Dot Product", "Vector3", NID_DOT_PRODUCT, &DotProductNode::staticMetaObject ),
 	ClassEntry( "Ceil", "Math", NID_CEIL, &CeilNode::staticMetaObject ),
+	ClassEntry( "Cosine (Degrees)", NID_COSINE_DEGREES, &CosineDegreeNode::staticMetaObject ),
 	ClassEntry( "Divide", "Math", NID_DIVIDE, &DivideNode::staticMetaObject ),
 	ClassEntry( "Expression", "Math", NID_MATH_EXPRESSION, &MathExpressionNode::staticMetaObject ),
 	ClassEntry( "FlipFlop", "Logic", NID_FLIP_FLOP_LOGIC, &FlipFlopNode::staticMetaObject ),

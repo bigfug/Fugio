@@ -72,7 +72,10 @@ SOURCES += mathplugin.cpp \
     andbitsnode.cpp \
     orbitsnode.cpp \
     xorbitsnode.cpp \
-    flipflopnode.cpp
+    flipflopnode.cpp \
+    cosinedegreesnode.cpp \
+    minnode.cpp \
+    maxnode.cpp
 
 HEADERS += mathplugin.h \
 	../../include/fugio/math/uuid.h \
@@ -133,7 +136,10 @@ HEADERS += mathplugin.h \
     andbitsnode.h \
     orbitsnode.h \
     xorbitsnode.h \
-    flipflopnode.h
+    flipflopnode.h \
+    cosinedegreesnode.h \
+    minnode.h \
+    maxnode.h
 
 RESOURCES += \
     resources.qrc
