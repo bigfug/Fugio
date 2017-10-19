@@ -66,6 +66,8 @@
 #include "rotationfromvectorsnode.h"
 
 #include "minmaxnode.h"
+#include "minnode.h"
+#include "maxnode.h"
 
 #include "ceilnode.h"
 #include "floornode.h"
@@ -113,6 +115,8 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Join", "Vector3", NID_JOIN_VECTOR3, &JoinVector3Node::staticMetaObject ),
 	ClassEntry( "Join", "Vector4", NID_JOIN_VECTOR4, &JoinVector4Node::staticMetaObject ),
 	ClassEntry( "Look At", "Matrix", NID_MATRIX_LOOKAT, &MatrixLookAtNode::staticMetaObject ),
+	ClassEntry( "Max", "Math", NID_MAX, &MaxNode::staticMetaObject ),
+	ClassEntry( "Min", "Math", NID_MIN, &MinNode::staticMetaObject ),
 	ClassEntry( "MinMax", "Math", NID_MINMAX, &MinMaxNode::staticMetaObject ),
 	ClassEntry( "Modulus", "Math", NID_MODULUS, &ModulusNode::staticMetaObject ),
 	ClassEntry( "Multiply", "Math", NID_MULTIPLY, &MultiplyNode::staticMetaObject ),
