@@ -16,6 +16,13 @@ class AddNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Add" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
+	class Operator
+	{
+		public:
+			template<typename T> static T add2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+			template<typename T> static T add3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+	};
+
 public:
 	Q_INVOKABLE AddNode( QSharedPointer<fugio::NodeInterface> pNode );
 
@@ -28,7 +35,11 @@ public:
 	virtual QList<QUuid> pinAddTypesInput() const;
 	virtual bool canAcceptPin(fugio::PinInterface *pPin) const;
 
+private:
+	static QVariant addNumber( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+
 protected:
+	QSharedPointer<fugio::PinInterface>			 mPinInput;
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
 	fugio::VariantInterface						*mValOutput;
 };

@@ -43,11 +43,23 @@ void SubtractNode::inputsUpdated( qint64 pTimeStamp )
 			break;
 
 		case QMetaType::QPoint:
-			OutputValue = subtractPoint( mNode->enumInputPins() );
+			OutputValue = Operator::sub2<QPoint>( mNode->enumInputPins() );
+			break;
+
+		case QMetaType::QPointF:
+			OutputValue = Operator::sub2<QPointF>( mNode->enumInputPins() );
+			break;
+
+		case QMetaType::QSize:
+			OutputValue = Operator::sub2<QSize>( mNode->enumInputPins() );
+			break;
+
+		case QMetaType::QSizeF:
+			OutputValue = Operator::sub2<QSizeF>( mNode->enumInputPins() );
 			break;
 
 		case QMetaType::QVector3D:
-			OutputValue = subtractVector3D( mNode->enumInputPins() );
+			OutputValue = Operator::sub3<QVector3D>( mNode->enumInputPins() );
 			break;
 
 		default:
@@ -123,9 +135,11 @@ QVariant SubtractNode::subtractNumber( const QList< QSharedPointer<fugio::PinInt
 	return( OutVal );
 }
 
-QVariant SubtractNode::subtractVector3D( const QList< QSharedPointer<fugio::PinInterface> > pInputPins )
+template<typename T>
+T SubtractNode::Operator::sub2(const QList<QSharedPointer<PinInterface> > pInputPins)
 {
-	QVector3D		OutVal;
+	T				OutVal;
+	QMetaType::Type	OutType = QMetaType::Type( qMetaTypeId<T>() );
 	bool			OutHas = false;
 
 	for( QSharedPointer<fugio::PinInterface> P : pInputPins )
@@ -133,35 +147,36 @@ QVariant SubtractNode::subtractVector3D( const QList< QSharedPointer<fugio::PinI
 		QVariant		InputBase = variantStatic( P );
 		QMetaType::Type	InputType = QMetaType::Type( InputBase.type() );
 
+		if( InputBase.canConvert( OutType ) )
+		{
+			T			v = InputBase.value<T>();
+
+			if( !OutHas )
+			{
+				OutVal = v;
+				OutHas = true;
+			}
+			else
+			{
+				OutVal -= v;
+			}
+
+			continue;
+		}
+
 		switch( InputType )
 		{
-			case QMetaType::QVector3D:
-				{
-					QVector3D		v = variantStatic( P ).value<QVector3D>();
-
-					if( !OutHas )
-					{
-						OutVal = v;
-						OutHas = true;
-					}
-					else
-					{
-						OutVal -= v;
-					}
-				}
-				break;
-
 			case QMetaType::Float:
 			case QMetaType::Double:
 			case QMetaType::Int:
 			case QMetaType::QString:
 				{
 					bool		c;
-					qreal		v = variantStatic( P ).toReal( &c );
+					qreal		v = InputBase.toReal( &c );
 
 					if( c )
 					{
-						OutVal -= QVector3D( v, v, v );
+						OutVal -= T( v, v );
 					}
 				}
 				break;
@@ -174,9 +189,11 @@ QVariant SubtractNode::subtractVector3D( const QList< QSharedPointer<fugio::PinI
 	return( OutVal );
 }
 
-QVariant SubtractNode::subtractPoint( const QList<QSharedPointer<PinInterface> > pInputPins )
+template<typename T>
+T SubtractNode::Operator::sub3(const QList<QSharedPointer<PinInterface> > pInputPins)
 {
-	QPoint			OutVal;
+	T				OutVal;
+	QMetaType::Type	OutType = QMetaType::Type( qMetaTypeId<T>() );
 	bool			OutHas = false;
 
 	for( QSharedPointer<fugio::PinInterface> P : pInputPins )
@@ -184,43 +201,36 @@ QVariant SubtractNode::subtractPoint( const QList<QSharedPointer<PinInterface> >
 		QVariant		InputBase = variantStatic( P );
 		QMetaType::Type	InputType = QMetaType::Type( InputBase.type() );
 
+		if( InputBase.canConvert( OutType ) )
+		{
+			T			v = InputBase.value<T>();
+
+			if( !OutHas )
+			{
+				OutVal = v;
+				OutHas = true;
+			}
+			else
+			{
+				OutVal -= v;
+			}
+
+			continue;
+		}
+
 		switch( InputType )
 		{
-			case QMetaType::QPoint:
-				{
-					QPoint		v = variantStatic( P ).toPoint();
-
-					if( !OutHas )
-					{
-						OutVal = v;
-						OutHas = true;
-					}
-					else
-					{
-						OutVal -= v;
-					}
-				}
-				break;
-
-			case QMetaType::QVector2D:
-				{
-					QVector2D	v = variantStatic( P ).value<QVector2D>();
-
-					OutVal -= QPoint( v.x(), v.y() );
-				}
-				break;
-
 			case QMetaType::Float:
 			case QMetaType::Double:
 			case QMetaType::Int:
 			case QMetaType::QString:
 				{
 					bool		c;
-					qreal		v = variantStatic( P ).toReal( &c );
+					qreal		v = InputBase.toReal( &c );
 
 					if( c )
 					{
-						OutVal -= QPoint( v, v );
+						OutVal -= T( v, v, v );
 					}
 				}
 				break;

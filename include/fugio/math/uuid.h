@@ -26,6 +26,7 @@
 #define NID_MATRIX_MULTIPLY		(QUuid("{78337a4d-51ec-4dbd-8c68-32b16ac38369}"))
 
 #define NID_SIN_DEGREES			(QUuid("{d89e3606-003e-4398-96bb-10f71f584c3e}"))
+#define NID_COSINE_DEGREES		(QUuid("{F02103C5-A136-4718-B6B8-842B5F95671A}"))
 
 #define NID_SIN_RADIANS			(QUuid("{c938ee49-06fa-42b3-a9e0-5130c86aed94}"))
 
@@ -61,6 +62,8 @@
 
 #define NID_RADIANS_TO_DEGREES	(QUuid("{10dad119-9424-4e41-9a5a-2a6bc6b69348}"))
 
+#define NID_MIN					(QUuid("{AC1125ED-65E0-4B3E-92DD-8EC62E757BB6}"))
+#define NID_MAX					(QUuid("{39514F40-6CCC-4FDB-B72D-41AD55673596}"))
 #define NID_MINMAX				(QUuid("{0e884852-1a9f-44d5-a053-52b09de6c724}"))
 
 #define NID_CEIL				(QUuid("{e838e126-f085-4f24-a2aa-bf50277caa41}"))
