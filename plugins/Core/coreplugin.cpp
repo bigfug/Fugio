@@ -45,6 +45,7 @@
 #include "flipflopnode.h"
 #include "bitstoboolnode.h"
 #include "booltobitsnode.h"
+#include "joinpointnode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -87,6 +88,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Frame Delay", "Context", NID_FRAME_DELAY, &FrameDelayNode::staticMetaObject ),
 	ClassEntry( "Get Size", "Size", NID_GET_SIZE, &GetSizeNode::staticMetaObject ),
 	ClassEntry( "Smooth", "Number", ClassEntry::None, NID_FADE, &SmoothNode::staticMetaObject ),
+	ClassEntry( "Join Point", "Point", NID_JOIN_POINT, &JoinPointNode::staticMetaObject ),
 	ClassEntry( "Join Size", "Size", NID_JOIN_SIZE, &JoinSizeNode::staticMetaObject ),
 	ClassEntry( "Last Updated Input", NID_LAST_UPDATED_INPUT, &LastUpdatedInputNode::staticMetaObject ),
 	ClassEntry( "Index", NID_INDEX, &IndexNode::staticMetaObject ),
@@ -162,8 +164,6 @@ PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp
 
 	mApp = pApp;
 
-	//mApp->registerVideoOutputFactory( this );
-
 	mApp->registerNodeClasses( mNodeClasses );
 
 	mApp->registerPinClasses( mPinClasses );
@@ -174,7 +174,7 @@ PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp
 	mApp->registerPinSplitter( PID_POINT, NID_SPLIT_POINT );
 
 	mApp->registerPinJoiner( PID_SIZE, NID_JOIN_SIZE );
-	//mApp->registerPinJoiner( PID_SIZE_3D, NID_JOIN_SIZE );
+	mApp->registerPinJoiner( PID_POINT, NID_JOIN_POINT );
 
 	return( INIT_OK );
 }

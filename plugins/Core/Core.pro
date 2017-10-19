@@ -75,7 +75,8 @@ SOURCES += \
     bitarraypin.cpp \
     bitstoboolnode.cpp \
 	booltobitsnode.cpp \
-    linepin.cpp
+    linepin.cpp \
+    joinpointnode.cpp
 
 HEADERS += \
 	stringpin.h \
@@ -146,7 +147,8 @@ HEADERS += \
     bitarraypin.h \
     bitstoboolnode.h \
 	booltobitsnode.h \
-    linepin.h
+    linepin.h \
+    joinpointnode.h
 
 RESOURCES += \
     resources.qrc
