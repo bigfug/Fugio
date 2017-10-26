@@ -66,14 +66,40 @@ QUuid ArrayPin::listPinControl() const
 {
 	switch( mType )
 	{
+		case QMetaType::Bool:
+			return( PID_BOOL );
+
+		case QMetaType::UInt:
+		case QMetaType::Int:
+		case QMetaType::Long:
+		case QMetaType::LongLong:
+		case QMetaType::Short:
+			return( PID_INTEGER );
+
+		case QMetaType::QChar:
+		case QMetaType::QString:
+			return( PID_STRING );
+
+		case QMetaType::QByteArray:
+			return( PID_BYTEARRAY );
+
 		case QMetaType::Float:
+		case QMetaType::Double:
 			return( PID_FLOAT );
+
+		case QMetaType::QPoint:
+		case QMetaType::QPointF:
+			return( PID_POINT );
+
+		case QMetaType::QSize:
+		case QMetaType::QSizeF:
+			return( PID_SIZE );
 
 		default:
 			break;
 	}
 
-	return( QUuid() );
+	return( PID_VARIANT );
 }
 
 QVariant ArrayPin::listIndex( int pIndex ) const
