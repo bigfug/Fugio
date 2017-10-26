@@ -33,7 +33,8 @@ SUBDIRS += \
 	VideoCapture \
 	VST \
 	XInput \
-    ISF
+    ISF \
+    Geometry
 
 qtHaveModule( serialport ) {
 	SUBDIRS += Serial
