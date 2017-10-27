@@ -212,23 +212,3 @@ win32 {
 win32 {
 #    LIBS += -L$$(LIBS)/bullet3-2.83.4/bin
 }
-
-#------------------------------------------------------------------------------
-# crashrpt
-
-win32 {
-	INCLUDEPATH += $$(LIBS)/crashrpt/include
-
-	LIBS += -L$$(LIBS)/crashrpt.32.2013/bin
-	LIBS += -L$$(LIBS)/crashrpt.32.2013/lib
-
-	CONFIG(debug,debug|release) {
-		LIBS += -lCrashRpt1402d
-	} else {
-		LIBS += -lCrashRpt1402
-	}
-
-	QMAKE_CFLAGS_RELEASE = -O2 -MD -Oy- -Zi
-
-	QMAKE_LFLAGS_RELEASE = /DEBUG /INCREMENTAL:NO
-}
