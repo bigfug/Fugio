@@ -1,7 +1,6 @@
 #include "polygonnode.h"
 
-#define _USE_MATH_DEFINES
-#include <math.h>
+#include <qmath.h>
 
 #include <fugio/core/uuid.h>
 
