@@ -153,6 +153,16 @@ public:
 		}
 	}
 
+	virtual QOpenGLTexture *srcTex() Q_DECL_OVERRIDE
+	{
+		return( mSrcTex );
+	}
+
+	virtual QOpenGLTexture *dstTex() Q_DECL_OVERRIDE
+	{
+		return( mDstTex );
+	}
+
 	//-------------------------------------------------------------------------
 
 	// SizeInterface interface

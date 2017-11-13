@@ -46,6 +46,7 @@
 #include "texturemonitornode.h"
 #include "rendertotexturenode.h"
 #include "easyshader2dnode.h"
+#include "arraytotexturebuffernode.h"
 
 #include "texturepin.h"
 #include "renderpin.h"
@@ -82,6 +83,7 @@ ClassEntry		OpenGLPlugin::mNodeClasses[] =
 {
 	ClassEntry( "Array To Buffer", "OpenGL", NID_OPENGL_ARRAY_TO_BUFFER, &ArrayToBufferNode::staticMetaObject ),
 	ClassEntry( "Array To Index", "OpenGL", NID_OPENGL_ARRAY_TO_INDEX, &ArrayToIndexNode::staticMetaObject ),
+	ClassEntry( "Array To Texture", "OpenGL", NID_OPENGL_ARRAY_TO_TEXTURE, &ArrayToTextureBufferNode::staticMetaObject ),
 	ClassEntry( "Bind Texture", "OpenGL", NID_OPENGL_BIND_TEXTURE, &BindTextureNode::staticMetaObject ),
 	ClassEntry( "Buffer", "OpenGL", NID_OPENGL_BUFFER, &BufferNode::staticMetaObject ),
 	ClassEntry( "Buffer Entry", "OpenGL", NID_OPENGL_BUFFER_ENTRY, &BufferEntryNode::staticMetaObject ),

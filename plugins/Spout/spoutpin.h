@@ -156,6 +156,16 @@ public:
 		Q_UNUSED( pDescription )
 	}
 
+	virtual QOpenGLTexture *srcTex() Q_DECL_OVERRIDE
+	{
+		return( nullptr );
+	}
+
+	virtual QOpenGLTexture *dstTex() Q_DECL_OVERRIDE
+	{
+		return( nullptr );
+	}
+
 	//-------------------------------------------------------------------------
 
 private:

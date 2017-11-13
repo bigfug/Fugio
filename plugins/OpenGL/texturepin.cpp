@@ -248,17 +248,22 @@ void TexturePin::update()
 
 	checkDefinition();
 
-	if( !mTexDsc.mImgWidth )
-	{
-		return;
-	}
-
 	if( mDstTex )
 	{
 		return;
 	}
 
 	if( !( mDstTex = new QOpenGLTexture( QOpenGLTexture::Target( mTexDsc.mTarget ) ) ) )
+	{
+		return;
+	}
+
+	if( mDstTex->target() == QOpenGLTexture::TargetBuffer )
+	{
+		return;
+	}
+
+	if( !mTexDsc.mImgWidth )
 	{
 		return;
 	}
@@ -328,8 +333,6 @@ void TexturePin::update()
 	if( !mDstTex->isStorageAllocated() && !isCompressedFormat( mTexDsc.mInternalFormat ) )
 	{
 		qDebug() << "Couldn't allocate texture";
-
-		return;
 	}
 }
 
@@ -355,79 +358,88 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 		return;
 	}
 
-	dstBind();
+	if( mDstTex->target() == QOpenGLTexture::TargetBuffer )
+	{
+		return;
+	}
+
+//	dstBind();
 
 	if( isCompressedFormat( mTexDsc.mInternalFormat ) )
 	{
-			switch( mTexDsc.mTarget )
-			{
-//				case GL_TEXTURE_1D:
-//					if( GLEX )
-//					{
-//						GL20->glCompressedTexImage1D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, 0, pDataSize, pData );
-//					}
+		mDstTex->setCompressedData( pDataSize, pData );
+
+//			switch( mTexDsc.mTarget )
+//			{
+////				case GL_TEXTURE_1D:
+////					if( GLEX )
+////					{
+////						GL20->glCompressedTexImage1D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, 0, pDataSize, pData );
+////					}
+////					break;
+
+//				case GL_TEXTURE_2D:
+//				case QOpenGLTexture::TargetRectangle:
+//					glCompressedTexImage2D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, mTexDsc.mImgHeight, 0, pDataSize, pData );
 //					break;
 
-				case GL_TEXTURE_2D:
-				case QOpenGLTexture::TargetRectangle:
-					glCompressedTexImage2D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, mTexDsc.mImgHeight, 0, pDataSize, pData );
-					break;
+//				case GL_TEXTURE_CUBE_MAP:
+//					glCompressedTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + pCubeFaceIndex, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, mTexDsc.mImgHeight, 0, pDataSize, pData );
+//					break;
 
-				case GL_TEXTURE_CUBE_MAP:
-					glCompressedTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + pCubeFaceIndex, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, mTexDsc.mImgHeight, 0, pDataSize, pData );
-					break;
-
-				case GL_TEXTURE_3D:
-					if( GLEX )
-					{
-						GLEX->glCompressedTexImage3D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mImgDepth, 0, pDataSize, pData );
-					}
-					break;
-			}
+//				case GL_TEXTURE_3D:
+//					if( GLEX )
+//					{
+//						GLEX->glCompressedTexImage3D( mTexDsc.mTarget, 0, mTexDsc.mInternalFormat, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mImgDepth, 0, pDataSize, pData );
+//					}
+//					break;
+//			}
 	}
 	else
 	{
-		glPixelStorei( GL_UNPACK_ALIGNMENT, 4 );
+		mDstTex->setData( mTexDsc.mFormat, mTexDsc.mType, pData );
 
-		OPENGL_DEBUG( mPin->node()->name() );
+//		glPixelStorei( GL_UNPACK_ALIGNMENT, 4 );
 
-		switch( mTexDsc.mTarget )
-		{
-//			case GL_TEXTURE_1D:
-//				if( GL20 )
-//				{
-//					glTexSubImage1D( mTexDsc.mTarget, 0, 0, mTexDsc.mImgWidth, mTexDsc.mFormat, mTexDsc.mType, pData );
-//				}
+//		OPENGL_DEBUG( mPin->node()->name() );
+
+//		switch( mTexDsc.mTarget )
+//		{
+////			case GL_TEXTURE_1D:
+////				if( GL20 )
+////				{
+////					glTexSubImage1D( mTexDsc.mTarget, 0, 0, mTexDsc.mImgWidth, mTexDsc.mFormat, mTexDsc.mType, pData );
+////				}
+////				break;
+
+//			case GL_TEXTURE_2D:
+//			case QOpenGLTexture::TargetRectangle:
+//				glTexSubImage2D( mTexDsc.mTarget, 0, 0, 0, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mFormat, mTexDsc.mType, pData );
 //				break;
 
-			case GL_TEXTURE_2D:
-			case QOpenGLTexture::TargetRectangle:
-				glTexSubImage2D( mTexDsc.mTarget, 0, 0, 0, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mFormat, mTexDsc.mType, pData );
-				break;
+//			case GL_TEXTURE_CUBE_MAP:
+//				glTexSubImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + pCubeFaceIndex, 0, 0, 0, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mFormat, mTexDsc.mType, pData );
+//				break;
 
-			case GL_TEXTURE_CUBE_MAP:
-				glTexSubImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + pCubeFaceIndex, 0, 0, 0, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mFormat, mTexDsc.mType, pData );
-				break;
+//			case GL_TEXTURE_3D:
+//				if( GLEX )
+//				{
+//					GLEX->glTexSubImage3D( mTexDsc.mTarget, 0, 0, 0, 0, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mImgDepth, mTexDsc.mFormat, mTexDsc.mType, pData );
+//				}
+//				break;
+//		}
 
-			case GL_TEXTURE_3D:
-				if( GLEX )
-				{
-					GLEX->glTexSubImage3D( mTexDsc.mTarget, 0, 0, 0, 0, mTexDsc.mImgWidth, mTexDsc.mImgHeight, mTexDsc.mImgDepth, mTexDsc.mFormat, mTexDsc.mType, pData );
-				}
-				break;
-		}
+//		OPENGL_DEBUG( mPin->node()->name() );
 
-		OPENGL_DEBUG( mPin->node()->name() );
+//		glPixelStorei( GL_UNPACK_ALIGNMENT, 4 );
 
-		glPixelStorei( GL_UNPACK_ALIGNMENT, 4 );
-
-		if( mTexDsc.mGenerateMipMaps && ( mTexDsc.mTarget == GL_TEXTURE_2D || mTexDsc.mTarget == GL_TEXTURE_CUBE_MAP ) )
-		{
-			glGenerateMipmap( mTexDsc.mTarget );
-		}
+//		if( mTexDsc.mGenerateMipMaps && ( mTexDsc.mTarget == GL_TEXTURE_2D || mTexDsc.mTarget == GL_TEXTURE_CUBE_MAP ) )
+//		{
+//			glGenerateMipmap( mTexDsc.mTarget );
+//		}
 	}
 
-	release();
+//	release();
 
 	if( isDoubleBuffered() )
 	{
@@ -716,6 +728,7 @@ int TexturePin::sizeDimensions() const
 	switch( mTexDsc.mTarget )
 	{
 		case QOpenGLTexture::Target1D:
+		case QOpenGLTexture::TargetBuffer:
 			return( 1 );
 			break;
 
