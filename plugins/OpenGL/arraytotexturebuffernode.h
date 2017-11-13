@@ -4,6 +4,7 @@
 #include "opengl_includes.h"
 
 #include <QObject>
+#include <QOpenGLFunctions>
 
 #include <fugio/nodecontrolbase.h>
 #include <fugio/paired_pins_helper_interface.h>
@@ -14,7 +15,7 @@ FUGIO_NAMESPACE_BEGIN
 class VariantInterface;
 FUGIO_NAMESPACE_END
 
-class ArrayToTextureBufferNode : public fugio::NodeControlBase, public fugio::PairedPinsHelperInterface
+class ArrayToTextureBufferNode : public fugio::NodeControlBase, public fugio::PairedPinsHelperInterface, private QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::PairedPinsHelperInterface )

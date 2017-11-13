@@ -1,5 +1,7 @@
 #include "arraytotexturebuffernode.h"
 
+#include <QOpenGLFunctions_3_1>
+
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
 #include <fugio/performance.h>
@@ -38,6 +40,8 @@ bool ArrayToTextureBufferNode::initialise()
 		return( false );
 	}
 
+	initializeOpenGLFunctions();
+
 	return( true );
 }
 
@@ -53,6 +57,13 @@ void ArrayToTextureBufferNode::inputsUpdated( qint64 pTimeStamp )
 	fugio::Performance	Perf( mNode, "inputsUpdated", pTimeStamp );
 
 	if( !OpenGLPlugin::hasContextStatic() )
+	{
+		return;
+	}
+
+	QOpenGLFunctions_3_1	*GL31 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_1>();
+
+	if( !GL31 || !GL31->initializeOpenGLFunctions() )
 	{
 		return;
 	}
@@ -80,7 +91,60 @@ void ArrayToTextureBufferNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( A->type() != QMetaType::QVector4D )
+		GLenum	InternalFormat = 0;
+
+		switch( A->type() )
+		{
+			case QMetaType::UChar:
+				InternalFormat = GL_R8UI;
+				break;
+
+			case QMetaType::Char:
+				InternalFormat = GL_R8I;
+				break;
+
+			case QMetaType::UShort:
+				InternalFormat = GL_R16UI;
+				break;
+
+			case QMetaType::Short:
+				InternalFormat = GL_R16I;
+				break;
+
+			case QMetaType::UInt:
+				InternalFormat = GL_R32UI;
+				break;
+
+			case QMetaType::Int:
+				InternalFormat = GL_R32I;
+				break;
+
+			case QMetaType::Float:
+				InternalFormat = GL_R32F;
+				break;
+
+			case QMetaType::QPoint:
+			case QMetaType::QSize:
+				InternalFormat = GL_RG32I;
+				break;
+
+
+			case QMetaType::QVector2D:
+			case QMetaType::QSizeF:
+			case QMetaType::QPointF:
+				InternalFormat = GL_RG32F;
+				break;
+
+			case QMetaType::QVector3D:
+				InternalFormat = GL_RGB32F;
+				break;
+
+			case QMetaType::QVector4D:
+				InternalFormat = GL_RGBA32F;
+				break;
+		}
+
+		if( !InternalFormat )
 		{
 			continue;
 		}
@@ -114,7 +178,8 @@ void ArrayToTextureBufferNode::inputsUpdated( qint64 pTimeStamp )
 		BufO->dstTex()->create();
 
 		glBindTexture( GL_TEXTURE_BUFFER, BufO->dstTexId() );
-		glTexBuffer( GL_TEXTURE_BUFFER, GL_RGBA32F, TBO );
+
+		GL31->glTexBuffer( GL_TEXTURE_BUFFER, InternalFormat, TBO );
 
 		BufO->release();
 
