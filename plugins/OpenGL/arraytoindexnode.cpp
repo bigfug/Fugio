@@ -91,7 +91,7 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( BufO->buffer() && !BufO->buffer()->isCreated() && !BufO->alloc( A->type(), A->size(), A->stride(), A->count() ) )
+		if( ( !BufO->buffer() || !BufO->buffer()->isCreated() ) && !BufO->alloc( A->type(), A->size(), A->stride(), A->count() ) )
 		{
 			BufO->clear();
 
