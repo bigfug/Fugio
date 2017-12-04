@@ -339,7 +339,7 @@ int main( int argc, char *argv[] )
 
 	GlobalPrivate	*PBG = &APP->global();
 
-#if defined( Q_OS_LINUX )
+#if defined( Q_OS_LINUX ) && !defined( QT_DEBUG )
 	QDir	PluginsDir = QDir( "/usr/lib/fugio" );
 #else
 	QDir	PluginsDir = QDir( qApp->applicationDirPath() );

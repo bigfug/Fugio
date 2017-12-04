@@ -16,13 +16,15 @@ CONFIG += plugin c++11
 DESTDIR = $$DESTDIR/plugins
 
 SOURCES += raspberrypiplugin.cpp \
-    sourcenode.cpp
+    sourcenode.cpp \
+    gpionode.cpp
 
 HEADERS += raspberrypiplugin.h \
 	../../include/fugio/raspberrypi/uuid.h \
 	../../include/fugio/nodecontrolbase.h \
 	../../include/fugio/pincontrolbase.h \
-    sourcenode.h
+    sourcenode.h \
+    gpionode.h
 
 RESOURCES += \
     resources.qrc
@@ -100,6 +102,8 @@ contains( DEFINES, Q_OS_RASPBERRY_PI ) {
 	INCLUDEPATH += $$[QT_SYSROOT]/opt/vc/include $$[QT_SYSROOT]/opt/vc/include/interface/vcos/pthreads $$[QT_SYSROOT]/opt/vc/include/interface/vmcs_host/linux
 
         LIBS += -L$$[QT_SYSROOT]/opt/vc/lib -lbcm_host -lopenmaxil
+
+    DEFINES += OMX_SKIP64BIT
 }
 
 #------------------------------------------------------------------------------

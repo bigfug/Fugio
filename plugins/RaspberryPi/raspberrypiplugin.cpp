@@ -22,11 +22,13 @@
 #endif
 
 #include "sourcenode.h"
+#include "gpionode.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
 ClassEntry	NodeClasses[] =
 {
+	ClassEntry( "GPIO",   "RPi", NID_RPI_GPIO, &GPIONode::staticMetaObject ),
 	ClassEntry( "Source", "OMX", NID_OMX_SOURCE, &SourceNode::staticMetaObject ),
 	ClassEntry()
 };
@@ -36,7 +38,9 @@ ClassEntry PinClasses[] =
 	ClassEntry()
 };
 
-RasperryPiPlugin::RasperryPiPlugin() : mApp( 0 )
+RaspberryPiPlugin	*RaspberryPiPlugin::mInstance = 0;
+
+RaspberryPiPlugin::RaspberryPiPlugin() : mApp( 0 ), mPigPioInit( -1 )
 {
 	//-------------------------------------------------------------------------
 	// Install translator
@@ -47,9 +51,11 @@ RasperryPiPlugin::RasperryPiPlugin() : mApp( 0 )
 	{
 		qApp->installTranslator( &Translator );
 	}
+
+	mInstance = this;
 }
 
-PluginInterface::InitResult RasperryPiPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
+PluginInterface::InitResult RaspberryPiPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
 	Q_UNUSED( pLastChance )
 
@@ -107,7 +113,7 @@ PluginInterface::InitResult RasperryPiPlugin::initialise( fugio::GlobalInterface
 	return( INIT_OK );
 }
 
-void RasperryPiPlugin::deinitialise( void )
+void RaspberryPiPlugin::deinitialise( void )
 {
 #if defined( PIGPIO_SUPPORTED )
 	if( mPigPioInit >= 0 )

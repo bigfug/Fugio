@@ -5,16 +5,26 @@
 
 using namespace fugio;
 
-class RasperryPiPlugin : public QObject, public fugio::PluginInterface
+class RaspberryPiPlugin : public QObject, public fugio::PluginInterface
 {
 	Q_OBJECT
 	Q_PLUGIN_METADATA( IID "com.bigfug.fugio.raspberry-pi.plugin" )
 	Q_INTERFACES( fugio::PluginInterface )
 
 public:
-	Q_INVOKABLE explicit RasperryPiPlugin( void );
+	Q_INVOKABLE explicit RaspberryPiPlugin( void );
 
-	virtual ~RasperryPiPlugin( void ) {}
+	virtual ~RaspberryPiPlugin( void ) {}
+
+	static RaspberryPiPlugin *instance( void )
+	{
+		return( mInstance );
+	}
+
+	int piIndex( void ) const
+	{
+		return( mPigPioInit );
+	}
 
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
@@ -24,11 +34,13 @@ public:
 	virtual void deinitialise( void );
 
 private:
-	GlobalInterface			*mApp;
+	static RaspberryPiPlugin	*mInstance;
 
-#if defined( PIGPIO_SUPPORTED )
-	int						 mPigPioInit;
-#endif
+	GlobalInterface				*mApp;
+
+	int							 mPigPioInit;
+
+
 };
 
 #endif // RASPBERRYPIPLUGIN_H
