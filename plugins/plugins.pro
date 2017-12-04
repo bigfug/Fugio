@@ -37,6 +37,6 @@ SUBDIRS += \
     Geometry
 
 qtHaveModule( serialport ) {
-	SUBDIRS += Serial
+        SUBDIRS += Serial
 }
 

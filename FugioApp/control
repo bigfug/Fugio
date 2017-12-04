@@ -8,4 +8,4 @@ Depends: libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5netwo
 Description: a free, node-based, cross-platform, visual programming system
 Homepage: https://www.bigfug.com/software/fugio
 Maintainer: alex@bigfug.com
-Version: 2.13.0
+Version: 2.14.0
