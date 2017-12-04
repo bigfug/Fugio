@@ -27,7 +27,6 @@ HEADERS += \
     polygonnode.h
 
 RESOURCES += \
-    resources.qrc \
     resources.qrc
 
 TRANSLATIONS = \

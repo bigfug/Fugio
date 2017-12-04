@@ -1,6 +1,7 @@
 #include "polygonnode.h"
 
 #include <qmath.h>
+#include <QPointF>
 
 #include <fugio/core/uuid.h>
 

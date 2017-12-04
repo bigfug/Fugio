@@ -87,6 +87,8 @@ windows {
 # Linux
 
 unix:!macx {
+    QMAKE_DEFAULT_INCDIRS= \
+
     target.path = $$INSTALLBASE/usr/lib/fugio
 
     INSTALLS += target

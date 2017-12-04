@@ -1,6 +1,7 @@
 #include "addnode.h"
 
 #include <QVector3D>
+#include <QSizeF>
 
 #include <fugio/core/uuid.h>
 #include <fugio/math/uuid.h>
