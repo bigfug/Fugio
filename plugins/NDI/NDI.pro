@@ -82,11 +82,26 @@ macx {
 # Windows
 
 windows {
-	contains( DEFINES, INTERNAL_BUILD ) {
-		plugin.path  = $$INSTALLDATA/plugins
-		plugin.files = $$DESTDIR/$$TARGET".dll"
+	INSTALLDEST  = $$INSTALLDATA/plugins/ndi
 
-		INSTALLS += plugin
+	plugin.path  = $$INSTALLDEST
+	plugin.files = $$DESTDIR/$$TARGET".dll"
+
+	INSTALLS += plugin
+
+	NDI_PATH = "C:/Program Files/NewTek/NewTek NDI Redist/v2"
+
+	contains( QT_ARCH, x86_64 ) {
+		NDI_LIB = x64
+	} else {
+		NDI_LIB = x86
+	}
+
+	exists( $$NDI_PATH ) {
+		libraries.path  = $$INSTALLDEST
+		libraries.files = $$NDI_PATH/Processing.NDI.Lib.$${NDI_LIB}.dll
+
+		INSTALLS += libraries
 	}
 }
 
