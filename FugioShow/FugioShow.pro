@@ -95,6 +95,13 @@ macx {
 #	INSTALLS += qttranslation
 }
 
+windows {
+	app.path  = $$INSTALLDATA
+	app.files = $$DESTDIR/$$TARGET".exe"
+
+	INSTALLS += app
+}
+
 #------------------------------------------------------------------------------
 # API
 
