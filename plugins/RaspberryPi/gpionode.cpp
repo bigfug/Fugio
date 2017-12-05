@@ -65,6 +65,7 @@ bool GPIONode::mustChooseNamedInputPin() const
 
 void GPIONode::pinAdded( QSharedPointer<fugio::PinInterface> pPin )
 {
+#if defined( PIGPIO_SUPPORTED )
 	const int		PigPio = RaspberryPiPlugin::instance()->piIndex();
 
 	quint16		PId = pPin->name().toInt();
@@ -93,10 +94,12 @@ void GPIONode::pinAdded( QSharedPointer<fugio::PinInterface> pPin )
 	{
 		qWarning() << "PI_NOT_PERMITTED";
 	}
+#endif
 }
 
 void GPIONode::frameStart()
 {
+#if defined( PIGPIO_SUPPORTED )
 	const int		PigPio = RaspberryPiPlugin::instance()->piIndex();
 
 	for( QSharedPointer<fugio::PinInterface> P : mNode->enumOutputPins() )
@@ -117,10 +120,12 @@ void GPIONode::frameStart()
 			}
 		}
 	}
+#endif
 }
 
 void GPIONode::frameEnd( qint64 pTimestamp )
 {
+#if defined( PIGPIO_SUPPORTED )
 	const int		PigPio = RaspberryPiPlugin::instance()->piIndex();
 
 	for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
@@ -135,6 +140,7 @@ void GPIONode::frameEnd( qint64 pTimestamp )
 		int			Val = variant( P ).toInt();
 		int			Res = gpio_write( PigPio, PId, Val );
 	}
+#endif
 }
 
 
