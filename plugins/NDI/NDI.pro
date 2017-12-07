@@ -61,20 +61,18 @@ macx {
 
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
-		QMAKE_POST_LINK += && install_name_tool -change @rpath/libndi.dylib $$(LIBS)/NDI/bin/x64/libndi.dylib $$DESTLIB
+		QMAKE_POST_LINK += && install_name_tool -change @rpath/libndi.dylib $$(LIBS)/NDI/lib/x64/libndi.dylib $$DESTLIB
 
 		QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
 		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$FRAMEWORKDIR
 		QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs.sh $$BUNDLEDIR/Contents/MacOS
 
-		contains( DEFINES, INTERNAL_BUILD ) {
-			plugin.path = $$INSTALLDEST
-			plugin.files = $$BUNDLEDIR
-			plugin.extra = rm -rf $$INSTALLDEST/$$TARGET".bundle"
+		plugin.path = $$INSTALLDEST
+		plugin.files = $$BUNDLEDIR
+		plugin.extra = rm -rf $$INSTALLDEST/$$TARGET".bundle"
 
-			INSTALLS += plugin
-		}
+		INSTALLS += plugin
 	}
 }
 
@@ -122,7 +120,7 @@ macx:exists( $$(LIBS)/NDI ) {
 
 	LIBS += -L$$(LIBS)/NDI/lib/x64 -lndi
 
-#	DEFINES += NDI_SUPPORTED
+	DEFINES += NDI_SUPPORTED
 }
 
 windows:exists( "C:/Program Files/NewTek/NewTek NDI SDK" ) {

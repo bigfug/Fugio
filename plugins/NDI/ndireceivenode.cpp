@@ -27,7 +27,7 @@ NDIReceiveNode::NDIReceiveNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 #if defined( NDI_SUPPORTED )
 	mNDIFind        = 0;
-	mNDIFindTimeout = 10000;
+	mNDIFindTimeout = 500;
 	mNDIInstance    = 0;
 #endif
 
@@ -104,14 +104,14 @@ void NDIReceiveNode::inputsUpdated( qint64 pTimeStamp )
 		RecvCreate.bandwidth            = NDIlib_recv_bandwidth_highest;
 
 #if !defined( Q_OS_WIN )
-		RecvCreate.prefer_UYVY          = false;
+//		RecvCreate.prefer_UYVY          = false;
 #endif
 
 		uint32_t					 NDICount = 0;
 
 		const NDIlib_source_t		*NDISources = NDIlib_find_get_current_sources( mNDIFind, &NDICount );
 
-		for( DWORD i=0; i < NDICount ; i++ )
+		for( uint32_t i = 0 ; i < NDICount ; i++ )
 		{
 			if( SourceName != QString( NDISources[ i ].p_ndi_name ) )
 			{
@@ -159,7 +159,7 @@ void NDIReceiveNode::updateNDISources()
 
 //		while( !no_sources )
 		{
-			NDIlib_find_wait_for_sources( mNDIFind, 0 );
+			NDIlib_find_wait_for_sources( mNDIFind, mNDIFindTimeout );
 
 			const NDIlib_source_t* p_sources = NDIlib_find_get_current_sources( mNDIFind, &no_sources );
 

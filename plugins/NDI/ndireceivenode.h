@@ -133,7 +133,7 @@ protected:
 
 #if defined( NDI_SUPPORTED )
 	NDIlib_find_instance_t						 mNDIFind;
-	DWORD										 mNDIFindTimeout;
+	uint32_t									 mNDIFindTimeout;
 	NDIlib_recv_instance_t						 mNDIInstance;
 
 	mutable QMutex								 mAudioMutex;
