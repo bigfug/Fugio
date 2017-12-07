@@ -5,12 +5,15 @@
 
 #include <QObject>
 #include <QDockWidget>
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLShaderProgram>
+#include <QOpenGLBuffer>
 
 #include <fugio/nodecontrolbase.h>
 
 #include "texturemonitor.h"
 
-class TextureMonitorNode : public fugio::NodeControlBase
+class TextureMonitorNode : public fugio::NodeControlBase, public QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_CLASSINFO( "Author", "Alex May" )
@@ -44,10 +47,10 @@ protected:
 	QDockWidget					*mDockWidget;
 	TextureMonitor				*mWidget;
 	Qt::DockWidgetArea			 mDockArea;
-
-	GLuint						 mVAO;
-	GLuint						 mProgram;
-	GLuint						 mVBO;
+	QOpenGLVertexArrayObject	 mVAO;
+	QOpenGLShaderProgram		 mShader;
+	QOpenGLBuffer				 mBuffer;
+	GLint						 mVertexAttribLocation;
 };
 
 #endif // TEXTUREMONITORNODE_H

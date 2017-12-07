@@ -50,6 +50,19 @@ macx {
 	INSTALLDEST  = $$INSTALLDATA/plugins
 	INCLUDEDEST  = $$INSTALLDATA/include/fugio
 
+	isEmpty( CASKBASE ) {
+		libraries.path  = $$DESTDIR/../libs
+		libraries.files = $$(LIBS)/lua-x64/lib/liblua5.3.4.dylib
+
+		INSTALLS += libraries
+
+		library_id.path = $$DESTDIR/../libs
+		library_id.depends = install_libraries
+		library_id.commands = install_name_tool -id @rpath/liblua5.3.4.dylib $$library_id.path/liblua5.3.4.dylib
+
+		INSTALLS += library_id
+	}
+
 	DESTDIR = $$BUNDLEDIR/Contents/MacOS
 	DESTLIB = $$DESTDIR/"lib"$$TARGET".dylib"
 
@@ -65,7 +78,7 @@ macx {
 		QMAKE_POST_LINK += && defaults write $$absolute_path( "Contents/Info", $$BUNDLEDIR ) CFBundleExecutable "lib"$$TARGET".dylib"
 
 		isEmpty( CASKBASE ) {
-			QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
+#			QMAKE_POST_LINK += && macdeployqt $$BUNDLEDIR -always-overwrite -no-plugins
 
 			QMAKE_POST_LINK += && $$FUGIO_ROOT/Fugio/mac_fix_libs_shared.sh $$BUNDLEDIR/Contents/MacOS
 		}
@@ -83,6 +96,15 @@ windows {
 	plugin.files = $$DESTDIR/$$TARGET".dll"
 
 	INSTALLS += plugin
+}
+
+#------------------------------------------------------------------------------
+# Linux
+
+unix:!macx {
+    target.path = $$INSTALLBASE/usr/lib/fugio
+
+    INSTALLS += target
 }
 
 #------------------------------------------------------------------------------

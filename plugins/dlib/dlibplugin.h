@@ -1,6 +1,8 @@
 #ifndef DLIBPLUGIN_H
 #define DLIBPLUGIN_H
 
+#include <cstdlib>
+
 #include <fugio/plugin_interface.h>
 
 using namespace fugio;

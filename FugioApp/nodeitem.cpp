@@ -613,7 +613,7 @@ void NodeItem::create( const QPointF &pPosition )
 	mPinsItem = new QGraphicsRectItem( mBorderItem );
 
 	mPinsItem->setPen( QPen( Qt::black ) );
-	mPinsItem->setBrush( mBackgroundColour );
+	mPinsItem->setBrush( mContextView->nodeColour() );
 
 	updateGui();
 

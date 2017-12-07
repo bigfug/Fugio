@@ -84,6 +84,17 @@ windows {
 }
 
 #------------------------------------------------------------------------------
+# Linux
+
+unix:!macx {
+    QMAKE_DEFAULT_INCDIRS= \
+
+    target.path = $$INSTALLBASE/usr/lib/fugio
+
+    INSTALLS += target
+}
+
+#------------------------------------------------------------------------------
 # dlib
 
 linux:!macx:exists( /usr/include/dlib ) {

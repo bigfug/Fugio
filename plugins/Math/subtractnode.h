@@ -16,6 +16,13 @@ class SubtractNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Subtract" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
+	class Operator
+	{
+		public:
+			template<typename T> static T sub2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+			template<typename T> static T sub3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+	};
+
 public:
 	Q_INVOKABLE SubtractNode( QSharedPointer<fugio::NodeInterface> pNode );
 
@@ -31,8 +38,6 @@ public:
 
 private:
 	static QVariant subtractNumber( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-	static QVariant subtractVector3D( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-	static QVariant subtractPoint( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;

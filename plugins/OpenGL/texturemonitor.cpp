@@ -20,56 +20,24 @@ void TextureMonitor::setNode( TextureMonitorNode *pNode )
 
 void TextureMonitor::initializeGL()
 {
-#if defined( __glew_h__ )
-	if( glewExperimental == GL_FALSE )
-	{
-		glewExperimental = GL_TRUE;
+	initializeOpenGLFunctions();
 
-		if( glewInit() != GLEW_OK )
-		{
-			qWarning() << "GLEW did not initialise";
+	OpenGLPlugin::instance()->initGLEW();
 
-			return;
-		}
-	}
-#endif
-
-	qDebug() << "GL_VENDOR" << QString( (const char *)glGetString( GL_VENDOR ) );
-
-	qDebug() << "GL_RENDERER" << QString( (const char *)glGetString( GL_RENDERER ) );
-
-	qDebug() << "GL_VERSION" << QString( (const char *)glGetString( GL_VERSION ) );
-
-	//qDebug() << context()->extensions();
-
-	switch( context()->format().profile() )
-	{
-		case QSurfaceFormat::NoProfile:
-			qInfo() << "Profile: None";
-			break;
-
-		case QSurfaceFormat::CoreProfile:
-			qInfo() << "Profile: Core";
-			break;
-
-		case QSurfaceFormat::CompatibilityProfile:
-			qInfo() << "Profile: Compatibility";
-			break;
-	}
-
-	qInfo() << "Samples:" << context()->format().samples();
-	qInfo() << "Alpha:" << context()->format().alphaBufferSize();
-	qInfo() << "Depth:" << context()->format().depthBufferSize();
-	qInfo() << "RGB:" << context()->format().redBufferSize() << context()->format().greenBufferSize() << context()->format().blueBufferSize();
+	mNode->node()->context()->nodeInitialised();
 }
 
 void TextureMonitor::resizeGL( int w, int h )
 {
+	initializeOpenGLFunctions();
+
 	glViewport( 0, 0, w, h );
 }
 
 void TextureMonitor::paintGL()
 {
+	initializeOpenGLFunctions();
+
 	if( mNode )
 	{
 		mNode->paintGL();

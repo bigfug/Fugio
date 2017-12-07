@@ -56,49 +56,49 @@ public:
 	virtual quint32 srcTexId( void ) const Q_DECL_OVERRIDE;
 	virtual quint32 dstTexId( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 target( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::Target target( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 format( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::PixelFormat format( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 internalFormat( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::TextureFormat internalFormat( void ) const Q_DECL_OVERRIDE;
 
-	virtual quint32 type( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::PixelType type( void ) const Q_DECL_OVERRIDE;
 
-	virtual int filterMin( void ) const Q_DECL_OVERRIDE;
-	virtual int filterMag( void ) const Q_DECL_OVERRIDE;
-	virtual int wrapS( void ) const Q_DECL_OVERRIDE;
-	virtual int wrapT( void ) const Q_DECL_OVERRIDE;
-	virtual int wrapR( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::Filter filterMin( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::Filter filterMag( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::WrapMode wrapS( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::WrapMode wrapT( void ) const Q_DECL_OVERRIDE;
+	virtual QOpenGLTexture::WrapMode wrapR( void ) const Q_DECL_OVERRIDE;
 	virtual bool genMipMaps( void ) const Q_DECL_OVERRIDE;
 
-	virtual void setSize( qint32 pWidth, qint32 pHeight = 0, qint32 pDepth = 0 ) Q_DECL_OVERRIDE;
+	virtual void setSize( qint32, qint32, qint32 ) Q_DECL_OVERRIDE {}
 
-	virtual void setSize( const QVector3D &pSize ) Q_DECL_OVERRIDE;
+	virtual void setSize( const QVector3D & ) Q_DECL_OVERRIDE {}
 
-	virtual void setTarget( quint32 pTarget ) Q_DECL_OVERRIDE;
+	virtual void setTarget( QOpenGLTexture::Target ) Q_DECL_OVERRIDE {}
 
-	virtual void setFormat( quint32 pFormat ) Q_DECL_OVERRIDE;
+	virtual void setFormat( QOpenGLTexture::PixelFormat ) Q_DECL_OVERRIDE {}
 
-	virtual void setType( quint32 pType ) Q_DECL_OVERRIDE;
+	virtual void setType( QOpenGLTexture::PixelType ) Q_DECL_OVERRIDE {}
 
-	virtual void setInternalFormat( quint32 pInternalFormat ) Q_DECL_OVERRIDE;
+	virtual void setInternalFormat( QOpenGLTexture::TextureFormat ) Q_DECL_OVERRIDE {}
 
-	virtual void update( void ) Q_DECL_OVERRIDE;
+	virtual void update( void ) Q_DECL_OVERRIDE {}
 
-	virtual void update( const unsigned char *pData, int pDataSize, int pLineSize, int pCubeFaceIndex = 0 ) Q_DECL_OVERRIDE;
+	virtual void update( const unsigned char *, int, int, int ) Q_DECL_OVERRIDE {}
 
-	virtual void setFilter( quint32 pMin, quint32 pMag ) Q_DECL_OVERRIDE;
+	virtual void setFilter( QOpenGLTexture::Filter, QOpenGLTexture::Filter ) Q_DECL_OVERRIDE {}
 
-	virtual void setWrap( quint32 pX, quint32 pY, quint32 pZ ) Q_DECL_OVERRIDE;
+	virtual void setWrap( QOpenGLTexture::WrapMode, QOpenGLTexture::WrapMode, QOpenGLTexture::WrapMode ) Q_DECL_OVERRIDE {}
 
-	virtual void setGenMipMaps( bool pGenMipMaps ) Q_DECL_OVERRIDE;
+	virtual void setGenMipMaps( bool ) Q_DECL_OVERRIDE {}
 
 	virtual void free( void ) Q_DECL_OVERRIDE;
 
 	virtual QImage image( void ) Q_DECL_OVERRIDE;
 
 	virtual void srcBind( void ) Q_DECL_OVERRIDE;
-	virtual void dstBind( void ) Q_DECL_OVERRIDE;
+	virtual void dstBind( void ) Q_DECL_OVERRIDE {};
 
 	virtual void release( void ) Q_DECL_OVERRIDE;
 
@@ -136,12 +136,12 @@ public:
 		return( false );
 	}
 
-	virtual qint32 compare() const Q_DECL_OVERRIDE
+	virtual QOpenGLTexture::ComparisonFunction compare() const Q_DECL_OVERRIDE
 	{
-		return( GL_NONE );
+		return( QOpenGLTexture::CompareLessEqual );
 	}
 
-	virtual void setCompare( qint32 pCompare) Q_DECL_OVERRIDE
+	virtual void setCompare( QOpenGLTexture::ComparisonFunction pCompare) Q_DECL_OVERRIDE
 	{
 		Q_UNUSED( pCompare )
 	}
@@ -154,6 +154,16 @@ public:
 	virtual void setTextureDescription( const OpenGLTextureDescription &pDescription ) Q_DECL_OVERRIDE
 	{
 		Q_UNUSED( pDescription )
+	}
+
+	virtual QOpenGLTexture *srcTex() Q_DECL_OVERRIDE
+	{
+		return( nullptr );
+	}
+
+	virtual QOpenGLTexture *dstTex() Q_DECL_OVERRIDE
+	{
+		return( nullptr );
 	}
 
 	//-------------------------------------------------------------------------

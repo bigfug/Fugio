@@ -90,15 +90,9 @@ windows {
 # Linux
 
 unix:!macx {
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+    target.path = $$INSTALLBASE/usr/lib/fugio
 
-	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-		target.path = Desktop/Fugio/plugins
-	} else {
-		target.path = $$shell_path( $$INSTALLDIR/data/plugins )
-	}
-
-	INSTALLS += target
+    INSTALLS += target
 }
 
 #------------------------------------------------------------------------------
@@ -153,7 +147,7 @@ macx {
 
 unix:!macx {
 	exists( $$[QT_SYSROOT]/usr/include/fftw3.h ) {
-		INCLUDEPATH += $$[QT_SYSROOT]/usr/include
+#		INCLUDEPATH += $$[QT_SYSROOT]/usr/include
 
 		LIBS += -lfftw3f
 

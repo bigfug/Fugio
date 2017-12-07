@@ -76,6 +76,8 @@ public slots:
 
 	QStringList patchOpenDialog( void );
 
+	void stylesApply( void );
+
 private:
 	virtual void closeEvent( QCloseEvent *pEvent ) Q_DECL_OVERRIDE;
 

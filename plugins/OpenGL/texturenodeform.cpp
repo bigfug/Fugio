@@ -65,49 +65,49 @@ TextureNodeForm::~TextureNodeForm()
 	delete ui;
 }
 
-int TextureNodeForm::target() const
+QOpenGLTexture::Target TextureNodeForm::target() const
 {
-	return( OpenGLPlugin::mMapTargets.value( ui->mComboTarget->currentText() ) );
+	return( QOpenGLTexture::Target( OpenGLPlugin::mMapTargets.value( ui->mComboTarget->currentText() ) ) );
 }
 
-int TextureNodeForm::format() const
+QOpenGLTexture::PixelFormat TextureNodeForm::format() const
 {
-	return( OpenGLPlugin::mMapFormat.value( ui->mComboFormat->currentText() ) );
+	return( QOpenGLTexture::PixelFormat( OpenGLPlugin::mMapFormat.value( ui->mComboFormat->currentText() ) ) );
 }
 
-int TextureNodeForm::internal() const
+QOpenGLTexture::TextureFormat TextureNodeForm::internal() const
 {
-	return( OpenGLPlugin::mMapInternal.value( ui->mComboInternalFormat->currentText() ) );
+	return( QOpenGLTexture::TextureFormat( OpenGLPlugin::mMapInternal.value( ui->mComboInternalFormat->currentText() ) ) );
 }
 
-int TextureNodeForm::type() const
+QOpenGLTexture::PixelType TextureNodeForm::type() const
 {
-	return( OpenGLPlugin::mMapType.value( ui->mComboType->currentText() ) );
+	return( QOpenGLTexture::PixelType( OpenGLPlugin::mMapType.value( ui->mComboType->currentText() ) ) );
 }
 
-int TextureNodeForm::filterMin() const
+QOpenGLTexture::Filter TextureNodeForm::filterMin() const
 {
-	return( OpenGLPlugin::mMapFilterMin.value( ui->mFilterMin->currentText() ) );
+	return( QOpenGLTexture::Filter( OpenGLPlugin::mMapFilterMin.value( ui->mFilterMin->currentText() ) ) );
 }
 
-int TextureNodeForm::filterMag() const
+QOpenGLTexture::Filter TextureNodeForm::filterMag() const
 {
-	return( OpenGLPlugin::mMapFilterMag.value( ui->mFilterMag->currentText() ) );
+	return( QOpenGLTexture::Filter( OpenGLPlugin::mMapFilterMag.value( ui->mFilterMag->currentText() ) ) );
 }
 
-int TextureNodeForm::wrapS() const
+QOpenGLTexture::WrapMode TextureNodeForm::wrapS() const
 {
-	return( OpenGLPlugin::mMapWrap.value( ui->mWrapS->currentText() ) );
+	return( QOpenGLTexture::WrapMode( OpenGLPlugin::mMapWrap.value( ui->mWrapS->currentText() ) ) );
 }
 
-int TextureNodeForm::wrapT() const
+QOpenGLTexture::WrapMode TextureNodeForm::wrapT() const
 {
-	return( OpenGLPlugin::mMapWrap.value( ui->mWrapT->currentText() ) );
+	return( QOpenGLTexture::WrapMode( OpenGLPlugin::mMapWrap.value( ui->mWrapT->currentText() ) ) );
 }
 
-int TextureNodeForm::wrapR() const
+QOpenGLTexture::WrapMode TextureNodeForm::wrapR() const
 {
-	return( OpenGLPlugin::mMapWrap.value( ui->mWrapR->currentText() ) );
+	return( QOpenGLTexture::WrapMode( OpenGLPlugin::mMapWrap.value( ui->mWrapR->currentText() ) ) );
 }
 
 bool TextureNodeForm::genMipMaps() const
@@ -120,9 +120,9 @@ bool TextureNodeForm::doubleBuffer() const
 	return( ui->mDoubleBuffer->isChecked() );
 }
 
-int TextureNodeForm::compare() const
+QOpenGLTexture::ComparisonFunction TextureNodeForm::compare() const
 {
-	return( OpenGLPlugin::mMapCompare.value( ui->mCompare->currentText() ) );
+	return( QOpenGLTexture::ComparisonFunction( OpenGLPlugin::mMapCompare.value( ui->mCompare->currentText() ) ) );
 }
 
 void TextureNodeForm::updateInternalFormat()

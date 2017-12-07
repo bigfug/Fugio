@@ -24,6 +24,7 @@
 #include "luagradient.h"
 #include "luaimage.h"
 #include "luatransform.h"
+#include "lualine.h"
 
 const char *LuaPainter::LuaPainterData::TypeName = "qt.painter";
 
@@ -504,12 +505,16 @@ int LuaPainter::luaDrawLine( lua_State *L )
 {
 	LuaPainterData		*PainterData = checkactivepainter( L );
 
-	QPointF				 P1, P2;
+	QLineF				 Line;
 
 	if( LuaPointF::isPointF( L, 2 ) )
 	{
-		P1 = LuaPointF::checkpointf( L, 2 );
-		P2 = LuaPointF::checkpointf( L, 3 );
+		Line.setP1( LuaPointF::checkpointf( L, 2 ) );
+		Line.setP2( LuaPointF::checkpointf( L, 3 ) );
+	}
+	else if( LuaLine::isLine( L, 2 ) )
+	{
+		Line = LuaLine::checkLine( L, 2 );
 	}
 	else
 	{
@@ -518,11 +523,10 @@ int LuaPainter::luaDrawLine( lua_State *L )
 		qreal		x2 = luaL_checknumber( L, 4 );
 		qreal		y2 = luaL_checknumber( L, 5 );
 
-		P1 = QPointF( x1, y1 );
-		P2 = QPointF( x2, y2 );
+		Line.setLine( x1, y1, x2, y2 );
 	}
 
-	PainterData->mPainter->drawLine( P1, P2 );
+	PainterData->mPainter->drawLine( Line );
 
 	return( 0 );
 }

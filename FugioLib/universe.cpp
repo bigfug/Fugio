@@ -3,7 +3,6 @@
 #include <QTimer>
 #include <QNetworkInterface>
 #include <QNetworkAddressEntry>
-#include <QNetworkDatagram>
 #include <QDataStream>
 
 Universe::Universe( QObject *pParent )
@@ -193,17 +192,20 @@ void Universe::cast( void )
 
 void Universe::readyRead()
 {
+	QByteArray		DatagramBuffer;
+
 	while( mSocket->hasPendingDatagrams() )
 	{
-		QNetworkDatagram	DG = mSocket->receiveDatagram();
+		DatagramBuffer.resize( mSocket->pendingDatagramSize() );
 
-		if( !DG.isValid() )
+		if( DatagramBuffer.size() != mSocket->pendingDatagramSize() )
 		{
-			continue;
+			break;
 		}
 
-		QDataStream			DS( DG.data() );
+		mSocket->readDatagram( DatagramBuffer.data(), DatagramBuffer.size() );
 
+		QDataStream			DS( DatagramBuffer );
 		DataCast			DC;
 
 		DS >> DC.mTime;

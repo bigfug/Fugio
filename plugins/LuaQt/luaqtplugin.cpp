@@ -35,6 +35,7 @@
 #include "luajsonobject.h"
 #include "luavector3.h"
 #include "luaquaternion.h"
+#include "lualine.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
@@ -64,6 +65,7 @@ const luaL_Reg LuaQtPlugin::mLuaFunctions[] =
 	{ "jsonarray", LuaJsonArray::luaNew },
 	{ "jsondocument", LuaJsonDocument::luaNew },
 	{ "jsonobject", LuaJsonObject::luaNew },
+	{ "line", LuaLine::luaNew },
 	{ "matrix4x4", LuaMatrix4x4::luaNewQt },
 	{ "pen", LuaPen::luaNew },
 	{ "point", LuaPointF::luaNew },
@@ -119,6 +121,7 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 #if defined( LUA_SUPPORTED )
 	LUA->luaRegisterLibrary( "qt", LuaQtPlugin::luaOpen );
 
+	LUA->luaRegisterLibrary( "line", LuaLine::luaOpen );
 	LUA->luaRegisterLibrary( "matrix4x4", LuaMatrix4x4::luaOpen );
 	LUA->luaRegisterLibrary( "vector3d", LuaVector3D::luaOpen );
 	LUA->luaRegisterLibrary( "quaternion", LuaQuaternion::luaOpen );
@@ -150,10 +153,18 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaAddPinGet( PID_RECT, LuaRectF::luaPinGet );
 	LUA->luaAddPinGet( PID_SIZE, LuaSizeF::luaPinGet );
 	LUA->luaAddPinGet( PID_VECTOR3, LuaVector3D::luaPinGet );
+	LUA->luaAddPinGet( PID_LINE, LuaLine::luaPinGet );
 
 	LUA->luaAddPinSet( PID_MATRIX4, LuaMatrix4x4::luaPinSet );
 	LUA->luaAddPinSet( PID_QUATERNION, LuaQuaternion::luaPinSet );
 	LUA->luaAddPinSet( PID_VECTOR3, LuaVector3D::luaPinSet );
+	LUA->luaAddPinSet( PID_LINE, LuaLine::luaPinSet );
+
+	LUA->luaAddPushVariantFunction( QMetaType::QLineF, LuaLine::pushVariant );
+	LUA->luaAddPushVariantFunction( QMetaType::QPointF, LuaPointF::pushVariant );
+
+	LUA->luaAddPopVariantFunction( LuaLine::mTypeName, LuaLine::popVariant );
+	LUA->luaAddPopVariantFunction( LuaPointF::mTypeName, LuaPointF::popVariant );
 #endif
 
 	return( INIT_OK );

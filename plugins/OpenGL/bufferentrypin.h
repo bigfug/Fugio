@@ -10,7 +10,7 @@
 
 #include <fugio/pincontrolbase.h>
 
-class BufferEntryPin : public fugio::PinControlBase, public fugio::OpenGLBufferEntryInterface
+class BufferEntryPin : public fugio::PinControlBase, public fugio::OpenGLBufferEntryInterface, protected QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::OpenGLBufferEntryInterface )
@@ -33,8 +33,8 @@ public:
 		return( "Buffer Entry" );
 	}
 
-	virtual void loadSettings( QSettings & ) Q_DECL_OVERRIDE;
-	virtual void saveSettings( QSettings & ) const Q_DECL_OVERRIDE;
+	virtual void loadSettings( QSettings & ) Q_DECL_OVERRIDE {}
+	virtual void saveSettings( QSettings & ) const Q_DECL_OVERRIDE {}
 
 	//-------------------------------------------------------------------------
 	// fugio::OpenGLBufferEntryInterface

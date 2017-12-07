@@ -4,3 +4,6 @@
 [submodule "libs/exprtk"]
 	path = libs/exprtk
 	url = https://github.com/ArashPartow/exprtk
+[submodule "libs/FugioTime"]
+	path = libs/FugioTime
+	url = https://github.com/bigfug/FugioTime.git

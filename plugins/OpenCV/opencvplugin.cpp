@@ -24,6 +24,8 @@
 #include "converttonode.h"
 #include "addnode.h"
 #include "flipnode.h"
+#include "houghlinesnode.h"
+#include "simpleblobdetectornode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -39,6 +41,7 @@ ClassEntry	OpenCVPlugin::mNodeEntries[] =
 	ClassEntry( "Find Contours", "OpenCV", NID_OPENCV_FIND_CONTOURS, &FindContoursNode::staticMetaObject ),
 	ClassEntry( "Flip", "OpenCV", NID_OPENCV_FLIP, &FlipNode::staticMetaObject ),
 	ClassEntry( "Grayscale", "OpenCV", NID_OPENCV_GRAYSCALE, &GrayscaleNode::staticMetaObject ),
+	ClassEntry( "Hough Lines", "OpenCV", NID_OPENCV_HOUGH_LINES, &HoughLinesNode::staticMetaObject ),
 	ClassEntry( "Threshold (Image)", "OpenCV", NID_OPENCV_IMAGE_THRESHOLD, &ImageThresholdNode::staticMetaObject ),
 	ClassEntry( "InPaint", "OpenCV", NID_OPENCV_INPAINT, &InPaintNode::staticMetaObject ),
 	ClassEntry( "InRange", "OpenCV", NID_OPENCV_INRANGE, &InRangeNode::staticMetaObject ),
@@ -48,6 +51,7 @@ ClassEntry	OpenCVPlugin::mNodeEntries[] =
 	ClassEntry( "Background Subtraction", "OpenCV", NID_OPENCV_BACKGROUND_SUBTRACTION, &BackgroundSubtractionNode::staticMetaObject ),
 	ClassEntry( "Resize", "OpenCV", ClassEntry::Deprecated, NID_OPENCV_RESIZE, &ResizeNode::staticMetaObject ),
 	ClassEntry( "Moments", "OpenCV", NID_OPENCV_MOMENTS, &MomentsNode::staticMetaObject ),
+	ClassEntry( "Simple Blob Detector", "OpenCV", NID_OPENCV_SIMPLE_BLOB_DETECTOR, &SimpleBlobDetectorNode::staticMetaObject ),
 	ClassEntry()
 };
 

@@ -43,6 +43,10 @@ SnippetsForm::SnippetsForm(QWidget *parent) :
 
 	ui->mUser->header()->hide();
 
+#if defined( Q_OS_LINUX )
+	QDir	SysDir = QDir( "/usr/share/fugio/snippets" );
+
+#else
 	QDir	SysDir = QDir( qApp->applicationDirPath() );
 
 #if defined( Q_OS_MACX )
@@ -64,7 +68,8 @@ SnippetsForm::SnippetsForm(QWidget *parent) :
 	SysDir.cd( "Fugio" );
 #endif
 
-#endif
+#endif // defined( Q_OS_MACX )
+#endif // defined( Q_OS_LINUX )
 
 	SysDir.cd( "snippets" );
 

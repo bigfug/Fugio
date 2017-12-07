@@ -235,6 +235,13 @@ MainWindow::MainWindow(QWidget *parent) :
 		FoundExamples = addExamplesPath( QDir( QApplication::applicationDirPath() ).absoluteFilePath( "../Fugio/examples" ) );
 	}
 
+#if defined( Q_OS_LINUX )
+	if( !FoundExamples )
+	{
+		FoundExamples = addExamplesPath( "/usr/share/fugio/examples" );
+	}
+#endif
+
 	if( !FoundExamples )
 	{
 		QDir	ExamplesDir = QDir( qApp->applicationDirPath() );
@@ -254,16 +261,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
 		qInfo() << "Examples Directory:" << ExamplesDir.absolutePath();
 
-		addExamplesPath( ExamplesDir.absolutePath() );
+		FoundExamples = addExamplesPath( ExamplesDir.absolutePath() );
 	}
 
 	ui->actionRescan->setVisible( false );
 
 	//-------------------------------------------------------------------------
 
-	show();
+//	show();
 
-	QTimer::singleShot( 500, ui->mStyleSheet, SLOT(stylesApply()) );
+//	QTimer::singleShot( 500, ui->mStyleSheet, SLOT(stylesApply()) );
 
 	//-------------------------------------------------------------------------
 	// doesn't do what you might hope...
@@ -446,6 +453,11 @@ QStringList MainWindow::patchOpenDialog()
 	}
 
 	return( FileList );
+}
+
+void MainWindow::stylesApply()
+{
+	ui->mStyleSheet->stylesApply();
 }
 
 void MainWindow::on_actionOpen_triggered()

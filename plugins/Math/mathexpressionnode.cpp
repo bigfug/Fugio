@@ -5,7 +5,10 @@
 #include <fugio/context_interface.h>
 
 MathExpressionNode::MathExpressionNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mExpDat( nullptr )
+	: NodeControlBase( pNode )
+#if defined( INCLUDE_EXPRTK_HPP )
+	, mExpDat( nullptr )
+#endif
 {
 	FUGID( PIN_INPUT_EXPRESSION, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 
@@ -16,16 +19,19 @@ MathExpressionNode::MathExpressionNode( QSharedPointer<fugio::NodeInterface> pNo
 
 bool MathExpressionNode::deinitialise()
 {
+#if defined( INCLUDE_EXPRTK_HPP )
 	if( mExpDat )
 	{
 		delete mExpDat;
 
 		mExpDat = nullptr;
 	}
+#endif
 
 	return( NodeControlBase::deinitialise() );
 }
 
+#if defined( INCLUDE_EXPRTK_HPP )
 void MathExpressionNode::expAddInputs( ExpDat *NewExpDat ) const
 {
 	for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
@@ -232,9 +238,11 @@ void MathExpressionNode::expUpdateOutputs()
 		}
 	}
 }
+#endif
 
 void MathExpressionNode::inputsUpdated( qint64 pTimeStamp )
 {
+#if defined( INCLUDE_EXPRTK_HPP )
 	if( pTimeStamp && mPinInputExpression->isUpdated( pTimeStamp ) )
 	{
 		ExpDat		*NewExpDat = new ExpDat();
@@ -321,6 +329,7 @@ void MathExpressionNode::inputsUpdated( qint64 pTimeStamp )
 	mExpDat->mExpression.value();
 
 	expUpdateOutputs();
+#endif
 }
 
 

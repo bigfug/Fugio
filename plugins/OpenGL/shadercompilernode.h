@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QOpenGLShaderProgram>
 
 #include <fugio/nodecontrolbase.h>
 #include <fugio/opengl/shader_interface.h>
@@ -12,13 +13,13 @@
 #include <fugio/choice_interface.h>
 #include <fugio/opengl/vertex_array_object_interface.h>
 
-#include "vertexarrayobjectpin.h"
-
 #include <fugio/text/syntax_error_interface.h>
+
+#include "shadercompilerdata.h"
 
 using namespace fugio;
 
-class ShaderCompilerNode : public fugio::NodeControlBase, public fugio::OpenGLShaderInterface
+class ShaderCompilerNode : public fugio::NodeControlBase, public fugio::OpenGLShaderInterface, protected QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::OpenGLShaderInterface )
@@ -48,7 +49,7 @@ public:
 
 	virtual bool isLinked( void ) const
 	{
-		return( mShaderCompilerData.mProgramLinked );
+		return( mShaderCompilerData.mProgram->isLinked() );
 	}
 
 	virtual const fugio::ShaderUniformMap &uniformMap( void ) const
@@ -63,12 +64,15 @@ public:
 
 	virtual GLuint programId( void ) const
 	{
-		return( mShaderCompilerData.mProgramId );
+		return( mShaderCompilerData.mProgram->programId() );
+	}
+
+	virtual QOpenGLShaderProgram *program( void )
+	{
+		return( mShaderCompilerData.mProgram );
 	}
 
 private:
-	static void loadShader( QSharedPointer<fugio::PinInterface> pPin, GLuint pProgramId, GLuint &pShaderId, GLenum pShaderType, int &pCompiled, int &pFailed );
-
 	void loadShader();
 
 protected:
@@ -92,55 +96,6 @@ protected:
 	OpenGLShaderInterface					*mOutputShader;
 
 	qint64									 mLastShaderLoad;
-
-	typedef struct ShaderCompilerData
-	{
-		ShaderUniformMap						 mShaderUniformTypes;
-		ShaderUniformMap						 mShaderAttributeTypes;
-
-		QStringList								 mUniformNames;
-		QStringList								 mAttributeNames;
-
-		GLuint									 mProgramId;
-		GLboolean								 mProgramLinked;
-
-		ShaderCompilerData( void )
-			: mProgramId( 0 ), mProgramLinked( false )
-		{
-
-		}
-
-		ShaderCompilerData( ShaderCompilerData &&other )
-		{
-			*this = std::move( other );
-		}
-
-		~ShaderCompilerData( void )
-		{
-			clear();
-		}
-
-		ShaderCompilerData &operator = ( ShaderCompilerData && other )
-		{
-			mProgramId = other.mProgramId;
-			mProgramLinked = other.mProgramLinked;
-
-			other.mProgramId = 0;
-			other.mProgramLinked = false;
-
-			mShaderUniformTypes = std::move( other.mShaderUniformTypes );
-			mShaderAttributeTypes = std::move( other.mShaderAttributeTypes );
-			mUniformNames = std::move( other.mUniformNames );
-			mAttributeNames = std::move( other.mAttributeNames );
-
-			return( *this );
-		}
-
-		void process( void );
-
-		void clear( void );
-
-	} ShaderCompilerData;
 
 	ShaderCompilerData						 mShaderCompilerData;
 };

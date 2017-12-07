@@ -92,6 +92,15 @@ windows {
 }
 
 #------------------------------------------------------------------------------
+# Linux
+
+unix:!macx {
+    target.path = $$INSTALLBASE/usr/lib/fugio
+
+    INSTALLS += target
+}
+
+#------------------------------------------------------------------------------
 # video_capture
 
 macx:exists( $$(LIBS)/video_capture/install/mac-clang-x86_64/include/videocapture/Capture.h ) {

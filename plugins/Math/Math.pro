@@ -63,7 +63,19 @@ SOURCES += mathplugin.cpp \
 	roundnode.cpp \
 	quaternionpin.cpp \
     mathexpressionnode.cpp \
-    modulusnode.cpp
+    modulusnode.cpp \
+    inttobitsnode.cpp \
+    multiplexornode.cpp \
+    bitstopinsnode.cpp \
+    notbitsnode.cpp \
+    nandbitsnode.cpp \
+    andbitsnode.cpp \
+    orbitsnode.cpp \
+    xorbitsnode.cpp \
+    flipflopnode.cpp \
+    cosinedegreesnode.cpp \
+    minnode.cpp \
+    maxnode.cpp
 
 HEADERS += mathplugin.h \
 	../../include/fugio/math/uuid.h \
@@ -115,7 +127,19 @@ HEADERS += mathplugin.h \
 	roundnode.h \
 	quaternionpin.h \
     mathexpressionnode.h \
-    modulusnode.h
+    modulusnode.h \
+    inttobitsnode.h \
+    multiplexornode.h \
+    bitstopinsnode.h \
+    notbitsnode.h \
+    nandbitsnode.h \
+    andbitsnode.h \
+    orbitsnode.h \
+    xorbitsnode.h \
+    flipflopnode.h \
+    cosinedegreesnode.h \
+    minnode.h \
+    maxnode.h
 
 RESOURCES += \
     resources.qrc
@@ -177,15 +201,9 @@ windows {
 # Linux
 
 unix:!macx {
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+    target.path = $$INSTALLBASE/usr/lib/fugio
 
-	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-		target.path = Desktop/Fugio/plugins
-	} else {
-		target.path = $$shell_path( $$INSTALLDIR/data/plugins )
-	}
-
-	INSTALLS += target
+    INSTALLS += target
 }
 
 #------------------------------------------------------------------------------

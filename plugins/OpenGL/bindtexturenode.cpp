@@ -60,6 +60,8 @@ void BindTextureNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 {
 	Q_UNUSED( pSourcePinId )
 
+	initializeOpenGLFunctions();
+
 	OpenGLTextureInterface		*T;
 
 	QList<QSharedPointer<fugio::PinInterface>>		PinLst = mNode->enumInputPins();
@@ -72,7 +74,7 @@ void BindTextureNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		{
 			T->srcBind();
 
-			glEnable( T->target() );
+//			glEnable( T->target() );
 		}
 	}
 
@@ -133,7 +135,7 @@ void BindTextureNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		{
 			T->release();
 
-			glDisable( T->target() );
+//			glDisable( T->target() );
 		}
 	}
 }

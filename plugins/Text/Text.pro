@@ -25,7 +25,8 @@ SOURCES += textplugin.cpp \
 	stringjoinnode.cpp \
 	linebuffernode.cpp \
     syntaxerrorpin.cpp \
-    texteditorremotenode.cpp
+    texteditorremotenode.cpp \
+    stringsplitnode.cpp
 
 HEADERS += textplugin.h\
 	../../include/fugio/nodecontrolbase.h \
@@ -45,7 +46,8 @@ HEADERS += textplugin.h\
     syntaxerrorpin.h \
     ../../include/fugio/text/syntax_error_signals.h \
     ../../include/fugio/text/syntax_error_interface.h \
-    texteditorremotenode.h
+    texteditorremotenode.h \
+    stringsplitnode.h
 	cmdtexteditorupdate.h
 
 FORMS += \
@@ -109,15 +111,9 @@ windows {
 # Linux
 
 unix:!macx {
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+    target.path = $$INSTALLBASE/usr/lib/fugio
 
-	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-		target.path = Desktop/Fugio/plugins
-	} else {
-		target.path = $$shell_path( $$INSTALLDIR/data/plugins )
-	}
-
-	INSTALLS += target
+    INSTALLS += target
 }
 
 #------------------------------------------------------------------------------

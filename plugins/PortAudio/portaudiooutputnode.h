@@ -1,6 +1,8 @@
 #ifndef PORTAUDIOOUTPUTNODE_H
 #define PORTAUDIOOUTPUTNODE_H
 
+#include <cstdlib>
+
 #include <QObject>
 #include <QVector>
 

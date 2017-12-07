@@ -1,5 +1,8 @@
 #include "bufferentrypin.h"
 
+#include <QOpenGLExtraFunctions>
+#include <QOpenGLFunctions_4_1_Core>
+
 BufferEntryPin::BufferEntryPin( QSharedPointer<fugio::PinInterface> pPin )
 	: PinControlBase( pPin ), mSize( 0 ), mType( 0 ), mNormalised( GL_FALSE ), mTypeSize( 0 )
 {
@@ -19,9 +22,7 @@ void BufferEntryPin::setType( GLenum pType )
 
 		case GL_SHORT:
 		case GL_UNSIGNED_SHORT:
-#if !defined( Q_OS_RASPBERRY_PI )
 		case GL_HALF_FLOAT:
-#endif
 			mTypeSize = 2;
 			break;
 
@@ -29,15 +30,13 @@ void BufferEntryPin::setType( GLenum pType )
 		case GL_UNSIGNED_INT:
 		case GL_FLOAT:
 	case GL_FIXED:
-#if !defined( Q_OS_RASPBERRY_PI )
 		case GL_INT_2_10_10_10_REV:
 		case GL_UNSIGNED_INT_2_10_10_10_REV:
 		case GL_UNSIGNED_INT_10F_11F_11F_REV:
-#endif
 			mTypeSize = 4;
 			break;
 
-#if !defined( Q_OS_RASPBERRY_PI )
+#if !defined( QT_OPENGL_ES_2 )
 		case GL_DOUBLE:
 			mTypeSize = 8;
 			break;
@@ -49,34 +48,31 @@ void BufferEntryPin::setType( GLenum pType )
 	}
 }
 
-void BufferEntryPin::loadSettings(QSettings &)
-{
-
-}
-
-void BufferEntryPin::saveSettings(QSettings &) const
-{
-
-}
-
 const GLvoid *BufferEntryPin::bind( GLuint pIndex, GLsizei pStride, const GLvoid *pPointer )
 {
+	initializeOpenGLFunctions();
+
 	const GLvoid	*NextBuff = reinterpret_cast<const GLvoid *>( reinterpret_cast<const GLubyte *>( pPointer ) + entrySize() );
 
 	glEnableVertexAttribArray( pIndex );
 
-#if !defined( Q_OS_RASPBERRY_PI )
-	if( GLEW_ARB_vertex_attrib_64bit )
+#if !defined( QT_OPENGL_ES_2 )
+	if( mType == GL_DOUBLE )
 	{
-		switch( mType )
-		{
-			case GL_DOUBLE:
-				glVertexAttribLPointer( pIndex, mSize, mType, pStride, pPointer );
-				return( NextBuff );
-		}
-	}
+		QOpenGLFunctions_4_1_Core	*GL41 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_1_Core>();
 
-	if( GLEW_VERSION_3_0 )
+		if( GL41 && GL41->initializeOpenGLFunctions() )
+		{
+			GL41->glVertexAttribLPointer( pIndex, mSize, mType, pStride, pPointer );
+		}
+
+		return( NextBuff );
+	}
+#endif
+
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+
+	if( GLEX )
 	{
 		switch( mType )
 		{
@@ -86,11 +82,10 @@ const GLvoid *BufferEntryPin::bind( GLuint pIndex, GLsizei pStride, const GLvoid
 			case GL_UNSIGNED_SHORT:
 			case GL_INT:
 			case GL_UNSIGNED_INT:
-				glVertexAttribIPointer( pIndex, mSize, mType, pStride, pPointer );
+				GLEX->glVertexAttribIPointer( pIndex, mSize, mType, pStride, pPointer );
 				return( NextBuff );
 		}
 	}
-#endif
 
 	glVertexAttribPointer( pIndex, mSize, mType, mNormalised, pStride, pPointer );
 
@@ -104,5 +99,7 @@ void BufferEntryPin::bind( GLuint pIndex )
 
 void BufferEntryPin::release( GLuint pIndex )
 {
+	initializeOpenGLFunctions();
+
 	glDisableVertexAttribArray( pIndex );
 }

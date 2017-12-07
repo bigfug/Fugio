@@ -1,0 +1,8 @@
+#ifndef GEOMETRY_GLOBAL_H
+#define GEOMETRY_GLOBAL_H
+
+#include <QUuid>
+
+#define NID_POLYGON			(QUuid("{76CACF62-FEA6-4287-9C38-785A8A169DEC}"))
+
+#endif // GEOMETRY_GLOBAL_H

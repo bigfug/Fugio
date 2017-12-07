@@ -4,6 +4,7 @@
 
 #include <QRect>
 #include <QRectF>
+#include <QLineF>
 
 ArrayPin::ArrayPin( QSharedPointer<fugio::PinInterface> pPin )
 	: PinControlBase( pPin ), mData( nullptr ),
@@ -65,14 +66,40 @@ QUuid ArrayPin::listPinControl() const
 {
 	switch( mType )
 	{
+		case QMetaType::Bool:
+			return( PID_BOOL );
+
+		case QMetaType::UInt:
+		case QMetaType::Int:
+		case QMetaType::Long:
+		case QMetaType::LongLong:
+		case QMetaType::Short:
+			return( PID_INTEGER );
+
+		case QMetaType::QChar:
+		case QMetaType::QString:
+			return( PID_STRING );
+
+		case QMetaType::QByteArray:
+			return( PID_BYTEARRAY );
+
 		case QMetaType::Float:
+		case QMetaType::Double:
 			return( PID_FLOAT );
+
+		case QMetaType::QPoint:
+		case QMetaType::QPointF:
+			return( PID_POINT );
+
+		case QMetaType::QSize:
+		case QMetaType::QSizeF:
+			return( PID_SIZE );
 
 		default:
 			break;
 	}
 
-	return( QUuid() );
+	return( PID_VARIANT );
 }
 
 QVariant ArrayPin::listIndex( int pIndex ) const
@@ -102,6 +129,14 @@ QVariant ArrayPin::listIndex( int pIndex ) const
 
 		case QMetaType::QRectF:
 			V = static_cast<const QRectF *>( A )[ pIndex ];
+			break;
+
+		case QMetaType::QLineF:
+			V = static_cast<const QLineF *>( A )[ pIndex ];
+			break;
+
+		case QMetaType::QPointF:
+			V = static_cast<const QPointF *>( A )[ pIndex ];
 			break;
 
 		default:

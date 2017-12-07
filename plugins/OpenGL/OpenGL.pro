@@ -6,11 +6,7 @@
 
 include( ../../FugioGlobal.pri )
 
-QT += widgets concurrent
-
-contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-	QT -= opengl
-}
+QT += widgets concurrent opengl
 
 TARGET = $$qtLibraryTarget(fugio-opengl)
 TEMPLATE = lib
@@ -62,7 +58,11 @@ SOURCES += openglplugin.cpp \
 	textureclonenode.cpp \
     texturemonitornode.cpp \
     texturemonitor.cpp \
-    rendertotexturenode.cpp
+    rendertotexturenode.cpp \
+	deviceopengloutput.cpp \
+    easyshader2dnode.cpp \
+    shadercompilerdata.cpp \
+    arraytotexturebuffernode.cpp
 
 HEADERS +=\
 	texturenode.h \
@@ -121,7 +121,11 @@ HEADERS +=\
 	textureclonenode.h \
     texturemonitornode.h \
     texturemonitor.h \
-    rendertotexturenode.h
+    rendertotexturenode.h \
+	deviceopengloutput.h \
+    easyshader2dnode.h \
+    shadercompilerdata.h \
+    arraytotexturebuffernode.h
 
 FORMS += \
 	texturenodeform.ui \
@@ -135,19 +139,11 @@ TRANSLATIONS = \
 	translations/fugio_opengl_es.ts \
 	translations/fugio_opengl_fr.ts
 
-contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-	SOURCES += deviceopengloutputrpi.cpp
-	HEADERS += deviceopengloutputrpi.h
-} else {
-	SOURCES += deviceopengloutput.cpp
-	HEADERS += deviceopengloutput.h
-}
+#windows {
+#	QMAKE_LFLAGS_DEBUG += /INCREMENTAL:NO
 
-windows {
-	QMAKE_LFLAGS_DEBUG += /INCREMENTAL:NO
-
-	LIBS += -lopengl32 -lglu32
-}
+#	LIBS += -lopengl32 -lglu32
+#}
 
 #------------------------------------------------------------------------------
 # Raspberry Pi
@@ -224,69 +220,12 @@ windows {
 # Linux
 
 unix:!macx {
-	INSTALLDIR = $$INSTALLBASE/packages/com.bigfug.fugio
+    target.path = $$INSTALLBASE/usr/lib/fugio
 
-	contains( DEFINES, Q_OS_RASPBERRY_PI ) {
-		target.path = Desktop/Fugio/plugins
-	} else {
-		target.path = $$shell_path( $$INSTALLDIR/data/plugins )
-	}
-
-	INSTALLS += target
+    INSTALLS += target
 }
 
 #------------------------------------------------------------------------------
 # API
 
 INCLUDEPATH += $$FUGIO_ROOT/Fugio/include
-
-#------------------------------------------------------------------------------
-# GLEW
-
-windows {
-	INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
-
-	contains( QT_ARCH, x86_64 ) {
-		GLEW_PATH = $$(LIBS)/glew.64.2015
-	} else {
-		GLEW_PATH = $$(LIBS)/glew.32.2015
-	}
-
-	CONFIG(release,debug|release) {
-		GLEW_PATH = $$GLEW_PATH/lib/Release
-	} else {
-		GLEW_PATH = $$GLEW_PATH/lib/Debug
-	}
-
-	exists( $$GLEW_PATH ) {
-		LIBS += -L$$GLEW_PATH
-
-		CONFIG(release,debug|release) {
-			LIBS += -llibglew32
-		} else {
-			LIBS += -llibglew32d
-		}
-
-		DEFINES += GLEW_STATIC
-
-		LIBS += -lopengl32
-	}
-}
-
-macx {
-	isEmpty( CASKBASE ) {
-		INCLUDEPATH += $$(LIBS)/glew-2.0.0/include
-
-		LIBS += -L$$(LIBS)/glew-2.0.0/lib -lGLEW
-
-	} else {
-		INCLUDEPATH += /usr/local/include
-
-		LIBS += -L/usr/local/lib -lGLEW
-	}
-}
-
-linux:exists( /usr/include/GL/glew.h ) {
-	DEFINES += GLEW_SUPPORTED
-}
-

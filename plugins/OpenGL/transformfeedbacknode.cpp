@@ -1,5 +1,8 @@
 #include "transformfeedbacknode.h"
 
+#include <QOpenGLFunctions_4_0_Core>
+#include <QOpenGLExtraFunctions>
+
 #include "openglplugin.h"
 
 #include <fugio/opengl/buffer_entry_interface.h>
@@ -90,13 +93,13 @@ bool TransformFeedbackNode::initialise()
 		return( false );
 	}
 
-#if !defined( GL_ES_VERSION_2_0 )
-	if( GLEW_ARB_transform_feedback2 )
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+
+	if( GLEX )
 	{
-		glGenTransformFeedbacks( 2, mTrnFbkId );
+		GLEX->glGenTransformFeedbacks( 2, mTrnFbkId );
 	}
 	else
-#endif
 	{
 		return( false );
 	}
@@ -106,12 +109,12 @@ bool TransformFeedbackNode::initialise()
 
 bool TransformFeedbackNode::deinitialise()
 {
-#if !defined( GL_ES_VERSION_2_0 )
-	if( GLEW_ARB_transform_feedback2 )
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+
+	if( GLEX )
 	{
-		glDeleteTransformFeedbacks( 2, mTrnFbkId );
+		GLEX->glDeleteTransformFeedbacks( 2, mTrnFbkId );
 	}
-#endif
 
 	return( NodeControlBase::deinitialise() );
 }
@@ -119,6 +122,10 @@ bool TransformFeedbackNode::deinitialise()
 void TransformFeedbackNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
+
+	initializeOpenGLFunctions();
+
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
 	// The transform mode is a sub-set of the draw modes
 
@@ -198,26 +205,24 @@ void TransformFeedbackNode::inputsUpdated( qint64 pTimeStamp )
 				return;
 			}
 
-#if !defined( GL_ES_VERSION_2_0 )
-			if( GLEW_ARB_transform_feedback2 )
+			if( GLEX )
 			{
 				// Set up the first TF destination buffer
 
-				glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mTrnFbkId[ 0 ] );
+				GLEX->glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mTrnFbkId[ 0 ] );
 
-				glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, XFIndex, BufO->dstBuf() );
+				GLEX->glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, XFIndex, BufO->dstBuf()->bufferId() );
 
 				// Set up the second TF destination buffer
 
-				glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mTrnFbkId[ 1 ] );
+				GLEX->glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mTrnFbkId[ 1 ] );
 
-				glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, XFIndex, BufO->srcBuf() );
+				GLEX->glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, XFIndex, BufO->srcBuf()->bufferId() );
 
 				// Reset the TF bind
 
-				glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
+				GLEX->glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
 			}
-#endif
 
 			// We'll use the first TF buffer, with dstBuf() as our target
 
@@ -263,7 +268,19 @@ void TransformFeedbackNode::render1( qint64 pTimeStamp )
 {
 	Q_UNUSED( pTimeStamp )
 
-#if !defined( GL_ES_VERSION_2_0 )
+	initializeOpenGLFunctions();
+
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+
+#if !defined( QT_OPENGL_ES_2 )
+	QOpenGLFunctions_4_0_Core	*GL40 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_0_Core>();
+
+	if( GL40 && !GL40->initializeOpenGLFunctions() )
+	{
+		GL40 = Q_NULLPTR;
+	}
+#endif
+
 	glEnable( GL_RASTERIZER_DISCARD );
 
 #if defined( TF_QUERY )
@@ -274,13 +291,13 @@ void TransformFeedbackNode::render1( qint64 pTimeStamp )
 	glBeginQuery( GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, query );
 #endif
 
-	if( GLEW_ARB_transform_feedback2 )
+	if( GLEX )
 	{
-		glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mTrnFbkId[ currTFB() ] );
+		GLEX->glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mTrnFbkId[ currTFB() ] );
 
 		// Draw the buffers (using the previous buffer as the primitive count if !mFirstTransform)
 
-		glBeginTransformFeedback( mTransformMode );
+		GLEX->glBeginTransformFeedback( mTransformMode );
 
 		if( mFirstTransform )
 		{
@@ -288,16 +305,18 @@ void TransformFeedbackNode::render1( qint64 pTimeStamp )
 
 			mFirstTransform = false;
 		}
-		else
+#if !defined( QT_OPENGL_ES_2 )
+		else if( GL40 )
 		{
-			glDrawTransformFeedback( mDrawMode, mTrnFbkId[ nextTFB() ] );
+			GL40->glDrawTransformFeedback( mDrawMode, mTrnFbkId[ nextTFB() ] );
 		}
+#endif
 
-		glEndTransformFeedback();
+		GLEX->glEndTransformFeedback();
 
 		// Clear our TF binding and turn off GL_RASTERIZER_DISCARD
 
-		glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
+		GLEX->glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
 	}
 
 #if defined( TF_QUERY )
@@ -318,7 +337,6 @@ void TransformFeedbackNode::render1( qint64 pTimeStamp )
 #endif
 
 	glDisable( GL_RASTERIZER_DISCARD );
-#endif
 
 	// Increment the TF buffer index so we'll use the next one for the next call
 
@@ -356,17 +374,19 @@ void TransformFeedbackNode::render2( qint64 pTimeStamp )
 {
 	Q_UNUSED( pTimeStamp )
 
-#if !defined( GL_ES_VERSION_2_0 )
-	if( GLEW_ARB_transform_feedback2 )
+	if( !mFirstTransform )
 	{
-		if( !mFirstTransform )
+#if !defined( QT_OPENGL_ES_2 )
+		QOpenGLFunctions_4_0_Core	*GL40 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_4_0_Core>();
+
+		if( GL40 && GL40->initializeOpenGLFunctions() )
 		{
-			glDrawTransformFeedback( mDrawMode, mTrnFbkId[ nextTFB() ] );
+			GL40->glDrawTransformFeedback( mDrawMode, mTrnFbkId[ nextTFB() ] );
 		}
+#endif
 	}
 
 	OPENGL_DEBUG( mNode->name() );
-#endif
 }
 
 QList<QUuid> TransformFeedbackNode::pinAddTypesInput() const

@@ -18,6 +18,7 @@
 #include <QDesktopServices>
 #include <QColorDialog>
 #include <QMetaClassInfo>
+#include <QFileDialog>
 
 #include <QDebug>
 
@@ -28,6 +29,7 @@
 #include <fugio/node_control_interface.h>
 #include <fugio/choice_interface.h>
 #include <fugio/colour/colour_interface.h>
+#include <fugio/file/filename_interface.h>
 
 #include "linkitem.h"
 #include "contextview.h"
@@ -819,6 +821,25 @@ void PinItem::menuEditDefault()
 		if( NewLabel != CurrentLabel )
 		{
 			CmdSetDefaultValue		*Cmd = new CmdSetDefaultValue( mPin, NewLabel );
+
+			if( Cmd )
+			{
+				mContextView->widget()->undoStack()->push( Cmd );
+			}
+		}
+
+		return;
+	}
+
+	fugio::FilenameInterface	*FNI = mPin->hasControl() ? qobject_cast<fugio::FilenameInterface *>( mPin->control()->qobject() ) : nullptr;
+
+	if( FNI )
+	{
+		QString	FN = QFileDialog::getOpenFileName( Q_NULLPTR, tr( "Select file..." ), FNI->filename() );
+
+		if( !FN.isEmpty() )
+		{
+			CmdSetDefaultValue		*Cmd = new CmdSetDefaultValue( mPin, FN );
 
 			if( Cmd )
 			{
