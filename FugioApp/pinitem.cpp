@@ -136,7 +136,10 @@ void PinItem::paint( QPainter *pPainter, const QStyleOptionGraphicsItem *pOption
 		NodeItem		*SrcNod = mContextView->findNodeItem( ConPin->node()->uuid() ).data();
 		PinItem			*SrcPin = SrcNod->findPinOutput( ConPin->globalId() );
 
-		PinColour = SrcPin->colour();
+		if( SrcPin )
+		{
+			PinColour = SrcPin->colour();
+		}
 	}
 
 	NodeItem			*Node  = qobject_cast<NodeItem *>( parentObject() );
