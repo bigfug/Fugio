@@ -4,6 +4,7 @@
 #include <fugio/global.h>
 
 class QPainter;
+class QRect;
 
 FUGIO_NAMESPACE_BEGIN
 
@@ -14,7 +15,7 @@ public:
 
 	virtual void setSource( PainterInterface *pSource ) = 0;
 
-	virtual void paint( QPainter &pPainter ) = 0;
+	virtual void paint( QPainter &pPainter, const QRect &pRect ) = 0;
 };
 
 FUGIO_NAMESPACE_END

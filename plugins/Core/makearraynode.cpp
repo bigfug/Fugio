@@ -6,6 +6,7 @@
 
 #include <fugio/core/uuid.h>
 #include <fugio/math/uuid.h>
+#include <fugio/colour/uuid.h>
 
 #include <fugio/context_interface.h>
 
@@ -52,6 +53,10 @@ void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
 				mValOutput->setStride( sizeof( float ) * 16 );
 				break;
 
+			case QMetaType::QColor:
+				mValOutput->setStride( sizeof( QColor ) );
+				break;
+
 			default:
 				return;
 		}
@@ -82,6 +87,15 @@ void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
 				}
 				break;
 
+			case QMetaType::QColor:
+				{
+					QColor		 V = variant( PinLst.at( i ) ).value<QColor>();
+					QColor		*D = &static_cast<QColor *>( DstPtr )[ i ];
+
+					*D = V;
+				}
+				break;
+
 			default:
 				return;
 		}
@@ -108,6 +122,10 @@ QList<QUuid> MakeArrayNode::pinAddTypesInput() const
 
 			case QMetaType::QMatrix4x4:
 				PinLst << PID_MATRIX4;
+				break;
+
+			case QMetaType::QColor:
+				PinLst << PID_COLOUR;
 				break;
 
 			default:
@@ -160,6 +178,7 @@ QWidget *MakeArrayNode::gui()
 
 	GUI->addItem( "int", QVariant::fromValue<int>( 0 ) );
 	GUI->addItem( "float", QVariant::fromValue<float>( 0 ) );
+	GUI->addItem( "Colour", QColor() );
 	GUI->addItem( "Matrix4", QMatrix4x4() );
 
 	connect( GUI, SIGNAL(activated(int)), this, SLOT(setType(int)) );

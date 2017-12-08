@@ -11,10 +11,10 @@ void PainterPin::setSource( PainterInterface *pSource )
 	mSource = pSource;
 }
 
-void PainterPin::paint(QPainter &pPainter)
+void PainterPin::paint(QPainter &pPainter, const QRect &pRect )
 {
 	if( mSource )
 	{
-		mSource->paint( pPainter );
+		mSource->paint( pPainter, pRect );
 	}
 }
