@@ -23,12 +23,14 @@
 
 #include "sourcenode.h"
 #include "gpionode.h"
+#include "pwmnode.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
 ClassEntry	NodeClasses[] =
 {
 	ClassEntry( "GPIO",   "RPi", NID_RPI_GPIO, &GPIONode::staticMetaObject ),
+	ClassEntry( "PWM",	"RPi", NID_RPI_PWM, &PWMNode::staticMetaObject ),
 	ClassEntry( "Source", "OMX", NID_OMX_SOURCE, &SourceNode::staticMetaObject ),
 	ClassEntry()
 };

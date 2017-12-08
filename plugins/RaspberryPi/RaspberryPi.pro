@@ -17,14 +17,16 @@ DESTDIR = $$DESTDIR/plugins
 
 SOURCES += raspberrypiplugin.cpp \
     sourcenode.cpp \
-    gpionode.cpp
+    gpionode.cpp \
+    pwmnode.cpp
 
 HEADERS += raspberrypiplugin.h \
 	../../include/fugio/raspberrypi/uuid.h \
 	../../include/fugio/nodecontrolbase.h \
 	../../include/fugio/pincontrolbase.h \
     sourcenode.h \
-    gpionode.h
+    gpionode.h \
+    pwmnode.h
 
 RESOURCES += \
     resources.qrc

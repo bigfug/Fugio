@@ -112,7 +112,7 @@ void GPIONode::frameStart()
 		{
 			fugio::VariantInterface	*V = qobject_cast<fugio::VariantInterface *>( P->control()->qobject() );
 
-			if( V && V->variant().toInt() != Res )
+			if( V && V->variant().toBool() != Res )
 			{
 				V->setVariant( Res );
 
@@ -137,8 +137,9 @@ void GPIONode::frameEnd( qint64 pTimestamp )
 			continue;
 		}
 
-		int			Val = variant( P ).toInt();
-		int			Res = gpio_write( PigPio, PId, Val );
+		bool		Val = variant( P ).toBool();
+
+		gpio_write( PigPio, PId, Val ? 1 : 0 );
 	}
 #endif
 }
