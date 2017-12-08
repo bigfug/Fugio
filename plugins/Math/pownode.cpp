@@ -1,5 +1,7 @@
 #include "pownode.h"
 
+#include <cmath>
+
 #include <fugio/core/uuid.h>
 
 #include <fugio/context_interface.h>
@@ -22,7 +24,7 @@ void PowNode::inputsUpdated( qint64 pTimeStamp )
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
 	qreal	x = variant( mPinInputX ).toReal();
-	qreal	y = variant( mPinInputX ).toReal();
+	qreal	y = variant( mPinInputY ).toReal();
 
 	qreal	r = std::pow( x, y );
 
