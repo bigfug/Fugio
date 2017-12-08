@@ -36,7 +36,7 @@ public:
 			return( mList->listSize() );
 		}
 
-		if( mVariant || !mValue.isNull() )
+		if( mVariant || mValue.isValid() )
 		{
 			return( 1 );
 		}
@@ -66,7 +66,7 @@ public:
 			return( mList->listIsEmpty() );
 		}
 
-		if( mVariant || !mValue.isNull() )
+		if( mVariant || mValue.isValid() )
 		{
 			return( false );
 		}
