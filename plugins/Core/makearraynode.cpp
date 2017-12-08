@@ -88,12 +88,7 @@ void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
 				break;
 
 			case QMetaType::QColor:
-				{
-					QColor		 V = variant( PinLst.at( i ) ).value<QColor>();
-					QColor		*D = &static_cast<QColor *>( DstPtr )[ i ];
-
-					*D = V;
-				}
+				static_cast<QColor *>( DstPtr )[ i ] = variant( PinLst.at( i ) ).value<QColor>();
 				break;
 
 			default:
