@@ -57,6 +57,7 @@
 #define NID_ROTATION_FROM_VECTORS	(QUuid("{2cf63965-a8b3-432d-8921-5f1074108b92}"))
 
 #define NID_ABS					(QUuid("{d96b5665-281d-4dca-ae9d-73e39a24961a}"))
+#define NID_POW					(QUuid("{f475d2b6-a2ec-48ab-84f9-0cbd01b77e9e}"))
 
 #define NID_ARCCOS				(QUuid("{19ea5028-8e5a-4942-a24f-0b9278ae495c}"))
 

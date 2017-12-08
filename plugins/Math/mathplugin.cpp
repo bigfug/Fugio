@@ -91,6 +91,7 @@
 #include "flipflopnode.h"
 
 #include "pointtransformnode.h"
+#include "pownode.h"
 
 MathPlugin *MathPlugin::mInstance = nullptr;
 
@@ -137,6 +138,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Perspective", "Matrix", NID_MATRIX_PERSPECTIVE, &MatrixPerspectiveNode::staticMetaObject ),
 	ClassEntry( "Pi", "Number", NID_PI, &PiNode::staticMetaObject ),
 	ClassEntry( "Point Transform", NID_POINT_TRANSFORM, &PointTransformNode::staticMetaObject ),
+	ClassEntry( "Pow", "Math", NID_POW, &PowNode::staticMetaObject ),
 	ClassEntry( "Rotate", "Matrix", NID_MATRIX_ROTATE, &MatrixRotateNode::staticMetaObject ),
 	ClassEntry( "Rotation From Vectors", "Matrix", NID_ROTATION_FROM_VECTORS, &RotationFromVectorsNode::staticMetaObject ),
 	ClassEntry( "Round", "Math", NID_ROUND, &RoundNode::staticMetaObject ),
