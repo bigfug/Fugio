@@ -74,7 +74,7 @@ void PainterWindow::renderPin( QSharedPointer<fugio::PinInterface> P )
 	}
 	else if( fugio::PainterInterface *I = input<fugio::PainterInterface *>( P ) )
 	{
-		I->render( painter );
+		I->paint( painter );
 	}
 
 	m_backingStore->endPaint();

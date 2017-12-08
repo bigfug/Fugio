@@ -39,7 +39,7 @@ public:
 	// fugio::PainterInterface
 
 	virtual void setSource(fugio::PainterInterface *pSource) Q_DECL_OVERRIDE;
-	virtual void render(QPainter &pPainter) Q_DECL_OVERRIDE;
+	virtual void paint(QPainter &pPainter) Q_DECL_OVERRIDE;
 
 private:
 	fugio::PainterInterface			*mSource;

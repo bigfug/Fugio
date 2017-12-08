@@ -18,5 +18,6 @@
 #define NID_IMAGE_FILTER		(QUuid("{8B6A04F7-3AA3-42BC-8D0F-B4381D9F49D9}"))
 
 #define	PID_IMAGE				(QUuid("{e92e8e7b-f6a4-4691-8eb5-dea5dbefbdd3}"))
+#define PID_PAINTER				(QUuid("{939E191D-1769-4B68-8408-9B6A058460DA}"))
 
 #endif // IMAGE_GLOBAL_H

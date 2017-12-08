@@ -18,6 +18,7 @@
 #include "painterwindownode.h"
 
 #include "imagepin.h"
+#include "painterpin.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -41,6 +42,7 @@ ClassEntry		mNodeClasses[] =
 ClassEntry		mPinClasses[] =
 {
 	ClassEntry( "Image", PID_IMAGE, &ImagePin::staticMetaObject ),
+	ClassEntry( "Painter", PID_PAINTER, &PainterPin::staticMetaObject ),
 	ClassEntry()
 };
 

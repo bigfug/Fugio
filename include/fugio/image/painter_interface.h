@@ -14,7 +14,7 @@ public:
 
 	virtual void setSource( PainterInterface *pSource ) = 0;
 
-	virtual void render( QPainter &pPainter ) = 0;
+	virtual void paint( QPainter &pPainter ) = 0;
 };
 
 FUGIO_NAMESPACE_END
