@@ -90,6 +90,8 @@
 
 #include "flipflopnode.h"
 
+#include "pointtransformnode.h"
+
 MathPlugin *MathPlugin::mInstance = nullptr;
 
 QList<QUuid>	NodeControlBase::PID_UUID;
@@ -134,6 +136,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Orthographic", "Matrix", NID_MATRIX_ORTHOGRAPHIC, &MatrixOrthographicNode::staticMetaObject ),
 	ClassEntry( "Perspective", "Matrix", NID_MATRIX_PERSPECTIVE, &MatrixPerspectiveNode::staticMetaObject ),
 	ClassEntry( "Pi", "Number", NID_PI, &PiNode::staticMetaObject ),
+	ClassEntry( "Point Transform", NID_POINT_TRANSFORM, &PointTransformNode::staticMetaObject ),
 	ClassEntry( "Rotate", "Matrix", NID_MATRIX_ROTATE, &MatrixRotateNode::staticMetaObject ),
 	ClassEntry( "Rotation From Vectors", "Matrix", NID_ROTATION_FROM_VECTORS, &RotationFromVectorsNode::staticMetaObject ),
 	ClassEntry( "Round", "Math", NID_ROUND, &RoundNode::staticMetaObject ),
