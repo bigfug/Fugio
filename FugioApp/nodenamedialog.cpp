@@ -104,6 +104,11 @@ void NodeNameDialog::setListCompare( const QString &pCmp )
 
 	ui->listWidget->clear();
 
+	const QString					CmpLwr = pCmp.toLower();
+	QPair<QString,QUuid>			Match;
+	QMap<QString,QUuid>				MatchStart;
+	QMap<QString,QUuid>				MatchContain;
+
 	for( const fugio::ClassEntry &NodeEntry : NodeList.values() )
 	{
 		if( NodeEntry.mFlags.testFlag( fugio::ClassEntry::Deprecated ) )
@@ -111,13 +116,59 @@ void NodeNameDialog::setListCompare( const QString &pCmp )
 			continue;
 		}
 
-		QString		LocalName = NodeEntry.friendlyName();
+		const QString		LocalName = NodeEntry.friendlyName();
+		const QString		LocalLower = LocalName.toLower();
 
-		if( LocalName.toLower().contains( pCmp.toLower() ) )
+		if( LocalLower == CmpLwr )
 		{
-			QListWidgetItem		*NodeItem = new QListWidgetItem( LocalName );
+			Match = QPair<QString,QUuid>( LocalName, NodeEntry.mUuid );
+		}
+		else if( LocalLower.startsWith( CmpLwr ) )
+		{
+			MatchStart.insert( LocalName, NodeEntry.mUuid );
+		}
+		else if( LocalLower.contains( CmpLwr ) )
+		{
+			MatchContain.insert( LocalName, NodeEntry.mUuid );
+		}
+	}
 
-			NodeItem->setData( Qt::UserRole, NodeEntry.mUuid );
+	if( !Match.second.isNull() )
+	{
+		QListWidgetItem		*NodeItem = new QListWidgetItem( Match.first );
+
+		NodeItem->setData( Qt::UserRole, Match.second );
+
+		ui->listWidget->addItem( NodeItem );
+	}
+
+	if( !MatchStart.isEmpty() )
+	{
+		QStringList			NodeList = MatchStart.keys();
+
+		std::sort( NodeList.begin(), NodeList.end() );
+
+		for( const QString &S : NodeList )
+		{
+			QListWidgetItem		*NodeItem = new QListWidgetItem( S );
+
+			NodeItem->setData( Qt::UserRole, MatchStart.value( S ) );
+
+			ui->listWidget->addItem( NodeItem );
+		}
+	}
+
+	if( !MatchContain.isEmpty() )
+	{
+		QStringList			NodeList = MatchContain.keys();
+
+		std::sort( NodeList.begin(), NodeList.end() );
+
+		for( const QString &S : NodeList )
+		{
+			QListWidgetItem		*NodeItem = new QListWidgetItem( S );
+
+			NodeItem->setData( Qt::UserRole, MatchContain.value( S ) );
 
 			ui->listWidget->addItem( NodeItem );
 		}
