@@ -38,7 +38,8 @@ SOURCES += \
 	addnode.cpp \
 	flipnode.cpp \
     houghlinesnode.cpp \
-    simpleblobdetectornode.cpp
+    simpleblobdetectornode.cpp \
+    absdiffnode.cpp
 
 HEADERS +=\
 	../../include/fugio/nodecontrolbase.h \
@@ -65,7 +66,8 @@ HEADERS +=\
 	addnode.h \
 	flipnode.h \
     houghlinesnode.h \
-    simpleblobdetectornode.h
+    simpleblobdetectornode.h \
+    absdiffnode.h
 
 RESOURCES += \
     resources.qrc

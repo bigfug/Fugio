@@ -26,11 +26,13 @@
 #include "flipnode.h"
 #include "houghlinesnode.h"
 #include "simpleblobdetectornode.h"
+#include "absdiffnode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
 ClassEntry	OpenCVPlugin::mNodeEntries[] =
 {
+	ClassEntry( "AbsDiff", "OpenCV", NID_OPENCV_ABSDIFF, &AbsDiffNode::staticMetaObject ),
 	ClassEntry( "Add", "OpenCV", NID_OPENCV_ADD, &AddNode::staticMetaObject ),
 	ClassEntry( "Cascade Classifier", "OpenCV", NID_OPENCV_CASCADE_CLASSIFER, &CascadeClassifierNode::staticMetaObject ),
 	ClassEntry( "ConvertTo", "OpenCV", NID_OPENCV_CONVERT_TO, &ConvertToNode::staticMetaObject ),
