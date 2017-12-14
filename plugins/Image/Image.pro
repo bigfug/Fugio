@@ -30,7 +30,8 @@ SOURCES += imageplugin.cpp \
 	colourmasknode.cpp \
 	imagesizenode.cpp \
 	imagefilternode.cpp \
-	imagesavenode.cpp
+	imagesavenode.cpp \
+    copynode.cpp
 
 HEADERS += imageplugin.h\
 	../../include/fugio/nodecontrolbase.h \
@@ -51,7 +52,8 @@ HEADERS += imageplugin.h\
 	imagefilternode.h \
 	imagesavenode.h \
 	../../include/fugio/image/uuid.h \
-	../../include/fugio/image/image_interface.h
+	../../include/fugio/image/image_interface.h \
+    copynode.h
 
 RESOURCES += \
     resources.qrc
