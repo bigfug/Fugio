@@ -31,6 +31,8 @@ public:
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputImage;
 
+	QSharedPointer<fugio::PinInterface>			 mPinInputRect;
+
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
 	fugio::ImageInterface						*mValOutputImage;
 };
