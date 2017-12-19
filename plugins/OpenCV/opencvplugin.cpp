@@ -27,6 +27,7 @@
 #include "houghlinesnode.h"
 #include "simpleblobdetectornode.h"
 #include "absdiffnode.h"
+#include "countnonzeronode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -36,6 +37,7 @@ ClassEntry	OpenCVPlugin::mNodeEntries[] =
 	ClassEntry( "Add", "OpenCV", NID_OPENCV_ADD, &AddNode::staticMetaObject ),
 	ClassEntry( "Cascade Classifier", "OpenCV", NID_OPENCV_CASCADE_CLASSIFER, &CascadeClassifierNode::staticMetaObject ),
 	ClassEntry( "ConvertTo", "OpenCV", NID_OPENCV_CONVERT_TO, &ConvertToNode::staticMetaObject ),
+	ClassEntry( "Count Non Zero", "OpenCV", NID_OPENCV_COUNT_NON_ZERO, &CountNonZeroNode::staticMetaObject ),
 	ClassEntry( "Distance Transform", "OpenCV", NID_OPENCV_DISTANCE_TRANSFORM, &DistanceTransformNode::staticMetaObject ),
 	ClassEntry( "Dilate", "OpenCV", NID_OPENCV_DILATE, &DilateNode::staticMetaObject ),
 	ClassEntry( "Erode", "OpenCV", NID_OPENCV_ERODE, &ErodeNode::staticMetaObject ),
