@@ -68,10 +68,11 @@ QString ImagePin::toString() const
 		case FORMAT_RG32:			FmtVal = "FORMAT_RG32";			break;
 		case FORMAT_DXT1:			FmtVal = "FORMAT_DXT1";			break;
 		case FORMAT_DXT5:			FmtVal = "FORMAT_DXT5";			break;
-		case FORMAT_YCoCg_DXT5:		FmtVal = "FORMAT_YCoCg_DXT5";		break;
+		case FORMAT_YCoCg_DXT5:		FmtVal = "FORMAT_YCoCg_DXT5";	break;
 		case FORMAT_HSV8:			FmtVal = "FORMAT_HSV8";			break;
 		case FORMAT_R32S:			FmtVal = "FORMAT_R32S";			break;
 		case FORMAT_R32F:			FmtVal = "FORMAT_R32F";			break;
+		case FORMAT_NV12:			FmtVal = "FORMAT_NV12";			break;
 
 		default:
 			FmtStr = "Unknown";

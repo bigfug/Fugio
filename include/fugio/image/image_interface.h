@@ -32,7 +32,9 @@ public:
 		FORMAT_YUV420P,
 		FORMAT_UYVY422,
 		FORMAT_R32S,
-		FORMAT_R32F
+		FORMAT_R32F,
+		FORMAT_YUVJ422P,
+		FORMAT_NV12
 	} Format;
 
 	static int formatPixelByteCount( Format pFormat, int pBuffer = 0 )
@@ -52,6 +54,7 @@ public:
 			case FORMAT_HSV8:		return( 3 );
 			case FORMAT_R32S:		return( 4 );
 			case FORMAT_R32F:		return( 4 );
+			case FORMAT_NV12:		return( 1 );
 
 			default:			break;
 		}
