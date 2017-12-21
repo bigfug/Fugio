@@ -152,7 +152,16 @@ void GlobalPrivate::initialisePlugins()
 	qDebug() << tr( "Nodes registered: %1" ).arg( mNodeMap.size() );
 }
 
-
+QString GlobalPrivate::sharedDataPath() const
+{
+#if defined( QT_DEBUG )
+	return( QDir::current().absoluteFilePath( "../Fugio" ) );
+#elif defined( Q_OS_LINUX )
+	return( "/usr/share/fugio" );
+#else
+	return( QDir::current().absolutePath() );
+#endif
+}
 
 void GlobalPrivate::loadPlugins( QDir pDir )
 {
@@ -759,6 +768,16 @@ QList<QUuid> GlobalPrivate::pinSplitters(const QUuid &pPinId) const
 QList<QUuid> GlobalPrivate::pinJoiners(const QUuid &pPinId) const
 {
 	return( mPinJoiners.values( pPinId ) );
+}
+
+QUuid GlobalPrivate::findPinForMetaType(QMetaType::Type pType) const
+{
+	return( mMetaTypeToPinUuid.value( pType ) );
+}
+
+void GlobalPrivate::registerPinForMetaType(const QUuid &pUuid, QMetaType::Type pType)
+{
+	mMetaTypeToPinUuid.insert( pType, pUuid );
 }
 
 void GlobalPrivate::start()

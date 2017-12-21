@@ -10,6 +10,8 @@ contains( QMAKE_CXXFLAGS, -march=armv8-a ) {
 } else:contains( QMAKE_CXXFLAGS, -march=armv6zk ) {
 	DEFINES += Q_OS_RASPBERRY_PI
 	QMAKE_TARGET.arch = "rpi1"
+} else:contains( QMAKE_HOST.arch, arm.* ) {
+        DEFINES += Q_OS_RASPBERRY_PI
 } else {
 	QMAKE_TARGET.arch = $$QMAKE_HOST.arch
 }

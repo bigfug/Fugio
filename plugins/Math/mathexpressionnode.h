@@ -7,7 +7,7 @@
 
 #include <fugio/core/variant_interface.h>
 
-#if !defined( Q_OS_RASPBERRY_PI )
+#if 1 //!defined( Q_OS_RASPBERRY_PI )
 #include "../libs/exprtk/exprtk.hpp"
 #endif
 

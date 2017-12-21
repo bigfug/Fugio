@@ -44,6 +44,9 @@ public:
 
 	virtual void render( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
+private slots:
+	void sizeChanged( const QSize &pSize );
+
 private:
 	QDockWidget							*mDockWidget;
 	Qt::DockWidgetArea					 mDockArea;
@@ -51,6 +54,9 @@ private:
 
 	QSharedPointer<fugio::PinInterface>	 mPinInputState;
 	QSharedPointer<fugio::PinInterface>	 mPinInputRender;
+
+	QSharedPointer<fugio::PinInterface>	 mPinOutputSize;
+	fugio::VariantInterface				*mValOutputSize;
 };
 
 #endif // OPENGLPREVIEWNODE_H

@@ -68,9 +68,15 @@ void SplitListNode::inputsUpdated( qint64 pTimeStamp )
 
 			if( CurVar && CurIdx >= 0 && CurIdx < LstInf->listSize() )
 			{
-				CurVar->setVariant( LstInf->listIndex( CurIdx ));
-			}
+				QVariant		NewVar = LstInf->listIndex( CurIdx );
 
+				if( NewVar != CurVar->variant() )
+				{
+					CurVar->setVariant( NewVar );
+
+					pinUpdated( CurPin );
+				}
+			}
 		}
 
 		return;

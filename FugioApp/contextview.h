@@ -37,7 +37,8 @@ class ContextView : public QGraphicsView, public fugio::EditInterface
 	Q_INTERFACES( fugio::EditInterface )
 	Q_PROPERTY( QBrush LabelBrush READ labelBrush WRITE setLabelBrush NOTIFY labelBrushUpdated )
 	Q_PROPERTY( QFont  LabelFont READ labelFont WRITE setLabelFont NOTIFY labelFontUpdated )
-	Q_PROPERTY( QFont  pin_font READ pinFont WRITE setPinFont NOTIFY pinFontUpdated )
+	Q_PROPERTY( QFont  PinFont READ pinFont WRITE setPinFont NOTIFY pinFontUpdated )
+	Q_PROPERTY( QColor  NodeColour READ nodeColour WRITE setNodeColour NOTIFY nodeColourUpdated )
 	Q_PROPERTY( QString NoteFontFace READ noteFontFace WRITE setNoteFontFace NOTIFY noteFontFaceUpdated )
 	Q_PROPERTY( int     NoteFontSize READ noteFontSize WRITE setNoteFontSize NOTIFY noteFontSizeUpdated )
 	Q_PROPERTY( QColor  NoteColour READ noteColour WRITE setNoteColour NOTIFY noteColourUpdated )
@@ -80,7 +81,7 @@ public:
 
 	QFont pinFont() const
 	{
-		return m_pin_font;
+		return m_PinFont;
 	}
 
 	void setNodePositionFlag( void )
@@ -203,6 +204,8 @@ signals:
 	void noteColourUpdated(QColor arg);
 
 	void groupIdChanged(QUuid GroupId);
+
+	void nodeColourUpdated(QColor NodeColour);
 
 public slots:
 	void setLabelBrush(QBrush arg)
@@ -358,6 +361,11 @@ public slots:
 public:
 	virtual bool event( QEvent * ) Q_DECL_OVERRIDE;
 
+	QColor nodeColour() const
+	{
+		return m_NodeColour;
+	}
+
 public slots:
 	QSharedPointer<NoteItem> noteAdd(const QString &pText , QUuid pUuid);
 
@@ -372,10 +380,10 @@ public slots:
 
 	void setPinFont(QFont arg)
 	{
-		if (m_pin_font == arg)
+		if (m_PinFont == arg)
 			return;
 
-		m_pin_font = arg;
+		m_PinFont = arg;
 		emit pinFontUpdated( arg );
 	}
 
@@ -414,6 +422,15 @@ public slots:
 			return;
 
 		m_PastePoint = PastePoint;
+	}
+
+	void setNodeColour(QColor NodeColour)
+	{
+		if (m_NodeColour == NodeColour)
+			return;
+
+		m_NodeColour = NodeColour;
+		emit nodeColourUpdated(m_NodeColour);
 	}
 
 private:
@@ -479,7 +496,7 @@ private:
 	bool									 mChanged;
 	QBrush									 mLabelBrush;
 	QFont									 m_LabelFont;
-	QFont									 m_pin_font;
+	QFont									 m_PinFont;
 	bool									 mNodePositionFlag;
 	QPointF									 mNodePosition;
 	int										 mPasteOffset;
@@ -516,6 +533,8 @@ private:
 	QUuid									 m_GroupId;
 
 	QList<QUuid>							 mGlobalPins;
+
+	QColor									 m_NodeColour;
 };
 
 #endif // CONTEXTVIEW_H

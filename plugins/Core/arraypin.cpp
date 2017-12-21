@@ -5,6 +5,9 @@
 #include <QRect>
 #include <QRectF>
 #include <QLineF>
+#include <QColor>
+
+#include "coreplugin.h"
 
 ArrayPin::ArrayPin( QSharedPointer<fugio::PinInterface> pPin )
 	: PinControlBase( pPin ), mData( nullptr ),
@@ -64,65 +67,35 @@ int ArrayPin::listSize() const
 
 QUuid ArrayPin::listPinControl() const
 {
-	switch( mType )
-	{
-		case QMetaType::Float:
-			return( PID_FLOAT );
-
-		default:
-			break;
-	}
-
-	return( QUuid() );
+	return( CorePlugin::instance()->app()->findPinForMetaType( mType ) );
 }
 
 QVariant ArrayPin::listIndex( int pIndex ) const
 {
-	QVariant		 V;
-	const void		*A = ( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
+	const quint8	*A = (const quint8 *)( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
 
 	if( !A )
 	{
-		return( V );
+		return( QVariant() );
 	}
 
 	if( pIndex < 0 || pIndex >= mCount )
 	{
-		return( V );
+		return( QVariant() );
 	}
 
-	switch( mType )
-	{
-		case QMetaType::Float:
-			V = static_cast<const float *>( A )[ pIndex ];
-			break;
+	int				L = QMetaType::sizeOf( mType );
 
-		case QMetaType::QRect:
-			V = static_cast<const QRect *>( A )[ pIndex ];
-			break;
+	A += L * pIndex;
 
-		case QMetaType::QRectF:
-			V = static_cast<const QRectF *>( A )[ pIndex ];
-			break;
-
-		case QMetaType::QLineF:
-			V = static_cast<const QLineF *>( A )[ pIndex ];
-			break;
-
-		case QMetaType::QPointF:
-			V = static_cast<const QPointF *>( A )[ pIndex ];
-			break;
-
-		default:
-			break;
-	}
+	QVariant		 V( mType, (const void *)A );
 
 	return( V );
 }
 
 void ArrayPin::listSetIndex( int pIndex, const QVariant &pValue )
 {
-	void		*A = ( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
+	quint8	*A = (quint8 *)( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
 
 	if( !A )
 	{
@@ -134,17 +107,11 @@ void ArrayPin::listSetIndex( int pIndex, const QVariant &pValue )
 		return;
 	}
 
-	switch( mType )
-	{
-		case QMetaType::Float:
-			{
-				static_cast<float *>( A )[ pIndex ] = pValue.toFloat();
-			}
-			break;
+	int				L = QMetaType::sizeOf( mType );
 
-		default:
-			break;
-	}
+	A += L * pIndex;
+
+	QMetaType::construct( mType, A, pValue.constData() );
 }
 
 void ArrayPin::listSetSize( int pSize )
@@ -159,26 +126,10 @@ void ArrayPin::listSetSize( int pSize )
 		return;
 	}
 
-	int		NewSze = mArray.size();
+	mCount = pSize;
 
-	switch( mType )
-	{
-		case QMetaType::Float:
-			{
-				NewSze = pSize * mStride;
-			}
-			break;
-
-		default:
-			break;
-	}
-
-	if( mArray.size() != NewSze )
-	{
-		mArray.resize( NewSze );
-	}
+	mArray.resize( mStride * qMax( mCount, mReserve ) );
 }
-
 
 int ArrayPin::sizeDimensions() const
 {

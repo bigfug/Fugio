@@ -80,6 +80,7 @@ public:
 	virtual QOpenGLTexture::WrapMode wrapS( void ) const = 0;
 	virtual QOpenGLTexture::WrapMode wrapT( void ) const = 0;
 	virtual QOpenGLTexture::WrapMode wrapR( void ) const = 0;
+
 	virtual bool genMipMaps( void ) const = 0;
 
 	virtual void setCompare( QOpenGLTexture::ComparisonFunction pCompare ) = 0;
@@ -124,6 +125,9 @@ public:
 	virtual OpenGLTextureDescription textureDescription( void ) const = 0;
 
 	virtual void setTextureDescription( const OpenGLTextureDescription &pDescription ) = 0;
+
+	virtual QOpenGLTexture *srcTex( void ) = 0;
+	virtual QOpenGLTexture *dstTex( void ) = 0;
 };
 
 FUGIO_NAMESPACE_END

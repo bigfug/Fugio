@@ -16,6 +16,15 @@ class DivideNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Divide" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
+	class Operator
+	{
+		public:
+			template<typename T> static T op0( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+			template<typename T> static T op1( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+			template<typename T> static T op2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+			template<typename T> static T op3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+	};
+
 public:
 	Q_INVOKABLE DivideNode( QSharedPointer<fugio::NodeInterface> pNode );
 
@@ -24,6 +33,13 @@ public:
 	// NodeControlInterface interface
 
 	virtual void inputsUpdated( qint64 pTimeStamp );
+
+	virtual QList<QUuid> pinAddTypesInput() const;
+
+	virtual bool canAcceptPin(fugio::PinInterface *pPin) const;
+
+private:
+	static QVariant divideNumber( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinNumerator;

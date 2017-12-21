@@ -10,6 +10,7 @@
 #include <QTranslator>
 #include <QMessageBox>
 #include <QSurfaceFormat>
+#include <QSplashScreen>
 
 #include "contextprivate.h"
 #include "contextsubwindow.h"
@@ -22,7 +23,9 @@
 #include <bcm_host.h>
 #endif
 
-QString LogNam;
+QSplashScreen	*SplashScreen = Q_NULLPTR;
+
+QString			LogNam;
 
 void log_file( const QString &pLogDat )
 {
@@ -110,6 +113,84 @@ void checkLocale( App *APP )
 	}
 }
 
+void setOpenGLType( int argc, char *argv[] )
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
+	QCoreApplication::setAttribute( Qt::AA_ShareOpenGLContexts );
+#endif
+
+	//-------------------------------------------------------------------------
+
+	typedef enum OpenGLType
+	{
+		GLT_DEFAULT,
+		GLT_DESKTOP,
+		GLT_ES,
+		GLT_SOFTWARE
+	} OpenGLType;
+
+	OpenGLType		GLType = GLT_DESKTOP;
+
+	for( int i = 1 ; i < argc ; i++ )
+	{
+		if( !strcmp( argv[ i ], "--opengl" ) )
+		{
+			GLType = GLT_DESKTOP;
+
+			continue;
+		}
+
+		if( !strcmp( argv[ i ], "--gles" ) )
+		{
+			GLType = GLT_ES;
+
+			continue;
+		}
+
+
+		if( !strcmp( argv[ i ], "--glsw" ) )
+		{
+			GLType = GLT_SOFTWARE;
+
+			continue;
+		}
+	}
+
+	QSurfaceFormat	SurfaceFormat;
+
+	if( GLType == GLT_DESKTOP )
+	{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 3, 0 )
+		QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
+#endif
+
+#if !defined( QT_OPENGL_ES_2 )
+		SurfaceFormat.setDepthBufferSize( 24 );
+		SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
+		SurfaceFormat.setSamples( 4 );
+		SurfaceFormat.setVersion( 4, 5 );
+#endif
+	}
+	else if( GLType == GLT_ES )
+	{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 3, 0 )
+		QCoreApplication::setAttribute( Qt::AA_UseOpenGLES );
+#endif
+	}
+	else if( GLType == GLT_SOFTWARE )
+	{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
+		QCoreApplication::setAttribute( Qt::AA_UseSoftwareOpenGL );
+#endif
+	}
+
+#if defined( QT_DEBUG )
+	SurfaceFormat.setOption( QSurfaceFormat::DebugContext );
+#endif
+
+	QSurfaceFormat::setDefaultFormat( SurfaceFormat );
+}
+
 int main( int argc, char *argv[] )
 {
 #if defined( Q_OS_RASPBERRY_PI )
@@ -144,28 +225,7 @@ int main( int argc, char *argv[] )
 
 	//-------------------------------------------------------------------------
 
-	QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
-
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
-	QCoreApplication::setAttribute( Qt::AA_ShareOpenGLContexts );
-#endif
-
-	//-------------------------------------------------------------------------
-
-#if !defined( QT_OPENGL_ES_2 )
-	QSurfaceFormat	SurfaceFormat;
-
-	SurfaceFormat.setDepthBufferSize( 24 );
-	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
-	SurfaceFormat.setSamples( 4 );
-	SurfaceFormat.setVersion( 4, 5 );
-
-#if defined( QT_DEBUG )
-	SurfaceFormat.setOption( QSurfaceFormat::DebugContext );
-#endif
-
-	QSurfaceFormat::setDefaultFormat( SurfaceFormat );
-#endif
+	setOpenGLType( argc, argv );
 
 	//-------------------------------------------------------------------------
 
@@ -175,6 +235,15 @@ int main( int argc, char *argv[] )
 	if( APP == 0 )
 	{
 		return( -1 );
+	}
+
+	QPixmap pixmap( ":/icons/fugio-splash.png" );
+
+	if( ( SplashScreen = new QSplashScreen( pixmap, Qt::WindowStaysOnTopHint ) ) )
+	{
+		SplashScreen->show();
+
+		APP->processEvents();
 	}
 
 	//-------------------------------------------------------------------------
@@ -254,19 +323,23 @@ int main( int argc, char *argv[] )
 	CLP.setApplicationDescription( "Fugio Editor" );
 
 	QCommandLineOption		ClearSettingsOption( "clear-settings", "Clear all settings (mainly for testing purposes)" );
+	QCommandLineOption		SetLocaleOption( "locale", "Set default locale", "locale", QLocale().bcp47Name() );
+	QCommandLineOption		OpenGLDesktop( "opengl", "Use Desktop OpenGL" );
+	QCommandLineOption		OpenGLES( "gles", "Use OpenGL ES" );
+	QCommandLineOption		OpenGLSW( "glsw", "Use OpenGL Software" );
 
 	CLP.addOption( ClearSettingsOption );
-
-	QCommandLineOption		SetLocaleOption( "locale", "Set default locale", "locale", QLocale().bcp47Name() );
-
 	CLP.addOption( SetLocaleOption );
+	CLP.addOption( OpenGLDesktop );
+	CLP.addOption( OpenGLES );
+	CLP.addOption( OpenGLSW );
 
 	//-------------------------------------------------------------------------
 	// Register and load plugins
 
 	GlobalPrivate	*PBG = &APP->global();
 
-#if defined( Q_OS_LINUX )
+#if defined( Q_OS_LINUX ) && !defined( QT_DEBUG )
 	QDir	PluginsDir = QDir( "/usr/lib/fugio" );
 #else
 	QDir	PluginsDir = QDir( qApp->applicationDirPath() );
@@ -299,10 +372,10 @@ int main( int argc, char *argv[] )
 		WND->initBegin();
 
 #if defined( QT_DEBUG )
-		PBG->setEnabledPlugins(
-			QStringList() <<
-			"fugio-core" <<
-			"fugio-raspberrypi" );
+//		PBG->setEnabledPlugins(
+//			QStringList() <<
+//			"fugio-core" <<
+//			"fugio-raspberrypi" );
 #endif
 
 #if defined( Q_OS_MACX ) or defined( Q_OS_LINUX )
@@ -354,6 +427,12 @@ int main( int argc, char *argv[] )
 		}
 
 		WND->initEnd();
+
+		WND->show();
+
+		QTimer::singleShot( 500, WND, SLOT(stylesApply()) );
+
+		SplashScreen->finish( WND );
 
 		// Load patches that were specified on the command line
 

@@ -16,6 +16,15 @@ class MultiplyNode : public fugio::NodeControlBase
 	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Multiply" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
+	class Operator
+	{
+		public:
+			template<typename T> static T op0( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+			template<typename T> static T op1( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+			template<typename T> static T op2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+			template<typename T> static T op3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+	};
+
 public:
 	Q_INVOKABLE MultiplyNode( QSharedPointer<fugio::NodeInterface> pNode );
 
@@ -31,10 +40,6 @@ public:
 
 private:
 	static QVariant multiplyNumber( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-	static QVariant multiplyVector3D( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-	static QVariant multiplyVector4D( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-	static QVariant multiplyPoint( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-	static QVariant multiplyMatrix4x4( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;

@@ -32,7 +32,9 @@ public:
 		FORMAT_YUV420P,
 		FORMAT_UYVY422,
 		FORMAT_R32S,
-		FORMAT_R32F
+		FORMAT_R32F,
+		FORMAT_YUVJ422P,
+		FORMAT_NV12
 	} Format;
 
 	static int formatPixelByteCount( Format pFormat, int pBuffer = 0 )
@@ -52,6 +54,7 @@ public:
 			case FORMAT_HSV8:		return( 3 );
 			case FORMAT_R32S:		return( 4 );
 			case FORMAT_R32F:		return( 4 );
+			case FORMAT_NV12:		return( 1 );
 
 			default:			break;
 		}
@@ -116,7 +119,7 @@ public:
 			case FORMAT_RGB8:	return( QImage::Format_RGB888 );
 			case FORMAT_RGBA8:	return( QImage::Format_ARGB32 );
 			case FORMAT_BGRA8:	return( QImage::Format_ARGB32 );
-#if QT_VERSION > QT_VERSION_CHECK( 5, 4, 0 )
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 )
 			case FORMAT_GRAY8:	return( QImage::Format_Grayscale8 );
 #endif
 			default:			break;
@@ -132,7 +135,7 @@ public:
 			case QImage::Format_RGB888:					return( FORMAT_RGB8 );
 			case QImage::Format_ARGB32:					return( FORMAT_RGBA8 );
 			case QImage::Format_ARGB32_Premultiplied:	return( FORMAT_RGBA8 );
-#if QT_VERSION > QT_VERSION_CHECK( 5, 4, 0 )
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 )
 			case QImage::Format_Grayscale8:				return( FORMAT_GRAY8 );
 #endif
 			default:									break;

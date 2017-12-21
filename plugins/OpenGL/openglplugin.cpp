@@ -8,6 +8,8 @@
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
+#include <fugio/text/syntax_error_interface.h>
+
 #include <fugio/text/syntax_highlighter_interface.h>
 
 #include <QCommandLineParser>
@@ -43,6 +45,8 @@
 #include "cubemaprendernode.h"
 #include "texturemonitornode.h"
 #include "rendertotexturenode.h"
+#include "easyshader2dnode.h"
+#include "arraytotexturebuffernode.h"
 
 #include "texturepin.h"
 #include "renderpin.h"
@@ -79,6 +83,7 @@ ClassEntry		OpenGLPlugin::mNodeClasses[] =
 {
 	ClassEntry( "Array To Buffer", "OpenGL", NID_OPENGL_ARRAY_TO_BUFFER, &ArrayToBufferNode::staticMetaObject ),
 	ClassEntry( "Array To Index", "OpenGL", NID_OPENGL_ARRAY_TO_INDEX, &ArrayToIndexNode::staticMetaObject ),
+	ClassEntry( "Array To Texture", "OpenGL", NID_OPENGL_ARRAY_TO_TEXTURE, &ArrayToTextureBufferNode::staticMetaObject ),
 	ClassEntry( "Bind Texture", "OpenGL", NID_OPENGL_BIND_TEXTURE, &BindTextureNode::staticMetaObject ),
 	ClassEntry( "Buffer", "OpenGL", NID_OPENGL_BUFFER, &BufferNode::staticMetaObject ),
 	ClassEntry( "Buffer Entry", "OpenGL", NID_OPENGL_BUFFER_ENTRY, &BufferEntryNode::staticMetaObject ),
@@ -87,6 +92,7 @@ ClassEntry		OpenGLPlugin::mNodeClasses[] =
 	ClassEntry( "Context", "OpenGL", NID_OPENGL_CONTEXT, &ContextNode::staticMetaObject ),
 	ClassEntry( "CubeMap Render", "OpenGL", NID_OPENGL_CUBEMAP_RENDER, &CubeMapRenderNode::staticMetaObject ),
 	ClassEntry( "Draw", "OpenGL", NID_OPENGL_DRAW, &DrawNode::staticMetaObject ),
+	ClassEntry( "Easy Shader 2D", "OpenGL", NID_OPENGL_EASY_SHADER_2D, &EasyShader2DNode::staticMetaObject ),
 	ClassEntry( "Image to Texture", "OpenGL", NID_OPENGL_IMAGE_TO_TEXTURE, &ImageToTextureNode::staticMetaObject ),
 	ClassEntry( "Instance Buffer", "OpenGL", NID_OPENGL_INSTANCE_BUFFER, &InstanceBufferNode::staticMetaObject ),
 	ClassEntry( "Preview", "OpenGL", NID_OPENGL_PREVIEW, &PreviewNode::staticMetaObject ),
@@ -197,7 +203,7 @@ void OpenGLPlugin::parseShaderErrors( QString pErrorText, QList<SyntaxError> &pE
 
 		if( P1.indexIn( S ) > -1 )
 		{
-			SE.mLineStart = SE.mLineEnd = P1.cap( 2 ).toInt();
+			SE.mLineStart = SE.mLineEnd = P1.cap( 2 ).toInt() + 1;
 
 			SE.mError = P1.cap( 3 );
 
@@ -232,14 +238,13 @@ void OpenGLPlugin::parseShaderErrors( QString pErrorText, QList<SyntaxError> &pE
 			continue;
 		}
 
-		SE.mLineStart = SE.mLineEnd   = -1;
+		SE.mLineStart = SE.mLineEnd = -1;
 
 		SE.mError = S;
 
 		pErrorData << SE;
 
 		qDebug() << S;
-
 	}
 }
 
@@ -672,6 +677,75 @@ void OpenGLPlugin::initGLEW()
 		qInfo() << "Depth:" << Context->format().depthBufferSize();
 		qInfo() << "RGB:" << Context->format().redBufferSize() << Context->format().greenBufferSize() << Context->format().blueBufferSize();
 	}
+}
+
+void OpenGLPlugin::loadShader( QSharedPointer<PinInterface> pPin, QOpenGLShaderProgram &pProgram, QOpenGLShader::ShaderType pShaderType, int &pCompiled, int &pFailed )
+{
+	fugio::SyntaxErrorInterface *SyntaxErrors = Q_NULLPTR;
+
+	if( pPin->hasControl() )
+	{
+		SyntaxErrors = qobject_cast<fugio::SyntaxErrorInterface *>( pPin->control()->qobject() );
+	}
+
+	QString			Source;
+
+	if( !pPin->isConnected() || !pPin->connectedPin()->hasControl() )
+	{
+		Source = pPin->value().toString();
+	}
+	else
+	{
+		fugio::VariantInterface	*V = qobject_cast<fugio::VariantInterface *>( pPin->connectedPin()->control()->qobject() );
+
+		Source = ( V ? V->variant().toString() : pPin->value().toString() );
+	}
+
+	if( Source.isEmpty() )
+	{
+		if( SyntaxErrors )
+		{
+			SyntaxErrors->clearSyntaxErrors();
+		}
+
+		return;
+	}
+
+	if( !pProgram.addShaderFromSourceCode( pShaderType, Source ) )
+	{
+		QString		Log = pProgram.log();
+
+		if( !Log.isEmpty() )
+		{
+			qWarning() << Log;
+		}
+
+		if( SyntaxErrors )
+		{
+			QList<fugio::SyntaxError>	SE;
+
+			OpenGLPlugin::parseShaderErrors( Log, SE );
+
+			if( SE.isEmpty() )
+			{
+				SyntaxErrors->clearSyntaxErrors();
+			}
+			else
+			{
+				SyntaxErrors->setSyntaxErrors( SE );
+			}
+		}
+
+		pFailed++;
+
+		return;
+	}
+	else if( SyntaxErrors )
+	{
+		SyntaxErrors->clearSyntaxErrors();
+	}
+
+	pCompiled++;
 }
 
 SyntaxHighlighterInstanceInterface *OpenGLPlugin::syntaxHighlighterInstance( QUuid pUuid ) const

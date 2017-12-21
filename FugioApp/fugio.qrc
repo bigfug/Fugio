@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/icons">
         <file>fugio-icon.ico</file>
+        <file>fugio-splash.png</file>
     </qresource>
     <qresource prefix="/html">
         <file>about.html</file>

@@ -103,6 +103,11 @@ public:
 	virtual QThread *thread( void ) = 0;
 
 	//-------------------------------------------------------------------------
+	// Paths
+
+	virtual QString sharedDataPath( void ) const = 0;
+
+	//-------------------------------------------------------------------------
 
 	virtual QStringList loadedPluginNames( void ) const = 0;
 
@@ -220,11 +225,17 @@ public:
 
 	virtual QList<QUuid> pinSplitters( const QUuid &pPinId ) const = 0;
 	virtual QList<QUuid> pinJoiners( const QUuid &pPinId ) const = 0;
+
+	//-------------------------------------------------------------------------
+	// QMetaType
+
+	virtual QUuid findPinForMetaType( QMetaType::Type pType ) const = 0;
+	virtual void registerPinForMetaType( const QUuid &pUuid, QMetaType::Type pType ) = 0;
 };
 
 FUGIO_NAMESPACE_END
 
-Q_DECLARE_INTERFACE( fugio::GlobalInterface, "com.bigfug.fugio.global/1.0" )
+Q_DECLARE_INTERFACE( fugio::GlobalInterface, "com.bigfug.fugio.global/1.1" )
 
 #if !defined(FUGIOLIB_LIBRARY)
 FUGIO_NAMESPACE_BEGIN

@@ -1,13 +1,6 @@
 #ifndef FACE_FEATURES_NODE_H
 #define FACE_FEATURES_NODE_H
 
-#include <QObject>
-
-#include <fugio/nodecontrolbase.h>
-#include <fugio/core/variant_interface.h>
-#include <fugio/core/array_interface.h>
-#include <fugio/core/array_list_interface.h>
-
 #if defined( DLIB_SUPPORTED )
 #include <dlib/image_processing/frontal_face_detector.h>
 #include <dlib/image_processing.h>
@@ -16,6 +9,13 @@
 using namespace std;
 using namespace dlib;
 #endif
+
+#include <QObject>
+
+#include <fugio/nodecontrolbase.h>
+#include <fugio/core/variant_interface.h>
+#include <fugio/core/array_interface.h>
+#include <fugio/core/array_list_interface.h>
 
 class FaceFeaturesNode : public fugio::NodeControlBase
 {

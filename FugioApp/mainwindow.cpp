@@ -268,9 +268,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	//-------------------------------------------------------------------------
 
-	show();
+//	show();
 
-	QTimer::singleShot( 500, ui->mStyleSheet, SLOT(stylesApply()) );
+//	QTimer::singleShot( 500, ui->mStyleSheet, SLOT(stylesApply()) );
 
 	//-------------------------------------------------------------------------
 	// doesn't do what you might hope...
@@ -453,6 +453,11 @@ QStringList MainWindow::patchOpenDialog()
 	}
 
 	return( FileList );
+}
+
+void MainWindow::stylesApply()
+{
+	ui->mStyleSheet->stylesApply();
 }
 
 void MainWindow::on_actionOpen_triggered()

@@ -46,15 +46,19 @@ void MultiplyNode::inputsUpdated( qint64 pTimeStamp )
 			break;
 
 		case QMetaType::QPoint:
-			OutputValue = multiplyPoint( mNode->enumInputPins() );
+			OutputValue = Operator::op0<QPoint>( mNode->enumInputPins() );
+			break;
+
+		case QMetaType::QPointF:
+			OutputValue = Operator::op0<QPointF>( mNode->enumInputPins() );
 			break;
 
 		case QMetaType::QMatrix4x4:
-			OutputValue = multiplyMatrix4x4( mNode->enumInputPins() );
+			OutputValue = Operator::op1<QMatrix4x4>( mNode->enumInputPins() );
 			break;
 
 		case QMetaType::QVector3D:
-			OutputValue = multiplyVector3D( mNode->enumInputPins() );
+			OutputValue = Operator::op3<QVector3D>( mNode->enumInputPins() );
 			break;
 
 		default:
@@ -88,7 +92,9 @@ QList<QUuid> MultiplyNode::pinAddTypesInput() const
 		PID_INTEGER,
 		PID_STRING,
 		PID_POINT,
-		PID_VECTOR3
+		PID_VECTOR3,
+		PID_SIZE,
+		PID_MATRIX4
 	};
 
 	return( PinLst );
@@ -131,131 +137,11 @@ QVariant MultiplyNode::multiplyNumber( const QList<QSharedPointer<PinInterface> 
 	return( OutVal );
 }
 
-QVariant MultiplyNode::multiplyVector3D( const QList<QSharedPointer<PinInterface> > pInputPins )
+template<typename T>
+T MultiplyNode::Operator::op2( const QList<QSharedPointer<PinInterface> > pInputPins )
 {
-	QVector3D	OutVal;
-	bool		OutHas = false;
-
-	for( QSharedPointer<fugio::PinInterface> P : pInputPins )
-	{
-		QVariant		InputBase = variantStatic( P );
-		QMetaType::Type	InputType = QMetaType::Type( InputBase.type() );
-
-		switch( InputType )
-		{
-			case QMetaType::QVector3D:
-				{
-					QVector3D		v = variantStatic( P ).value<QVector3D>();
-
-					if( !OutHas )
-					{
-						OutVal = v;
-						OutHas = true;
-					}
-					else
-					{
-						OutVal *= v;
-					}
-				}
-				break;
-
-			case QMetaType::QMatrix4x4:
-				{
-					QMatrix4x4		m = variantStatic( P ).value<QMatrix4x4>();
-
-					QVector4D		v = QVector4D( OutVal, 1.0f );
-
-					v = m * v;
-
-					OutVal = v.toVector3D();
-				}
-				break;
-
-			case QMetaType::Float:
-			case QMetaType::Double:
-			case QMetaType::Int:
-			case QMetaType::QString:
-				{
-					bool		c;
-					qreal		v = variantStatic( P ).toReal( &c );
-
-					if( c )
-					{
-						OutVal *= QVector3D( v, v, v );
-					}
-				}
-				break;
-
-			default:
-				continue;
-		}
-	}
-
-	return( OutVal );
-}
-
-QVariant MultiplyNode::multiplyVector4D( const QList<QSharedPointer<PinInterface> > pInputPins )
-{
-	QVector4D	OutVal;
-	bool		OutHas = false;
-
-	for( QSharedPointer<fugio::PinInterface> P : pInputPins )
-	{
-		QVariant		InputBase = variantStatic( P );
-		QMetaType::Type	InputType = QMetaType::Type( InputBase.type() );
-
-		switch( InputType )
-		{
-			case QMetaType::QVector4D:
-				{
-					QVector4D		v = variantStatic( P ).value<QVector4D>();
-
-					if( !OutHas )
-					{
-						OutVal = v;
-						OutHas = true;
-					}
-					else
-					{
-						OutVal *= v;
-					}
-				}
-				break;
-
-			case QMetaType::QMatrix4x4:
-				{
-					QMatrix4x4		m = variantStatic( P ).value<QMatrix4x4>();
-
-					OutVal = m * OutVal;
-				}
-				break;
-
-			case QMetaType::Float:
-			case QMetaType::Double:
-			case QMetaType::Int:
-			case QMetaType::QString:
-				{
-					bool		c;
-					qreal		v = variantStatic( P ).toReal( &c );
-
-					if( c )
-					{
-						OutVal *= v;
-					}
-				}
-				break;
-
-			default:
-				continue;
-		}
-	}
-
-	return( OutVal );
-}
-
-QVariant MultiplyNode::multiplyPoint(const QList<QSharedPointer<PinInterface> > pInputPins)
-{
-	QPoint			OutVal;
+	T				OutVal;
+	QMetaType::Type	OutType = QMetaType::Type( qMetaTypeId<T>() );
 	bool			OutHas = false;
 
 	for( QSharedPointer<fugio::PinInterface> P : pInputPins )
@@ -263,31 +149,38 @@ QVariant MultiplyNode::multiplyPoint(const QList<QSharedPointer<PinInterface> > 
 		QVariant		InputBase = variantStatic( P );
 		QMetaType::Type	InputType = QMetaType::Type( InputBase.type() );
 
+		if( InputBase.canConvert( OutType ) )
+		{
+			T			v = InputBase.value<T>();
+
+			if( !OutHas )
+			{
+				OutVal = v;
+				OutHas = true;
+			}
+			else
+			{
+				OutVal *= v;
+			}
+
+			continue;
+		}
+
 		switch( InputType )
 		{
-			case QMetaType::QPoint:
+			case QMetaType::QSize:
 				{
-					QPoint		v = variantStatic( P ).toPoint();
+					QSize		v = InputBase.toSize();
 
-					if( !OutHas )
-					{
-						OutVal = v;
-						OutHas = true;
-					}
-					else
-					{
-						OutVal.rx() *= v.x();
-						OutVal.ry() *= v.y();
-					}
+					OutVal *= T( v.width(), v.height() );
 				}
 				break;
 
-			case QMetaType::QVector2D:
+			case QMetaType::QSizeF:
 				{
-					QVector2D	v = variantStatic( P ).value<QVector2D>();
+					QSizeF		v = InputBase.toSizeF();
 
-					OutVal.rx() *= v.x();
-					OutVal.ry() *= v.y();
+					OutVal *= T( v.width(), v.height() );
 				}
 				break;
 
@@ -297,12 +190,11 @@ QVariant MultiplyNode::multiplyPoint(const QList<QSharedPointer<PinInterface> > 
 			case QMetaType::QString:
 				{
 					bool		c;
-					int			v = variantStatic( P ).toInt( &c );
+					qreal		v = InputBase.toReal( &c );
 
 					if( c )
 					{
-						OutVal.rx() *= v;
-						OutVal.ry() *= v;
+						OutVal *= T( v, v );
 					}
 				}
 				break;
@@ -315,9 +207,11 @@ QVariant MultiplyNode::multiplyPoint(const QList<QSharedPointer<PinInterface> > 
 	return( OutVal );
 }
 
-QVariant MultiplyNode::multiplyMatrix4x4( const QList<QSharedPointer<PinInterface> > pInputPins )
+template<typename T>
+T MultiplyNode::Operator::op3(const QList<QSharedPointer<PinInterface> > pInputPins)
 {
-	QMatrix4x4		OutVal;
+	T				OutVal;
+	QMetaType::Type	OutType = QMetaType::Type( qMetaTypeId<T>() );
 	bool			OutHas = false;
 
 	for( QSharedPointer<fugio::PinInterface> P : pInputPins )
@@ -325,31 +219,86 @@ QVariant MultiplyNode::multiplyMatrix4x4( const QList<QSharedPointer<PinInterfac
 		QVariant		InputBase = variantStatic( P );
 		QMetaType::Type	InputType = QMetaType::Type( InputBase.type() );
 
+		if( InputBase.canConvert( OutType ) )
+		{
+			T			v = InputBase.value<T>();
+
+			if( !OutHas )
+			{
+				OutVal = v;
+				OutHas = true;
+			}
+			else
+			{
+				OutVal *= v;
+			}
+
+			continue;
+		}
+
 		switch( InputType )
 		{
-			case QMetaType::QMatrix4x4:
-				{
-					QMatrix4x4		v = variantStatic( P ).value<QMatrix4x4>();
-
-					if( !OutHas )
-					{
-						OutVal = v;
-						OutHas = true;
-					}
-					else
-					{
-						OutVal *= v;
-					}
-				}
-				break;
-
 			case QMetaType::Float:
 			case QMetaType::Double:
 			case QMetaType::Int:
 			case QMetaType::QString:
 				{
 					bool		c;
-					qreal		v = variantStatic( P ).toReal( &c );
+					qreal		v = InputBase.toReal( &c );
+
+					if( c )
+					{
+						OutVal *= T( v, v, v );
+					}
+				}
+				break;
+
+			default:
+				continue;
+		}
+	}
+
+	return( OutVal );
+}
+
+template<typename T>
+T MultiplyNode::Operator::op1(const QList<QSharedPointer<PinInterface> > pInputPins)
+{
+	T				OutVal;
+	QMetaType::Type	OutType = QMetaType::Type( qMetaTypeId<T>() );
+	bool			OutHas = false;
+
+	for( QSharedPointer<fugio::PinInterface> P : pInputPins )
+	{
+		QVariant		InputBase = variantStatic( P );
+		QMetaType::Type	InputType = QMetaType::Type( InputBase.type() );
+
+		if( InputBase.canConvert( OutType ) )
+		{
+			T			v = InputBase.value<T>();
+
+			if( !OutHas )
+			{
+				OutVal = v;
+				OutHas = true;
+			}
+			else
+			{
+				OutVal *= v;
+			}
+
+			continue;
+		}
+
+		switch( InputType )
+		{
+			case QMetaType::Float:
+			case QMetaType::Double:
+			case QMetaType::Int:
+			case QMetaType::QString:
+				{
+					bool		c;
+					qreal		v = InputBase.toReal( &c );
 
 					if( c )
 					{
@@ -366,3 +315,52 @@ QVariant MultiplyNode::multiplyMatrix4x4( const QList<QSharedPointer<PinInterfac
 	return( OutVal );
 }
 
+template<typename T>
+T MultiplyNode::Operator::op0(const QList<QSharedPointer<PinInterface> > pInputPins)
+{
+	T				OutVal;
+	QMetaType::Type	OutType = QMetaType::Type( qMetaTypeId<T>() );
+	bool			OutHas = false;
+
+	for( QSharedPointer<fugio::PinInterface> P : pInputPins )
+	{
+		QVariant		InputBase = variantStatic( P );
+		QMetaType::Type	InputType = QMetaType::Type( InputBase.type() );
+
+		if( InputBase.canConvert( OutType ) )
+		{
+			T			v = InputBase.value<T>();
+
+			if( !OutHas )
+			{
+				OutVal = v;
+				OutHas = true;
+			}
+
+			continue;
+		}
+
+		switch( InputType )
+		{
+			case QMetaType::Float:
+			case QMetaType::Double:
+			case QMetaType::Int:
+			case QMetaType::QString:
+				{
+					bool		c;
+					qreal		v = InputBase.toReal( &c );
+
+					if( c )
+					{
+						OutVal *= v;
+					}
+				}
+				break;
+
+			default:
+				continue;
+		}
+	}
+
+	return( OutVal );
+}

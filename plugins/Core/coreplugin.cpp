@@ -45,6 +45,8 @@
 #include "flipflopnode.h"
 #include "bitstoboolnode.h"
 #include "booltobitsnode.h"
+#include "joinpointnode.h"
+#include "joinrectnode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -66,10 +68,12 @@
 #include "rectpin.h"
 #include "bitarraypin.h"
 #include "linepin.h"
+#include "transformpin.h"
 
 #include "loggernode.h"
 
-QList<QUuid>				NodeControlBase::PID_UUID;
+QList<QUuid>				 NodeControlBase::PID_UUID;
+CorePlugin					*CorePlugin::mInstance = Q_NULLPTR;
 
 ClassEntry		CorePlugin::mNodeClasses[] =
 {
@@ -87,7 +91,9 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Frame Delay", "Context", NID_FRAME_DELAY, &FrameDelayNode::staticMetaObject ),
 	ClassEntry( "Get Size", "Size", NID_GET_SIZE, &GetSizeNode::staticMetaObject ),
 	ClassEntry( "Smooth", "Number", ClassEntry::None, NID_FADE, &SmoothNode::staticMetaObject ),
+	ClassEntry( "Join Point", "Point", NID_JOIN_POINT, &JoinPointNode::staticMetaObject ),
 	ClassEntry( "Join Size", "Size", NID_JOIN_SIZE, &JoinSizeNode::staticMetaObject ),
+	ClassEntry( "Join Rect", "Rect", NID_JOIN_RECT, &JoinRectNode::staticMetaObject ),
 	ClassEntry( "Last Updated Input", NID_LAST_UPDATED_INPUT, &LastUpdatedInputNode::staticMetaObject ),
 	ClassEntry( "Index", NID_INDEX, &IndexNode::staticMetaObject ),
 	ClassEntry( "List Size", NID_LIST_SIZE, &ListSizeNode::staticMetaObject ),
@@ -133,6 +139,7 @@ ClassEntry		CorePlugin::mPinClasses[] =
 	ClassEntry( "String", PID_STRING, &StringPin::staticMetaObject ),
 	ClassEntry( "String List", PID_STRING_LIST, &StringListPin::staticMetaObject ),
 	ClassEntry( "Trigger", PID_TRIGGER, &TriggerPin::staticMetaObject ),
+	ClassEntry( "Transform", PID_TRANSFORM, &TransformPin::staticMetaObject ),
 	ClassEntry( "Variant", PID_VARIANT, &VariantPin::staticMetaObject ),
 	ClassEntry( "Variant List", PID_VARIANT_LIST, &VariantListPin::staticMetaObject ),
 	ClassEntry()
@@ -160,9 +167,9 @@ PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp
 {
 	Q_UNUSED( pLastChance )
 
-	mApp = pApp;
+	mInstance = this;
 
-	//mApp->registerVideoOutputFactory( this );
+	mApp = pApp;
 
 	mApp->registerNodeClasses( mNodeClasses );
 
@@ -174,7 +181,32 @@ PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp
 	mApp->registerPinSplitter( PID_POINT, NID_SPLIT_POINT );
 
 	mApp->registerPinJoiner( PID_SIZE, NID_JOIN_SIZE );
-	//mApp->registerPinJoiner( PID_SIZE_3D, NID_JOIN_SIZE );
+	mApp->registerPinJoiner( PID_POINT, NID_JOIN_POINT );
+	mApp->registerPinJoiner( PID_RECT, NID_JOIN_RECT );
+
+	mApp->registerPinForMetaType( PID_BOOL, QMetaType::Bool );
+	mApp->registerPinForMetaType( PID_STRING, QMetaType::Char );
+	mApp->registerPinForMetaType( PID_FLOAT, QMetaType::Double );
+	mApp->registerPinForMetaType( PID_FLOAT, QMetaType::Float );
+	mApp->registerPinForMetaType( PID_INTEGER, QMetaType::Int );
+	mApp->registerPinForMetaType( PID_INTEGER, QMetaType::Long );
+	mApp->registerPinForMetaType( PID_INTEGER, QMetaType::LongLong );
+	mApp->registerPinForMetaType( PID_INTEGER, QMetaType::Short );
+	mApp->registerPinForMetaType( PID_BITARRAY, QMetaType::QBitArray );
+	mApp->registerPinForMetaType( PID_BYTEARRAY, QMetaType::QByteArray );
+	mApp->registerPinForMetaType( PID_BYTEARRAY_LIST, QMetaType::QByteArrayList );
+	mApp->registerPinForMetaType( PID_STRING, QMetaType::QChar );
+
+	mApp->registerPinForMetaType( PID_POINT, QMetaType::QPoint );
+	mApp->registerPinForMetaType( PID_POINT, QMetaType::QPointF );
+	mApp->registerPinForMetaType( PID_FLOAT, QMetaType::QReal );
+	mApp->registerPinForMetaType( PID_RECT, QMetaType::QRect );
+	mApp->registerPinForMetaType( PID_RECT, QMetaType::QRectF );
+	mApp->registerPinForMetaType( PID_SIZE, QMetaType::QSize );
+	mApp->registerPinForMetaType( PID_SIZE, QMetaType::QSizeF );
+	mApp->registerPinForMetaType( PID_TRANSFORM, QMetaType::QTransform );
+	mApp->registerPinForMetaType( PID_VARIANT, QMetaType::QVariant );
+	mApp->registerPinForMetaType( PID_VARIANT_LIST, QMetaType::QVariantList );
 
 	return( INIT_OK );
 }

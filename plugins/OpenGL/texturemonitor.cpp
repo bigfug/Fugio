@@ -23,6 +23,8 @@ void TextureMonitor::initializeGL()
 	initializeOpenGLFunctions();
 
 	OpenGLPlugin::instance()->initGLEW();
+
+	mNode->node()->context()->nodeInitialised();
 }
 
 void TextureMonitor::resizeGL( int w, int h )

@@ -1,7 +1,6 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-	Example \
 	ARToolKit \
 	Audio \
 	Colour \
@@ -19,6 +18,7 @@ SUBDIRS += \
 	LuaQt \
 	Math \
 	MIDI \
+	NDI \
 	OculusRift \
 	OpenCV \
 	OpenGL \
@@ -34,9 +34,10 @@ SUBDIRS += \
 	VideoCapture \
 	VST \
 	XInput \
-    ISF
+    ISF \
+    Geometry
 
 qtHaveModule( serialport ) {
-	SUBDIRS += Serial
+        SUBDIRS += Serial
 }
 

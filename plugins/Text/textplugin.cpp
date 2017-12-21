@@ -11,6 +11,7 @@
 #include "stringjoinnode.h"
 #include "linebuffernode.h"
 #include "texteditorremotenode.h"
+#include "stringsplitnode.h"
 
 #include "syntaxerrorpin.h"
 
@@ -28,6 +29,7 @@ ClassEntry		mNodeClasses[] =
 	ClassEntry( "Number To String",		"String", NID_NUMBER_TO_STRING, &NumberToStringNode::staticMetaObject ),
 	ClassEntry( "RegExp",				"String", NID_REGEXP, &RegExpNode::staticMetaObject ),
 	ClassEntry( "Join",					"String", NID_STRING_JOIN, &StringJoinNode::staticMetaObject ),
+	ClassEntry( "Split",				"String", NID_STRING_SPLIT, &StringSplitNode::staticMetaObject ),
 	ClassEntry( "Line Buffer",			"String", NID_LINE_BUFFER, &LineBufferNode::staticMetaObject ),
 	ClassEntry( "Text Editor",			"GUI", NID_TEXT_EDIT, &TextEditorNode::staticMetaObject ),
 	ClassEntry( "Text Editor Remote",	"Network", NID_TEXT_EDIT_REMOTE, &TextEditorRemoteNode::staticMetaObject ),

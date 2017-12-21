@@ -14,10 +14,12 @@
 #include "imagesizenode.h"
 #include "imagefilternode.h"
 #include "imagesavenode.h"
+#include "copynode.h"
 
 #include "painterwindownode.h"
 
 #include "imagepin.h"
+#include "painterpin.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -26,6 +28,7 @@ using namespace fugio;
 ClassEntry		mNodeClasses[] =
 {
 	ClassEntry( "Colour Mask", "Image", NID_COLOUR_MASK, &ColourMaskNode::staticMetaObject ),
+	ClassEntry( "Copy", "Image", NID_IMAGE_COPY, &CopyNode::staticMetaObject ),
 	ClassEntry( "Filter", "Image", NID_IMAGE_FILTER, &ImageFilterNode::staticMetaObject ),
 	ClassEntry( "Grab Screen", "Image", NID_GRAB_SCREEN, &GrabScreenNode::staticMetaObject ),
 	ClassEntry( "Image", "Image", NID_IMAGE, &ImageNode::staticMetaObject ),
@@ -41,6 +44,7 @@ ClassEntry		mNodeClasses[] =
 ClassEntry		mPinClasses[] =
 {
 	ClassEntry( "Image", PID_IMAGE, &ImagePin::staticMetaObject ),
+	ClassEntry( "Painter", PID_PAINTER, &PainterPin::staticMetaObject ),
 	ClassEntry()
 };
 

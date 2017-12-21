@@ -29,10 +29,13 @@ void Preview::initializeGL()
 	{
 		NI->context()->nodeInitialised();
 	}
+
+	OpenGLPlugin::instance()->initGLEW();
 }
 
 void Preview::resizeGL( int w, int h )
 {
+	emit resized( QSize( w, h ) );
 }
 
 void Preview::paintGL()

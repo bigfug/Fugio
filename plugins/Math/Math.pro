@@ -63,7 +63,23 @@ SOURCES += mathplugin.cpp \
 	roundnode.cpp \
 	quaternionpin.cpp \
     mathexpressionnode.cpp \
-    modulusnode.cpp
+    modulusnode.cpp \
+    inttobitsnode.cpp \
+    multiplexornode.cpp \
+    bitstopinsnode.cpp \
+    notbitsnode.cpp \
+    nandbitsnode.cpp \
+    andbitsnode.cpp \
+    orbitsnode.cpp \
+    xorbitsnode.cpp \
+    flipflopnode.cpp \
+    cosinedegreesnode.cpp \
+    minnode.cpp \
+    maxnode.cpp \
+    pointtransformnode.cpp \
+    pownode.cpp \
+    numberarraynode.cpp \
+    transformnode.cpp
 
 HEADERS += mathplugin.h \
 	../../include/fugio/math/uuid.h \
@@ -115,7 +131,23 @@ HEADERS += mathplugin.h \
 	roundnode.h \
 	quaternionpin.h \
     mathexpressionnode.h \
-    modulusnode.h
+    modulusnode.h \
+    inttobitsnode.h \
+    multiplexornode.h \
+    bitstopinsnode.h \
+    notbitsnode.h \
+    nandbitsnode.h \
+    andbitsnode.h \
+    orbitsnode.h \
+    xorbitsnode.h \
+    flipflopnode.h \
+    cosinedegreesnode.h \
+    minnode.h \
+    maxnode.h \
+    pointtransformnode.h \
+    pownode.h \
+    numberarraynode.h \
+    transformnode.h
 
 RESOURCES += \
     resources.qrc
