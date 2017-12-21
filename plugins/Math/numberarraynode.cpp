@@ -34,11 +34,6 @@ void NumberArrayNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	if( !pTimeStamp )
-	{
-		return;
-	}
-
 	float	s = variant( mPinInputStart ).toReal();
 	float	e = variant( mPinInputEnd ).toReal();
 	float	i = variant( mPinInputIncrement ).toReal();
