@@ -92,6 +92,7 @@
 
 #include "pointtransformnode.h"
 #include "pownode.h"
+#include "numberarraynode.h"
 
 MathPlugin *MathPlugin::mInstance = nullptr;
 
@@ -132,6 +133,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "NOT Bits", "Logic", NID_NOT_BITS, &NotBitsNode::staticMetaObject ),
 	ClassEntry( "NOR", "Logic", NID_NOR, &NorNode::staticMetaObject ),
 	ClassEntry( "Normalise", "Vector3", NID_NORMALISE, &NormaliseNode::staticMetaObject ),
+	ClassEntry( "Number Array", NID_NUMBER_ARRAY, &NumberArrayNode::staticMetaObject ),
 	ClassEntry( "OR", "Logic", NID_OR, &OrNode::staticMetaObject ),
 	ClassEntry( "OR Bits", "Logic", NID_OR_BITS, &OrBitsNode::staticMetaObject ),
 	ClassEntry( "Orthographic", "Matrix", NID_MATRIX_ORTHOGRAPHIC, &MatrixOrthographicNode::staticMetaObject ),
