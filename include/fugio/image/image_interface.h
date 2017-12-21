@@ -119,7 +119,7 @@ public:
 			case FORMAT_RGB8:	return( QImage::Format_RGB888 );
 			case FORMAT_RGBA8:	return( QImage::Format_ARGB32 );
 			case FORMAT_BGRA8:	return( QImage::Format_ARGB32 );
-#if QT_VERSION > QT_VERSION_CHECK( 5, 4, 0 )
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 )
 			case FORMAT_GRAY8:	return( QImage::Format_Grayscale8 );
 #endif
 			default:			break;
@@ -135,7 +135,7 @@ public:
 			case QImage::Format_RGB888:					return( FORMAT_RGB8 );
 			case QImage::Format_ARGB32:					return( FORMAT_RGBA8 );
 			case QImage::Format_ARGB32_Premultiplied:	return( FORMAT_RGBA8 );
-#if QT_VERSION > QT_VERSION_CHECK( 5, 4, 0 )
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 )
 			case QImage::Format_Grayscale8:				return( FORMAT_GRAY8 );
 #endif
 			default:									break;
