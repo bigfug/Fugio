@@ -71,7 +71,8 @@
 
 #include "loggernode.h"
 
-QList<QUuid>				NodeControlBase::PID_UUID;
+QList<QUuid>				 NodeControlBase::PID_UUID;
+CorePlugin					*CorePlugin::mInstance = Q_NULLPTR;
 
 ClassEntry		CorePlugin::mNodeClasses[] =
 {
@@ -163,6 +164,8 @@ CorePlugin::~CorePlugin( void )
 PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
 	Q_UNUSED( pLastChance )
+
+	mInstance = this;
 
 	mApp = pApp;
 

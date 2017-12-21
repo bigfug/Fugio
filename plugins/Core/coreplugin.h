@@ -20,6 +20,16 @@ public:
 
 	virtual ~CorePlugin( void );
 
+	static CorePlugin *instance( void )
+	{
+		return( mInstance );
+	}
+
+	fugio::GlobalInterface *app( void )
+	{
+		return( mApp );
+	}
+
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
 
@@ -28,9 +38,10 @@ public:
 	virtual void deinitialise( void );
 
 private:
-	static ClassEntry		 mNodeClasses[];
-	static ClassEntry		 mPinClasses[];
+	static ClassEntry				 mNodeClasses[];
+	static ClassEntry				 mPinClasses[];
 
+	static CorePlugin				*mInstance;
 	fugio::GlobalInterface			*mApp;
 };
 
