@@ -46,7 +46,10 @@ void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
 		mValOutput->setStride( MetaType.sizeOf() );
 	}
 
-	mValOutput->setCount( PinLst.size() );
+	if( mValOutput->count() != PinLst.size() )
+	{
+		mValOutput->setCount( PinLst.size() );
+	}
 
 	if( PinLst.isEmpty() )
 	{
@@ -57,11 +60,22 @@ void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
 
 	for( QSharedPointer<fugio::PinInterface> P : PinLst )
 	{
-		QVariant	V = variant( P );
+		QVariant		 V = variant( P );
 
-		if( V.type() == CurrType || ( V.canConvert( CurrType ) && V.convert( CurrType ) ) )
+		if( QMetaType::Type( V.type() ) == CurrType )
 		{
-			MetaType.construct( DstPtr, V.value<void *>() );
+			const void		*D = V.constData();
+
+			QMetaType::construct( CurrType, DstPtr, D );
+		}
+		else
+		{
+			if( V.convert( CurrType ) )
+			{
+				const void		*D = V.constData();
+
+				QMetaType::construct( CurrType, DstPtr, D );
+			}
 		}
 
 		DstPtr += MetaType.sizeOf();
@@ -69,40 +83,6 @@ void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
 
 	pinUpdated( mPinOutput );
 }
-
-//QList<QUuid> MakeArrayNode::pinAddTypesInput() const
-//{
-//	if( mPinInput->isConnected() )
-//	{
-//		QList<QUuid>	PinLst;
-
-//		switch( mType )
-//		{
-//			case QMetaType::Int:
-//				PinLst << PID_INTEGER;
-//				break;
-
-//			case QMetaType::Float:
-//				PinLst << PID_FLOAT;
-//				break;
-
-//			case QMetaType::QMatrix4x4:
-//				PinLst << PID_MATRIX4;
-//				break;
-
-//			case QMetaType::QColor:
-//				PinLst << PID_COLOUR;
-//				break;
-
-//			default:
-//				break;
-//		}
-
-//		return( PinLst );
-//	}
-
-//	return( mNode->context()->global()->pinIds().keys() );
-//}
 
 bool MakeArrayNode::canAcceptPin( fugio::PinInterface *pPin ) const
 {
@@ -116,67 +96,7 @@ bool MakeArrayNode::canAcceptPin( fugio::PinInterface *pPin ) const
 	return( V );
 }
 
-//void MakeArrayNode::setType( int pIndex )
-//{
-//	QComboBox		*GUI = qobject_cast<QComboBox *>( sender() );
-
-//	if( GUI )
-//	{
-//		QMetaType::Type		Type = QMetaType::Type( GUI->itemData( pIndex ).type() );
-
-//		if( Type != mType )
-//		{
-//			mType = Type;
-
-//			mNode->context()->updateNode( mNode );
-//		}
-//	}
-//}
-
 bool MakeArrayNode::pinShouldAutoRename( fugio::PinInterface *pPin ) const
 {
 	return( pPin->direction() == PIN_INPUT );
 }
-
-//QWidget *MakeArrayNode::gui()
-//{
-//	QComboBox		*GUI = new QComboBox();
-
-//	GUI->addItem( "int", QVariant::fromValue<int>( 0 ) );
-//	GUI->addItem( "float", QVariant::fromValue<float>( 0 ) );
-//	GUI->addItem( "Colour", QColor() );
-//	GUI->addItem( "Matrix4", QMatrix4x4() );
-
-//	connect( GUI, SIGNAL(activated(int)), this, SLOT(setType(int)) );
-
-//	if( mType == QMetaType::UnknownType )
-//	{
-//		mType = QMetaType::Type( GUI->currentData().type() );
-//	}
-//	else
-//	{
-//		for( int i = 0 ; i < GUI->count() ; i++ )
-//		{
-//			if( mType != QMetaType::Type( GUI->itemData( i ).type() ) )
-//			{
-//				continue;
-//			}
-
-//			GUI->setCurrentIndex( i );
-
-//			break;
-//		}
-//	}
-
-//	return( GUI );
-//}
-
-//void MakeArrayNode::loadSettings( QSettings &pSettings )
-//{
-//	mType = QMetaType::Type( pSettings.value( "type", int( mType ) ).toInt() );
-//}
-
-//void MakeArrayNode::saveSettings(QSettings &pSettings) const
-//{
-//	pSettings.setValue( "type", int( mType ) );
-//}

@@ -7,6 +7,8 @@
 #include <QLineF>
 #include <QColor>
 
+#include "coreplugin.h"
+
 ArrayPin::ArrayPin( QSharedPointer<fugio::PinInterface> pPin )
 	: PinControlBase( pPin ), mData( nullptr ),
 	  mType( QMetaType::UnknownType ), mStride( 0 ), mCount( 0 ), mSize( 0 ), mReserve( 0 )
@@ -65,95 +67,35 @@ int ArrayPin::listSize() const
 
 QUuid ArrayPin::listPinControl() const
 {
-	switch( mType )
-	{
-		case QMetaType::Bool:
-			return( PID_BOOL );
-
-		case QMetaType::UInt:
-		case QMetaType::Int:
-		case QMetaType::Long:
-		case QMetaType::LongLong:
-		case QMetaType::Short:
-			return( PID_INTEGER );
-
-		case QMetaType::QChar:
-		case QMetaType::QString:
-			return( PID_STRING );
-
-		case QMetaType::QByteArray:
-			return( PID_BYTEARRAY );
-
-		case QMetaType::Float:
-		case QMetaType::Double:
-			return( PID_FLOAT );
-
-		case QMetaType::QPoint:
-		case QMetaType::QPointF:
-			return( PID_POINT );
-
-		case QMetaType::QSize:
-		case QMetaType::QSizeF:
-			return( PID_SIZE );
-
-		default:
-			break;
-	}
-
-	return( PID_VARIANT );
+	return( CorePlugin::instance()->app()->findPinForMetaType( mType ) );
 }
 
 QVariant ArrayPin::listIndex( int pIndex ) const
 {
-	QVariant		 V;
-	const void		*A = ( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
+	const quint8	*A = (const quint8 *)( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
 
 	if( !A )
 	{
-		return( V );
+		return( QVariant() );
 	}
 
 	if( pIndex < 0 || pIndex >= mCount )
 	{
-		return( V );
+		return( QVariant() );
 	}
 
-	switch( mType )
-	{
-		case QMetaType::Float:
-			V = static_cast<const float *>( A )[ pIndex ];
-			break;
+	int				L = QMetaType::sizeOf( mType );
 
-		case QMetaType::QRect:
-			V = static_cast<const QRect *>( A )[ pIndex ];
-			break;
+	A += L * pIndex;
 
-		case QMetaType::QRectF:
-			V = static_cast<const QRectF *>( A )[ pIndex ];
-			break;
-
-		case QMetaType::QLineF:
-			V = static_cast<const QLineF *>( A )[ pIndex ];
-			break;
-
-		case QMetaType::QPointF:
-			V = static_cast<const QPointF *>( A )[ pIndex ];
-			break;
-
-		case QMetaType::QColor:
-			V = static_cast<const QColor *>( A )[ pIndex ];
-			break;
-
-		default:
-			break;
-	}
+	QVariant		 V( mType, (const void *)A );
 
 	return( V );
 }
 
 void ArrayPin::listSetIndex( int pIndex, const QVariant &pValue )
 {
-	void		*A = ( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
+	quint8	*A = (quint8 *)( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
 
 	if( !A )
 	{
@@ -165,17 +107,11 @@ void ArrayPin::listSetIndex( int pIndex, const QVariant &pValue )
 		return;
 	}
 
-	switch( mType )
-	{
-		case QMetaType::Float:
-			{
-				static_cast<float *>( A )[ pIndex ] = pValue.toFloat();
-			}
-			break;
+	int				L = QMetaType::sizeOf( mType );
 
-		default:
-			break;
-	}
+	A += L * pIndex;
+
+	QMetaType::construct( mType, A, pValue.constData() );
 }
 
 void ArrayPin::listSetSize( int pSize )
@@ -190,26 +126,13 @@ void ArrayPin::listSetSize( int pSize )
 		return;
 	}
 
-	int		NewSze = mArray.size();
-
-	switch( mType )
-	{
-		case QMetaType::Float:
-			{
-				NewSze = pSize * mStride;
-			}
-			break;
-
-		default:
-			break;
-	}
+	int		NewSze = mArray.size() * QMetaType::sizeOf( mType );
 
 	if( mArray.size() != NewSze )
 	{
 		mArray.resize( NewSze );
 	}
 }
-
 
 int ArrayPin::sizeDimensions() const
 {
