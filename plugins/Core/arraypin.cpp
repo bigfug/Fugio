@@ -126,12 +126,9 @@ void ArrayPin::listSetSize( int pSize )
 		return;
 	}
 
-	int		NewSze = mArray.size() * QMetaType::sizeOf( mType );
+	mCount = pSize;
 
-	if( mArray.size() != NewSze )
-	{
-		mArray.resize( NewSze );
-	}
+	mArray.resize( mStride * qMax( mCount, mReserve ) );
 }
 
 int ArrayPin::sizeDimensions() const
