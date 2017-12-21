@@ -51,11 +51,6 @@ public:
 			return( mList->listIndex( pIndex % mList->listSize() ) );
 		}
 
-		if( pIndex )
-		{
-			return( QVariant() );
-		}
-
 		return( mVariant ? mVariant->variant() : mValue );
 	}
 
