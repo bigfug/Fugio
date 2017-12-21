@@ -10,17 +10,20 @@
 #include <fugio/image/image_interface.h>
 #include <fugio/image/uuid.h>
 #include <fugio/core/size_interface.h>
+#include <fugio/core/variant_interface.h>
 
 #include <fugio/pincontrolbase.h>
 
-class ImagePin : public fugio::PinControlBase, public fugio::ImageInterface, public fugio::SizeInterface
+#include <fugio/image/image.h>
+
+class ImagePin : public fugio::PinControlBase, public fugio::ImageInterface, public fugio::SizeInterface, public fugio::VariantInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::ImageInterface fugio::SizeInterface )
+	Q_INTERFACES( fugio::ImageInterface fugio::SizeInterface fugio::VariantInterface )
 
 public:
 	Q_INVOKABLE explicit ImagePin( QSharedPointer<fugio::PinInterface> pPin );
-	
+
 	virtual ~ImagePin( void );
 
 	//-------------------------------------------------------------------------
@@ -36,31 +39,29 @@ public:
 	//-------------------------------------------------------------------------
 	// InterfaceImage
 
-	virtual QSize size( void ) const Q_DECL_OVERRIDE
+	inline virtual QSize size( void ) const Q_DECL_OVERRIDE
 	{
-		return( mImageSize );
+		return( mImage.size() );
 	}
 
-	virtual int width( void ) const Q_DECL_OVERRIDE
+	inline virtual int width( void ) const Q_DECL_OVERRIDE
 	{
-		return( mImageSize.width() );
+		return( mImage.width() );
 	}
 
-	virtual int height( void ) const Q_DECL_OVERRIDE
+	inline virtual int height( void ) const Q_DECL_OVERRIDE
 	{
-		return( mImageSize.height() );
+		return( mImage.height() );
 	}
 
-	virtual int lineSize( int pIndex ) const Q_DECL_OVERRIDE
+	inline virtual int lineSize( int pIndex ) const Q_DECL_OVERRIDE
 	{
-		Q_ASSERT( pIndex >= 0 && pIndex < PLANE_COUNT );
-
-		return( mLineWidth[ pIndex ] );
+		return( mImage.lineSize( pIndex ) );
 	}
 
-	virtual const int *lineSizes( void ) const Q_DECL_OVERRIDE
+	inline virtual const int *lineSizes( void ) const Q_DECL_OVERRIDE
 	{
-		return( mLineWidth );
+		return( mImage.lineSizes() );
 	}
 
 	virtual quint8 *internalBuffer( int pIndex ) Q_DECL_OVERRIDE;
@@ -72,19 +73,19 @@ public:
 	virtual const quint8 *buffer( int pIndex ) Q_DECL_OVERRIDE;
 	virtual const quint8 *buffer( int pIndex ) const Q_DECL_OVERRIDE;
 
-    //virtual const quint8 * const *buffers( void ) Q_DECL_OVERRIDE;
+	//virtual const quint8 * const *buffers( void ) Q_DECL_OVERRIDE;
 	virtual const quint8 * const *buffers( void ) const Q_DECL_OVERRIDE;
 
 	virtual int bufferSize( int pIndex ) const Q_DECL_OVERRIDE;
 
-	virtual Format format( void ) const Q_DECL_OVERRIDE
+	inline virtual Format format( void ) const Q_DECL_OVERRIDE
 	{
-		return( mImageFormat );
+		return( mImage.format() );
 	}
 
-	virtual int internalFormat( void ) const Q_DECL_OVERRIDE
+	inline virtual int internalFormat( void ) const Q_DECL_OVERRIDE
 	{
-		return( mImageInternalFormat );
+		return( mImage.internalFormat() );
 	}
 
 	virtual void unsetBuffers( void ) Q_DECL_OVERRIDE;
@@ -99,7 +100,7 @@ public:
 
 	virtual void setInternalFormat( int pInternalFormat ) Q_DECL_OVERRIDE
 	{
-		mImageInternalFormat = pInternalFormat;
+		mImage.setInternalFormat( pInternalFormat );
 	}
 
 	virtual void setLineSize( int pIndex, int pLineSize ) Q_DECL_OVERRIDE;
@@ -120,14 +121,15 @@ public:
 	virtual QSizeF toSizeF() const Q_DECL_OVERRIDE;
 	virtual QVector3D toVector3D() const Q_DECL_OVERRIDE;
 
+	// VariantInterface interface
+public:
+	virtual void setVariant(const QVariant &pValue) Q_DECL_OVERRIDE;
+	virtual QVariant variant() const Q_DECL_OVERRIDE;
+	virtual void setFromBaseVariant(const QVariant &pValue) Q_DECL_OVERRIDE;
+	virtual QVariant baseVariant() const Q_DECL_OVERRIDE;
+
 private:
-	mutable quint8					*mImageBuffer[ 8 ];
-	mutable int						 mBufferSizes[ 8 ];
-	const quint8					*mImagePointer[ 8 ];
-	QSize							 mImageSize;
-	int								 mLineWidth[ 8 ];
-	fugio::ImageInterface::Format	 mImageFormat;
-	int								 mImageInternalFormat;
+	fugio::Image			mImage;
 
 };
 
