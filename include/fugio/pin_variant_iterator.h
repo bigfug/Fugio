@@ -48,7 +48,7 @@ public:
 	{
 		if( mList )
 		{
-			return( mList->listIndex( pIndex ) );
+			return( mList->listIndex( pIndex % mList->listSize() ) );
 		}
 
 		if( pIndex )
