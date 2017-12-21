@@ -68,6 +68,7 @@
 #include "rectpin.h"
 #include "bitarraypin.h"
 #include "linepin.h"
+#include "transformpin.h"
 
 #include "loggernode.h"
 
@@ -138,6 +139,7 @@ ClassEntry		CorePlugin::mPinClasses[] =
 	ClassEntry( "String", PID_STRING, &StringPin::staticMetaObject ),
 	ClassEntry( "String List", PID_STRING_LIST, &StringListPin::staticMetaObject ),
 	ClassEntry( "Trigger", PID_TRIGGER, &TriggerPin::staticMetaObject ),
+	ClassEntry( "Transform", PID_TRANSFORM, &TransformPin::staticMetaObject ),
 	ClassEntry( "Variant", PID_VARIANT, &VariantPin::staticMetaObject ),
 	ClassEntry( "Variant List", PID_VARIANT_LIST, &VariantListPin::staticMetaObject ),
 	ClassEntry()
@@ -202,6 +204,7 @@ PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp
 	mApp->registerPinForMetaType( PID_RECT, QMetaType::QRectF );
 	mApp->registerPinForMetaType( PID_SIZE, QMetaType::QSize );
 	mApp->registerPinForMetaType( PID_SIZE, QMetaType::QSizeF );
+	mApp->registerPinForMetaType( PID_TRANSFORM, QMetaType::QTransform );
 	mApp->registerPinForMetaType( PID_VARIANT, QMetaType::QVariant );
 	mApp->registerPinForMetaType( PID_VARIANT_LIST, QMetaType::QVariantList );
 

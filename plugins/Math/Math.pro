@@ -78,7 +78,8 @@ SOURCES += mathplugin.cpp \
     maxnode.cpp \
     pointtransformnode.cpp \
     pownode.cpp \
-    numberarraynode.cpp
+    numberarraynode.cpp \
+    transformnode.cpp
 
 HEADERS += mathplugin.h \
 	../../include/fugio/math/uuid.h \
@@ -145,7 +146,8 @@ HEADERS += mathplugin.h \
     maxnode.h \
     pointtransformnode.h \
     pownode.h \
-    numberarraynode.h
+    numberarraynode.h \
+    transformnode.h
 
 RESOURCES += \
     resources.qrc

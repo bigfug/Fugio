@@ -93,6 +93,7 @@
 #include "pointtransformnode.h"
 #include "pownode.h"
 #include "numberarraynode.h"
+#include "transformnode.h"
 
 MathPlugin *MathPlugin::mInstance = nullptr;
 
@@ -150,6 +151,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Split", "Vector3", NID_SPLIT_VECTOR3, &SplitVector3Node::staticMetaObject ),
 	ClassEntry( "Split", "Vector4", NID_SPLIT_VECTOR4, &SplitVector4Node::staticMetaObject ),
 	ClassEntry( "Subtract", "Math", NID_SUBTRACT, &SubtractNode::staticMetaObject ),
+	ClassEntry( "Transform", "Math", NID_TRANSFORM, &TransformNode::staticMetaObject ),
 	ClassEntry( "Translate", "Matrix", NID_MATRIX_TRANSLATE, &MatrixTranslateNode::staticMetaObject ),
 	ClassEntry( "Vector3", "GUI", NID_VECTOR3, &Vector3Node::staticMetaObject ),
 	ClassEntry( "XNOR", "Logic", NID_XNOR, &XnorNode::staticMetaObject ),
