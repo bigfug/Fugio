@@ -179,6 +179,29 @@ PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp
 	mApp->registerPinJoiner( PID_POINT, NID_JOIN_POINT );
 	mApp->registerPinJoiner( PID_RECT, NID_JOIN_RECT );
 
+	mApp->registerPinForMetaType( PID_BOOL, QMetaType::Bool );
+	mApp->registerPinForMetaType( PID_STRING, QMetaType::Char );
+	mApp->registerPinForMetaType( PID_FLOAT, QMetaType::Double );
+	mApp->registerPinForMetaType( PID_FLOAT, QMetaType::Float );
+	mApp->registerPinForMetaType( PID_INTEGER, QMetaType::Int );
+	mApp->registerPinForMetaType( PID_INTEGER, QMetaType::Long );
+	mApp->registerPinForMetaType( PID_INTEGER, QMetaType::LongLong );
+	mApp->registerPinForMetaType( PID_INTEGER, QMetaType::Short );
+	mApp->registerPinForMetaType( PID_BITARRAY, QMetaType::QBitArray );
+	mApp->registerPinForMetaType( PID_BYTEARRAY, QMetaType::QByteArray );
+	mApp->registerPinForMetaType( PID_BYTEARRAY_LIST, QMetaType::QByteArrayList );
+	mApp->registerPinForMetaType( PID_STRING, QMetaType::QChar );
+
+	mApp->registerPinForMetaType( PID_POINT, QMetaType::QPoint );
+	mApp->registerPinForMetaType( PID_POINT, QMetaType::QPointF );
+	mApp->registerPinForMetaType( PID_FLOAT, QMetaType::QReal );
+	mApp->registerPinForMetaType( PID_RECT, QMetaType::QRect );
+	mApp->registerPinForMetaType( PID_RECT, QMetaType::QRectF );
+	mApp->registerPinForMetaType( PID_SIZE, QMetaType::QSize );
+	mApp->registerPinForMetaType( PID_SIZE, QMetaType::QSizeF );
+	mApp->registerPinForMetaType( PID_VARIANT, QMetaType::QVariant );
+	mApp->registerPinForMetaType( PID_VARIANT_LIST, QMetaType::QVariantList );
+
 	return( INIT_OK );
 }
 

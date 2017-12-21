@@ -230,7 +230,6 @@ public:
 
 	virtual QUuid findPinForMetaType( QMetaType::Type pType ) const Q_DECL_OVERRIDE;
 	virtual void registerPinForMetaType( const QUuid &pUuid, QMetaType::Type pType ) Q_DECL_OVERRIDE;
-	virtual void unregisterPinForMetaType( const QUuid &pUuid, QMetaType::Type pType ) Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 

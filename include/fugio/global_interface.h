@@ -231,7 +231,6 @@ public:
 
 	virtual QUuid findPinForMetaType( QMetaType::Type pType ) const = 0;
 	virtual void registerPinForMetaType( const QUuid &pUuid, QMetaType::Type pType ) = 0;
-	virtual void unregisterPinForMetaType( const QUuid &pUuid, QMetaType::Type pType ) = 0;
 };
 
 FUGIO_NAMESPACE_END

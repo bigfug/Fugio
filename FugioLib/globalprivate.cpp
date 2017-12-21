@@ -779,11 +779,6 @@ void GlobalPrivate::registerPinForMetaType(const QUuid &pUuid, QMetaType::Type p
 	mMetaTypeToPinUuid.insert( pType, pUuid );
 }
 
-void GlobalPrivate::unregisterPinForMetaType(const QUuid &pUuid, QMetaType::Type pType)
-{
-	mMetaTypeToPinUuid.remove( pType );
-}
-
 void GlobalPrivate::start()
 {
 #if !defined( GLOBAL_THREADED )

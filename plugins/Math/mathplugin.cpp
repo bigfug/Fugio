@@ -198,6 +198,9 @@ PluginInterface::InitResult MathPlugin::initialise( fugio::GlobalInterface *pApp
 	mApp->registerPinJoiner( PID_VECTOR3, NID_JOIN_VECTOR3 );
 	mApp->registerPinJoiner( PID_VECTOR4, NID_JOIN_VECTOR4 );
 
+	mApp->registerPinForMetaType( PID_VECTOR3, QMetaType::QVector3D );
+	mApp->registerPinForMetaType( PID_VECTOR4, QMetaType::QVector4D );
+
 	return( INIT_OK );
 }
 
