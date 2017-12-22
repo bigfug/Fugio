@@ -156,45 +156,7 @@ void ImagePin::setLineSizes( const int pLineSize[] )
 
 QImage ImagePin::image( void ) const
 {
-	static QVector<QRgb> GrayTable8;
-
-	if( GrayTable8.isEmpty() )
-	{
-		for( int i = 0; i < 256; i++ ) GrayTable8.push_back( qRgb( i,i,i ) );
-	}
-
-	QImage::Format		ImageFormat = QImage::Format_ARGB32;
-
-	switch( mImage.format() )
-	{
-		case fugio::ImageInterface::FORMAT_GRAY8:
-			ImageFormat = QImage::Format_Indexed8;
-			break;
-
-		case fugio::ImageInterface::FORMAT_BGRA8:
-			ImageFormat = QImage::Format_RGB32;
-			break;
-
-		case fugio::ImageInterface::FORMAT_RGB8:
-			ImageFormat = QImage::Format_RGB888;
-			break;
-
-		case fugio::ImageInterface::FORMAT_RGBA8:
-			ImageFormat = QImage::Format_ARGB32;
-			break;
-
-		default:
-			return( QImage() );
-	}
-
-	QImage	IM( buffer( 0 ), mImage.width(), mImage.height(), lineSize( 0 ), ImageFormat );
-
-	if( ImageFormat ==  QImage::Format_Indexed8 )
-	{
-		IM.setColorTable( GrayTable8 );
-	}
-
-	return( IM );
+	return( mImage.image() );
 }
 
 bool ImagePin::isValid() const
@@ -240,10 +202,9 @@ QVector3D ImagePin::toVector3D() const
 	return( QVector3D( mImage.width(), mImage.height(), 0 ) );
 }
 
-
 void ImagePin::setVariant( const QVariant &pValue )
 {
-	if( pValue.type() == QMetaType::type( "fugio::Image" ) )
+	if( QMetaType::Type( pValue.type() ) == QMetaType::type( "fugio::Image" ) )
 	{
 		mImage = pValue.value<fugio::Image>();
 	}
@@ -260,7 +221,7 @@ QVariant ImagePin::variant() const
 
 void ImagePin::setFromBaseVariant( const QVariant &pValue )
 {
-	if( pValue.type() == QMetaType::type( "fugio::Image" ) )
+	if( QMetaType::Type( pValue.type() ) == QMetaType::type( "fugio::Image" ) )
 	{
 		mImage = pValue.value<fugio::Image>();
 	}

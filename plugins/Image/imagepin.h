@@ -130,7 +130,6 @@ public:
 
 private:
 	fugio::Image			mImage;
-
 };
 
 #endif // IMAGEBUFFER_H

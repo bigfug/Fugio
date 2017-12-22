@@ -27,7 +27,7 @@ void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	QMetaType::Type		CurrType = QMetaType::Type( variant( mPinInput ).type() );
+	QMetaType::Type		CurrType = QMetaType::Type( variant( mPinInput ).userType() );
 
 	if( CurrType == QMetaType::UnknownType )
 	{
