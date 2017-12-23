@@ -28,7 +28,11 @@ void PainterWindow::resizeEvent(QResizeEvent *resizeEvent)
 {
 	m_backingStore->resize(resizeEvent->size());
 	if (isExposed())
+	{
 		renderNow();
+	}
+
+	emit windowUpdated();
 }
 
 void PainterWindow::renderNow()

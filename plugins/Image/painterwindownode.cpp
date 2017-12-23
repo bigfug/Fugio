@@ -51,6 +51,11 @@ bool PainterWindowNode::initialise()
 		return( false );
 	}
 
+	connect( mPainterWindow, &PainterWindow::windowUpdated, [=]( void )
+	{
+		mPainterWindow->renderPin( mPinInputImage );
+	} );
+
 	mPainterWindow->show();
 
 	return( true );
