@@ -196,6 +196,7 @@ PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp
 	mApp->registerPinForMetaType( PID_BYTEARRAY, QMetaType::QByteArray );
 	mApp->registerPinForMetaType( PID_BYTEARRAY_LIST, QMetaType::QByteArrayList );
 	mApp->registerPinForMetaType( PID_STRING, QMetaType::QChar );
+	mApp->registerPinForMetaType( PID_STRING, QMetaType::QString );
 
 	mApp->registerPinForMetaType( PID_POINT, QMetaType::QPoint );
 	mApp->registerPinForMetaType( PID_POINT, QMetaType::QPointF );

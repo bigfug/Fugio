@@ -121,9 +121,34 @@ void AddNode::inputsUpdated( qint64 pTimeStamp )
 			return;
 		}
 
-		mValOutputArray->setType( OutTyp );
-		mValOutputArray->setCount( ItrMax );
-		mValOutputArray->setStride( QMetaType::sizeOf( OutTyp ) );
+		if( mValOutputArray->count() != ItrMax || mValOutputArray->type() != OutTyp )
+		{
+			if( mValOutputArray->type() != QMetaType::UnknownType )
+			{
+				const QMetaType::Type	CurTyp = mValOutputArray->type();
+				const int				TypSiz = QMetaType::sizeOf( CurTyp );
+
+				for( int i = 0 ; i < mValOutputArray->count() ; i++ )
+				{
+					QMetaType::destroy( mValOutputArray->type(), reinterpret_cast<quint8 *>( mValOutputArray->array() ) + TypSiz * i );
+				}
+			}
+
+			mValOutputArray->setType( OutTyp );
+			mValOutputArray->setCount( ItrMax );
+			mValOutputArray->setStride( QMetaType::sizeOf( OutTyp ) );
+
+			if( true )
+			{
+				const QMetaType::Type	CurTyp = mValOutputArray->type();
+				const int				TypSiz = QMetaType::sizeOf( CurTyp );
+
+				for( int i = 0 ; i < mValOutputArray->count() ; i++ )
+				{
+					QMetaType::construct( mValOutputArray->type(), reinterpret_cast<quint8 *>( mValOutputArray->array() ) + TypSiz * i, Q_NULLPTR );
+				}
+			}
+		}
 
 		switch( OutTyp )
 		{
@@ -380,7 +405,7 @@ void AddNode::Operator::add( const QList<fugio::PinVariantIterator> &ItrLst, voi
 {
 	T	*OutPtr = reinterpret_cast<T *>( OutDst );
 
-	for( int i = 0 ; i < ItrMax ; i++ )
+	for( int i = 0 ; i < ItrMax ; i++, OutPtr++ )
 	{
 		T			OutVal;
 
@@ -391,6 +416,6 @@ void AddNode::Operator::add( const QList<fugio::PinVariantIterator> &ItrLst, voi
 			OutVal = ( !j ? NewVal : OutVal + NewVal );
 		}
 
-		*OutPtr++ = OutVal;
+		*OutPtr = OutVal;
 	}
 }
