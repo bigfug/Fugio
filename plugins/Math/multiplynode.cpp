@@ -70,7 +70,7 @@ void MultiplyNode::inputsUpdated( qint64 pTimeStamp )
 					return;
 				}
 
-				OutputValue = MathFunc( mNode->enumInputPins() );
+//				OutputValue = MathFunc( mNode->enumInputPins() );
 			}
 			break;
 	}
