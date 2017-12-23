@@ -112,4 +112,6 @@ private:
 	int					 mReserve;
 };
 
+Q_DECLARE_METATYPE( ArrayListEntry )
+
 #endif // ARRAYENTRY_H

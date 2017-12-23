@@ -197,6 +197,11 @@ public:
 		return( mCount == 0 );
 	}
 
+	virtual QMetaType::Type listType( void ) const Q_DECL_OVERRIDE
+	{
+		return( mType );
+	}
+
 	// SizeInterface interface
 public:
 	virtual int sizeDimensions() const Q_DECL_OVERRIDE;

@@ -151,6 +151,11 @@ public:
 		return( mValue.isEmpty() );
 	}
 
+	virtual QMetaType::Type listType( void ) const Q_DECL_OVERRIDE
+	{
+		return( QMetaType::QColor );
+	}
+
 signals:
 	void valueChanged( const QVector<QColor> &pValue );
 

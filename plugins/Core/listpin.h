@@ -108,6 +108,11 @@ public:
 		return( mValue.isEmpty() );
 	}
 
+	virtual QMetaType::Type listType( void ) const Q_DECL_OVERRIDE
+	{
+		return( QMetaType::QVariant );
+	}
+
 private:
 	QVariantList		mValue;
 };

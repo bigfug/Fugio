@@ -69,6 +69,21 @@ public:
 		return( true );
 	}
 
+	QMetaType::Type type( void ) const
+	{
+		if( mList )
+		{
+			return( mList->listType() );
+		}
+
+		if( mVariant )
+		{
+			return( QMetaType::Type( mVariant->variant().userType() ) );
+		}
+
+		return( QMetaType::Type( mValue.userType() ) );
+	}
+
 protected:
 	fugio::VariantInterface		*mVariant;
 	fugio::ListInterface		*mList;

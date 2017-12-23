@@ -63,6 +63,11 @@ public:
 	virtual void listAppend(const QVariant &pValue) Q_DECL_OVERRIDE;
 	virtual bool listIsEmpty() const Q_DECL_OVERRIDE;
 
+	virtual QMetaType::Type listType( void ) const Q_DECL_OVERRIDE
+	{
+		return( QMetaType::Type( QMetaType::type( "ArrayListEntry" ) ) );
+	}
+
 private:
 	QVector<ArrayListEntry>		mArrayList;
 };
