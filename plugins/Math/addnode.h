@@ -21,11 +21,11 @@ class AddNode : public fugio::NodeControlBase
 
 	class Operator
 	{
-		public:
-			template<typename T> static T add2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-			template<typename T> static T add3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+	public:
+		template<typename T> static T add2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+		template<typename T> static T add3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
 
-			template<typename T> static void add( const QList<fugio::PinVariantIterator> &ItrLst, void *OutDst, int ItrMax );
+		template<typename T> static void add( const QList<fugio::PinVariantIterator> &ItrLst, void *OutDst, int ItrMax );
 	};
 
 public:

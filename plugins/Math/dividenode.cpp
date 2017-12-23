@@ -15,73 +15,202 @@
 DivideNode::DivideNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
+	FUGID( PII_NUMBER1, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PII_NUMBER2, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+	FUGID( PII_RESULT,	"261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
+
 	mPinNumerator   = pinInput( "Input" );
 	mPinDenominator = pinInput( "Input" );
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_VARIANT );
+	mValOutputArray = pinOutput<fugio::ArrayInterface *>( "Output", mPinOutputArray, PID_ARRAY, PII_RESULT );
+
+	mValOutputArray->setSize( 1 );
 }
 
 void DivideNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	QVariant		InputBase = variant( mPinNumerator );
-	QMetaType::Type	InputType = QMetaType::Type( InputBase.type() );
-
-	QVariant		OutputValue;
-
-	switch( InputType )
+	if( mPinOutputArray->controlUuid() == PID_VARIANT )
 	{
-		case QMetaType::Float:
-		case QMetaType::Double:
-		case QMetaType::Int:
-		case QMetaType::QString:
-			OutputValue = divideNumber( mNode->enumInputPins() );
-			break;
+		fugio::VariantInterface				*mValOutput = qobject_cast<fugio::VariantInterface *>( mPinOutputArray->control()->qobject() );
 
-		case QMetaType::QPoint:
-			OutputValue = Operator::op0<QPoint>( mNode->enumInputPins() );
-			break;
+		QVariant		InputBase = variant( mPinNumerator );
+		QMetaType::Type	InputType = QMetaType::Type( InputBase.type() );
 
-		case QMetaType::QPointF:
-			OutputValue = Operator::op0<QPointF>( mNode->enumInputPins() );
-			break;
+		QVariant		OutputValue;
 
-		case QMetaType::QSize:
-			OutputValue = Operator::op0<QSize>( mNode->enumInputPins() );
-			break;
+		switch( InputType )
+		{
+			case QMetaType::Float:
+			case QMetaType::Double:
+			case QMetaType::Int:
+			case QMetaType::QString:
+				OutputValue = divideNumber( mNode->enumInputPins() );
+				break;
 
-		case QMetaType::QSizeF:
-			OutputValue = Operator::op0<QSizeF>( mNode->enumInputPins() );
-			break;
+			case QMetaType::QPoint:
+				OutputValue = Operator::op0<QPoint>( mNode->enumInputPins() );
+				break;
 
-		case QMetaType::QMatrix4x4:
-			OutputValue = Operator::op0<QMatrix4x4>( mNode->enumInputPins() );
-			break;
+			case QMetaType::QPointF:
+				OutputValue = Operator::op0<QPointF>( mNode->enumInputPins() );
+				break;
 
-		case QMetaType::QVector3D:
-			OutputValue = Operator::op3<QVector3D>( mNode->enumInputPins() );
-			break;
+			case QMetaType::QSize:
+				OutputValue = Operator::op0<QSize>( mNode->enumInputPins() );
+				break;
 
-		default:
-			{
-				fugio::MathInterface::MathOperatorFunction	MathFunc = MathPlugin::instance()->findMetaTypeMathOperator( InputType, fugio::MathInterface::OP_DIVIDE );
+			case QMetaType::QSizeF:
+				OutputValue = Operator::op0<QSizeF>( mNode->enumInputPins() );
+				break;
 
-				if( !MathFunc )
+			case QMetaType::QMatrix4x4:
+				OutputValue = Operator::op0<QMatrix4x4>( mNode->enumInputPins() );
+				break;
+
+			case QMetaType::QVector3D:
+				OutputValue = Operator::op3<QVector3D>( mNode->enumInputPins() );
+				break;
+
+			default:
 				{
-					return;
+					fugio::MathInterface::MathOperatorFunction	MathFunc = MathPlugin::instance()->findMetaTypeMathOperator( InputType, fugio::MathInterface::OP_DIVIDE );
+
+					if( !MathFunc )
+					{
+						return;
+					}
+
+	//				OutputValue = MathFunc( mNode->enumInputPins() );
 				}
+				break;
+		}
 
-//				OutputValue = MathFunc( mNode->enumInputPins() );
-			}
-			break;
+		if( OutputValue != mValOutput->variant() )
+		{
+			mValOutput->setVariant( OutputValue );
+
+			pinUpdated( mPinOutputArray );
+		}
 	}
-
-	if( OutputValue != mValOutput->variant() )
+	else
 	{
-		mValOutput->setVariant( OutputValue );
+		QList<fugio::PinVariantIterator>	ItrLst;
+		int									ItrMax = 0;
+		QMetaType::Type						OutTyp = QMetaType::UnknownType;
 
-		pinUpdated( mPinOutput );
+		for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
+		{
+			ItrLst << fugio::PinVariantIterator( P );
+
+			ItrMax = std::max( ItrMax, ItrLst.last().size() );
+
+			if( OutTyp == QMetaType::UnknownType )
+			{
+				OutTyp = ItrLst.last().type();
+			}
+		}
+
+		if( !ItrMax || OutTyp == QMetaType::UnknownType )
+		{
+			return;
+		}
+
+		if( mValOutputArray->count() != ItrMax || mValOutputArray->type() != OutTyp )
+		{
+			if( mValOutputArray->type() != QMetaType::UnknownType )
+			{
+				const QMetaType::Type	CurTyp = mValOutputArray->type();
+				const int				TypSiz = QMetaType::sizeOf( CurTyp );
+
+				for( int i = 0 ; i < mValOutputArray->count() ; i++ )
+				{
+					QMetaType::destroy( mValOutputArray->type(), reinterpret_cast<quint8 *>( mValOutputArray->array() ) + TypSiz * i );
+				}
+			}
+
+			mValOutputArray->setType( OutTyp );
+			mValOutputArray->setCount( ItrMax );
+			mValOutputArray->setStride( QMetaType::sizeOf( OutTyp ) );
+
+			if( true )
+			{
+				const QMetaType::Type	CurTyp = mValOutputArray->type();
+				const int				TypSiz = QMetaType::sizeOf( CurTyp );
+
+				for( int i = 0 ; i < mValOutputArray->count() ; i++ )
+				{
+					QMetaType::construct( mValOutputArray->type(), reinterpret_cast<quint8 *>( mValOutputArray->array() ) + TypSiz * i, Q_NULLPTR );
+				}
+			}
+		}
+
+		switch( OutTyp )
+		{
+			case QMetaType::Double:
+				Operator::div<double>( ItrLst, mValOutputArray->array(), ItrMax );
+				break;
+
+			case QMetaType::Float:
+				Operator::div<float>( ItrLst, mValOutputArray->array(), ItrMax );
+				break;
+
+			case QMetaType::QPoint:
+				Operator::div<QPoint,int>( ItrLst, mValOutputArray->array(), ItrMax );
+				break;
+
+			case QMetaType::QPointF:
+				Operator::div<QPointF,qreal>( ItrLst, mValOutputArray->array(), ItrMax );
+				break;
+
+			case QMetaType::QSize:
+				Operator::div<QSize, int>( ItrLst, mValOutputArray->array(), ItrMax );
+				break;
+
+			case QMetaType::QSizeF:
+				Operator::div<QSizeF, qreal>( ItrLst, mValOutputArray->array(), ItrMax );
+				break;
+
+			case QMetaType::Int:
+				Operator::div<int>( ItrLst, mValOutputArray->array(), ItrMax );
+				break;
+
+			case QMetaType::QVector2D:
+				Operator::divs<QVector2D,float>( ItrLst, mValOutputArray->array(), ItrMax );
+				break;
+
+			case QMetaType::QVector3D:
+				Operator::divs<QVector3D,float>( ItrLst, mValOutputArray->array(), ItrMax );
+				break;
+
+			case QMetaType::QVector4D:
+				Operator::divs<QVector4D>( ItrLst, mValOutputArray->array(), ItrMax );
+				break;
+
+			case QMetaType::QQuaternion:
+				Operator::div<QQuaternion,float>( ItrLst, mValOutputArray->array(), ItrMax );
+				break;
+
+			case QMetaType::QMatrix4x4:
+				Operator::div<QMatrix4x4,float>( ItrLst, mValOutputArray->array(), ItrMax );
+				break;
+
+			default:
+				{
+					fugio::MathInterface::MathOperatorFunction	MathFunc = MathPlugin::instance()->findMetaTypeMathOperator( OutTyp, fugio::MathInterface::OP_MULTIPLY );
+
+					if( !MathFunc )
+					{
+						return;
+					}
+
+					MathFunc( ItrLst, mValOutputArray->array(), ItrMax );
+				}
+				break;
+		}
+
+		pinUpdated( mPinOutputArray );
 	}
 }
 
@@ -353,4 +482,49 @@ T DivideNode::Operator::op0(const QList<QSharedPointer<PinInterface> > pInputPin
 	}
 
 	return( OutVal );
+}
+
+template<typename T, typename S>
+void DivideNode::Operator::div(const QList<fugio::PinVariantIterator> &ItrLst, void *OutDst, int ItrMax)
+{
+	T	*OutPtr = reinterpret_cast<T *>( OutDst );
+
+	for( int i = 0 ; i < ItrMax ; i++, OutPtr++ )
+	{
+		T			OutVal = ItrLst.at( 0 ).index( i ).value<T>();
+
+		for( int j = 1 ; j < ItrLst.size() ; j++ )
+		{
+			OutVal /= ItrLst.at( 0 ).index( i ).value<S>();
+		}
+
+		*OutPtr = OutVal;
+	}
+}
+
+template<typename T, typename S>
+void DivideNode::Operator::divs(const QList<fugio::PinVariantIterator> &ItrLst, void *OutDst, int ItrMax)
+{
+	T	*OutPtr = reinterpret_cast<T *>( OutDst );
+
+	for( int i = 0 ; i < ItrMax ; i++, OutPtr++ )
+	{
+		T			OutVal = ItrLst.at( 0 ).index( i ).value<T>();
+
+		for( int j = 1 ; j < ItrLst.size() ; j++ )
+		{
+			const QVariant	V = ItrLst.at( j ).index( i );
+
+			if( V.canConvert<T>() )
+			{
+				OutVal /= V.value<T>();
+			}
+			else
+			{
+				OutVal /= V.value<S>();
+			}
+		}
+
+		*OutPtr = OutVal;
+	}
 }
