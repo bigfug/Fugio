@@ -205,7 +205,7 @@ public:
 		if( mData->mBufferSizes[ pIndex ] != BufSiz )
 		{
 	#if defined( Q_OS_WIN )
-			if( ( mBuffer[ pIndex ] = reinterpret_cast<quint8 *>( _aligned_realloc( mBuffer[ pIndex ], BufSiz, 16 ) ) ) )
+			if( ( mData->mBuffer[ pIndex ] = reinterpret_cast<quint8 *>( _aligned_realloc( mData->mBuffer[ pIndex ], BufSiz, 16 ) ) ) )
 	#elif defined( Q_OS_UNIX )
 			if( mData->mBuffer[ pIndex ] )
 			{
@@ -238,7 +238,7 @@ public:
 				if( mData->mBuffer[ pIndex ] )
 				{
 	#if defined( Q_OS_WIN )
-					_aligned_free( mBuffer[ pIndex ] );
+					_aligned_free( mData->mBuffer[ pIndex ] );
 	#elif defined( Q_OS_UNIX )
 					free( mData->mBuffer[ pIndex ] );
 	#endif
@@ -249,13 +249,13 @@ public:
 			else if( !mData->mBuffer[ pIndex ] )
 			{
 	#if defined( Q_OS_WIN )
-				mBuffer[ pIndex ] = reinterpret_cast<quint8 *>( _aligned_malloc( BufSiz, 16 ) );
+				mData->mBuffer[ pIndex ] = reinterpret_cast<quint8 *>( _aligned_malloc( BufSiz, 16 ) );
 	#elif defined( Q_OS_UNIX )
 				posix_memalign( (void **)&mData->mBuffer[ pIndex ], 16, BufSiz );
 	#endif
 			}
 	#if defined( Q_OS_WIN )
-			else if( ( mBuffer[ pIndex ] = reinterpret_cast<quint8 *>( _aligned_realloc( mBuffer[ pIndex ], BufSiz, 16 ) ) ) )
+			else if( ( mData->mBuffer[ pIndex ] = reinterpret_cast<quint8 *>( _aligned_realloc( mData->mBuffer[ pIndex ], BufSiz, 16 ) ) ) )
 			{
 			}
 	#elif defined( Q_OS_UNIX )
