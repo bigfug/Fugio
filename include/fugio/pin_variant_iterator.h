@@ -48,7 +48,7 @@ public:
 	{
 		if( mList )
 		{
-			return( mList->listIndex( pIndex % mList->listSize() ) );
+			return( mList->listIsEmpty() ? QVariant() : mList->listIndex( pIndex % mList->listSize() ) );
 		}
 
 		return( mVariant ? mVariant->variant() : mValue );
