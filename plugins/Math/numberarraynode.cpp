@@ -38,7 +38,7 @@ void NumberArrayNode::inputsUpdated( qint64 pTimeStamp )
 	float	e = variant( mPinInputEnd ).toReal();
 	float	i = variant( mPinInputIncrement ).toReal();
 
-	fugio::ListInterface	*L = dynamic_cast<fugio::ListInterface *>( mPinOutputArray->control().data() );
+	fugio::ListInterface	*L = qobject_cast<fugio::ListInterface *>( mPinOutputArray->control()->qobject() );
 
 	if( !i )
 	{
