@@ -192,7 +192,19 @@ int LuaExPin::luaPinSetValue( lua_State *L )
 
 	if( V.isValid() )
 	{
-		IV->setFromBaseVariant( V );
+		if( V.userType() == QVariant::List )
+		{
+			QVariantList	VL = V.toList();
+
+			for( int i = 0 ; i < VL.size() ; i++ )
+			{
+				IV->setFromBaseVariant( i, VL.at( i ) );
+			}
+		}
+		else
+		{
+			IV->setFromBaseVariant( V );
+		}
 
 		P->node()->context()->pinUpdated( P );
 	}
@@ -274,7 +286,21 @@ int LuaExPin::luaPinGetValue( lua_State *L )
 
 		if( IV )
 		{
-			V = IV->baseVariant();
+			if( IV->variantCount() > 1 )
+			{
+				QVariantList	VL;
+
+				for( int i = 0 ; i < IV->variantCount() ; i++ )
+				{
+					VL << IV->baseVariant( i );
+				}
+
+				V = VL;
+			}
+			else
+			{
+				V = IV->baseVariant();
+			}
 		}
 	}
 
