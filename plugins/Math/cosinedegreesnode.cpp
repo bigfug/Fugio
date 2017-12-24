@@ -22,20 +22,13 @@ void CosineDegreeNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::PinVariantIterator	Input( mPinInput );
 
-	bool	OutputUpdated = mValOutput->variantCount() != Input.size();
+	bool	OutputUpdated = false;
 
-	mValOutput->setVariantCount( Input.size() );
+	variantSetCount( mValOutput, Input.size(), OutputUpdated );
 
 	for( int i = 0 ; i < Input.size() ; i++ )
 	{
-		double		NewVal = std::cos( ( Input.index( i ).toDouble() / 180.0 ) * M_PI );
-
-		if( NewVal != mValOutput->variant( i ).toDouble() )
-		{
-			mValOutput->setVariant( i, NewVal );
-
-			OutputUpdated = true;
-		}
+		variantSetValue( mValOutput, i, std::cos( ( Input.index( i ).toDouble() / 180.0 ) * M_PI ), OutputUpdated );
 	}
 
 	if( OutputUpdated )
