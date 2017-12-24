@@ -12,18 +12,14 @@ TransformNode::TransformNode( QSharedPointer<fugio::NodeInterface> pNode )
 {
 	FUGID( PIN_OUTPUT_TRANSFORM, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 
-	mValOutputTransform = pinOutput<fugio::ListInterface *>( "Transforms", mPinOutputTransform, PID_ARRAY, PIN_OUTPUT_TRANSFORM );
-
-	fugio::ArrayInterface	*A = qobject_cast<fugio::ArrayInterface *>( mPinOutputTransform->control()->qobject() );
-
-	A->setSize( 1 );
-	A->setStride( QMetaType::sizeOf( QMetaType::QTransform ) );
-	A->setType( QMetaType::QTransform );
+	mValOutputTransform = pinOutput<fugio::VariantInterface *>( "Transforms", mPinOutputTransform, PID_TRANSFORM, PIN_OUTPUT_TRANSFORM );
 }
 
 void TransformNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
+
+	bool		OutputUpdated = false;
 
 	typedef QPair<QString,fugio::PinVariantIterator>	NamedPinVariantIterator;
 
@@ -53,7 +49,7 @@ void TransformNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	mValOutputTransform->listSetSize( Max );
+	variantSetCount( mValOutputTransform, Max, OutputUpdated );
 
 	for( int i = 0 ; i < Max ; i++ )
 	{
@@ -85,10 +81,13 @@ void TransformNode::inputsUpdated( qint64 pTimeStamp )
 			}
 		}
 
-		mValOutputTransform->listSetIndex( i, T );
+		variantSetValue( mValOutputTransform, i, T, OutputUpdated );
 	}
 
-	pinUpdated( mPinOutputTransform );
+	if( OutputUpdated )
+	{
+		pinUpdated( mPinOutputTransform );
+	}
 }
 
 QStringList TransformNode::availableInputPins() const

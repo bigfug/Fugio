@@ -3,7 +3,7 @@
 
 #include <fugio/nodecontrolbase.h>
 
-#include <fugio/core/array_interface.h>
+#include <fugio/core/variant_interface.h>
 
 class NumberArrayNode : public fugio::NodeControlBase
 {
@@ -29,7 +29,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputIncrement;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputArray;
-	fugio::ArrayInterface						*mValOutputArray;
+	fugio::VariantInterface						*mValOutputArray;
 };
 
 #endif // NUMBERARRAYNODE_H

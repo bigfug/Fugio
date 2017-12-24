@@ -4,7 +4,6 @@
 #include <fugio/nodecontrolbase.h>
 
 #include <fugio/core/variant_interface.h>
-#include <fugio/core/list_interface.h>
 
 class TransformNode : public fugio::NodeControlBase
 {
@@ -37,7 +36,7 @@ private:
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinOutputTransform;
-	fugio::ListInterface						*mValOutputTransform;
+	fugio::VariantInterface						*mValOutputTransform;
 };
 
 #endif // TRANSFORMNODE_H
