@@ -27,9 +27,39 @@ public:
 		{
 			mValue = pPin->value();
 		}
+
+		mSize = calcsize();
+		mType = calctype();
+		mIsEmpty = calcisEmpty();
 	}
 
-	int size( void ) const
+	QVariant index( int pIndex ) const
+	{
+		if( mList )
+		{
+			return( mIsEmpty ? QVariant() : mList->listIndex( pIndex % mSize ) );
+		}
+
+		return( mVariant ? mVariant->variant( pIndex % mSize ) : mValue );
+	}
+
+	inline int size( void ) const
+	{
+		return( mSize );
+	}
+
+	inline bool isEmpty( void ) const
+	{
+		return( mIsEmpty );
+	}
+
+	inline QMetaType::Type type( void ) const
+	{
+		return( mType );
+	}
+
+private:
+	int calcsize( void ) const
 	{
 		if( mList )
 		{
@@ -41,20 +71,10 @@ public:
 			return( mVariant->variantCount() );
 		}
 
-		return( 0 );
+		return( mValue.isValid() ? 1 : 0 );
 	}
 
-	QVariant index( int pIndex ) const
-	{
-		if( mList )
-		{
-			return( mList->listIsEmpty() ? QVariant() : mList->listIndex( pIndex % mList->listSize() ) );
-		}
-
-		return( mVariant ? mVariant->variant( pIndex % mVariant->variantCount() ) : mValue );
-	}
-
-	bool isEmpty( void ) const
+	bool calcisEmpty( void ) const
 	{
 		if( mList )
 		{
@@ -66,10 +86,10 @@ public:
 			return( !mVariant->variantCount() );
 		}
 
-		return( true );
+		return( !mValue.isValid() );
 	}
 
-	QMetaType::Type type( void ) const
+	QMetaType::Type calctype( void ) const
 	{
 		if( mList )
 		{
@@ -88,6 +108,9 @@ protected:
 	fugio::VariantInterface		*mVariant;
 	fugio::ListInterface		*mList;
 	QVariant					 mValue;
+	QMetaType::Type				 mType;
+	int							 mSize;
+	bool						 mIsEmpty;
 };
 
 FUGIO_NAMESPACE_END

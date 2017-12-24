@@ -437,6 +437,33 @@ public:
 	}
 
 	//-------------------------------------------------------------------------
+	// fugio::VariantInterface helpers
+
+	void variantSetCount( fugio::VariantInterface *I, int C, bool &U )
+	{
+		if( I->variantCount() != C )
+		{
+			I->setVariantCount( C );
+
+			U = true;
+		}
+	}
+
+	template <typename T> void variantSetValue( fugio::VariantInterface *I, int pIndex, const T &D, bool &U )
+	{
+		QVariant	V;
+
+		V.setValue( D );
+
+		if( I->variant( pIndex ) != V )
+		{
+			I->setVariant( pIndex, V );
+
+			U = true;
+		}
+	}
+
+	//-------------------------------------------------------------------------
 	// Helper methods for working with pin pairs
 
 private:
