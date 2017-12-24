@@ -18,10 +18,12 @@
 
 #include <fugio/serialise_interface.h>
 
-class ArrayPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::ArrayInterface, public fugio::SerialiseInterface, public fugio::ListInterface, public fugio::SizeInterface
+#include "arraylistentry.h"
+
+class ArrayPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::SerialiseInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::VariantInterface fugio::ArrayInterface fugio::SerialiseInterface fugio::ListInterface fugio::SizeInterface )
+	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface )
 
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
@@ -53,89 +55,52 @@ public:
 
 	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		mArray = pValue.toByteArray();
+		setVariant( 0, pValue );
 	}
 
-	virtual QVariant variant( void ) const Q_DECL_OVERRIDE
+	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		return( mArray );
+		mValues[ pIndex ] = pValue.value<ArrayListEntry>();
+	}
+
+	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
+	{
+		return( QVariant::fromValue<ArrayListEntry>( mValues[ pIndex ] ) );
+	}
+
+	virtual void setVariantCount( int pCount )
+	{
+		mValues.resize( pCount );
+	}
+
+	virtual int variantCount( void ) const
+	{
+		return( mValues.size() );
+	}
+
+	inline virtual QMetaType::Type variantType( void ) const
+	{
+		return( QMetaType::Type( QMetaType::type( "ArrayListEntry" ) ) );
 	}
 
 	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		setVariant( pValue );
+		setFromBaseVariant( 0, pValue );
 	}
 
-	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE;
-
-	//-------------------------------------------------------------------------
-	// InterfaceArray
-
-	virtual void setType( QMetaType::Type pType ) Q_DECL_OVERRIDE
+	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		mType = pType;
+		setVariant( pIndex, pValue );
 	}
 
-	virtual QMetaType::Type type( void ) const Q_DECL_OVERRIDE
+	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
 	{
-		return( mType );
+		return( variant( pIndex ) );
 	}
 
-	virtual int stride( void ) const Q_DECL_OVERRIDE
+	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
 	{
-		return( mStride );
-	}
 
-	virtual int count( void ) const Q_DECL_OVERRIDE	// also works for fugio::CountInterface
-	{
-		return( mCount );
-	}
-
-	virtual int size( void ) const Q_DECL_OVERRIDE
-	{
-		return( mSize );
-	}
-
-	virtual void reserve( int pCount ) Q_DECL_OVERRIDE
-	{
-		mReserve = pCount;
-	}
-
-	virtual void setArray( void *pArray ) Q_DECL_OVERRIDE
-	{
-		mData = pArray;
-
-		if( mData )
-		{
-			mArray.clear();
-		}
-	}
-
-	virtual void *array( void ) Q_DECL_OVERRIDE
-	{
-		if( mData )
-		{
-			return( mData );
-		}
-
-		mArray.resize( mStride * qMax( mCount, mReserve ) );
-
-		return( mArray.data() );
-	}
-
-	virtual void setStride( int pStride ) Q_DECL_OVERRIDE
-	{
-		mStride = pStride;
-	}
-
-	virtual void setCount( int pCount ) Q_DECL_OVERRIDE
-	{
-		mCount = pCount;
-	}
-
-	virtual void setSize( int pSize ) Q_DECL_OVERRIDE
-	{
-		mSize = pSize;
 	}
 
 	//-------------------------------------------------------------------------
@@ -143,83 +108,16 @@ public:
 
 	virtual void serialise( QDataStream &pDataStream ) const Q_DECL_OVERRIDE
 	{
-		pDataStream << int( mType );
-		pDataStream << mStride;
-		pDataStream << mCount;
-		pDataStream << mSize;
-
-		if( mData )
-		{
-			pDataStream.writeRawData( static_cast<const char *>( mData ), mSize );
-		}
-		else
-		{
-			pDataStream.writeRawData( mArray.data(), mSize );
-		}
+//		mArray.serialise( pDataStream );
 	}
 
 	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE
 	{
-		int			TmpInt;
-
-		pDataStream >> TmpInt;
-		pDataStream >> mStride;
-		pDataStream >> mCount;
-		pDataStream >> mSize;
-
-		mType = QMetaType::Type( TmpInt );
-
-		mArray.resize( mSize );
-
-		pDataStream.readRawData( mArray.data(), mSize );
+//		mArray.deserialise( pDataStream );
 	}
-
-	//-------------------------------------------------------------------------
-	// ListInterface interface
-
-	virtual int listSize() const Q_DECL_OVERRIDE;
-	virtual QUuid listPinControl() const Q_DECL_OVERRIDE;
-	virtual QVariant listIndex(int pIndex) const Q_DECL_OVERRIDE;
-	virtual void listSetIndex( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE;
-	virtual void listSetSize( int pSize ) Q_DECL_OVERRIDE;
-
-	virtual void listClear() Q_DECL_OVERRIDE
-	{
-	}
-
-	virtual void listAppend( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		Q_UNUSED( pValue )
-	}
-
-	virtual bool listIsEmpty() const Q_DECL_OVERRIDE
-	{
-		return( mCount == 0 );
-	}
-
-	virtual QMetaType::Type listType( void ) const Q_DECL_OVERRIDE
-	{
-		return( mType );
-	}
-
-	// SizeInterface interface
-public:
-	virtual int sizeDimensions() const Q_DECL_OVERRIDE;
-	virtual float size(int pDimension) const Q_DECL_OVERRIDE;
-	virtual float sizeWidth() const Q_DECL_OVERRIDE;
-	virtual float sizeHeight() const Q_DECL_OVERRIDE;
-	virtual float sizeDepth() const Q_DECL_OVERRIDE;
-	virtual QSizeF toSizeF() const Q_DECL_OVERRIDE;
-	virtual QVector3D toVector3D() const Q_DECL_OVERRIDE;
 
 private:
-	void				*mData;
-	QByteArray			 mArray;
-	QMetaType::Type		 mType;
-	int					 mStride;
-	int					 mCount;
-	int					 mSize;
-	int					 mReserve;
+	QVector<ArrayListEntry>		 mValues;
 };
 
 #endif // ARRAYPIN_H

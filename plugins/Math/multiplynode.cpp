@@ -24,9 +24,7 @@ MultiplyNode::MultiplyNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	pinInput( "Input", PII_NUMBER2 );
 
-	mValOutputArray = pinOutput<fugio::ArrayInterface *>( "Output", mPinOutputArray, PID_ARRAY, PII_RESULT );
-
-	mValOutputArray->setSize( 1 );
+	mValOutputArray = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputArray, PID_VARIANT, PII_RESULT );
 }
 
 void MultiplyNode::inputsUpdated( qint64 pTimeStamp )
@@ -111,83 +109,56 @@ void MultiplyNode::inputsUpdated( qint64 pTimeStamp )
 			return;
 		}
 
-		if( mValOutputArray->count() != ItrMax || mValOutputArray->type() != OutTyp )
-		{
-			if( mValOutputArray->type() != QMetaType::UnknownType )
-			{
-				const QMetaType::Type	CurTyp = mValOutputArray->type();
-				const int				TypSiz = QMetaType::sizeOf( CurTyp );
-
-				for( int i = 0 ; i < mValOutputArray->count() ; i++ )
-				{
-					QMetaType::destroy( mValOutputArray->type(), reinterpret_cast<quint8 *>( mValOutputArray->array() ) + TypSiz * i );
-				}
-			}
-
-			mValOutputArray->setType( OutTyp );
-			mValOutputArray->setCount( ItrMax );
-			mValOutputArray->setStride( QMetaType::sizeOf( OutTyp ) );
-
-			if( true )
-			{
-				const QMetaType::Type	CurTyp = mValOutputArray->type();
-				const int				TypSiz = QMetaType::sizeOf( CurTyp );
-
-				for( int i = 0 ; i < mValOutputArray->count() ; i++ )
-				{
-					QMetaType::construct( mValOutputArray->type(), reinterpret_cast<quint8 *>( mValOutputArray->array() ) + TypSiz * i, Q_NULLPTR );
-				}
-			}
-		}
+		mValOutputArray->setVariantCount( ItrMax );
 
 		switch( OutTyp )
 		{
 			case QMetaType::Double:
-				Operator::mul<double>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::mul<double>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::Float:
-				Operator::mul<float>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::mul<float>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QPoint:
-				Operator::mul<QPoint,int>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::mul<QPoint,int>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QPointF:
-				Operator::mul<QPointF,qreal>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::mul<QPointF,qreal>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QSize:
-				Operator::mul<QSize, int>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::mul<QSize, int>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QSizeF:
-				Operator::mul<QSizeF, qreal>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::mul<QSizeF, qreal>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::Int:
-				Operator::mul<int>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::mul<int>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QVector2D:
-				Operator::muls<QVector2D,float>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::muls<QVector2D,float>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QVector3D:
-				Operator::muls<QVector3D,float>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::muls<QVector3D,float>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QVector4D:
-				Operator::muls<QVector4D>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::muls<QVector4D>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QQuaternion:
-				Operator::muls<QQuaternion,float>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::muls<QQuaternion,float>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QMatrix4x4:
-				Operator::muls<QMatrix4x4>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::muls<QMatrix4x4>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			default:
@@ -199,7 +170,7 @@ void MultiplyNode::inputsUpdated( qint64 pTimeStamp )
 						return;
 					}
 
-					MathFunc( ItrLst, mValOutputArray->array(), ItrMax );
+					MathFunc( ItrLst, mValOutputArray, ItrMax );
 				}
 				break;
 		}
@@ -491,11 +462,9 @@ T MultiplyNode::Operator::op0(const QList<QSharedPointer<PinInterface> > pInputP
 }
 
 template<typename T, typename S>
-void MultiplyNode::Operator::mul( const QList<PinVariantIterator> &ItrLst, void *OutDst, int ItrMax )
+void MultiplyNode::Operator::mul( const QList<PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax )
 {
-	T	*OutPtr = reinterpret_cast<T *>( OutDst );
-
-	for( int i = 0 ; i < ItrMax ; i++, OutPtr++ )
+	for( int i = 0 ; i < ItrMax ; i++ )
 	{
 		T			OutVal = ItrLst.at( 0 ).index( i ).value<T>();
 
@@ -504,16 +473,14 @@ void MultiplyNode::Operator::mul( const QList<PinVariantIterator> &ItrLst, void 
 			OutVal *= ItrLst.at( 0 ).index( i ).value<S>();
 		}
 
-		*OutPtr = OutVal;
+		OutDst->setVariant( i, OutVal );
 	}
 }
 
 template<typename T, typename S>
-void MultiplyNode::Operator::muls(const QList<PinVariantIterator> &ItrLst, void *OutDst, int ItrMax)
+void MultiplyNode::Operator::muls(const QList<PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax)
 {
-	T	*OutPtr = reinterpret_cast<T *>( OutDst );
-
-	for( int i = 0 ; i < ItrMax ; i++, OutPtr++ )
+	for( int i = 0 ; i < ItrMax ; i++ )
 	{
 		T			OutVal = ItrLst.at( 0 ).index( i ).value<T>();
 
@@ -531,6 +498,6 @@ void MultiplyNode::Operator::muls(const QList<PinVariantIterator> &ItrLst, void 
 			}
 		}
 
-		*OutPtr = OutVal;
+		OutDst->setVariant( i, OutVal );
 	}
 }

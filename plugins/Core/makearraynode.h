@@ -43,7 +43,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::ArrayInterface						*mValOutput;
+	fugio::VariantInterface						*mValOutput;
 
 //	QMetaType::Type								 mType;
 };

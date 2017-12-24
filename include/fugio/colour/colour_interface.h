@@ -17,7 +17,9 @@ public:
 
 	virtual void setColour( const QColor &pValue ) = 0;
 
-	virtual QColor colour( void ) const = 0;
+	virtual void setColour( int pIndex, const QColor &pValue ) = 0;
+
+	virtual QColor colour( int pIndex = 0 ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

@@ -36,9 +36,9 @@ public:
 			return( mList->listSize() );
 		}
 
-		if( mVariant || mValue.isValid() )
+		if( mVariant )
 		{
-			return( 1 );
+			return( mVariant->variantCount() );
 		}
 
 		return( 0 );
@@ -51,7 +51,7 @@ public:
 			return( mList->listIsEmpty() ? QVariant() : mList->listIndex( pIndex % mList->listSize() ) );
 		}
 
-		return( mVariant ? mVariant->variant() : mValue );
+		return( mVariant ? mVariant->variant( pIndex % mVariant->variantCount() ) : mValue );
 	}
 
 	bool isEmpty( void ) const
@@ -61,9 +61,9 @@ public:
 			return( mList->listIsEmpty() );
 		}
 
-		if( mVariant || mValue.isValid() )
+		if( mVariant )
 		{
-			return( false );
+			return( !mVariant->variantCount() );
 		}
 
 		return( true );
@@ -78,7 +78,7 @@ public:
 
 		if( mVariant )
 		{
-			return( QMetaType::Type( mVariant->variant().userType() ) );
+			return( mVariant->variantType() );
 		}
 
 		return( QMetaType::Type( mValue.userType() ) );

@@ -2,7 +2,7 @@
 #include <QSettings>
 
 ColourPin::ColourPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin )
+	: PinControlBase( pPin ), mColours( 1 )
 {
 }
 

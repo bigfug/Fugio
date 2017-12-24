@@ -6,6 +6,8 @@
 
 #include <qmath.h>
 
+#include <fugio/pin_variant_iterator.h>
+
 CosineDegreeNode::CosineDegreeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
@@ -16,22 +18,28 @@ CosineDegreeNode::CosineDegreeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void CosineDegreeNode::inputsUpdated( qint64 pTimeStamp )
 {
-	Q_UNUSED( pTimeStamp )
+	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	bool		b;
-	double		v = variant( mPinInput ).toDouble( &b );
+	fugio::PinVariantIterator	Input( mPinInput );
 
-	if( !b )
+	bool	OutputUpdated = mValOutput->variantCount() != Input.size();
+
+	mValOutput->setVariantCount( Input.size() );
+
+	for( int i = 0 ; i < Input.size() ; i++ )
 	{
-		return;
+		double		NewVal = std::cos( ( Input.index( i ).toDouble() / 180.0 ) * M_PI );
+
+		if( NewVal != mValOutput->variant( i ).toDouble() )
+		{
+			mValOutput->setVariant( i, NewVal );
+
+			OutputUpdated = true;
+		}
 	}
 
-	v = std::cos( ( v / 180.0 ) * M_PI );
-
-	if( v != mValOutput->variant().toDouble() )
+	if( OutputUpdated )
 	{
-		mValOutput->setVariant( v );
-
 		pinUpdated( mPinOutput );
 	}
 }

@@ -5,14 +5,14 @@
 #include <QDir>
 
 FilenamePin::FilenamePin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin )
+	: PinControlBase( pPin ), mFilenames( 1 )
 {
 
 }
 
 void FilenamePin::loadSettings( QSettings &pSettings )
 {
-	QString		FileName = pSettings.value( "filename", mFilename ).toString();
+	QString		FileName = pSettings.value( "filename", mFilenames.first() ).toString();
 
 	if( !FileName.isEmpty() )
 	{
@@ -20,39 +20,33 @@ void FilenamePin::loadSettings( QSettings &pSettings )
 		QDir		FileDir( FileInfo.absolutePath() );
 		QFileInfo	DestInfo( FileDir.absoluteFilePath( FileName ) );
 
-		mFilename = DestInfo.exists() ? DestInfo.canonicalFilePath() : FileName;
+		mFilenames[ 0 ] = DestInfo.exists() ? DestInfo.canonicalFilePath() : FileName;
 	}
 }
 
 void FilenamePin::saveSettings( QSettings &pSettings ) const
 {
-	if( !mFilename.isEmpty() )
+	if( !mFilenames.first().isEmpty() )
 	{
 		QFileInfo	FileInfo( pSettings.fileName() );
 		QDir		FileDir( FileInfo.absolutePath() );
-		QString		FileName = FileDir.relativeFilePath( mFilename );
+		QString		FileName = FileDir.relativeFilePath( mFilenames.first() );
 
 		pSettings.setValue( "filename", FileName );
 	}
 }
 
-
-void FilenamePin::setVariant(const QVariant &pValue)
+void FilenamePin::setVariant( const QVariant &pValue )
 {
-	mFilename = pValue.toString();
+	setVariant( 0, pValue );
 }
 
-QVariant FilenamePin::variant() const
+void FilenamePin::setVariant( int pIndex, const QVariant &pValue )
 {
-	return( mFilename );
+	mFilenames[ pIndex ] = pValue.toString();
 }
 
-void FilenamePin::setFromBaseVariant( const QVariant &pValue )
+QVariant FilenamePin::variant( int pIndex ) const
 {
-	mFilename = pValue.toString();
-}
-
-QVariant FilenamePin::baseVariant() const
-{
-	return( mFilename );
+	return( mFilenames[ pIndex ] );
 }

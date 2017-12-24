@@ -32,7 +32,7 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString( "%1,%2,%3" ).arg( mValue.x() ).arg( mValue.y() ).arg( mValue.z() ) );
+		return( QString( "%1,%2,%3" ).arg( mValues.first().x() ).arg( mValues.first().y() ).arg( mValues.first().z() ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
@@ -45,36 +45,70 @@ public:
 
 	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		mValue = pValue.value<QVector3D>();
+		setVariant( 0, pValue );
 	}
 
-	virtual QVariant variant( void ) const Q_DECL_OVERRIDE
+	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		return( QVariant::fromValue<QVector3D>( mValue ) );
+		mValues[ pIndex ] = pValue.value<QVector3D>();
+	}
+
+	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
+	{
+		return( QVariant::fromValue<QVector3D>( mValues[ pIndex ] ) );
+	}
+
+	virtual void setVariantCount( int pCount )
+	{
+		mValues.resize( pCount );
+	}
+
+	virtual int variantCount( void ) const
+	{
+		return( mValues.size() );
+	}
+
+	inline virtual QMetaType::Type variantType( void ) const
+	{
+		return( QMetaType::QVector3D );
 	}
 
 	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		QList<QVariant>		L = pValue.toList();
-
-		if( L.size() > 0 ) mValue.setX( L.at( 0 ).toReal() );
-		if( L.size() > 1 ) mValue.setY( L.at( 1 ).toReal() );
-		if( L.size() > 2 ) mValue.setZ( L.at( 2 ).toReal() );
+		setFromBaseVariant( 0, pValue );
 	}
 
-	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE
+	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
+	{
+		QList<QVariant>     L = pValue.toList();
+		QVector3D			V;
+
+		if( L.size() > 0 ) V.setX( L.at( 0 ).toReal() );
+		if( L.size() > 1 ) V.setY( L.at( 1 ).toReal() );
+		if( L.size() > 1 ) V.setZ( L.at( 2 ).toReal() );
+
+		mValues[ pIndex ] = V;
+	}
+
+	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
 	{
 		QList<QVariant>		L;
+		QVector3D			V = mValues.at( pIndex );
 
-		L << mValue.x();
-		L << mValue.y();
-		L << mValue.z();
+		L << V.x();
+		L << V.y();
+		L << V.z();
 
 		return( L );
 	}
 
+	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
+	{
+
+	}
+
 private:
-	QVector3D		mValue;
+	QVector<QVector3D>		mValues;
 };
 
 

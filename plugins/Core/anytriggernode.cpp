@@ -28,7 +28,7 @@ void AnyTriggerNode::inputsUpdated( qint64 pTimeStamp )
 
 QList<QUuid> AnyTriggerNode::pinAddTypesInput() const
 {
-	return( mNode->context()->global()->pinIds().keys() );
+	return( QList<QUuid>() );
 }
 
 bool AnyTriggerNode::canAcceptPin( fugio::PinInterface *pPin ) const

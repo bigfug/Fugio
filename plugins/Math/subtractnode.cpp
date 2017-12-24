@@ -26,9 +26,7 @@ SubtractNode::SubtractNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	pinInput( "Input", PIN_NUMBER2 );
 
-	mValOutputArray = pinOutput<fugio::ArrayInterface *>( "Output", mPinOutput, PID_ARRAY, PIN_OUTPUT_NUMBER );
-
-	mValOutputArray->setSize( 1 );
+	mValOutputArray = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_VARIANT, PIN_OUTPUT_NUMBER );
 }
 
 void SubtractNode::inputsUpdated( qint64 pTimeStamp )
@@ -117,83 +115,56 @@ void SubtractNode::inputsUpdated( qint64 pTimeStamp )
 			return;
 		}
 
-		if( mValOutputArray->count() != ItrMax || mValOutputArray->type() != OutTyp )
-		{
-			if( mValOutputArray->type() != QMetaType::UnknownType )
-			{
-				const QMetaType::Type	CurTyp = mValOutputArray->type();
-				const int				TypSiz = QMetaType::sizeOf( CurTyp );
-
-				for( int i = 0 ; i < mValOutputArray->count() ; i++ )
-				{
-					QMetaType::destroy( mValOutputArray->type(), reinterpret_cast<quint8 *>( mValOutputArray->array() ) + TypSiz * i );
-				}
-			}
-
-			mValOutputArray->setType( OutTyp );
-			mValOutputArray->setCount( ItrMax );
-			mValOutputArray->setStride( QMetaType::sizeOf( OutTyp ) );
-
-			if( true )
-			{
-				const QMetaType::Type	CurTyp = mValOutputArray->type();
-				const int				TypSiz = QMetaType::sizeOf( CurTyp );
-
-				for( int i = 0 ; i < mValOutputArray->count() ; i++ )
-				{
-					QMetaType::construct( mValOutputArray->type(), reinterpret_cast<quint8 *>( mValOutputArray->array() ) + TypSiz * i, Q_NULLPTR );
-				}
-			}
-		}
+		mValOutputArray->setVariantCount( ItrMax );
 
 		switch( OutTyp )
 		{
 			case QMetaType::Double:
-				Operator::sub<double>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::sub<double>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::Float:
-				Operator::sub<float>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::sub<float>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QPoint:
-				Operator::sub<QPoint>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::sub<QPoint>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QPointF:
-				Operator::sub<QPointF>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::sub<QPointF>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QSize:
-				Operator::sub<QSize>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::sub<QSize>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QSizeF:
-				Operator::sub<QSizeF>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::sub<QSizeF>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::Int:
-				Operator::sub<int>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::sub<int>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QVector2D:
-				Operator::sub<QVector2D>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::sub<QVector2D>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QVector3D:
-				Operator::sub<QVector3D>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::sub<QVector3D>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QVector4D:
-				Operator::sub<QVector4D>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::sub<QVector4D>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QQuaternion:
-				Operator::sub<QQuaternion>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::sub<QQuaternion>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QMatrix4x4:
-				Operator::sub<QMatrix4x4>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::sub<QMatrix4x4>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			default:
@@ -205,7 +176,7 @@ void SubtractNode::inputsUpdated( qint64 pTimeStamp )
 						return;
 					}
 
-					MathFunc( ItrLst, mValOutputArray->array(), ItrMax );
+					MathFunc( ItrLst, mValOutputArray, ItrMax );
 				}
 				break;
 		}
@@ -375,11 +346,9 @@ T SubtractNode::Operator::sub3(const QList<QSharedPointer<PinInterface> > pInput
 
 
 template<typename T>
-void SubtractNode::Operator::sub( const QList<PinVariantIterator> &ItrLst, void *OutDst, int ItrMax )
+void SubtractNode::Operator::sub( const QList<PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax )
 {
-	T	*OutPtr = reinterpret_cast<T *>( OutDst );
-
-	for( int i = 0 ; i < ItrMax ; i++, OutPtr++ )
+	for( int i = 0 ; i < ItrMax ; i++ )
 	{
 		T			OutVal;
 
@@ -390,6 +359,6 @@ void SubtractNode::Operator::sub( const QList<PinVariantIterator> &ItrLst, void 
 			OutVal = ( !j ? NewVal : OutVal - NewVal );
 		}
 
-		*OutPtr = OutVal;
+		OutDst->setVariant( i, OutVal );
 	}
 }

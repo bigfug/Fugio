@@ -20,7 +20,7 @@ class Matrix4Pin : public fugio::PinControlBase, public fugio::VariantInterface
 public:
 	Q_INVOKABLE explicit Matrix4Pin( QSharedPointer<fugio::PinInterface> pPin );
 
-	virtual ~Matrix4Pin( void );
+	virtual ~Matrix4Pin( void ) {}
 
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
@@ -41,26 +41,56 @@ public:
 
 	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		mValue = pValue.value<QMatrix4x4>();
+		setVariant( 0, pValue );
 	}
 
-	virtual QVariant variant( void ) const Q_DECL_OVERRIDE
+	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		return( mValue );
+		mValues[ pIndex ] = pValue.value<QMatrix4x4>();
+	}
+
+	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
+	{
+		return( QVariant::fromValue<QMatrix4x4>( mValues[ pIndex ] ) );
+	}
+
+	virtual void setVariantCount( int pCount )
+	{
+		mValues.resize( pCount );
+	}
+
+	virtual int variantCount( void ) const
+	{
+		return( mValues.size() );
+	}
+
+	inline virtual QMetaType::Type variantType( void ) const
+	{
+		return( QMetaType::QMatrix4x4 );
 	}
 
 	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		setVariant( pValue );
+		setFromBaseVariant( 0, pValue );
 	}
 
-	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE
+	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		return( variant() );
+		setVariant( pIndex, pValue );
+	}
+
+	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
+	{
+		return( variant( pIndex ) );
+	}
+
+	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
+	{
+
 	}
 
 private:
-	QMatrix4x4			mValue;
+	QVector<QMatrix4x4>			mValues;
 };
 
 #endif // MATRIX4PIN_H

@@ -13,10 +13,10 @@
 
 #include <fugio/pincontrolbase.h>
 
-class QuaternionPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::ListInterface
+class QuaternionPin : public fugio::PinControlBase, public fugio::VariantInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::VariantInterface fugio::ListInterface )
+	Q_INTERFACES( fugio::VariantInterface )
 
 public:
 	Q_INVOKABLE explicit QuaternionPin( QSharedPointer<fugio::PinInterface> pPin );
@@ -30,7 +30,7 @@ public:
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
 	{
-		return( "Matrix4" );
+		return( "Quaternion" );
 	}
 
 	virtual void loadSettings( QSettings &pSettings ) Q_DECL_OVERRIDE;
@@ -42,43 +42,56 @@ public:
 
 	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		mValue = pValue.value<QQuaternion>();
+		setVariant( 0, pValue );
 	}
 
-	virtual QVariant variant( void ) const Q_DECL_OVERRIDE
+	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		return( mValue );
+		mValues[ pIndex ] = pValue.value<QQuaternion>();
 	}
 
-	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
+	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
 	{
-		setVariant( pValue );
+		return( QVariant::fromValue<QQuaternion>( mValues[ pIndex ] ) );
 	}
 
-	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE
+	virtual void setVariantCount( int pCount )
 	{
-		return( variant() );
+		mValues.resize( pCount );
 	}
 
-	//-------------------------------------------------------------------------
-	// ListInterface interface
-public:
-	virtual int listSize() const Q_DECL_OVERRIDE;
-	virtual QUuid listPinControl() const Q_DECL_OVERRIDE;
-	virtual QVariant listIndex(int pIndex) const Q_DECL_OVERRIDE;
-	virtual void listSetIndex(int pIndex, const QVariant &pValue) Q_DECL_OVERRIDE;
-	virtual void listSetSize(int pSize) Q_DECL_OVERRIDE;
-	virtual void listClear() Q_DECL_OVERRIDE;
-	virtual void listAppend(const QVariant &pValue) Q_DECL_OVERRIDE;
-	virtual bool listIsEmpty() const Q_DECL_OVERRIDE;
+	virtual int variantCount( void ) const
+	{
+		return( mValues.size() );
+	}
 
-	virtual QMetaType::Type listType( void ) const Q_DECL_OVERRIDE
+	inline virtual QMetaType::Type variantType( void ) const
 	{
 		return( QMetaType::QQuaternion );
 	}
 
+	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
+	{
+		setFromBaseVariant( 0, pValue );
+	}
+
+	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
+	{
+		setVariant( pIndex, pValue );
+	}
+
+	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
+	{
+		return( variant( pIndex ) );
+	}
+
+	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
+	{
+
+	}
+
 private:
-	QQuaternion			mValue;
+	QVector<QQuaternion>			mValues;
 };
 
 #endif // QUATERNIONPIN_H

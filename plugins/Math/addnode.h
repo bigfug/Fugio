@@ -25,7 +25,7 @@ class AddNode : public fugio::NodeControlBase
 		template<typename T> static T add2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
 		template<typename T> static T add3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
 
-		template<typename T> static void add( const QList<fugio::PinVariantIterator> &ItrLst, void *OutDst, int ItrMax );
+		template<typename T> static void add( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
 	};
 
 public:
@@ -47,7 +47,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
 
-	fugio::ArrayInterface						*mValOutputArray;
+	fugio::VariantInterface						*mValOutputArray;
 };
 
 #endif // ADDNODE_H

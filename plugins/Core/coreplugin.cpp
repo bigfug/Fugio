@@ -61,10 +61,6 @@
 #include "listpin.h"
 #include "choicepin.h"
 #include "variantpin.h"
-#include "stringlistpin.h"
-#include "bytearraylistpin.h"
-#include "variantlistpin.h"
-#include "arraylistpin.h"
 #include "rectpin.h"
 #include "bitarraypin.h"
 #include "linepin.h"
@@ -122,11 +118,9 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 ClassEntry		CorePlugin::mPinClasses[] =
 {
 	ClassEntry( "Array", PID_ARRAY, &ArrayPin::staticMetaObject ),
-	ClassEntry( "Array List", PID_ARRAY_LIST, &ArrayListPin::staticMetaObject ),
 	ClassEntry( "Bit Array", PID_BITARRAY, &BitArrayPin::staticMetaObject ),
 	ClassEntry( "Bool", PID_BOOL, &BoolPin::staticMetaObject ),
 	ClassEntry( "Byte Array", PID_BYTEARRAY, &ByteArrayPin::staticMetaObject ),
-	ClassEntry( "Byte Array List", PID_BYTEARRAY_LIST, &ByteArrayListPin::staticMetaObject ),
 	ClassEntry( "Choice", PID_CHOICE, &ChoicePin::staticMetaObject ),
 	ClassEntry( "Float", PID_FLOAT, &FloatPin::staticMetaObject ),
 	ClassEntry( "Integer", PID_INTEGER, &IntegerPin::staticMetaObject ),
@@ -137,11 +131,9 @@ ClassEntry		CorePlugin::mPinClasses[] =
 	ClassEntry( "Size", PID_SIZE, &SizePin::staticMetaObject ),
 	ClassEntry( "Size3d", PID_SIZE_3D, &Size3dPin::staticMetaObject ),
 	ClassEntry( "String", PID_STRING, &StringPin::staticMetaObject ),
-	ClassEntry( "String List", PID_STRING_LIST, &StringListPin::staticMetaObject ),
 	ClassEntry( "Trigger", PID_TRIGGER, &TriggerPin::staticMetaObject ),
 	ClassEntry( "Transform", PID_TRANSFORM, &TransformPin::staticMetaObject ),
 	ClassEntry( "Variant", PID_VARIANT, &VariantPin::staticMetaObject ),
-	ClassEntry( "Variant List", PID_VARIANT_LIST, &VariantListPin::staticMetaObject ),
 	ClassEntry()
 };
 

@@ -26,8 +26,8 @@ class MultiplyNode : public fugio::NodeControlBase
 		template<typename T> static T op2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
 		template<typename T> static T op3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
 
-		template<typename T, typename S = T> static void mul( const QList<fugio::PinVariantIterator> &ItrLst, void *OutDst, int ItrMax );
-		template<typename T, typename S = T> static void muls( const QList<fugio::PinVariantIterator> &ItrLst, void *OutDst, int ItrMax );
+		template<typename T, typename S = T> static void mul( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
+		template<typename T, typename S = T> static void muls( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
 	};
 
 public:
@@ -50,7 +50,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputArray;
-	fugio::ArrayInterface						*mValOutputArray;
+	fugio::VariantInterface						*mValOutputArray;
 };
 
 #endif // MULTIPLYNODE_H

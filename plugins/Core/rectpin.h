@@ -32,7 +32,7 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString( "x=%1 y=%2 w=%3 h=%4" ).arg( mValue.x() ).arg( mValue.y() ).arg( mValue.width() ).arg( mValue.height() ) );
+		return( QString() ); //QString( "x=%1 y=%2 w=%3 h=%4" ).arg( mValue.x() ).arg( mValue.y() ).arg( mValue.width() ).arg( mValue.height() ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
@@ -45,38 +45,72 @@ public:
 
 	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		mValue = pValue.toRectF();
+		setVariant( 0, pValue );
 	}
 
-	virtual QVariant variant( void ) const Q_DECL_OVERRIDE
+	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		return( QVariant::fromValue<QRectF>( mValue ) );
+		mValues[ pIndex ] = pValue.toRectF();
+	}
+
+	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
+	{
+		return( QVariant::fromValue<QRectF>( mValues[ pIndex ] ) );
+	}
+
+	virtual void setVariantCount( int pCount )
+	{
+		mValues.resize( pCount );
+	}
+
+	virtual int variantCount( void ) const
+	{
+		return( mValues.size() );
+	}
+
+	inline virtual QMetaType::Type variantType( void ) const
+	{
+		return( QMetaType::QRectF );
 	}
 
 	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		QList<QVariant>		L = pValue.toList();
-
-		if( L.size() > 0 ) mValue.setX( L.at( 0 ).toReal() );
-		if( L.size() > 1 ) mValue.setY( L.at( 1 ).toReal() );
-		if( L.size() > 2 ) mValue.setWidth( L.at( 0 ).toReal() );
-		if( L.size() > 3 ) mValue.setHeight( L.at( 1 ).toReal() );
+		setFromBaseVariant( 0, pValue );
 	}
 
-	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE
+	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
+	{
+		QList<QVariant>		L = pValue.toList();
+		QRectF				V;
+
+		if( L.size() > 0 ) V.setX( L.at( 0 ).toReal() );
+		if( L.size() > 1 ) V.setY( L.at( 1 ).toReal() );
+		if( L.size() > 2 ) V.setWidth( L.at( 0 ).toReal() );
+		if( L.size() > 3 ) V.setHeight( L.at( 1 ).toReal() );
+
+		mValues[ pIndex ] = V;
+	}
+
+	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
 	{
 		QList<QVariant>		L;
+		QRectF				V = mValues.at( pIndex );
 
-		L << mValue.x();
-		L << mValue.y();
-		L << mValue.width();
-		L << mValue.height();
+		L << V.x();
+		L << V.y();
+		L << V.width();
+		L << V.height();
 
 		return( L );
 	}
 
+	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
+	{
+
+	}
+
 private:
-	QRectF		mValue;
+	QVector<QRectF>		mValues;
 };
 
 #endif // RECTPIN_H

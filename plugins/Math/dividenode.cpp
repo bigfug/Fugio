@@ -22,9 +22,7 @@ DivideNode::DivideNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinNumerator   = pinInput( "Input" );
 	mPinDenominator = pinInput( "Input" );
 
-	mValOutputArray = pinOutput<fugio::ArrayInterface *>( "Output", mPinOutputArray, PID_ARRAY, PII_RESULT );
-
-	mValOutputArray->setSize( 1 );
+	mValOutputArray = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputArray, PID_VARIANT, PII_RESULT );
 }
 
 void DivideNode::inputsUpdated( qint64 pTimeStamp )
@@ -117,83 +115,56 @@ void DivideNode::inputsUpdated( qint64 pTimeStamp )
 			return;
 		}
 
-		if( mValOutputArray->count() != ItrMax || mValOutputArray->type() != OutTyp )
-		{
-			if( mValOutputArray->type() != QMetaType::UnknownType )
-			{
-				const QMetaType::Type	CurTyp = mValOutputArray->type();
-				const int				TypSiz = QMetaType::sizeOf( CurTyp );
-
-				for( int i = 0 ; i < mValOutputArray->count() ; i++ )
-				{
-					QMetaType::destroy( mValOutputArray->type(), reinterpret_cast<quint8 *>( mValOutputArray->array() ) + TypSiz * i );
-				}
-			}
-
-			mValOutputArray->setType( OutTyp );
-			mValOutputArray->setCount( ItrMax );
-			mValOutputArray->setStride( QMetaType::sizeOf( OutTyp ) );
-
-			if( true )
-			{
-				const QMetaType::Type	CurTyp = mValOutputArray->type();
-				const int				TypSiz = QMetaType::sizeOf( CurTyp );
-
-				for( int i = 0 ; i < mValOutputArray->count() ; i++ )
-				{
-					QMetaType::construct( mValOutputArray->type(), reinterpret_cast<quint8 *>( mValOutputArray->array() ) + TypSiz * i, Q_NULLPTR );
-				}
-			}
-		}
+		mValOutputArray->setVariantCount( ItrMax );
 
 		switch( OutTyp )
 		{
 			case QMetaType::Double:
-				Operator::div<double>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::div<double>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::Float:
-				Operator::div<float>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::div<float>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QPoint:
-				Operator::div<QPoint,int>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::div<QPoint,int>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QPointF:
-				Operator::div<QPointF,qreal>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::div<QPointF,qreal>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QSize:
-				Operator::div<QSize, int>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::div<QSize, int>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QSizeF:
-				Operator::div<QSizeF, qreal>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::div<QSizeF, qreal>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::Int:
-				Operator::div<int>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::div<int>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QVector2D:
-				Operator::divs<QVector2D,float>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::divs<QVector2D,float>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QVector3D:
-				Operator::divs<QVector3D,float>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::divs<QVector3D,float>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QVector4D:
-				Operator::divs<QVector4D>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::divs<QVector4D>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QQuaternion:
-				Operator::div<QQuaternion,float>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::div<QQuaternion,float>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			case QMetaType::QMatrix4x4:
-				Operator::div<QMatrix4x4,float>( ItrLst, mValOutputArray->array(), ItrMax );
+				Operator::div<QMatrix4x4,float>( ItrLst, mValOutputArray, ItrMax );
 				break;
 
 			default:
@@ -205,7 +176,7 @@ void DivideNode::inputsUpdated( qint64 pTimeStamp )
 						return;
 					}
 
-					MathFunc( ItrLst, mValOutputArray->array(), ItrMax );
+					MathFunc( ItrLst, mValOutputArray, ItrMax );
 				}
 				break;
 		}
@@ -485,11 +456,9 @@ T DivideNode::Operator::op0(const QList<QSharedPointer<PinInterface> > pInputPin
 }
 
 template<typename T, typename S>
-void DivideNode::Operator::div(const QList<fugio::PinVariantIterator> &ItrLst, void *OutDst, int ItrMax)
+void DivideNode::Operator::div( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax )
 {
-	T	*OutPtr = reinterpret_cast<T *>( OutDst );
-
-	for( int i = 0 ; i < ItrMax ; i++, OutPtr++ )
+	for( int i = 0 ; i < ItrMax ; i++ )
 	{
 		T			OutVal = ItrLst.at( 0 ).index( i ).value<T>();
 
@@ -498,16 +467,14 @@ void DivideNode::Operator::div(const QList<fugio::PinVariantIterator> &ItrLst, v
 			OutVal /= ItrLst.at( 0 ).index( i ).value<S>();
 		}
 
-		*OutPtr = OutVal;
+		OutDst->setVariant( i, OutVal );
 	}
 }
 
 template<typename T, typename S>
-void DivideNode::Operator::divs(const QList<fugio::PinVariantIterator> &ItrLst, void *OutDst, int ItrMax)
+void DivideNode::Operator::divs(const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax)
 {
-	T	*OutPtr = reinterpret_cast<T *>( OutDst );
-
-	for( int i = 0 ; i < ItrMax ; i++, OutPtr++ )
+	for( int i = 0 ; i < ItrMax ; i++ )
 	{
 		T			OutVal = ItrLst.at( 0 ).index( i ).value<T>();
 
@@ -525,6 +492,6 @@ void DivideNode::Operator::divs(const QList<fugio::PinVariantIterator> &ItrLst, 
 			}
 		}
 
-		*OutPtr = OutVal;
+		OutDst->setVariant( i, OutVal );
 	}
 }

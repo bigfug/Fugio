@@ -23,7 +23,7 @@ class SubtractNode : public fugio::NodeControlBase
 	public:
 		template<typename T> static T sub2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
 		template<typename T> static T sub3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-		template<typename T> static void sub( const QList<fugio::PinVariantIterator> &ItrLst, void *OutDst, int ItrMax );
+		template<typename T> static void sub( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
 	};
 
 public:
@@ -46,7 +46,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::ArrayInterface						*mValOutputArray;
+	fugio::VariantInterface						*mValOutputArray;
 };
 
 #endif // SUBTRACTNODE_H

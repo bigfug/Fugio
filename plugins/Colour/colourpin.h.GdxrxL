@@ -119,17 +119,12 @@ public:
 		QList<QVariant>		L;
 		QColor				C = mColours.at( pIndex );
 
-		L << C.redF();
-		L << C.greenF();
-		L << C.blueF();
-		L << C.alphaF();
+		L << mColour.redF();
+		L << mColour.greenF();
+		L << mColour.blueF();
+		L << mColour.alphaF();
 
 		return( L );
-	}
-
-	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
-	{
-
 	}
 
 	//-------------------------------------------------------------------------
@@ -163,8 +158,6 @@ public:
 
 			return;
 		}
-
-		pDataStream.rollbackTransaction();
 
 		QVector<QColor>	L;
 

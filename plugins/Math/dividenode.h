@@ -23,8 +23,8 @@ class DivideNode : public fugio::NodeControlBase
 		template<typename T> static T op2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
 		template<typename T> static T op3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
 
-		template<typename T, typename S = T> static void div( const QList<fugio::PinVariantIterator> &ItrLst, void *OutDst, int ItrMax );
-		template<typename T, typename S = T> static void divs( const QList<fugio::PinVariantIterator> &ItrLst, void *OutDst, int ItrMax );
+		template<typename T, typename S = T> static void div( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
+		template<typename T, typename S = T> static void divs( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
 	};
 
 public:
@@ -48,7 +48,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinDenominator;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputArray;
-	fugio::ArrayInterface						*mValOutputArray;
+	fugio::VariantInterface						*mValOutputArray;
 };
 
 #endif // DIVIDENODE_H
