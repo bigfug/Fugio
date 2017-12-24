@@ -25,7 +25,7 @@ class ColourPin : public fugio::PinControlBase, public fugio::ColourInterface, p
 public:
 	Q_INVOKABLE explicit ColourPin( QSharedPointer<fugio::PinInterface> pPin );
 	
-	virtual ~ColourPin( void );
+	virtual ~ColourPin( void ) {}
 
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
@@ -101,31 +101,9 @@ public:
 		setFromBaseVariant( 0, pValue );
 	}
 
-	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		QList<QVariant>     L = pValue.toList();
-		QColor				C;
+	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE;
 
-		if( L.size() > 0 ) C.setRedF( L.at( 0 ).toReal() );
-		if( L.size() > 1 ) C.setGreenF( L.at( 1 ).toReal() );
-		if( L.size() > 2 ) C.setBlueF( L.at( 2 ).toReal() );
-		if( L.size() > 3 ) C.setAlphaF( L.at( 3 ).toReal() );
-
-		mColours[ pIndex ] = C;
-	}
-
-	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
-	{
-		QList<QVariant>		L;
-		QColor				C = mColours.at( pIndex );
-
-		L << C.redF();
-		L << C.greenF();
-		L << C.blueF();
-		L << C.alphaF();
-
-		return( L );
-	}
+	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE;
 
 	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
 	{
