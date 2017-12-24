@@ -30,10 +30,7 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
-	virtual QString toString( void ) const Q_DECL_OVERRIDE
-	{
-		return( QString() ); //QString( "x=%1 y=%2 w=%3 h=%4" ).arg( mValue.x() ).arg( mValue.y() ).arg( mValue.width() ).arg( mValue.height() ) );
-	}
+	virtual QString toString( void ) const Q_DECL_OVERRIDE;
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
 	{
@@ -58,17 +55,17 @@ public:
 		return( QVariant::fromValue<QRectF>( mValues[ pIndex ] ) );
 	}
 
-	virtual void setVariantCount( int pCount )
+	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
 	{
 		mValues.resize( pCount );
 	}
 
-	virtual int variantCount( void ) const
+	virtual int variantCount( void ) const Q_DECL_OVERRIDE
 	{
 		return( mValues.size() );
 	}
 
-	inline virtual QMetaType::Type variantType( void ) const
+	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
 	{
 		return( QMetaType::QRectF );
 	}

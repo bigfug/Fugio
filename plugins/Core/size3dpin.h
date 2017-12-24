@@ -58,17 +58,17 @@ public:
 		return( QVariant::fromValue<QVector3D>( mValues[ pIndex ] ) );
 	}
 
-	virtual void setVariantCount( int pCount )
+	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
 	{
 		mValues.resize( pCount );
 	}
 
-	virtual int variantCount( void ) const
+	virtual int variantCount( void ) const Q_DECL_OVERRIDE
 	{
 		return( mValues.size() );
 	}
 
-	inline virtual QMetaType::Type variantType( void ) const
+	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
 	{
 		return( QMetaType::QVector3D );
 	}

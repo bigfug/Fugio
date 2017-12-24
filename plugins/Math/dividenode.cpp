@@ -19,8 +19,8 @@ DivideNode::DivideNode( QSharedPointer<fugio::NodeInterface> pNode )
 	FUGID( PII_NUMBER2, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
 	FUGID( PII_RESULT,	"261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
 
-	mPinNumerator   = pinInput( "Input" );
-	mPinDenominator = pinInput( "Input" );
+	mPinNumerator   = pinInput( "Input", PII_NUMBER1 );
+	mPinDenominator = pinInput( "Input", PII_NUMBER2 );
 
 	mValOutputArray = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputArray, PID_VARIANT, PII_RESULT );
 }

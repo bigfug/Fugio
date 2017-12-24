@@ -142,6 +142,9 @@ void NDISendNode::inputsUpdated( qint64 pTimeStamp )
 				case fugio::ImageInterface::FORMAT_YUYV422:
 					VideoFrame.FourCC = NDIlib_FourCC_type_UYVY;
 					break;
+
+				default:
+					return;
 			}
 
 			VideoFrame.xres = SrcImg->width();

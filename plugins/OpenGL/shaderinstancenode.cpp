@@ -630,6 +630,9 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 
 				Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
 				break;
+
+			default:
+				break;
 		}
 	}
 

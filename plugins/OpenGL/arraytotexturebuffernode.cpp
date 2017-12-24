@@ -151,6 +151,9 @@ void ArrayToTextureBufferNode::inputsUpdated( qint64 pTimeStamp )
 			case QMetaType::QVector4D:
 				InternalFormat = GL_RGBA32F;
 				break;
+
+			default:
+				break;
 		}
 
 		if( !InternalFormat )

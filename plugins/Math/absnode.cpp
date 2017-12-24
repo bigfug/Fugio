@@ -5,6 +5,8 @@
 #include <fugio/context_interface.h>
 #include <fugio/pin_variant_iterator.h>
 
+#include <cmath>
+
 AbsNode::AbsNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {

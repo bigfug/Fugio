@@ -66,12 +66,12 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::VariantInterface
 
-	virtual void setVariantCount( int pCount )
+	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
 	{
 		mColours.resize( pCount );
 	}
 
-	virtual int variantCount( void ) const
+	virtual int variantCount( void ) const Q_DECL_OVERRIDE
 	{
 		return( mColours.size() );
 	}
@@ -91,7 +91,7 @@ public:
 		return( QVariant::fromValue<QColor>( mColours[ pIndex ] ) );
 	}
 
-	inline virtual QMetaType::Type variantType( void ) const
+	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
 	{
 		return( QMetaType::QColor );
 	}

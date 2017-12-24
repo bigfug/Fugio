@@ -147,12 +147,12 @@ public:
 		return( mCount );
 	}
 
-	QUuid listPinControl() const
+	QUuid listPinControl() const Q_DECL_OVERRIDE
 	{
 		return( CorePlugin::instance()->app()->findPinForMetaType( mType ) );
 	}
 
-	QVariant listIndex( int pIndex ) const
+	QVariant listIndex( int pIndex ) const Q_DECL_OVERRIDE
 	{
 		const quint8	*A = (const quint8 *)( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
 
@@ -175,7 +175,7 @@ public:
 		return( V );
 	}
 
-	void listSetIndex( int pIndex, const QVariant &pValue )
+	void listSetIndex( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
 		quint8	*A = (quint8 *)( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
 
@@ -196,7 +196,7 @@ public:
 		QMetaType::construct( mType, A, pValue.constData() );
 	}
 
-	void listSetSize( int pSize )
+	void listSetSize( int pSize ) Q_DECL_OVERRIDE
 	{
 		if( mData )
 		{
