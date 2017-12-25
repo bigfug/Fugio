@@ -248,6 +248,7 @@ int LuaExPin::luaPinGetValue( lua_State *L )
 
 	if( PinCtl )
 	{
+		QObject							*CtlObj = PinCtl->qobject();
 		LuaPlugin::luaPinGetFunc		PinGetFnc = LuaPlugin::instance()->getFunctions().value( PinSrc->controlUuid() );
 
 		if( PinGetFnc )
@@ -255,34 +256,34 @@ int LuaExPin::luaPinGetValue( lua_State *L )
 			return( PinGetFnc( P->localId(), L ) );
 		}
 
-		fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( PinCtl->qobject() );
+		fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( CtlObj );
 
 		if( ArLInt )
 		{
-			LuaArray::pusharray( L, PinCtl->qobject(), P->direction() == PIN_INPUT );
+			LuaArray::pusharray( L, CtlObj, P->direction() == PIN_INPUT );
 
 			return( 1 );
 		}
 
-		fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( PinCtl->qobject() );
+		fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( CtlObj );
 
 		if( ArrInt )
 		{
-			LuaArray::pusharray( L, PinCtl->qobject(), P->direction() == PIN_INPUT );
+			LuaArray::pusharray( L, CtlObj, P->direction() == PIN_INPUT );
 
 			return( 1 );
 		}
 
-		fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( PinCtl->qobject() );
+		fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( CtlObj );
 
 		if( LstInt )
 		{
-			LuaArray::pusharray( L, PinCtl->qobject(), P->direction() == PIN_INPUT );
+			LuaArray::pusharray( L, CtlObj, P->direction() == PIN_INPUT );
 
 			return( 1 );
 		}
 
-		VariantInterface			*IV = qobject_cast<VariantInterface *>( PinCtl->qobject() );
+		fugio::VariantInterface			*IV = qobject_cast<fugio::VariantInterface *>( CtlObj );
 
 		if( IV )
 		{
