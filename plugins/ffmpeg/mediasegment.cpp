@@ -361,9 +361,10 @@ bool MediaSegment::ptsInRange( qreal pPTS, qreal pTarget, qreal Min, qreal Max )
 
 void MediaSegment::audioRange( qint64 &pMinPTS, qint64 &pMaxPTS ) const
 {
-	QMutexLocker	L( &mAudDatLck );
-
 	pMinPTS = pMaxPTS = -1;
+
+#if defined( FFMPEG_SUPPORTED )
+	QMutexLocker	L( &mAudDatLck );
 
 	for( const AudioBuffer &AB : mAudDat )
 	{
@@ -377,12 +378,14 @@ void MediaSegment::audioRange( qint64 &pMinPTS, qint64 &pMaxPTS ) const
 			pMaxPTS = AB.mAudPts;
 		}
 	}
+#endif
 }
 
 void MediaSegment::videoRange(qreal &pMinPTS, qreal &pMaxPTS) const
 {
 	pMinPTS = pMaxPTS = -1;
 
+#if defined( FFMPEG_SUPPORTED )
 	for( const VidDat &VD : mVidDat )
 	{
 		if( pMinPTS == -1 || VD.mPTS < pMinPTS )
@@ -395,6 +398,7 @@ void MediaSegment::videoRange(qreal &pMinPTS, qreal &pMaxPTS) const
 			pMaxPTS = VD.mPTS;
 		}
 	}
+#endif
 }
 
 void MediaSegment::processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pForce )
