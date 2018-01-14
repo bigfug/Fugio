@@ -180,7 +180,9 @@ public:
 
 	inline const quint8 * const *buffers() const
 	{
-		return( mData->mPointer[ 0 ] ? mData->mPointer : mData->mBuffer );
+		const ImageData	*IM = mData.data();
+
+		return( IM->mPointer[ 0 ] ? IM->mPointer : IM->mBuffer );
 	}
 
 	inline void setBuffer( int pIndex, const quint8 *pBuffer )
