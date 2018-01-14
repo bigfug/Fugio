@@ -46,7 +46,7 @@
 
 MediaTimelineNode::MediaTimelineNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mTimelineControl( 0 ), mSegment( 0 ), mKF( 0 ), mAudioMute( false ), mAudioVolume( 1 ),
-	  mLastImageUpdate( 0 ), mGUI( nullptr ), mPreloadAudio( false ), mFrameDecodeTime( 0 )
+	  mLastImageUpdate( 0 ), mPreloadAudio( false ), mFrameDecodeTime( 0 )
 {
 	FUGID( PIN_INPUT_FILENAME, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 	FUGID( PIN_INPUT_VOLUME, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
@@ -155,19 +155,17 @@ bool MediaTimelineNode::deinitialise()
 
 QWidget *MediaTimelineNode::gui()
 {
-	if( !mGUI )
-	{
-		if( ( mGUI = new QPushButton( tr( "Preload Audio" ) ) ) )
-		{
-			mGUI->setCheckable( true );
+	QPushButton		*GUI = new QPushButton( tr( "Preload Audio" ) );
 
-			mGUI->setChecked( mPreloadAudio );
+	GUI->setCheckable( true );
 
-			connect( mGUI, SIGNAL(toggled(bool)), this, SLOT(buttonPreload(bool)) );
-		}
-	}
+	GUI->setChecked( mPreloadAudio );
 
-	return( mGUI );
+	connect( GUI, SIGNAL(clicked(bool)), this, SLOT(buttonPreload(bool)) );
+
+	connect( this, SIGNAL(preloaded(bool)), GUI, SLOT(setChecked(bool)) );
+
+	return( GUI );
 }
 
 void MediaTimelineNode::inputsUpdated( qint64 pTimeStamp )
@@ -258,14 +256,7 @@ void MediaTimelineNode::loadSettings( QSettings &pSettings )
 		mSegment->setPreload( mPreloadAudio );
 	}
 
-	if( mGUI )
-	{
-		mGUI->blockSignals( true );
-
-		mGUI->setChecked( mPreloadAudio );
-
-		mGUI->blockSignals( false );
-	}
+	emit preloaded( mPreloadAudio );
 }
 
 void MediaTimelineNode::saveSettings( QSettings &pSettings ) const

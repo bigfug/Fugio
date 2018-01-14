@@ -84,13 +84,19 @@ void VideoCaptureNode::frameCallback( ca::PixelBuffer &pBuffer )
 		switch( pBuffer.pixel_format )
 		{
 			case CA_YUV422P:                                                             /* YUV422 Planar */
-			case CA_YUV420BP:                                                            /* YUV420 Bi Planar */
 			case CA_YUVJ420P:                                                          /* YUV420 Planar Full Range (JPEG), J comes from the JPEG. (values 0-255 used) */
 			case CA_YUVJ420BP:                                                          /* YUV420 Bi-Planer Full Range (JPEG), J comes fro the JPEG. (values: luma = [16,235], chroma=[16,240]) */
 			case CA_JPEG_OPENDML:                                                          /* JPEG with Open-DML extensions */
 			case CA_H264:                                                                  /* H264 */
-			case CA_MJPEG:                                                                /* MJPEG 2*/
 				return;
+
+			case CA_YUV420BP:                                                            /* YUV420 Bi Planar */
+				mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_NV12 );
+				break;
+
+			case CA_MJPEG:                                                                /* MJPEG 2*/
+				mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_YUVJ422P );
+				break;
 
 			case CA_YUV420P:                                                           /* YUV420 Planar */
 				mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_YUV420P );
@@ -183,7 +189,7 @@ void VideoCaptureNode::setCurrentDevice( int pDevIdx, int pCfgIdx )
 
 	DevCfg.device     = mDeviceIndex;
 	DevCfg.capability = mFormatIndex;
-	DevCfg.format     = CA_NONE;
+	DevCfg.format     = DevCap.pixel_format;
 
 	switch( DevCap.pixel_format )
 	{
@@ -209,6 +215,8 @@ void VideoCaptureNode::setCurrentDevice( int pDevIdx, int pCfgIdx )
 
 	if( DevErr < 0 )
 	{
+		mNode->setStatus( fugio::NodeInterface::Error );
+
 		return;
 	}
 
@@ -216,6 +224,8 @@ void VideoCaptureNode::setCurrentDevice( int pDevIdx, int pCfgIdx )
 
 	if( DevErr >= 0 )
 	{
+		mNode->setStatus( fugio::NodeInterface::Initialised );
+
 		connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(frameStart()) );
 	}
 #endif

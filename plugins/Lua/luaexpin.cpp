@@ -192,7 +192,19 @@ int LuaExPin::luaPinSetValue( lua_State *L )
 
 	if( V.isValid() )
 	{
-		IV->setFromBaseVariant( V );
+		if( V.userType() == QVariant::List )
+		{
+			QVariantList	VL = V.toList();
+
+			for( int i = 0 ; i < VL.size() ; i++ )
+			{
+				IV->setFromBaseVariant( i, VL.at( i ) );
+			}
+		}
+		else
+		{
+			IV->setFromBaseVariant( V );
+		}
 
 		P->node()->context()->pinUpdated( P );
 	}
@@ -236,6 +248,7 @@ int LuaExPin::luaPinGetValue( lua_State *L )
 
 	if( PinCtl )
 	{
+		QObject							*CtlObj = PinCtl->qobject();
 		LuaPlugin::luaPinGetFunc		PinGetFnc = LuaPlugin::instance()->getFunctions().value( PinSrc->controlUuid() );
 
 		if( PinGetFnc )
@@ -243,38 +256,52 @@ int LuaExPin::luaPinGetValue( lua_State *L )
 			return( PinGetFnc( P->localId(), L ) );
 		}
 
-		fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( PinCtl->qobject() );
+		fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( CtlObj );
 
 		if( ArLInt )
 		{
-			LuaArray::pusharray( L, PinCtl->qobject(), P->direction() == PIN_INPUT );
+			LuaArray::pusharray( L, CtlObj, P->direction() == PIN_INPUT );
 
 			return( 1 );
 		}
 
-		fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( PinCtl->qobject() );
+		fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( CtlObj );
 
 		if( ArrInt )
 		{
-			LuaArray::pusharray( L, PinCtl->qobject(), P->direction() == PIN_INPUT );
+			LuaArray::pusharray( L, CtlObj, P->direction() == PIN_INPUT );
 
 			return( 1 );
 		}
 
-		fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( PinCtl->qobject() );
+		fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( CtlObj );
 
 		if( LstInt )
 		{
-			LuaArray::pusharray( L, PinCtl->qobject(), P->direction() == PIN_INPUT );
+			LuaArray::pusharray( L, CtlObj, P->direction() == PIN_INPUT );
 
 			return( 1 );
 		}
 
-		VariantInterface			*IV = qobject_cast<VariantInterface *>( PinCtl->qobject() );
+		fugio::VariantInterface			*IV = qobject_cast<fugio::VariantInterface *>( CtlObj );
 
 		if( IV )
 		{
-			V = IV->baseVariant();
+			if( IV->variantCount() > 1 )
+			{
+				QVariantList	VL;
+
+				for( int i = 0 ; i < IV->variantCount() ; i++ )
+				{
+					VL << IV->baseVariant( i );
+				}
+
+				V = VL;
+			}
+			else
+			{
+				V = IV->baseVariant();
+			}
 		}
 	}
 

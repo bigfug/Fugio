@@ -1,43 +1,40 @@
-#ifndef BOOLPIN_H
-#define BOOLPIN_H
+#ifndef TRANSFORMPIN_H
+#define TRANSFORMPIN_H
 
-#include <QObject>
-
-#include <fugio/pin_interface.h>
-#include <fugio/pin_control_interface.h>
-
-#include <fugio/core/variant_interface.h>
+#include <QTransform>
 
 #include <fugio/pincontrolbase.h>
 
+#include <fugio/core/variant_interface.h>
+
 #include <fugio/serialise_interface.h>
 
-class BoolPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::SerialiseInterface
+class TransformPin : public fugio::PinControlBase, public fugio::VariantInterface
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface )
-//	Q_PROPERTY( bool mValue READ value WRITE setValue NOTIFY valueChanged )
+	Q_INTERFACES( fugio::VariantInterface )
+//	Q_PROPERTY( QTransform mValue READ value WRITE setValue NOTIFY valueChanged )
 
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "" )
-	Q_CLASSINFO( "URL", WIKI_PIN_URL( "Boolean" ) )
+	Q_CLASSINFO( "URL", WIKI_PIN_URL( "QTransform" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 public:
-	Q_INVOKABLE explicit BoolPin( QSharedPointer<fugio::PinInterface> pPin );
+	Q_INVOKABLE explicit TransformPin( QSharedPointer<fugio::PinInterface> pPin );
 
-	virtual ~BoolPin( void ) {}
+	virtual ~TransformPin( void ) {}
 
 	//-------------------------------------------------------------------------
 	// Q_PROPERTY
 
-//	Q_INVOKABLE bool value( void ) const
+//	Q_INVOKABLE QTransform value( void ) const
 //	{
 //		return( mValue );
 //	}
 
-//	Q_INVOKABLE void setValue( bool pValue )
+//	Q_INVOKABLE void setValue( QTransform pValue )
 //	{
 //		if( pValue != mValue )
 //		{
@@ -52,12 +49,12 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString( "%1" ).arg( mValues.first() ) );
+		return( QString() );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
 	{
-		return( "Bool" );
+		return( "Transform" );
 	}
 
 	//-------------------------------------------------------------------------
@@ -70,12 +67,12 @@ public:
 
 	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		mValues[ pIndex ] = pValue.toBool();
+		mValues[ pIndex ] = pValue.value<QTransform>();
 	}
 
 	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
 	{
-		return( QVariant::fromValue<bool>( mValues[ pIndex ] ) );
+		return( QVariant::fromValue<QTransform>( mValues[ pIndex ] ) );
 	}
 
 	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
@@ -90,7 +87,7 @@ public:
 
 	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
 	{
-		return( QMetaType::Bool );
+		return( QMetaType::QTransform );
 	}
 
 	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
@@ -113,52 +110,11 @@ public:
 
 	}
 
-	//-------------------------------------------------------------------------
-	// fugio::SerialiseInterface
-
-	virtual void serialise( QDataStream &pDataStream ) const Q_DECL_OVERRIDE
-	{
-		if( mValues.size() == 1 )
-		{
-			pDataStream << mValues.first();
-		}
-		else
-		{
-			pDataStream << mValues;
-		}
-	}
-
-	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE
-	{
-		double				V;
-
-		pDataStream.startTransaction();
-
-		pDataStream >> V;
-
-		if( pDataStream.commitTransaction() )
-		{
-			mValues.resize( 1 );
-
-			setVariant( 0, V );
-
-			return;
-		}
-
-		pDataStream.rollbackTransaction();
-
-		QVector<bool>	L;
-
-		pDataStream >> L;
-
-		mValues = L;
-	}
-
 signals:
-//	void valueChanged( bool pValue );
+	void valueChanged( QTransform pValue );
 
 private:
-	QVector<bool>		mValues;
+	QVector<QTransform>		mValues;
 };
 
-#endif // BOOLPIN_H
+#endif // TRANSFORMPIN_H

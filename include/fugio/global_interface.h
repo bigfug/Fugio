@@ -225,6 +225,12 @@ public:
 
 	virtual QList<QUuid> pinSplitters( const QUuid &pPinId ) const = 0;
 	virtual QList<QUuid> pinJoiners( const QUuid &pPinId ) const = 0;
+
+	//-------------------------------------------------------------------------
+	// QMetaType
+
+	virtual QUuid findPinForMetaType( QMetaType::Type pType ) const = 0;
+	virtual void registerPinForMetaType( const QUuid &pUuid, QMetaType::Type pType ) = 0;
 };
 
 FUGIO_NAMESPACE_END

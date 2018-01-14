@@ -60,10 +60,17 @@ void AbsDiffNode::inputsUpdated( qint64 pTimeStamp )
 	cv::Mat						 MatSrc1 = OpenCVPlugin::image2mat( SrcImg1 );
 	cv::Mat						 MatSrc2 = OpenCVPlugin::image2mat( SrcImg2 );
 
-	cv::absdiff( MatSrc1, MatSrc2, mMatImg );
+	try
+	{
+		cv::absdiff( MatSrc1, MatSrc2, mMatImg );
 
-	OpenCVPlugin::mat2image( mMatImg, mOutputImage );
+		OpenCVPlugin::mat2image( mMatImg, mOutputImage );
 
-	pinUpdated( mPinOutputImage );
+		pinUpdated( mPinOutputImage );
+	}
+	catch( ... )
+	{
+
+	}
 #endif
 }

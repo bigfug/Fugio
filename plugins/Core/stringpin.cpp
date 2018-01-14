@@ -2,10 +2,6 @@
 #include <QSettings>
 
 StringPin::StringPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin )
-{
-}
-
-StringPin::~StringPin()
+	: PinControlBase( pPin ), mValues( 1 )
 {
 }

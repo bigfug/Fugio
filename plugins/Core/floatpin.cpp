@@ -2,10 +2,18 @@
 #include <QSettings>
 
 FloatPin::FloatPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mValue( 0.0 )
+	: PinControlBase( pPin ), mValues( 1 )
 {
 }
 
-FloatPin::~FloatPin( void )
+QString FloatPin::toString() const
 {
+	QStringList		L;
+
+	for( double v : mValues )
+	{
+		L << QString::number( v );
+	}
+
+	return( L.join( ',' ) );
 }

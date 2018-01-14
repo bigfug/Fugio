@@ -15,13 +15,25 @@ class VariantInterface
 public:
 	virtual ~VariantInterface( void ) {}
 
+	virtual void setVariantType( QMetaType::Type pType ) = 0;
+
+	virtual QMetaType::Type variantType( void ) const = 0;
+
+	virtual void setVariantCount( int pCount ) = 0;
+
+	virtual int variantCount( void ) const = 0;
+
 	virtual void setVariant( const QVariant &pValue ) = 0;
 
-	virtual QVariant variant( void ) const = 0;
+	virtual void setVariant( int pIndex, const QVariant &pValue ) = 0;
+
+	virtual QVariant variant( int pIndex = 0 ) const = 0;
 
 	virtual void setFromBaseVariant( const QVariant &pValue ) = 0;
 
-	virtual QVariant baseVariant( void ) const = 0;
+	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) = 0;
+
+	virtual QVariant baseVariant( int pIndex = 0 ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

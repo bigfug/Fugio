@@ -769,6 +769,16 @@ QList<QUuid> GlobalPrivate::pinJoiners(const QUuid &pPinId) const
 	return( mPinJoiners.values( pPinId ) );
 }
 
+QUuid GlobalPrivate::findPinForMetaType(QMetaType::Type pType) const
+{
+	return( mMetaTypeToPinUuid.value( pType ) );
+}
+
+void GlobalPrivate::registerPinForMetaType(const QUuid &pUuid, QMetaType::Type pType)
+{
+	mMetaTypeToPinUuid.insert( pType, pUuid );
+}
+
 void GlobalPrivate::start()
 {
 #if !defined( GLOBAL_THREADED )

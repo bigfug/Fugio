@@ -6,6 +6,9 @@
 #include <fugio/nodecontrolbase.h>
 
 #include <fugio/core/variant_interface.h>
+#include <fugio/core/array_interface.h>
+
+#include <fugio/pin_variant_iterator.h>
 
 class AddNode : public fugio::NodeControlBase
 {
@@ -18,9 +21,8 @@ class AddNode : public fugio::NodeControlBase
 
 	class Operator
 	{
-		public:
-			template<typename T> static T add2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-			template<typename T> static T add3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+	public:
+		template<typename T> static void add( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
 	};
 
 public:
@@ -35,13 +37,11 @@ public:
 	virtual QList<QUuid> pinAddTypesInput() const;
 	virtual bool canAcceptPin(fugio::PinInterface *pPin) const;
 
-private:
-	static QVariant addNumber( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::VariantInterface						*mValOutput;
+
+	fugio::VariantInterface						*mValOutputArray;
 };
 
 #endif // ADDNODE_H

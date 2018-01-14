@@ -2,6 +2,9 @@
 
 #include <QVector2D>
 #include <QVector3D>
+#include <QVector4D>
+#include <QQuaternion>
+#include <QMatrix4x4>
 #include <QSizeF>
 
 #include <fugio/core/uuid.h>
@@ -15,71 +18,168 @@
 SubtractNode::SubtractNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
-	static const QUuid	PII_NUMBER1( "{c13a41c6-544b-46bb-a9f2-19dd156d236c}" );
-	static const QUuid	PII_NUMBER2( "{608ac771-490b-4ae6-9c81-12b9af526d09}" );
+	FUGID( PIN_NUMBER1, "c13a41c6-544b-46bb-a9f2-19dd156d236c" );
+	FUGID( PIN_NUMBER2, "608ac771-490b-4ae6-9c81-12b9af526d09" );
+	FUGID( PIN_OUTPUT_NUMBER, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 
-	mPinInput = pinInput( "Input", PII_NUMBER1 );
+	mPinInput = pinInput( "Input", PIN_NUMBER1 );
 
-	pinInput( "Input", PII_NUMBER2 );
+	pinInput( "Input", PIN_NUMBER2 );
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_VARIANT );
+	mValOutputArray = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_VARIANT, PIN_OUTPUT_NUMBER );
 }
 
 void SubtractNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	QVariant		InputBase = variant( mPinInput );
-	QMetaType::Type	InputType = QMetaType::Type( InputBase.type() );
-
-	QVariant		OutputValue;
-
-	switch( InputType )
+	if( mPinOutput->controlUuid() == PID_VARIANT )
 	{
-		case QMetaType::Float:
-		case QMetaType::Double:
-		case QMetaType::Int:
-		case QMetaType::QString:
-			OutputValue = subtractNumber( mNode->enumInputPins() );
-			break;
+		fugio::VariantInterface						*mValOutput = qobject_cast<fugio::VariantInterface *>( mPinOutput->control()->qobject() );
 
-		case QMetaType::QPoint:
-			OutputValue = Operator::sub2<QPoint>( mNode->enumInputPins() );
-			break;
+		QVariant		InputBase = variant( mPinInput );
+		QMetaType::Type	InputType = QMetaType::Type( InputBase.type() );
 
-		case QMetaType::QPointF:
-			OutputValue = Operator::sub2<QPointF>( mNode->enumInputPins() );
-			break;
+		QVariant		OutputValue;
 
-		case QMetaType::QSize:
-			OutputValue = Operator::sub2<QSize>( mNode->enumInputPins() );
-			break;
+		switch( InputType )
+		{
+			case QMetaType::Float:
+			case QMetaType::Double:
+			case QMetaType::Int:
+			case QMetaType::QString:
+				OutputValue = subtractNumber( mNode->enumInputPins() );
+				break;
 
-		case QMetaType::QSizeF:
-			OutputValue = Operator::sub2<QSizeF>( mNode->enumInputPins() );
-			break;
+			case QMetaType::QPoint:
+				OutputValue = Operator::sub2<QPoint>( mNode->enumInputPins() );
+				break;
 
-		case QMetaType::QVector3D:
-			OutputValue = Operator::sub3<QVector3D>( mNode->enumInputPins() );
-			break;
+			case QMetaType::QPointF:
+				OutputValue = Operator::sub2<QPointF>( mNode->enumInputPins() );
+				break;
 
-		default:
-			{
-				fugio::MathInterface::MathOperatorFunction	MathFunc = MathPlugin::instance()->findMetaTypeMathOperator( InputType, fugio::MathInterface::OP_SUBTRACT );
+			case QMetaType::QSize:
+				OutputValue = Operator::sub2<QSize>( mNode->enumInputPins() );
+				break;
 
-				if( !MathFunc )
+			case QMetaType::QSizeF:
+				OutputValue = Operator::sub2<QSizeF>( mNode->enumInputPins() );
+				break;
+
+			case QMetaType::QVector3D:
+				OutputValue = Operator::sub3<QVector3D>( mNode->enumInputPins() );
+				break;
+
+			default:
 				{
-					return;
+					fugio::MathInterface::MathOperatorFunction	MathFunc = MathPlugin::instance()->findMetaTypeMathOperator( InputType, fugio::MathInterface::OP_SUBTRACT );
+
+					if( !MathFunc )
+					{
+						return;
+					}
+
+	//				OutputValue = MathFunc( mNode->enumInputPins() );
 				}
+				break;
+		}
 
-				OutputValue = MathFunc( mNode->enumInputPins() );
-			}
-			break;
+		if( OutputValue != mValOutput->variant() )
+		{
+			mValOutput->setVariant( OutputValue );
+
+			pinUpdated( mPinOutput );
+		}
 	}
-
-	if( OutputValue != mValOutput->variant() )
+	else
 	{
-		mValOutput->setVariant( OutputValue );
+		QList<fugio::PinVariantIterator>	ItrLst;
+		int									ItrMax = 0;
+		QMetaType::Type						OutTyp = QMetaType::UnknownType;
+
+		for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
+		{
+			ItrLst << fugio::PinVariantIterator( P );
+
+			ItrMax = std::max( ItrMax, ItrLst.last().size() );
+
+			if( OutTyp == QMetaType::UnknownType )
+			{
+				OutTyp = ItrLst.last().type();
+			}
+		}
+
+		if( !ItrMax || OutTyp == QMetaType::UnknownType )
+		{
+			return;
+		}
+
+		mValOutputArray->setVariantCount( ItrMax );
+
+		switch( OutTyp )
+		{
+			case QMetaType::Double:
+				Operator::sub<double>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::Float:
+				Operator::sub<float>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QPoint:
+				Operator::sub<QPoint>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QPointF:
+				Operator::sub<QPointF>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QSize:
+				Operator::sub<QSize>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QSizeF:
+				Operator::sub<QSizeF>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::Int:
+				Operator::sub<int>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QVector2D:
+				Operator::sub<QVector2D>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QVector3D:
+				Operator::sub<QVector3D>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QVector4D:
+				Operator::sub<QVector4D>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QQuaternion:
+				Operator::sub<QQuaternion>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QMatrix4x4:
+				Operator::sub<QMatrix4x4>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			default:
+				{
+					fugio::MathInterface::MathOperatorFunction	MathFunc = MathPlugin::instance()->findMetaTypeMathOperator( OutTyp, fugio::MathInterface::OP_ADD );
+
+					if( !MathFunc )
+					{
+						return;
+					}
+
+					MathFunc( ItrLst, mValOutputArray, ItrMax );
+				}
+				break;
+		}
 
 		pinUpdated( mPinOutput );
 	}
@@ -244,3 +344,21 @@ T SubtractNode::Operator::sub3(const QList<QSharedPointer<PinInterface> > pInput
 	return( OutVal );
 }
 
+
+template<typename T>
+void SubtractNode::Operator::sub( const QList<PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax )
+{
+	for( int i = 0 ; i < ItrMax ; i++ )
+	{
+		T			OutVal;
+
+		for( int j = 0 ; j < ItrLst.size() ; j++ )
+		{
+			T	NewVal = ItrLst.at( j ).index( i ).value<T>();
+
+			OutVal = ( !j ? NewVal : OutVal - NewVal );
+		}
+
+		OutDst->setVariant( i, OutVal );
+	}
+}

@@ -13,6 +13,8 @@
 FUGIO_NAMESPACE_BEGIN
 
 class PinInterface;
+class PinVariantIterator;
+class VariantInterface;
 
 class MathInterface
 {
@@ -25,7 +27,7 @@ public:
         OP_DIVIDE
     } MathOperator;
 
-    typedef QVariant (*MathOperatorFunction)( const QList< QSharedPointer<PinInterface> > pInputPins );
+	typedef void (*MathOperatorFunction)( const QList<fugio::PinVariantIterator> &pItrLst, fugio::VariantInterface *pOutDst, int pItrMax );
 
     virtual ~MathInterface( void ) {}
 

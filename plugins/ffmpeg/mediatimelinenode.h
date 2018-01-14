@@ -216,6 +216,9 @@ private:
 
 	void setInstanceSampleOffset( qint64 pSampleOffset );
 
+signals:
+	void preloaded( bool pPreloaded );
+
 private:
 	TimelineControlInterface						*mTimelineControl;
 
@@ -241,7 +244,7 @@ private:
 
 	qreal									 mLastImageUpdate;
 
-	QPushButton								*mGUI;
+//	QPushButton								*mGUI;
 
 	bool									 mPreloadAudio;
 

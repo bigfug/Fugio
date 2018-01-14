@@ -92,6 +92,8 @@
 
 #include "pointtransformnode.h"
 #include "pownode.h"
+#include "numberarraynode.h"
+#include "transformnode.h"
 
 MathPlugin *MathPlugin::mInstance = nullptr;
 
@@ -132,6 +134,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "NOT Bits", "Logic", NID_NOT_BITS, &NotBitsNode::staticMetaObject ),
 	ClassEntry( "NOR", "Logic", NID_NOR, &NorNode::staticMetaObject ),
 	ClassEntry( "Normalise", "Vector3", NID_NORMALISE, &NormaliseNode::staticMetaObject ),
+	ClassEntry( "Number Array", NID_NUMBER_ARRAY, &NumberArrayNode::staticMetaObject ),
 	ClassEntry( "OR", "Logic", NID_OR, &OrNode::staticMetaObject ),
 	ClassEntry( "OR Bits", "Logic", NID_OR_BITS, &OrBitsNode::staticMetaObject ),
 	ClassEntry( "Orthographic", "Matrix", NID_MATRIX_ORTHOGRAPHIC, &MatrixOrthographicNode::staticMetaObject ),
@@ -148,6 +151,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Split", "Vector3", NID_SPLIT_VECTOR3, &SplitVector3Node::staticMetaObject ),
 	ClassEntry( "Split", "Vector4", NID_SPLIT_VECTOR4, &SplitVector4Node::staticMetaObject ),
 	ClassEntry( "Subtract", "Math", NID_SUBTRACT, &SubtractNode::staticMetaObject ),
+	ClassEntry( "Transform", "Math", NID_TRANSFORM, &TransformNode::staticMetaObject ),
 	ClassEntry( "Translate", "Matrix", NID_MATRIX_TRANSLATE, &MatrixTranslateNode::staticMetaObject ),
 	ClassEntry( "Vector3", "GUI", NID_VECTOR3, &Vector3Node::staticMetaObject ),
 	ClassEntry( "XNOR", "Logic", NID_XNOR, &XnorNode::staticMetaObject ),
@@ -197,6 +201,9 @@ PluginInterface::InitResult MathPlugin::initialise( fugio::GlobalInterface *pApp
 
 	mApp->registerPinJoiner( PID_VECTOR3, NID_JOIN_VECTOR3 );
 	mApp->registerPinJoiner( PID_VECTOR4, NID_JOIN_VECTOR4 );
+
+	mApp->registerPinForMetaType( PID_VECTOR3, QMetaType::QVector3D );
+	mApp->registerPinForMetaType( PID_VECTOR4, QMetaType::QVector4D );
 
 	return( INIT_OK );
 }

@@ -113,6 +113,8 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 
 		mLastImageFormat = mCurrImageFormat;
 		mLastImageSize   = SrcImg->size();
+
+		clearImage();
 	}
 
 	AVPixelFormat		SrcFmt = AV_PIX_FMT_NONE;
@@ -179,6 +181,14 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 
 			case ImageInterface::FORMAT_YUV420P:
 				SrcFmt = AV_PIX_FMT_YUV420P;
+				break;
+
+			case ImageInterface::FORMAT_YUVJ422P:
+				SrcFmt = AV_PIX_FMT_YUVJ422P;
+				break;
+
+			case ImageInterface::FORMAT_NV12:
+				SrcFmt = AV_PIX_FMT_NV12;
 				break;
 
 			default:

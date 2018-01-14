@@ -24,62 +24,158 @@ MultiplyNode::MultiplyNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	pinInput( "Input", PII_NUMBER2 );
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_VARIANT, PII_RESULT );
+	mValOutputArray = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputArray, PID_VARIANT, PII_RESULT );
 }
 
 void MultiplyNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	QVariant		InputBase = variant( mPinInput );
-	QMetaType::Type	InputType = QMetaType::Type( InputBase.type() );
-
-	QVariant		OutputValue;
-
-	switch( InputType )
+	if( mPinOutputArray->controlUuid() == PID_VARIANT )
 	{
-		case QMetaType::Float:
-		case QMetaType::Double:
-		case QMetaType::Int:
-		case QMetaType::QString:
-			OutputValue = multiplyNumber( mNode->enumInputPins() );
-			break;
+		fugio::VariantInterface				*mValOutput = qobject_cast<fugio::VariantInterface *>( mPinOutputArray->control()->qobject() );
 
-		case QMetaType::QPoint:
-			OutputValue = Operator::op0<QPoint>( mNode->enumInputPins() );
-			break;
+		QVariant		InputBase = variant( mPinInput );
+		QMetaType::Type	InputType = QMetaType::Type( InputBase.type() );
 
-		case QMetaType::QPointF:
-			OutputValue = Operator::op0<QPointF>( mNode->enumInputPins() );
-			break;
+		QVariant		OutputValue;
 
-		case QMetaType::QMatrix4x4:
-			OutputValue = Operator::op1<QMatrix4x4>( mNode->enumInputPins() );
-			break;
+		switch( InputType )
+		{
+			case QMetaType::Float:
+			case QMetaType::Double:
+			case QMetaType::Int:
+			case QMetaType::QString:
+				OutputValue = multiplyNumber( mNode->enumInputPins() );
+				break;
 
-		case QMetaType::QVector3D:
-			OutputValue = Operator::op3<QVector3D>( mNode->enumInputPins() );
-			break;
+			case QMetaType::QPoint:
+				OutputValue = Operator::op0<QPoint>( mNode->enumInputPins() );
+				break;
 
-		default:
-			{
-				fugio::MathInterface::MathOperatorFunction	MathFunc = MathPlugin::instance()->findMetaTypeMathOperator( InputType, fugio::MathInterface::OP_MULTIPLY );
+			case QMetaType::QPointF:
+				OutputValue = Operator::op0<QPointF>( mNode->enumInputPins() );
+				break;
 
-				if( !MathFunc )
+			case QMetaType::QMatrix4x4:
+				OutputValue = Operator::op1<QMatrix4x4>( mNode->enumInputPins() );
+				break;
+
+			case QMetaType::QVector3D:
+				OutputValue = Operator::op3<QVector3D>( mNode->enumInputPins() );
+				break;
+
+			default:
 				{
-					return;
+					fugio::MathInterface::MathOperatorFunction	MathFunc = MathPlugin::instance()->findMetaTypeMathOperator( InputType, fugio::MathInterface::OP_MULTIPLY );
+
+					if( !MathFunc )
+					{
+						return;
+					}
+
+	//				OutputValue = MathFunc( mNode->enumInputPins() );
 				}
+				break;
+		}
 
-				OutputValue = MathFunc( mNode->enumInputPins() );
-			}
-			break;
+		if( OutputValue != mValOutput->variant() )
+		{
+			mValOutput->setVariant( OutputValue );
+
+			pinUpdated( mPinOutputArray );
+		}
 	}
-
-	if( OutputValue != mValOutput->variant() )
+	else
 	{
-		mValOutput->setVariant( OutputValue );
+		QList<fugio::PinVariantIterator>	ItrLst;
+		int									ItrMax = 0;
+		QMetaType::Type						OutTyp = QMetaType::UnknownType;
 
-		pinUpdated( mPinOutput );
+		for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
+		{
+			ItrLst << fugio::PinVariantIterator( P );
+
+			ItrMax = std::max( ItrMax, ItrLst.last().size() );
+
+			if( OutTyp == QMetaType::UnknownType )
+			{
+				OutTyp = ItrLst.last().type();
+			}
+		}
+
+		if( !ItrMax || OutTyp == QMetaType::UnknownType )
+		{
+			return;
+		}
+
+		mValOutputArray->setVariantCount( ItrMax );
+
+		switch( OutTyp )
+		{
+			case QMetaType::Double:
+				Operator::mul<double>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::Float:
+				Operator::mul<float>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QPoint:
+				Operator::mul<QPoint,int>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QPointF:
+				Operator::mul<QPointF,qreal>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QSize:
+				Operator::mul<QSize, int>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QSizeF:
+				Operator::mul<QSizeF, qreal>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::Int:
+				Operator::mul<int>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QVector2D:
+				Operator::muls<QVector2D,float>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QVector3D:
+				Operator::muls<QVector3D,float>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QVector4D:
+				Operator::muls<QVector4D>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QQuaternion:
+				Operator::muls<QQuaternion,float>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			case QMetaType::QMatrix4x4:
+				Operator::muls<QMatrix4x4>( ItrLst, mValOutputArray, ItrMax );
+				break;
+
+			default:
+				{
+					fugio::MathInterface::MathOperatorFunction	MathFunc = MathPlugin::instance()->findMetaTypeMathOperator( OutTyp, fugio::MathInterface::OP_MULTIPLY );
+
+					if( !MathFunc )
+					{
+						return;
+					}
+
+					MathFunc( ItrLst, mValOutputArray, ItrMax );
+				}
+				break;
+		}
+
+		pinUpdated( mPinOutputArray );
 	}
 }
 
@@ -363,4 +459,45 @@ T MultiplyNode::Operator::op0(const QList<QSharedPointer<PinInterface> > pInputP
 	}
 
 	return( OutVal );
+}
+
+template<typename T, typename S>
+void MultiplyNode::Operator::mul( const QList<PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax )
+{
+	for( int i = 0 ; i < ItrMax ; i++ )
+	{
+		T			OutVal = ItrLst.at( 0 ).index( i ).value<T>();
+
+		for( int j = 1 ; j < ItrLst.size() ; j++ )
+		{
+			OutVal *= ItrLst.at( 0 ).index( i ).value<S>();
+		}
+
+		OutDst->setVariant( i, OutVal );
+	}
+}
+
+template<typename T, typename S>
+void MultiplyNode::Operator::muls(const QList<PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax)
+{
+	for( int i = 0 ; i < ItrMax ; i++ )
+	{
+		T			OutVal = ItrLst.at( 0 ).index( i ).value<T>();
+
+		for( int j = 1 ; j < ItrLst.size() ; j++ )
+		{
+			const QVariant	V = ItrLst.at( j ).index( i );
+
+			if( V.canConvert<T>() )
+			{
+				OutVal *= V.value<T>();
+			}
+			else
+			{
+				OutVal *= V.value<S>();
+			}
+		}
+
+		OutDst->setVariant( i, OutVal );
+	}
 }

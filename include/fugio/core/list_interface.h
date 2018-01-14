@@ -18,6 +18,8 @@ public:
 
 	virtual QUuid listPinControl( void ) const = 0;
 
+	virtual QMetaType::Type listType( void ) const = 0;
+
 	virtual QVariant listIndex( int pIndex ) const = 0;
 
 	virtual void listSetIndex( int pIndex, const QVariant &pValue ) = 0;

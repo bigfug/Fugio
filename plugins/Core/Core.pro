@@ -53,18 +53,14 @@ SOURCES += \
 	duplicatepinsnode.cpp \
 	lastupdatedinputnode.cpp \
 	counternode.cpp \
-	stringlistpin.cpp \
 	listsizenode.cpp \
 	listindexnode.cpp \
 	framedelaynode.cpp \
 	typesizenode.cpp \
-	bytearraylistpin.cpp \
 	switchnode.cpp \
 	floatthresholdnode.cpp \
 	smoothnode.cpp \
 	autorangenode.cpp \
-	variantlistpin.cpp \
-	arraylistpin.cpp \
 	rectpin.cpp \
 	getsizenode.cpp \
 	triggerarraynode.cpp \
@@ -77,7 +73,8 @@ SOURCES += \
 	booltobitsnode.cpp \
     linepin.cpp \
     joinpointnode.cpp \
-    joinrectnode.cpp
+    joinrectnode.cpp \
+    transformpin.cpp
 
 HEADERS += \
 	stringpin.h \
@@ -123,19 +120,15 @@ HEADERS += \
 	duplicatepinsnode.h \
 	lastupdatedinputnode.h \
 	counternode.h \
-	stringlistpin.h \
 	listsizenode.h \
 	listindexnode.h \
 	framedelaynode.h \
 	typesizenode.h \
-	bytearraylistpin.h \
 	switchnode.h \
 	floatthresholdnode.h \
 	smoothnode.h \
 	autorangenode.h \
-	variantlistpin.h \
 	../../include/fugio/core/array_list_interface.h \
-	arraylistpin.h \
 	arraylistentry.h \
 	rectpin.h \
 	../../include/fugio/core/size_interface.h \
@@ -150,7 +143,8 @@ HEADERS += \
 	booltobitsnode.h \
     linepin.h \
     joinpointnode.h \
-    joinrectnode.h
+    joinrectnode.h \
+    transformpin.h
 
 RESOURCES += \
     resources.qrc

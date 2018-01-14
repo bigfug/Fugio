@@ -1,7 +1,7 @@
 #include "bytearraypin.h"
 
 ByteArrayPin::ByteArrayPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin )
+	: PinControlBase( pPin ), mValues( 1 )
 {
 }
 
@@ -18,12 +18,12 @@ int ByteArrayPin::sizeDimensions() const
 
 float ByteArrayPin::size(int pDimension) const
 {
-	return( pDimension == 0 ? mValue.size() : 0 );
+	return( pDimension == 0 ? mValues.first().size() : 0 );
 }
 
 float ByteArrayPin::sizeWidth() const
 {
-	return( mValue.size() );
+	return( mValues.first().size() );
 }
 
 float ByteArrayPin::sizeHeight() const
@@ -38,10 +38,10 @@ float ByteArrayPin::sizeDepth() const
 
 QSizeF ByteArrayPin::toSizeF() const
 {
-	return( QSizeF( mValue.size(), 0 ) );
+	return( QSizeF( mValues.first().size(), 0 ) );
 }
 
 QVector3D ByteArrayPin::toVector3D() const
 {
-	return( QVector3D( mValue.size(), 0, 0 ) );
+	return( QVector3D( mValues.first().size(), 0, 0 ) );
 }

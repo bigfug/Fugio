@@ -47,9 +47,9 @@ private:
 	fugio::FilenameInterface					*mValInputFilename;
 
 	QSharedPointer<fugio::PinInterface>			 mPinImage;
-	fugio::ImageInterface							*mImage;
+	fugio::VariantInterface						*mImage;
 
-	QImage									 mImageData;
+	QImage										 mImageData;
 };
 
 #endif // IMAGELOADERNODE_H

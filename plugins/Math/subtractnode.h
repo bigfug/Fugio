@@ -5,7 +5,9 @@
 
 #include <fugio/nodecontrolbase.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/array_interface.h>
+
+#include <fugio/pin_variant_iterator.h>
 
 class SubtractNode : public fugio::NodeControlBase
 {
@@ -18,9 +20,10 @@ class SubtractNode : public fugio::NodeControlBase
 
 	class Operator
 	{
-		public:
-			template<typename T> static T sub2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-			template<typename T> static T sub3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+	public:
+		template<typename T> static T sub2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+		template<typename T> static T sub3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+		template<typename T> static void sub( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
 	};
 
 public:
@@ -40,10 +43,10 @@ private:
 	static QVariant subtractNumber( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
 
 protected:
-	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::VariantInterface						*mValOutput;
-
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
+
+	QSharedPointer<fugio::PinInterface>			 mPinOutput;
+	fugio::VariantInterface						*mValOutputArray;
 };
 
 #endif // SUBTRACTNODE_H
