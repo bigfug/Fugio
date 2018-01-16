@@ -26,70 +26,99 @@ void ListIndexNode::inputsUpdated( qint64 pTimeStamp )
 
 	const int					 LstIdx = variant( mPinInputIndex ).toInt();
 
-	fugio::ArrayListInterface	*ArLInf = input<fugio::ArrayListInterface *>( mPinInputList );
+	fugio::VariantInterface		*VarOut = qobject_cast<fugio::VariantInterface *>( mPinOutputValue->control()->qobject() );
 
-	if( ArLInf )
+	fugio::VariantInterface		*VarInf = input<fugio::VariantInterface *>( mPinInputList );
+
+	if( VarInf )
 	{
-		if( LstIdx < 0 || LstIdx >= ArLInf->count() )
+		if( LstIdx < 0 || LstIdx >= VarInf->variantCount() )
 		{
 			return;
 		}
 
-		fugio::ArrayInterface	*SrcArr = ArLInf->arrayIndex( LstIdx );
+		QVariant				 VarVal = VarInf->variant( LstIdx );
 
-		fugio::ArrayInterface	*DstInf = qobject_cast<fugio::ArrayInterface *>( mPinOutputValue->control()->qobject() );
-
-		if( mPinOutputValue->controlUuid() != PID_ARRAY )
+		if( VarOut->variant() != VarVal )
 		{
-			mNode->context()->updatePinControl( mPinOutputValue, PID_ARRAY );
+			if( mPinOutputValue->controlUuid() != VarInf->variantPinControl() )
+			{
+				mNode->context()->updatePinControl( mPinOutputValue, VarInf->variantPinControl() );
 
-			DstInf = qobject_cast<fugio::ArrayInterface *>( mPinOutputValue->control()->qobject() );
-		}
+				VarOut = qobject_cast<fugio::VariantInterface *>( mPinOutputValue->control()->qobject() );
+			}
 
-		if( DstInf )
-		{
-			DstInf->setArray( SrcArr->array() );
-			DstInf->setCount( SrcArr->count() );
-			DstInf->setSize( SrcArr->size() );
-			DstInf->setStride( SrcArr->stride() );
-			DstInf->setType( SrcArr->type() );
+			if( VarOut )
+			{
+				VarOut->setVariant( VarVal );
 
-			pinUpdated( mPinOutputValue );
-		}
-
-		return;
-	}
-
-	fugio::ListInterface	*LstInf = input<fugio::ListInterface *>( mPinInputList );
-
-	if( !LstInf )
-	{
-		return;
-	}
-
-	if( LstIdx < 0 || LstIdx >= LstInf->listSize() )
-	{
-		return;
-	}
-
-	QVariant				 LstVal = LstInf->listIndex( LstIdx );
-
-	fugio::VariantInterface	*VarInf = qobject_cast<fugio::VariantInterface *>( mPinOutputValue->control()->qobject() );
-
-	if( VarInf && VarInf->variant() != LstVal )
-	{
-		if( mPinOutputValue->controlUuid() != LstInf->listPinControl() )
-		{
-			mNode->context()->updatePinControl( mPinOutputValue, LstInf->listPinControl() );
-
-			VarInf = qobject_cast<fugio::VariantInterface *>( mPinOutputValue->control()->qobject() );
-		}
-
-		if( VarInf )
-		{
-			VarInf->setVariant( LstVal );
-
-			pinUpdated( mPinOutputValue );
+				pinUpdated( mPinOutputValue );
+			}
 		}
 	}
+
+//	fugio::ArrayListInterface	*ArLInf = input<fugio::ArrayListInterface *>( mPinInputList );
+
+//	if( ArLInf )
+//	{
+//		if( LstIdx < 0 || LstIdx >= ArLInf->count() )
+//		{
+//			return;
+//		}
+
+//		fugio::ArrayInterface	*SrcArr = ArLInf->arrayIndex( LstIdx );
+
+//		fugio::ArrayInterface	*DstInf = qobject_cast<fugio::ArrayInterface *>( mPinOutputValue->control()->qobject() );
+
+//		if( mPinOutputValue->controlUuid() != PID_ARRAY )
+//		{
+//			mNode->context()->updatePinControl( mPinOutputValue, PID_ARRAY );
+
+//			DstInf = qobject_cast<fugio::ArrayInterface *>( mPinOutputValue->control()->qobject() );
+//		}
+
+//		if( DstInf )
+//		{
+//			DstInf->setArray( SrcArr->array() );
+//			DstInf->setCount( SrcArr->count() );
+//			DstInf->setSize( SrcArr->size() );
+//			DstInf->setStride( SrcArr->stride() );
+//			DstInf->setType( SrcArr->type() );
+
+//			pinUpdated( mPinOutputValue );
+//		}
+
+//		return;
+//	}
+
+//	fugio::ListInterface	*LstInf = input<fugio::ListInterface *>( mPinInputList );
+
+//	if( !LstInf )
+//	{
+//		return;
+//	}
+
+//	if( LstIdx < 0 || LstIdx >= LstInf->listSize() )
+//	{
+//		return;
+//	}
+
+//	QVariant				 LstVal = LstInf->listIndex( LstIdx );
+
+//	if( VarInf && VarInf->variant() != LstVal )
+//	{
+//		if( mPinOutputValue->controlUuid() != LstInf->listPinControl() )
+//		{
+//			mNode->context()->updatePinControl( mPinOutputValue, LstInf->listPinControl() );
+
+//			VarInf = qobject_cast<fugio::VariantInterface *>( mPinOutputValue->control()->qobject() );
+//		}
+
+//		if( VarInf )
+//		{
+//			VarInf->setVariant( LstVal );
+
+//			pinUpdated( mPinOutputValue );
+//		}
+//	}
 }
