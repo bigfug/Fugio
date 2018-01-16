@@ -11,7 +11,6 @@ set( SOURCE_FILES
 	colourpin.h
 	colourplugin.h
 	splitcolourhslanode.h
-	colourlistpin.h
 	splitcolourrgbanode.h
 	joincolourrgbanode.h
 	joincolourhslanode.h
@@ -20,7 +19,6 @@ set( SOURCE_FILES
 	colourpin.cpp
 	colourplugin.cpp
 	splitcolourhslanode.cpp
-	colourlistpin.cpp
 	splitcolourrgbanode.cpp
 	joincolourrgbanode.cpp
 	joincolourhslanode.cpp

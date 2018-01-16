@@ -41,18 +41,14 @@ set( SOURCE_FILES
     duplicatepinsnode.cpp
     lastupdatedinputnode.cpp
     counternode.cpp
-    stringlistpin.cpp
     listsizenode.cpp
     listindexnode.cpp
     framedelaynode.cpp
     typesizenode.cpp
-    bytearraylistpin.cpp
     switchnode.cpp
     floatthresholdnode.cpp
     smoothnode.cpp
     autorangenode.cpp
-    variantlistpin.cpp
-    arraylistpin.cpp
     rectpin.cpp
     getsizenode.cpp
     triggerarraynode.cpp
@@ -65,7 +61,6 @@ set( SOURCE_FILES
     ../../include/fugio/core/list_interface.h
     ../../include/fugio/core/struct_entry_interface.h
     ../../include/fugio/core/array_list_interface.h
-    arraylistpin.h
     arraylistentry.h
 	bitstoboolnode.cpp
 	bitstoboolnode.h
