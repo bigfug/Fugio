@@ -10,7 +10,8 @@
 #include "coreplugin.h"
 
 ArrayPin::ArrayPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), VariantHelper( QMetaType::Type( qMetaTypeId<ArrayListEntry>() ), PID_ARRAY )
+	: PinControlBase( pPin ), mData( nullptr ), mType( QMetaType::UnknownType ), mStride( 0 ),
+	  mCount( 0 ), mSize( 0 ), mReserve( 0 )
 {
 
 }
@@ -20,14 +21,4 @@ QString ArrayPin::toString() const
 //	return( QString( "<p>Type: %1</p><p>Count: %2</p><p>Size: %3</p><p>Total Size: %4</p>" ).arg( QString( QMetaType::typeName( type() ) ) ).arg( count() ).arg( size() ).arg( count() * stride() ) );
 
 	return( QString() );
-}
-
-void ArrayPin::loadSettings( QSettings &pSettings )
-{
-//	mArray = pSettings.value( "array", mArray ).toByteArray();
-}
-
-void ArrayPin::saveSettings( QSettings &pSettings ) const
-{
-//	pSettings.setValue( "array", mArray );
 }

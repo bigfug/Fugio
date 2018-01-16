@@ -35,6 +35,8 @@ public:
 
 	virtual int variantStride( void ) const = 0;
 
+	virtual int variantArraySize( void ) const = 0;
+
 
 	virtual void setVariant( const QVariant &pValue ) = 0;
 
@@ -52,7 +54,6 @@ public:
 	virtual void setFromBaseVariant( int pIndex, int pOffset, const QVariant &pValue ) = 0;
 
 	virtual QVariant baseVariant( int pIndex = 0, int pOffset = 0 ) const = 0;
-
 
 
 	virtual void variantClear( void ) = 0;
