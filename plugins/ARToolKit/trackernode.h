@@ -8,7 +8,6 @@
 #include <fugio/artoolkit/param_interface.h>
 
 #include <fugio/math/matrix_interface.h>
-#include <fugio/core/array_interface.h>
 
 #if defined( ARTOOLKIT_SUPPORTED )
 #include <AR/ar.h>
@@ -83,7 +82,7 @@ protected:
 	fugio::VariantInterface						*mValOutputCenter;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputPoints;
-	fugio::ArrayInterface						*mValOutputPoints;
+	fugio::VariantInterface						*mValOutputPoints;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputConfidence;
 	fugio::VariantInterface						*mValOutputConfidence;

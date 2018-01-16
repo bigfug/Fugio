@@ -5,8 +5,6 @@
 
 #include <fugio/nodecontrolbase.h>
 
-#include <fugio/core/array_interface.h>
-
 class MakeArrayNode : public fugio::NodeControlBase
 {
 	Q_OBJECT

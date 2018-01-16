@@ -16,14 +16,10 @@ PolygonNode::PolygonNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputRadius = pinInput( tr( "Radius" ), PIN_INPUT_RADIUS );
 
-	mValOutputPoints = pinOutput<fugio::ArrayInterface *>( tr( "Points" ), mPinOutputPoints, PID_ARRAY, PIN_OUTPUT_POINTS );
+	mValOutputPoints = pinOutput<fugio::VariantInterface *>( tr( "Points" ), mPinOutputPoints, PID_POINT, PIN_OUTPUT_POINTS );
 
 	mPinInputSides->setValue( 3 );
 	mPinInputRadius->setValue( mRadius );
-
-	mValOutputPoints->setType( QMetaType::QPointF );
-	mValOutputPoints->setSize( 1 );
-	mValOutputPoints->setStride( sizeof( QPointF ) );
 }
 
 void PolygonNode::inputsUpdated( qint64 pTimeStamp )
@@ -44,20 +40,19 @@ void PolygonNode::inputsUpdated( qint64 pTimeStamp )
 		Radius = std::sqrt( 2.0f );
 	}
 
-	if( mValOutputPoints->size() != Sides || mRadius != Radius )
+	if( mValOutputPoints->variantCount() != Sides || mRadius != Radius )
 	{
-		mValOutputPoints->setCount( Sides );
+		mValOutputPoints->setVariantCount( Sides );
 
 		const bool		 SidesEven = !( Sides % 2 );
 		const float		 Div = ( 2.0f * M_PI ) / float( Sides );
-		QPointF			*Arr = (QPointF *)mValOutputPoints->array();
 		const float		 Offset = ( SidesEven ? Div * 0.5f : 0.0f );
 
 		for( int i = 0 ; i < Sides ; i++ )
 		{
 			const float	A = ( float( i ) * Div ) + Offset;
 
-			*Arr++ = QPointF( std::sin( A ) * Radius, std::cos( A ) * Radius );
+			mValOutputPoints->setVariant( i, QPointF( std::sin( A ) * Radius, std::cos( A ) * Radius ) );
 		}
 
 		mRadius = Radius;

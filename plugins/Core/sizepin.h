@@ -7,11 +7,11 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/variant_helper.h>
 
 #include <fugio/pincontrolbase.h>
 
-class SizePin : public fugio::PinControlBase, public fugio::VariantInterface
+class SizePin : public fugio::PinControlBase, public fugio::VariantHelper<QSizeF>
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface )
@@ -43,71 +43,28 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::VariantInterface
 
-	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
+	virtual void setFromBaseVariant( int pIndex, int pOffset, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		setVariant( 0, pValue );
-	}
-
-	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		mValues[ pIndex ] = pValue.toSizeF();
-	}
-
-	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
-	{
-		return( QVariant::fromValue<QSizeF>( mValues[ pIndex ] ) );
-	}
-
-	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
-	{
-		mValues.resize( pCount );
-	}
-
-	virtual int variantCount( void ) const Q_DECL_OVERRIDE
-	{
-		return( mValues.size() );
-	}
-
-	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
-	{
-		return( QMetaType::QSizeF );
-	}
-
-	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setFromBaseVariant( 0, pValue );
-	}
-
-	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
+		const int			i = variantIndex( pIndex, pOffset );
 		QList<QVariant>     L = pValue.toList();
 		QSizeF				V;
 
 		if( L.size() > 0 ) V.setWidth( L.at( 0 ).toReal() );
 		if( L.size() > 1 ) V.setHeight( L.at( 1 ).toReal() );
 
-		mValues[ pIndex ] = V;
+		mValues[ i ] = V;
 	}
 
-	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
+	virtual QVariant baseVariant( int pIndex, int pOffset ) const Q_DECL_OVERRIDE
 	{
 		QList<QVariant>		L;
-		QSizeF				V = mValues.at( pIndex );
+		QSizeF				V = mValues.at( variantIndex( pIndex, pOffset ) );
 
 		L << V.width();
 		L << V.height();
 
 		return( L );
 	}
-
-	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
-	{
-
-	}
-
-private:
-	QVector<QSizeF>		mValues;
 };
-
 
 #endif // SIZEPIN_H

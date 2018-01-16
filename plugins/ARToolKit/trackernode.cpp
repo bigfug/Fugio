@@ -51,14 +51,11 @@ TrackerNode::TrackerNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mValOutputCenter = pinOutput<fugio::VariantInterface *>( "Center", mPinOutputCenter, PID_POINT, PIN_OUTPUT_CENTER );
 
-	mValOutputPoints = pinOutput<fugio::ArrayInterface *>( "Points", mPinOutputPoints, PID_ARRAY, PIN_OUTPUT_POINTS );
+	mValOutputPoints = pinOutput<fugio::VariantInterface *>( "Points", mPinOutputPoints, PID_POINT, PIN_OUTPUT_POINTS );
 
 	mValOutputConfidence = pinOutput<fugio::VariantInterface *>( "Confidence", mPinOutputConfidence, PID_FLOAT, PIN_OUTPUT_CONFIDENCE );
 
-	mValOutputPoints->setSize( 1 );
-	mValOutputPoints->setStride( sizeof( float ) * 2 );
-	mValOutputPoints->setType( QMetaType::QPointF );
-	mValOutputPoints->setCount( 4 );
+	mValOutputPoints->setVariantCount( 4 );
 }
 
 bool TrackerNode::deinitialise()

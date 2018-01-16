@@ -8,7 +8,7 @@
 #include <QObject>
 
 #include <fugio/lua/lua_interface.h>
-#include <fugio/core/array_interface.h>
+#include <fugio/core/variant_interface.h>
 
 class LuaArray
 {
@@ -68,7 +68,7 @@ private:
 
 	static int setIndex( lua_State *L, LuaArrayUserData *LstDat, const int LstIdx );
 	static int setTable( lua_State *L, LuaArrayUserData *LstDat );
-	static void setArrayIndex( lua_State *L, fugio::ArrayInterface *ArrInt, int LstIdx, int ValIdx );
+	static void setArrayIndex( lua_State *L, fugio::VariantInterface *ArrInt, int LstIdx, int ValIdx );
 
 private:
 	static int luaGet( lua_State *L );

@@ -7,11 +7,11 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/variant_helper.h>
 
 #include <fugio/pincontrolbase.h>
 
-class Size3dPin : public fugio::PinControlBase, public fugio::VariantInterface
+class Size3dPin : public fugio::PinControlBase, public fugio::VariantHelper<QVector3D>
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface )
@@ -43,42 +43,7 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::VariantInterface
 
-	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setVariant( 0, pValue );
-	}
-
-	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		mValues[ pIndex ] = pValue.value<QVector3D>();
-	}
-
-	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
-	{
-		return( QVariant::fromValue<QVector3D>( mValues[ pIndex ] ) );
-	}
-
-	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
-	{
-		mValues.resize( pCount );
-	}
-
-	virtual int variantCount( void ) const Q_DECL_OVERRIDE
-	{
-		return( mValues.size() );
-	}
-
-	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
-	{
-		return( QMetaType::QVector3D );
-	}
-
-	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setFromBaseVariant( 0, pValue );
-	}
-
-	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
+	virtual void setFromBaseVariant( int pIndex, int pOffset, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
 		QList<QVariant>     L = pValue.toList();
 		QVector3D			V;
@@ -87,13 +52,13 @@ public:
 		if( L.size() > 1 ) V.setY( L.at( 1 ).toReal() );
 		if( L.size() > 1 ) V.setZ( L.at( 2 ).toReal() );
 
-		mValues[ pIndex ] = V;
+		mValues[ variantIndex( pIndex, pOffset ) ] = V;
 	}
 
-	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
+	virtual QVariant baseVariant( int pIndex, int pOffset ) const Q_DECL_OVERRIDE
 	{
 		QList<QVariant>		L;
-		QVector3D			V = mValues.at( pIndex );
+		QVector3D			V = mValues.at( variantIndex( pIndex, pOffset ) );
 
 		L << V.x();
 		L << V.y();
@@ -101,14 +66,6 @@ public:
 
 		return( L );
 	}
-
-	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
-	{
-
-	}
-
-private:
-	QVector<QVector3D>		mValues;
 };
 
 

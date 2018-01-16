@@ -7,11 +7,11 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/variant_helper.h>
 
 #include <fugio/pincontrolbase.h>
 
-class RectPin : public fugio::PinControlBase, public fugio::VariantInterface
+class RectPin : public fugio::PinControlBase, public fugio::VariantHelper<QRectF>
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface )
@@ -40,58 +40,37 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::VariantInterface
 
-	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
+	virtual void setFromBaseVariant( int pIndex, int pOffset, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		setVariant( 0, pValue );
-	}
-
-	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		mValues[ pIndex ] = pValue.toRectF();
-	}
-
-	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
-	{
-		return( QVariant::fromValue<QRectF>( mValues[ pIndex ] ) );
-	}
-
-	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
-	{
-		mValues.resize( pCount );
-	}
-
-	virtual int variantCount( void ) const Q_DECL_OVERRIDE
-	{
-		return( mValues.size() );
-	}
-
-	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
-	{
-		return( QMetaType::QRectF );
-	}
-
-	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setFromBaseVariant( 0, pValue );
-	}
-
-	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		QList<QVariant>		L = pValue.toList();
 		QRectF				V;
 
-		if( L.size() > 0 ) V.setX( L.at( 0 ).toReal() );
-		if( L.size() > 1 ) V.setY( L.at( 1 ).toReal() );
-		if( L.size() > 2 ) V.setWidth( L.at( 0 ).toReal() );
-		if( L.size() > 3 ) V.setHeight( L.at( 1 ).toReal() );
+		if( QMetaType::Type( pValue.type() ) == QMetaType::QVariantMap )
+		{
+			const QVariantMap		M = pValue.toMap();
 
-		mValues[ pIndex ] = V;
+			V.setX( M.value( "x", V.x() ).toReal() );
+			V.setY( M.value( "y", V.y() ).toReal() );
+
+			V.setWidth( M.value( "width", V.width() ).toReal() );
+			V.setHeight( M.value( "height", V.height() ).toReal() );
+		}
+		else if( QMetaType::Type( pValue.type() ) == QMetaType::QVariantList )
+		{
+			const QVariantList		L = pValue.toList();
+
+			if( L.size() > 0 ) V.setX( L.at( 0 ).toReal() );
+			if( L.size() > 1 ) V.setY( L.at( 1 ).toReal() );
+			if( L.size() > 2 ) V.setWidth( L.at( 0 ).toReal() );
+			if( L.size() > 3 ) V.setHeight( L.at( 1 ).toReal() );
+		}
+
+		mValues[ variantIndex( pIndex, pOffset ) ] = V;
 	}
 
-	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
+	virtual QVariant baseVariant( int pIndex, int pOffset ) const Q_DECL_OVERRIDE
 	{
 		QList<QVariant>		L;
-		QRectF				V = mValues.at( pIndex );
+		QRectF				V = mValues.at( variantIndex( pIndex, pOffset ) );
 
 		L << V.x();
 		L << V.y();
@@ -100,14 +79,6 @@ public:
 
 		return( L );
 	}
-
-	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
-	{
-
-	}
-
-private:
-	QVector<QRectF>		mValues;
 };
 
 #endif // RECTPIN_H

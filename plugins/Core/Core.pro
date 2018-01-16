@@ -74,7 +74,8 @@ SOURCES += \
     linepin.cpp \
     joinpointnode.cpp \
     joinrectnode.cpp \
-    transformpin.cpp
+    transformpin.cpp \
+    polygonpin.cpp
 
 HEADERS += \
 	stringpin.h \
@@ -111,6 +112,7 @@ HEADERS += \
 	envelopenode.h \
 	numberspreadnode.h \
 	../../include/fugio/core/variant_interface.h \
+	../../include/fugio/core/variant_helper.h \
 	../../include/fugio/core/array_interface.h \
 	../../include/fugio/core/list_interface.h \
 	../../include/fugio/core/struct_entry_interface.h \
@@ -144,7 +146,8 @@ HEADERS += \
     linepin.h \
     joinpointnode.h \
     joinrectnode.h \
-    transformpin.h
+    transformpin.h \
+    polygonpin.h
 
 RESOURCES += \
     resources.qrc

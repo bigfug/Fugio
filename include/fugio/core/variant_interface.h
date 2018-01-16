@@ -19,21 +19,52 @@ public:
 
 	virtual QMetaType::Type variantType( void ) const = 0;
 
+	virtual QUuid variantPinControl( void ) const = 0;
+
 	virtual void setVariantCount( int pCount ) = 0;
 
 	virtual int variantCount( void ) const = 0;
+
+	virtual void setVariantElementCount( int pElementCount ) = 0;
+
+	virtual int variantElementCount( void ) const = 0;
+
+	virtual void variantReserve( int pCount ) = 0;
+
+	virtual void variantSetStride( int pStride ) = 0;
+
+	virtual int variantStride( void ) const = 0;
+
 
 	virtual void setVariant( const QVariant &pValue ) = 0;
 
 	virtual void setVariant( int pIndex, const QVariant &pValue ) = 0;
 
-	virtual QVariant variant( int pIndex = 0 ) const = 0;
+	virtual void setVariant( int pIndex, int pOffset, const QVariant &pValue ) = 0;
+
+	virtual QVariant variant( int pIndex = 0, int pOffset = 0 ) const = 0;
+
 
 	virtual void setFromBaseVariant( const QVariant &pValue ) = 0;
 
 	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) = 0;
 
-	virtual QVariant baseVariant( int pIndex = 0 ) const = 0;
+	virtual void setFromBaseVariant( int pIndex, int pOffset, const QVariant &pValue ) = 0;
+
+	virtual QVariant baseVariant( int pIndex = 0, int pOffset = 0 ) const = 0;
+
+
+
+	virtual void variantClear( void ) = 0;
+
+	virtual void variantAppend( const QVariant &pValue ) = 0;
+
+
+	virtual void *variantArray( void ) = 0;
+
+	virtual const void *variantArray( void ) const = 0;
+
+	virtual void variantSetArray( void *pArray ) = 0;
 };
 
 FUGIO_NAMESPACE_END

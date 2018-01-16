@@ -6,13 +6,13 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/variant_helper.h>
 
 #include <fugio/pincontrolbase.h>
 
 #include <fugio/serialise_interface.h>
 
-class StringPin : public fugio::PinControlBase, public fugio::VariantInterface
+class StringPin : public fugio::PinControlBase, public fugio::VariantHelper<QString>
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface )
@@ -63,36 +63,6 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::VariantInterface
 
-	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setVariant( 0, pValue );
-	}
-
-	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		mValues[ pIndex ] = pValue.toString();
-	}
-
-	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
-	{
-		return( QVariant::fromValue<QString>( mValues[ pIndex ] ) );
-	}
-
-	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
-	{
-		mValues.resize( pCount );
-	}
-
-	virtual int variantCount( void ) const Q_DECL_OVERRIDE
-	{
-		return( mValues.size() );
-	}
-
-	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
-	{
-		return( QMetaType::QString );
-	}
-
 	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
 		setFromBaseVariant( 0, pValue );
@@ -103,21 +73,16 @@ public:
 		setVariant( pIndex, pValue );
 	}
 
-	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
+	virtual QVariant baseVariant( int pIndex, int pOffset ) const Q_DECL_OVERRIDE
 	{
-		return( variant( pIndex ) );
-	}
-
-	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
-	{
-
+		return( variant( pIndex, pOffset ) );
 	}
 
 signals:
 //	void valueChanged( const QString &pValue );
 
 private:
-	QVector<QString>			mValues;
+//	QVector<QString>			mValues;
 };
 
 #endif // STRINGPIN_H

@@ -10,7 +10,7 @@
 #include "coreplugin.h"
 
 ArrayPin::ArrayPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mValues( 1 )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::Type( qMetaTypeId<ArrayListEntry>() ), PID_ARRAY )
 {
 
 }
