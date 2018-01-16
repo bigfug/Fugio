@@ -80,6 +80,11 @@ public:
 		return( mSyntaxErrors.isEmpty() );
 	}
 
+	virtual QMetaType::Type listType( void ) const Q_DECL_OVERRIDE
+	{
+		return( QMetaType::Type( QMetaType::type( "fugio::SyntaxError" ) ) );
+	}
+
 	// SizeInterface interface
 public:
 	virtual int sizeDimensions() const Q_DECL_OVERRIDE;

@@ -137,6 +137,8 @@ int ARToolKitPlugin::luaOpen( lua_State *L )
 int ARToolKitPlugin::luaParamLoad( lua_State *L )
 {
 #if !defined( ARTOOLKIT_SUPPORTED )
+	Q_UNUSED( L )
+
 	return( 0 );
 #else
 	const char	*Filename = luaL_checkstring( L, 1 );

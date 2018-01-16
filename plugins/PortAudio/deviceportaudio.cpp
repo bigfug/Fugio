@@ -425,7 +425,12 @@ void DevicePortAudio::deviceOutputOpen( const PaDeviceInfo *DevInf )
 	StrPrm.device           = mDeviceIndex;
 	StrPrm.channelCount     = DevInf->maxOutputChannels;
 	StrPrm.sampleFormat     = paNonInterleaved | paFloat32;
+
+#if defined( Q_OS_RASPBERRY_PI )
+	StrPrm.suggestedLatency = DevInf->defaultHighOutputLatency;
+#else
 	StrPrm.suggestedLatency = DevInf->defaultLowOutputLatency;
+#endif
 
 	if( Pa_OpenStream( &mStreamOutput, 0, &StrPrm, outputSampleRate(), paFramesPerBufferUnspecified, paNoFlag, &DevicePortAudio::streamCallbackStatic, this ) != paNoError )
 	{

@@ -16,7 +16,7 @@ class BoolPin : public fugio::PinControlBase, public fugio::VariantInterface, pu
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface )
-	Q_PROPERTY( bool mValue READ value WRITE setValue NOTIFY valueChanged )
+//	Q_PROPERTY( bool mValue READ value WRITE setValue NOTIFY valueChanged )
 
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
@@ -32,27 +32,27 @@ public:
 	//-------------------------------------------------------------------------
 	// Q_PROPERTY
 
-	Q_INVOKABLE bool value( void ) const
-	{
-		return( mValue );
-	}
+//	Q_INVOKABLE bool value( void ) const
+//	{
+//		return( mValue );
+//	}
 
-	Q_INVOKABLE void setValue( bool pValue )
-	{
-		if( pValue != mValue )
-		{
-			mValue = pValue;
+//	Q_INVOKABLE void setValue( bool pValue )
+//	{
+//		if( pValue != mValue )
+//		{
+//			mValue = pValue;
 
-			emit valueChanged( pValue );
-		}
-	}
+//			emit valueChanged( pValue );
+//		}
+//	}
 
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString( "%1" ).arg( mValue ) );
+		return( QString( "%1" ).arg( mValues.first() ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
@@ -65,22 +65,52 @@ public:
 
 	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		setValue( pValue.toBool() );
+		setVariant( 0, pValue );
 	}
 
-	virtual QVariant variant( void ) const Q_DECL_OVERRIDE
+	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		return( QVariant::fromValue<bool>( mValue ) );
+		mValues[ pIndex ] = pValue.toBool();
+	}
+
+	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
+	{
+		return( QVariant::fromValue<bool>( mValues[ pIndex ] ) );
+	}
+
+	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
+	{
+		mValues.resize( pCount );
+	}
+
+	virtual int variantCount( void ) const Q_DECL_OVERRIDE
+	{
+		return( mValues.size() );
+	}
+
+	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
+	{
+		return( QMetaType::Bool );
 	}
 
 	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		setVariant( pValue );
+		setFromBaseVariant( 0, pValue );
 	}
 
-	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE
+	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		return( variant() );
+		setVariant( pIndex, pValue );
+	}
+
+	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
+	{
+		return( variant( pIndex ) );
+	}
+
+	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
+	{
+
 	}
 
 	//-------------------------------------------------------------------------
@@ -88,23 +118,47 @@ public:
 
 	virtual void serialise( QDataStream &pDataStream ) const Q_DECL_OVERRIDE
 	{
-		pDataStream << mValue;
+		if( mValues.size() == 1 )
+		{
+			pDataStream << mValues.first();
+		}
+		else
+		{
+			pDataStream << mValues;
+		}
 	}
 
 	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE
 	{
-		bool		NewVal;
+		double				V;
 
-		pDataStream >> NewVal;
+		pDataStream.startTransaction();
 
-		setValue( NewVal );
+		pDataStream >> V;
+
+		if( pDataStream.commitTransaction() )
+		{
+			mValues.resize( 1 );
+
+			setVariant( 0, V );
+
+			return;
+		}
+
+		pDataStream.rollbackTransaction();
+
+		QVector<bool>	L;
+
+		pDataStream >> L;
+
+		mValues = L;
 	}
 
 signals:
-	void valueChanged( bool pValue );
+//	void valueChanged( bool pValue );
 
 private:
-	bool		mValue;
+	QVector<bool>		mValues;
 };
 
 #endif // BOOLPIN_H

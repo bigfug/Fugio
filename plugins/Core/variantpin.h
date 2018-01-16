@@ -16,7 +16,7 @@ class VariantPin : public fugio::PinControlBase, public fugio::VariantInterface,
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface )
-	Q_PROPERTY( QVariant value READ value WRITE setValue NOTIFY valueChanged )
+//	Q_PROPERTY( QVariant value READ value WRITE setValue NOTIFY valueChanged )
 
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
@@ -32,20 +32,20 @@ public:
 	//-------------------------------------------------------------------------
 	// Q_PROPERTY
 
-	Q_INVOKABLE QVariant value( void ) const
-	{
-		return( mValue );
-	}
+//	Q_INVOKABLE QVariant value( void ) const
+//	{
+//		return( mValue );
+//	}
 
-	Q_INVOKABLE void setValue( QVariant pValue )
-	{
-		if( pValue != mValue )
-		{
-			mValue = pValue;
+//	Q_INVOKABLE void setValue( QVariant pValue )
+//	{
+//		if( pValue != mValue )
+//		{
+//			mValue = pValue;
 
-			emit valueChanged( pValue );
-		}
-	}
+//			emit valueChanged( pValue );
+//		}
+//	}
 
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
@@ -62,22 +62,52 @@ public:
 
 	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		setValue( pValue );
+		setVariant( 0, pValue );
 	}
 
-	virtual QVariant variant( void ) const Q_DECL_OVERRIDE
+	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		return( mValue );
+		mValues[ pIndex ] = pValue;
+	}
+
+	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
+	{
+		return( mValues[ pIndex ] );
+	}
+
+	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
+	{
+		mValues.resize( pCount );
+	}
+
+	virtual int variantCount( void ) const Q_DECL_OVERRIDE
+	{
+		return( mValues.size() );
+	}
+
+	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
+	{
+		return( mType );
 	}
 
 	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		setVariant( pValue );
+		setFromBaseVariant( 0, pValue );
 	}
 
-	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE
+	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		return( variant() );
+		setVariant( pIndex, pValue );
+	}
+
+	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
+	{
+		return( variant( pIndex ) );
+	}
+
+	virtual void setVariantType( QMetaType::Type pType ) Q_DECL_OVERRIDE
+	{
+		mType = pType;
 	}
 
 	//-------------------------------------------------------------------------
@@ -85,23 +115,24 @@ public:
 
 	virtual void serialise( QDataStream &pDataStream ) const Q_DECL_OVERRIDE
 	{
-		pDataStream << mValue;
+//		pDataStream << mValue;
 	}
 
 	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE
 	{
-		QVariant		NewVal;
+//		QVariant		NewVal;
 
-		pDataStream >> NewVal;
+//		pDataStream >> NewVal;
 
-		setValue( NewVal );
+//		setValue( NewVal );
 	}
 
 signals:
-	void valueChanged( QVariant pValue );
+//	void valueChanged( QVariant pValue );
 
 private:
-	QVariant		mValue;
+	QVector<QVariant>		mValues;
+	QMetaType::Type			mType;
 };
 
 

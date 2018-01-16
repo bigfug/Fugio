@@ -20,35 +20,27 @@ MakeArrayNode::MakeArrayNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInput->setAutoRename( true );
 
-	mValOutput = pinOutput<fugio::ArrayInterface *>( "Array", mPinOutput, PID_ARRAY, PIN_OUTPUT_ARRAY );
+	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_VARIANT, PIN_OUTPUT_ARRAY );
 }
 
 void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	QMetaType::Type		CurrType = QMetaType::Type( variant( mPinInput ).type() );
+	QMetaType::Type		CurrType = QMetaType::Type( variant( mPinInput ).userType() );
 
 	if( CurrType == QMetaType::UnknownType )
 	{
 		return;
 	}
 
-	QMetaType	MetaType( CurrType );
+	mValOutput->setVariantType( CurrType );
 
 	QList<QSharedPointer<fugio::PinInterface>>	PinLst = mNode->enumInputPins();
 
-	if( mValOutput->type() != CurrType )
+	if( mValOutput->variantCount() != PinLst.size() )
 	{
-		mValOutput->setType( CurrType );
-		mValOutput->setSize( 1 );
-
-		mValOutput->setStride( MetaType.sizeOf() );
-	}
-
-	if( mValOutput->count() != PinLst.size() )
-	{
-		mValOutput->setCount( PinLst.size() );
+		mValOutput->setVariantCount( PinLst.size() );
 	}
 
 	if( PinLst.isEmpty() )
@@ -56,29 +48,9 @@ void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	quint8		*DstPtr = (quint8 *)mValOutput->array();
-
-	for( QSharedPointer<fugio::PinInterface> P : PinLst )
+	for( int i = 0 ; i < PinLst.size() ; i++ )
 	{
-		QVariant		 V = variant( P );
-
-		if( QMetaType::Type( V.type() ) == CurrType )
-		{
-			const void		*D = V.constData();
-
-			QMetaType::construct( CurrType, DstPtr, D );
-		}
-		else
-		{
-			if( V.convert( CurrType ) )
-			{
-				const void		*D = V.constData();
-
-				QMetaType::construct( CurrType, DstPtr, D );
-			}
-		}
-
-		DstPtr += MetaType.sizeOf();
+		mValOutput->setVariant( i, variant( PinLst.at( i ) ) );
 	}
 
 	pinUpdated( mPinOutput );

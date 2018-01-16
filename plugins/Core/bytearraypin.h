@@ -34,7 +34,7 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString( "%1 bytes" ).arg( mValue.size() ) );
+		return( QString( "%1 bytes" ).arg( mValues.first().size() ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
@@ -47,22 +47,47 @@ public:
 
 	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		mValue = pValue.toByteArray();
+		setVariant( 0, pValue );
 	}
 
-	virtual QVariant variant( void ) const Q_DECL_OVERRIDE
+	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		return( mValue );
+		mValues[ pIndex ] = pValue.toByteArray();
+	}
+
+	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
+	{
+		return( QVariant::fromValue<QByteArray>( mValues[ pIndex ] ) );
+	}
+
+	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
+	{
+		mValues.resize( pCount );
+	}
+
+	virtual int variantCount( void ) const Q_DECL_OVERRIDE
+	{
+		return( mValues.size() );
+	}
+
+	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
+	{
+		return( QMetaType::QByteArray );
 	}
 
 	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		setVariant( pValue );
+		setFromBaseVariant( 0, pValue );
 	}
 
-	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE
+	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		return( variant() );
+		setVariant( pIndex, pValue );
+	}
+
+	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
+	{
+		return( variant( pIndex ) );
 	}
 
 	//-------------------------------------------------------------------------
@@ -70,12 +95,45 @@ public:
 
 	virtual void serialise( QDataStream &pDataStream ) const Q_DECL_OVERRIDE
 	{
-		pDataStream << mValue;
+		if( mValues.size() == 1 )
+		{
+			pDataStream << mValues.first();
+		}
+		else
+		{
+			pDataStream << mValues;
+		}
 	}
 
 	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE
 	{
-		pDataStream >> mValue;
+		QByteArray				V;
+
+		pDataStream.startTransaction();
+
+		pDataStream >> V;
+
+		if( pDataStream.commitTransaction() )
+		{
+			mValues.resize( 1 );
+
+			setVariant( 0, V );
+
+			return;
+		}
+
+		pDataStream.rollbackTransaction();
+
+		QVector<QByteArray>	L;
+
+		pDataStream >> L;
+
+		mValues = L;
+	}
+
+	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
+	{
+
 	}
 
 	//-------------------------------------------------------------------------
@@ -91,7 +149,7 @@ public:
 	virtual QVector3D toVector3D() const Q_DECL_OVERRIDE;
 
 private:
-	QByteArray		mValue;
+	QVector<QByteArray>		mValues;
 };
 
 #endif // BYTEARRAYPIN_H

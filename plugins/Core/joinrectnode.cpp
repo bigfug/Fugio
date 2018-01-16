@@ -4,6 +4,8 @@
 
 #include <fugio/core/uuid.h>
 
+#include <fugio/pin_variant_iterator.h>
+
 JoinRectNode::JoinRectNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
@@ -25,18 +27,38 @@ void JoinRectNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	qreal		X = variant( mPinInputX ).toReal();
-	qreal		Y = variant( mPinInputY ).toReal();
-	qreal		W = variant( mPinInputWidth ).toReal();
-	qreal		H = variant( mPinInputHeight ).toReal();
+	bool	UpdateOutput = false;
 
-	QRectF		CurRct = mValOutputRect->variant().toRectF();
-	QRectF		NewRct = QRect( X, Y, W, H );
+	fugio::PinVariantIterator	X( mPinInputX );
+	fugio::PinVariantIterator	Y( mPinInputY );
+	fugio::PinVariantIterator	W( mPinInputWidth );
+	fugio::PinVariantIterator	H( mPinInputHeight );
 
-	if( CurRct != NewRct )
+	QVector<int>	PinCnt = { X.size(), Y.size(), W.size(), H.size() };
+
+	auto			MinMax = std::minmax_element( PinCnt.begin(), PinCnt.end() );
+
+	if( !*MinMax.first )
 	{
-		mValOutputRect->setVariant( NewRct );
+		return;
+	}
 
+	const int		OutCnt = *MinMax.second;
+
+	variantSetCount( mValOutputRect, OutCnt, UpdateOutput );
+
+	for( int i = 0 ; i < OutCnt ; i++ )
+	{
+		qreal		x = X.index( i ).toReal();
+		qreal		y = Y.index( i ).toReal();
+		qreal		w = W.index( i ).toReal();
+		qreal		h = H.index( i ).toReal();
+
+		variantSetValue( mValOutputRect, i, QRectF( x, y, w, h ), UpdateOutput );
+	}
+
+	if( UpdateOutput )
+	{
 		pinUpdated( mPinOutputRect );
 	}
 }

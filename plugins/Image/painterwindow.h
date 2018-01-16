@@ -25,6 +25,9 @@ public slots:
 
 	void renderPin( QSharedPointer<fugio::PinInterface> P );
 
+signals:
+	void windowUpdated( void );
+
 protected:
 	template <class T> T input( QSharedPointer<fugio::PinInterface> &pPin )
 	{

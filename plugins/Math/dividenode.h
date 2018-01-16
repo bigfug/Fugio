@@ -1,11 +1,10 @@
 #ifndef DIVIDENODE_H
 #define DIVIDENODE_H
 
-#include <QObject>
-
 #include <fugio/nodecontrolbase.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/array_interface.h>
+#include <fugio/pin_variant_iterator.h>
 
 class DivideNode : public fugio::NodeControlBase
 {
@@ -18,11 +17,14 @@ class DivideNode : public fugio::NodeControlBase
 
 	class Operator
 	{
-		public:
-			template<typename T> static T op0( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-			template<typename T> static T op1( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-			template<typename T> static T op2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-			template<typename T> static T op3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+	public:
+		template<typename T> static T op0( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+		template<typename T> static T op1( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+		template<typename T> static T op2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+		template<typename T> static T op3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+
+		template<typename T, typename S = T> static void div( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
+		template<typename T, typename S = T> static void divs( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
 	};
 
 public:
@@ -45,8 +47,8 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinNumerator;
 	QSharedPointer<fugio::PinInterface>			 mPinDenominator;
 
-	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::VariantInterface						*mValOutput;
+	QSharedPointer<fugio::PinInterface>			 mPinOutputArray;
+	fugio::VariantInterface						*mValOutputArray;
 };
 
 #endif // DIVIDENODE_H

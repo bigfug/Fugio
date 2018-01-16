@@ -364,7 +364,7 @@ void MediaSegment::audioRange( qint64 &pMinPTS, qint64 &pMaxPTS ) const
 	pMinPTS = pMaxPTS = -1;
 
 #if defined( FFMPEG_SUPPORTED )
-	QMutexLocker	L(&mAudDatLck);
+	QMutexLocker	L( &mAudDatLck );
 
 	for( const AudioBuffer &AB : mAudDat )
 	{

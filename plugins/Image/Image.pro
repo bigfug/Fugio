@@ -53,7 +53,8 @@ HEADERS += imageplugin.h\
 	imagesavenode.h \
 	../../include/fugio/image/uuid.h \
 	../../include/fugio/image/image_interface.h \
-    copynode.h
+    copynode.h \
+    ../../include/fugio/image/image.h
 
 RESOURCES += \
     resources.qrc

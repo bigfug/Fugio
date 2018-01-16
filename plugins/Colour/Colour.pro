@@ -20,7 +20,6 @@ SOURCES += \
 	colourpin.cpp \
 	colourplugin.cpp \
 	splitcolourhslanode.cpp \
-	colourlistpin.cpp \
 	splitcolourrgbanode.cpp \
 	joincolourrgbanode.cpp \
 	joincolourhslanode.cpp \
@@ -35,7 +34,6 @@ HEADERS += \
 	colourpin.h \
 	colourplugin.h \
 	splitcolourhslanode.h \
-	colourlistpin.h \
 	splitcolourrgbanode.h \
 	joincolourrgbanode.h \
 	joincolourhslanode.h \

@@ -72,6 +72,8 @@ PluginInterface::InitResult ImagePlugin::initialise( fugio::GlobalInterface *pAp
 
 	mApp->registerPinClasses( mPinClasses );
 
+	mApp->registerPinForMetaType( PID_IMAGE, QMetaType::Type( qMetaTypeId<fugio::Image>() ) );
+
 	return( INIT_OK );
 }
 

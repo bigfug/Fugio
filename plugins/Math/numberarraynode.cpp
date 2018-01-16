@@ -4,8 +4,7 @@
 
 #include <fugio/core/uuid.h>
 
-#include <fugio/context_interface.h>
-#include <fugio/core/list_interface.h>
+#include <fugio/pin_variant_iterator.h>
 
 NumberArrayNode::NumberArrayNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -21,24 +20,20 @@ NumberArrayNode::NumberArrayNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputIncrement = pinInput( "Increment", PIN_INPUT_INCREMENT );
 
-	mValOutputArray = pinOutput<fugio::ArrayInterface *>( "Array", mPinOutputArray, PID_ARRAY, PIN_OUTPUT_ARRAY );
-
-	mValOutputArray->setSize( 1 );
-	mValOutputArray->setStride( sizeof( float ) );
-	mValOutputArray->setType( QMetaType::Float );
-
-	mPinInputIncrement->setValue( 1 );
+	mValOutputArray = pinOutput<fugio::VariantInterface *>( "Array", mPinOutputArray, PID_FLOAT, PIN_OUTPUT_ARRAY );
 }
 
 void NumberArrayNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
+	bool OutputUpdated = false;
+
 	float	s = variant( mPinInputStart ).toReal();
 	float	e = variant( mPinInputEnd ).toReal();
 	float	i = variant( mPinInputIncrement ).toReal();
 
-	fugio::ListInterface	*L = dynamic_cast<fugio::ListInterface *>( mPinOutputArray->control().data() );
+	fugio::ListInterface	*L = qobject_cast<fugio::ListInterface *>( mPinOutputArray->control()->qobject() );
 
 	if( !i )
 	{
@@ -59,13 +54,13 @@ void NumberArrayNode::inputsUpdated( qint64 pTimeStamp )
 			return;
 		}
 
-		L->listSetSize( c );
+		variantSetCount( mValOutputArray, c, OutputUpdated );
 
 		int		idx = 0;
 
 		for( float j = s ; j < e ; j += i, idx++ )
 		{
-			L->listSetIndex( idx, j );
+			variantSetValue( mValOutputArray, idx, j, OutputUpdated );
 		}
 	}
 	else
@@ -77,15 +72,18 @@ void NumberArrayNode::inputsUpdated( qint64 pTimeStamp )
 			return;
 		}
 
-		L->listSetSize( c );
+		variantSetCount( mValOutputArray, c, OutputUpdated );
 
 		int		idx = 0;
 
 		for( float j = s ; j < e ; j += i, idx++ )
 		{
-			L->listSetIndex( idx, j );
+			variantSetValue( mValOutputArray, idx, j, OutputUpdated );
 		}
 	}
 
-	pinUpdated( mPinOutputArray );
+	if( OutputUpdated )
+	{
+		pinUpdated( mPinOutputArray );
+	}
 }

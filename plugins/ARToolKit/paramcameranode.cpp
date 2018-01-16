@@ -38,6 +38,8 @@ ParamCameraNode::ParamCameraNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void ParamCameraNode::inputsUpdated( qint64 pTimeStamp )
 {
+	NodeControlBase::inputsUpdated( pTimeStamp );
+
 	fugio::ar::ParamInterface		*PrmInt = input<fugio::ar::ParamInterface *>( mPinInputParam );
 
 	if( !PrmInt )
