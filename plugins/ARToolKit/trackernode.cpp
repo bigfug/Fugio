@@ -274,7 +274,7 @@ void TrackerNode::inputsUpdated( qint64 pTimeStamp )
 
 		pinUpdated( mPinOutputCenter );
 
-		float		*PntPtr = (float *)mValOutputPoints->array();
+		float		*PntPtr = (float *)mValOutputPoints->variantArray();
 
 		for( int i = 0 ; i < 4 ; i++ )
 		{
