@@ -11,10 +11,6 @@ include_directories( ../FugioLib )
 #------------------------------------------------------------------------------
 
 set( SOURCE_FILES
-	../include/fugio/context_widget_interface.h
-	../include/fugio/context_widget_signals.h
-	../include/fugio/editor_interface.h
-	../include/fugio/editor_signals.h
 	../include/fugio/global.h
 	../include/fugio/utils.h
 	../stable.h
