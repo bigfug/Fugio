@@ -70,6 +70,12 @@ set( SOURCE_FILES
 	bitarraypin.h
 	linepin.cpp
 	linepin.h
+	joinpointnode.cpp
+	joinpointnode.h
+	joinrectnode.cpp
+	joinrectnode.h
+	transformpin.cpp
+	transformpin.h
 )
 
 set( QRC_FILES

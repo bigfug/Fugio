@@ -39,6 +39,8 @@ set( SOURCE_FILES
 	painterwindownode.h
 	scaleimagenode.cpp
 	scaleimagenode.h
+	copynode.cpp
+	copynode.h
 )
 
 set( QRC_FILES

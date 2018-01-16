@@ -48,9 +48,6 @@ set( SOURCE_FILES
 	
 	mediarecorderform.ui
 	mediaplayervideopreview.ui
-	
-	hap/source/hap.c
-	hap/source/hap.h
 )
 
 set( QRC_FILES
@@ -111,6 +108,11 @@ if( WIN32 )
 
 		target_link_libraries( ${PROJECT_NAME} snappy )
 
+		target_sources( ${PROJECT_NAME} PRIVATE
+			hap/source/hap.c
+			hap/source/hap.h
+		)
+
 	endif( SNAPPY_DIR )
 endif( WIN32 )
 
@@ -123,6 +125,11 @@ if( SNAPPY_FOUND )
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${SNAPPY_INCLUDE_DIR} )
 
 	target_link_libraries( ${PROJECT_NAME} ${SNAPPY_LIBRARIES} )
+
+	target_sources( ${PROJECT_NAME} PRIVATE
+		hap/source/hap.c
+		hap/source/hap.h
+	)
 else()
 	message( "snappy not found" )
 endif()
