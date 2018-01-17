@@ -4,28 +4,28 @@
 
 #if defined( OCULUS_PLUGIN_SUPPORTED ) && defined( Q_OS_WIN )
 
-#include "wglext.h"
+//#include "wglext.h"
 #include <fugio/opengl/uuid.h>
 
 #include "oculusriftplugin.h"
 
-bool WGLExtensionSupported(const char *extension_name)
-{
-	// this is pointer to function which returns pointer to string with list of all wgl extensions
-	PFNWGLGETEXTENSIONSSTRINGEXTPROC _wglGetExtensionsStringEXT = NULL;
+//bool WGLExtensionSupported(const char *extension_name)
+//{
+//	// this is pointer to function which returns pointer to string with list of all wgl extensions
+//	PFNWGLGETEXTENSIONSSTRINGEXTPROC _wglGetExtensionsStringEXT = NULL;
 
-	// determine pointer to wglGetExtensionsStringEXT function
-	_wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC) wglGetProcAddress("wglGetExtensionsStringEXT");
+//	// determine pointer to wglGetExtensionsStringEXT function
+//	_wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC) wglGetProcAddress("wglGetExtensionsStringEXT");
 
-	if (strstr(_wglGetExtensionsStringEXT(), extension_name) == NULL)
-	{
-		// string was not found
-		return false;
-	}
+//	if (strstr(_wglGetExtensionsStringEXT(), extension_name) == NULL)
+//	{
+//		// string was not found
+//		return false;
+//	}
 
-	// extension is supported
-	return true;
-}
+//	// extension is supported
+//	return true;
+//}
 #endif
 
 QList<QWeakPointer<DeviceOculusRift>>		 DeviceOculusRift::mDeviceList;
@@ -456,24 +456,31 @@ bool DeviceOculusRift::deviceOpen()
 		return( false );
 	}
 
-#if defined( Q_OS_WIN )
-	PFNWGLSWAPINTERVALEXTPROC       wglSwapIntervalEXT = NULL;
-	PFNWGLGETSWAPINTERVALEXTPROC    wglGetSwapIntervalEXT = NULL;
+	QSurfaceFormat	Format = QOpenGLContext::currentContext()->format();
 
-	if (WGLExtensionSupported("WGL_EXT_swap_control"))
-	{
-		// Extension is supported, init pointers.
-		wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress ("wglSwapIntervalEXT");
+	Format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
+	Format.setSwapInterval( 0 );
 
-		// this is another function from WGL_EXT_swap_control extension
-		wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC) wglGetProcAddress ("wglGetSwapIntervalEXT");
-	}
+	QOpenGLContext::currentContext()->setFormat( Format );
 
-	if( wglSwapIntervalEXT )
-	{
-		wglSwapIntervalEXT( 0 );
-	}
-#endif
+//#if defined( Q_OS_WIN )
+//	PFNWGLSWAPINTERVALEXTPROC       wglSwapIntervalEXT = NULL;
+//	PFNWGLGETSWAPINTERVALEXTPROC    wglGetSwapIntervalEXT = NULL;
+
+//	if (WGLExtensionSupported("WGL_EXT_swap_control"))
+//	{
+//		// Extension is supported, init pointers.
+//		wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC) wglGetProcAddress ("wglSwapIntervalEXT");
+
+//		// this is another function from WGL_EXT_swap_control extension
+//		wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC) wglGetProcAddress ("wglGetSwapIntervalEXT");
+//	}
+
+//	if( wglSwapIntervalEXT )
+//	{
+//		wglSwapIntervalEXT( 0 );
+//	}
+//#endif
 
 	ovrResult result;
 

@@ -54,18 +54,6 @@ bool OculusRiftPlugin::hasOpenGLContext()
 		return( false );
 	}
 
-#if defined( OCULUS_PLUGIN_SUPPORTED )
-	if( glewExperimental == GL_FALSE )
-	{
-		glewExperimental = GL_TRUE;
-
-		if( glewInit() != GLEW_OK )
-		{
-			return( false );
-		}
-	}
-#endif
-
 	return( true );
 }
 
