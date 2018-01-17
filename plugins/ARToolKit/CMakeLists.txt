@@ -34,7 +34,14 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 find_package( ARToolKit )
 
 if( ARTOOLKIT_FOUND )
-	target_link_libraries( ${PROJECT_NAME} ARToolKit )
+	#message( "--- ARToolKit" )
+	#message( ${ARTOOLKIT_ARICP_LIBRARY_RELEASE} )
+
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE ${ARTOOLKIT_DEFINITIONS} )
+
+	target_link_libraries( ${PROJECT_NAME} ${ARTOOLKIT_LIBRARIES} ${ARTOOLKIT_ARICP_LIBRARY_RELEASE} )
+
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${ARTOOLKIT_INCLUDE_DIR} )
 
 	if( MSVC14 )
 		target_link_libraries( ${PROJECT_NAME} legacy_stdio_definitions )
