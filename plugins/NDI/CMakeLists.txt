@@ -44,7 +44,9 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 find_package( NDI QUIET )
 
 if( NDI_FOUND )
-	target_link_libraries( ${PROJECT_NAME} NDI )
+	target_link_libraries( ${PROJECT_NAME} ${NDI_LIBRARY} )
+
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${NDI_INCLUDE_DIR} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE NDI_SUPPORTED )
 endif( NDI_FOUND )
