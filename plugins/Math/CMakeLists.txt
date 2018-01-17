@@ -110,6 +110,8 @@ set( SOURCE_FILES
 	andbitsnode.h
 	notbitsnode.cpp
 	notbitsnode.h
+	xorbitsnode.cpp
+	xorbitsnode.h
 	flipflopnode.cpp
 	flipflopnode.h
 	nandbitsnode.cpp

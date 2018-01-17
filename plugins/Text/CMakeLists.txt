@@ -33,6 +33,8 @@ set( SOURCE_FILES
 	texteditorremotenode.h
 	textplugin.cpp
 	textplugin.h
+	stringsplitnode.cpp
+	stringsplitnode.h
 
 	texteditorform.ui
 )

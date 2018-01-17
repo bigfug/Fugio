@@ -54,6 +54,11 @@ set( SOURCE_FILES
 	simpleblobdetectornode.h
 	videocapturenode.cpp
 	videocapturenode.h
+
+	absdiffnode.cpp
+	absdiffnode.h
+	countnonzeronode.cpp
+	countnonzeronode.h
 )
 
 set( QRC_FILES

@@ -12,6 +12,11 @@ set( SOURCE_FILES
 	raspberrypiplugin.h
 	sourcenode.cpp
 	sourcenode.h
+	gpionode.cpp
+	gpionode.h
+	pwmnode.cpp
+	pwmnode.h
+
 )
 
 set( QRC_FILES

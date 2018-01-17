@@ -108,6 +108,13 @@ set( SOURCE_FILES
     texturemonitor.h
     texturemonitornode.h
 
+	easyshader2dnode.cpp
+	easyshader2dnode.h
+	shadercompilerdata.cpp
+	shadercompilerdata.h
+	arraytotexturebuffernode.cpp
+	arraytotexturebuffernode.h
+
 	openglstateform.ui
 	texturenodeform.ui
 )
