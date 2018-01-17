@@ -41,6 +41,9 @@ set( PATH_PLUGIN . )
 
 if( FUGIO_INSTALL_TYPE STREQUAL "Normal" )
 	message( STATUS "Normal Install" )
+
+	set( PATH_INCLUDE	include )
+	set( PATH_PLUGIN	plugins )
 endif()
 
 if( FUGIO_INSTALL_TYPE STREQUAL "QtIFW" )
