@@ -40,6 +40,8 @@ SimpleBlobDetectorNode::SimpleBlobDetectorNode( QSharedPointer<fugio::NodeInterf
 	mValOutputSizes->setSize( 1 );
 	mValOutputSizes->setStride( sizeof( float ) );
 
+#if defined( OPENCV_SUPPORTED )
+
 	cv::SimpleBlobDetector::Params	BlbPrm;
 
 	BlbPrm.filterByArea        = true;
@@ -53,10 +55,12 @@ SimpleBlobDetectorNode::SimpleBlobDetectorNode( QSharedPointer<fugio::NodeInterf
 
 	BlbPrm.minDistBetweenBlobs = 0.1f;
 
-#if defined( Q_OS_RASPBERRY_PI )
-	mDetector = Q_NULLPTR;
+#if ( CV_VERSION_EPOCH <= 2 )
+	mDetector = new cv::SimpleBlobDetector( BlbPrm );
 #else
 	mDetector = cv::SimpleBlobDetector::create( BlbPrm );
+#endif
+
 #endif
 }
 
