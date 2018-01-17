@@ -46,7 +46,7 @@ install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 find_package( PORTMIDI QUIET )
 
 if( PORTMIDI_FOUND )
-	target_include_directories( ${PROJECT_NAME} PRIVATE ${PORTMIDI_INCLUDE_DIR} )
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${PORTMIDI_INCLUDE_DIR} ${PORTTIME_INCLUDE_DIR} )
 
 	target_link_libraries( ${PROJECT_NAME} ${PORTMIDI_LIBRARIES} )
 

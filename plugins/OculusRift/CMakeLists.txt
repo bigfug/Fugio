@@ -46,12 +46,13 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::OpenGL Qt5::Widge
 if( WIN32 )
 	find_path( OCULUS_INCLUDE_DIR OVR_CAPI.h )
 	
-	find_library( OCULUS_LIB NAMES LibOVR )
+	find_library( OCULUS_LIB_DEBUG   NAMES LibOVR )
+	find_library( OCULUS_LIB_RELEASE NAMES LibOVR )
 
-	if( OCULUS_INCLUDE_DIR AND OCULUS_LIB )
+	if( OCULUS_INCLUDE_DIR AND OCULUS_LIB_DEBUG AND OCULUS_LIB_RELEASE )
 		target_include_directories( ${PROJECT_NAME} PRIVATE ${OCULUS_INCLUDE_DIR} )
 
-		target_link_libraries( ${PROJECT_NAME} ${OCULUS_LIB} )
+		target_link_libraries( ${PROJECT_NAME} debug ${OCULUS_LIB_DEBUG} optimized ${OCULUS_LIB_RELEASE} )
 
 		target_compile_definitions( ${PROJECT_NAME} PRIVATE OCULUS_PLUGIN_SUPPORTED )
 	endif()

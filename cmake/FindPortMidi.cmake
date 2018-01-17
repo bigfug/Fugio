@@ -19,9 +19,15 @@ find_path(PORTMIDI_INCLUDE_DIR portmidi.h
   $ENV{PORTMIDI_DIR}
 )
 
-set(PORTMIDI_LIBRARIES ${PORTMIDI_LIBRARY})
+find_path( PORTTIME_INCLUDE_DIR porttime.h
+  HINTS
+  $ENV{PORTMIDI_DIR}
+)
+
+set( PORTMIDI_LIBRARIES ${PORTMIDI_LIBRARY} )
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(PortMidi REQUIRED_VARS PORTMIDI_LIBRARIES PORTMIDI_INCLUDE_DIR)
 
-mark_as_advanced(PORTMIDI_LIBRARY)
+find_package_handle_standard_args( PortMidi REQUIRED_VARS PORTMIDI_LIBRARIES PORTMIDI_INCLUDE_DIR PORTTIME_INCLUDE_DIR )
+
+mark_as_advanced( PORTMIDI_LIBRARY )

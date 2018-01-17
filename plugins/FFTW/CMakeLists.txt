@@ -41,7 +41,7 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 #—————————————————————————————————-
 # fftw
 
-find_package( FFTW QUIET )
+find_package( FFTW )
 
 if( FFTW_FOUND )
 	target_link_libraries( ${PROJECT_NAME} ${FFTW_F_LIB} )
