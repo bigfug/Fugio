@@ -103,6 +103,39 @@ set( SOURCE_FILES
 	xornode.h
     mathexpressionnode.cpp
     mathexpressionnode.h
+
+	orbitsnode.cpp
+	orbitsnode.h
+	andbitsnode.cpp
+	andbitsnode.h
+	notbitsnode.cpp
+	notbitsnode.h
+	flipflopnode.cpp
+	flipflopnode.h
+	nandbitsnode.cpp
+	nandbitsnode.h
+	inttobitsnode.cpp
+	inttobitsnode.h
+	transformnode.cpp
+	transformnode.h
+	bitstopinsnode.cpp
+	bitstopinsnode.h
+	multiplexornode.cpp
+	multiplexornode.h
+	numberarraynode.cpp
+	numberarraynode.h
+	cosinedegreesnode.cpp
+	cosinedegreesnode.h
+	pointtransformnode.cpp
+	pointtransformnode.h
+	maxnode.cpp
+	maxnode.h
+	minnode.cpp
+	minnode.h
+	pownode.cpp
+	pownode.h
+
+
 )
 
 set( QRC_FILES
