@@ -55,7 +55,7 @@ SimpleBlobDetectorNode::SimpleBlobDetectorNode( QSharedPointer<fugio::NodeInterf
 
 	BlbPrm.minDistBetweenBlobs = 0.1f;
 
-#if ( CV_VERSION_EPOCH <= 2 )
+#if ( CV_MAJOR_VERSION <= 2 )
 	mDetector = new cv::SimpleBlobDetector( BlbPrm );
 #else
 	mDetector = cv::SimpleBlobDetector::create( BlbPrm );
