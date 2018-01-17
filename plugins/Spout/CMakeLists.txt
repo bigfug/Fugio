@@ -98,8 +98,11 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::OpenGL Qt5::Widge
 #------------------------------------------------------------------------------
 # OpenGL
 
-find_package( OpenGL REQUIRED )
+find_package( OpenGL )
 
-target_include_directories( ${PROJECT_NAME} PRIVATE ${OPENGL_INCLUDE_DIR} )
+if( OpenGL_FOUND )
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${OPENGL_INCLUDE_DIR} )
 
-target_link_libraries( ${PROJECT_NAME} ${OPENGL_LIBRARIES} )
+	target_link_libraries( ${PROJECT_NAME} ${OPENGL_LIBRARIES} )
+endif( OpenGL_FOUND )
+
