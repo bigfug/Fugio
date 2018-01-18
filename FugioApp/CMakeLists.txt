@@ -130,13 +130,8 @@ add_definitions( -DFUGIOLIB_STATIC )
 add_executable( Fugio WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURCES} ${UIS_HDRS} fugio.rc ) 
 
 if( APPLE )
-	set_target_properties( Fugio PROPERTIES
-		FRAMEWORK TRUE
-		FRAMEWORK_VERSION A
-		MACOSX_FRAMEWORK_IDENTIFIER com.bigfug.fugio
-		MACOSX_FRAMEWORK_INFO_PLIST Info.plist
-	)
-endif()
+	set_target_properties( ${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist )
+endif( APPLE )
 
 install( TARGETS Fugio
 	RUNTIME DESTINATION ${PATH_APP}
