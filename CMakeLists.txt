@@ -129,3 +129,23 @@ install( DIRECTORY include/fugio DESTINATION ${PATH_INCLUDE} )
 install( DIRECTORY examples DESTINATION ${PATH_SHARE} )
 install( DIRECTORY snippets DESTINATION ${PATH_SHARE} )
 install( DIRECTORY FugioApp/stylesheets DESTINATION ${PATH_SHARE} )
+
+#------------------------------------------------------------------------------
+# CPack
+
+set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Fugio" )
+set( CPACK_PACKAGE_VENDOR "bigfug.com" )
+set( CPACK_PACKAGE_CONTACT "fugio@bigfug.com" )
+
+if( APPLE )
+	set( CPACK_INCLUDE_TOPLEVEL_DIRECTORY ON )
+endif()
+
+string( REPLACE "." ";" FUGIO_VERSION_LIST ${FUGIO_VERSION} )
+
+list( GET FUGIO_VERSION_LIST 0 CPACK_PACKAGE_VERSION_MAJOR )
+list( GET FUGIO_VERSION_LIST 1 CPACK_PACKAGE_VERSION_MINOR )
+list( GET FUGIO_VERSION_LIST 2 CPACK_PACKAGE_VERSION_PATCH )
+
+include( CPack )
+
