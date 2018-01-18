@@ -2,13 +2,14 @@
 #include <QSettings>
 
 ColourPin::ColourPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mColours( 1 )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::QColor, PID_COLOUR )
 {
 }
 
-void ColourPin::setFromBaseVariant(int pIndex, const QVariant &pValue)
+void ColourPin::setFromBaseVariant( int pIndex, int pOffset, const QVariant &pValue )
 {
-	QColor				C = mColours[ pIndex ];
+	const int			i = variantIndex( pIndex, pOffset );
+	QColor				C = mValues[ i ];
 
 	if( pValue.type() == QVariant::Map )
 	{
@@ -29,12 +30,12 @@ void ColourPin::setFromBaseVariant(int pIndex, const QVariant &pValue)
 		if( L.size() > 3 ) C.setAlphaF( L.at( 3 ).toReal() );
 	}
 
-	mColours[ pIndex ] = C;
+	mValues[ i ] = C;
 }
 
-QVariant ColourPin::baseVariant( int pIndex ) const
+QVariant ColourPin::baseVariant( int pIndex, int pOffset ) const
 {
-	QColor				C = mColours.at( pIndex );
+	QColor				C = mValues.at( variantIndex( pIndex, pOffset ) );
 
 //	QList<QVariant>		L;
 

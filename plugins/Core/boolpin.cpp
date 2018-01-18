@@ -1,7 +1,9 @@
 #include "boolpin.h"
 
+#include <fugio/core/uuid.h>
+
 BoolPin::BoolPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mValues( 1 )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::Bool, PID_BOOL )
 {
 
 }

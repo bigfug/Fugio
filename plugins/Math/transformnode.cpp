@@ -5,7 +5,6 @@
 #include <fugio/core/uuid.h>
 
 #include <fugio/pin_variant_iterator.h>
-#include <fugio/core/array_interface.h>
 
 TransformNode::TransformNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )

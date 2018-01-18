@@ -1,7 +1,9 @@
 #include "bytearraypin.h"
 
+#include <fugio/core/uuid.h>
+
 ByteArrayPin::ByteArrayPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mValues( 1 )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::QByteArray, PID_BYTEARRAY )
 {
 }
 

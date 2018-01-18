@@ -1,7 +1,9 @@
 #include "rectpin.h"
 
+#include <fugio/core/uuid.h>
+
 RectPin::RectPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mValues( 1 )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::QRectF, PID_RECT )
 {
 
 }

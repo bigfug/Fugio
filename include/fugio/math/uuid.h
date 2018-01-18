@@ -39,6 +39,7 @@
 #define NID_NAND				(QUuid("{d22f8fe4-34d0-466d-8c38-b6b31710a93f}"))
 #define NID_NOR					(QUuid("{2b77eb69-27b3-4562-bd61-ad80e45f1708}"))
 #define NID_XNOR				(QUuid("{5c0784e5-8c2c-4df0-91f4-0c02765e69c5}"))
+#define NID_SUM					(QUuid("{97377df3-559d-4a73-b2fc-5b63fa8b1064}"))
 
 #define NID_COMPARE_NUMBERS		(QUuid("{aaf42ad1-6336-4455-ad30-f65f69729ca3}"))
 

@@ -5,7 +5,7 @@
 
 #include <fugio/nodecontrolbase.h>
 
-#include <fugio/core/array_interface.h>
+#include <fugio/core/variant_interface.h>
 
 class PointTransformNode : public fugio::NodeControlBase
 {
@@ -30,7 +30,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputPoints;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputPoints;
-	fugio::ArrayInterface						*mValOutputPoints;
+	fugio::VariantInterface						*mValOutputPoints;
 };
 
 #endif // POINTTRANSFORMNODE_H

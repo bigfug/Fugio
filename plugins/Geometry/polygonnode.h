@@ -2,7 +2,8 @@
 #define POLYGONNODE_H
 
 #include <fugio/nodecontrolbase.h>
-#include <fugio/core/array_interface.h>
+
+#include <fugio/core/variant_interface.h>
 
 class PolygonNode : public fugio::NodeControlBase
 {
@@ -28,7 +29,7 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputRadius;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputPoints;
-	fugio::ArrayInterface						*mValOutputPoints;
+	fugio::VariantInterface						*mValOutputPoints;
 
 	float										 mRadius;
 };

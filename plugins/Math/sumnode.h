@@ -1,7 +1,5 @@
-#ifndef ADDNODE_H
-#define ADDNODE_H
-
-#include <QObject>
+#ifndef SUMNODE_H
+#define SUMNODE_H
 
 #include <fugio/nodecontrolbase.h>
 
@@ -9,38 +7,39 @@
 
 #include <fugio/pin_variant_iterator.h>
 
-class AddNode : public fugio::NodeControlBase
+class SumNode : public fugio::NodeControlBase
 {
 	Q_OBJECT
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
-	Q_CLASSINFO( "Description", "Adds all the input numbers together." )
-	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Add" ) )
+	Q_CLASSINFO( "Description", "Sums all the input numbers together." )
+	Q_CLASSINFO( "URL", WIKI_NODE_URL( "Sum" ) )
 	Q_CLASSINFO( "Contact", "http://www.bigfug.com/contact/" )
 
 	class Operator
 	{
 	public:
-		template<typename T> static void add( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
+		template<typename T> static void op( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
 	};
 
 public:
-	Q_INVOKABLE AddNode( QSharedPointer<fugio::NodeInterface> pNode );
+	Q_INVOKABLE SumNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~AddNode( void ) {}
+	virtual ~SumNode( void ) {}
 
 	// NodeControlInterface interface
 
 	virtual void inputsUpdated( qint64 pTimeStamp );
 
 	virtual QList<QUuid> pinAddTypesInput() const;
+
 	virtual bool canAcceptPin(fugio::PinInterface *pPin) const;
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
 
-	fugio::VariantInterface						*mValOutputArray;
+	fugio::VariantInterface						*mValOutputValue;
 };
 
-#endif // ADDNODE_H
+#endif // SUMNODE_H

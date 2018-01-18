@@ -9,7 +9,7 @@
 #include <QImage>
 
 ImagePin::ImagePin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mValues( 1 )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::Type( qMetaTypeId<fugio::Image>() ), PID_IMAGE )
 {
 }
 

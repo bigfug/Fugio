@@ -36,11 +36,9 @@ CascadeClassifierNode::CascadeClassifierNode( QSharedPointer<fugio::NodeInterfac
 
 	mPinInputImage->registerPinInputType( PID_RECT );
 
-	mValOutputRects = pinOutput<fugio::ArrayInterface *>( "Rects", mPinOutputRects, PID_ARRAY, PIN_OUTPUT_RECTS );
+	mValOutputRects = pinOutput<fugio::VariantInterface *>( "Rects", mPinOutputRects, PID_RECT, PIN_OUTPUT_RECTS );
 
-	mValOutputRects->setType( QMetaType::QRect );
-	mValOutputRects->setStride( sizeof( QRect ) );
-	mValOutputRects->setSize( 1 );
+	mValOutputRects->variantClear();
 }
 
 void CascadeClassifierNode::inputsUpdated( qint64 pTimeStamp )
@@ -128,23 +126,20 @@ void CascadeClassifierNode::conversion( CascadeClassifierNode *pNode )
 
 	if( !pNode->mRctTmp.size() )
 	{
-		pNode->mValOutputRects->setArray( nullptr );
-		pNode->mValOutputRects->setCount( 0 );
+		pNode->mValOutputRects->variantClear();
 	}
 	else
 	{
 		pNode->mRctVec.resize( pNode->mRctTmp.size() );
 
+		pNode->mValOutputRects->setVariantCount( pNode->mRctVec.size() );
+
 		const cv::Rect	*SrcRct = &pNode->mRctTmp[ 0 ];
-		QRect			*DstRct = &pNode->mRctVec[ 0 ];
 
-		for( size_t i = 0 ; i < pNode->mRctTmp.size() ; i++, SrcRct++, DstRct++ )
+		for( size_t i = 0 ; i < pNode->mRctTmp.size() ; i++, SrcRct++ )
 		{
-			*DstRct = QRect( SrcRct->x, SrcRct->y, SrcRct->width, SrcRct->height );
+			pNode->mValOutputRects->setVariant( i, QRect( SrcRct->x, SrcRct->y, SrcRct->width, SrcRct->height ) );
 		}
-
-		pNode->mValOutputRects->setCount( pNode->mRctVec.size() );
-		pNode->mValOutputRects->setArray( &pNode->mRctVec[ 0 ] );
 	}
 
 	pNode->pinUpdated( pNode->mPinOutputRects );

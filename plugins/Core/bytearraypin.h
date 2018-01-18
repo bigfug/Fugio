@@ -6,14 +6,14 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/variant_helper.h>
 #include <fugio/core/size_interface.h>
 
 #include <fugio/pincontrolbase.h>
 
 #include <fugio/serialise_interface.h>
 
-class ByteArrayPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::SerialiseInterface, public fugio::SizeInterface
+class ByteArrayPin : public fugio::PinControlBase, public fugio::VariantHelper<QByteArray>, public fugio::SerialiseInterface, public fugio::SizeInterface
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface fugio::SizeInterface )
@@ -40,54 +40,6 @@ public:
 	virtual QString description( void ) const Q_DECL_OVERRIDE
 	{
 		return( "Byte Array" );
-	}
-
-	//-------------------------------------------------------------------------
-	// fugio::VariantInterface
-
-	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setVariant( 0, pValue );
-	}
-
-	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		mValues[ pIndex ] = pValue.toByteArray();
-	}
-
-	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
-	{
-		return( QVariant::fromValue<QByteArray>( mValues[ pIndex ] ) );
-	}
-
-	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
-	{
-		mValues.resize( pCount );
-	}
-
-	virtual int variantCount( void ) const Q_DECL_OVERRIDE
-	{
-		return( mValues.size() );
-	}
-
-	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
-	{
-		return( QMetaType::QByteArray );
-	}
-
-	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setFromBaseVariant( 0, pValue );
-	}
-
-	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setVariant( pIndex, pValue );
-	}
-
-	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
-	{
-		return( variant( pIndex ) );
 	}
 
 	//-------------------------------------------------------------------------

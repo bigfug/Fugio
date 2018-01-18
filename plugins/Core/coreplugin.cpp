@@ -65,6 +65,7 @@
 #include "bitarraypin.h"
 #include "linepin.h"
 #include "transformpin.h"
+#include "polygonpin.h"
 
 #include "loggernode.h"
 
@@ -127,6 +128,7 @@ ClassEntry		CorePlugin::mPinClasses[] =
 	ClassEntry( "Line", PID_LINE, &LinePin::staticMetaObject ),
 	ClassEntry( "List", PID_LIST, &ListPin::staticMetaObject ),
 	ClassEntry( "Point", PID_POINT, &PointPin::staticMetaObject ),
+	ClassEntry( "Polygon", PID_POLYGON, &PolygonPin::staticMetaObject ),
 	ClassEntry( "Rect", PID_RECT, &RectPin::staticMetaObject ),
 	ClassEntry( "Size", PID_SIZE, &SizePin::staticMetaObject ),
 	ClassEntry( "Size3d", PID_SIZE_3D, &Size3dPin::staticMetaObject ),
@@ -189,6 +191,8 @@ PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp
 	mApp->registerPinForMetaType( PID_BYTEARRAY_LIST, QMetaType::QByteArrayList );
 	mApp->registerPinForMetaType( PID_STRING, QMetaType::QChar );
 	mApp->registerPinForMetaType( PID_STRING, QMetaType::QString );
+	mApp->registerPinForMetaType( PID_POLYGON, QMetaType::QPolygon );
+	mApp->registerPinForMetaType( PID_POLYGON, QMetaType::QPolygonF );
 
 	mApp->registerPinForMetaType( PID_POINT, QMetaType::QPoint );
 	mApp->registerPinForMetaType( PID_POINT, QMetaType::QPointF );

@@ -9,14 +9,14 @@
 #include <fugio/pin_control_interface.h>
 
 #include <fugio/colour/colour_interface.h>
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/variant_helper.h>
 
 #include <fugio/pincontrolbase.h>
 
 #include <fugio/serialise_interface.h>
 //#include <fugio/core/list_interface.h>
 
-class ColourPin : public fugio::PinControlBase, public fugio::ColourInterface, public fugio::VariantInterface, public fugio::SerialiseInterface
+class ColourPin : public fugio::PinControlBase, public fugio::ColourInterface, public fugio::VariantHelper<QColor>, public fugio::SerialiseInterface
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::ColourInterface fugio::VariantInterface fugio::SerialiseInterface )
@@ -45,9 +45,9 @@ public:
 
 	Q_INVOKABLE virtual void setColour( const QColor &pColour ) Q_DECL_OVERRIDE
 	{
-		if( pColour != mColours.first() )
+		if( pColour != mValues.first() )
 		{
-			mColours[ 0 ] = pColour;
+			mValues[ 0 ] = pColour;
 
 			emit colourChanged( pColour );
 		}
@@ -55,73 +55,43 @@ public:
 
 	Q_INVOKABLE virtual void setColour( int pIndex, const QColor &pValue ) Q_DECL_OVERRIDE
 	{
-		mColours[ pIndex ] = pValue;
+		mValues[ pIndex ] = pValue;
 	}
 
 	Q_INVOKABLE virtual QColor colour( int pIndex = 0 ) const Q_DECL_OVERRIDE
 	{
-		return( mColours[ pIndex ] );
+		return( mValues[ pIndex ] );
 	}
 
 	//-------------------------------------------------------------------------
 	// fugio::VariantInterface
-
-	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
-	{
-		mColours.resize( pCount );
-	}
-
-	virtual int variantCount( void ) const Q_DECL_OVERRIDE
-	{
-		return( mColours.size() );
-	}
-
-	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setVariant( 0, pValue );
-	}
-
-	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		mColours[ pIndex ] = pValue.value<QColor>();
-	}
-
-	virtual QVariant variant( int pIndex ) const Q_DECL_OVERRIDE
-	{
-		return( QVariant::fromValue<QColor>( mColours[ pIndex ] ) );
-	}
 
 	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
 	{
 		return( QMetaType::QColor );
 	}
 
-	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
+	virtual QUuid variantPinControl( void ) const Q_DECL_OVERRIDE
 	{
-		setFromBaseVariant( 0, pValue );
+		return( PID_COLOUR );
 	}
 
-	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE;
+	virtual void setFromBaseVariant( int pIndex, int pOffset, const QVariant &pValue ) Q_DECL_OVERRIDE;
 
-	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE;
-
-	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
-	{
-
-	}
+	virtual QVariant baseVariant( int pIndex, int pOffset ) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// fugio::SerialiseInterface
 
 	virtual void serialise( QDataStream &pDataStream ) const Q_DECL_OVERRIDE
 	{
-		if( mColours.size() == 1 )
+		if( mValues.size() == 1 )
 		{
-			pDataStream << mColours.first();
+			pDataStream << mValues.first();
 		}
 		else
 		{
-			pDataStream << mColours;
+			pDataStream << mValues;
 		}
 	}
 
@@ -135,9 +105,9 @@ public:
 
 		if( pDataStream.commitTransaction() )
 		{
-			mColours.resize( 1 );
+			mValues.resize( 1 );
 
-			mColours[ 0 ] = C;
+			mValues[ 0 ] = C;
 
 			return;
 		}
@@ -148,14 +118,14 @@ public:
 
 		pDataStream >> L;
 
-		mColours = L;
+		mValues = L;
 	}
 
 signals:
 	void colourChanged( const QColor &pColour );
 
 private:
-	QVector<QColor>			mColours;
+//	QVector<QColor>			mColours;
 };
 
 #endif // COLOURPIN_H
