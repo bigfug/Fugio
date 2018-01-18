@@ -15,7 +15,7 @@ set( SOURCE_FILES
 )
 
 set( QRC_FILES
-	resources.qrc
+#	resources.qrc
 )
 
 add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} )

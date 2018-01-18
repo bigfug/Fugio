@@ -76,6 +76,8 @@ set( SOURCE_FILES
 	joinrectnode.h
 	transformpin.cpp
 	transformpin.h
+	polygonpin.cpp
+	polygonpin.h
 )
 
 set( QRC_FILES

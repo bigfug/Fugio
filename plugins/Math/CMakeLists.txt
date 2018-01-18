@@ -136,8 +136,8 @@ set( SOURCE_FILES
 	minnode.h
 	pownode.cpp
 	pownode.h
-
-
+	sumnode.cpp
+	sumnode.h
 )
 
 set( QRC_FILES
