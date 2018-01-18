@@ -61,3 +61,16 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Concurrent Qt5::Gui Qt5::N
 
 include( ../qtdeploy.cmake )
 
+#------------------------------------------------------------------------------
+# Raspberry Pi
+
+if( Q_OS_RASPBERRY_PI )
+	target_include_directories( ${PROJECT_NAME} PRIVATE /opt/vc/include )
+
+	find_library( BCM_HOST_LIBRARY NAMES bcm_host PATHS /opt/vc/lib )
+
+	target_link_libraries( ${PROJECT_NAME} ${BCM_HOST_LIBRARY} )
+
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE OMX_SKIP64BIT )
+endif()
+
