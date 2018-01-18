@@ -34,7 +34,7 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 #------------------------------------------------------------------------------
 # PortAudio
 
-find_package( PortAudio QUIET )
+find_package( PortAudio )
 
 if( PortAudio_FOUND )
 	target_link_libraries( ${PROJECT_NAME} PortAudio )

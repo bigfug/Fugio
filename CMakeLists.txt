@@ -13,6 +13,8 @@ set( CMAKE_AUTORCC ON )
 
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 
+set( PKG_CONFIG_USE_CMAKE_PREFIX_PATH ON )
+
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
     message(STATUS "*** Have SIZEOF void * = 8, so 64-bit")
     set( IS_64_BIT 1 )
