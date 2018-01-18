@@ -37,6 +37,20 @@ find_package( Qt5 COMPONENTS Core Widgets REQUIRED )
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 
 #------------------------------------------------------------------------------
+# Raspberry Pi
+
+if( Q_OS_RASPBERRY_PI )
+	target_include_directories( ${PROJECT_NAME} PRIVATE /opt/vc/include )
+
+	find_library( BCM_HOST_LIBRARY NAMES bcm_host PATHS /opt/vc/lib )
+	find_library( PIGPIO_LIBRARY   NAMES pigpio )
+
+	target_link_libraries( ${PROJECT_NAME} ${BCM_HOST_LIBRARY} ${PIGPIO_LIBRARY} )
+
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE OMX_SKIP64BIT )
+endif()
+
+#------------------------------------------------------------------------------
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )

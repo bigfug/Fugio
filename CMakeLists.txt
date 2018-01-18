@@ -25,7 +25,11 @@ endif ()
 # There must be a better way to do this...
 
 if( EXISTS /usr/lib/arm-linux-gnueabihf )
-    add_definitions( -DQ_OS_RASPBERRY_PI )
+	set( Q_OS_RASPBERRY_PI TRUE )
+
+	add_definitions( -DQ_OS_RASPBERRY_PI )
+
+	message( "RASPBERRY PI BUILD" )
 endif()
 
 #------------------------------------------------------------------------------
