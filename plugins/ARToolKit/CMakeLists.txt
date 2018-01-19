@@ -94,7 +94,7 @@ endif()
 if( LUA_FOUND )
 	target_link_libraries( ${PROJECT_NAME} ${LUA_LIBRARIES} )
 
-	target_include_directories( ${PROJECT_NAME} PRIVATE ${LUA_INCLUDE_DIRS} )
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${LUA_INCLUDE_DIR} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE LUA_SUPPORTED )
 endif( LUA_FOUND )
