@@ -34,12 +34,12 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 find_package( ARToolKit )
 
 if( ARTOOLKIT_FOUND )
-	#message( "--- ARToolKit" )
-	#message( ${ARTOOLKIT_ARICP_LIBRARY_RELEASE} )
+#	message( "--- ARToolKit" )
+#	message( ${ARTOOLKIT_LIBRARIES} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE ${ARTOOLKIT_DEFINITIONS} )
 
-	target_link_libraries( ${PROJECT_NAME} ${ARTOOLKIT_LIBRARIES} ${ARTOOLKIT_ARICP_LIBRARY_RELEASE} )
+	target_link_libraries( ${PROJECT_NAME} ${ARTOOLKIT_LIBRARIES} )
 
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${ARTOOLKIT_INCLUDE_DIR} )
 
@@ -76,10 +76,25 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 
 find_package( Lua 5.2 )
 
+if( NOT LUA_FOUND )
+	find_path( LUA_INCLUDE_DIR lua.hpp )
+
+	find_library( LUA_LIBRARY
+	  NAMES lua
+	)
+
+	set( LUA_INCLUDE_DIRS ${LUA_INCLUDE_DIR} )
+	set( LUA_LIBRARIES ${LUA_LIBRARY} )
+
+	if( LUA_INCLUDE_DIR AND LUA_LIBRARY )
+		set( LUA_FOUND ON )
+	endif()
+endif()
+
 if( LUA_FOUND )
 	target_link_libraries( ${PROJECT_NAME} ${LUA_LIBRARIES} )
 
-	target_include_directories( ${PROJECT_NAME} PRIVATE ${LUA_INCLUDE_DIR} )
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${LUA_INCLUDE_DIRS} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE LUA_SUPPORTED )
 endif( LUA_FOUND )
