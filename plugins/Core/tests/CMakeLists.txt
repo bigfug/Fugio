@@ -14,6 +14,8 @@ set( SOURCE_FILES
 	../../../include/fugio/test_helper.h
 )
 
+add_definitions( -DFUGIOLIB_STATIC )
+
 add_executable( ${PROJECT_NAME} ${SOURCE_FILES} )
 
 find_package( Qt5 REQUIRED COMPONENTS Core Test )
