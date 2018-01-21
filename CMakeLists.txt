@@ -33,6 +33,11 @@ if( EXISTS /usr/lib/arm-linux-gnueabihf )
 endif()
 
 #------------------------------------------------------------------------------
+# Enable Unit Testing
+
+include( CTest )
+
+#------------------------------------------------------------------------------
 
 file( READ FugioApp/version.txt FUGIO_VERSION )
 
