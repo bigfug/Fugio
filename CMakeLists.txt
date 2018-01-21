@@ -144,6 +144,26 @@ set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Fugio" )
 set( CPACK_PACKAGE_VENDOR "bigfug.com" )
 set( CPACK_PACKAGE_CONTACT "fugio@bigfug.com" )
 
+if( Q_OS_RASPBERRY_PI )
+	set( CPACK_DEBIAN_PACKAGE_ARCHITECTURE armhf )
+elseif( IS_64_BIT )
+	set( CPACK_DEBIAN_PACKAGE_ARCHITECTURE x86 )
+else()
+	set( CPACK_DEBIAN_PACKAGE_ARCHITECTURE i386 )
+endif()
+
+if( Q_OS_RASPBERRY_PI )
+	set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
+		libgles2-mesa, libicu57, libavcodec57, libavdevice57, libavformat57, libavutil55, libswscale4,
+		libswresample2, libavfilter6, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2, pigpio,
+		libqt5serialport5" )
+elseif( LINUX )
+	set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
+		libicu57, libavcodec57, libavdevice57, libavformat57, libavutil55, libswscale4,
+		libswresample2, libavfilter6, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2,
+		libqt5serialport5" )
+endif()
+
 if( APPLE )
 	set( CPACK_INCLUDE_TOPLEVEL_DIRECTORY ON )
 endif()
