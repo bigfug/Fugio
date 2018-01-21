@@ -37,6 +37,8 @@ endif()
 
 include( CTest )
 
+set( CTEST_OUTPUT_ON_FAILURE ON )
+
 #------------------------------------------------------------------------------
 
 file( READ FugioApp/version.txt FUGIO_VERSION )
