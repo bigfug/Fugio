@@ -55,7 +55,7 @@ else( WIN32 )
 	if( dlib_LIBS )
 		target_link_libraries( ${PROJECT_NAME} ${dlib_LIBS} )
 
-		add_definitions( -DDLIB_SUPPORTED )
+		target_compile_definitions( ${PROJECT_NAME} PRIVATE DLIB_SUPPORTED )
 	endif()
 endif( WIN32 )
 

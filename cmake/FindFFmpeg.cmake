@@ -36,6 +36,10 @@ if (NOT FFmpeg_FIND_COMPONENTS)
   set(FFmpeg_FIND_COMPONENTS AVCODEC AVFORMAT AVUTIL)
 endif ()
 
+if( WIN32 )
+	find_path( FFMPEG_DIR NAMES include/libavcodec/avcodec.h )
+endif( WIN32 )
+
 #
 ### Macro: set_component_found
 #
@@ -65,6 +69,9 @@ macro(find_component _component _pkgconfig _library _header)
      if (PKG_CONFIG_FOUND)
        pkg_check_modules(PC_${_component} ${_pkgconfig})
      endif ()
+  else (NOT WIN32)
+	set( PC_LIB${_component}_INCLUDEDIR ${FFMPEG_DIR}/include )
+	set( PC_LIB${_component}_LIBDIR     ${FFMPEG_DIR}/lib )
   endif (NOT WIN32)
 
   find_path(${_component}_INCLUDE_DIRS ${_header}

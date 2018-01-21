@@ -51,7 +51,7 @@ set( FUGIO_INSTALL_TYPE "Normal" CACHE STRING "Type of build" )
 
 set_property( CACHE FUGIO_INSTALL_TYPE PROPERTY STRINGS Normal QtIFW Debian )
 
-message( STATUS "FUGIO_INSTALL_TYPE=’${FUGIO_INSTALL_TYPE}'" )
+message( STATUS "FUGIO_INSTALL_TYPE=${FUGIO_INSTALL_TYPE}" )
 
 set( PATH_APP . )
 set( PATH_INCLUDE . )
@@ -140,9 +140,18 @@ install( DIRECTORY FugioApp/stylesheets DESTINATION ${PATH_SHARE} )
 #------------------------------------------------------------------------------
 # CPack
 
-set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Fugio" )
+INCLUDE( InstallRequiredSystemLibraries )
+
+set( CPACK_PACKAGE_NAME "Fugio" )
 set( CPACK_PACKAGE_VENDOR "bigfug.com" )
 set( CPACK_PACKAGE_CONTACT "fugio@bigfug.com" )
+set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Fugio is a free, cross platform, creative visual programming system" )
+set( CPACK_PACKAGE_EXECUTABLES "Fugio" )
+set( CPACK_PACKAGE_INSTALL_DIRECTORY "Fugio" )
+set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "Fugio" )
+#set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE" )
+#set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "ExecWait '\\\"$INSTDIR\\\\vcredist_x86.exe\\\" /q:a'" )
+#set( CPACK_NSIS_HELP_LINK "http:\\\\\\\\wiki.bigfug.com" )
 
 if( Q_OS_RASPBERRY_PI )
 	set( CPACK_DEBIAN_PACKAGE_ARCHITECTURE armhf )
@@ -176,3 +185,7 @@ list( GET FUGIO_VERSION_LIST 2 CPACK_PACKAGE_VERSION_PATCH )
 
 include( CPack )
 
+add_custom_target( mypackage
+  COMMAND ${CMAKE_CPACK_COMMAND}
+  COMMAND ${CMAKE_COMMAND} -E echo "after packaging"
+)
