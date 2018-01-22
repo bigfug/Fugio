@@ -51,18 +51,19 @@ set( FUGIO_INSTALL_TYPE "Normal" CACHE STRING "Type of build" )
 
 set_property( CACHE FUGIO_INSTALL_TYPE PROPERTY STRINGS Normal QtIFW Debian )
 
-message( STATUS "FUGIO_INSTALL_TYPE=${FUGIO_INSTALL_TYPE}" )
+#message( STATUS "FUGIO_INSTALL_TYPE=${FUGIO_INSTALL_TYPE}" )
 
-set( PATH_APP . )
-set( PATH_INCLUDE . )
+set( PATH_APP bin )
+set( PATH_INCLUDE include )
 set( PATH_SHARE . )
-set( PATH_PLUGIN . )
+set( PATH_PLUGIN plugins )
+
+if( APPLE )
+	set( PATH_APP . )
+endif()
 
 if( FUGIO_INSTALL_TYPE STREQUAL "Normal" )
 	message( STATUS "Normal Install" )
-
-	set( PATH_INCLUDE	include )
-	set( PATH_PLUGIN	plugins )
 endif()
 
 if( FUGIO_INSTALL_TYPE STREQUAL "QtIFW" )
