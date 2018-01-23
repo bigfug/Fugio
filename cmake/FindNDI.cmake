@@ -17,10 +17,20 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 	  $ENV{NDI_DIR}
 	)
 
+	find_file( NDI_DLL Processing.NDI.Lib.x64.dll
+	  HINTS
+	  $ENV{NDI_DIR}
+	)
+
 elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
 	# 32 bits
 
 	find_library( NDI_LIBRARY optimised Processing.NDI.Lib.x86.lib
+	  HINTS
+	  $ENV{NDI_DIR}
+	)
+
+	find_file( NDI_DLL Processing.NDI.Lib.x86.dll
 	  HINTS
 	  $ENV{NDI_DIR}
 	)
@@ -34,8 +44,8 @@ find_path( NDI_INCLUDE_DIR Processing.NDI.Lib.h
 
 set( NDI_LIBRARIES optimised ${NDI_LIBRARY} )
 
-include( FindPackageHandleStandardArgs)
+include( FindPackageHandleStandardArgs )
 
-find_package_handle_standard_args( NDI REQUIRED_VARS NDI_LIBRARIES NDI_INCLUDE_DIR )
+find_package_handle_standard_args( NDI REQUIRED_VARS NDI_LIBRARIES NDI_INCLUDE_DIR NDI_DLL )
 
 mark_as_advanced( NDI_LIBRARY )

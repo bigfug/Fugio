@@ -116,9 +116,11 @@ if( FFMPEG_FOUND )
 		SET(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /SAFESEH:NO")
 		SET(CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO} /SAFESEH:NO")
 		
-		file( GLOB dlls "${FFMPEG_LIBRARIES}/../bin/*.dll" )
+		file( GLOB dlls "${FFMPEG_DIR}/bin/*.dll" )
 		
-		install( FILES ${dlls} DESTINATION "${PATH_PLUGIN}/ffmpeg" )
+		if( dlls )
+			install( FILES ${dlls} DESTINATION "${PATH_PLUGIN}/ffmpeg" )
+		endif()
 
 	endif( WIN32 )
 else()

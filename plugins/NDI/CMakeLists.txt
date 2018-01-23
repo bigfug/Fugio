@@ -26,12 +26,16 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
   BUNDLE TRUE
 )
 
-#—————————————————————————————————-
+#------------------------------------------------------------------------------
 # Install
 
-install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+if( WIN32 )
+	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/ndi )
+else( WIN32 )
+	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+endif( WIN32 )
 
-#—————————————————————————————————-
+#------------------------------------------------------------------------------
 # Qt5
 
 find_package( Qt5 COMPONENTS Core Gui Widgets REQUIRED )
@@ -39,7 +43,7 @@ find_package( Qt5 COMPONENTS Core Gui Widgets REQUIRED )
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 
 #------------------------------------------------------------------------------
-# PortAudio
+# NDI
 
 find_package( NDI QUIET )
 
@@ -49,4 +53,8 @@ if( NDI_FOUND )
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${NDI_INCLUDE_DIR} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE NDI_SUPPORTED )
+
+	if( WIN32 )
+		install( FILES ${NDI_DLL} DESTINATION ${PATH_PLUGIN}/ndi )
+	endif( WIN32 )
 endif( NDI_FOUND )
