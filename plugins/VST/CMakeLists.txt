@@ -63,7 +63,7 @@ if( VST3SDK_FOUND )
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE VST_SUPPORTED RELEASE )
 
 	target_sources( ${PROJECT_NAME} PRIVATE
-		"${VST3SDK_INCLUDE_DIR}/public.sdk/source/common/memorystream.h"
+#		"${VST3SDK_INCLUDE_DIR}/public.sdk/source/common/memorystream.h"
 		"${VST3SDK_INCLUDE_DIR}/public.sdk/source/common/memorystream.cpp"
 		)
 

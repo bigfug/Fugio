@@ -138,6 +138,14 @@ install( TARGETS Fugio
 	BUNDLE DESTINATION ${PATH_APP}
 )
 
+if( WIN32 AND CMAKE_BUILD_TYPE EQUAL "DEBUG" )
+add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
+	COMMAND "execute_process( COMMAND \"${WINDEPLOYQT_EXECUTABLE}\" --force --verbose 2 --qmldir \"${CMAKE_SOURCE_DIR}/qml\" \"${PATH_APP}/${PROJECT_NAME}.exe\" )"
+	WORKING_DIRECTORY "${PATH_APP}"
+	COMMENT "Running windeployqt..."
+)
+endif()
+
 #------------------------------------------------------------------------------
 # Read version.txt
 
