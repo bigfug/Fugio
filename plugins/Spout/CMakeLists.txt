@@ -75,6 +75,8 @@ if( WIN32 )
 
 		target_link_libraries( ${PROJECT_NAME} Spout )
 
+		set_target_properties( Spout PROPERTIES LINKER_LANGUAGE CXX )
+
 		target_compile_definitions( ${PROJECT_NAME} PRIVATE SPOUT_SUPPORTED )
 	else( SPOUT_DIR )
 		message( "Spout is not configured" )

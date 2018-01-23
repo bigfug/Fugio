@@ -51,13 +51,7 @@ if( WIN32 )
 	set( CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1 )
 endif( WIN32 )
 
-set( FUGIO_INSTALL_TYPE "Normal" CACHE STRING "Type of build" )
-
-set_property( CACHE FUGIO_INSTALL_TYPE PROPERTY STRINGS Normal QtIFW Debian )
-
-#message( STATUS "FUGIO_INSTALL_TYPE=${FUGIO_INSTALL_TYPE}" )
-
-set( PATH_APP bin )
+set( PATH_APP . )
 set( PATH_INCLUDE include )
 set( PATH_SHARE . )
 set( PATH_PLUGIN plugins )
@@ -66,64 +60,13 @@ if( APPLE )
 	set( PATH_APP . )
 endif()
 
-if( FUGIO_INSTALL_TYPE STREQUAL "Normal" )
-	message( STATUS "Normal Install" )
-endif()
-
-if( FUGIO_INSTALL_TYPE STREQUAL "QtIFW" )
-	message( STATUS "QtIFW Installer" )
-	
-	set( PATH_BASE		packages/com.bigfug.fugio )
-	set( PATH_DATA		${PATH_BASE}/data )
-
-	set( PATH_APP		${PATH_DATA} )
-	set( PATH_INCLUDE	${PATH_DATA}/include )
-	set( PATH_SHARE		${PATH_DATA} )
-	set( PATH_PLUGIN	${PATH_DATA}/plugins )
-
-	if( WIN32 )
-		if( IS_64_BIT )
-			set( FUGIO_REPOSITORY_URL "http://www.bigfug.com/packages/fugio-win64" )
-		else()
-			set( FUGIO_REPOSITORY_URL "http://www.bigfug.com/packages/fugio-win32" )
-		endif()
-	elseif( APPLE )
-		set( FUGIO_REPOSITORY_URL "http://www.bigfug.com/packages/fugio-osx" )
-	endif()
-	
-	configure_file( qtifw_config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/qtifw_config.cmake @ONLY ) 
-	
-	add_custom_command( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/package.xml 
-		COMMAND ${CMAKE_COMMAND} -P 
-			${CMAKE_CURRENT_BINARY_DIR}/qtifw_config.cmake 
-		DEPENDS 
-			${CMAKE_CURRENT_BINARY_DIR}/qtifw_config.cmake 
-			${CMAKE_CURRENT_SOURCE_DIR}/config.cmake.xml 
-			${CMAKE_CURRENT_SOURCE_DIR}/package.cmake.xml
-			FugioApp/version.txt
-		COMMENT "Configuring QtIFW..." 
-			VERBATIM ) 
-  
-	add_custom_target( configure_qtifw ALL
-		DEPENDS
-			${CMAKE_CURRENT_BINARY_DIR}/package.xml
-			${CMAKE_CURRENT_BINARY_DIR}/config.xml
-			FugioApp/version.txt
-	) 
-	
-	install( FILES ${CMAKE_CURRENT_BINARY_DIR}/package.xml	DESTINATION ${PATH_BASE}/meta )
-	install( FILES ${CMAKE_CURRENT_BINARY_DIR}/config.xml	DESTINATION config )
-endif()
-
-if( FUGIO_INSTALL_TYPE STREQUAL "Debian" )
-	message( STATUS "Debian Package" )
-
+if( LINUX )
 	set( PATH_APP		usr/bin )
 	set( PATH_INCLUDE	usr/include )
 	set( PATH_SHARE		usr/share/fugio )
 	set( PATH_PLUGIN	usr/lib/fugio )
 	
-	install( FILES FugioApp/control			DESTINATION DEBIAN )
+#	install( FILES FugioApp/control			DESTINATION DEBIAN )
 	install( FILES FugioApp/fugio.desktop	DESTINATION usr/share/applications )
 	install( FILES FugioApp/fugio.png		DESTINATION usr/share/icons/hicolor/256x256/apps )
 endif()
@@ -189,8 +132,3 @@ list( GET FUGIO_VERSION_LIST 1 CPACK_PACKAGE_VERSION_MINOR )
 list( GET FUGIO_VERSION_LIST 2 CPACK_PACKAGE_VERSION_PATCH )
 
 include( CPack )
-
-add_custom_target( mypackage
-  COMMAND ${CMAKE_CPACK_COMMAND}
-  COMMAND ${CMAKE_COMMAND} -E echo "after packaging"
-)
