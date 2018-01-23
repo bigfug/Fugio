@@ -109,7 +109,7 @@ if( OpenCV_FOUND )
 			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_videoio${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
 		)
 
-		message( ${OpenCV_DLL} )
+#		message( ${OpenCV_DLL} )
 
 		if( OpenCV_DLL )
 			install( FILES ${OpenCV_DLL} DESTINATION "${PATH_PLUGIN}/opencv" )

@@ -39,6 +39,8 @@ find_package( PortAudio )
 if( PORTAUDIO_FOUND )
 	target_link_libraries( ${PROJECT_NAME} PortAudio )
 
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${PORTAUDIO_INCLUDE_DIRS} )
+
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE PORTAUDIO_SUPPORTED )
 endif( PORTAUDIO_FOUND )
 
