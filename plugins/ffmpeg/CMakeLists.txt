@@ -104,6 +104,8 @@ if( WIN32 )
 		
 		target_compile_definitions( snappy PRIVATE SNAPPY_STATIC )
 
+		set_target_properties( snappy PROPERTIES LINKER_LANGUAGE CXX )
+
 		target_compile_definitions( ${PROJECT_NAME} PRIVATE SNAPPY_STATIC )
 
 		target_link_libraries( ${PROJECT_NAME} snappy )
