@@ -47,6 +47,10 @@ string( STRIP ${FUGIO_VERSION} FUGIO_VERSION )
 
 #------------------------------------------------------------------------------
 
+if( WIN32 )
+	set( CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1 )
+endif( WIN32 )
+
 set( FUGIO_INSTALL_TYPE "Normal" CACHE STRING "Type of build" )
 
 set_property( CACHE FUGIO_INSTALL_TYPE PROPERTY STRINGS Normal QtIFW Debian )
