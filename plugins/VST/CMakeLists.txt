@@ -47,14 +47,6 @@ install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 find_package( vst3sdk QUIET )
 
-#LIBS += -F/Library/Frameworks
-
-#LIBS += -framework CoreFoundation
-
-#SOURCES += "$$(LIBS)/VST3 SDK/public.sdk/source/common/memorystream.cpp"
-
-#HEADERS += "$$(LIBS)/VST3 SDK/public.sdk/source/common/memorystream.h"
-
 if( VST3SDK_FOUND )
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${VST3SDK_INCLUDE_DIR} )
 
