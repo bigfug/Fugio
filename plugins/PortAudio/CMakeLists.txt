@@ -36,24 +36,31 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 
 find_package( PortAudio )
 
-if( PortAudio_FOUND )
+if( PORTAUDIO_FOUND )
 	target_link_libraries( ${PROJECT_NAME} PortAudio )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE PORTAUDIO_SUPPORTED )
-endif( PortAudio_FOUND )
+endif( PORTAUDIO_FOUND )
 
 #------------------------------------------------------------------------------
 # Install
 
 if( WIN32 )
-	if( PortAudio_FOUND )
-		string( REPLACE ".lib" ".dll" PORTAUDIO_DLL ${PORTAUDIO_LIBRARY} )
+	if( PORTAUDIO_FOUND )
+		STRING( FIND ${PORTAUDIO_LIBRARY} "_static" IS_PORTAUDIO_STATIC )
 
-		install( FILES ${PORTAUDIO_DLL} DESTINATION ${PATH_PLUGIN}/portaudio )
+		if( IS_PORTAUDIO_STATIC GREATER -1 )
+			message( "PortAudio: static library detected" )
+
+			install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+		else()
+			string( REPLACE ".lib" ".dll" PORTAUDIO_DLL ${PORTAUDIO_LIBRARY} )
+
+			install( FILES ${PORTAUDIO_DLL} DESTINATION ${PATH_PLUGIN}/portaudio )
+
+			install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/portaudio )
+		endif()
 	endif()
-	
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/portaudio )
-
 else( WIN32 )
 	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 endif( WIN32 )
