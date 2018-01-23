@@ -81,46 +81,6 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 #—————————————————————————————————-
 # snappy
 
-if( WIN32 )
-	find_path( SNAPPY_DIR snappy-stubs-public.h )
-	
-	if( SNAPPY_DIR )
-		target_include_directories( ${PROJECT_NAME} PRIVATE ${SNAPPY_DIR} )
-		
-		set( SNAPPY_FILES
-			${SNAPPY_DIR}/snappy.cc
-			${SNAPPY_DIR}/snappy-c.cc
-			${SNAPPY_DIR}/snappy-sinksource.cc
-			${SNAPPY_DIR}/snappy-stubs-internal.cc
-			${SNAPPY_DIR}/snappy.h
-			${SNAPPY_DIR}/snappy-c.h
-			${SNAPPY_DIR}/snappy-internal.h
-			${SNAPPY_DIR}/snappy-sinksource.h
-			${SNAPPY_DIR}/snappy-stubs-internal.h
-			${SNAPPY_DIR}/snappy-stubs-public.h
-		)
-
-		add_library( snappy STATIC ${SNAPPY_FILES} )
-		
-		target_compile_definitions( snappy PRIVATE SNAPPY_STATIC )
-
-		set_target_properties( snappy PROPERTIES LINKER_LANGUAGE CXX )
-
-		target_compile_definitions( ${PROJECT_NAME} PRIVATE SNAPPY_STATIC )
-
-		target_link_libraries( ${PROJECT_NAME} snappy )
-
-		target_sources( ${PROJECT_NAME} PRIVATE
-			hap/source/hap.c
-			hap/source/hap.h
-		)
-
-	endif( SNAPPY_DIR )
-endif( WIN32 )
-
-#—————————————————————————————————-
-# snappy
-
 find_package( SNAPPY QUIET )
 
 if( SNAPPY_FOUND )
