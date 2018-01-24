@@ -38,7 +38,11 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 #------------------------------------------------------------------------------
 # Install
 
-install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+if( WIN32 )
+	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/portmidi )
+else( WIN32 )
+	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+endif( WIN32 )
 
 #------------------------------------------------------------------------------
 # PortMidi
@@ -51,6 +55,12 @@ if( PORTMIDI_FOUND )
 	target_link_libraries( ${PROJECT_NAME} ${PORTMIDI_LIBRARIES} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE PORTMIDI_SUPPORTED )
+
+	if( WIN32 )
+		string( REPLACE ".lib" ".dll" PORTMIDI_DLL ${PORTMIDI_LIBRARY} )
+
+		install( FILES ${PORTMIDI_DLL} DESTINATION ${PATH_PLUGIN}/portmidi )
+	endif( WIN32 )
 else()
 	message( "PortMidi is not configured" )
 endif()

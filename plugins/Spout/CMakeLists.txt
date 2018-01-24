@@ -48,6 +48,10 @@ if( SPOUT_FOUND )
 	target_link_libraries( ${PROJECT_NAME} ${SPOUT_LIBRARIES} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE SPOUT_SUPPORTED )
+
+	string( REPLACE ".lib" ".dll" SPOUT_DLL ${SPOUT_LIBRARY} )
+
+	install( FILES ${SPOUT_DLL} DESTINATION ${PATH_PLUGIN}/spout )
 elseif( WIN32 )
 	message( "Spout not found" )
 endif()
@@ -55,7 +59,11 @@ endif()
 #------------------------------------------------------------------------------
 # Install
 
-install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+if( WIN32 )
+	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/spout )
+else( WIN32 )
+	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+endif( WIN32 )
 
 #------------------------------------------------------------------------------
 # Qt5
