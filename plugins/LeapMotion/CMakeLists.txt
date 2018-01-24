@@ -32,10 +32,14 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
   BUNDLE TRUE
 )
 
-#—————————————————————————————————-
+#------------------------------------------------------------------------------
 # Install
 
-install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+if( WIN32 )
+	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/leapmotion )
+else( WIN32 )
+	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+endif( WIN32 )
 
 #—————————————————————————————————-
 # Qt5
@@ -58,6 +62,10 @@ if( WIN32 )
 		target_link_libraries( ${PROJECT_NAME} ${LEAP_LIB} )
 
 		target_compile_definitions( ${PROJECT_NAME} PRIVATE LEAP_PLUGIN_SUPPORTED )
+
+		string( REPLACE ".lib" ".dll" LEAP_DLL ${LEAP_LIB} )
+
+		install( FILES ${LEAP_DLL} DESTINATION ${PATH_PLUGIN}/leapmotion )
 	endif( LEAP_INCLUDE_DIR AND LEAP_LIB )
 endif( WIN32 )
 

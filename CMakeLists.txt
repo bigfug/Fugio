@@ -88,8 +88,6 @@ install( DIRECTORY FugioApp/stylesheets DESTINATION ${PATH_SHARE} )
 #------------------------------------------------------------------------------
 # CPack
 
-INCLUDE( InstallRequiredSystemLibraries )
-
 set( CPACK_PACKAGE_NAME "Fugio" )
 set( CPACK_PACKAGE_VENDOR "bigfug.com" )
 set( CPACK_PACKAGE_CONTACT "fugio@bigfug.com" )
