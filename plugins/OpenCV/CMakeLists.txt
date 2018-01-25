@@ -80,6 +80,8 @@ else( WIN32 )
 	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 endif( WIN32 )
 
+include( ${CMAKE_SOURCE_DIR}/mac_fix_bundle.cmake )
+
 #—————————————————————————————————-
 # Qt5
 
@@ -90,7 +92,8 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 #—————————————————————————————————-
 # OpenCV
 
-find_package( OpenCV COMPONENTS core OPTIONAL_COMPONENTS highgui imgproc features2d objdetect photo video videoio )
+#find_package( OpenCV COMPONENTS core OPTIONAL_COMPONENTS highgui imgproc features2d objdetect photo video videoio )
+find_package( OpenCV COMPONENTS core OPTIONAL_COMPONENTS imgproc features2d objdetect photo video )
 
 if( OpenCV_FOUND )
 	target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )

@@ -35,6 +35,15 @@ else( WIN32 )
 	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 endif( WIN32 )
 
+include( ${CMAKE_SOURCE_DIR}/mac_fix_bundle.cmake )
+
+if( APPLE )
+	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND install_name_tool -change "@rpath/libndi.dylib" "@loader_path/../Frameworks/libndi.dylib" "${BUNDLE_PATH}/Contents/MacOS/${PROJECT_NAME}"
+		VERBATIM
+		)
+endif( APPLE )
+
 #------------------------------------------------------------------------------
 # Qt5
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FILES=$1/*.dylib
+FILES=$1/*
 
 for f in $FILES
 do
@@ -12,7 +12,7 @@ do
 
   for d in "${deps[@]}"
   do
-    if [ -n "$d" ]; then
+    if [ -f "$d" ]; then
       echo "Dependency: $d..."
 
       base=$(basename "$d")

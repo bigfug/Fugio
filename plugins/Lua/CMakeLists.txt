@@ -78,3 +78,5 @@ if( ( WIN32 ) AND ( LUA_FOUND ) )
 
 	install( FILES ${LUA_DLL} DESTINATION . )
 endif()
+
+include( ${CMAKE_SOURCE_DIR}/mac_fix_bundle.cmake )

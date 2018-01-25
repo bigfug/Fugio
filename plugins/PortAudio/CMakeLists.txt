@@ -66,3 +66,5 @@ if( WIN32 )
 else( WIN32 )
 	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 endif( WIN32 )
+
+include( ${CMAKE_SOURCE_DIR}/mac_fix_bundle.cmake )

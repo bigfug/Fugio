@@ -107,3 +107,5 @@ if( WIN32 AND LUA_LIBRARIES )
 
 	install( FILES ${LUA_DLL} DESTINATION ${PATH_APP} )
 endif( WIN32 AND LUA_LIBRARIES )
+
+include( ${CMAKE_SOURCE_DIR}/mac_fix_bundle.cmake )
