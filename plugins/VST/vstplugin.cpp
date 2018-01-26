@@ -40,8 +40,7 @@ extern "C"
 	typedef bool (PLUGIN_API *InitModuleProc) ();
 	typedef bool (PLUGIN_API *ExitModuleProc) ();
 
-	typedef AEffect *(PLUGIN_API *VSTPluginMain)( audioMasterCallback audioMaster );
-
+//	typedef AEffect *(PLUGIN_API *VSTPluginMain)( audioMasterCallback audioMaster );
 }
 
 #endif
