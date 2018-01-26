@@ -297,10 +297,10 @@ bool VST3Node::initialise()
 	// (for Plug-ins which did not succeed to separate component from controller)
 	if( mPluginComponent->queryInterface( Vst::IEditController::iid, (void**)&mPluginController) != kResultTrue )
 	{
-		FUID controllerCID;
+		TUID controllerCID;
 
 		// ask for the associated controller class ID
-		if (mPluginComponent->getControllerClassId (controllerCID) == kResultTrue && controllerCID.isValid ())
+		if (mPluginComponent->getControllerClassId (controllerCID) == kResultTrue )
 		{
 			// create its controller part created from the factory
 			result = mPluginFactory->createInstance (controllerCID, Vst::IEditController::iid, (void**)&mPluginController);

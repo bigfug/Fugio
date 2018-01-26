@@ -59,6 +59,8 @@ if( VST3SDK_FOUND )
 	target_sources( ${PROJECT_NAME} PRIVATE
 		"${VST3SDK_INCLUDE_DIR}/public.sdk/source/common/memorystream.h"
 		"${VST3SDK_INCLUDE_DIR}/public.sdk/source/common/memorystream.cpp"
+		"${VST3SDK_INCLUDE_DIR}/pluginterfaces/base/funknown.cpp"
+		"${VST3SDK_INCLUDE_DIR}/pluginterfaces/base/funknown.h"
 		)
 
 else()
