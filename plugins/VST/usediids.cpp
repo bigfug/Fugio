@@ -8,7 +8,7 @@
 #include <pluginterfaces/base/ibstream.h>
 
 #include "base/source/fstring.h"
-#include "base/source/fcontainer.h"
+//#include "base/source/fcontainer.h"
 
 #include "pluginterfaces/vst/ivstcomponent.h"
 #include "pluginterfaces/vst/ivsteditcontroller.h"
