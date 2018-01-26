@@ -15,7 +15,7 @@
 
 #if defined( VST_SUPPORTED )
 
-#include <pluginterfaces/vst2.x/aeffect.h>
+//#include <pluginterfaces/vst2.x/aeffect.h>
 //#include <pluginterfaces/vst2.x/aeffectx.h>
 
 #if defined( Q_OS_WIN )

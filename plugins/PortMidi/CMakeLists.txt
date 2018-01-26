@@ -49,7 +49,7 @@ include( ${CMAKE_SOURCE_DIR}/mac_fix_bundle.cmake )
 #------------------------------------------------------------------------------
 # PortMidi
 
-find_package( PORTMIDI QUIET )
+find_package( PortMidi QUIET )
 
 if( PORTMIDI_FOUND )
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${PORTMIDI_INCLUDE_DIR} ${PORTTIME_INCLUDE_DIR} )
