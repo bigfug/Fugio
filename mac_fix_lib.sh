@@ -3,7 +3,7 @@
 BUNDLE_DIR=$1
 BUNDLE_EXE=$2
 
-macdepoyqt "$BUNDLE_DIR" -no-plugins -verbose=1
+macdeployqt "$BUNDLE_DIR" -no-plugins -verbose=1
 
 for f in "$BUNDLE_DIR/Contents/Frameworks"/Qt*.framework
 do
