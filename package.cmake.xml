@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Package>
-	<DisplayName>Fugio</DisplayName>
-	<Description>The Fugio patch editor</Description>
-	<Version>@FUGIO_VERSION@</Version>
-	<ReleaseDate>@FUGIO_RELEASE_DATE@</ReleaseDate>
-	<Default>True</Default>
-</Package>

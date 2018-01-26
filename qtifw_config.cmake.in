@@ -1,7 +1,0 @@
-set(SRC_DIR "@CMAKE_CURRENT_SOURCE_DIR@") 
-set(BIN_DIR "@CMAKE_CURRENT_BINARY_DIR@") 
-set(FUGIO_VERSION "@FUGIO_VERSION@") 
-set(FUGIO_REPOSITORY_URL "@FUGIO_REPOSITORY_URL@")
-string( TIMESTAMP FUGIO_RELEASE_DATE "%Y-%m-%d" )
-configure_file( ${SRC_DIR}/config.cmake.xml ${BIN_DIR}/config.xml ESCAPE_QUOTES @ONLY) 
-configure_file( ${SRC_DIR}/package.cmake.xml ${BIN_DIR}/package.xml ESCAPE_QUOTES @ONLY) 
