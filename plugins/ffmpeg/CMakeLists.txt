@@ -94,6 +94,13 @@ if( SNAPPY_FOUND )
 		hap/source/hap.c
 		hap/source/hap.h
 	)
+
+	if( WIN32 )
+		string( REPLACE ".lib" ".dll" SNAPPY_DLL ${SNAPPY_LIBRARY} )
+
+		install( FILES ${SNAPPY_DLL} DESTINATION ${PATH_PLUGIN}/ffmpeg )
+	endif( WIN32 )
+
 else()
 	message( "snappy not found" )
 endif()
