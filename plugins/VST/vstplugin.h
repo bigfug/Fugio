@@ -37,7 +37,7 @@ protected:
 
 	bool pluginProcess3( QLibrary &pPlgLib );
 
-	bool pluginProcess2( QLibrary &pPlgLib );
+//	bool pluginProcess2( QLibrary &pPlgLib );
 
 private:
 	fugio::GlobalInterface				*mApp;

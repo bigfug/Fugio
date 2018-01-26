@@ -11,7 +11,7 @@
 #include <fugio/vst/uuid.h>
 
 #include "vst3node.h"
-#include "vst2node.h"
+//#include "vst2node.h"
 
 #if defined( VST_SUPPORTED )
 
@@ -221,6 +221,7 @@ void VSTPlugin::pluginDirScan( QDir pDir )
 	}
 }
 
+#if 0
 bool VSTPlugin::pluginProcess2( QLibrary &pPlgLib )
 {
 #if !defined( VST_SUPPORTED )
@@ -280,6 +281,8 @@ bool VSTPlugin::pluginProcess2( QLibrary &pPlgLib )
 
 	return( false );
 }
+
+#endif
 
 bool VSTPlugin::pluginProcess3( QLibrary &pPlgLib )
 {

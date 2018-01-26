@@ -10,8 +10,8 @@ set( SOURCE_FILES
 
 	dirlocker.h
 	usediids.cpp
-	vst2node.cpp
-	vst2node.h
+#	vst2node.cpp
+#	vst2node.h
 	vst3node.cpp
 	vst3node.h
 	vstplugin.cpp
