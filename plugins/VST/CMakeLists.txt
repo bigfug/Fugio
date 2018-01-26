@@ -47,7 +47,7 @@ include( ${CMAKE_SOURCE_DIR}/mac_fix_bundle.cmake )
 #------------------------------------------------------------------------------
 # VST3SDK
 
-find_package( vst3sdk QUIET )
+find_package( VST3SDK QUIET )
 
 if( VST3SDK_FOUND )
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${VST3SDK_INCLUDE_DIR} )
