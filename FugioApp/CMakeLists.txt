@@ -1,6 +1,10 @@
 cmake_minimum_required( VERSION 3.1 )
 
-project( Fugio LANGUAGES CXX )
+if( UNIX AND NOT APPLE )
+	project( fugio LANGUAGES CXX )
+else()
+	project( Fugio LANGUAGES CXX )
+endif()
 
 set( CMAKE_CXX_STANDARD 11 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
