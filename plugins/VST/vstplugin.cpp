@@ -175,19 +175,19 @@ void VSTPlugin::pluginDirScan( QDir pDir )
 				continue;
 			}
 
-			if( InfDat.suffix().toLower() == "vst" )
-			{
-				QString		FN = pDir.absoluteFilePath( QString( "%1/Contents/MacOS/%2" ).arg( InfDat.fileName() ).arg( InfDat.baseName() ) );
+//			if( InfDat.suffix().toLower() == "vst" )
+//			{
+//				QString		FN = pDir.absoluteFilePath( QString( "%1/Contents/MacOS/%2" ).arg( InfDat.fileName() ).arg( InfDat.baseName() ) );
 
-				QLibrary		PlgLib( FN );
+//				QLibrary		PlgLib( FN );
 
-				if( PlgLib.load() )
-				{
-					pluginProcess2( PlgLib );
-				}
+//				if( PlgLib.load() )
+//				{
+//					pluginProcess2( PlgLib );
+//				}
 
-				continue;
-			}
+//				continue;
+//			}
 #endif
 
 			if( pDir.cd( InfDat.fileName() ) )

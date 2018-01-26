@@ -50,7 +50,7 @@ typedef bool (*bundleExitPtr)(void);
 #include "pluginterfaces/vst/ivstunits.h"
 
 #include "base/source/fstring.h"
-#include "base/source/fcontainer.h"
+//#include "base/source/fcontainer.h"
 #include "base/source/fmemory.h"
 #include "base/source/fstreamer.h"
 #include "base/source/tarray.h"
