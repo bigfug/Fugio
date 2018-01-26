@@ -56,19 +56,14 @@ set( PATH_INCLUDE include )
 set( PATH_SHARE . )
 set( PATH_PLUGIN plugins )
 
-if( APPLE )
-	set( PATH_APP . )
-endif()
-
-if( LINUX )
-	set( PATH_APP		usr/bin )
-	set( PATH_INCLUDE	usr/include )
-	set( PATH_SHARE		usr/share/fugio )
-	set( PATH_PLUGIN	usr/lib/fugio )
+if( UNIX AND NOT APPLE )
+	set( PATH_APP		bin )
+	set( PATH_INCLUDE	include )
+	set( PATH_SHARE		share/fugio )
+	set( PATH_PLUGIN	lib/fugio )
 	
-#	install( FILES FugioApp/control			DESTINATION DEBIAN )
-	install( FILES FugioApp/fugio.desktop	DESTINATION usr/share/applications )
-	install( FILES FugioApp/fugio.png		DESTINATION usr/share/icons/hicolor/256x256/apps )
+	install( FILES FugioApp/fugio.desktop	DESTINATION share/applications )
+	install( FILES FugioApp/fugio.png		DESTINATION share/icons/hicolor/256x256/apps )
 endif()
 
 #------------------------------------------------------------------------------
@@ -109,7 +104,7 @@ elseif( APPLE )
 	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-macOS" )
 elseif( Q_OS_RASPBERRY_PI )
 	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-rpi" )
-elseif( LINUX AND IS_64_BIT )
+elseif( UNIX AND IS_64_BIT )
 	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-linux64" )
 endif()
 
@@ -126,7 +121,7 @@ if( Q_OS_RASPBERRY_PI )
 		libgles2-mesa, libicu57, libavcodec57, libavdevice57, libavformat57, libavutil55, libswscale4,
 		libswresample2, libavfilter6, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2, pigpio,
 		libqt5serialport5" )
-elseif( LINUX )
+elseif( UNIX )
 	set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
 		libicu57, libavcodec57, libavdevice57, libavformat57, libavutil55, libswscale4,
 		libswresample2, libavfilter6, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2,
