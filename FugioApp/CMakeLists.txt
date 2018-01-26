@@ -131,13 +131,13 @@ set( UIS_HDRS
 
 add_definitions( -DFUGIOLIB_STATIC )
 
-add_executable( Fugio WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURCES} ${UIS_HDRS} fugio.rc ) 
+add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURCES} ${UIS_HDRS} fugio.rc )
 
 if( APPLE )
 	set_target_properties( ${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist )
 endif( APPLE )
 
-install( TARGETS Fugio
+install( TARGETS ${PROJECT_NAME}
 	RUNTIME DESTINATION ${PATH_APP}
 	BUNDLE DESTINATION ${PATH_APP}
 )
@@ -158,7 +158,7 @@ find_package( Qt5
 	COMPONENTS Core Concurrent Gui OpenGL Network Widgets
 	OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml )
 
-target_link_libraries( Fugio Qt5::Core Qt5::Concurrent Qt5::Gui Qt5::Network Qt5::OpenGL Qt5::Qml Qt5::Quick Qt5::QuickControls2 Qt5::QuickWidgets Qt5::SerialPort Qt5::WebSockets Qt5::Widgets libfugio )
+target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Concurrent Qt5::Gui Qt5::Network Qt5::OpenGL Qt5::Qml Qt5::Quick Qt5::QuickControls2 Qt5::QuickWidgets Qt5::SerialPort Qt5::WebSockets Qt5::Widgets libfugio )
 
 include( ../qtdeploy.cmake )
 
