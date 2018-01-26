@@ -51,10 +51,10 @@ typedef bool (*bundleExitPtr)(void);
 
 #include "base/source/fstring.h"
 //#include "base/source/fcontainer.h"
-#include "base/source/fmemory.h"
+//#include "base/source/fmemory.h"
 #include "base/source/fstreamer.h"
-#include "base/source/tarray.h"
-#include "base/source/tdictionary.h"
+//#include "base/source/tarray.h"
+//#include "base/source/tdictionary.h"
 #include "base/source/fcommandline.h"
 #include "pluginterfaces/base/ibstream.h"
 
