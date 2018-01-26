@@ -26,7 +26,7 @@ extern "C"
 	typedef bool (PLUGIN_API *InitModuleProc) ();
 	typedef bool (PLUGIN_API *ExitModuleProc) ();
 
-	typedef AEffect *(PLUGIN_API *VSTPluginMain)( audioMasterCallback audioMaster );
+//	typedef AEffect *(PLUGIN_API *VSTPluginMain)( audioMasterCallback audioMaster );
 }
 
 #elif defined( Q_OS_MAC )
@@ -58,10 +58,10 @@ extern "C"
 
 extern "C"
 {
-VstIntPtr audioMaster( AEffect*, VstInt32, VstInt32, VstIntPtr, void*, float )
-{
-	return( 0 );
-}
+//VstIntPtr audioMaster( AEffect*, VstInt32, VstInt32, VstIntPtr, void*, float )
+//{
+//	return( 0 );
+//}
 }
 #endif
 
