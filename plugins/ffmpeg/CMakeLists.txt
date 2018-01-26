@@ -83,7 +83,7 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 #—————————————————————————————————-
 # snappy
 
-find_package( SNAPPY QUIET )
+find_package( Snappy QUIET )
 
 if( SNAPPY_FOUND )
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${SNAPPY_INCLUDE_DIR} )
