@@ -33,7 +33,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
-include( ${CMAKE_SOURCE_DIR}/mac_fix_bundle.cmake )
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
 #—————————————————————————————————-
 # Qt5

@@ -160,7 +160,7 @@ find_package( Qt5
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Concurrent Qt5::Gui Qt5::Network Qt5::OpenGL Qt5::Qml Qt5::Quick Qt5::QuickControls2 Qt5::QuickWidgets Qt5::SerialPort Qt5::WebSockets Qt5::Widgets libfugio )
 
-include( ../qtdeploy.cmake )
+include( ${CMAKE_SOURCE_DIR}/cmake/DeployApp.cmake )
 
 #------------------------------------------------------------------------------
 # Raspberry Pi
