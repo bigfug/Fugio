@@ -89,6 +89,9 @@ void KinectConfigDialog::setColourCameraResolution( KinectCameraResolution pReso
 {
 	switch( pResolution )
 	{
+		case RES_NONE:
+			break;
+
 		case RES_640x480:
 			ui->mColourResolution->setCurrentIndex( 0 );
 			break;

@@ -1,8 +1,8 @@
 #include "floatpin.h"
-#include <QSettings>
+#include <fugio/core/uuid.h>
 
 FloatPin::FloatPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mValues( 1 )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::Double, PID_FLOAT )
 {
 }
 

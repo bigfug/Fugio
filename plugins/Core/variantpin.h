@@ -6,13 +6,13 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/variant_helper.h>
 
 #include <fugio/pincontrolbase.h>
 
 #include <fugio/serialise_interface.h>
 
-class VariantPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::SerialiseInterface
+class VariantPin : public fugio::PinControlBase, public fugio::VariantHelper<QVariant>, public fugio::SerialiseInterface
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface )
@@ -60,55 +60,6 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::VariantInterface
 
-	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setVariant( 0, pValue );
-	}
-
-	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		mValues[ pIndex ] = pValue;
-	}
-
-	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
-	{
-		return( mValues[ pIndex ] );
-	}
-
-	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
-	{
-		mValues.resize( pCount );
-	}
-
-	virtual int variantCount( void ) const Q_DECL_OVERRIDE
-	{
-		return( mValues.size() );
-	}
-
-	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
-	{
-		return( mType );
-	}
-
-	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setFromBaseVariant( 0, pValue );
-	}
-
-	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setVariant( pIndex, pValue );
-	}
-
-	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
-	{
-		return( variant( pIndex ) );
-	}
-
-	virtual void setVariantType( QMetaType::Type pType ) Q_DECL_OVERRIDE
-	{
-		mType = pType;
-	}
 
 	//-------------------------------------------------------------------------
 	// fugio::SerialiseInterface
@@ -129,10 +80,6 @@ public:
 
 signals:
 //	void valueChanged( QVariant pValue );
-
-private:
-	QVector<QVariant>		mValues;
-	QMetaType::Type			mType;
 };
 
 

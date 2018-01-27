@@ -378,7 +378,7 @@ int main( int argc, char *argv[] )
 //			"fugio-raspberrypi" );
 #endif
 
-#if defined( Q_OS_MACX ) or defined( Q_OS_LINUX )
+#if defined( Q_OS_MACX ) || defined( Q_OS_LINUX )
 		if( !PluginsDir.isRoot() && PluginsDir.isReadable())
 		{
 			PBG->loadPlugins( PluginsDir );

@@ -7,6 +7,7 @@
 #include <QApplication>
 #include <QStandardPaths>
 #include <QMainWindow>
+#include <QTranslator>
 #include <QFileInfo>
 
 #include <QXmlStreamWriter>

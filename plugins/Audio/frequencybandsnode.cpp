@@ -32,10 +32,11 @@ FrequencyBandsNode::FrequencyBandsNode( QSharedPointer<fugio::NodeInterface> pNo
 
 	mPinInputCount->setValue( 12 );
 
-	mValOutputBands = pinOutput<fugio::ArrayInterface *>( "Bands", mPinOutputBands, PID_ARRAY, PIN_OUTPUT_BANDS );
+	mValOutputBands = pinOutput<fugio::VariantInterface *>( "Bands", mPinOutputBands, PID_FLOAT, PIN_OUTPUT_BANDS );
+
+	mValOutputBands->setVariantCount( 12 );
 
 	mPinInputFFT->setDescription( tr( "The frequency information calculated using a Fast Fourier Transform (FFT) node" ) );
-
 }
 
 float FrequencyBandsNode::getBandWidth( float timeSize, float sampleRate )
@@ -64,12 +65,9 @@ void FrequencyBandsNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	if( BandCount != mValOutputBands->count() )
+	if( BandCount != mValOutputBands->variantCount() )
 	{
-		mValOutputBands->setCount( BandCount );
-		mValOutputBands->setSize( 1 );
-		mValOutputBands->setStride( sizeof( float ) );
-		mValOutputBands->setType( QMetaType::Float );
+		mValOutputBands->setVariantCount( BandCount );
 	}
 
 	if( mPinInputFFT->isUpdated( pTimeStamp ) )
@@ -91,8 +89,6 @@ void FrequencyBandsNode::inputsUpdated( qint64 pTimeStamp )
 			return;
 		}
 
-		float		*ValOut = reinterpret_cast<float *>( mValOutputBands->array() );
-
 		for( int i = 0 ; i < BandCount ; i++ )
 		{
 			float	avg = 0;
@@ -113,7 +109,7 @@ void FrequencyBandsNode::inputsUpdated( qint64 pTimeStamp )
 			// avg /= (hiBound - lowBound);
 			avg /= (hiBound - lowBound + 1);
 
-			ValOut[ i ] = avg;
+			mValOutputBands->setVariant( i, avg );
 		}
 
 		pinUpdated( mPinOutputBands );

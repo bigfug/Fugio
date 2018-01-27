@@ -6,13 +6,13 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/variant_helper.h>
 
 #include <fugio/pincontrolbase.h>
 
 #include <fugio/serialise_interface.h>
 
-class BoolPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::SerialiseInterface
+class BoolPin : public fugio::PinControlBase, public fugio::VariantHelper<bool>, public fugio::SerialiseInterface
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface )
@@ -61,59 +61,6 @@ public:
 	}
 
 	//-------------------------------------------------------------------------
-	// fugio::VariantInterface
-
-	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setVariant( 0, pValue );
-	}
-
-	virtual void setVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		mValues[ pIndex ] = pValue.toBool();
-	}
-
-	virtual QVariant variant( int pIndex = 0 ) const Q_DECL_OVERRIDE
-	{
-		return( QVariant::fromValue<bool>( mValues[ pIndex ] ) );
-	}
-
-	virtual void setVariantCount( int pCount ) Q_DECL_OVERRIDE
-	{
-		mValues.resize( pCount );
-	}
-
-	virtual int variantCount( void ) const Q_DECL_OVERRIDE
-	{
-		return( mValues.size() );
-	}
-
-	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
-	{
-		return( QMetaType::Bool );
-	}
-
-	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setFromBaseVariant( 0, pValue );
-	}
-
-	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setVariant( pIndex, pValue );
-	}
-
-	virtual QVariant baseVariant( int pIndex ) const Q_DECL_OVERRIDE
-	{
-		return( variant( pIndex ) );
-	}
-
-	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
-	{
-
-	}
-
-	//-------------------------------------------------------------------------
 	// fugio::SerialiseInterface
 
 	virtual void serialise( QDataStream &pDataStream ) const Q_DECL_OVERRIDE
@@ -156,9 +103,6 @@ public:
 
 signals:
 //	void valueChanged( bool pValue );
-
-private:
-	QVector<bool>		mValues;
 };
 
 #endif // BOOLPIN_H

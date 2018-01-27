@@ -46,9 +46,9 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputMaxLineGap;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputLines;
-	fugio::ArrayInterface						*mValOutputLines;
+	fugio::VariantInterface						*mValOutputLines;
 
-	QVector<QLineF>								 mLineData;
+//	QVector<QLineF>								 mLineData;
 
 #if defined( OPENCV_SUPPORTED )
 	cv::Mat										 mMatImg;

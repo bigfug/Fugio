@@ -6,7 +6,6 @@
 
 #include <fugio/nodecontrolbase.h>
 
-#include <fugio/core/array_interface.h>
 #include <fugio/pin_variant_iterator.h>
 
 class MultiplyNode : public fugio::NodeControlBase

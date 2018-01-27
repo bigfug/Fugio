@@ -27,8 +27,6 @@
 #include <fugio/audio/fft_interface.h>
 #include <fugio/audio/audio_producer_interface.h>
 
-#include <fugio/core/array_interface.h>
-
 #include <fugio/file/uuid.h>
 
 #include <fugio/isf/uuid.h>

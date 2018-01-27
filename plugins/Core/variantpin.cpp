@@ -3,8 +3,10 @@
 #include <QPointF>
 #include <QSizeF>
 
+#include <fugio/core/uuid.h>
+
 VariantPin::VariantPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mValues( 1 ), mType( QMetaType::QVariant )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::UnknownType, PID_VARIANT )
 {
 
 }

@@ -6,7 +6,6 @@
 
 #include <fugio/context_interface.h>
 #include <fugio/core/variant_interface.h>
-#include <fugio/core/array_interface.h>
 #include <fugio/node_signals.h>
 
 #include "openglplugin.h"
@@ -20,7 +19,7 @@ ArrayToIndexNode::ArrayToIndexNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputArray  = pinInput( "Array", PIN_INPUT_ARRAY );
 
-	mPinInputArray->registerPinInputType( PID_ARRAY );
+//	mPinInputArray->registerPinInputType( PID_ARRAY );
 
 	mValOutputBuffer = pinOutput<fugio::OpenGLBufferInterface *>( "Index", mPinOutputBuffer, PID_OPENGL_BUFFER, PIN_OUTPUT_BUFFER );
 
@@ -74,24 +73,24 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 			BufO->setTarget( QOpenGLBuffer::IndexBuffer );
 		}
 
-		fugio::ArrayInterface			*A;
+		fugio::VariantInterface			*A;
 
-		if( ( A = input<fugio::ArrayInterface *>( PinI ) ) == nullptr )
+		if( ( A = input<fugio::VariantInterface *>( PinI ) ) == nullptr )
 		{
 			continue;
 		}
 
-		if( BufO->buffer() && BufO->buffer()->isCreated() && ( A->type() != BufO->type() || A->size() != BufO->size() || A->stride() != BufO->stride() || A->count() != BufO->count() ) )
+		if( BufO->buffer() && BufO->buffer()->isCreated() && ( A->variantType() != BufO->type() || A->variantCount() != BufO->size() || A->variantStride() != BufO->stride() || A->variantElementCount() != BufO->count() ) )
 		{
 			BufO->clear();
 		}
 
-		if( A->count() <= 0 )
+		if( A->variantCount() <= 0 )
 		{
 			continue;
 		}
 
-		if( ( !BufO->buffer() || !BufO->buffer()->isCreated() ) && !BufO->alloc( A->type(), A->size(), A->stride(), A->count() ) )
+		if( ( !BufO->buffer() || !BufO->buffer()->isCreated() ) && !BufO->alloc( A->variantType(), A->variantCount(), A->variantStride(), A->variantElementCount() ) )
 		{
 			BufO->clear();
 
@@ -104,7 +103,7 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 
 		BufO->setIndex( true );
 
-		BufO->buffer()->write( 0, A->array(), A->stride() * A->count() );
+		BufO->buffer()->write( 0, A->variantArray(), A->variantArraySize() );
 
 		BufO->release();
 

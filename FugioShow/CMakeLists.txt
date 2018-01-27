@@ -1,0 +1,80 @@
+cmake_minimum_required( VERSION 3.1 )
+
+if( UNIX AND NOT APPLE )
+	project( fugioshow LANGUAGES CXX )
+else()
+	project( FugioShow LANGUAGES CXX )
+endif()
+
+set( CMAKE_CXX_STANDARD 11 )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+set( CMAKE_CXX_EXTENSIONS OFF )
+
+include_directories( ../FugioLib )
+
+#------------------------------------------------------------------------------
+
+set( SOURCE_FILES
+	../include/fugio/global.h
+	../include/fugio/utils.h
+	../stable.h
+	
+	main.cpp
+	show.cpp
+	show.h
+)
+
+set( UIS_HDRS
+)
+
+add_definitions( -DFUGIOLIB_STATIC )
+
+add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURCES} ${UIS_HDRS} ) 
+
+if( APPLE )
+	set_target_properties( ${PROJECT_NAME} PROPERTIES
+		FRAMEWORK TRUE
+		FRAMEWORK_VERSION A
+		MACOSX_FRAMEWORK_IDENTIFIER com.bigfug.fugio
+		MACOSX_FRAMEWORK_INFO_PLIST Info.plist
+	)
+endif()
+
+install( TARGETS ${PROJECT_NAME}
+	RUNTIME DESTINATION ${PATH_APP}
+	BUNDLE DESTINATION ${PATH_APP}
+)
+
+#------------------------------------------------------------------------------
+# Read version.txt
+
+file( READ ../FugioApp/version.txt FUGIO_VERSION )
+
+string( STRIP ${FUGIO_VERSION} FUGIO_VERSION )
+
+target_compile_definitions( ${PROJECT_NAME} PRIVATE FUGIO_VERSION=${FUGIO_VERSION} )
+
+#------------------------------------------------------------------------------
+# Qt5
+
+find_package( Qt5
+	COMPONENTS Core Concurrent Gui OpenGL Network Widgets
+	OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml )
+
+target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Concurrent Qt5::Gui Qt5::Network Qt5::OpenGL Qt5::Qml Qt5::Quick Qt5::QuickControls2 Qt5::QuickWidgets Qt5::SerialPort Qt5::WebSockets Qt5::Widgets libfugio )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/DeployApp.cmake )
+
+#------------------------------------------------------------------------------
+# Raspberry Pi
+
+if( Q_OS_RASPBERRY_PI )
+	target_include_directories( ${PROJECT_NAME} PRIVATE /opt/vc/include )
+
+	find_library( BCM_HOST_LIBRARY NAMES bcm_host PATHS /opt/vc/lib )
+
+	target_link_libraries( ${PROJECT_NAME} ${BCM_HOST_LIBRARY} )
+
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE OMX_SKIP64BIT )
+endif()
+

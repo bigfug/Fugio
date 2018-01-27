@@ -2,8 +2,10 @@
 
 #include <QSettings>
 
+#include <fugio/math/uuid.h>
+
 Matrix4Pin::Matrix4Pin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mValues( 1 )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::QMatrix4x4, PID_MATRIX4 )
 {
 }
 

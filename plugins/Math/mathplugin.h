@@ -23,6 +23,11 @@ public:
 		return( mInstance );
 	}
 
+	static fugio::GlobalInterface *app( void )
+	{
+		return( instance()->mApp );
+	}
+
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
 

@@ -19,11 +19,9 @@ PointTransformNode::PointTransformNode( QSharedPointer<fugio::NodeInterface> pNo
 
 	mPinInputPoints = pinInput( "Points", PIN_INPUT_POINTS );
 
-	mValOutputPoints = pinOutput<fugio::ArrayInterface *>( "Points", mPinOutputPoints, PID_ARRAY, PIN_OUTPUT_POINTS );
+	mValOutputPoints = pinOutput<fugio::VariantInterface *>( "Points", mPinOutputPoints, PID_POINT, PIN_OUTPUT_POINTS );
 
-	mValOutputPoints->setType( QMetaType::QPointF );
-	mValOutputPoints->setSize( 1 );
-	mValOutputPoints->setStride( sizeof( QPointF ) );
+	mValOutputPoints->variantClear();
 }
 
 void PointTransformNode::inputsUpdated( qint64 pTimeStamp )
@@ -36,17 +34,15 @@ void PointTransformNode::inputsUpdated( qint64 pTimeStamp )
 
 	const int					PointCount = Points.size();
 
-	mValOutputPoints->setCount( PointCount );
+	mValOutputPoints->setVariantCount( PointCount );
 
 	if( PointCount )
 	{
-		QPointF		*o = (QPointF *)mValOutputPoints->array();
-
 		for( int i = 0 ; i < PointCount ; i++ )
 		{
 			QPointF		p = Points.index( i ).toPointF();
 
-			o[ i ] = Matrix * p;
+			mValOutputPoints->setVariant( i, Matrix * p );
 		}
 	}
 

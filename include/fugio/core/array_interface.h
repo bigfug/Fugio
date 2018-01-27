@@ -33,6 +33,8 @@ public:
 
 	virtual void *array( void ) = 0;
 
+	virtual const void *array( void ) const = 0;
+
 	virtual void setArray( void *pArray ) = 0;
 };
 

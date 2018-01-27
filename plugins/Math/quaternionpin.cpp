@@ -3,9 +3,10 @@
 #include <QSettings>
 
 #include <fugio/core/uuid.h>
+#include <fugio/math/uuid.h>
 
 QuaternionPin::QuaternionPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mValues( 1 )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::QQuaternion, PID_QUATERNION )
 {
 }
 
