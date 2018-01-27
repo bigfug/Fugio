@@ -45,6 +45,8 @@ file( READ FugioApp/version.txt FUGIO_VERSION )
 
 string( STRIP ${FUGIO_VERSION} FUGIO_VERSION )
 
+message( "FUGIO VERSION ${FUGIO_VERSION}" )
+
 #------------------------------------------------------------------------------
 
 if( WIN32 )
