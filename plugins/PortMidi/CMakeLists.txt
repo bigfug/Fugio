@@ -36,17 +36,6 @@ find_package( Qt5 COMPONENTS Core Widgets REQUIRED )
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 
 #------------------------------------------------------------------------------
-# Install
-
-if( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/portmidi )
-else( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
-endif( WIN32 )
-
-include( ${CMAKE_SOURCE_DIR}/mac_fix_bundle.cmake )
-
-#------------------------------------------------------------------------------
 # PortMidi
 
 find_package( PortMidi QUIET )
@@ -63,8 +52,39 @@ if( PORTMIDI_FOUND )
 
 		install( FILES ${PORTMIDI_DLL} DESTINATION ${PATH_PLUGIN}/portmidi )
 	endif( WIN32 )
+
+	if( APPLE )
+		find_library( CoreMidi_LIBRARY CoreMidi )
+		find_library( CoreFoundation_LIBRARY CoreFoundation )
+		find_library( CoreServices_LIBRARY CoreServices )
+		find_library( CoreAudio_LIBRARY CoreAudio )
+
+		target_link_libraries( ${PROJECT_NAME}
+			${CoreMidi_LIBRARY}
+			${CoreFoundation_LIBRARY}
+			${CoreServices_LIBRARY}
+			${CoreAudio_LIBRARY}
+			)
+	endif( APPLE )
 else()
 	message( "PortMidi is not configured" )
 endif()
 
+#------------------------------------------------------------------------------
+# Install
+
+if( WIN32 )
+	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/portmidi )
+else( WIN32 )
+	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+endif( WIN32 )
+
+include( ${CMAKE_SOURCE_DIR}/mac_fix_bundle.cmake )
+
+if( APPLE )
+	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND install_name_tool -change "libportmidi.dylib" "@loader_path/../Frameworks/libportmidi.dylib" "${BUNDLE_PATH}/Contents/MacOS/${PROJECT_NAME}"
+		VERBATIM
+		)
+endif( APPLE )
 

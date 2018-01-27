@@ -50,6 +50,8 @@ include( ${CMAKE_SOURCE_DIR}/mac_fix_bundle.cmake )
 find_package( VST3SDK QUIET )
 
 if( VST3SDK_FOUND )
+	message( "VST: YES" )
+
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${VST3SDK_INCLUDE_DIR} )
 
 	target_link_libraries( ${PROJECT_NAME} ${VST3SDK_LIBRARIES} )
@@ -64,7 +66,7 @@ if( VST3SDK_FOUND )
 		)
 
 else()
-	message( "VST is not configured" )
+	message( "VST: NO" )
 endif()
 
 if( APPLE )

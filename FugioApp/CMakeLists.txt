@@ -174,3 +174,35 @@ if( Q_OS_RASPBERRY_PI )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE OMX_SKIP64BIT )
 endif()
+
+#-------------------------------------
+# Lua
+
+if( APPLE )
+	find_package( Lua 5.2 )
+
+	if( NOT LUA_FOUND )
+		find_path( LUA_INCLUDE_DIR lua.hpp )
+
+		find_library( LUA_LIBRARY
+		  NAMES lua
+		)
+
+		set( LUA_INCLUDE_DIRS ${LUA_INCLUDE_DIR} )
+		set( LUA_LIBRARIES ${LUA_LIBRARY} )
+
+		if( LUA_INCLUDE_DIR AND LUA_LIBRARY )
+			set( LUA_FOUND ON )
+		endif()
+	endif()
+
+	get_filename_component( LUA_LIB ${LUA_LIBRARY} NAME )
+
+	set( BUNDLE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.app" )
+
+	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy "${LUA_LIBRARY}" "${BUNDLE_PATH}/Contents/Frameworks/"
+		COMMAND install_name_tool -id ${LUA_LIB} "${BUNDLE_PATH}/Contents/Frameworks/${LUA_LIB}"
+		VERBATIM
+	)
+endif( APPLE )

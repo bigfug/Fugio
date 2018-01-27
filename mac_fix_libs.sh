@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ -z "$(ls -A "$1")" ]; then
+	echo "$1 is empty..."
+
+	exit 0
+fi
+
 FILES=$1/*
 
 for f in $FILES

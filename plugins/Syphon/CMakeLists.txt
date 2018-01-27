@@ -68,7 +68,7 @@ if( APPLE )
 
 		add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
 			COMMAND ${CMAKE_COMMAND} -E copy_directory "${Syphon_LIBRARY}" "${BUNDLE_PATH}/Contents/Frameworks/Syphon.framework"
-			COMMAND install_name_tool -change "@loader_path/../Frameworks/Syphon.framework/Versions/A/Syphon" "@rpath/Syphon.framework/Versions/A/Syphon" "${BUNDLE_PATH}/Contents/MacOS/${PROJECT_NAME}"
+#			COMMAND install_name_tool -change "@loader_path/../Frameworks/Syphon.framework/Versions/A/Syphon" "@rpath/Syphon.framework/Versions/A/Syphon" "${BUNDLE_PATH}/Contents/MacOS/${PROJECT_NAME}"
 			COMMENT "Bundling ${Syphon_LIBRARY}..."
 			VERBATIM
 		)

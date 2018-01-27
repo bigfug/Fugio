@@ -86,6 +86,8 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 find_package( Snappy QUIET )
 
 if( SNAPPY_FOUND )
+	message( "snappy: YES" )
+
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${SNAPPY_INCLUDE_DIR} )
 
 	target_link_libraries( ${PROJECT_NAME} ${SNAPPY_LIBRARIES} )
@@ -102,7 +104,7 @@ if( SNAPPY_FOUND )
 	endif( WIN32 )
 
 else()
-	message( "snappy not found" )
+	message( "snappy: NO" )
 endif()
 
 #—————————————————————————————————-

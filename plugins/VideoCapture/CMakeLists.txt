@@ -48,13 +48,15 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 find_package( videocapture QUIET )
 
 if( VIDEOCAPTURE_FOUND )
+	message( "VideoCapture: YES" )
+
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${VIDEOCAPTURE_INCLUDE_DIR} )
 
 	target_link_libraries( ${PROJECT_NAME} ${VIDEOCAPTURE_LIBRARIES} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE VIDEOCAPTURE_SUPPORTED )
 else()
-	message( "videocapture is not configured" )
+	message( "VideoCapture: NO" )
 endif()
 
 if( WIN32 )

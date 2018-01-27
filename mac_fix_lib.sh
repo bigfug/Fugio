@@ -1,9 +1,10 @@
 #!/bin/bash
 
-BUNDLE_DIR=$1
-BUNDLE_EXE=$2
+MACDEPLOYQT=$1
+BUNDLE_DIR=$2
+BUNDLE_EXE=$3
 
-macdeployqt "$BUNDLE_DIR" -no-plugins -verbose=1
+$1 "$BUNDLE_DIR" -no-plugins -verbose=1
 
 for f in "$BUNDLE_DIR/Contents/Frameworks"/Qt*.framework
 do

@@ -37,11 +37,15 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 find_package( PortAudio )
 
 if( PORTAUDIO_FOUND )
+	message( "PortAudio: YES" )
+
 	target_link_libraries( ${PROJECT_NAME} ${PORTAUDIO_LIBRARIES} )
 
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${PORTAUDIO_INCLUDE_DIRS} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE PORTAUDIO_SUPPORTED )
+else()
+	message( "PortAudio: NO" )
 endif( PORTAUDIO_FOUND )
 
 #------------------------------------------------------------------------------
