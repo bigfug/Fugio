@@ -37,8 +37,6 @@ SimpleBlobDetectorNode::SimpleBlobDetectorNode( QSharedPointer<fugio::NodeInterf
 
 #if defined( OPENCV_SUPPORTED )
 
-#if defined( OPENCV_SUPPORTED )
-
 	cv::SimpleBlobDetector::Params	BlbPrm;
 
 	BlbPrm.filterByArea        = true;
