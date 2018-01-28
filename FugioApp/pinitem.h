@@ -80,6 +80,8 @@ protected:
 
 	virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent );
 
+	virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent *event );
+
 	virtual void contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent );
 
 	virtual void hoverEnterEvent( QGraphicsSceneHoverEvent *pEvent );
