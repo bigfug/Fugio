@@ -4,6 +4,8 @@
 #include <QGraphicsObject>
 #include <QMouseEvent>
 
+#include <memory>
+
 #include <fugio/pin_interface.h>
 
 class QGraphicsLineItem;
