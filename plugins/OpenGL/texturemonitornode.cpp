@@ -1,7 +1,6 @@
 #include "texturemonitornode.h"
 
 #include <QMainWindow>
-#include <QOpenGLExtraFunctions>
 
 #include "openglplugin.h"
 

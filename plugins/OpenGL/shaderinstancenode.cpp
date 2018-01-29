@@ -8,7 +8,10 @@
 #include <QVector4D>
 #include <QOpenGLVertexArrayObject>
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 #include <QOpenGLExtraFunctions>
+#endif
+
 #include <QOpenGLFunctions_3_2_Core>
 
 #include <fugio/core/uuid.h>
@@ -257,10 +260,12 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 					Buffers.append( GL_NONE );
 				}
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 				if( GLEX )
 				{
 					GLEX->glDrawBuffers( Buffers.size(), Buffers.data() );
 				}
+#endif
 
 				OPENGL_DEBUG( mNode->name() );
 
@@ -781,7 +786,9 @@ void ShaderInstanceNode::bindUniforms( QList<ShaderBindData> &Bindings )
 {
 	bool		NumberOK;
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+#endif
 
 	OpenGLShaderInterface					*Shader = input<OpenGLShaderInterface *>( mPinShader );
 	fugio::NodeInterface					*CompilerNode = mPinShader->connectedNode();
@@ -987,11 +994,13 @@ void ShaderInstanceNode::bindUniforms( QList<ShaderBindData> &Bindings )
 				{
 					GLboolean		NewVal = PinVar.toBool();
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 					if( GLEX )
 					{
 						GLEX->glUniform1ui( UniformData.mLocation, NewVal );
 					}
 					else
+#endif
 					{
 						glUniform1i( UniformData.mLocation, NewVal );
 					}

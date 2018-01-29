@@ -6,7 +6,10 @@
 #include <QByteArray>
 
 #include <QOpenGLFunctions_2_0>
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 #include <QOpenGLExtraFunctions>
+#endif
 
 #include <fugio/node_interface.h>
 
@@ -347,7 +350,9 @@ void TexturePin::update( const unsigned char *pData, int pDataSize, int pLineSiz
 
 	initializeOpenGLFunctions();
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+#endif
 
 	OPENGL_PLUGIN_DEBUG
 
@@ -658,7 +663,9 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 {
 	checkDefinition();
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+#endif
 
 	GLint		FBOCur;
 
@@ -689,10 +696,12 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 			glGenRenderbuffers( 1, &mFBOMSDepthRBId );
 			glBindRenderbuffer( GL_RENDERBUFFER, mFBOMSDepthRBId );
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 			if( GLEX )
 			{
 				GLEX->glRenderbufferStorageMultisample( GL_RENDERBUFFER, pSamples, GL_DEPTH_COMPONENT24, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
 			}
+#endif
 
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mFBOMSDepthRBId );
 		}

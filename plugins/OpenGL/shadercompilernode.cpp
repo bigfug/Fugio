@@ -1,6 +1,8 @@
 #include "shadercompilernode.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 #include <QOpenGLExtraFunctions>
+#endif
 
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
@@ -153,7 +155,9 @@ void ShaderCompilerNode::loadShader()
 		return;
 	}
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+#endif
 
 	OPENGL_PLUGIN_DEBUG;
 
@@ -232,10 +236,12 @@ void ShaderCompilerNode::loadShader()
 			BufMod = GL_SEPARATE_ATTRIBS;
 		}
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 		if( GLEX )
 		{
 			GLEX->glTransformFeedbackVaryings( CompilerData.mProgram->programId(), VarLst.size(), (const GLchar **)VarLst.constData(), BufMod );
 		}
+#endif
 
 		OPENGL_PLUGIN_DEBUG;
 	}
