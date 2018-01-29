@@ -77,6 +77,7 @@ public:
 
 	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE
 	{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
 		double				V;
 
 		pDataStream.startTransaction();
@@ -93,6 +94,7 @@ public:
 		}
 
 		pDataStream.rollbackTransaction();
+#endif
 
 		QVector<bool>	L;
 
