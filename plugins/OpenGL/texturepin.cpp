@@ -684,10 +684,12 @@ quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
 		glGenRenderbuffers( 1, &mFBOMSColourRBId );
 		glBindRenderbuffer( GL_RENDERBUFFER, mFBOMSColourRBId );
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 		if( GLEX )
 		{
 			GLEX->glRenderbufferStorageMultisample( GL_RENDERBUFFER, pSamples, GL_RGBA, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
 		}
+#endif
 
 		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, mFBOMSColourRBId );
 

@@ -218,7 +218,7 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 	//-------------------------------------------------------------------------
 
-#if !defined( GL_ES_VERSION_2_0 )
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 #endif
 
