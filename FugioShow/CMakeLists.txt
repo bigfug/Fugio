@@ -31,6 +31,8 @@ add_definitions( -DFUGIOLIB_STATIC )
 
 add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURCES} ${UIS_HDRS} ) 
 
+target_link_libraries( ${PROJECT_NAME} libfugio )
+
 if( APPLE )
 	set_target_properties( ${PROJECT_NAME} PROPERTIES
 		FRAMEWORK TRUE

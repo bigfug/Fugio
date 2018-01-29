@@ -80,6 +80,8 @@ protected:
 
 	virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent );
 
+	virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent *event );
+
 	virtual void contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent );
 
 	virtual void hoverEnterEvent( QGraphicsSceneHoverEvent *pEvent );
@@ -124,10 +126,11 @@ private:
 	ContextView								*mContextView;
 	QSharedPointer<fugio::PinInterface>		 mPin;
 	QList<LinkItem *>						 mLinks;
-	LinkItem								*mLink;
+	std::unique_ptr<LinkItem>				 mLink;
 	QUuid									 mPinId;
 	QString									 mPinName;
 	QColor									 mPinColour;
+	QPointF									 mDragStartPoint;
 };
 
 #endif // PINWIDGET_H

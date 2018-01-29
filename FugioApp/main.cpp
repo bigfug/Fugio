@@ -237,9 +237,29 @@ int main( int argc, char *argv[] )
 		return( -1 );
 	}
 
-	QPixmap pixmap( ":/icons/fugio-splash.png" );
+	QImage	SplashImage( ":/icons/fugio-splash.png" );
 
-	if( ( SplashScreen = new QSplashScreen( pixmap, Qt::WindowStaysOnTopHint ) ) )
+	if( true )
+	{
+		QPainter		Painter( &SplashImage );
+		QFont			Font = Painter.font();
+
+		Font.setPixelSize( SplashImage.height() / 12 );
+
+		Painter.setFont( Font );
+
+		QFontMetrics	FontMetrics( Font );
+		QString			SplashText = QUOTE( FUGIO_VERSION );
+		QSize			TextSize = FontMetrics.size( Qt::TextSingleLine, SplashText );
+
+		Painter.setPen( Qt::white );
+
+		Painter.drawText( ( SplashImage.rect().center() + QPoint( 0, SplashImage.height() / 3 ) ) - QPoint( TextSize.width() / 2, TextSize.height() / 2 ), SplashText );
+	}
+
+	QPixmap	SplashPixmap = QPixmap::fromImage( SplashImage );
+
+	if( ( SplashScreen = new QSplashScreen( SplashPixmap, Qt::WindowStaysOnTopHint ) ) )
 	{
 		SplashScreen->show();
 

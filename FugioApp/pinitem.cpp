@@ -1,5 +1,7 @@
 #include "pinitem.h"
 
+#include <memory>
+
 #include <QGraphicsLineItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
@@ -36,6 +38,7 @@
 #include "contextview.h"
 
 #include "contextwidgetprivate.h"
+#include "pinprivate.h"
 
 #include "undo/cmdsetdefaultvalue.h"
 #include "undo/cmdsetupdatable.h"
@@ -59,7 +62,7 @@
 #include "undo/cmdpindisconnectglobal.h"
 
 PinItem::PinItem( ContextView *pContextView, QSharedPointer<fugio::PinInterface> pPin, NodeItem *pParent ) :
-	QGraphicsObject( pParent ), mContextView( pContextView ), mPin( pPin ), mLink( 0 ), mPinId( pPin->globalId() )
+	QGraphicsObject( pParent ), mContextView( pContextView ), mPin( pPin ), mPinId( pPin->globalId() )
 {
 	setAcceptHoverEvents( true );
 
@@ -71,7 +74,7 @@ PinItem::PinItem( ContextView *pContextView, QSharedPointer<fugio::PinInterface>
 }
 
 PinItem::PinItem( ContextView *pContextView, const QUuid &pId, NodeItem *pParent )
-	: QGraphicsObject( pParent ), mContextView( pContextView ), mLink( 0 ), mPinId( pId )
+	: QGraphicsObject( pParent ), mContextView( pContextView ), mPinId( pId )
 {
 	setAcceptHoverEvents( true );
 
@@ -569,38 +572,40 @@ void PinItem::mousePressEvent( QGraphicsSceneMouseEvent *pEvent )
 {
 	if( pEvent->button() == Qt::LeftButton )
 	{
-		if( mLink != 0 )
+		mLink.reset();
+
+		if( mPin->direction() == PIN_OUTPUT || !mPin->isConnected() )
 		{
-			delete mLink;
-
-			mLink = 0;
-		}
-
-		if( mPin->direction() == PIN_INPUT && !mPin->connectedPin().isNull() )
-		{
-			pEvent->accept();
-
-			return;
-		}
-
-		if( ( mLink = new LinkItem() ) != 0 )
-		{
-			scene()->addItem( mLink );
-
-			mLink->setZValue( 1.0 );
-
-			mLink->setSrcPin( this );
-
-			mLink->setDstPnt( mapToScene( 5, 5 ) );
+			mDragStartPoint = pEvent->pos();
 		}
 	}
-
-	pEvent->accept();
 }
 
 void PinItem::mouseMoveEvent( QGraphicsSceneMouseEvent *pEvent )
 {
-	if( mLink != 0 )
+	if( !mLink )
+	{
+		if( !mDragStartPoint.isNull() )
+		{
+			if( ( pEvent->pos() - mDragStartPoint ).manhattanLength() >= QApplication::startDragDistance() )
+			{
+				mLink = std::unique_ptr<LinkItem>( new LinkItem() );
+
+				if( mLink )
+				{
+					scene()->addItem( mLink.get() );
+
+					mLink->setZValue( 1.0 );
+
+					mLink->setSrcPin( this );
+
+					mLink->setDstPnt( mapToScene( 5, 5 ) );
+				}
+			}
+		}
+	}
+
+	if( mLink )
 	{
 		PinItem		*PI = findDest( pEvent->scenePos() );
 
@@ -633,7 +638,7 @@ void PinItem::mouseMoveEvent( QGraphicsSceneMouseEvent *pEvent )
 			{
 				NodeItem	*Node = qgraphicsitem_cast<NodeItem *>( Items.at( i ) );
 
-				if( Node == 0 )
+				if( !Node )
 				{
 					continue;
 				}
@@ -651,8 +656,6 @@ void PinItem::mouseMoveEvent( QGraphicsSceneMouseEvent *pEvent )
 			}
 		}
 	}
-
-	pEvent->accept();
 }
 
 void PinItem::mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent )
@@ -724,14 +727,21 @@ void PinItem::mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent )
 			}
 		}
 
-		delete mLink;
-
-		mLink = nullptr;
+		mLink.reset();
 	}
 
-	pEvent->accept();
+	mDragStartPoint = QPointF();
 }
 
+void PinItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent *pEvent )
+{
+	PinPrivate	*PP = qobject_cast<PinPrivate *>( mPin->qobject() );
+
+	if( PP && PP->direction() == PIN_INPUT )
+	{
+		PP->update( std::numeric_limits<qint64>::max() );
+	}
+}
 
 PinItem *PinItem::findDest( const QPointF &pPoint )
 {
