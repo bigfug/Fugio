@@ -140,7 +140,7 @@ elseif( APPLE )
 	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-macOS" )
 elseif( Q_OS_RASPBERRY_PI )
 	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-rpi" )
-elseif( "${UNIX_ID}" STREQUAL "Ubuntu" AND "${UNIX_ID}" STREQUAL "16.04" )
+elseif( "${UNIX_ID}" STREQUAL "Ubuntu" AND "${UNIX_RELEASE}" STREQUAL "16.04" )
 	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-xenial-x64" )
 elseif( UNIX AND IS_64_BIT )
 	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-linux64" )
@@ -162,7 +162,7 @@ if( Q_OS_RASPBERRY_PI )
 		libswresample2, libavfilter6, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2, pigpio,
 		libqt5serialport5" )
 elseif( UNIX )
-	if( "${UNIX_ID}" STREQUAL "Ubuntu" AND "${UNIX_ID}" STREQUAL "16.04" )
+	if( "${UNIX_ID}" STREQUAL "Ubuntu" AND "${UNIX_RELEASE}" STREQUAL "16.04" )
 		set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
 			libicu55, libavcodec-ffmpeg56, libavdevice-ffmpeg56, libavformat-ffmpeg56, libavutil-ffmpeg54, libswscale-ffmpeg3,
 			libswresample-ffmpeg2, libavfilter-ffmpeg5, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2,
