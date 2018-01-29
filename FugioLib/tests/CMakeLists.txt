@@ -4,10 +4,6 @@ project( libfugiotests )
 
 include_directories( .. )
 
-set( CMAKE_CXX_STANDARD 11 )
-set( CMAKE_CXX_STANDARD_REQUIRED ON )
-set( CMAKE_CXX_EXTENSIONS OFF )
-
 add_definitions( -DFUGIOLIB_STATIC )
 
 set( SOURCE_FILES

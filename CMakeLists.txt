@@ -6,6 +6,10 @@ project( Fugio )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
+set( CMAKE_CXX_STANDARD 11 )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+set( CMAKE_CXX_EXTENSIONS OFF )
+
 # Instruct CMake to run moc automatically when needed.
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_AUTOUIC ON )
