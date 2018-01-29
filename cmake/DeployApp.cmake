@@ -1,3 +1,40 @@
+
+find_package( Qt5
+	COMPONENTS Core Concurrent Gui OpenGL Network Widgets
+	OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml )
+
+target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Concurrent Qt5::Gui Qt5::Network Qt5::OpenGL Qt5::Widgets )
+
+if( Qt5SerialPort_DIR )
+	message( "Qt5::SerialPort: YES" )
+	target_link_libraries( ${PROJECT_NAME} Qt5::SerialPort )
+endif()
+
+if( Qt5Qml_DIR )
+	message( "Qt5::Qml: YES" )
+	target_link_libraries( ${PROJECT_NAME} Qt5::Qml )
+endif()
+
+if( Qt5Quick_DIR )
+	message( "Qt5::Quick: YES" )
+	target_link_libraries( ${PROJECT_NAME} Qt5::Quick )
+endif()
+
+if( Qt5QuickControls2_DIR )
+	message( "Qt5::QuickControls2: YES" )
+	target_link_libraries( ${PROJECT_NAME} Qt5::QuickControls2 )
+endif()
+
+if( Qt5QuickWidgets_DIR )
+	message( "Qt5::QuickWidgets: YES" )
+	target_link_libraries( ${PROJECT_NAME} Qt5::QuickWidgets )
+endif()
+
+if( Qt5WebSockets_DIR )
+	message( "Qt5::WebSockets: YES" )
+	target_link_libraries( ${PROJECT_NAME} Qt5::WebSockets )
+endif()
+
 # Retrieve the absolute path to qmake and then use that path to find
 # the binaries
 get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
