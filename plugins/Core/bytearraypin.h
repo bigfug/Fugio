@@ -59,6 +59,7 @@ public:
 
 	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE
 	{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
 		QByteArray				V;
 
 		pDataStream.startTransaction();
@@ -75,6 +76,7 @@ public:
 		}
 
 		pDataStream.rollbackTransaction();
+#endif
 
 		QVector<QByteArray>	L;
 

@@ -97,6 +97,7 @@ public:
 
 	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE
 	{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
 		QColor			C;
 
 		pDataStream.startTransaction();
@@ -113,6 +114,7 @@ public:
 		}
 
 		pDataStream.rollbackTransaction();
+#endif
 
 		QVector<QColor>	L;
 
