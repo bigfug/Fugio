@@ -257,10 +257,7 @@ void GlobalPrivate::unloadPlugins()
 		}
 	}
 
-	for( QList<QObject *>::iterator it = mPluginInstances.begin() ; it != mPluginInstances.end() ; it++ )
-	{
-		delete *it;
-	}
+	qDeleteAll( mPluginInstances );
 
 	mPluginInstances.clear();
 
