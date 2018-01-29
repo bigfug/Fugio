@@ -6,7 +6,10 @@
 
 #include <QSurfaceFormat>
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 #include <QOpenGLExtraFunctions>
+#endif
+
 #include <QOpenGLFunctions_4_3_Core>
 
 #include "openglplugin.h"
@@ -85,6 +88,7 @@ void TextureCopyNode::inputsUpdated( qint64 pTimeStamp )
 		else
 #endif
 		{
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 			QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
 			if( GLEX )
@@ -111,6 +115,7 @@ void TextureCopyNode::inputsUpdated( qint64 pTimeStamp )
 					glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 				}
 			}
+#endif
 		}
 
 		pinUpdated( mPinTexDst );

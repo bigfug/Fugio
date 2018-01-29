@@ -10,7 +10,11 @@
 #include <QImage>
 #include <QDateTime>
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 #include <QOpenGLExtraFunctions>
+#else
+#warning Qt < 5.6 so ISF multipass render disabled
+#endif
 
 #include <fugio/core/uuid.h>
 #include <fugio/colour/uuid.h>
@@ -1274,7 +1278,9 @@ void ISFNode::renderImports()
 
 void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 {
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+#endif
 
 	for( ISFPass &PassData : mISFPasses )
 	{
@@ -1354,12 +1360,14 @@ void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, PassData.mTextureId, 0 );
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 		GLenum DrawBuffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 
 		if( GLEX )
 		{
 			GLEX->glDrawBuffers( 1, DrawBuffers );
 		}
+#endif
 
 		if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
 		{

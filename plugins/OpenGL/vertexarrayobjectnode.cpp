@@ -1,6 +1,8 @@
 #include "vertexarrayobjectnode.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 #include <QOpenGLExtraFunctions>
+#endif
 
 #include "openglplugin.h"
 
@@ -262,9 +264,14 @@ void VertexArrayObjectNode::vaoRelease()
 
 void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlInterface *PinControl , fugio::OpenGLBufferInterface *Buffer , const ShaderUniformData &UniformData)
 {
-	QOpenGLExtraFunctions		*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
-	GLEX->initializeOpenGLFunctions();
+	if( GLEX )
+	{
+		GLEX->initializeOpenGLFunctions();
+	}
+#endif
 
 	if( true )
 	{
@@ -292,6 +299,7 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 			case QMetaType::Int:
 				if( Buffer->bind() )
 				{
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 					if( GLEX )
 					{
 						GLEX->glVertexAttribIPointer( UniformData.mLocation, 1, GL_INT, 0, BUFFER_OFFSET( 0 ) );
@@ -303,6 +311,7 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 					{
 						GLEX->glVertexAttribDivisor( UniformData.mLocation, 1 );
 					}
+#endif
 				}
 				break;
 
@@ -313,16 +322,19 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 
 					glEnableVertexAttribArray( UniformData.mLocation );
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 					if( Buffer->instanced() && GLEX )
 					{
 						GLEX->glVertexAttribDivisor( UniformData.mLocation, 1 );
 					}
+#endif
 				}
 				break;
 
 			case QMetaType::QPoint:
 				if( Buffer->bind() )
 				{
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 					if( GLEX )
 					{
 						GLEX->glVertexAttribIPointer( UniformData.mLocation, 2, GL_INT, 0, BUFFER_OFFSET( 0 ) );
@@ -334,6 +346,7 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 					{
 						GLEX->glVertexAttribDivisor( UniformData.mLocation, 1 );
 					}
+#endif
 				}
 				break;
 
@@ -345,10 +358,12 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 
 					glEnableVertexAttribArray( UniformData.mLocation );
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 					if( Buffer->instanced() && GLEX )
 					{
 						GLEX->glVertexAttribDivisor( UniformData.mLocation, 1 );
 					}
+#endif
 				}
 				break;
 
@@ -359,10 +374,12 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 
 					glEnableVertexAttribArray( UniformData.mLocation );
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 					if( Buffer->instanced() && GLEX )
 					{
 						GLEX->glVertexAttribDivisor( UniformData.mLocation, 1 );
 					}
+#endif
 
 					OPENGL_DEBUG( mNode->name() );
 				}
@@ -375,10 +392,12 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 
 					glEnableVertexAttribArray( UniformData.mLocation );
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 					if( Buffer->instanced() && GLEX )
 					{
 						GLEX->glVertexAttribDivisor( UniformData.mLocation, 1 );
 					}
+#endif
 				}
 				break;
 
@@ -391,10 +410,12 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 
 						glEnableVertexAttribArray( UniformData.mLocation + i );
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 						if( Buffer->instanced() && GLEX )
 						{
 							GLEX->glVertexAttribDivisor( UniformData.mLocation + i, 1 );
 						}
+#endif
 					}
 				}
 				break;
@@ -404,10 +425,12 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 				break;
 		}
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 		if( !Buffer->instanced() && GLEX )
 		{
 			GLEX->glVertexAttribDivisor( UniformData.mLocation, 0 );
 		}
+#endif
 	}
 }
 

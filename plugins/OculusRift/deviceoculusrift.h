@@ -1,12 +1,14 @@
 #ifndef DEVICEOCULUSRIFT_H
 #define DEVICEOCULUSRIFT_H
 
-#include <QOpenGLExtraFunctions>
-
 #include <QObject>
 #include <QSettings>
 #include <QDebug>
 #include <QSharedPointer>
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
+#include <QOpenGLExtraFunctions>
+#endif
 
 #if defined( OCULUS_PLUGIN_SUPPORTED )
 #include <OVR_CAPI_GL.h>
@@ -15,7 +17,10 @@
 using namespace OVR;
 #endif
 
-class DeviceOculusRift : public QObject, private QOpenGLExtraFunctions
+class DeviceOculusRift : public QObject
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
+		, private QOpenGLExtraFunctions
+#endif
 {
 	Q_OBJECT
 

@@ -100,7 +100,37 @@ set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "Fugio" )
 #set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "ExecWait '\\\"$INSTDIR\\\\vcredist_x86.exe\\\" /q:a'" )
 #set( CPACK_NSIS_HELP_LINK "http:\\\\\\\\wiki.bigfug.com" )
 
+# Set the output package filename
+
 set( CPACK_PACKAGE_FILE_NAME "Fugio-${FUGIO_VERSION}" )
+
+# If we're running on a UNIX system, try to ascertain the type and version
+
+if( UNIX )
+	execute_process( COMMAND lsb_release -is
+		OUTPUT_VARIABLE UNIX_ID
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+
+	execute_process( COMMAND lsb_release -rs
+		OUTPUT_VARIABLE UNIX_RELEASE
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+
+	if( "${UNIX_ID}" STREQUAL "" )
+		set( UNIX_ID "unknown" )
+	else()
+		message( "UNIX ID: ${UNIX_ID}" )
+	endif()
+
+	if( "${UNIX_RELEASE}" STREQUAL "" )
+		set( UNIX_RELEASE "unknown" )
+	else()
+		message( "UNIX RELEASE: ${UNIX_RELEASE}" )
+	endif()
+endif( UNIX )
+
+# Set the output package extension
 
 if( WIN32 AND IS_64_BIT )
 	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-win64" )
@@ -110,6 +140,8 @@ elseif( APPLE )
 	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-macOS" )
 elseif( Q_OS_RASPBERRY_PI )
 	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-rpi" )
+elseif( "${UNIX_ID}" STREQUAL "Ubuntu" AND "${UNIX_ID}" STREQUAL "16.04" )
+	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-xenial-x64" )
 elseif( UNIX AND IS_64_BIT )
 	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-linux64" )
 endif()
@@ -122,16 +154,25 @@ else()
 	set( CPACK_DEBIAN_PACKAGE_ARCHITECTURE i386 )
 endif()
 
+# The dependencies for various UNIX packages
+
 if( Q_OS_RASPBERRY_PI )
 	set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
 		libgles2-mesa, libicu57, libavcodec57, libavdevice57, libavformat57, libavutil55, libswscale4,
 		libswresample2, libavfilter6, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2, pigpio,
 		libqt5serialport5" )
 elseif( UNIX )
-	set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
-		libicu57, libavcodec57, libavdevice57, libavformat57, libavutil55, libswscale4,
-		libswresample2, libavfilter6, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2,
-		libqt5serialport5" )
+	if( "${UNIX_ID}" STREQUAL "Ubuntu" AND "${UNIX_ID}" STREQUAL "16.04" )
+		set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
+			libicu55, libavcodec-ffmpeg56, libavdevice-ffmpeg56, libavformat-ffmpeg56, libavutil-ffmpeg54, libswscale-ffmpeg3,
+			libswresample-ffmpeg2, libavfilter-ffmpeg5, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2,
+			libqt5serialport5" )
+	else()
+		set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
+			libicu57, libavcodec57, libavdevice57, libavformat57, libavutil55, libswscale4,
+			libswresample2, libavfilter6, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2,
+			libqt5serialport5" )
+	endif()
 endif()
 
 if( APPLE )

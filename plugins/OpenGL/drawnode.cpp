@@ -2,7 +2,10 @@
 
 #include <QMatrix4x4>
 #include <QTime>
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 #include <QOpenGLExtraFunctions>
+#endif
 
 #include <qmath.h>
 
@@ -110,7 +113,9 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		Count = std::numeric_limits<int>::max();
 	}
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+#endif
 
 	fugio::OpenGLBufferInterface	*B;
 
@@ -126,10 +131,12 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 				if( Instances > 0 )
 				{
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 					if( GLEX )
 					{
 						GLEX->glDrawElementsInstanced( Mode, Count, GL_UNSIGNED_INT, 0, Instances );
 					}
+#endif
 				}
 				else
 				{
@@ -142,10 +149,12 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 	}
 	else if( Instances > 0 )
 	{
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 		if( GLEX )
 		{
 			GLEX->glDrawArraysInstanced( Mode, 0, Count, Instances );
 		}
+#endif
 	}
 	else if( Count > 0 && Count < std::numeric_limits<int>::max() )
 	{

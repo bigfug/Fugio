@@ -101,7 +101,7 @@ public:
 
 		QVector<int>	NewVec;
 
-		pDataStream >> NewVal;
+		pDataStream >> NewVec;
 
 		mValues = NewVec;
 	}
