@@ -741,6 +741,9 @@ int TexturePin::sizeDimensions() const
 		case QOpenGLTexture::TargetCubeMap:
 			return( 2 );
 			break;
+
+		default:
+			break;
 	}
 
 	return( 0 );
