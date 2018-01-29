@@ -1,7 +1,5 @@
 #include "pinitem.h"
 
-#include <memory>
-
 #include <QGraphicsLineItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>

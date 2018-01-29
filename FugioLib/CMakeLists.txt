@@ -2,10 +2,6 @@ cmake_minimum_required( VERSION 3.1 )
 
 project( libfugio )
 
-set( CMAKE_CXX_STANDARD 11 )
-set( CMAKE_CXX_STANDARD_REQUIRED ON )
-set( CMAKE_CXX_EXTENSIONS OFF )
-
 find_package( Qt5 REQUIRED COMPONENTS Core Concurrent Network Widgets )
 
 set( UI_RESOURCES resources.qrc )

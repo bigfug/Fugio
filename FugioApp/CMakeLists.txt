@@ -6,10 +6,6 @@ else()
 	project( Fugio LANGUAGES CXX )
 endif()
 
-set( CMAKE_CXX_STANDARD 11 )
-set( CMAKE_CXX_STANDARD_REQUIRED ON )
-set( CMAKE_CXX_EXTENSIONS OFF )
-
 set( UI_RESOURCES fugio.qrc )
 
 include_directories( ../FugioLib )
