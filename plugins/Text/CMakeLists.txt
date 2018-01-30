@@ -35,6 +35,10 @@ set( SOURCE_FILES
 	textplugin.h
 	stringsplitnode.cpp
 	stringsplitnode.h
+	stringtointegernode.cpp
+	stringtointegernode.h
+	stringtofloatnode.cpp
+	stringtofloatnode.h
 
 	texteditorform.ui
 )
