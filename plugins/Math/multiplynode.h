@@ -20,11 +20,6 @@ class MultiplyNode : public fugio::NodeControlBase
 	class Operator
 	{
 	public:
-		template<typename T> static T op0( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-		template<typename T> static T op1( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-		template<typename T> static T op2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-		template<typename T> static T op3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-
 		template<typename T, typename S = T> static void mul( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
 		template<typename T, typename S = T> static void muls( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
 	};
@@ -41,9 +36,6 @@ public:
 	virtual QList<QUuid> pinAddTypesInput() const;
 
 	virtual bool canAcceptPin(fugio::PinInterface *pPin) const;
-
-private:
-	static QVariant multiplyNumber( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
