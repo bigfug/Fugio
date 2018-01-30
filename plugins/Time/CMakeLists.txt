@@ -46,6 +46,8 @@ set( SOURCE_FILES
 	timeplugin.h
 	universetimenode.cpp
 	universetimenode.h
+	utctimenode.cpp
+	utctimenode.h
 
 	cronform.ui
 )

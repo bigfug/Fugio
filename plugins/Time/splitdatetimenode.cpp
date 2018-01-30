@@ -18,6 +18,8 @@ SplitDateTimeNode::SplitDateTimeNode( QSharedPointer<fugio::NodeInterface> pNode
 	mValOutputDate = pinOutput<fugio::VariantInterface *>( "Date", mPinOutputDate, PID_DATE, PIN_OUTPUT_DATE );
 
 	mValOutputTime = pinOutput<fugio::VariantInterface *>( "Time", mPinOutputTime, PID_TIME, PIN_OUTPUT_TIME );
+
+	mPinInputDateTime->registerPinInputType( PID_DATETIME );
 }
 
 void SplitDateTimeNode::inputsUpdated( qint64 pTimeStamp )

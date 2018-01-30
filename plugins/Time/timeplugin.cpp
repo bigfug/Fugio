@@ -26,6 +26,7 @@
 #include "datetimetostringnode.h"
 #include "localtimenode.h"
 #include "splitdatetimenode.h"
+#include "utctimenode.h"
 
 #include "inertianode.h"
 
@@ -54,13 +55,14 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Split DateTime",	"Time", NID_SPLIT_DATETIME, &SplitDateTimeNode::staticMetaObject ),
 	ClassEntry( "Time",				"Time", NID_TIME, &TimeNode::staticMetaObject ),
 	ClassEntry( "Universe Time",	"Time", NID_UNIVERSE_TIME, &UniverseTimeNode::staticMetaObject ),
+	ClassEntry( "UTC Time",			"Time", NID_UTCTIME, &UTCTimeNode::staticMetaObject ),
 	ClassEntry()
 };
 
 ClassEntry PinClasses[] =
 {
-	ClassEntry( "Date",			"Time", PID_DATE, &TimePin::staticMetaObject ),
-	ClassEntry( "DateTime",		"Time", PID_DATETIME, &TimePin::staticMetaObject ),
+	ClassEntry( "Date",			"Time", PID_DATE, &DatePin::staticMetaObject ),
+	ClassEntry( "DateTime",		"Time", PID_DATETIME, &DateTimePin::staticMetaObject ),
 	ClassEntry( "Time",			"Time", PID_TIME, &TimePin::staticMetaObject ),
 	ClassEntry()
 };

@@ -1,4 +1,5 @@
-#include "localtimenode.h"
+#include "utctimenode.h"
+
 
 #include <fugio/core/uuid.h>
 #include <fugio/time/uuid.h>
@@ -6,7 +7,7 @@
 
 #include <QDateTime>
 
-LocalTimeNode::LocalTimeNode( QSharedPointer<fugio::NodeInterface> pNode )
+UTCTimeNode::UTCTimeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
 	FUGID( PIN_OUTPUT_TIME, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
@@ -16,7 +17,7 @@ LocalTimeNode::LocalTimeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mValOutputTime = pinOutput<fugio::VariantInterface*>( tr( "DateTime" ), mPinOutputTime, PID_DATETIME, PIN_OUTPUT_TIME );
 }
 
-bool LocalTimeNode::initialise()
+bool UTCTimeNode::initialise()
 {
 	if( !NodeControlBase::initialise() )
 	{
@@ -28,21 +29,21 @@ bool LocalTimeNode::initialise()
 	return( true );
 }
 
-bool LocalTimeNode::deinitialise()
+bool UTCTimeNode::deinitialise()
 {
 	disconnect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
 
 	return( NodeControlBase::deinitialise() );
 }
 
-void LocalTimeNode::inputsUpdated( qint64 pTimeStamp )
+void UTCTimeNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
 	updateTime();
 }
 
-void LocalTimeNode::contextFrameStart()
+void UTCTimeNode::contextFrameStart()
 {
 	if( !mPinInputTrigger->isConnected() )
 	{
@@ -50,9 +51,9 @@ void LocalTimeNode::contextFrameStart()
 	}
 }
 
-void LocalTimeNode::updateTime()
+void UTCTimeNode::updateTime()
 {
-	QDateTime		LocalTime = QDateTime::currentDateTime();
+	QDateTime		LocalTime = QDateTime::currentDateTimeUtc();
 
 	if( mValOutputTime->variant().toDateTime() != LocalTime )
 	{
