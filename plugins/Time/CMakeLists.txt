@@ -16,20 +16,32 @@ set( SOURCE_FILES
 	cronnode.h
 	datenode.cpp
 	datenode.h
+	datepin.cpp
+	datepin.h
+	datetimepin.cpp
+	datetimepin.h
+	datetimetostringnode.cpp
+	datetimetostringnode.h
 	delaynode.cpp
 	delaynode.h
 	everynode.cpp
 	everynode.h
 	inertianode.cpp
 	inertianode.h
+	localtimenode.cpp
+	localtimenode.h
 	playheadcontrolnode.cpp
 	playheadcontrolnode.h
 	playheadframesnode.cpp
 	playheadframesnode.h
 	playheadnode.cpp
 	playheadnode.h
+	splitdatetimenode.cpp
+	splitdatetimenode.h
 	timenode.cpp
 	timenode.h
+	timepin.cpp
+	timepin.h
 	timeplugin.cpp
 	timeplugin.h
 	universetimenode.cpp

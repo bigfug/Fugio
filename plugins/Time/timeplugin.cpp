@@ -3,6 +3,8 @@
 #include <QTranslator>
 #include <QCoreApplication>
 
+#include <ctime>
+
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
 
@@ -21,8 +23,15 @@
 #include "datenode.h"
 #include "playheadframesnode.h"
 #include "universetimenode.h"
+#include "datetimetostringnode.h"
+#include "localtimenode.h"
+#include "splitdatetimenode.h"
 
 #include "inertianode.h"
+
+#include "timepin.h"
+#include "datepin.h"
+#include "datetimepin.h"
 
 TimePlugin		*TimePlugin::mInstance = nullptr;
 
@@ -34,12 +43,15 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Clock",			"Time", NID_CLOCK, &ClockNode::staticMetaObject ),
 	ClassEntry( "Cron",				"Time", NID_CRON, &CronNode::staticMetaObject ),
 	ClassEntry( "Date",				"Time", NID_DATE, &DateNode::staticMetaObject ),
+	ClassEntry( "DateTime To String",	"Time", NID_DATETIMETOSTRING, &DateTimeToStringNode::staticMetaObject ),
 	ClassEntry( "Delay",			"Time", NID_TIME_DELAY, &DelayNode::staticMetaObject ),
 	ClassEntry( "Every",			"Time", NID_EVERY, &EveryNode::staticMetaObject ),
 	ClassEntry( "Inertia",			"Time", NID_INERTIA, &InertiaNode::staticMetaObject ),
+	ClassEntry( "Local Time",		"Time", NID_LOCALTIME, &LocalTimeNode::staticMetaObject ),
 	ClassEntry( "Playhead",			"Time", NID_PLAYHEAD, &PlayheadNode::staticMetaObject ),
 	ClassEntry( "Playhead Control",	"Time", NID_PLAYHEAD_CONTROL, &PlayheadControlNode::staticMetaObject ),
 	ClassEntry( "Playhead Frames",	"Time", NID_PLAYHEAD_FRAMES, &PlayheadFramesNode::staticMetaObject ),
+	ClassEntry( "Split DateTime",	"Time", NID_SPLIT_DATETIME, &SplitDateTimeNode::staticMetaObject ),
 	ClassEntry( "Time",				"Time", NID_TIME, &TimeNode::staticMetaObject ),
 	ClassEntry( "Universe Time",	"Time", NID_UNIVERSE_TIME, &UniverseTimeNode::staticMetaObject ),
 	ClassEntry()
@@ -47,6 +59,9 @@ ClassEntry	NodeClasses[] =
 
 ClassEntry PinClasses[] =
 {
+	ClassEntry( "Date",			"Time", PID_DATE, &TimePin::staticMetaObject ),
+	ClassEntry( "DateTime",		"Time", PID_DATETIME, &TimePin::staticMetaObject ),
+	ClassEntry( "Time",			"Time", PID_TIME, &TimePin::staticMetaObject ),
 	ClassEntry()
 };
 
@@ -74,6 +89,8 @@ PluginInterface::InitResult TimePlugin::initialise( fugio::GlobalInterface *pApp
 	mApp->registerNodeClasses( NodeClasses );
 
 	mApp->registerPinClasses( PinClasses );
+
+	mApp->registerPinSplitter( PID_DATETIME, NID_SPLIT_DATETIME );
 
 	return( INIT_OK );
 }
