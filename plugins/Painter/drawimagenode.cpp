@@ -7,7 +7,7 @@
 #include <fugio/painter/uuid.h>
 
 #include <fugio/pin_variant_iterator.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/image/image.h>
 
 DrawImageNode::DrawImageNode( QSharedPointer<fugio::NodeInterface> pNode )

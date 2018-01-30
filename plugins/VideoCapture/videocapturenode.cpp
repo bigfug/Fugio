@@ -17,7 +17,7 @@ VideoCaptureNode::VideoCaptureNode( QSharedPointer<fugio::NodeInterface> pNode )
 {
 	FUGID( PIN_OUTPUT_IMAGE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 
-	mValOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 
 #if defined( VIDEOCAPTURE_SUPPORTED )
 	memset( &mPrvDat, 0, sizeof( ca::PixelBuffer ) );
@@ -75,11 +75,13 @@ void VideoCaptureNode::frameCallback( ca::PixelBuffer &pBuffer )
 	TmpBuf.pixels = 0;
 	TmpBuf.user = 0;
 
+	fugio::Image	Output = mValOutputImage->variant().value<fugio::Image>();
+
 	if( memcmp( &TmpBuf, &mPrvDat, sizeof( ca::PixelBuffer ) ) != 0 )
 	{
 		mPrvDat = TmpBuf;
 
-		mValOutputImage->setSize( pBuffer.width[ 0 ], pBuffer.height[ 0 ] );
+		Output.setSize( pBuffer.width[ 0 ], pBuffer.height[ 0 ] );
 
 		switch( pBuffer.pixel_format )
 		{
@@ -91,46 +93,46 @@ void VideoCaptureNode::frameCallback( ca::PixelBuffer &pBuffer )
 				return;
 
 			case CA_YUV420BP:                                                            /* YUV420 Bi Planar */
-				mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_NV12 );
+				Output.setFormat( fugio::ImageFormat::NV12 );
 				break;
 
 			case CA_MJPEG:                                                                /* MJPEG 2*/
-				mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_YUVJ422P );
+				Output.setFormat( fugio::ImageFormat::YUVJ422P );
 				break;
 
 			case CA_YUV420P:                                                           /* YUV420 Planar */
-				mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_YUV420P );
+				Output.setFormat( fugio::ImageFormat::YUV420P );
 				break;
 
 			case CA_UYVY422:                                                              /* Cb Y0 Cr Y1 */
-				mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_UYVY422 );
+				Output.setFormat( fugio::ImageFormat::UYVY422 );
 				break;
 
 			case CA_YUYV422:                                                             /* Y0 Cb Y1 Cr */
-				mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_YUYV422 );
+				Output.setFormat( fugio::ImageFormat::YUYV422 );
 				break;
 
 			case CA_ARGB32:                                                              /* ARGB 8:8:8:8 32bpp, ARGBARGBARGB... */
 			case CA_RGBA32:                                                              /* RGBA 8:8:8:8 32bpp. */
-				mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_RGBA8 );
+				Output.setFormat( fugio::ImageFormat::RGBA8 );
 				break;
 
 			case CA_BGRA32:                                                             /* BGRA 8:8:8:8 32bpp, BGRABGRABGRA... */
-				mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+				Output.setFormat( fugio::ImageFormat::BGRA8 );
 				break;
 
 			case CA_RGB24:                                                              /* RGB 8:8:8 24bit */
-				mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_RGB8 );
+				Output.setFormat( fugio::ImageFormat::RGB8 );
 				break;
 		}
 
 		for( int i = 0 ; i < 3 ; i++ )
 		{
-			mValOutputImage->setLineSize( i, pBuffer.stride[ i ] );
+			Output.setLineSize( i, pBuffer.stride[ i ] );
 		}
 	}
 
-	if( !mValOutputImage->isValid() )
+	if( !Output.isValid() )
 	{
 		return;
 	}
@@ -138,7 +140,7 @@ void VideoCaptureNode::frameCallback( ca::PixelBuffer &pBuffer )
 	for( int i = 0 ; i < 3 ; i++ )
 	{
 		const uint8_t		*SrcPtr = pBuffer.plane[ i ];
-		uint8_t				*DstPtr = mValOutputImage->internalBuffer( i );
+		uint8_t				*DstPtr = Output.internalBuffer( i );
 
 		if( SrcPtr && DstPtr )
 		{

@@ -4,7 +4,7 @@
 #include <QColor>
 
 #include <fugio/core/uuid.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/image/uuid.h>
 #include <fugio/image/image.h>
 #include <fugio/pin_variant_iterator.h>
@@ -40,7 +40,7 @@ void PainterNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( !ImgSze.isEmpty() && ImgSze != CurImg.size() )
 	{
-		CurImg.setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+		CurImg.setFormat( fugio::ImageFormat::BGRA8 );
 		CurImg.setLineSize( 0, 4 * ImgSze.width() );
 		CurImg.setSize( ImgSze.width(), ImgSze.height() );
 

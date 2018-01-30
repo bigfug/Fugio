@@ -5,10 +5,6 @@
 
 #include <fugio/nodecontrolbase.h>
 
-FUGIO_NAMESPACE_BEGIN
-class ImageInterface;
-FUGIO_NAMESPACE_END
-
 class LeapRectifyNode : public fugio::NodeControlBase
 {
 	Q_OBJECT
@@ -34,7 +30,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputHeight;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::ImageInterface							*mValOutput;
+	fugio::VariantInterface							*mValOutput;
 };
 
 

@@ -7,14 +7,14 @@
 #include <fugio/core/uuid.h>
 #include <fugio/image/uuid.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 GrabScreenNode::GrabScreenNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
 	mPinTrigger = pinInput( "Trigger" );
 
-	mValOutput = pinOutput<fugio::ImageInterface *>( "Image", mPinOutput, PID_IMAGE );
+	mValOutput = pinOutput<fugio::VariantInterface *>( "Image", mPinOutput, PID_IMAGE );
 
 	mPinOutput->setDescription( tr( "The screenshot image" ) );
 }
@@ -30,7 +30,7 @@ void GrabScreenNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	QPixmap PM = Screen->grabWindow(0);
+	QPixmap PM = Screen->grabWindow( 0 );
 
 	if( PM.isNull() )
 	{
@@ -44,24 +44,26 @@ void GrabScreenNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	mValOutput->setSize( mImage.width(), mImage.height() );
+	fugio::Image	DstImg = mValOutput->variant().value<fugio::Image>();
 
-	mValOutput->setLineSize( 0, mImage.bytesPerLine() );
+	DstImg.setSize( mImage.width(), mImage.height() );
+
+	DstImg.setLineSize( 0, mImage.bytesPerLine() );
 
 	if( mImage.format() == QImage::Format_RGB32 )
 	{
-		mValOutput->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+		DstImg.setFormat( fugio::ImageFormat::BGRA8 );
 	}
 	else if( mImage.format() == QImage::Format_ARGB32 )
 	{
-		mValOutput->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+		DstImg.setFormat( fugio::ImageFormat::BGRA8 );
 	}
 	else
 	{
 		return;
 	}
 
-	memcpy( mValOutput->internalBuffer( 0 ), mImage.constBits(), mImage.byteCount() );
+	memcpy( DstImg.internalBuffer( 0 ), mImage.constBits(), mImage.byteCount() );
 
 	pinUpdated( mPinOutput );
 }

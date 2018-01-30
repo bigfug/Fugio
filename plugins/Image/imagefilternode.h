@@ -36,7 +36,7 @@ protected:
 	fugio::ChoiceInterface						*mValFilter;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface						*mValOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 };
 
 #endif // IMAGEFILTERNODE_H

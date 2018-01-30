@@ -4,7 +4,7 @@
 
 #include <fugio/image/uuid.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #include "opencvplugin.h"
 
@@ -23,7 +23,7 @@ BackgroundSubtractionNode::BackgroundSubtractionNode( QSharedPointer<fugio::Node
 
 	mPinInputReset = pinInput( "Reset", PIN_INPUT_RESET );
 
-	if( ( mOutputImage = pinOutput<fugio::ImageInterface *>( "Output", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE ) ) == 0 )
+	if( ( mOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE ) ) == 0 )
 	{
 		return;
 	}
@@ -38,9 +38,9 @@ void BackgroundSubtractionNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	fugio::ImageInterface			*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image	SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || SrcImg->size().isEmpty() )
+	if( !SrcImg.isValid() )
 	{
 		return;
 	}
@@ -67,9 +67,9 @@ void BackgroundSubtractionNode::process( BackgroundSubtractionNode *pNode )
 void BackgroundSubtractionNode::process( void )
 {
 #if defined( OPENCV_SUPPORTED )
-	fugio::ImageInterface		*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image	SrcImg = variantStatic<fugio::Image>( mPinInputImage );
 
-	cv::Mat						 MatSrc = OpenCVPlugin::image2mat( SrcImg );
+	cv::Mat			MatSrc = OpenCVPlugin::image2mat( SrcImg );
 
 	if( !mBckSub )
 	{
@@ -86,7 +86,7 @@ void BackgroundSubtractionNode::process( void )
 	mBckSub->operator()( MatSrc, mMatDst, mLearningRate );
 #endif
 
-	OpenCVPlugin::mat2image( mMatDst, mOutputImage );
+	OpenCVPlugin::mat2image( mMatDst, mOutputImage->variant().value<fugio::Image>() );
 
 	pinUpdated( mPinOutputImage );
 #endif

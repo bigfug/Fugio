@@ -72,9 +72,9 @@ void CascadeClassifierNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	fugio::ImageInterface			*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image	SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || SrcImg->size().isEmpty() )
+	if( !SrcImg.isValid() )
 	{
 		return;
 	}
@@ -95,11 +95,11 @@ void CascadeClassifierNode::inputsUpdated( qint64 pTimeStamp )
 void CascadeClassifierNode::conversion( CascadeClassifierNode *pNode )
 {
 #if defined( OPENCV_SUPPORTED )
-	fugio::ImageInterface		*SrcImg = pNode->input<fugio::ImageInterface *>( pNode->mPinInputImage );
+	fugio::Image	SrcImg = variantStatic<fugio::Image>( pNode->mPinInputImage );
 
-	cv::Mat						 MatSrc = OpenCVPlugin::image2mat( SrcImg );
+	cv::Mat			MatSrc = OpenCVPlugin::image2mat( SrcImg );
 
-	QRect						 SrcROI = pNode->variant( pNode->mPinInputROI ).toRect();
+	QRect			SrcROI = pNode->variant( pNode->mPinInputROI ).toRect();
 
 	try
 	{

@@ -7,7 +7,7 @@
 #include <fugio/core/uuid.h>
 #include <fugio/image/uuid.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #include <fugio/performance.h>
 
@@ -22,7 +22,7 @@ CopyNode::CopyNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputRect = pinInput( "Area", PIN_INPUT_RECT );
 
-	mValOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 
 	mPinOutputImage->setDescription( tr( "The copied image" ) );
 }
@@ -31,14 +31,14 @@ void CopyNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	fugio::ImageInterface	*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image	SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || !SrcImg->isValid() )
+	if( !SrcImg.isValid() )
 	{
 		return;
 	}
 
-	QRect		SrcRct = QRect( QPoint(), SrcImg->size() );
+	QRect		SrcRct = QRect( QPoint(), SrcImg.size() );
 	QRect		DstRct = variant( mPinInputRect ).toRect();
 
 	if( !DstRct.isValid() || DstRct.isEmpty() )
@@ -46,47 +46,49 @@ void CopyNode::inputsUpdated( qint64 pTimeStamp )
 		DstRct = SrcRct;
 	}
 
-	mValOutputImage->setSize( DstRct.width(), DstRct.height() );
-	mValOutputImage->setFormat( SrcImg->format() );
-	mValOutputImage->setInternalFormat( SrcImg->internalFormat() );
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
+	DstImg.setSize( DstRct.width(), DstRct.height() );
+	DstImg.setFormat( SrcImg.format() );
+	DstImg.setInternalFormat( SrcImg.internalFormat() );
 
 	if( DstRct == SrcRct )
 	{
 		for( int i = 0 ; i < 8 ; i++ )
 		{
-			mValOutputImage->setLineSize( i, SrcImg->lineSize( i ) );
+			DstImg.setLineSize( i, SrcImg.lineSize( i ) );
 		}
 
 		for( int i = 0 ; i < 8 ; i++ )
 		{
-			const int BufSiz = SrcImg->bufferSize( i );
+			const int BufSiz = SrcImg.bufferSize( i );
 
 			if( !BufSiz )
 			{
 				break;
 			}
 
-			memcpy( mValOutputImage->internalBuffer( i ), SrcImg->buffer( i ), BufSiz );
+			memcpy( DstImg.internalBuffer( i ), SrcImg.buffer( i ), BufSiz );
 		}
 	}
 	else
 	{
 		for( int i = 0 ; i < 8 ; i++ )
 		{
-			mValOutputImage->setLineSize( i, DstRct.width() * fugio::ImageInterface::formatPixelByteCount( SrcImg->format(), i ) );
+			DstImg.setLineSize( i, DstRct.width() * fugio::Image::formatPixelByteCount( SrcImg.format(), i ) );
 		}
 
-		for( int i = 0 ; i < 8 && SrcImg->bufferSize( i ) ; i++ )
+		for( int i = 0 ; i < 8 && SrcImg.bufferSize( i ) ; i++ )
 		{
-			const int		 PixSze = fugio::ImageInterface::formatPixelByteCount( SrcImg->format(), i );
-			const QRect		 SrcCpy( PixSze * DstRct.left(), SrcImg->lineSize( i ) * DstRct.top(), PixSze * DstRct.width(), 1 );
-			const quint8	*SrcBuf = SrcImg->buffer( i );
-			quint8			*DstBuf = mValOutputImage->internalBuffer( i );
-			const int		 BufSiz = SrcImg->bufferSize( i );
+			const int		 PixSze = fugio::Image::formatPixelByteCount( SrcImg.format(), i );
+			const QRect		 SrcCpy( PixSze * DstRct.left(), SrcImg.lineSize( i ) * DstRct.top(), PixSze * DstRct.width(), 1 );
+			const quint8	*SrcBuf = SrcImg.buffer( i );
+			quint8			*DstBuf = DstImg.internalBuffer( i );
+			const int		 BufSiz = SrcImg.bufferSize( i );
 
 			for( int y = 0 ; y < DstRct.height() ; y++ )
 			{
-				int		SrcOff = SrcCpy.left() + SrcCpy.top() + SrcImg->lineSize( i ) * y;
+				int		SrcOff = SrcCpy.left() + SrcCpy.top() + SrcImg.lineSize( i ) * y;
 				int		SrcCnt = std::min<int>( SrcCpy.width(), BufSiz - SrcOff );
 
 				if( SrcCnt > 0 )

@@ -20,6 +20,8 @@ ClearNode::ClearNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputColour->registerPinInputType( PID_COLOUR );
 
+	mPinInputColour->setValue( QColor( Qt::black ) );
+
 	mValOutputPainter = pinOutput<fugio::PainterInterface *>( "Painter", mPinOutputPainter, PID_PAINTER, PIN_OUTPUT_PAINTER );
 
 	mValOutputPainter->setSource( this );

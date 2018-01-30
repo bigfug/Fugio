@@ -7,7 +7,7 @@
 #include <fugio/core/uuid.h>
 #include <fugio/image/uuid.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #include "opencvplugin.h"
 
@@ -32,9 +32,9 @@ void CountNonZeroNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( mPinInputImage->isConnected() )
 	{
-		fugio::ImageInterface			*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+		fugio::Image					SrcImg = variant<fugio::Image>( mPinInputImage );
 
-		if( SrcImg && SrcImg->isValid() )
+		if( !SrcImg.isEmpty() )
 		{
 #if defined( OPENCV_SUPPORTED )
 			cv::Mat	MatSrc = OpenCVPlugin::image2mat( SrcImg );

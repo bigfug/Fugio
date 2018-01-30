@@ -7,7 +7,7 @@
 #include <fugio/image/uuid.h>
 
 #include <fugio/context_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/core/variant_interface.h>
 #include <fugio/performance.h>
 
@@ -22,7 +22,7 @@ LeapRectifyNode::LeapRectifyNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputHeight = pinInput( "Height" );
 
-	mValOutput = pinOutput<fugio::ImageInterface *>( "Image", mPinOutput, PID_IMAGE );
+	mValOutput = pinOutput<fugio::VariantInterface *>( "Image", mPinOutput, PID_IMAGE );
 }
 
 //float truncf(float x)
@@ -53,7 +53,7 @@ void LeapRectifyNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	QSize					 S;
+	QSize						 S;
 
 	fugio::VariantInterface		*V;
 
@@ -80,15 +80,17 @@ void LeapRectifyNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	if( S != mValOutput->size() )
+	fugio::Image	DstImg = mValOutput->variant().value<fugio::Image>();
+
+	if( S != DstImg.size() )
 	{
-		mValOutput->setFormat( fugio::ImageInterface::FORMAT_GRAY8 );
+		DstImg.setFormat( fugio::ImageFormat::GRAY8 );
 
-		mValOutput->setSize( S.width(), S.height() );
+		DstImg.setSize( S.width(), S.height() );
 
-		mValOutput->setLineSize( 0, S.width() );
+		DstImg.setLineSize( 0, S.width() );
 
-		memset( mValOutput->internalBuffer( 0 ), 0, mValOutput->bufferSize( 0 ) );
+		memset( DstImg.internalBuffer( 0 ), 0, DstImg.bufferSize( 0 ) );
 	}
 
 	if( !mPinInputImage->isConnected() || !mPinInputImage->isUpdated( pTimeStamp ) )
@@ -101,17 +103,17 @@ void LeapRectifyNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	fugio::ImageInterface		*SRC = input<fugio::ImageInterface *>( mPinInputImage );
-	fugio::ImageInterface		*DST = input<fugio::ImageInterface *>( mPinInputDistortion );
+	fugio::Image	SRC = variant<fugio::Image>( mPinInputImage );
+	fugio::Image	DST = variant<fugio::Image>( mPinInputDistortion );
 
-	if( !SRC || !DST || SRC->size().isEmpty() || DST->size().isEmpty() )
+	if( !SRC.isValid() || !DST.isValid() )
 	{
 		return;
 	}
 
 	float destinationWidth = S.width();
 	float destinationHeight = S.height();
-	unsigned char *destination = mValOutput->internalBuffer( 0 );
+	unsigned char *destination = DstImg.internalBuffer( 0 );
 
 	//define needed variables outside the inner loop
 	float calibrationX, calibrationY;
@@ -122,13 +124,13 @@ void LeapRectifyNode::inputsUpdated( qint64 pTimeStamp )
 	int denormalizedX, denormalizedY;
 	int i, j;
 
-	const unsigned char* raw = SRC->buffer( 0 );
-	const float* distortion_buffer = (const float *)DST->buffer( 0 );
+	const unsigned char* raw = SRC.buffer( 0 );
+	const float* distortion_buffer = (const float *)DST.buffer( 0 );
 
 	//Local variables for values needed in loop
-	const int distortionWidth = DST->size().width() * 2;
-	const int width = SRC->size().width();
-	const int height = SRC->size().height();
+	const int distortionWidth = DST.size().width() * 2;
+	const int width = SRC.size().width();
+	const int height = SRC.size().height();
 
 	for (i = 0; i < destinationWidth; i++) {
 		for (j = 0; j < destinationHeight; j++) {

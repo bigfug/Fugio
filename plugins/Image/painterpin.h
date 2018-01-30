@@ -5,7 +5,7 @@
 
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/image/uuid.h>
 
 #include <fugio/pincontrolbase.h>

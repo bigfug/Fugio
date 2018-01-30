@@ -31,7 +31,6 @@
 #include "mediaaudioprocessor.h"
 
 FUGIO_NAMESPACE_BEGIN
-class ImageInterface;
 class TimelineControlInterface;
 FUGIO_NAMESPACE_END
 
@@ -188,7 +187,7 @@ public:
 
 	//-------------------------------------------------------------------------
 
-	fugio::ImageInterface *image( void ) const
+	fugio::VariantInterface *image( void ) const
 	{
 		return( mValImage );
 	}
@@ -228,7 +227,7 @@ private:
 //	QSharedPointer<fugio::PinInterface>				 mPinScratch;
 
 	QSharedPointer<fugio::PinInterface>				 mPinImage;
-	fugio::ImageInterface							*mValImage;
+	fugio::VariantInterface							*mValImage;
 
 	QSharedPointer<fugio::PinInterface>				 mPinAudio;
 	fugio::AudioProducerInterface					*mValAudio;

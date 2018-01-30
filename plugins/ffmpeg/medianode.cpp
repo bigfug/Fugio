@@ -22,7 +22,7 @@
 
 #include <fugio/global_interface.h>
 #include <fugio/context_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/core/variant_interface.h>
 #include <fugio/file/filename_interface.h>
 #include <fugio/audio/audio_producer_interface.h>
@@ -75,7 +75,7 @@ MediaNode::MediaNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputTime = pinInput( "Time", PIN_FRAME_TIME );
 
-	mValImage = pinOutput<fugio::ImageInterface *>( "Image", mPinImage, PID_IMAGE, PIN_IMAGE );
+	mValImage = pinOutput<fugio::VariantInterface *>( "Image", mPinImage, PID_IMAGE, PIN_IMAGE );
 
 	mValAudio = pinOutput<fugio::AudioProducerInterface *>( "Audio", mPinAudio, PID_AUDIO, PIN_AUDIO );
 
@@ -489,9 +489,11 @@ void MediaNode::updateVideo( qreal pTimeCurr )
 
 	const fugio::SegmentInterface::VidDat	*VD = mSegment->viddat();
 
+	fugio::Image		SrcImg = mValImage->variant().value<fugio::Image>();
+
 	if( !VD )
 	{
-		mValImage->unsetBuffers();
+		SrcImg.unsetBuffers();
 
 		return;
 	}
@@ -503,75 +505,75 @@ void MediaNode::updateVideo( qreal pTimeCurr )
 
 	mImgPts = VD->mPTS;
 
-	mValImage->setSize( mSegment->imageSize().width(), mSegment->imageSize().height() );
+	SrcImg.setSize( mSegment->imageSize().width(), mSegment->imageSize().height() );
 
-	mValImage->setLineSizes( VD->mLineSizes );
+	SrcImg.setLineSizes( VD->mLineSizes );
 
 	if( mSegment->imageIsHap() )
 	{
 		switch( HapTextureFormat( mSegment->imageFormat() ) )
 		{
 			case HapTextureFormat_RGB_DXT1:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_DXT1 );
+				SrcImg.setFormat( fugio::ImageFormat::DXT1 );
 				break;
 
 			case HapTextureFormat_RGBA_DXT5:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_DXT5 );
+				SrcImg.setFormat( fugio::ImageFormat::DXT5 );
 				break;
 
 			case HapTextureFormat_YCoCg_DXT5:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_YCoCg_DXT5 );
+				SrcImg.setFormat( fugio::ImageFormat::YCoCg_DXT5 );
 				break;
 
 			default:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_UNKNOWN );
+				SrcImg.setFormat( fugio::ImageFormat::UNKNOWN );
 				break;
 		}
 	}
 	else
 	{
-		mValImage->setInternalFormat( mSegment->imageFormat() );
+		SrcImg.setInternalFormat( mSegment->imageFormat() );
 
 		switch( AVPixelFormat( mSegment->imageFormat() ) )
 		{
 			case AV_PIX_FMT_RGB24:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_RGB8 );
+				SrcImg.setFormat( fugio::ImageFormat::RGB8 );
 				break;
 
 			case AV_PIX_FMT_RGBA:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_RGBA8 );
+				SrcImg.setFormat( fugio::ImageFormat::RGBA8 );
 				break;
 
 			case AV_PIX_FMT_BGR24:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_BGR8 );
+				SrcImg.setFormat( fugio::ImageFormat::BGR8 );
 				break;
 
 			case AV_PIX_FMT_BGRA:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+				SrcImg.setFormat( fugio::ImageFormat::BGRA8 );
 				break;
 
 			case AV_PIX_FMT_YUYV422:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_YUYV422 );
+				SrcImg.setFormat( fugio::ImageFormat::YUYV422 );
 				break;
 
 			case AV_PIX_FMT_GRAY8:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_GRAY8 );
+				SrcImg.setFormat( fugio::ImageFormat::GRAY8 );
 				break;
 
 			case AV_PIX_FMT_GRAY16:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_GRAY16 );
+				SrcImg.setFormat( fugio::ImageFormat::GRAY16 );
 				break;
 
 			default:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_INTERNAL );
+				SrcImg.setFormat( fugio::ImageFormat::INTERNAL );
 				break;
 		}
 	}
 
-	mValImage->setBuffers( VD->mData );
-	mValImage->setLineSizes( VD->mLineSizes );
+	SrcImg.setBuffers( VD->mData );
+	SrcImg.setLineSizes( VD->mLineSizes );
 
-	if( mValImage->format() != fugio::ImageInterface::FORMAT_UNKNOWN )
+	if( SrcImg.format() != fugio::ImageFormat::UNKNOWN )
 	{
 		pinUpdated( mPinImage );
 	}

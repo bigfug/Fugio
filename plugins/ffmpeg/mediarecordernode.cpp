@@ -11,7 +11,7 @@
 
 #include <fugio/global_interface.h>
 #include <fugio/context_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/audio/audio_producer_interface.h>
 #include <fugio/context_signals.h>
 #include <fugio/audio/audio_instance_base.h>
@@ -325,7 +325,7 @@ void MediaRecorderNode::record( const QString &pFileName )
 
 	if( mOutputFormat->video_codec != AV_CODEC_ID_NONE )
 	{
-		fugio::ImageInterface			*Image = input<fugio::ImageInterface *>( mPinInputImage );
+		fugio::VariantInterface			*Image = input<fugio::VariantInterface *>( mPinInputImage );
 
 		if( !Image )
 		{
@@ -1038,11 +1038,9 @@ QImage MediaRecorderNode::cropImage( const QImage &pImage, const QSize &pSize )
 
 bool MediaRecorderNode::imageToFrame( void )
 {
-	fugio::ImageInterface		*SrcInt = input<fugio::ImageInterface *>( mPinInputImage );
+	QImage				SrcImg = variant( mPinInputImage ).value<fugio::Image>().image();
 
-	QImage				 SrcImg = SrcInt ? SrcInt->image() : QImage();
-
-	static QImage		 TmpImg( 10, 10, QImage::Format_ARGB32 );
+	static QImage		TmpImg( 10, 10, QImage::Format_ARGB32 );
 
 	if( SrcImg.isNull() )
 	{

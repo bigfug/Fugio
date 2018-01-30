@@ -51,7 +51,7 @@ ImageHomographyNode::ImageHomographyNode( QSharedPointer<fugio::NodeInterface> p
 		return;
 	}
 
-	if( ( mOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE ) ) == 0 )
+	if( ( mOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE ) ) == 0 )
 	{
 		return;
 	}
@@ -186,14 +186,14 @@ void ImageHomographyNode::inputsUpdated( qint64 )
 
 	if( mPinInputImage->isConnected() )
 	{
-		fugio::ImageInterface	*I1 = qobject_cast<fugio::ImageInterface *>( mPinInputImage->connectedPin()->control()->qobject() );
+		fugio::Image		I1 = variant<fugio::Image>( mPinInputImage );
 
-//		if( I1->format() != fugio::ImageInterface::FORMAT_RGB8 )
+//		if( I1->format() != fugio::ImageFormat::RGB8 )
 //		{
 //			return;
 //		}
 
-		mImgSrc = I1->image().convertToFormat( QImage::Format_RGB888 );
+		mImgSrc = I1.image().convertToFormat( QImage::Format_RGB888 );
 
 		if( mImgSrc.isNull() )
 		{
@@ -247,14 +247,16 @@ void ImageHomographyNode::inputsUpdated( qint64 )
 			cv::warpPerspective( MatSrc, mMatDst, mMatHom.inv(), cv::Size( ImgSze.width(), ImgSze.height() ) );
 		}
 
-		mOutputImage->setSize( mMatDst.cols, mMatDst.rows );
-		mOutputImage->setLineSize( 0, mMatDst.step );
+		fugio::Image	Output = mOutputImage->variant().value<fugio::Image>();
 
-		mOutputImage->setFormat( fugio::ImageInterface::FORMAT_RGB8 );
+		Output.setSize( mMatDst.cols, mMatDst.rows );
+		Output.setLineSize( 0, mMatDst.step );
 
-		mOutputImage->setBuffer( 0, mMatDst.data );
+		Output.setFormat( fugio::ImageFormat::RGB8 );
 
-		mNode->context()->pinUpdated( mPinOutputImage );
+		Output.setBuffer( 0, mMatDst.data );
+
+		pinUpdated( mPinOutputImage );
 	}
 #endif
 }

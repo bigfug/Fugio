@@ -4,7 +4,7 @@
 
 #include <fugio/core/uuid.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/performance.h>
 
 #if defined( DLIB_SUPPORTED )
@@ -22,7 +22,7 @@ public:
 	typedef pixel_type type;
 	typedef default_memory_manager mem_manager_type;
 
-	fugio_image( fugio::ImageInterface *pImgInt )
+	fugio_image( fugio::Image *pImgInt )
 	{
 		//			DLIB_CASSERT(img.depth() == cv::DataType<typename pixel_traits<pixel_type>::basic_pixel_type>::depth &&
 		//						 img.channels() == pixel_traits<pixel_type>::num,
@@ -78,7 +78,7 @@ public:
 		return *this;
 	}
 
-	fugio_image& operator=( const fugio::ImageInterface* img)
+	fugio_image& operator=( const fugio::VariantInterface* img)
 	{
 		init(img);
 		return *this;
@@ -86,7 +86,7 @@ public:
 
 private:
 
-	void init (const fugio::ImageInterface* img)
+	void init (const fugio::Image* img)
 	{
 		//			DLIB_CASSERT( img->dataOrder == 0, "Only interleaved color channels are supported with fugio_image");
 		//			DLIB_CASSERT((img->depth&0xFF)/8*img->nChannels == sizeof(pixel_type),
@@ -95,7 +95,7 @@ private:
 		_data = img;
 	}
 
-	const fugio::ImageInterface* _data;
+	const fugio::Image* _data;
 };
 
 // ----------------------------------------------------------------------------------------
@@ -237,11 +237,11 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( mPinInputImage->isUpdated( pTimeStamp ) )
 	{
-		fugio::ImageInterface		*I = input<fugio::ImageInterface *>( mPinInputImage );
+		fugio::Image				I = variant( mPinInputImage ).value<fugio::Image>();
 
-		if( I && I->isValid() )
+		if( I.isEmpty() )
 		{
-			if( I->format() != fugio::ImageInterface::FORMAT_GRAY8 )
+			if( I.format() != fugio::ImageFormat::GRAY8 )
 			{
 				return;
 			}
@@ -253,7 +253,7 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 			{
 				dlib::matrix<unsigned char>		SrcMat;
 
-				assign_image( SrcMat, fugio_image<unsigned char>( I ) );
+				assign_image( SrcMat, fugio_image<unsigned char>( &I ) );
 
 				std::vector<rectangle> dets = mDetector( SrcMat );
 

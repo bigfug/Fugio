@@ -8,7 +8,8 @@
 #include <QImage>
 #include <QUuid>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
+#include <fugio/core/variant_interface.h>
 
 class LuaImage
 {
@@ -17,7 +18,7 @@ private:
 	{
 		static const char *TypeName;
 
-		fugio::ImageInterface		*mImgInf;
+		fugio::VariantInterface		*mImgInf;
 		QImage						*mImage;
 		QUuid						 mPinId;	// only set if this is a writable image
 
@@ -40,21 +41,23 @@ private:
 				mImage = nullptr;
 			}
 
-			if( mImgInf->isValid() )
+			fugio::Image	ImgDat = mImgInf->variant().value<fugio::Image>();
+
+			if( ImgDat.isValid() )
 			{
-				QImage::Format		ImgFmt = fugio::ImageInterface::toQImageFormat( mImgInf->format() );
+				QImage::Format		ImgFmt = fugio::Image::toQImageFormat( ImgDat.format() );
 
 				if( ImgFmt != QImage::Format_Invalid )
 				{
 					if( isReadOnly() )
 					{
-						mImage = new QImage( mImgInf->buffer( 0 ), mImgInf->width(), mImgInf->height(), mImgInf->lineSize( 0 ), ImgFmt );
+						mImage = new QImage( ImgDat.buffer( 0 ), ImgDat.width(), ImgDat.height(), ImgDat.lineSize( 0 ), ImgFmt );
 					}
 					else
 					{
-						mImage = new QImage( mImgInf->internalBuffer( 0 ), mImgInf->width(), mImgInf->height(), mImgInf->lineSize( 0 ), ImgFmt );
+						mImage = new QImage( ImgDat.internalBuffer( 0 ), ImgDat.width(), ImgDat.height(), ImgDat.lineSize( 0 ), ImgFmt );
 
-						memset( mImgInf->internalBuffer( 0 ), 0, mImgInf->lineSize( 0 ) * mImgInf->height() );
+						memset( ImgDat.internalBuffer( 0 ), 0, ImgDat.lineSize( 0 ) * ImgDat.height() );
 					}
 				}
 			}
@@ -73,7 +76,7 @@ public:
 
 	static int luaPinGet( const QUuid &pPinLocalId, lua_State *L );
 
-	static int pushimage( lua_State *L, fugio::ImageInterface *pImgInf, QUuid pPinId )
+	static int pushimage( lua_State *L, fugio::VariantInterface *pImgInf, QUuid pPinId )
 	{
 		ImageUserData	*UD = (ImageUserData *)lua_newuserdata( L, sizeof( ImageUserData ) );
 

@@ -47,11 +47,11 @@ KinectNode::KinectNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInputIndex->registerPinInputType( PID_INTEGER );
 	mPinInputElevation->registerPinInputType( PID_INTEGER );
 
-	mValOutputCamera   = pinOutput<fugio::ImageInterface *>( "Camera", mPinOutputCamera, PID_IMAGE, PID_OUTPUT_CAMERA );
+	mValOutputCamera   = pinOutput<fugio::VariantInterface *>( "Camera", mPinOutputCamera, PID_IMAGE, PID_OUTPUT_CAMERA );
 
-	mValOutputDepth    = pinOutput<fugio::ImageInterface *>( "Depth", mPinOutputDepth, PID_IMAGE, PIN_OUTPUT_DEPTH );
+	mValOutputDepth    = pinOutput<fugio::VariantInterface *>( "Depth", mPinOutputDepth, PID_IMAGE, PIN_OUTPUT_DEPTH );
 
-	mValOutputUser     = pinOutput<fugio::ImageInterface *>( "User", mPinOutputUser, PID_IMAGE, PIN_OUTPUT_USER );
+	mValOutputUser     = pinOutput<fugio::VariantInterface *>( "User", mPinOutputUser, PID_IMAGE, PIN_OUTPUT_USER );
 
 	mValOutputElevation = pinOutput<fugio::VariantInterface *>( "Elevation", mPinOutputElevation, PID_INTEGER, PIN_OUTPUT_ELEVATION );
 
@@ -249,17 +249,19 @@ void KinectNode::frameStart( qint64 pTimeStamp )
 
 					//if( mPinOutputCamera->isConnected() )
 					{
+						fugio::Image	ImgDat = mValOutputCamera->variant().value<fugio::Image>();
+
 						QSize			S = nuiSize( imageFrame.eResolution );
 
-						mValOutputCamera->setSize( S.width(), S.height() );
-						mValOutputCamera->setLineSize( 0, LockedRect.Pitch );
-						mValOutputCamera->setFormat( nuiFormat( imageFrame.eImageType ) );
+						ImgDat.setSize( S.width(), S.height() );
+						ImgDat.setLineSize( 0, LockedRect.Pitch );
+						ImgDat.setFormat( nuiFormat( imageFrame.eImageType ) );
 
 						if( imageFrame.eImageType == NUI_IMAGE_TYPE_COLOR )
 						{
 							const quint8	*SrcPtr = LockedRect.pBits;
-							quint8			*DstPtr = mValOutputCamera->internalBuffer( 0 );
-							const int		 SrcSze = mValOutputCamera->bufferSize( 0 );
+							quint8			*DstPtr = ImgDat.internalBuffer( 0 );
+							const int		 SrcSze = ImgDat.bufferSize( 0 );
 
 							for( int i = 0 ; i < SrcSze ; i += 4 )
 							{
@@ -271,7 +273,7 @@ void KinectNode::frameStart( qint64 pTimeStamp )
 						}
 						else
 						{
-							memcpy( mValOutputCamera->internalBuffer( 0 ), LockedRect.pBits, mValOutputCamera->bufferSize( 0 ) );
+							memcpy( ImgDat.internalBuffer( 0 ), LockedRect.pBits, ImgDat.bufferSize( 0 ) );
 						}
 
 						pinUpdated( mPinOutputCamera );
@@ -317,18 +319,21 @@ void KinectNode::frameStart( qint64 pTimeStamp )
 
 							//-------------------------------------------------------------------------
 
+							fugio::Image	DepImg = mValOutputDepth->variant().value<fugio::Image>();
+							fugio::Image	UsrImg = mValOutputDepth->variant().value<fugio::Image>();
+
 							QSize			S = nuiSize( imageFrame.eResolution );
 
-							mValOutputDepth->setSize( S.width(), S.height() );
-							mValOutputDepth->setLineSize( 0, S.width() * 2 );
-							mValOutputDepth->setFormat( fugio::ImageInterface::FORMAT_GRAY16 );
+							DepImg.setSize( S.width(), S.height() );
+							DepImg.setLineSize( 0, S.width() * 2 );
+							DepImg.setFormat( fugio::ImageFormat::GRAY16 );
 
-							mValOutputUser->setSize( S.width(), S.height() );
-							mValOutputUser->setLineSize( 0, S.width() * 2 );
-							mValOutputUser->setFormat( fugio::ImageInterface::FORMAT_GRAY16 );
+							UsrImg.setSize( S.width(), S.height() );
+							UsrImg.setLineSize( 0, S.width() * 2 );
+							UsrImg.setFormat( fugio::ImageFormat::GRAY16 );
 
-							quint16		*DepDst = reinterpret_cast<quint16 *>( mValOutputDepth->internalBuffer( 0 ) );
-							quint16		*UsrDst = reinterpret_cast<quint16 *>( mValOutputUser->internalBuffer( 0 ) );
+							quint16		*DepDst = reinterpret_cast<quint16 *>( DepImg.internalBuffer( 0 ) );
+							quint16		*UsrDst = reinterpret_cast<quint16 *>( UsrImg.internalBuffer( 0 ) );
 
 							for( int y = 0 ; y < S.height() ; y++ )
 							{
@@ -540,18 +545,18 @@ QSize KinectNode::nuiSize( NUI_IMAGE_RESOLUTION pNuiRes )
 	return( S );
 }
 
-fugio::ImageInterface::Format KinectNode::nuiFormat( NUI_IMAGE_TYPE pNuiType )
+fugio::ImageFormat KinectNode::nuiFormat( NUI_IMAGE_TYPE pNuiType )
 {
-	fugio::ImageInterface::Format		ImgFmt = fugio::ImageInterface::FORMAT_UNKNOWN;
+	fugio::ImageFormat		ImgFmt = fugio::ImageFormat::UNKNOWN;
 
 	switch( pNuiType )
 	{
 		case NUI_IMAGE_TYPE_DEPTH_AND_PLAYER_INDEX:		break;
-		case NUI_IMAGE_TYPE_COLOR:						ImgFmt = fugio::ImageInterface::FORMAT_BGRA8;	break;
+		case NUI_IMAGE_TYPE_COLOR:						ImgFmt = fugio::ImageFormat::BGRA8;	break;
 		case NUI_IMAGE_TYPE_COLOR_YUV:					break;
 		case NUI_IMAGE_TYPE_COLOR_RAW_YUV:				break;
-		case NUI_IMAGE_TYPE_DEPTH:						ImgFmt = fugio::ImageInterface::FORMAT_GRAY16;	break;
-		case NUI_IMAGE_TYPE_COLOR_INFRARED:				ImgFmt = fugio::ImageInterface::FORMAT_GRAY16;	break;
+		case NUI_IMAGE_TYPE_DEPTH:						ImgFmt = fugio::ImageFormat::GRAY16;	break;
+		case NUI_IMAGE_TYPE_COLOR_INFRARED:				ImgFmt = fugio::ImageFormat::GRAY16;	break;
 		case NUI_IMAGE_TYPE_COLOR_RAW_BAYER:			break;
 
 	}

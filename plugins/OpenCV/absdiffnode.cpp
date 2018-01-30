@@ -30,7 +30,7 @@ AbsDiffNode::AbsDiffNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputImage2->registerPinInputType( PID_IMAGE );
 
-	mOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
+	mOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 }
 
 void AbsDiffNode::inputsUpdated( qint64 pTimeStamp )
@@ -42,16 +42,16 @@ void AbsDiffNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	fugio::ImageInterface			*SrcImg1 = input<fugio::ImageInterface *>( mPinInputImage1 );
+	fugio::Image				SrcImg1 = variant( mPinInputImage1 ).value<fugio::Image>();
 
-	if( !SrcImg1 || !SrcImg1->isValid() )
+	if( !SrcImg1.isEmpty() )
 	{
 		return;
 	}
 
-	fugio::ImageInterface			*SrcImg2 = input<fugio::ImageInterface *>( mPinInputImage2 );
+	fugio::Image				SrcImg2 = variant( mPinInputImage2 ).value<fugio::Image>();
 
-	if( !SrcImg2 || !SrcImg2->isValid() )
+	if( !SrcImg2.isEmpty() )
 	{
 		return;
 	}
@@ -64,7 +64,7 @@ void AbsDiffNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		cv::absdiff( MatSrc1, MatSrc2, mMatImg );
 
-		OpenCVPlugin::mat2image( mMatImg, mOutputImage );
+		OpenCVPlugin::mat2image( mMatImg, mOutputImage->variant().value<fugio::Image>() );
 
 		pinUpdated( mPinOutputImage );
 	}

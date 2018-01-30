@@ -5,7 +5,7 @@
 
 #include <fugio/nodecontrolbase.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/core/variant_interface.h>
 
 class ImageNode : public fugio::NodeControlBase
@@ -35,7 +35,7 @@ private:
 	fugio::VariantInterface						*mValSize;
 
 	QSharedPointer<fugio::PinInterface>			 mPinImage;
-	fugio::ImageInterface						*mImage;
+	fugio::VariantInterface						*mImage;
 
 	QImage										 mImageData;
 };

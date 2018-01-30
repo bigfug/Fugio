@@ -3,7 +3,7 @@
 #include <fugio/core/uuid.h>
 #include <fugio/image/uuid.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/colour/colour_interface.h>
 
 #include <fugio/performance.h>
@@ -25,9 +25,9 @@ void ImageSizeNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	fugio::ImageInterface	*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image	SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg )
+	if( !SrcImg.isValid() )
 	{
 		mNode->setStatus( fugio::NodeInterface::Warning );
 
@@ -36,7 +36,7 @@ void ImageSizeNode::inputsUpdated( qint64 pTimeStamp )
 
 	mNode->setStatus( fugio::NodeInterface::Initialised );
 
-	mValOutputSize->setVariant( SrcImg->size() );
+	mValOutputSize->setVariant( SrcImg.size() );
 
 	pinUpdated( mPinOutputSize );
 }

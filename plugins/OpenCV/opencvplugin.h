@@ -7,7 +7,7 @@
 #include <fugio/global_interface.h>
 #include <fugio/plugin_interface.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #if defined( OPENCV_SUPPORTED )
 #include <opencv2/core/core.hpp>
@@ -36,9 +36,9 @@ public:
 	//-------------------------------------------------------------------------
 
 #if defined( OPENCV_SUPPORTED )
-	static cv::Mat image2mat( fugio::ImageInterface *pSrcImg );
+	static cv::Mat image2mat( const fugio::Image &pSrcImg );
 
-	static void mat2image( cv::Mat &pSrcMat, fugio::ImageInterface *pDstImg, fugio::ImageInterface::Format pDstFmt = fugio::ImageInterface::FORMAT_UNKNOWN );
+	static void mat2image( cv::Mat &pSrcMat, fugio::Image &pDstImg, fugio::ImageFormat pDstFmt = fugio::ImageFormat::UNKNOWN );
 #endif
 
 private:

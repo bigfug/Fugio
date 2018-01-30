@@ -3,7 +3,7 @@
 
 #include <fugio/nodecontrolbase.h>
 #include <fugio/core/variant_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #if defined( VIDEOCAPTURE_SUPPORTED )
 #include <videocapture/Capture.h>
@@ -58,7 +58,7 @@ protected:
 //	QSharedPointer<fugio::PinInterface>			 mPinInput;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface						*mValOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 
 	int											 mDeviceIndex;
 	int											 mFormatIndex;

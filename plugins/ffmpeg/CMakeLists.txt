@@ -110,9 +110,15 @@ endif()
 #—————————————————————————————————-
 # ffmpeg
 
-find_package( FFmpeg COMPONENTS AVCODEC AVFORMAT AVUTIL )
+find_package( FFmpeg COMPONENTS AVCODEC AVDEVICE AVFORMAT AVUTIL SWSCALE SWRESAMPLE )
 
-if( FFMPEG_FOUND )
+if( SNAPPY_FOUND AND FFMPEG_FOUND )
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${FFMPEG_INCLUDE_DIRS} )
+
+	target_link_libraries( ${PROJECT_NAME} ${FFMPEG_LIBRARIES} )
+
+	message( ${FFMPEG_LIBRARIES} )
+
 	if( WIN32 )
 		SET(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} /SAFESEH:NO")
 		SET(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} /SAFESEH:NO")
@@ -134,6 +140,10 @@ if( FFMPEG_FOUND )
 		endif()
 
 	endif( WIN32 )
+
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE FFMPEG_SUPPORTED )
+
+	message( "FFMPEG: YES" )
 else()
-	message( "FFmpeg is not configured" )
+	message( "FFMPEG: NO" )
 endif()

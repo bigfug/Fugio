@@ -5,7 +5,7 @@
 
 #include <fugio/nodecontrolbase.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #ifndef INT64_C
 #define INT64_C(c) (c ## LL)
@@ -65,10 +65,10 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputHeight;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::ImageInterface						*mValOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 
-	fugio::ImageInterface::Format				 mCurrImageFormat;
-	fugio::ImageInterface::Format				 mLastImageFormat;
+	fugio::ImageFormat							 mCurrImageFormat;
+	fugio::ImageFormat							 mLastImageFormat;
 	QSize										 mLastImageSize;
 
 #if defined( FFMPEG_SUPPORTED )
@@ -80,7 +80,7 @@ protected:
 	int											 mDstLen[ AV_NUM_DATA_POINTERS ];
 #endif
 
-	static QMap<fugio::ImageInterface::Format,QString>	 mImageFormatMap;
+	static QMap<fugio::ImageFormat,QString>	 mImageFormatMap;
 };
 
 #endif // IMAGECONVERTNODE_H
