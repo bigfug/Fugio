@@ -47,6 +47,7 @@
 #include "booltobitsnode.h"
 #include "joinpointnode.h"
 #include "joinrectnode.h"
+#include "splitrectnode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -111,6 +112,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Type Size", NID_TYPE_SIZE, &TypeSizeNode::staticMetaObject ),
 	ClassEntry( "Split List", NID_SPLIT_LIST, &SplitListNode::staticMetaObject ),
 	ClassEntry( "Split Point", NID_SPLIT_POINT, &SplitPointNode::staticMetaObject ),
+	ClassEntry( "Split Rect", NID_SPLIT_RECT, &SplitRectNode::staticMetaObject ),
 	ClassEntry( "Split Size", NID_SPLIT_SIZE, &SplitSizeNode::staticMetaObject ),
 	ClassEntry( "Switch", NID_SWITCH, &SwitchNode::staticMetaObject ),
 	ClassEntry()
@@ -173,6 +175,7 @@ PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp
 	//mApp->registerPinSplitter( PID_SIZE_3D, NID_SPLIT_SIZE );
 	mApp->registerPinSplitter( PID_LIST, NID_SPLIT_LIST );
 	mApp->registerPinSplitter( PID_POINT, NID_SPLIT_POINT );
+	mApp->registerPinSplitter( PID_RECT, NID_SPLIT_RECT );
 
 	mApp->registerPinJoiner( PID_SIZE, NID_JOIN_SIZE );
 	mApp->registerPinJoiner( PID_POINT, NID_JOIN_POINT );

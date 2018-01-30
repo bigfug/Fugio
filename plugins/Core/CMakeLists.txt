@@ -6,6 +6,12 @@ set( SOURCE_FILES
 	coreplugin.cpp
     ../../include/fugio/nodecontrolbase.h
     ../../include/fugio/pincontrolbase.h
+	../../include/fugio/core/uuid.h
+	../../include/fugio/core/variant_interface.h
+	../../include/fugio/core/array_interface.h
+	../../include/fugio/core/list_interface.h
+	../../include/fugio/core/struct_entry_interface.h
+	../../include/fugio/core/array_list_interface.h
 	stringpin.cpp
     integerpin.cpp
     floatpin.cpp
@@ -56,11 +62,6 @@ set( SOURCE_FILES
     makearraynode.cpp
     flipflopnode.cpp
     loggernode.cpp
-    ../../include/fugio/core/variant_interface.h
-    ../../include/fugio/core/array_interface.h
-    ../../include/fugio/core/list_interface.h
-    ../../include/fugio/core/struct_entry_interface.h
-    ../../include/fugio/core/array_list_interface.h
     arraylistentry.h
 	bitstoboolnode.cpp
 	bitstoboolnode.h
@@ -78,6 +79,8 @@ set( SOURCE_FILES
 	transformpin.h
 	polygonpin.cpp
 	polygonpin.h
+	splitrectnode.cpp
+	splitrectnode.h
 )
 
 set( QRC_FILES
