@@ -20,6 +20,8 @@
 #include "textnode.h"
 #include "switchnode.h"
 
+#include "fontpin.h"
+
 QList<QUuid>				fugio::NodeControlBase::PID_UUID;
 
 ClassEntry		mNodeClasses[] =
@@ -38,6 +40,7 @@ ClassEntry		mNodeClasses[] =
 
 ClassEntry		mPinClasses[] =
 {
+	ClassEntry( "Font", "Painter", PID_FONT, &FontPin::staticMetaObject ),
 	ClassEntry()
 };
 

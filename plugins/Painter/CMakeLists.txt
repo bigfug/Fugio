@@ -21,6 +21,8 @@ set( SOURCE_FILES
 	clearnode.h
 	drawimagenode.cpp
 	drawimagenode.h
+	fontpin.cpp
+	fontpin.h
 	rectnode.cpp
 	rectnode.h
 	switchnode.cpp

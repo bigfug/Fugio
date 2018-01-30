@@ -10,6 +10,7 @@
 #include <QUrl>
 #include <QMimeData>
 #include <QFileDialog>
+#include <QFontDialog>
 #include <QTextStream>
 #include <QStyleOptionGraphicsItem>
 #include <QColorDialog>
@@ -873,6 +874,25 @@ void PinItem::menuEditDefault()
 		if( NewColour.isValid() )
 		{
 			CmdSetDefaultValue		*Cmd = new CmdSetDefaultValue( mPin, NewColour );
+
+			if( Cmd )
+			{
+				mContextView->widget()->undoStack()->push( Cmd );
+			}
+		}
+
+		return;
+	}
+
+	if( QMetaType::Type( PinVal.type() ) == QMetaType::QFont )
+	{
+		bool			OK;
+		QFont			CurVal = mPin->value().value<QFont>();
+		QFont			NewVal = QFontDialog::getFont( &OK, CurVal, nullptr, tr( "Choose Font" ) );
+
+		if( OK )
+		{
+			CmdSetDefaultValue		*Cmd = new CmdSetDefaultValue( mPin, NewVal );
 
 			if( Cmd )
 			{

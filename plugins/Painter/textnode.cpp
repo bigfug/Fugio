@@ -39,7 +39,10 @@ TextNode::TextNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInputTransform = pinInput( "Transform", PIN_INPUT_TRANSFORM );
 
 	mPinInputPen->setValue( QColor( Qt::white ) );
+
 	mPinInputBrush->setValue( QColor( Qt::transparent ) );
+
+	mPinInputFont->setValue( QFont() );
 }
 
 void TextNode::inputsUpdated( qint64 pTimeStamp )
@@ -83,6 +86,8 @@ void TextNode::paint( QPainter &pPainter, const QRect &pRect )
 		painterSetBrush( pPainter, Brush, i );
 
 		pPainter.setTransform( Transform.index( i ).value<QTransform>() );
+
+		pPainter.setFont( Font.index( i ).value<QFont>() );
 
 		QVariant	p = Position.index( i );
 
