@@ -14,6 +14,8 @@
 #define NID_PAINTER_BRUSH		(QUuid("{71b77d15-ffdb-4c31-86a5-4a7b4de8f613}"))
 #define NID_PAINTER_TEXT		(QUuid("{AD36BBF0-0111-4AB5-929C-8C0258B68790}"))
 #define NID_PAINTER_SWITCH		(QUuid("{34C4CC2F-DFA0-436B-9CBB-DC9C5BB7C670}"))
+#define NID_FONT_METRICS		(QUuid("{a548b9f9-2433-42fd-a8f7-09702d41a8bc}"))
+#define NID_FONT				(QUuid("{5a0b1827-f313-488c-9685-7c403ec20406}"))
 
 #define PID_PEN					(QUuid("{576a9e13-0822-4e73-90c3-52ae3da519bd}"))
 #define PID_BRUSH				(QUuid("{2d17e2be-6c6a-47bd-979c-19e71aa06751}"))

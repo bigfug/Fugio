@@ -21,6 +21,8 @@ set( SOURCE_FILES
 	clearnode.h
 	drawimagenode.cpp
 	drawimagenode.h
+	fontnode.cpp
+	fontnode.h
 	fontpin.cpp
 	fontpin.h
 	rectnode.cpp
@@ -29,6 +31,8 @@ set( SOURCE_FILES
 	switchnode.h
 	textnode.cpp
 	textnode.h
+	fontmetricsnode.cpp
+	fontmetricsnode.h
 	)
 
 add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} )

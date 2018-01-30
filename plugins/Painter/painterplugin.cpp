@@ -19,6 +19,8 @@
 #include "brushnode.h"
 #include "textnode.h"
 #include "switchnode.h"
+#include "fontmetricsnode.h"
+#include "fontnode.h"
 
 #include "fontpin.h"
 
@@ -31,6 +33,8 @@ ClassEntry		mNodeClasses[] =
 	ClassEntry( "Draw Image", "Painter", NID_PAINTER_DRAW_IMAGE, &DrawImageNode::staticMetaObject ),
 	ClassEntry( "Draw Rect", "Painter", NID_PAINTER_RECT, &RectNode::staticMetaObject ),
 	ClassEntry( "Clear", "Painter", NID_PAINTER_CLEAR, &ClearNode::staticMetaObject ),
+	ClassEntry( "Font", "GUI", NID_FONT, &FontNode::staticMetaObject ),
+	ClassEntry( "Font Metrics", "Painter", NID_FONT_METRICS, &FontMetricsNode::staticMetaObject ),
 	ClassEntry( "Painter", "Painter", NID_PAINTER, &PainterNode::staticMetaObject ),
 	ClassEntry( "Pen", "Painter", NID_PAINTER_PEN, &PenNode::staticMetaObject ),
 	ClassEntry( "Switch", "Painter", NID_PAINTER_SWITCH, &SwitchNode::staticMetaObject ),
@@ -74,6 +78,7 @@ PluginInterface::InitResult PainterPlugin::initialise( fugio::GlobalInterface *p
 
 	mApp->registerPinForMetaType( PID_PEN, QMetaType::QPen );
 	mApp->registerPinForMetaType( PID_BRUSH, QMetaType::QBrush );
+	mApp->registerPinForMetaType( PID_FONT, QMetaType::QFont );
 
 	return( INIT_OK );
 }
