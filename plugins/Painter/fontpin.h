@@ -1,5 +1,5 @@
-#ifndef FONTNODE_H
-#define FONTNODE_H
+#ifndef FONTPIN_H
+#define FONTPIN_H
 
 #include <QFont>
 
@@ -43,4 +43,4 @@ public:
 	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE;
 };
 
-#endif // FONTNODE_H
+#endif // FONTPIN_H
