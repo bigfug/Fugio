@@ -94,6 +94,10 @@ PluginInterface::InitResult TimePlugin::initialise( fugio::GlobalInterface *pApp
 
 	mApp->registerPinSplitter( PID_DATETIME, NID_SPLIT_DATETIME );
 
+	mApp->registerPinForMetaType( PID_DATE, QMetaType::QDate );
+	mApp->registerPinForMetaType( PID_DATETIME, QMetaType::QDateTime );
+	mApp->registerPinForMetaType( PID_TIME, QMetaType::QTime );
+
 	return( INIT_OK );
 }
 
