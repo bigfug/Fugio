@@ -37,6 +37,9 @@ TextNode::TextNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInputBrush = pinInput( "Brush", PIN_INPUT_BRUSH );
 
 	mPinInputTransform = pinInput( "Transform", PIN_INPUT_TRANSFORM );
+
+	mPinInputPen->setValue( QColor( Qt::white ) );
+	mPinInputBrush->setValue( QColor( Qt::transparent ) );
 }
 
 void TextNode::inputsUpdated( qint64 pTimeStamp )
