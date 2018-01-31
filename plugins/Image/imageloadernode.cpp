@@ -94,7 +94,7 @@ void ImageLoaderNode::inputsUpdated( qint64 pTimeStamp )
 
 	mImageData = IMG;
 
-	fugio::Image		NewImg;
+	fugio::Image		NewImg = mImage->variant().value<fugio::Image>();
 
 	NewImg.setSize( mImageData.width(), mImageData.height() );
 
@@ -110,12 +110,6 @@ void ImageLoaderNode::inputsUpdated( qint64 pTimeStamp )
 	}
 
 	memcpy( NewImg.internalBuffer( 0 ), mImageData.constBits(), mImageData.byteCount() );
-
-	QVariant		V;
-
-	V.setValue( NewImg );
-
-	mImage->setVariant( V );
 
 	pinUpdated( mPinImage );
 
