@@ -109,15 +109,11 @@ void TextNode::paint( QPainter &pPainter, const QRect &pRect )
 		}
 		else if( QMetaType::Type( p.type() ) == QMetaType::QSize )
 		{
-			QSize	S = p.toSize();
-
-			pPainter.drawText( S.width(), S.height(), t );
+			pPainter.drawText( QRect( QPoint(), p.toSize() ), t );
 		}
 		else if( QMetaType::Type( p.type() ) == QMetaType::QSizeF )
 		{
-			QSizeF	S = p.toSizeF();
-
-			pPainter.drawText( S.width(), S.height(), t );
+			pPainter.drawText( QRectF( QPointF(), p.toSizeF() ), Qt::AlignHCenter | Qt::AlignCenter, t );
 		}
 	}
 }
