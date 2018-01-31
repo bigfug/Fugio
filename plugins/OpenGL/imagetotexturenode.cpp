@@ -222,7 +222,7 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::Image		I = variant( mPinInputImage ).value<fugio::Image>();
 
-	if( I.isEmpty() )
+	if( !I.isValid() )
 	{
 		if( QVector3D() != mOutputTextureSize->variant().value<QVector3D>() )
 		{
