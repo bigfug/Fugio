@@ -3,6 +3,7 @@
 
 #include <QUuid>
 
-#define NID_POLYGON			(QUuid("{76CACF62-FEA6-4287-9C38-785A8A169DEC}"))
+#define NID_POLYGON				(QUuid("{76CACF62-FEA6-4287-9C38-785A8A169DEC}"))
+#define NID_TRIANGLE_STRIP		(QUuid("{b9affb00-34cf-4a6f-91fa-eb29a6a28086}"))
 
 #endif // GEOMETRY_GLOBAL_H
