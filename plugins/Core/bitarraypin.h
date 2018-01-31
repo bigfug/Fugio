@@ -36,7 +36,14 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString() ); //QString( "%1 bits" ).arg( mValue.size() ) );
+		QStringList		L;
+
+		for( const QBitArray &V : mValues )
+		{
+			L << QString( "%1 bits" ).arg( V.size() );
+		}
+
+		return( L.join( ',' ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
