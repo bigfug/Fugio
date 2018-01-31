@@ -88,9 +88,9 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 	Performance( mNode, "inputsUpdated", pTimeStamp );
 
 #if defined( FFMPEG_SUPPORTED )
-	fugio::Image		SrcImg = mValOutputImage->variant().value<fugio::Image>();
+	const fugio::Image		SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg.isEmpty() )
+	if( !SrcImg.isValid() )
 	{
 		if( mScaleContext )
 		{
@@ -293,10 +293,12 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
 	if( mScaleContext && (
 				SrcFmt != mSrcPixFmt ||
-				NewSze != SrcImg.size() ||
-				mCurrImageFormat != SrcImg.format() ) )
+				NewSze != DstImg.size() ||
+				mCurrImageFormat != DstImg.format() ) )
 	{
 		sws_freeContext( mScaleContext );
 
@@ -325,10 +327,10 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			return;
 		}
 
-		SrcImg.setFormat( mCurrImageFormat );
-		SrcImg.setSize( NewSze.width(), NewSze.height() );
-		SrcImg.setLineSizes( mDstLen );
-		SrcImg.setBuffers( mDstDat );
+		DstImg.setFormat( mCurrImageFormat );
+		DstImg.setSize( NewSze.width(), NewSze.height() );
+		DstImg.setLineSizes( mDstLen );
+		DstImg.setBuffers( mDstDat );
 
 		if( ( mScaleContext = sws_getContext( SrcImg.width(), SrcImg.height(), SrcFmt, NewSze.width(), NewSze.height(), DstFmt, 0, NULL, NULL, NULL ) ) == 0 )
 		{
