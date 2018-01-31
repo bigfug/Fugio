@@ -32,7 +32,14 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString( "%1,%2" ).arg( mValues.first().x() ).arg( mValues.first().y() ) );
+		QStringList		L;
+
+		for( const QPointF &V : mValues )
+		{
+			L << QString( "(%1,%2)" ).arg( V.x() ).arg( V.y() );
+		}
+
+		return( L.join( ',' ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
