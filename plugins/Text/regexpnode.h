@@ -38,8 +38,11 @@ private:
 
 	QSharedPointer<fugio::PinInterface>			 mPinRegExp;
 
-	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::VariantInterface						*mValOutput;
+	QSharedPointer<fugio::PinInterface>			 mPinOutputMatches;
+	fugio::VariantInterface						*mValOutputMatches;
+
+	QSharedPointer<fugio::PinInterface>			 mPinOutputExactMatch;
+	fugio::VariantInterface						*mValOutputExactMatch;
 };
 
 #endif // REGEXPNODE_H

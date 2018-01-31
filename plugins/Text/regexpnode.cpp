@@ -12,12 +12,17 @@ RegExpNode::RegExpNode( QSharedPointer<fugio::NodeInterface> pNode ) :
 	FUGID( PIN_INPUT_TEXT,		"AF7205D3-204D-4070-AAD0-3EF106935733" );
 	FUGID( PIN_INPUT_REGEXP,	"eb2445ea-b47d-4a0d-b4fc-ab1fd0229dda" );
 	FUGID( PIN_OUTPUT_TEXT,		"ABDF2527-5590-4FDC-AEC7-E7F93E7E7E89" );
+	FUGID( PIN_OUTPUT_EXACT,	"a2bbf374-0dc8-42cb-b85a-6a43b58a348f" );
 
 	mPinInput = pinInput( "Input", PIN_INPUT_TEXT);
 
 	mPinRegExp = pinInput( "RegExp", PIN_INPUT_REGEXP );
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_STRING_LIST, PIN_OUTPUT_TEXT );
+	mValOutputMatches = pinOutput<fugio::VariantInterface *>( "Matches", mPinOutputMatches, PID_STRING, PIN_OUTPUT_TEXT );
+
+	mValOutputMatches->setVariantCount( 0 );
+
+	mValOutputExactMatch = pinOutput<fugio::VariantInterface *>( "Exact Match", mPinOutputExactMatch, PID_BOOL, PIN_OUTPUT_EXACT );
 }
 
 void RegExpNode::inputsUpdated( qint64 pTimeStamp )
@@ -72,15 +77,28 @@ void RegExpNode::inputsUpdated( qint64 pTimeStamp )
 				RegPos += MatLen;
 			}
 
-			mValOutput->setVariant( TxtOut );
+			if( mValOutputMatches->variantCount() != TxtOut.size() )
+			{
+				mValOutputMatches->setVariantCount( TxtOut.size() );
 
-			pinUpdated( mPinOutput );
+				for( int i = 0 ; i < TxtOut.size() ; i++ )
+				{
+					mValOutputMatches->setVariant( i, TxtOut.at( i ) );
+				}
+
+				pinUpdated( mPinOutputMatches );
+			}
 		}
 		else
 		{
-			mValOutput->setVariant( RegExp.exactMatch( RegTxt ) );
+			bool	ExactMatch = RegExp.exactMatch( RegTxt );
 
-			pinUpdated( mPinOutput );
+			if( mValOutputExactMatch->variant().toBool() != ExactMatch )
+			{
+				mValOutputExactMatch->setVariant( ExactMatch );
+
+				pinUpdated( mPinOutputExactMatch );
+			}
 		}
 	}
 }
