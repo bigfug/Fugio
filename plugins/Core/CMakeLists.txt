@@ -35,7 +35,7 @@ set( SOURCE_FILES
     size3dpin.cpp
     coreplugin.cpp
     splitlistnode.cpp
-    listpin.cpp
+#    listpin.cpp
     indexnode.cpp
     booltotriggernode.cpp
     signalnumbernode.cpp

@@ -3,6 +3,8 @@
 #include <QRect>
 #include <QRectF>
 
+#include <fugio/core/array_interface.h>
+
 #include "luaplugin.h"
 
 #if defined( LUA_SUPPORTED )
@@ -18,7 +20,7 @@ const luaL_Reg LuaArray::mLuaInstance[] =
 	{ "__newindex", LuaArray::luaSet },
 	{ "__len",		LuaArray::luaLen },
 	{ "array",		LuaArray::luaToArray },
-	{ "resize",		LuaArray::luaResize },
+	{ "resize",		LuaArray::luaSetCount },
 	{ "reserve",	LuaArray::luaReserve },
 	{ "set",		LuaArray::luaSetTable },
 	{ "setCount",	LuaArray::luaSetCount },
@@ -60,31 +62,17 @@ int LuaArray::luaGet( lua_State *L )
 
 	int							 LstIdx = luaL_checkinteger( L, 2 );
 
-//	fugio::ArrayListInterface	*ArrInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+	fugio::VariantInterface		*VarInt = qobject_cast<fugio::VariantInterface *>( LstDat->mObject );
 
-//	if( ArrInt )
-//	{
-//		if( LstIdx < 1 || LstIdx > ArrInt->count() )
-//		{
-//			return( luaL_error( L, "List index out of bounds (asked for %d, size is %d)", LstIdx, ArrInt->count() ) );
-//		}
+	if( VarInt )
+	{
+		if( LstIdx < 1 || LstIdx > VarInt->variantCount() )
+		{
+			return( luaL_error( L, "List index out of bounds (asked for %d, size is %d)", LstIdx, VarInt->variantCount() ) );
+		}
 
-//		return( pusharray( L, dynamic_cast<QObject *>( ArrInt->arrayIndex( LstIdx - 1 ) ), LstDat->mReadOnly ) );
-//	}
-
-//	fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( LstDat->mObject );
-
-//	if( !LstInt )
-//	{
-//		return( luaL_error( L, "No list" ) );
-//	}
-
-//	if( LstIdx < 1 || LstIdx > LstInt->listSize() )
-//	{
-//		return( luaL_error( L, "List index out of bounds (asked for %d, size is %d)", LstIdx, LstInt->listSize() ) );
-//	}
-
-//	return( LuaPlugin::pushVariant( L, LstInt->listIndex( LstIdx - 1 ) ) );
+		return( LuaPlugin::pushVariant( L, VarInt->variant( LstIdx - 1 ) ) );
+	}
 
 	return( 0 );
 }
@@ -305,32 +293,14 @@ int LuaArray::luaLen( lua_State *L )
 {
 	LuaArrayUserData			*LstDat = checkarray( L );
 
-//	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+	fugio::VariantInterface		*VarInt = qobject_cast<fugio::VariantInterface *>( LstDat->mObject );
 
-//	if( ArLInt )
-//	{
-//		lua_pushinteger( L, ArLInt->count() );
+	if( VarInt )
+	{
+		lua_pushinteger( L, VarInt->variantCount() );
 
-//		return( 1 );
-//	}
-
-//	fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( LstDat->mObject );
-
-//	if( LstInt )
-//	{
-//		lua_pushinteger( L, LstInt->listSize() );
-
-//		return( 1 );
-//	}
-
-//	fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
-
-//	if( ArrInt )
-//	{
-//		lua_pushinteger( L, ArrInt->count() );
-
-//		return( 1 );
-//	}
+		return( 1 );
+	}
 
 	return( 0 );
 }
@@ -566,22 +536,22 @@ int LuaArray::luaResize( lua_State *L )
 //		return( luaL_error( L, "Invalid list size: %d", LstSiz ) );
 //	}
 
-//	fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
+	fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
 
-//	if( ArrInt )
-//	{
-//		if( ArrInt->type() == QMetaType::UnknownType )
-//		{
-//			return( luaL_error( L, "Array has unknown type" ) );
-//		}
+	if( ArrInt )
+	{
+		if( ArrInt->type() == QMetaType::UnknownType )
+		{
+			return( luaL_error( L, "Array has unknown type" ) );
+		}
 
-//		if( ArrInt->count() != LstSiz )
-//		{
-//			ArrInt->setCount( LstSiz );
-//		}
+		if( ArrInt->count() != LstSiz )
+		{
+			ArrInt->setCount( LstSiz );
+		}
 
-//		return( 0 );
-//	}
+		return( 0 );
+	}
 
 //	fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( LstDat->mObject );
 
@@ -600,67 +570,71 @@ int LuaArray::luaReserve( lua_State *L )
 	LuaArrayUserData			*LstDat = checkarray( L );
 	int							 LstSiz = luaL_checkinteger( L, 2 );
 
-//	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+	if( LstSiz < 0 )
+	{
+		return( luaL_error( L, "Invalid list size: %d", LstSiz ) );
+	}
 
-//	if( ArLInt )
-//	{
-//		return( luaL_error( L, "Can't reserve array list (yet)" ) );
-//	}
+	fugio::ArrayInterface		*LstInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
 
-//	fugio::ArrayInterface		*LstInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
+	if( LstInt )
+	{
+		if( LstDat->mReadOnly )
+		{
+			return( luaL_error( L, "Can't reserve input list" ) );
+		}
 
-//	if( !LstInt )
-//	{
-//		return( luaL_error( L, "No list" ) );
-//	}
+		if( LstInt->type() == QMetaType::UnknownType )
+		{
+			return( luaL_error( L, "Array has unknown type" ) );
+		}
 
-//	if( LstDat->mReadOnly )
-//	{
-//		return( luaL_error( L, "Can't reserve input list" ) );
-//	}
+		LstInt->reserve( LstSiz );
 
-//	if( LstSiz < 0 )
-//	{
-//		return( luaL_error( L, "Invalid list size: %d", LstSiz ) );
-//	}
+		return( 0 );
+	}
 
-//	if( LstInt->type() == QMetaType::UnknownType )
-//	{
-//		return( luaL_error( L, "Array has unknown type" ) );
-//	}
+	fugio::VariantInterface		*VarInt = qobject_cast<fugio::VariantInterface *>( LstDat->mObject );
 
-//	LstInt->reserve( LstSiz );
+	if( VarInt )
+	{
+		VarInt->variantReserve( LstSiz );
 
-	return( 0 );
+		return( 0 );
+	}
+
+	return( luaL_error( L, "No list" ) );
 }
 
 int LuaArray::luaSetCount( lua_State *L )
 {
-	LuaArrayUserData		*LstDat = checkarray( L );
-	const int				 LstCnt = lua_tointeger( L, 2 );
+	LuaArrayUserData			*LstDat = checkarray( L );
+	const int					 LstCnt = lua_tointeger( L, 2 );
 
-//	fugio::ArrayListInterface	*ArLInt = qobject_cast<fugio::ArrayListInterface *>( LstDat->mObject );
+	fugio::ArrayInterface		*LstInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
 
-//	if( ArLInt )
-//	{
-//		return( luaL_error( L, "Can't setType on array list" ) );
-//	}
+	if( LstInt )
+	{
+		if( LstDat->mReadOnly )
+		{
+			return( luaL_error( L, "Can't set type on input array" ) );
+		}
 
-//	fugio::ArrayInterface		*LstInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
+		LstInt->setCount( LstCnt );
 
-//	if( !LstInt )
-//	{
-//		return( luaL_error( L, "No array" ) );
-//	}
+		return( 0 );
+	}
 
-//	if( LstDat->mReadOnly )
-//	{
-//		return( luaL_error( L, "Can't set type on input array" ) );
-//	}
+	fugio::VariantInterface		*VarInt = qobject_cast<fugio::VariantInterface *>( LstDat->mObject );
 
-//	LstInt->setCount( LstCnt );
+	if( VarInt )
+	{
+		VarInt->setVariantCount( LstCnt );
 
-	return( 0 );
+		return( 0 );
+	}
+
+	return( luaL_error( L, "Invalid array" ) );
 }
 
 int LuaArray::luaSetType( lua_State *L )
@@ -675,81 +649,81 @@ int LuaArray::luaSetType( lua_State *L )
 
 	fugio::VariantInterface		*ArrInt = qobject_cast<fugio::VariantInterface *>( LstDat->mObject );
 
-//	if( ArrInt )
-//	{
-//		if( strcmp( LstTyp, "float" ) == 0 )
-//		{
-//			ArrInt->setType( QMetaType::Float );
-//			ArrInt->setStride( sizeof( float ) );
-//			ArrInt->setSize( 1 );
-//		}
-//		else if( strcmp( LstTyp, "int" ) == 0 )
-//		{
-//			ArrInt->setType( QMetaType::Int );
-//			ArrInt->setStride( sizeof( int ) );
-//			ArrInt->setSize( 1 );
-//		}
-//		else if( strcmp( LstTyp, "point" ) == 0 )
-//		{
-//			ArrInt->setType( QMetaType::QPointF );
-//			ArrInt->setStride( sizeof( float ) * 2 );
-//			ArrInt->setSize( 1 );
-//		}
-//		else if( strcmp( LstTyp, "vec2" ) == 0 )
-//		{
-//			ArrInt->setType( QMetaType::QVector2D );
-//			ArrInt->setStride( sizeof( float ) * 2 );
-//			ArrInt->setSize( 1 );
-//		}
-//		else if( strcmp( LstTyp, "vec3" ) == 0 )
-//		{
-//			ArrInt->setType( QMetaType::QVector3D );
-//			ArrInt->setStride( sizeof( float ) * 3 );
-//			ArrInt->setSize( 1 );
-//		}
-//		else if( strcmp( LstTyp, "vec4" ) == 0 )
-//		{
-//			ArrInt->setType( QMetaType::QVector4D );
-//			ArrInt->setStride( sizeof( float ) * 4 );
-//			ArrInt->setSize( 1 );
-//		}
-//		else if( strcmp( LstTyp, "mat4" ) == 0 )
-//		{
-//			ArrInt->setType( QMetaType::QMatrix4x4 );
-//			ArrInt->setStride( sizeof( float ) * 4 * 4 );
-//			ArrInt->setSize( 1 );
-//		}
-//		else if( strcmp( LstTyp, "rect" ) == 0 )
-//		{
-//			ArrInt->setType( QMetaType::QRect );
-//			ArrInt->setStride( sizeof( QRect ) );
-//			ArrInt->setSize( 1 );
-//		}
-//		else if( strcmp( LstTyp, "rectf" ) == 0 )
-//		{
-//			ArrInt->setType( QMetaType::QRectF );
-//			ArrInt->setStride( sizeof( QRectF ) );
-//			ArrInt->setSize( 1 );
-//		}
-//		else if( strcmp( LstTyp, "line" ) == 0 )
-//		{
-//			ArrInt->setType( QMetaType::QLine );
-//			ArrInt->setStride( sizeof( QLine ) );
-//			ArrInt->setSize( 1 );
-//		}
-//		else if( strcmp( LstTyp, "linef" ) == 0 )
-//		{
-//			ArrInt->setType( QMetaType::QLineF );
-//			ArrInt->setStride( sizeof( QLineF ) );
-//			ArrInt->setSize( 1 );
-//		}
-//		else
-//		{
-//			return( luaL_error( L, "Unknown list type: %s", LstTyp ) );
-//		}
+	if( ArrInt )
+	{
+		if( strcmp( LstTyp, "float" ) == 0 )
+		{
+			ArrInt->setVariantType( QMetaType::Float );
+			ArrInt->variantSetStride( sizeof( float ) );
+			ArrInt->setVariantCount( 1 );
+		}
+		else if( strcmp( LstTyp, "int" ) == 0 )
+		{
+			ArrInt->setVariantType( QMetaType::Int );
+			ArrInt->variantSetStride( sizeof( int ) );
+			ArrInt->setVariantCount( 1 );
+		}
+		else if( strcmp( LstTyp, "point" ) == 0 )
+		{
+			ArrInt->setVariantType( QMetaType::QPointF );
+			ArrInt->variantSetStride( sizeof( float ) * 2 );
+			ArrInt->setVariantCount( 1 );
+		}
+		else if( strcmp( LstTyp, "vec2" ) == 0 )
+		{
+			ArrInt->setVariantType( QMetaType::QVector2D );
+			ArrInt->variantSetStride( sizeof( float ) * 2 );
+			ArrInt->setVariantCount( 1 );
+		}
+		else if( strcmp( LstTyp, "vec3" ) == 0 )
+		{
+			ArrInt->setVariantType( QMetaType::QVector3D );
+			ArrInt->variantSetStride( sizeof( float ) * 3 );
+			ArrInt->setVariantCount( 1 );
+		}
+		else if( strcmp( LstTyp, "vec4" ) == 0 )
+		{
+			ArrInt->setVariantType( QMetaType::QVector4D );
+			ArrInt->variantSetStride( sizeof( float ) * 4 );
+			ArrInt->setVariantCount( 1 );
+		}
+		else if( strcmp( LstTyp, "mat4" ) == 0 )
+		{
+			ArrInt->setVariantType( QMetaType::QMatrix4x4 );
+			ArrInt->variantSetStride( sizeof( float ) * 4 * 4 );
+			ArrInt->setVariantCount( 1 );
+		}
+		else if( strcmp( LstTyp, "rect" ) == 0 )
+		{
+			ArrInt->setVariantType( QMetaType::QRect );
+			ArrInt->variantSetStride( sizeof( QRect ) );
+			ArrInt->setVariantCount( 1 );
+		}
+		else if( strcmp( LstTyp, "rectf" ) == 0 )
+		{
+			ArrInt->setVariantType( QMetaType::QRectF );
+			ArrInt->variantSetStride( sizeof( QRectF ) );
+			ArrInt->setVariantCount( 1 );
+		}
+		else if( strcmp( LstTyp, "line" ) == 0 )
+		{
+			ArrInt->setVariantType( QMetaType::QLine );
+			ArrInt->variantSetStride( sizeof( QLine ) );
+			ArrInt->setVariantCount( 1 );
+		}
+		else if( strcmp( LstTyp, "linef" ) == 0 )
+		{
+			ArrInt->setVariantType( QMetaType::QLineF );
+			ArrInt->variantSetStride( sizeof( QLineF ) );
+			ArrInt->setVariantCount( 1 );
+		}
+		else
+		{
+			return( luaL_error( L, "Unknown list type: %s", LstTyp ) );
+		}
 
-//		return( 0 );
-//	}
+		return( 0 );
+	}
 
 	return( 0 );
 }

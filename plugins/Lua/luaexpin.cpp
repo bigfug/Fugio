@@ -7,8 +7,7 @@
 #include <fugio/global_signals.h>
 #include <fugio/node_interface.h>
 #include <fugio/node_signals.h>
-//#include <fugio/core/list_interface.h>
-//#include <fugio/core/array_list_interface.h>
+#include <fugio/core/array_interface.h>
 
 #include "luaplugin.h"
 #include "luaarray.h"
@@ -417,14 +416,14 @@ int LuaExPin::luaPinGetValue( lua_State *L )
 //			return( 1 );
 //		}
 
-//		fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( CtlObj );
+		fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( CtlObj );
 
-//		if( ArrInt )
-//		{
-//			LuaArray::pusharray( L, CtlObj, P->direction() == PIN_INPUT );
+		if( ArrInt )
+		{
+			LuaArray::pusharray( L, CtlObj, P->direction() == PIN_INPUT );
 
-//			return( 1 );
-//		}
+			return( 1 );
+		}
 
 //		fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( CtlObj );
 

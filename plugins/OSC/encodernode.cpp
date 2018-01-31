@@ -27,7 +27,7 @@ EncoderNode::EncoderNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	pinInput( "osc", InpPin2, PID_OSC_JOIN, PIN_INPUT_DATA );
 
-	mValOutputData = pinOutput<fugio::VariantInterface *>( "Data", mPinOutputData, PID_BYTEARRAY_LIST, PIN_OUTPUT_DATA );
+	mValOutputData = pinOutput<fugio::VariantInterface *>( "Data", mPinOutputData, PID_BYTEARRAY, PIN_OUTPUT_DATA );
 }
 
 bool EncoderNode::initialise()
@@ -221,7 +221,7 @@ void EncoderNode::contextFrameFinalise( qint64 pTimeStamp )
 
 	fugio::Performance( mNode, "frameFinalise", pTimeStamp );
 
-	QVariantList	VarLst;
+	mValOutputData->variantClear();
 
 	for( QHash<QString,QVariant>::const_iterator it = mDataOutput.begin() ; it != mDataOutput.end() ; it++ )
 	{
@@ -239,10 +239,8 @@ void EncoderNode::contextFrameFinalise( qint64 pTimeStamp )
 			continue;
 		}
 
-		VarLst << Message;
+		mValOutputData->variantAppend( Message );
 	}
-
-	mValOutputData->setVariant( VarLst );
 
 	pinUpdated( mPinOutputData );
 

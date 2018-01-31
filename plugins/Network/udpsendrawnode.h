@@ -27,8 +27,6 @@ public:
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
 protected slots:
-	void sendData( qint64 pTimeStamp );
-
 	void hostLookup( QHostInfo pHostInfo );
 
 protected:

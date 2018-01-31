@@ -311,7 +311,7 @@ QList<QUuid> PortMidiOutputNode::pinAddTypesInput() const
 	if( PinLst.isEmpty() )
 	{
 		PinLst << PID_MIDI_OUTPUT;
-		PinLst << PID_BYTEARRAY_LIST;
+		PinLst << PID_BYTEARRAY;
 	}
 
 	return( PinLst );
