@@ -34,7 +34,7 @@ public:
 
 	// PairedPinsHelperInterface interface
 public:
-	virtual QUuid pairedPinControlUuid(QSharedPointer<fugio::PinInterface> pPin) const Q_DECL_OVERRIDE;
+	virtual QUuid pairedPinControlUuid( QSharedPointer<fugio::PinInterface> pPin ) const Q_DECL_OVERRIDE;
 };
 
 #endif // GETSIZENODE_H

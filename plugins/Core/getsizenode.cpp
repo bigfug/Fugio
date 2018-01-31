@@ -2,6 +2,7 @@
 
 #include <fugio/core/uuid.h>
 #include <fugio/core/size_interface.h>
+#include <fugio/pin_variant_iterator.h>
 
 GetSizeNode::GetSizeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -37,69 +38,92 @@ void GetSizeNode::inputsUpdated( qint64 pTimeStamp )
 
 		fugio::SizeInterface	*SzeInt = input<fugio::SizeInterface *>( PinI );
 
-		if( !SzeInt )
+		if( SzeInt )
 		{
-			continue;
+			QVariant	Size;
+
+			switch( SzeInt->sizeDimensions() )
+			{
+				case 1:
+					Size = SzeInt->sizeWidth();
+
+					if( PinO->controlUuid() != PID_FLOAT )
+					{
+						QSharedPointer<fugio::PinControlInterface> PCI = mNode->context()->createPinControl( PID_FLOAT, PinO );
+
+						if( PCI )
+						{
+							PinO->setControl( PCI );
+
+							VarO = qobject_cast<fugio::VariantInterface *>( PCI->qobject() );
+						}
+					}
+					break;
+
+				case 2:
+					Size = SzeInt->toSizeF();
+
+					if( PinO->controlUuid() != PID_SIZE )
+					{
+						QSharedPointer<fugio::PinControlInterface> PCI = mNode->context()->createPinControl( PID_SIZE, PinO );
+
+						if( PCI )
+						{
+							PinO->setControl( PCI );
+
+							VarO = qobject_cast<fugio::VariantInterface *>( PCI->qobject() );
+						}
+					}
+					break;
+
+				case 3:
+					Size = SzeInt->toVector3D();
+
+					if( PinO->controlUuid() != PID_SIZE_3D )
+					{
+						QSharedPointer<fugio::PinControlInterface> PCI = mNode->context()->createPinControl( PID_SIZE_3D, PinO );
+
+						if( PCI )
+						{
+							PinO->setControl( PCI );
+
+							VarO = qobject_cast<fugio::VariantInterface *>( PCI->qobject() );
+						}
+					}
+					break;
+			}
+
+			if( VarO->variant() != Size )
+			{
+				VarO->setVariant( Size );
+
+				pinUpdated( PinO );
+			}
 		}
-
-		QVariant	Size;
-
-		switch( SzeInt->sizeDimensions() )
+		else
 		{
-			case 1:
-				Size = SzeInt->sizeWidth();
+			if( PinO->controlUuid() != PID_INTEGER )
+			{
+				QSharedPointer<fugio::PinControlInterface> PCI = mNode->context()->createPinControl( PID_INTEGER, PinO );
 
-				if( PinO->controlUuid() != PID_FLOAT )
+				if( PCI )
 				{
-					QSharedPointer<fugio::PinControlInterface> PCI = mNode->context()->createPinControl( PID_FLOAT, PinO );
+					PinO->setControl( PCI );
 
-					if( PCI )
-					{
-						PinO->setControl( PCI );
-
-						VarO = qobject_cast<fugio::VariantInterface *>( PCI->qobject() );
-					}
+					VarO = qobject_cast<fugio::VariantInterface *>( PCI->qobject() );
 				}
-				break;
+			}
 
-			case 2:
-				Size = SzeInt->toSizeF();
+			fugio::PinVariantIterator	PinItr( PinI );
 
-				if( PinO->controlUuid() != PID_SIZE )
-				{
-					QSharedPointer<fugio::PinControlInterface> PCI = mNode->context()->createPinControl( PID_SIZE, PinO );
+			VarO->setVariantCount( 1 );
 
-					if( PCI )
-					{
-						PinO->setControl( PCI );
+			if( VarO->variant().toInt() != PinItr.size() )
+			{
+				VarO->setVariant( PinItr.size() );
 
-						VarO = qobject_cast<fugio::VariantInterface *>( PCI->qobject() );
-					}
-				}
-				break;
-
-			case 3:
-				Size = SzeInt->toVector3D();
-
-				if( PinO->controlUuid() != PID_SIZE_3D )
-				{
-					QSharedPointer<fugio::PinControlInterface> PCI = mNode->context()->createPinControl( PID_SIZE_3D, PinO );
-
-					if( PCI )
-					{
-						PinO->setControl( PCI );
-
-						VarO = qobject_cast<fugio::VariantInterface *>( PCI->qobject() );
-					}
-				}
-				break;
-		}
-
-		if( VarO->variant() != Size )
-		{
-			VarO->setVariant( Size );
-
-			pinUpdated( PinO );
+				pinUpdated( PinO );
+			}
 		}
 	}
 }
