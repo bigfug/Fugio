@@ -19,7 +19,7 @@ LineBufferNode::LineBufferNode( QSharedPointer<fugio::NodeInterface> pNode ) :
 
 	mPinInputReset = pinInput( "Reset", PIN_INPUT_RESET );
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "Strings", mPinOutput, PID_STRING_LIST, PIN_OUTPUT_TEXT );
+	mValOutput = pinOutput<fugio::VariantInterface *>( "Strings", mPinOutput, PID_STRING, PIN_OUTPUT_TEXT );
 }
 
 void LineBufferNode::inputsUpdated( qint64 pTimeStamp )
@@ -71,11 +71,16 @@ void LineBufferNode::inputsUpdated( qint64 pTimeStamp )
 			StrLst = Input.split( Split, QString::SkipEmptyParts );
 		}
 
-		mValOutput->setVariant( StrLst );
-
-		if( !StrLst.isEmpty() )
+		if( mValOutput->variantCount() != StrLst.size() )
 		{
-			pinUpdated( mPinOutput );
+			mValOutput->setVariantCount( StrLst.size() );
 		}
+
+		for( int i = 0 ; i < StrLst.size() ; i++ )
+		{
+			mValOutput->setVariant( i, StrLst.at( i ) );
+		}
+
+		pinUpdated( mPinOutput );
 	}
 }
