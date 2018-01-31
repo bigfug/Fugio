@@ -81,6 +81,9 @@ void DateTimeToStringNode::inputsUpdated( qint64 pTimeStamp )
 				}
 			}
 			break;
+
+		default:
+			break;
 	}
 
 	if( mValOutputString->variant().toString() != Output )

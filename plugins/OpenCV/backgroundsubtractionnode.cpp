@@ -23,7 +23,7 @@ BackgroundSubtractionNode::BackgroundSubtractionNode( QSharedPointer<fugio::Node
 
 	mPinInputReset = pinInput( "Reset", PIN_INPUT_RESET );
 
-	if( ( mOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE ) ) == 0 )
+	if( ( mValOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE ) ) == 0 )
 	{
 		return;
 	}
@@ -86,7 +86,9 @@ void BackgroundSubtractionNode::process( void )
 	mBckSub->operator()( MatSrc, mMatDst, mLearningRate );
 #endif
 
-	OpenCVPlugin::mat2image( mMatDst, mOutputImage->variant().value<fugio::Image>() );
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( mMatDst, DstImg );
 
 	pinUpdated( mPinOutputImage );
 #endif

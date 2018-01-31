@@ -80,7 +80,9 @@ void EqualizeHistNode::conversion( EqualizeHistNode *pNode )
 
 	}
 
-	OpenCVPlugin::mat2image( pNode->mMatImg, pNode->mValOutputImage->variant().value<fugio::Image>() );
+	fugio::Image	DstImg = pNode->mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( pNode->mMatImg, DstImg );
 
 	pNode->pinUpdated( pNode->mPinOutputImage );
 #endif

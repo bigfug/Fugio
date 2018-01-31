@@ -31,7 +31,7 @@ InPaintNode::InPaintNode( QSharedPointer<fugio::NodeInterface> pNode )
 		return;
 	}
 
-	if( ( mOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE ) ) == 0 )
+	if( ( mValOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE ) ) == 0 )
 	{
 		return;
 	}
@@ -76,7 +76,9 @@ void InPaintNode::inputsUpdated( qint64 pTimeStamp )
 
 	cv::inpaint( MatTmp, MatMsk, mMatImg, mPinInputRadius->value().toDouble(), cv::INPAINT_NS );
 
-	OpenCVPlugin::mat2image( mMatImg, mOutputImage->variant().value<fugio::Image>(), fugio::ImageFormat::RGB8 );
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( mMatImg, DstImg );
 #endif
 
 	pinUpdated( mPinOutputImage );

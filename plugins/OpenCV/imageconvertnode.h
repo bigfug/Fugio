@@ -41,7 +41,7 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputThreshold;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::VariantInterface						*mOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 
 	fugio::ImageFormat				 mDestinationFormat;
 

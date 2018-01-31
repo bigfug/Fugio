@@ -23,7 +23,7 @@ ImageConvertNode::ImageConvertNode( QSharedPointer<fugio::NodeInterface> pNode )
 {
 	mPinInputImage = pinInput( "Input" );
 
-	mOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE );
 
 	if( mFormats.isEmpty() )
 	{
@@ -283,7 +283,9 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 		cv::cvtColor( MatSrc, mMatImg, CvtCod );
 	}
 
-	OpenCVPlugin::mat2image( mMatImg, mOutputImage->variant().value<fugio::Image>(), mDestinationFormat );
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( mMatImg, DstImg );
 #endif
 
 	pinUpdated( mPinOutputImage );

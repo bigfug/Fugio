@@ -39,7 +39,7 @@ private:
 	fugio::ChoiceInterface						*mValInputType;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::VariantInterface						*mOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 
 #if defined( OPENCV_SUPPORTED )
 	cv::Mat										 mMatImg;

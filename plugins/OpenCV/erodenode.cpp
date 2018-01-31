@@ -30,7 +30,7 @@ ErodeNode::ErodeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputIterations->setValue( 1 );
 
-	mOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 }
 
 void ErodeNode::inputsUpdated( qint64 pTimeStamp )
@@ -70,7 +70,9 @@ void ErodeNode::conversion( ErodeNode *pNode )
 
 	cv::erode( MatSrc, pNode->mMatImg, cv::Mat(), cv::Point( -1, -1 ), pNode->variant( pNode->mPinInputIterations ).toReal() );
 
-	OpenCVPlugin::mat2image( pNode->mMatImg, pNode->mOutputImage->variant().value<fugio::Image>() );
+	fugio::Image	DstImg = pNode->mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( pNode->mMatImg, DstImg );
 
 	pNode->pinUpdated( pNode->mPinOutputImage );
 #endif

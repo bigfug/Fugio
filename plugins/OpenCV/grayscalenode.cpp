@@ -23,7 +23,7 @@ GrayscaleNode::GrayscaleNode( QSharedPointer<fugio::NodeInterface> pNode )
 		return;
 	}
 
-	if( ( mOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE ) ) == 0 )
+	if( ( mValOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE ) ) == 0 )
 	{
 		return;
 	}
@@ -88,7 +88,9 @@ void GrayscaleNode::conversion( GrayscaleNode *pNode )
 			return;
 	}
 
-	OpenCVPlugin::mat2image( pNode->mMatImg, pNode->mOutputImage->variant().value<fugio::Image>(), DstFmt );
+	fugio::Image	DstImg = pNode->mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( pNode->mMatImg, DstImg );
 
 	pNode->pinUpdated( pNode->mPinOutputImage );
 #endif

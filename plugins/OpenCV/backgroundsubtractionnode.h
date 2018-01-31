@@ -41,7 +41,7 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputReset;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::VariantInterface						*mOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 
 #if defined( OPENCV_SUPPORTED )
 	cv::Mat										 mMatSrc;

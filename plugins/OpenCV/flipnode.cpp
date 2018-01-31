@@ -20,7 +20,7 @@ FlipNode::FlipNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputImage->registerPinInputType( PID_IMAGE );
 
-	mOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE );
 }
 
 void FlipNode::inputsUpdated( qint64 pTimeStamp )
@@ -44,7 +44,9 @@ void FlipNode::inputsUpdated( qint64 pTimeStamp )
 
 	cv::flip( MatSrc, mMatImg, 0 );
 
-	OpenCVPlugin::mat2image( mMatImg, mOutputImage->variant().value<fugio::Image>(), SrcImg.format() );
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( mMatImg, DstImg );
 
 	pinUpdated( mPinOutputImage );
 #endif

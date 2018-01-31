@@ -33,7 +33,7 @@ InRangeNode::InRangeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInputLow->setValue( QVector3D( 0, 0, 0 ) );
 	mPinInputHigh->setValue( QVector3D( 1, 1, 1 ) );
 
-	if( ( mOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE ) ) == 0 )
+	if( ( mValOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE ) ) == 0 )
 	{
 		return;
 	}
@@ -95,7 +95,9 @@ void InRangeNode::conversion( InRangeNode *pNode )
 
 	cv::inRange( MatSrc, cv::Scalar( l1, l2, l3 ), cv::Scalar( h1, h2, h3 ), pNode->mMatImg );
 
-	OpenCVPlugin::mat2image( pNode->mMatImg, pNode->mOutputImage->variant().value<fugio::Image>() );
+	fugio::Image	DstImg = pNode->mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( pNode->mMatImg, DstImg );
 
 	pNode->pinUpdated( pNode->mPinOutputImage );
 #endif

@@ -73,7 +73,9 @@ void AddNode::inputsUpdated( qint64 pTimeStamp )
 
 	mNode->setStatus( fugio::NodeInterface::Initialised );
 
-	OpenCVPlugin::mat2image( mMatImg, mValOutputImage->variant().value<fugio::Image>() );
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( mMatImg, DstImg );
 
 	pinUpdated( mPinOutputImage );
 #endif

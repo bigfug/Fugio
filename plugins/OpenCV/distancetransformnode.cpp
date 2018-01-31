@@ -78,9 +78,11 @@ void DistanceTransformNode::conversion( DistanceTransformNode *pNode )
 		cv::distanceTransform( MatSrc, pNode->mMatImg, pNode->mMatLab, CV_DIST_L2, 5, cv::DIST_LABEL_CCOMP );
 #endif
 
-		OpenCVPlugin::mat2image( pNode->mMatImg, pNode->mValOutputImage->variant().value<fugio::Image>() );
+		fugio::Image	DstImg = pNode->mValOutputImage->variant().value<fugio::Image>();
+		fugio::Image	DstLab = pNode->mValOutputLabels->variant().value<fugio::Image>();
 
-		OpenCVPlugin::mat2image( pNode->mMatLab, pNode->mValOutputLabels->variant().value<fugio::Image>() );
+		OpenCVPlugin::mat2image( pNode->mMatImg, DstImg );
+		OpenCVPlugin::mat2image( pNode->mMatLab, DstLab );
 
 		pNode->pinUpdated( pNode->mPinOutputImage );
 
