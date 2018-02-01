@@ -37,7 +37,7 @@ public:
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
 	{
-		return( "Integer" );
+		return( "Colour" );
 	}
 
 	//-------------------------------------------------------------------------
@@ -65,16 +65,6 @@ public:
 
 	//-------------------------------------------------------------------------
 	// fugio::VariantInterface
-
-	inline virtual QMetaType::Type variantType( void ) const Q_DECL_OVERRIDE
-	{
-		return( QMetaType::QColor );
-	}
-
-	virtual QUuid variantPinControl( void ) const Q_DECL_OVERRIDE
-	{
-		return( PID_COLOUR );
-	}
 
 	virtual void setFromBaseVariant( int pIndex, int pOffset, const QVariant &pValue ) Q_DECL_OVERRIDE;
 
