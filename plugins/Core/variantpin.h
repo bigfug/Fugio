@@ -54,7 +54,7 @@ public:
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
 	{
-		return( "Variant" );
+		return( QString( "Variant (%1)" ).arg( QMetaType::typeName( variantType() ) ) );
 	}
 
 	//-------------------------------------------------------------------------
