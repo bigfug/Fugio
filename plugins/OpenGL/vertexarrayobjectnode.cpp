@@ -89,6 +89,11 @@ void VertexArrayObjectNode::inputsUpdated( qint64 pTimeStamp )
 
 	OpenGLShaderInterface		*Shader = input<OpenGLShaderInterface *>( mPinInputShader );
 
+	if( !Shader )
+	{
+		return;
+	}
+
 	for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
 	{
 		if( P == mPinInputShader )
