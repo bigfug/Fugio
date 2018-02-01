@@ -153,6 +153,7 @@ int LuaExPin::luaSet( lua_State *L )
 	{
 		int			i = 1;
 		QVariant	v;
+		int			DataType = LUA_TNONE;
 
 		if( lua_gettop( L ) == 4 )
 		{
@@ -160,11 +161,15 @@ int LuaExPin::luaSet( lua_State *L )
 			{
 				i = lua_tointeger( L, 2 );
 				v = LuaPlugin::popVariant( L, 3 );
+
+				DataType = lua_type( L, 3 );
 			}
 		}
 		else if( lua_gettop( L ) == 3 )
 		{
 			v = LuaPlugin::popVariant( L, 2 );
+
+			DataType = lua_type( L, 2 );
 		}
 
 		fugio::VariantInterface				*V = qobject_cast<VariantInterface *>( P->control()->qobject() );
@@ -176,7 +181,14 @@ int LuaExPin::luaSet( lua_State *L )
 				return( 0 );
 			}
 
-			V->setVariant( i - 1, v );
+			if( DataType == LUA_TUSERDATA )
+			{
+				V->setVariant( i - 1, v );
+			}
+			else
+			{
+				V->setFromBaseVariant( i - 1, v );
+			}
 		}
 	}
 
