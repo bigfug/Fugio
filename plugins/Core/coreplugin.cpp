@@ -48,6 +48,7 @@
 #include "joinpointnode.h"
 #include "joinrectnode.h"
 #include "splitrectnode.h"
+#include "integertofloatnode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -94,6 +95,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Join Rect", "Rect", NID_JOIN_RECT, &JoinRectNode::staticMetaObject ),
 	ClassEntry( "Last Updated Input", NID_LAST_UPDATED_INPUT, &LastUpdatedInputNode::staticMetaObject ),
 	ClassEntry( "Index", NID_INDEX, &IndexNode::staticMetaObject ),
+	ClassEntry( "Integer To Float", NID_INTEGER_TO_FLOAT, &IntegerToFloatNode::staticMetaObject ),
 	ClassEntry( "List Size", NID_LIST_SIZE, &ListSizeNode::staticMetaObject ),
 	ClassEntry( "List Index", NID_LIST_INDEX, &ListIndexNode::staticMetaObject ),
 	ClassEntry( "Logger", NID_LOGGER, &LoggerNode::staticMetaObject ),

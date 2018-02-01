@@ -81,6 +81,8 @@ set( SOURCE_FILES
 	polygonpin.h
 	splitrectnode.cpp
 	splitrectnode.h
+	integertofloatnode.cpp
+	integertofloatnode.h
 )
 
 set( QRC_FILES
