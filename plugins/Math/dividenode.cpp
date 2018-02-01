@@ -50,6 +50,8 @@ void DivideNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+	mValOutputArray->setVariantType( OutTyp );
+
 	mValOutputArray->setVariantCount( ItrMax );
 
 	switch( OutTyp )

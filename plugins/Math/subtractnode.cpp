@@ -56,6 +56,8 @@ void SubtractNode::inputsUpdated( qint64 pTimeStamp )
 
 	mValOutputArray->setVariantCount( ItrMax );
 
+	mValOutputArray->setVariantType( OutTyp );
+
 	switch( OutTyp )
 	{
 		case QMetaType::Double:
