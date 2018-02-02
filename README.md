@@ -2,7 +2,7 @@
 Fugio is an open visual programming system for creating digital art, learning programming, and making cool stuff with hardware such as the Oculus Rift, Kinect, Arduino, Leap Motion, and any MIDI, OSC, TUIO, or DMX enabled thing.
 
 # Download Binaries
-Download Fugio ready-built for Microsoft Windows and Apple OS X from http://wwww.bigfug.com/software/fugio
+Download Fugio ready-built for Microsoft Windows and Apple OS X from http://www.bigfug.com/software/fugio
 
 # Simple, clear design
 There are building blocks called nodes that have inputs and outputs. Link the inputs to the outputs using your mouse. You now know how to use Fugio!
