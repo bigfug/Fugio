@@ -31,7 +31,7 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString( "%1" ).arg( mDstTex ? mDstTex->textureId() : -1 ) );
+		return( QString( "%1" ).arg( mDstTex ? mDstTex->textureId() : 0 ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
