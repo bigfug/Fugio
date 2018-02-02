@@ -25,6 +25,11 @@ extern "C"
 	#include <libswresample/swresample.h>
 #endif
 }
+
+#if LIBAVFORMAT_VERSION_MAJOR <= 56
+#undef FFMPEG_SUPPORTED
+#endif
+
 #endif
 
 #include "audiobuffer.h"
