@@ -11,33 +11,45 @@ foreach( QT_FRAMEWORK IN LISTS QT_FRAMEWORKS )
 	file( REMOVE_RECURSE ${QT_FRAMEWORK} )
 endforeach()
 
-execute_process( COMMAND otool -L ${BUNDLE_LIB}
-	OUTPUT_VARIABLE OTOOL_OUTPUT
-	)
+function( fixlibs LIB_PATH )
+	message( "Processing dependecies of ${LIB_PATH}..." )
 
-string( REGEX REPLACE ";" "\\\\;" OTOOL_OUTPUT "${OTOOL_OUTPUT}")
-string( REGEX REPLACE "\n" ";" OTOOL_OUTPUT "${OTOOL_OUTPUT}")
+	execute_process( COMMAND otool -L ${LIB_PATH}
+		OUTPUT_VARIABLE OTOOL_OUTPUT
+		)
 
-foreach( OTOOL_LINE IN LISTS OTOOL_OUTPUT )
-	if( NOT OTOOL_LINE STREQUAL "" )
-		string( STRIP ${OTOOL_LINE} OTOOL_LINE )
+	string( REGEX REPLACE ";" "\\\\;" OTOOL_OUTPUT "${OTOOL_OUTPUT}")
+	string( REGEX REPLACE "\n" ";" OTOOL_OUTPUT "${OTOOL_OUTPUT}")
 
-		string( REPLACE " (" ";" OTOOL_LINE "${OTOOL_LINE}" )
+	foreach( OTOOL_LINE IN LISTS OTOOL_OUTPUT )
+		if( NOT OTOOL_LINE STREQUAL "" )
+			string( STRIP ${OTOOL_LINE} OTOOL_LINE )
 
-		list( LENGTH OTOOL_LINE OTOOL_LEN )
+			string( REPLACE " (" ";" OTOOL_LINE "${OTOOL_LINE}" )
 
-		if( OTOOL_LEN EQUAL 2 )
-			list( GET OTOOL_LINE 0 OTOOL_LINE )
+			list( LENGTH OTOOL_LINE OTOOL_LEN )
 
-#			message( ${OTOOL_LINE} )
+			if( OTOOL_LEN EQUAL 2 )
+				list( GET OTOOL_LINE 0 OTOOL_LINE )
 
-			if( OTOOL_LINE MATCHES "^(/usr/local/|/Users/|@executable_path/../Frameworks/lib)" )
-				get_filename_component( OTOOL_LIB ${OTOOL_LINE} NAME )
+#				message( ${OTOOL_LINE} )
 
-				message( "Fixing ${OTOOL_LIB}..." )
+				if( OTOOL_LINE MATCHES "^(/usr/local/|/Users/|@executable_path/../Frameworks/lib)" )
+					get_filename_component( OTOOL_LIB ${OTOOL_LINE} NAME )
 
-				execute_process( COMMAND install_name_tool -change ${OTOOL_LINE} @loader_path/../Frameworks/${OTOOL_LIB} ${BUNDLE_LIB} )
+					message( "Fixing ${OTOOL_LIB}..." )
+
+					execute_process( COMMAND install_name_tool -change ${OTOOL_LINE} @loader_path/../Frameworks/${OTOOL_LIB} ${LIB_PATH} )
+				endif()
 			endif()
 		endif()
-	endif()
+	endforeach()
+endfunction()
+
+fixlibs( ${BUNDLE_LIB} )
+
+file( GLOB DYLIB_LIST "${BUNDLE_PATH}/Contents/Frameworks/*.dylib" )
+
+foreach( DYLIB IN LISTS DYLIB_LIST )
+	fixlibs( ${DYLIB} )
 endforeach()
