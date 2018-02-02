@@ -131,10 +131,6 @@ add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURC
 
 target_link_libraries( ${PROJECT_NAME} libfugio )
 
-if( APPLE )
-	set_target_properties( ${PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist )
-endif( APPLE )
-
 install( TARGETS ${PROJECT_NAME}
 	RUNTIME DESTINATION ${PATH_APP}
 	BUNDLE DESTINATION ${PATH_APP}
@@ -148,6 +144,28 @@ file( READ version.txt FUGIO_VERSION )
 string( STRIP ${FUGIO_VERSION} FUGIO_VERSION )
 
 target_compile_definitions( ${PROJECT_NAME} PRIVATE FUGIO_VERSION=${FUGIO_VERSION} )
+
+#------------------------------------------------------------------------------
+# Icon
+
+if( APPLE )
+	set_target_properties( ${PROJECT_NAME} PROPERTIES
+		MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist
+		)
+
+	set( MACOSX_BUNDLE_ICON_FILE fugio.icns )
+
+	set( FUGIO_ICON ${CMAKE_CURRENT_SOURCE_DIR}/fugio.icns )
+
+	set_source_files_properties( ${FUGIO_ICON} PROPERTIES
+		MACOSX_PACKAGE_LOCATION "Resources"
+		)
+
+	target_sources( ${PROJECT_NAME} PRIVATE
+		${FUGIO_ICON}
+		)
+endif( APPLE )
+
 
 #------------------------------------------------------------------------------
 # Qt5

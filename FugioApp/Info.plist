@@ -5,9 +5,9 @@
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>NSHighResolutionCapable</key>
-        <string>True</string>
+	<string>True</string>
 	<key>CFBundleIconFile</key>
-        <string>fugio.icns</string>
+	<string>fugio.icns</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleGetInfoString</key>
@@ -15,8 +15,8 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleExecutable</key>
-        <string>Fugio</string>
+	<string>Fugio</string>
 	<key>CFBundleIdentifier</key>
-        <string>com.bigfug.Fugio</string>
+	<string>com.bigfug.Fugio</string>
 </dict>
 </plist>
