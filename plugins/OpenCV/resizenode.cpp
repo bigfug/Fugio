@@ -45,7 +45,7 @@ ResizeNode::ResizeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInputInterpolation->setValue( "INTER_LINEAR" );
 #endif
 
-	mValOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 }
 
 void ResizeNode::inputsUpdated( qint64 pTimeStamp )
@@ -57,9 +57,9 @@ void ResizeNode::inputsUpdated( qint64 pTimeStamp )
 
 #if defined( OPENCV_SUPPORTED )
 
-	fugio::ImageInterface		*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image	SrcImg = variant( mPinInputImage ).value<fugio::Image>();
 
-	if( !SrcImg || !SrcImg->isValid() )
+	if( SrcImg.isEmpty() )
 	{
 		return;
 	}
@@ -78,7 +78,7 @@ void ResizeNode::inputsUpdated( qint64 pTimeStamp )
 
 		cv::resize( SrcMat, mMatImg, SrcSze, SclX, SclY, IntVal );
 
-		OpenCVPlugin::mat2image( mMatImg, mValOutputImage, SrcImg->format() );
+		OpenCVPlugin::mat2image( mMatImg, SrcImg, SrcImg.format() );
 
 		pinUpdated( mPinOutputImage );
 	}

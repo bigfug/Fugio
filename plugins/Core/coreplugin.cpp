@@ -47,6 +47,8 @@
 #include "booltobitsnode.h"
 #include "joinpointnode.h"
 #include "joinrectnode.h"
+#include "splitrectnode.h"
+#include "integertofloatnode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -93,6 +95,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Join Rect", "Rect", NID_JOIN_RECT, &JoinRectNode::staticMetaObject ),
 	ClassEntry( "Last Updated Input", NID_LAST_UPDATED_INPUT, &LastUpdatedInputNode::staticMetaObject ),
 	ClassEntry( "Index", NID_INDEX, &IndexNode::staticMetaObject ),
+	ClassEntry( "Integer To Float", NID_INTEGER_TO_FLOAT, &IntegerToFloatNode::staticMetaObject ),
 	ClassEntry( "List Size", NID_LIST_SIZE, &ListSizeNode::staticMetaObject ),
 	ClassEntry( "List Index", NID_LIST_INDEX, &ListIndexNode::staticMetaObject ),
 	ClassEntry( "Logger", NID_LOGGER, &LoggerNode::staticMetaObject ),
@@ -111,6 +114,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Type Size", NID_TYPE_SIZE, &TypeSizeNode::staticMetaObject ),
 	ClassEntry( "Split List", NID_SPLIT_LIST, &SplitListNode::staticMetaObject ),
 	ClassEntry( "Split Point", NID_SPLIT_POINT, &SplitPointNode::staticMetaObject ),
+	ClassEntry( "Split Rect", NID_SPLIT_RECT, &SplitRectNode::staticMetaObject ),
 	ClassEntry( "Split Size", NID_SPLIT_SIZE, &SplitSizeNode::staticMetaObject ),
 	ClassEntry( "Switch", NID_SWITCH, &SwitchNode::staticMetaObject ),
 	ClassEntry()
@@ -126,7 +130,7 @@ ClassEntry		CorePlugin::mPinClasses[] =
 	ClassEntry( "Float", PID_FLOAT, &FloatPin::staticMetaObject ),
 	ClassEntry( "Integer", PID_INTEGER, &IntegerPin::staticMetaObject ),
 	ClassEntry( "Line", PID_LINE, &LinePin::staticMetaObject ),
-	ClassEntry( "List", PID_LIST, &ListPin::staticMetaObject ),
+//	ClassEntry( "List", PID_LIST, &ListPin::staticMetaObject ),
 	ClassEntry( "Point", PID_POINT, &PointPin::staticMetaObject ),
 	ClassEntry( "Polygon", PID_POLYGON, &PolygonPin::staticMetaObject ),
 	ClassEntry( "Rect", PID_RECT, &RectPin::staticMetaObject ),
@@ -173,6 +177,7 @@ PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp
 	//mApp->registerPinSplitter( PID_SIZE_3D, NID_SPLIT_SIZE );
 	mApp->registerPinSplitter( PID_LIST, NID_SPLIT_LIST );
 	mApp->registerPinSplitter( PID_POINT, NID_SPLIT_POINT );
+	mApp->registerPinSplitter( PID_RECT, NID_SPLIT_RECT );
 
 	mApp->registerPinJoiner( PID_SIZE, NID_JOIN_SIZE );
 	mApp->registerPinJoiner( PID_POINT, NID_JOIN_POINT );
@@ -188,7 +193,6 @@ PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp
 	mApp->registerPinForMetaType( PID_INTEGER, QMetaType::Short );
 	mApp->registerPinForMetaType( PID_BITARRAY, QMetaType::QBitArray );
 	mApp->registerPinForMetaType( PID_BYTEARRAY, QMetaType::QByteArray );
-	mApp->registerPinForMetaType( PID_BYTEARRAY_LIST, QMetaType::QByteArrayList );
 	mApp->registerPinForMetaType( PID_STRING, QMetaType::QChar );
 	mApp->registerPinForMetaType( PID_STRING, QMetaType::QString );
 	mApp->registerPinForMetaType( PID_POLYGON, QMetaType::QPolygon );
@@ -203,7 +207,6 @@ PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp
 	mApp->registerPinForMetaType( PID_SIZE, QMetaType::QSizeF );
 	mApp->registerPinForMetaType( PID_TRANSFORM, QMetaType::QTransform );
 	mApp->registerPinForMetaType( PID_VARIANT, QMetaType::QVariant );
-	mApp->registerPinForMetaType( PID_VARIANT_LIST, QMetaType::QVariantList );
 
 	return( INIT_OK );
 }

@@ -1,5 +1,14 @@
 #include "testcore.h"
 
+TestCore::TestCore()
+{
+	fugio::GlobalInterface	*G = fugio::fugio();
+
+	QVERIFY( G );
+
+	G->enablePlugin( "fugio-core" );
+}
+
 void TestCore::newContext()
 {
 	QSharedPointer<fugio::ContextInterface>	C;

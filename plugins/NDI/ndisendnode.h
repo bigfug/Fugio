@@ -19,7 +19,7 @@
 #include <Processing.NDI.Send.h>
 #endif
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/audio/audio_instance_base.h>
 
 class NDISendNode : public fugio::NodeControlBase

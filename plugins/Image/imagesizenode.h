@@ -5,10 +5,6 @@
 
 #include <fugio/nodecontrolbase.h>
 
-FUGIO_NAMESPACE_BEGIN
-class ImageInterface;
-FUGIO_NAMESPACE_END
-
 class ImageSizeNode : public fugio::NodeControlBase
 {
 	Q_OBJECT

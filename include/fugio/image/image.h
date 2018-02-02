@@ -2,16 +2,43 @@
 #define IMAGE_H
 
 #include <fugio/global.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #include <QMetaType>
+#include <QSize>
+#include <QImage>
+#include <QSharedPointer>
 
 FUGIO_NAMESPACE_BEGIN
+
+typedef enum ImageFormat
+{
+	UNKNOWN = -1,
+	INTERNAL,
+	RGB8,
+	RGBA8,
+	BGR8,
+	BGRA8,
+	YUYV422,
+	GRAY16,
+	GRAY8,
+	RG32,
+	DXT1,
+	DXT5,
+	YCoCg_DXT5,
+	HSV8,
+	YUV420P,
+	UYVY422,
+	R32S,
+	R32F,
+	YUVJ422P,
+	NV12
+} ImageFormat;
 
 class ImageData
 {
 public:
-	ImageData( void ) : mFormat( fugio::ImageInterface::FORMAT_UNKNOWN ), mInternalFormat( -1 )
+	ImageData( void ) : mFormat( ImageFormat::UNKNOWN ), mInternalFormat( -1 )
 	{
 		memset( &mBuffer, 0, sizeof( mBuffer ) );
 		memset( &mPointer, 0, sizeof( mPointer ) );
@@ -43,13 +70,70 @@ public:
 	mutable int				 mBufferSizes[ PLANE_COUNT ];
 	int						 mLineWidth[ PLANE_COUNT ];
 	QSize					 mSize;
-	ImageInterface::Format	 mFormat;
+	ImageFormat				 mFormat;
 	int						 mInternalFormat;
 };
 
 class Image
 {
 public:
+	static int formatPixelByteCount( ImageFormat pFormat, int pBuffer = 0 )
+	{
+		switch( pFormat )
+		{
+			case ImageFormat::RGB8:		return( 3 );
+			case ImageFormat::RGBA8:	return( 4 );
+			case ImageFormat::BGR8:		return( 3 );
+			case ImageFormat::BGRA8:	return( 4 );
+			case ImageFormat::YUV420P:	return( !pBuffer ? 2 : 1 );
+			case ImageFormat::YUYV422:	return( 2 );
+			case ImageFormat::UYVY422:	return( 2 );
+			case ImageFormat::GRAY16:	return( 2 );
+			case ImageFormat::GRAY8:	return( 1 );
+			case ImageFormat::RG32:		return( 4 );
+			case ImageFormat::HSV8:		return( 3 );
+			case ImageFormat::R32S:		return( 4 );
+			case ImageFormat::R32F:		return( 4 );
+			case ImageFormat::NV12:		return( 1 );
+
+			default:			break;
+		}
+
+		return( 0 );
+	}
+
+	static QImage::Format toQImageFormat( ImageFormat pFormat )
+	{
+		switch( pFormat )
+		{
+			case ImageFormat::RGB8:		return( QImage::Format_RGB888 );
+			case ImageFormat::RGBA8:	return( QImage::Format_ARGB32 );
+			case ImageFormat::BGRA8:	return( QImage::Format_ARGB32 );
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 )
+			case ImageFormat::GRAY8:	return( QImage::Format_Grayscale8 );
+#endif
+			default:			break;
+		}
+
+		return( QImage::Format_Invalid );
+	}
+
+	static ImageFormat fromQImageFormat( QImage::Format pFormat )
+	{
+		switch( pFormat )
+		{
+			case QImage::Format_RGB888:					return( ImageFormat::RGB8 );
+			case QImage::Format_ARGB32:					return( ImageFormat::RGBA8 );
+			case QImage::Format_ARGB32_Premultiplied:	return( ImageFormat::RGBA8 );
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 )
+			case QImage::Format_Grayscale8:				return( ImageFormat::GRAY8 );
+#endif
+			default:									break;
+		}
+
+		return( ImageFormat::UNKNOWN );
+	}
+
 	Image( void )
 		: mData( new ImageData() )
 	{
@@ -60,12 +144,6 @@ public:
 	{
 
 	}
-
-//	Image( Image &&pOther )
-//		: mData( pOther.mData )
-//	{
-
-//	}
 
 	~Image( void )
 	{
@@ -111,12 +189,12 @@ public:
 		}
 	}
 
-	inline void setFormat( ImageInterface::Format pFormat )
+	inline void setFormat( ImageFormat pFormat )
 	{
 		mData->mFormat = pFormat;
 	}
 
-	inline ImageInterface::Format format( void ) const
+	inline ImageFormat format( void ) const
 	{
 		return( mData->mFormat );
 	}
@@ -124,6 +202,11 @@ public:
 	inline bool isEmpty( void ) const
 	{
 		return( mData->mSize.isEmpty() );
+	}
+
+	inline bool isValid( void ) const
+	{
+		return( !isEmpty() && format() != ImageFormat::UNKNOWN );
 	}
 
 	inline void setSize( const QSize &pSize )
@@ -313,33 +396,33 @@ public:
 			for( int i = 0; i < 256; i++ ) GrayTable8.push_back( qRgb( i,i,i ) );
 		}
 
-		QImage::Format		ImageFormat = QImage::Format_ARGB32;
+		QImage::Format		Format = QImage::Format_ARGB32;
 
 		switch( mData->mFormat )
 		{
-			case ImageInterface::FORMAT_GRAY8:
-				ImageFormat = QImage::Format_Indexed8;
+			case ImageFormat::GRAY8:
+				Format = QImage::Format_Indexed8;
 				break;
 
-			case ImageInterface::FORMAT_BGRA8:
-				ImageFormat = QImage::Format_ARGB32;
+			case ImageFormat::BGRA8:
+				Format = QImage::Format_ARGB32;
 				break;
 
-			case ImageInterface::FORMAT_RGB8:
-				ImageFormat = QImage::Format_RGB888;
+			case ImageFormat::RGB8:
+				Format = QImage::Format_RGB888;
 				break;
 
-			case ImageInterface::FORMAT_RGBA8:
-				ImageFormat = QImage::Format_ARGB32;
+			case ImageFormat::RGBA8:
+				Format = QImage::Format_ARGB32;
 				break;
 
 			default:
 				return( QImage() );
 		}
 
-		QImage	IM( buffer( 0 ), mData->mSize.width(), mData->mSize.height(), lineSize( 0 ), ImageFormat );
+		QImage	IM( buffer( 0 ), mData->mSize.width(), mData->mSize.height(), lineSize( 0 ), Format );
 
-		if( ImageFormat ==  QImage::Format_Indexed8 )
+		if( Format == QImage::Format_Indexed8 )
 		{
 			IM.setColorTable( GrayTable8 );
 		}

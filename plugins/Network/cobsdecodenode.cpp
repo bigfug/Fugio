@@ -15,7 +15,7 @@ COBSDecodeNode::COBSDecodeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputReset = pinInput( "Reset", PIN_INPUT_RESET );
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_BYTEARRAY_LIST, PIN_OUTPUT_ARRAY );
+	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_BYTEARRAY, PIN_OUTPUT_ARRAY );
 }
 
 void COBSDecodeNode::inputsUpdated( qint64 pTimeStamp )
@@ -34,7 +34,7 @@ void COBSDecodeNode::inputsUpdated( qint64 pTimeStamp )
 			return;
 		}
 
-		QVariantList		VarLst;
+		mValOutput->variantClear();
 
 		for( unsigned char c : InpDat )
 		{
@@ -42,7 +42,7 @@ void COBSDecodeNode::inputsUpdated( qint64 pTimeStamp )
 			{
 				if( !mCurPkt.isEmpty() )
 				{
-					VarLst.append( mCurPkt );
+					mValOutput->variantAppend( mCurPkt );
 
 					mCurPkt.clear();
 				}
@@ -71,9 +71,7 @@ void COBSDecodeNode::inputsUpdated( qint64 pTimeStamp )
 			}
 		}
 
-		mValOutput->setVariant( VarLst );
-
-		if( !VarLst.isEmpty() )
+		if( mValOutput->variantCount() )
 		{
 			pinUpdated( mPinOutput );
 		}

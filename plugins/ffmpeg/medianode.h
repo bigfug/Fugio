@@ -22,7 +22,6 @@
 #include "mediaaudioprocessor.h"
 
 FUGIO_NAMESPACE_BEGIN
-class ImageInterface;
 class SegmentInterface;
 FUGIO_NAMESPACE_END
 
@@ -102,7 +101,7 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputTime;
 
 	QSharedPointer<fugio::PinInterface>			 mPinImage;
-	fugio::ImageInterface						*mValImage;
+	fugio::VariantInterface						*mValImage;
 
 	QSharedPointer<fugio::PinInterface>			 mPinAudio;
 	fugio::AudioProducerInterface				*mValAudio;

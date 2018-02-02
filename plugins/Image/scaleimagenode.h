@@ -6,10 +6,6 @@
 
 #include <fugio/nodecontrolbase.h>
 
-FUGIO_NAMESPACE_BEGIN
-class ImageInterface;
-FUGIO_NAMESPACE_END
-
 class ScaleImageNode : public fugio::NodeControlBase
 {
 	Q_OBJECT
@@ -34,7 +30,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinHeight;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface						*mValOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 };
 
 #endif // SCALEIMAGENODE_H

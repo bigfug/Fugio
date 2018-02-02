@@ -12,6 +12,8 @@ set( SOURCE_FILES
 	geometryplugin.h
     polygonnode.cpp
     polygonnode.h
+	trianglestripnode.cpp
+	trianglestripnode.h
 )
 
 set( QRC_FILES

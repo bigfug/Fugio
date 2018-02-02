@@ -23,7 +23,7 @@ GrayscaleNode::GrayscaleNode( QSharedPointer<fugio::NodeInterface> pNode )
 		return;
 	}
 
-	if( ( mOutputImage = pinOutput<fugio::ImageInterface *>( "Output", mPinOutputImage, PID_IMAGE ) ) == 0 )
+	if( ( mValOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE ) ) == 0 )
 	{
 		return;
 	}
@@ -38,14 +38,9 @@ void GrayscaleNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	if( !mPinInputImage->isConnected() )
-	{
-		return;
-	}
+	fugio::Image	SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	fugio::ImageInterface			*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
-
-	if( !SrcImg || SrcImg->size().isEmpty() )
+	if( !SrcImg.isValid() )
 	{
 		return;
 	}
@@ -58,34 +53,34 @@ void GrayscaleNode::inputsUpdated( qint64 pTimeStamp )
 void GrayscaleNode::conversion( GrayscaleNode *pNode )
 {
 #if defined( OPENCV_SUPPORTED )
-	fugio::ImageInterface				*SrcImg = pNode->input<fugio::ImageInterface *>( pNode->mPinInputImage );
+	fugio::Image			SrcImg = variantStatic<fugio::Image>( pNode->mPinInputImage );
 
-	cv::Mat						 MatSrc = OpenCVPlugin::image2mat( SrcImg );
+	cv::Mat					MatSrc = OpenCVPlugin::image2mat( SrcImg );
 
-	fugio::ImageInterface::Format		 DstFmt = fugio::ImageInterface::FORMAT_GRAY8;
+	fugio::ImageFormat		DstFmt = fugio::ImageFormat::GRAY8;
 
-	switch( SrcImg->format() )
+	switch( SrcImg.format() )
 	{
-		case fugio::ImageInterface::FORMAT_RGB8:
+		case fugio::ImageFormat::RGB8:
 			cv::cvtColor( MatSrc, pNode->mMatImg, CV_RGB2GRAY );
 			break;
 
-		case fugio::ImageInterface::FORMAT_BGR8:
+		case fugio::ImageFormat::BGR8:
 			cv::cvtColor( MatSrc, pNode->mMatImg, CV_BGR2GRAY );
 			break;
 
-		case fugio::ImageInterface::FORMAT_RGBA8:
+		case fugio::ImageFormat::RGBA8:
 			cv::cvtColor( MatSrc, pNode->mMatImg, CV_RGBA2GRAY );
 			break;
 
-		case fugio::ImageInterface::FORMAT_BGRA8:
+		case fugio::ImageFormat::BGRA8:
 			cv::cvtColor( MatSrc, pNode->mMatImg, CV_BGRA2GRAY );
 			break;
 
-//		case fugio::ImageInterface::FORMAT_GRAY16:
+//		case fugio::ImageFormat::GRAY16:
 //			break;
 
-//		case fugio::ImageInterface::FORMAT_YUYV422:
+//		case fugio::ImageFormat::YUYV422:
 //			cv::cvtColor( MatSrc, mMatImg, CV_YUV2GRAY_420 );
 //			break;
 
@@ -93,7 +88,9 @@ void GrayscaleNode::conversion( GrayscaleNode *pNode )
 			return;
 	}
 
-	OpenCVPlugin::mat2image( pNode->mMatImg, pNode->mOutputImage, DstFmt );
+	fugio::Image	DstImg = pNode->mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( pNode->mMatImg, DstImg );
 
 	pNode->pinUpdated( pNode->mPinOutputImage );
 #endif

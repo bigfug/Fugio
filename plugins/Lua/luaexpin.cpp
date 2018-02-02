@@ -7,8 +7,7 @@
 #include <fugio/global_signals.h>
 #include <fugio/node_interface.h>
 #include <fugio/node_signals.h>
-//#include <fugio/core/list_interface.h>
-//#include <fugio/core/array_list_interface.h>
+#include <fugio/core/array_interface.h>
 
 #include "luaplugin.h"
 #include "luaarray.h"
@@ -154,6 +153,7 @@ int LuaExPin::luaSet( lua_State *L )
 	{
 		int			i = 1;
 		QVariant	v;
+		int			DataType = LUA_TNONE;
 
 		if( lua_gettop( L ) == 4 )
 		{
@@ -161,11 +161,15 @@ int LuaExPin::luaSet( lua_State *L )
 			{
 				i = lua_tointeger( L, 2 );
 				v = LuaPlugin::popVariant( L, 3 );
+
+				DataType = lua_type( L, 3 );
 			}
 		}
 		else if( lua_gettop( L ) == 3 )
 		{
 			v = LuaPlugin::popVariant( L, 2 );
+
+			DataType = lua_type( L, 2 );
 		}
 
 		fugio::VariantInterface				*V = qobject_cast<VariantInterface *>( P->control()->qobject() );
@@ -177,7 +181,14 @@ int LuaExPin::luaSet( lua_State *L )
 				return( 0 );
 			}
 
-			V->setVariant( i - 1, v );
+			if( DataType == LUA_TUSERDATA )
+			{
+				V->setVariant( i - 1, v );
+			}
+			else
+			{
+				V->setFromBaseVariant( i - 1, v );
+			}
 		}
 	}
 
@@ -417,14 +428,14 @@ int LuaExPin::luaPinGetValue( lua_State *L )
 //			return( 1 );
 //		}
 
-//		fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( CtlObj );
+		fugio::ArrayInterface		*ArrInt = qobject_cast<fugio::ArrayInterface *>( CtlObj );
 
-//		if( ArrInt )
-//		{
-//			LuaArray::pusharray( L, CtlObj, P->direction() == PIN_INPUT );
+		if( ArrInt )
+		{
+			LuaArray::pusharray( L, CtlObj, P->direction() == PIN_INPUT );
 
-//			return( 1 );
-//		}
+			return( 1 );
+		}
 
 //		fugio::ListInterface		*LstInt = qobject_cast<fugio::ListInterface *>( CtlObj );
 

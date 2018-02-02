@@ -1,6 +1,6 @@
 #include "mediaplayervideopreview.h"
 #include "ui_mediaplayervideopreview.h"
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 MediaPlayerVideoPreview::MediaPlayerVideoPreview( MediaTimelineNode *pMediaPlayer )
 	: ui(new Ui::MediaPlayerVideoPreview), mMediaPlayer( pMediaPlayer ),
@@ -29,14 +29,16 @@ void MediaPlayerVideoPreview::playheadPlay( qreal pTimeLast, qreal pTimeCurr )
 		return;
 	}
 
-	const fugio::ImageInterface		*SRC = mMediaPlayer->image();
+	const fugio::VariantInterface		*SRC = mMediaPlayer->image();
 
-	if( !SRC || SRC->size().isEmpty() )
+	fugio::Image	I = SRC->variant().value<fugio::Image>();
+
+	if( !SRC || I.isEmpty() )
 	{
 		return;
 	}
 
-	QImage						 IMG = SRC->image().scaled( ui->mVideoImage->size(), Qt::KeepAspectRatio );
+	QImage						 IMG = I.image().scaled( ui->mVideoImage->size(), Qt::KeepAspectRatio );
 
 	if( IMG.isNull() )
 	{

@@ -17,32 +17,28 @@ QString VariantPin::toString() const
 
 	for( QVariant v : mValues )
 	{
-		L << v.toString();
+		switch( QMetaType::Type( v.type() ) )
+		{
+			case QMetaType::QPointF:
+				{
+					QPointF		V = v.value<QPointF>();
+
+					L << QString( "%1,%2 (%3)" ).arg( V.x() ).arg( V.y() ).arg( QString( v.typeName() ) );
+				}
+
+			case QMetaType::QSizeF:
+				{
+					QSizeF		V = v.value<QSizeF>();
+
+					L << QString( "%1,%2 (%3)" ).arg( V.width() ).arg( V.height() ).arg( QString( v.typeName() ) );
+				}
+
+			default:
+				L << v.toString();
+				break;
+		}
 	}
 
 	return( L.join( ',' ) );
-//	switch( QMetaType::Type( mValue.type() ) )
-//	{
-//		case QMetaType::QPointF:
-//			{
-//				QPointF		V = mValue.value<QPointF>();
-
-//				return( QString( "%1,%2 (%3)" ).arg( V.x() ).arg( V.y() ) ).arg( QString( mValue.typeName() ) );
-//			}
-
-//		case QMetaType::QSizeF:
-//			{
-//				QSizeF		V = mValue.value<QSizeF>();
-
-//				return( QString( "%1,%2 (%3)" ).arg( V.width() ).arg( V.height() ) ).arg( QString( mValue.typeName() ) );
-//			}
-
-//		default:
-//			break;
-//	}
-
-//	return( QString( "%1 (%2)" ).arg( mValue.toString() ).arg( QString( mValue.typeName() ) ) );
-
-//	return( QString() );
 }
 

@@ -41,9 +41,9 @@ void MomentsNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	fugio::ImageInterface			*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image		SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || SrcImg->size().isEmpty() )
+	if( SrcImg.isEmpty() )
 	{
 		return;
 	}

@@ -4,7 +4,6 @@
 #include <fugio/nodecontrolbase.h>
 #include <fugio/midi/midi_input_interface.h>
 #include <fugio/midi/midi_interface.h>
-#include <fugio/core/list_interface.h>
 
 class MidiDecoderNode : public fugio::NodeControlBase, public fugio::MidiInputInterface
 {
@@ -46,7 +45,7 @@ private:
 	{
 		if( !mSysExCurrent.isEmpty() )
 		{
-			mValOutputSysEx->listAppend( mSysExCurrent );
+			mValOutputSysEx->variantAppend( mSysExCurrent );
 
 			mSysExCurrent.clear();
 		}
@@ -93,7 +92,7 @@ private:
 	fugio::MidiInterface					*mValOutputSystem;
 
 	QSharedPointer<fugio::PinInterface>		 mPinOutputSysEx;
-	fugio::ListInterface					*mValOutputSysEx;
+	fugio::VariantInterface					*mValOutputSysEx;
 
 	bool									 mSysEx;
 

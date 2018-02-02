@@ -385,6 +385,18 @@ public:
 		return( V ? V->variant() : pPin->value() );
 	}
 
+	template <class T> static T variantStatic( QSharedPointer<fugio::PinInterface> &pPin )
+	{
+		if( !pPin->isConnected() || !pPin->connectedPin()->hasControl() )
+		{
+			return( pPin->value().value<T>() );
+		}
+
+		VariantInterface	*V = qobject_cast<VariantInterface *>( pPin->connectedPin()->control()->qobject() );
+
+		return( V ? V->variant().value<T>() : pPin->value().value<T>() );
+	}
+
 	QVariant variant( QSharedPointer<fugio::PinInterface> &pPin ) const
 	{
 		VariantInterface	*V = input<VariantInterface *>( pPin );
@@ -397,6 +409,13 @@ public:
 		VariantInterface	*V = input<VariantInterface *>( pPin );
 
 		return( V ? V->variant() : pPin->value() );
+	}
+
+	template <class T> T variant( const QSharedPointer<fugio::PinInterface> &pPin ) const
+	{
+		VariantInterface	*V = input<VariantInterface *>( pPin );
+
+		return( V ? V->variant().value<T>() : pPin->value().value<T>() );
 	}
 
 	//-------------------------------------------------------------------------

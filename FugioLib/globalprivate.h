@@ -12,6 +12,8 @@
 #include <QThread>
 #include <QApplication>
 
+#include <memory>
+
 #include <fugio/global.h>
 
 #include <fugio/global_interface.h>
@@ -116,7 +118,7 @@ public:
 	virtual QThread *thread( void ) Q_DECL_OVERRIDE
 	{
 #if defined( GLOBAL_THREADED )
-		return( mGlobalThread );
+		return( mGlobalThread.get() );
 #else
 		return( QApplication::instance()->thread() );
 #endif
@@ -305,10 +307,10 @@ private:
 	bool							 mPause;
 
 #if defined( GLOBAL_THREADED )
-	QThread							*mGlobalThread;
+	std::unique_ptr<QThread>		 mGlobalThread;
 #endif
 
-	fugio::TimeSync					*mTimeSync;
+	std::unique_ptr<fugio::TimeSync> mTimeSync;
 
 	Universe						 mUniverse;
 

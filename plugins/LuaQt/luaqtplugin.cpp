@@ -15,7 +15,7 @@
 #include <fugio/math/uuid.h>
 #include <fugio/core/uuid.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #include "luapainter.h"
 #include "luapen.h"

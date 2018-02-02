@@ -57,6 +57,8 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::Widgets )
 
 target_compile_definitions( ${PROJECT_NAME} PRIVATE FUGIOLIB_STATIC )
 
+target_compile_definitions( ${PROJECT_NAME} PRIVATE GLOBAL_THREADED )
+
 #------------------------------------------------------------------------------
 # Unit Testing
 

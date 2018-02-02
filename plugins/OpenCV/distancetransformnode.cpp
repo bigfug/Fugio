@@ -30,9 +30,9 @@ DistanceTransformNode::DistanceTransformNode( QSharedPointer<fugio::NodeInterfac
 
 	mPinInputImage->registerPinInputType( PID_IMAGE );
 
-	mValOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 
-	mValOutputLabels = pinOutput<fugio::ImageInterface *>( "Labels", mPinOutputLabels, PID_IMAGE, PIN_OUTPUT_LABELS );
+	mValOutputLabels = pinOutput<fugio::VariantInterface *>( "Labels", mPinOutputLabels, PID_IMAGE, PIN_OUTPUT_LABELS );
 }
 
 void DistanceTransformNode::inputsUpdated( qint64 pTimeStamp )
@@ -44,9 +44,9 @@ void DistanceTransformNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	fugio::ImageInterface			*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image	SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || SrcImg->size().isEmpty() )
+	if( !SrcImg.isValid() )
 	{
 		return;
 	}
@@ -66,9 +66,9 @@ void DistanceTransformNode::inputsUpdated( qint64 pTimeStamp )
 void DistanceTransformNode::conversion( DistanceTransformNode *pNode )
 {
 #if defined( OPENCV_SUPPORTED )
-	fugio::ImageInterface				*SrcImg = pNode->input<fugio::ImageInterface *>( pNode->mPinInputImage );
+	fugio::Image	SrcImg = variantStatic<fugio::Image>( pNode->mPinInputImage );
 
-	cv::Mat								 MatSrc = OpenCVPlugin::image2mat( SrcImg );
+	cv::Mat			MatSrc = OpenCVPlugin::image2mat( SrcImg );
 
 	try
 	{
@@ -78,9 +78,11 @@ void DistanceTransformNode::conversion( DistanceTransformNode *pNode )
 		cv::distanceTransform( MatSrc, pNode->mMatImg, pNode->mMatLab, CV_DIST_L2, 5, cv::DIST_LABEL_CCOMP );
 #endif
 
-		OpenCVPlugin::mat2image( pNode->mMatImg, pNode->mValOutputImage );
+		fugio::Image	DstImg = pNode->mValOutputImage->variant().value<fugio::Image>();
+		fugio::Image	DstLab = pNode->mValOutputLabels->variant().value<fugio::Image>();
 
-		OpenCVPlugin::mat2image( pNode->mMatLab, pNode->mValOutputLabels );
+		OpenCVPlugin::mat2image( pNode->mMatImg, DstImg );
+		OpenCVPlugin::mat2image( pNode->mMatLab, DstLab );
 
 		pNode->pinUpdated( pNode->mPinOutputImage );
 

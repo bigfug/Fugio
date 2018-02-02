@@ -43,9 +43,9 @@ void FindContoursNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	fugio::ImageInterface			*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image	SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || !SrcImg->isValid() )
+	if( !SrcImg.isValid() )
 	{
 		return;
 	}
@@ -70,9 +70,9 @@ void FindContoursNode::conversion( FindContoursNode *pNode, qint64 pTimeStamp )
 	std::vector< std::vector<cv::Point> >		 Contours;
 	std::vector<cv::Vec4i>						 Hierarchy;
 
-	fugio::ImageInterface		*SrcImg = pNode->input<fugio::ImageInterface *>( pNode->mPinInputImage );
+	fugio::Image	SrcImg = variantStatic<fugio::Image>( pNode->mPinInputImage );
 
-	cv::Mat						 MatSrc = OpenCVPlugin::image2mat( SrcImg ).clone();		// findContrours modifies the source mat
+	cv::Mat			MatSrc = OpenCVPlugin::image2mat( SrcImg ).clone();		// findContrours modifies the source mat
 
 	cv::findContours( MatSrc, Contours, Hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE );
 

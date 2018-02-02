@@ -9,7 +9,6 @@
 #include <fugio/nodecontrolbase.h>
 
 #include <fugio/text/syntax_error_interface.h>
-#include <fugio/core/list_interface.h>
 
 class TextEditorRemoteNode : public fugio::NodeControlBase
 {
@@ -107,7 +106,7 @@ private:
 	fugio::SyntaxErrorInterface					*mValInputText;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputPackets;
-	fugio::ListInterface						*mValOutputPackets;
+	fugio::VariantInterface						*mValOutputPackets;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputText;
 	fugio::VariantInterface						*mValOutputText;

@@ -7,6 +7,9 @@ class TestCore : public TestHelper
 {
 	Q_OBJECT
 
+public:
+	TestCore( void );
+
 private slots:
 	void newContext();
 };

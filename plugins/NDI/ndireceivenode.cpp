@@ -21,7 +21,7 @@ NDIReceiveNode::NDIReceiveNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mValInputSource = pinInput<fugio::ChoiceInterface *>( "Source", mPinInputSource, PID_CHOICE, PIN_INPUT_SOURCE );
 
-	mValOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 
 	mValOutputAudio = pinOutput<fugio::AudioProducerInterface *>( "Audio", mPinOutputAudio, PID_AUDIO, PIN_OUTPUT_AUDIO );
 
@@ -290,9 +290,11 @@ void NDIReceiveNode::audio( qint64 pSamplePosition, qint64 pSampleCount, int pCh
 #if defined( NDI_SUPPORTED )
 void NDIReceiveNode::processVideoFrame( NDIlib_video_frame_t &pFrame )
 {
-	if( pFrame.xres != mValOutputImage->width() || pFrame.yres != mValOutputImage->height() )
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
+	if( pFrame.xres != DstImg.width() || pFrame.yres != DstImg.height() )
 	{
-		mValOutputImage->setSize( pFrame.xres, pFrame.yres );
+		DstImg.setSize( pFrame.xres, pFrame.yres );
 	}
 
 	if( pFrame.frame_format_type != NDIlib_frame_format_type_progressive )
@@ -302,20 +304,20 @@ void NDIReceiveNode::processVideoFrame( NDIlib_video_frame_t &pFrame )
 
 	if( pFrame.FourCC == NDIlib_FourCC_type_BGRA )
 	{
-		mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+		DstImg.setFormat( fugio::ImageFormat::BGRA8 );
 	}
 	else if( pFrame.FourCC == NDIlib_FourCC_type_BGRX )
 	{
-		mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+		DstImg.setFormat( fugio::ImageFormat::BGRA8 );
 	}
 	else if( pFrame.FourCC == NDIlib_FourCC_type_UYVY )
 	{
-		mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_YUYV422 );
+		DstImg.setFormat( fugio::ImageFormat::YUYV422 );
 	}
 
-	mValOutputImage->setLineSize( 0, pFrame.line_stride_in_bytes );
+	DstImg.setLineSize( 0, pFrame.line_stride_in_bytes );
 
-	memcpy( mValOutputImage->internalBuffer( 0 ), pFrame.p_data, mValOutputImage->bufferSize( 0 ) );
+	memcpy( DstImg.internalBuffer( 0 ), pFrame.p_data, DstImg.bufferSize( 0 ) );
 
 	pinUpdated( mPinOutputImage );
 }

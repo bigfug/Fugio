@@ -94,7 +94,7 @@ void ImageLoaderNode::inputsUpdated( qint64 pTimeStamp )
 
 	mImageData = IMG;
 
-	fugio::Image		NewImg;
+	fugio::Image		NewImg = mImage->variant().value<fugio::Image>();
 
 	NewImg.setSize( mImageData.width(), mImageData.height() );
 
@@ -102,20 +102,14 @@ void ImageLoaderNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( mImageData.format() == QImage::Format_RGB32 )
 	{
-		NewImg.setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+		NewImg.setFormat( fugio::ImageFormat::BGRA8 );
 	}
 	else if( mImageData.format() == QImage::Format_ARGB32 )
 	{
-		NewImg.setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+		NewImg.setFormat( fugio::ImageFormat::BGRA8 );
 	}
 
 	memcpy( NewImg.internalBuffer( 0 ), mImageData.constBits(), mImageData.byteCount() );
-
-	QVariant		V;
-
-	V.setValue( NewImg );
-
-	mImage->setVariant( V );
 
 	pinUpdated( mPinImage );
 

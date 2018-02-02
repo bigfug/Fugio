@@ -34,7 +34,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputRect;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface						*mValOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 };
 
 #endif // COPYNODE_H

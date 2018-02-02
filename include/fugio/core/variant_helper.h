@@ -80,6 +80,11 @@ public:
 
 	virtual QVariant variant( int pIndex, int pOffset ) const Q_DECL_OVERRIDE
 	{
+		if( !mCount )
+		{
+			return( QVariant() );
+		}
+
 		if( mArray )
 		{
 			return( QVariant::fromValue<T>( static_cast<T *>( mArray )[ variantIndex( pIndex, pOffset ) ] ) );

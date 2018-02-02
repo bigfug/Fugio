@@ -30,28 +30,28 @@ AddNode::AddNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputImage2->registerPinInputType( PID_IMAGE );
 
-	mValOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 }
 
 void AddNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	fugio::ImageInterface			*SrcImg1 = input<fugio::ImageInterface *>( mPinInputImage1 );
+	fugio::Image	SrcImg1 = variant<fugio::Image>( mPinInputImage1 );
 
-	if( !SrcImg1 || SrcImg1->size().isEmpty() )
+	if( !SrcImg1.isValid() )
 	{
 		return;
 	}
 
-	fugio::ImageInterface			*SrcImg2 = input<fugio::ImageInterface *>( mPinInputImage2 );
+	fugio::Image	SrcImg2 = variant<fugio::Image>( mPinInputImage2 );
 
-	if( !SrcImg2 || SrcImg2->size().isEmpty() )
+	if( !SrcImg2.isValid() )
 	{
 		return;
 	}
 
-	if( SrcImg1->size() != SrcImg2->size() )
+	if( SrcImg1.size() != SrcImg2.size() )
 	{
 		return;
 	}
@@ -73,7 +73,9 @@ void AddNode::inputsUpdated( qint64 pTimeStamp )
 
 	mNode->setStatus( fugio::NodeInterface::Initialised );
 
-	OpenCVPlugin::mat2image( mMatImg, mValOutputImage );
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( mMatImg, DstImg );
 
 	pinUpdated( mPinOutputImage );
 #endif

@@ -46,22 +46,22 @@ void ImagePreviewNode::inputsUpdated( qint64 pTimeStamp )
 
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	if( mPinImage->isConnectedToActiveNode() && mPinImage->isUpdated( pTimeStamp ) )
+	if( mPinImage->isUpdated( pTimeStamp ) )
 	{
-		fugio::ImageInterface		*SrcImg = input<fugio::ImageInterface *>( mPinImage );
+		fugio::Image	SrcImg = variant<fugio::Image>( mPinImage );
 
-		if( SrcImg && SrcImg->isValid() )
+		if( SrcImg.isValid() )
 		{
-			const QImage		Image = SrcImg->image();
+			const QImage		Image = SrcImg.image();
 			QPixmap				Pixmap;
 
 			if( Image.width() > MAX_SIZE || Image.height() > MAX_SIZE )
 			{
-				Pixmap = QPixmap::fromImage( SrcImg->image() ).scaled( MAX_SIZE, MAX_SIZE, Qt::KeepAspectRatio );
+				Pixmap = QPixmap::fromImage( Image ).scaled( MAX_SIZE, MAX_SIZE, Qt::KeepAspectRatio );
 			}
 			else
 			{
-				Pixmap = QPixmap::fromImage( SrcImg->image() );
+				Pixmap = QPixmap::fromImage( Image );
 			}
 
 			mGUI->setPixmap( Pixmap );

@@ -7,7 +7,7 @@
 
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/image/uuid.h>
 #include <fugio/core/size_interface.h>
 #include <fugio/core/variant_helper.h>

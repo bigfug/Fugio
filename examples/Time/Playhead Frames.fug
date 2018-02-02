@@ -1,3 +1,9 @@
+;-----------------------------------------------------------------
+; Created with Fugio 3.0.0 (x86_64/x86_64)
+; name: Untitled
+; created: 31 Jan 2018 10:02:04 +0000
+;-----------------------------------------------------------------
+
 [00576d06-38da-43d0-a147-3105149ffca0]
 direction=1
 name=Number
@@ -66,7 +72,7 @@ uuid=9e31a9e7-4c8a-4fac-96aa-36f9b0ebe2d0
 version=2
 
 [9de115f4-084b-47a6-910a-67989bb1618e]
-control\toggle=false
+control\toggle=true
 inputs\size=0
 name=Button
 outputs\1\ff8e7747-97bb-4cf1-80e1-c68e7d829e54=9f47ca6a-f8b8-4029-8dee-98caa049374e
@@ -145,10 +151,11 @@ size=0
 version=3
 
 [mainwindow]
-geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x2\0\0\xff\xff\xff\xff\0\0\0\x19\0\0\x5\x9e\0\0\x3\x81\xff\xff\xff\xff\0\0\0/\0\0\x5\x9e\0\0\x3\x81\0\0\0\0\0\0\0\0\x5\xa0)
+geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x2\0\0\xff\xff\xff\xff\0\0\0\x19\0\0\x5\x9e\0\0\x3\x81\xff\xff\xff\xff\0\0\0/\0\0\x5\x9e\0\0\x3\x81\0\0\0\0\x2\0\0\0\x5\xa0)
 state="@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x3\0\0\0\0\0\0\x1\x66\0\0\x3>\xfc\x2\0\0\0\x4\xfb\0\0\0\x1e\0m\0N\0o\0\x64\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\0\0\x1\xd7\0\0\0\xfd\0\xff\xff\xff\xfb\0\0\0\x1a\0I\0m\0\x61\0g\0\x65\0 \0P\0r\0\x65\0v\0i\0\x65\0w\x1\0\0\x1%\0\0\x1\xa3\0\0\0\0\0\0\0\0\xfc\0\0\x1\xd8\0\0\x1\x66\0\0\0z\x1\0\0\x14\xfa\0\0\0\x2\x1\0\0\0\x4\xfb\0\0\0,\0m\0P\0\x65\0r\0\x66\0o\0r\0m\0\x61\0n\0\x63\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\xff\xff\xff\xff\0\0\0O\0\xff\xff\xff\xfb\0\0\0\x14\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0 \0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0t\0h\0L\0o\0g\0g\0\x65\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0O\0\xff\xff\xff\xfb\0\0\0\x18\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0_\0\x33\x1\0\0\0\0\0\0\x1\x16\0\0\0\0\0\0\0\0\xfb\0\0\0\"\0M\0u\0l\0t\0i\0m\0\x65\0\x64\0i\0\x61\0 \0P\0l\0\x61\0y\0\x65\0r\x1\0\0\x3\xa7\0\0\0\xb6\0\0\0\0\0\0\0\0\0\0\0\x1\0\0\x1!\0\0\x3>\xfc\x2\0\0\0\x4\xfb\0\0\0*\0m\0S\0t\0y\0l\0\x65\0S\0h\0\x65\0\x65\0t\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x93\0\xff\xff\xff\xfb\0\0\0$\0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\x42\0r\0o\0w\0s\0\x65\0r\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x65\0\xff\xff\xff\xfb\0\0\0&\0m\0S\0n\0i\0p\0p\0i\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\0\0\x3>\0\0\0\0\0\0\0\0\xfb\0\0\0&\0m\0S\0n\0i\0p\0p\0\x65\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x85\0\xff\xff\xff\0\0\0\x3\0\0\x5\xa0\0\0\x1\x8c\xfc\x1\0\0\0\b\xfb\0\0\0\x10\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\x1\0\0\0\0\0\0\x2\xbe\0\0\0\0\0\0\0\0\xfb\0\0\0\f\0V\0\x65\0r\0t\0\x65\0x\x1\0\0\x2\xc2\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0m\0P\0l\0\x61\0y\0L\0i\0s\0t\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0\x6\0Q\0M\0L\x1\0\0\0\0\0\0\x1P\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0 \0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\0\0\0\0\x4\x41\0\0\0\0\0\0\0\0\xfb\0\0\0\x1a\0V\0\x65\0r\0t\0\x65\0x\0 \0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\x4\x42\0\0\x1^\0\0\0\0\0\0\0\0\xfb\0\0\0\x16\0T\0\x65\0x\0t\0 \0\x45\0\x64\0i\0t\0o\0r\x1\0\0\0\0\0\0\x5\xa0\0\0\0\0\0\0\0\0\xfb\0\0\0\x16\0T\0\x65\0x\0t\0 \0\x45\0\x64\0i\0t\0o\0r\x1\0\0\0\0\0\0\x5\xa0\0\0\0\0\0\0\0\0\0\0\x4\x39\0\0\x3>\0\0\0\x4\0\0\0\x4\0\0\0\b\0\0\0\b\xfc\0\0\0\0)"
 
 [meta]
+created=31 Jan 2018 10:02:04 +0000
 name=Untitled
 
 [node-groups]
@@ -162,7 +169,10 @@ e19e876d-2a0c-4831-bda7-437288b1f759=63794cc4-fa17-4de0-a512-ff038d467fd1
 efdfe1d8-e46c-499c-b43f-0233d0945349=63794cc4-fa17-4de0-a512-ff038d467fd1
 
 [notes]
-size=0
+1\note=Press the Button to advance the playhead by one frame.\n\nPress play on the patch to start the playhead\n\nDouble-click on stop to rewind
+1\position="-636,-333"
+1\uuid=6d14b3df-61c6-4571-9865-a6b534bf34e3
+size=1
 version=2
 
 [positions]
@@ -172,3 +182,8 @@ version=2
 e19e876d-2a0c-4831-bda7-437288b1f759="-139.517,-99.009"
 efdfe1d8-e46c-499c-b43f-0233d0945349="-140,-200"
 version=2
+
+[view]
+group=00000000-0000-0000-0000-000000000000
+state\center=@Variant(\0\0\0\x1a\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0)
+state\scale=1

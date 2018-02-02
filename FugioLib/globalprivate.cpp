@@ -46,10 +46,10 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 
 	//-------------------------------------------------------------------------
 
-	mTimeSync = new fugio::TimeSync( this );
+	mTimeSync = std::unique_ptr<fugio::TimeSync>( new fugio::TimeSync( this ) );
 
 #if defined( GLOBAL_THREADED )
-	mGlobalThread = new GlobalThread( this );
+	mGlobalThread = std::unique_ptr<GlobalThread>( new GlobalThread( this ) );
 #endif
 
 	mLastTime   = 0;
@@ -63,6 +63,10 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 
 GlobalPrivate::~GlobalPrivate( void )
 {
+	mTimeSync.reset();
+
+	mGlobalThread.reset();
+
 	for( UuidClassEntryMap::const_iterator it = mNodeMap.constBegin() ; it != mNodeMap.constEnd() ; it++ )
 	{
 		qWarning() << "Node Class not removed:" << it.value().mMetaObject->className();
@@ -253,10 +257,7 @@ void GlobalPrivate::unloadPlugins()
 		}
 	}
 
-	for( QList<QObject *>::iterator it = mPluginInstances.begin() ; it != mPluginInstances.end() ; it++ )
-	{
-		delete *it;
-	}
+	qDeleteAll( mPluginInstances );
 
 	mPluginInstances.clear();
 

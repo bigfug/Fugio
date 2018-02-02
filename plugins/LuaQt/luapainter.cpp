@@ -9,7 +9,7 @@
 #include <fugio/context_interface.h>
 #include <fugio/node_interface.h>
 #include <fugio/lua/lua_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/performance.h>
 
 #include "luaqtplugin.h"
@@ -130,14 +130,16 @@ int LuaPainter::luaNew( lua_State *L )
 		return( 0 );
 	}
 
-	fugio::ImageInterface		*Image = qobject_cast<fugio::ImageInterface *>( Pin->control()->qobject() );
+	fugio::VariantInterface		*Image = qobject_cast<fugio::VariantInterface *>( Pin->control()->qobject() );
 
 	if( !Image )
 	{
 		return( luaL_argerror( L, 1, "Need an image to paint onto" ) );
 	}
 
-	if( !Image->isValid() )
+	fugio::Image				DstImg = Image->variant().value<fugio::Image>();
+
+	if( !DstImg.isValid() )
 	{
 		return( luaL_argerror( L, 1, "Image is not valid" ) );
 	}
@@ -150,7 +152,7 @@ int LuaPainter::luaNew( lua_State *L )
 	luaL_getmetatable( L, LuaPainterData::TypeName );
 	lua_setmetatable( L, -2 );
 
-	PainterData->mImage   = new QImage( Image->internalBuffer( 0 ), Image->width(), Image->height(), Image->lineSize( 0 ), QImage::Format_ARGB32 );
+	PainterData->mImage   = new QImage( DstImg.internalBuffer( 0 ), DstImg.width(), DstImg.height(), DstImg.lineSize( 0 ), QImage::Format_ARGB32 );
 	PainterData->mPainter = new QPainter( PainterData->mImage );
 	PainterData->mPin     = Pin;
 
@@ -431,7 +433,7 @@ int LuaPainter::luaDrawImage( lua_State *L )
 		Source = QRectF( sx, sy, sw, sh );
 	}
 
-	fugio::ImageInterface					*I = nullptr;
+	fugio::VariantInterface					*I = nullptr;
 
 	if( LuaImage::isImage( L, ImgArg ) )
 	{
@@ -468,14 +470,14 @@ int LuaPainter::luaDrawImage( lua_State *L )
 			return( 0 );
 		}
 
-		I = qobject_cast<fugio::ImageInterface *>( P->control()->qobject() );
+		I = qobject_cast<fugio::VariantInterface *>( P->control()->qobject() );
 
 		if( !I )
 		{
 			return( luaL_error( L, "Source is not an image" ) );
 		}
 
-		const QImage					 IM = I->image();
+		const QImage					 IM = I->variant().value<fugio::Image>().image();
 
 		if( IM.isNull() )
 		{

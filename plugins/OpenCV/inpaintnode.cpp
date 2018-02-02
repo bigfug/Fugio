@@ -31,7 +31,7 @@ InPaintNode::InPaintNode( QSharedPointer<fugio::NodeInterface> pNode )
 		return;
 	}
 
-	if( ( mOutputImage = pinOutput<fugio::ImageInterface *>( "Output", mPinOutputImage, PID_IMAGE ) ) == 0 )
+	if( ( mValOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE ) ) == 0 )
 	{
 		return;
 	}
@@ -53,35 +53,16 @@ void InPaintNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	if( !mPinInputImage->isConnected() )
+	fugio::Image		SrcImg = variant<fugio::Image>( mPinInputImage );
+
+	if( SrcImg.isEmpty() )
 	{
 		return;
 	}
 
-	QSharedPointer<PinControlInterface>		 C1 = mPinInputImage->connectedPin()->control();
+	fugio::Image		MskImg = variant<fugio::Image>( mPinInputMask );
 
-	if( C1.isNull() )
-	{
-		return;
-	}
-
-	fugio::ImageInterface							*SrcImg = qobject_cast<fugio::ImageInterface *>( C1->qobject() );
-
-	if( SrcImg == 0 || SrcImg->size().isEmpty() )
-	{
-		return;
-	}
-
-	QSharedPointer<PinControlInterface>		 C2 = mPinInputMask->connectedPin()->control();
-
-	if( C2.isNull() )
-	{
-		return;
-	}
-
-	fugio::ImageInterface							*MskImg = qobject_cast<fugio::ImageInterface *>( C2->qobject() );
-
-	if( MskImg == 0 || MskImg->size().isEmpty() )
+	if( MskImg.isEmpty() )
 	{
 		return;
 	}
@@ -95,8 +76,10 @@ void InPaintNode::inputsUpdated( qint64 pTimeStamp )
 
 	cv::inpaint( MatTmp, MatMsk, mMatImg, mPinInputRadius->value().toDouble(), cv::INPAINT_NS );
 
-	OpenCVPlugin::mat2image( mMatImg, mOutputImage, fugio::ImageInterface::FORMAT_RGB8 );
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( mMatImg, DstImg );
 #endif
 
-	mNode->context()->pinUpdated( mPinOutputImage );
+	pinUpdated( mPinOutputImage );
 }

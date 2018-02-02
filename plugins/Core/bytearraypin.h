@@ -34,7 +34,14 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString( "%1 bytes" ).arg( mValues.first().size() ) );
+		QStringList		L;
+
+		for( const QByteArray &V : mValues )
+		{
+			L << QString( "%1 bytes" ).arg( V.size() );
+		}
+
+		return( L.join( ',' ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
@@ -85,11 +92,6 @@ public:
 		mValues = L;
 	}
 
-	virtual void setVariantType( QMetaType::Type ) Q_DECL_OVERRIDE
-	{
-
-	}
-
 	//-------------------------------------------------------------------------
 	// fugio::SizeInterface interface
 
@@ -101,9 +103,6 @@ public:
 	virtual float sizeDepth() const Q_DECL_OVERRIDE;
 	virtual QSizeF toSizeF() const Q_DECL_OVERRIDE;
 	virtual QVector3D toVector3D() const Q_DECL_OVERRIDE;
-
-private:
-	QVector<QByteArray>		mValues;
 };
 
 #endif // BYTEARRAYPIN_H

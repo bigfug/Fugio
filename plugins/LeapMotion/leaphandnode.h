@@ -5,7 +5,7 @@
 #include <fugio/nodecontrolbase.h>
 #include <fugio/pin_interface.h>
 #include <fugio/core/variant_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 class DeviceLeap;
 

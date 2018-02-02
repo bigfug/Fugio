@@ -12,7 +12,7 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/file/filename_interface.h>
 
 #include <fugio/nodecontrolbase.h>

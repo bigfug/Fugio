@@ -5,8 +5,6 @@
 
 #include <fugio/nodecontrolbase.h>
 
-#include <fugio/core/list_interface.h>
-
 class PacketDecodeNode : public fugio::NodeControlBase
 {
 	Q_OBJECT
@@ -43,7 +41,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputPackets;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputData;
-	fugio::ListInterface						*mValOutputData;
+	fugio::VariantInterface						*mValOutputData;
 };
 
 

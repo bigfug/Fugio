@@ -23,7 +23,7 @@
 
 #include <fugio/global_interface.h>
 #include <fugio/context_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/core/variant_interface.h>
 #include <fugio/file/filename_interface.h>
 #include <fugio/audio/audio_producer_interface.h>
@@ -52,7 +52,7 @@ MediaProcessorNode::MediaProcessorNode( QSharedPointer<fugio::NodeInterface> pNo
 
 	mPinRewind = pinInput( "Rewind", PIN_REWIND );
 
-	mValImage = pinOutput<fugio::ImageInterface *>( "Image", mPinImage, PID_IMAGE, PIN_IMAGE );
+	mValImage = pinOutput<fugio::VariantInterface *>( "Image", mPinImage, PID_IMAGE, PIN_IMAGE );
 
 	mValAudio = pinOutput<fugio::AudioProducerInterface *>( "Audio", mPinAudio, PID_AUDIO, PIN_AUDIO );
 
@@ -151,9 +151,11 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 
 		mLstPts = VD->mPTS;
 
-		mValImage->setSize( mSegment->imageSize().width(), mSegment->imageSize().height() );
+		fugio::Image		I = mValImage->variant().value<fugio::Image>();
 
-		mValImage->setLineSizes( VD->mLineSizes );
+		I.setSize( mSegment->imageSize().width(), mSegment->imageSize().height() );
+
+		I.setLineSizes( VD->mLineSizes );
 
 		if( mSegment->imageIsHap() )
 		{
@@ -161,77 +163,77 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 			switch( HapTextureFormat( mSegment->imageFormat() ) )
 			{
 				case HapTextureFormat_RGB_DXT1:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_DXT1 );
+					I.setFormat( fugio::ImageFormat::DXT1 );
 					break;
 
 				case HapTextureFormat_RGBA_DXT5:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_DXT5 );
+					I.setFormat( fugio::ImageFormat::DXT5 );
 					break;
 
 				case HapTextureFormat_YCoCg_DXT5:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_YCoCg_DXT5 );
+					I.setFormat( fugio::ImageFormat::YCoCg_DXT5 );
 					break;
 
 				default:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_UNKNOWN );
+					I.setFormat( fugio::ImageFormat::UNKNOWN );
 					break;
 			}
 #else
-			mValImage->setFormat( fugio::ImageInterface::FORMAT_UNKNOWN );
+			I.setFormat( fugio::ImageFormat::UNKNOWN );
 #endif
 		}
 		else
 		{
-			mValImage->setInternalFormat( mSegment->imageFormat() );
+			I.setInternalFormat( mSegment->imageFormat() );
 
 #if defined( FFMPEG_SUPPORTED )
 			switch( AVPixelFormat( mSegment->imageFormat() ) )
 			{
 				case AV_PIX_FMT_RGB24:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_RGB8 );
+					I.setFormat( fugio::ImageFormat::RGB8 );
 					break;
 
 				case AV_PIX_FMT_RGBA:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_RGBA8 );
+					I.setFormat( fugio::ImageFormat::RGBA8 );
 					break;
 
 				case AV_PIX_FMT_BGR24:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_BGR8 );
+					I.setFormat( fugio::ImageFormat::BGR8 );
 					break;
 
 				case AV_PIX_FMT_BGRA:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+					I.setFormat( fugio::ImageFormat::BGRA8 );
 					break;
 
 				case AV_PIX_FMT_YUYV422:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_YUYV422 );
+					I.setFormat( fugio::ImageFormat::YUYV422 );
 					break;
 
 				case AV_PIX_FMT_YUV420P:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_YUV420P );
+					I.setFormat( fugio::ImageFormat::YUV420P );
 					break;
 
 				case AV_PIX_FMT_GRAY8:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_GRAY8 );
+					I.setFormat( fugio::ImageFormat::GRAY8 );
 					break;
 
 				case AV_PIX_FMT_GRAY16:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_GRAY16 );
+					I.setFormat( fugio::ImageFormat::GRAY16 );
 					break;
 
 				default:
-					mValImage->setFormat( fugio::ImageInterface::FORMAT_INTERNAL );
+					I.setFormat( fugio::ImageFormat::INTERNAL );
 					break;
 			}
 #else
-			mValImage->setFormat( fugio::ImageInterface::FORMAT_INTERNAL );
+			I.setFormat( fugio::ImageFormat::INTERNAL );
 #endif
 		}
 
-		mValImage->setBuffers( VD->mData );
-		mValImage->setLineSizes( VD->mLineSizes );
+		I.setBuffers( VD->mData );
+		I.setLineSizes( VD->mLineSizes );
 
-		if( mValImage->format() != fugio::ImageInterface::FORMAT_UNKNOWN )
+		if( I.format() != fugio::ImageFormat::UNKNOWN )
 		{
 			pinUpdated( mPinImage );
 		}
