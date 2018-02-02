@@ -58,6 +58,8 @@ SnippetsForm::SnippetsForm(QWidget *parent) :
 	SysDir.cdUp();
 
 	SysDir.cd( "Fugio" );
+#else
+	SysDir.cd( "share" );
 #endif
 
 #else
@@ -66,6 +68,8 @@ SnippetsForm::SnippetsForm(QWidget *parent) :
 	SysDir.cdUp();
 
 	SysDir.cd( "Fugio" );
+#else
+	SysDir.cd( "share" );
 #endif
 
 #endif // defined( Q_OS_MACX )

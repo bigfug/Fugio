@@ -215,6 +215,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	bool		FoundExamples = false;
 
+#if defined( Q_OS_LINUX )
+	if( !FoundExamples )
+	{
+		FoundExamples = addExamplesPath( "/usr/share/fugio/examples" );
+	}
+#endif
+
 	if( !FoundExamples )
 	{
 		FoundExamples = addExamplesPath( QDir::current().absoluteFilePath( "examples" ) );
@@ -227,6 +234,11 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	if( !FoundExamples )
 	{
+		FoundExamples = addExamplesPath( QDir( QApplication::applicationDirPath() ).absoluteFilePath( "share/examples" ) );
+	}
+
+	if( !FoundExamples )
+	{
 		FoundExamples = addExamplesPath( QDir( QApplication::applicationDirPath() ).absoluteFilePath( "examples" ) );
 	}
 
@@ -234,13 +246,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	{
 		FoundExamples = addExamplesPath( QDir( QApplication::applicationDirPath() ).absoluteFilePath( "../Fugio/examples" ) );
 	}
-
-#if defined( Q_OS_LINUX )
-	if( !FoundExamples )
-	{
-		FoundExamples = addExamplesPath( "/usr/share/fugio/examples" );
-	}
-#endif
 
 	if( !FoundExamples )
 	{
