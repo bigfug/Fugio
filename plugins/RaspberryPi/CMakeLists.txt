@@ -40,12 +40,19 @@ target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 # Raspberry Pi
 
 if( Q_OS_RASPBERRY_PI )
-	target_include_directories( ${PROJECT_NAME} PRIVATE /opt/vc/include )
+	target_include_directories( ${PROJECT_NAME} PRIVATE
+		/opt/vc/include
+		/opt/vc/include/interface/vcos/pthreads
+		/opt/vc/include/interface/vmcs_host/linux
+		)
 
 	find_library( BCM_HOST_LIBRARY NAMES bcm_host PATHS /opt/vc/lib )
-	find_library( PIGPIO_LIBRARY   NAMES pigpio )
 
-	target_link_libraries( ${PROJECT_NAME} ${BCM_HOST_LIBRARY} ${PIGPIO_LIBRARY} )
+	find_library( OPENMAX_LIBRARY NAMES openmaxil PATHS /opt/vc/lib )
+
+	find_library( PIGPIO_LIBRARY NAMES pigpio )
+
+	target_link_libraries( ${PROJECT_NAME} ${BCM_HOST_LIBRARY} ${PIGPIO_LIBRARY} ${OPENMAX_LIBRARY} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE OMX_SKIP64BIT )
 endif()
