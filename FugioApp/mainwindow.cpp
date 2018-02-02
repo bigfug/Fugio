@@ -262,7 +262,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		ExamplesDir.cdUp();
 	#endif
 
-		ExamplesDir.cd( "examples" );
+		ExamplesDir.cd( "share/examples" );
 
 		qInfo() << "Examples Directory:" << ExamplesDir.absolutePath();
 
