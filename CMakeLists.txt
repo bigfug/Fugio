@@ -59,7 +59,7 @@ endif( WIN32 )
 
 set( PATH_APP . )
 set( PATH_INCLUDE include )
-set( PATH_SHARE . )
+set( PATH_SHARE share )
 set( PATH_PLUGIN plugins )
 
 if( UNIX AND NOT APPLE )
@@ -84,6 +84,7 @@ add_subdirectory( plugins )
 install( DIRECTORY include/fugio DESTINATION ${PATH_INCLUDE} )
 install( DIRECTORY examples DESTINATION ${PATH_SHARE} )
 install( DIRECTORY snippets DESTINATION ${PATH_SHARE} )
+install( DIRECTORY share/ DESTINATION ${PATH_SHARE} )
 install( DIRECTORY FugioApp/stylesheets DESTINATION ${PATH_SHARE} )
 
 #------------------------------------------------------------------------------
