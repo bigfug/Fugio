@@ -45,6 +45,9 @@ protected:
 
 	QVector<QSharedPointer<fugio::PinInterface>>	 mInputs;
 	QVector<QSharedPointer<fugio::PinInterface>>	 mParams;
+
+	FFUInt32										 mBitDepth;
+	QVector<quint8>									 mDstBuf;
 };
 
 #endif // FF10NODE_H

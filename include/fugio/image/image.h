@@ -32,7 +32,8 @@ typedef enum ImageFormat
 	R32S,
 	R32F,
 	YUVJ422P,
-	NV12
+	NV12,
+	RGB_565
 } ImageFormat;
 
 class ImageData
@@ -66,7 +67,7 @@ public:
 	const static int PLANE_COUNT = 8;
 
 	mutable quint8			*mBuffer[ PLANE_COUNT ];		// allocated buffers
-	const quint8			*mPointer[ PLANE_COUNT ];		// pointers to external buffers
+	quint8					*mPointer[ PLANE_COUNT ];		// pointers to external buffers
 	mutable int				 mBufferSizes[ PLANE_COUNT ];
 	int						 mLineWidth[ PLANE_COUNT ];
 	QSize					 mSize;
@@ -251,7 +252,7 @@ public:
 		mData->mBufferSizes[ pIndex ] = pBufSze;
 	}
 
-	inline const quint8 *buffer( int pIndex )
+	inline quint8 *buffer( int pIndex )
 	{
 		return( mData->mPointer[ pIndex ] ? mData->mPointer[ pIndex ] : internalBuffer( pIndex ) );
 	}
@@ -268,7 +269,7 @@ public:
 		return( IM->mPointer[ 0 ] ? IM->mPointer : IM->mBuffer );
 	}
 
-	inline void setBuffer( int pIndex, const quint8 *pBuffer )
+	inline void setBuffer( int pIndex, quint8 *pBuffer )
 	{
 		mData->mPointer[ pIndex ] = pBuffer;
 	}

@@ -172,6 +172,14 @@ void FFGLNode::inputsUpdated( qint64 pTimeStamp )
 
 			MainFunc( FF_SETPARAMETER, PMU, mInstanceId );
 		}
+		else if( PrmEnt.mType == FF_TYPE_BOOLEAN )
+		{
+			PrmSet.NewParameterValue.UIntValue = PrmVal.value<bool>() ? FF_TRUE : FF_FALSE;
+
+			PMU.PointerValue = &PrmSet;
+
+			MainFunc( FF_SETPARAMETER, PMU, mInstanceId );
+		}
 	}
 
 	GLint		Viewport[ 4 ];

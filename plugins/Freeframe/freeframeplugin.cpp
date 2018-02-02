@@ -44,7 +44,7 @@ PluginInterface::InitResult FreeframePlugin::initialise( fugio::GlobalInterface 
 {
 	Q_UNUSED( pLastChance )
 
-	static QDir FFDir( "/Users/bigfug/dev/Freeframe/deploy-release-x86_64" );
+	static QDir FFDir( "/Users/bigfug/dev/Freeframe/deploy-debug-x86_64" );
 
 	mApp = pApp;
 

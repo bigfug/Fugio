@@ -16,26 +16,51 @@ public:
 
 	inline bool isInitialised( void ) const
 	{
-		return( mFlags.testFlag( FLAGS_INITIALISED ) );
+		return( mFlags.testFlag( INITIALISED ) );
 	}
 
 	bool initialise( void );
 
 	void deinitialise( void );
 
+	enum Flag
+	{
+		NONE				= 0,
+		INITIALISED			= 1 << 0,
+		PROCESSFRAMECOPY	= 1 << 1,
+		FFGL				= 1 << 2,
+		SOURCE				= 1 << 3,
+		CAP_16BIT			= 1 << 4,
+		CAP_24BIT			= 1 << 5,
+		CAP_32BIT			= 1 << 6,
+		CAP_SETTIME			= 1 << 7
+	};
+
+	Q_DECLARE_FLAGS( Flags, Flag )
+
+	inline Flags flags( void ) const
+	{
+		return( mFlags );
+	}
+
 	inline bool isSource( void ) const
 	{
-		return( mFlags.testFlag( FLAGS_SOURCE ) );
+		return( mFlags.testFlag( SOURCE ) );
 	}
 
 	inline bool isFFGL( void ) const
 	{
-		return( mFlags.testFlag( FLAGS_FFGL ) );
+		return( mFlags.testFlag( FFGL ) );
 	}
 
 	inline bool hasProcessFrameCopy( void ) const
 	{
-		return( mFlags.testFlag( FLAGS_PROCESSFRAMECOPY ) );
+		return( mFlags.testFlag( PROCESSFRAMECOPY ) );
+	}
+
+	inline int minInputFrames( void ) const
+	{
+		return( mMinInputFrames );
 	}
 
 	inline int maxInputFrames( void ) const
@@ -48,16 +73,7 @@ public:
 		return( mMainFunc );
 	}
 
-	enum Flag
-	{
-		FLAGS_NONE				= 0,
-		FLAGS_INITIALISED		= 1 << 0,
-		FLAGS_PROCESSFRAMECOPY	= 1 << 1,
-		FLAGS_FFGL				= 1 << 2,
-		FLAGS_SOURCE			= 1 << 3
-	};
-
-	Q_DECLARE_FLAGS( Flags, Flag )
+	bool testCapability( FFUInt32 pType ) const;
 
 	typedef struct ParamEntry
 	{
@@ -79,6 +95,7 @@ public:
 
 protected:
 	QLibrary								 mPluginLibrary;
+	int										 mMinInputFrames;
 	int										 mMaxInputFrames;
 	Flags									 mFlags;
 	QList<ParamEntry>						 mParams;

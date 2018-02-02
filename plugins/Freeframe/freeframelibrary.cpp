@@ -1,7 +1,7 @@
 #include "freeframelibrary.h"
 
 FreeframeLibrary::FreeframeLibrary( const QString &pLibraryName )
-	: mPluginLibrary( pLibraryName ), mMaxInputFrames( 1 ), mFlags( FLAGS_NONE ), mMainFunc( nullptr )
+	: mPluginLibrary( pLibraryName ), mMaxInputFrames( 1 ), mFlags( NONE ), mMainFunc( nullptr )
 {
 	mMainFunc = nullptr;
 }
@@ -33,24 +33,54 @@ bool FreeframeLibrary::initialise()
 
 	FFMixed		PMU;
 
-	PMU.UIntValue = FF_CAP_PROCESSOPENGL;
-
-	PMU = mMainFunc( FF_GETPLUGINCAPS, PMU, NULL );
-
-	if( PMU.UIntValue == FF_SUPPORTED )
+	if( testCapability( FF_CAP_SETTIME ) )
 	{
-		mFlags.setFlag( FLAGS_FFGL );
+		mFlags.setFlag( CAP_SETTIME );
+	}
+
+	if( testCapability( FF_CAP_PROCESSOPENGL ) )
+	{
+		mFlags.setFlag( FFGL );
 	}
 	else
 	{
-		PMU.UIntValue = FF_CAP_PROCESSFRAMECOPY;
-
-		PMU = mMainFunc( FF_GETPLUGINCAPS, PMU, 0 );
-
-		if( PMU.UIntValue == FF_SUPPORTED )
+		if( testCapability( FF_CAP_16BITVIDEO ) )
 		{
-			mFlags.setFlag( FLAGS_PROCESSFRAMECOPY );
+			mFlags.setFlag( CAP_16BIT );
 		}
+
+		if( testCapability( FF_CAP_24BITVIDEO ) )
+		{
+			mFlags.setFlag( CAP_24BIT );
+		}
+
+		if( testCapability( FF_CAP_32BITVIDEO ) )
+		{
+			mFlags.setFlag( CAP_32BIT );
+		}
+
+		if( testCapability( FF_CAP_PROCESSFRAMECOPY ) )
+		{
+			mFlags.setFlag( PROCESSFRAMECOPY );
+		}
+	}
+
+	PMU.UIntValue = FF_CAP_MINIMUMINPUTFRAMES;
+
+	PMU = mMainFunc( FF_GETPLUGINCAPS, PMU, 0 );
+
+	if( PMU.UIntValue != FF_FALSE )
+	{
+		mMinInputFrames = PMU.UIntValue;
+	}
+	else
+	{
+		mMinInputFrames = 1;
+	}
+
+	if( !mMinInputFrames )
+	{
+		mFlags.setFlag( SOURCE );
 	}
 
 	PMU.UIntValue = FF_CAP_MAXIMUMINPUTFRAMES;
@@ -64,11 +94,6 @@ bool FreeframeLibrary::initialise()
 	else
 	{
 		mMaxInputFrames = 1;
-	}
-
-	if( !mMaxInputFrames )
-	{
-		mFlags.setFlag( FLAGS_SOURCE );
 	}
 
 	//-------------------------------------------------------------------------
@@ -151,7 +176,7 @@ bool FreeframeLibrary::initialise()
 		return( false );
 	}
 
-	mFlags |= FLAGS_INITIALISED;
+	mFlags |= INITIALISED;
 
 	return( true );
 }
@@ -172,10 +197,21 @@ void FreeframeLibrary::deinitialise()
 
 			mMainFunc = nullptr;
 
-			mFlags &= ~FLAGS_INITIALISED;
+			mFlags &= ~INITIALISED;
 		}
 
 		mPluginLibrary.unload();
 	}
+}
+
+bool FreeframeLibrary::testCapability(FFUInt32 pType) const
+{
+	FFMixed		PMU;
+
+	PMU.UIntValue = pType;
+
+	PMU = mMainFunc( FF_GETPLUGINCAPS, PMU, 0 );
+
+	return( PMU.UIntValue == FF_SUPPORTED );
 }
 
