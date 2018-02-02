@@ -46,7 +46,7 @@ void FlipNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
 
-	OpenCVPlugin::mat2image( mMatImg, DstImg );
+	OpenCVPlugin::mat2image( mMatImg, DstImg, SrcImg.format() );
 
 	pinUpdated( mPinOutputImage );
 #endif
