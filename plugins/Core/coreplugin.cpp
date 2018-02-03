@@ -49,6 +49,7 @@
 #include "joinrectnode.h"
 #include "splitrectnode.h"
 #include "integertofloatnode.h"
+#include "blockupdatesnode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -117,6 +118,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Split Rect", NID_SPLIT_RECT, &SplitRectNode::staticMetaObject ),
 	ClassEntry( "Split Size", NID_SPLIT_SIZE, &SplitSizeNode::staticMetaObject ),
 	ClassEntry( "Switch", NID_SWITCH, &SwitchNode::staticMetaObject ),
+	ClassEntry( "Block Updates", NID_BLOCK_UPDATES, &BlockUpdatesNode::staticMetaObject ),
 	ClassEntry()
 };
 

@@ -83,6 +83,8 @@ set( SOURCE_FILES
 	splitrectnode.h
 	integertofloatnode.cpp
 	integertofloatnode.h
+	blockupdatesnode.cpp
+	blockupdatesnode.h
 )
 
 set( QRC_FILES

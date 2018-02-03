@@ -14,13 +14,21 @@ set( SOURCE_FILES
 	cmdtexteditorupdate.h
 	codeeditor.cpp
 	codeeditor.h
+	containsnode.cpp
+	containsnode.h
 	linebuffernode.cpp
 	linebuffernode.h
 	linenumberarea.h
+	leftnode.cpp
+	leftnode.h
+	midnode.cpp
+	midnode.h
 	numbertostringnode.cpp
 	numbertostringnode.h
 	regexpnode.cpp
 	regexpnode.h
+	rightnode.cpp
+	rightnode.h
 	stringjoinnode.cpp
 	stringjoinnode.h
 	syntaxerrorpin.cpp

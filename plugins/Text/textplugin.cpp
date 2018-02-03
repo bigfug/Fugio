@@ -14,6 +14,10 @@
 #include "stringsplitnode.h"
 #include "stringtofloatnode.h"
 #include "stringtointegernode.h"
+#include "midnode.h"
+#include "leftnode.h"
+#include "rightnode.h"
+#include "containsnode.h"
 
 #include "syntaxerrorpin.h"
 
@@ -28,10 +32,14 @@ using namespace fugio;
 
 ClassEntry		mNodeClasses[] =
 {
+	ClassEntry( "Contains",				"String", NID_CONTAINS, &ContainsNode::staticMetaObject ),
 	ClassEntry( "Number To String",		"String", NID_NUMBER_TO_STRING, &NumberToStringNode::staticMetaObject ),
 	ClassEntry( "RegExp",				"String", NID_REGEXP, &RegExpNode::staticMetaObject ),
 	ClassEntry( "Join",					"String", NID_STRING_JOIN, &StringJoinNode::staticMetaObject ),
 	ClassEntry( "Split",				"String", NID_STRING_SPLIT, &StringSplitNode::staticMetaObject ),
+	ClassEntry( "Left",					"String", NID_LEFT, &LeftNode::staticMetaObject ),
+	ClassEntry( "Right",				"String", NID_RIGHT, &RightNode::staticMetaObject ),
+	ClassEntry( "Mid",					"String", NID_MID, &MidNode::staticMetaObject ),
 	ClassEntry( "Line Buffer",			"String", NID_LINE_BUFFER, &LineBufferNode::staticMetaObject ),
 	ClassEntry( "Strint To Integer",	"String", NID_STRING_TO_INTEGER, &StringToIntegerNode::staticMetaObject ),
 	ClassEntry( "Strint To Float",		"String", NID_STRING_TO_FLOAT, &StringToFloatNode::staticMetaObject ),

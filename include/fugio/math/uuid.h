@@ -41,6 +41,8 @@
 #define NID_XNOR				(QUuid("{5c0784e5-8c2c-4df0-91f4-0c02765e69c5}"))
 #define NID_SUM					(QUuid("{97377df3-559d-4a73-b2fc-5b63fa8b1064}"))
 
+#define NID_BOOLEAN_LATCH		(QUuid("{f2d59cc9-0ec6-406e-b0e3-df1fdb73ac7e}"))
+
 #define NID_COMPARE_NUMBERS		(QUuid("{aaf42ad1-6336-4455-ad30-f65f69729ca3}"))
 
 #define PID_MATRIX4				(QUuid("{a7e74342-b94c-4def-b563-b689c451bb33}"))

@@ -52,6 +52,8 @@ set( SOURCE_FILES
 	screennode.h
 	inputeventspin.h
 	mousenode.h
+	labelnode.cpp
+	labelnode.h
 
 	numbermonitorform.ui
 	keyboarddialog.ui

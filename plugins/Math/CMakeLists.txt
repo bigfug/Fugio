@@ -17,6 +17,8 @@ set( SOURCE_FILES
 	andnode.h
 	arccosnode.cpp
 	arccosnode.h
+	booleanlatchnode.cpp
+	booleanlatchnode.h
 	ceilnode.cpp
 	ceilnode.h
 	comparenumbersnode.cpp
