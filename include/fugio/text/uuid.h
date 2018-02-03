@@ -16,6 +16,7 @@
 #define NID_LEFT				(QUuid("{1ef2abf8-accb-4189-b326-a6b1c8561e94}"))
 #define NID_RIGHT				(QUuid("{78139514-e412-4a64-afdc-9bee4b1e7fb3}"))
 #define NID_CONTAINS			(QUuid("{9094cc75-9eea-455f-a66d-b4f9e8f1bb6d}"))
+#define NID_CHOP				(QUuid("{c44dc9f9-5fde-46f8-9406-6e2afcae52e0}"))
 
 #define PID_SYNTAX_ERROR		(QUuid("{35992A92-8571-4AC7-AACA-98AE7E0CD3D2}"))
 
