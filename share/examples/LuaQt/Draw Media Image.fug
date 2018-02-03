@@ -110,7 +110,7 @@ uuid=9c02b1dd-dae9-4011-858c-c050fa3d9e7c
 version=2
 
 [71069b4d-4f5c-48c2-b0c1-2c60a71b7ec2]
-control\filename=../../share/video/Fugio Clouds.mp4
+control\filename=../../video/Fugio Clouds.mp4
 direction=2
 name=Filename
 order=0
@@ -231,7 +231,7 @@ version=2
 direction=1
 name=Filename
 order=0
-settings\filename\directory=/Users/bigfug/dev/Fugio/Fugio/share/video
+settings\filename\directory=../../video
 uuid=43d2824f-7967-4b22-8b0f-c51358b65d17
 version=2
 

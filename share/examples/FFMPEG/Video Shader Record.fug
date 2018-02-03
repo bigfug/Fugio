@@ -341,7 +341,7 @@ version=2
 direction=1
 name=Filename
 order=1
-settings\filename\directory=/Users/bigfug/dev/Fugio/Fugio/share/video
+settings\filename\directory=../../video
 uuid=43d2824f-7967-4b22-8b0f-c51358b65d17
 version=2
 
@@ -762,7 +762,7 @@ outputs\size=1
 version=2
 
 [c5886812-0b28-41a5-83db-c3b53f7487e1]
-control\filename=../../share/video/Fugio Clouds.mp4
+control\filename=../../video/Fugio Clouds.mp4
 direction=2
 name=Filename
 order=0

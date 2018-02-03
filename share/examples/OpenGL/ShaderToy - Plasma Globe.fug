@@ -12,7 +12,7 @@ uuid=ce8d578e-c5a4-422f-b3c4-a1bdf40facdb
 version=2
 
 [01521c8a-d95c-47cf-acf8-afae1a585f04]
-control\filename=../../share/images/tex16.png
+control\filename=../../images/tex16.png
 direction=2
 name=Filename
 order=0
@@ -548,7 +548,7 @@ version=2
 direction=1
 name=FileName
 order=0
-settings\filename\directory=/Users/bigfug/dev/Fugio/Fugio/share/images
+settings\filename\directory=../../images
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
 version=2
 

@@ -53,7 +53,7 @@ uuid=8cc6495d-f647-4a49-bd33-5b4ed0da869e
 version=2
 
 [225b89a1-fdbb-40f3-85c2-7036c62a96d6]
-control\filename=../../share/video/Fugio Clouds.mp4
+control\filename=../../video/Fugio Clouds.mp4
 direction=2
 name=Filename
 order=0

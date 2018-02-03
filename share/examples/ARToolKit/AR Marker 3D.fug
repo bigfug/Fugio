@@ -107,7 +107,7 @@ name=Filename
 direction=2
 order=0
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
-control\filename=../../share/ARToolKit/hiro.patt
+control\filename=../ARToolKit/hiro.patt
 
 [92d61916-08eb-44df-82b9-3d4c5016f2ac]
 version=2
@@ -143,7 +143,7 @@ name=Pattern
 direction=1
 order=2
 uuid=261cc653-d7fa-4c34-a08b-3603e8ae71d5
-settings\filename\directory=E:/dev/projects/Fugio/Fugio/share/ARToolKit
+settings\filename\directory=../ARToolKit
 
 [3ff359e1-54d3-40f4-94a7-78fdf9713f3c]
 version=2
@@ -181,7 +181,7 @@ name=Filename
 direction=2
 order=0
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
-control\filename=../../share/ARToolKit/camera_para.dat
+control\filename=../ARToolKit/camera_para.dat
 
 [c107d24e-2cf5-4a2a-a890-017ef278cc72]
 version=2
@@ -251,7 +251,7 @@ name=Filename
 direction=1
 order=0
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
-settings\filename\directory=E:/dev/projects/Fugio/Fugio/share/ARToolKit
+settings\filename\directory=../ARToolKit
 
 [5f71690b-bc0d-4483-998b-1e44446fd553]
 version=2

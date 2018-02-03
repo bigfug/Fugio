@@ -166,7 +166,7 @@ name=Filename
 direction=1
 order=0
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
-settings\filename\directory=E:/dev/projects/Fugio/Fugio/share/video
+settings\filename\directory=../../video
 
 [a0282eaf-8ef0-42b0-9666-d84d7ce6e7a2]
 version=2
@@ -202,7 +202,7 @@ name=Filename
 direction=2
 order=0
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
-control\filename=../../share/video/Fugio Clouds.mp4
+control\filename=../../video/Fugio Clouds.mp4
 
 [positions]
 version=2

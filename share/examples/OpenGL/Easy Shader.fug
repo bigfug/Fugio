@@ -234,7 +234,7 @@ uuid=0c6cbd5b-221d-4579-90ee-f294c7313f2a
 version=2
 
 [b7cf10de-d9e6-404a-9011-44df2dd1b840]
-default=/Users/bigfug/dev/Fugio/Fugio/share/images/kitten.jpg
+default=../../images/kitten.jpg
 direction=1
 name=Filename
 order=0

@@ -370,7 +370,7 @@ name=Filename
 direction=2
 order=0
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
-control\filename=../../share/video/Fugio Clouds.mp4
+control\filename=../../video/Fugio Clouds.mp4
 
 [b9dd6090-dd0a-497a-b7e6-b6b147a8782b]
 version=2

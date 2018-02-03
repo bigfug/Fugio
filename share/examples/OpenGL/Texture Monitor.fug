@@ -2,7 +2,7 @@
 direction=1
 name=Filename
 order=0
-settings\filename\directory=/Users/bigfug/dev/Fugio/Fugio/share/images
+settings\filename\directory=../../images
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
 version=2
 
@@ -78,7 +78,7 @@ e3a066a1-3001-4323-a3b1-11f4eb617426=b3006a20-282c-421d-95b4-a33631caa4d7
 f3993f9e-8a37-4f2f-909e-8ab7b178306a=9d85d735-428f-4dc6-a3ae-e5e9a3e5914e
 
 [d633ce75-4961-4145-943b-6e5967412381]
-control\filename=../../share/images/kitten.jpg
+control\filename=../../images/kitten.jpg
 direction=2
 name=Filename
 order=0

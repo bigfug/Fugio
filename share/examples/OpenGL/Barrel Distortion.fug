@@ -213,7 +213,7 @@ outputs\size=1
 version=2
 
 [954621ca-7982-4220-a8b0-7170b7c4ff89]
-default=/Users/bigfug/dev/Fugio/Fugio/share/images/kitten.jpg
+default=../../images/kitten.jpg
 direction=1
 name=Filename
 order=0
