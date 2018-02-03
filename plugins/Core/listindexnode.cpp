@@ -5,6 +5,7 @@
 #include <fugio/context_interface.h>
 #include <fugio/core/list_interface.h>
 #include <fugio/core/array_list_interface.h>
+#include <fugio/pin_variant_iterator.h>
 
 ListIndexNode::ListIndexNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -17,44 +18,31 @@ ListIndexNode::ListIndexNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputIndex = pinInput( "Index", ID_INDEX );
 
-	pinOutput<fugio::VariantInterface *>( "Value", mPinOutputValue, PID_VARIANT, ID_VALUE );
+	mValOutputValue = pinOutput<fugio::VariantInterface *>( "Value", mPinOutputValue, PID_VARIANT, ID_VALUE );
 }
 
 void ListIndexNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	const int					 LstIdx = variant( mPinInputIndex ).toInt();
+	const int					 LstIdx = variant<int>( mPinInputIndex );
 
-	fugio::VariantInterface		*VarOut = qobject_cast<fugio::VariantInterface *>( mPinOutputValue->control()->qobject() );
-
-	fugio::VariantInterface		*VarInf = input<fugio::VariantInterface *>( mPinInputList );
-
-	if( VarInf )
+	if( LstIdx < 0 || LstIdx >= mValOutputValue->variantCount() )
 	{
-		if( LstIdx < 0 || LstIdx >= VarInf->variantCount() )
-		{
-			return;
-		}
+		return;
+	}
 
-		QVariant				 VarVal = VarInf->variant( LstIdx );
+	fugio::PinVariantIterator	 PinVar( mPinInputList );
 
-		if( VarOut->variant() != VarVal )
-		{
-			if( mPinOutputValue->controlUuid() != VarInf->variantPinControl() )
-			{
-				mNode->context()->updatePinControl( mPinOutputValue, VarInf->variantPinControl() );
+	const QVariant				 VarVal = PinVar.index( LstIdx );
 
-				VarOut = qobject_cast<fugio::VariantInterface *>( mPinOutputValue->control()->qobject() );
-			}
+	if( mValOutputValue->variant() != VarVal )
+	{
+		mValOutputValue->setVariantType( QMetaType::Type( VarVal.type() ) );
 
-			if( VarOut )
-			{
-				VarOut->setVariant( VarVal );
+		mValOutputValue->setVariant( VarVal );
 
-				pinUpdated( mPinOutputValue );
-			}
-		}
+		pinUpdated( mPinOutputValue );
 	}
 
 //	fugio::ArrayListInterface	*ArLInf = input<fugio::ArrayListInterface *>( mPinInputList );
