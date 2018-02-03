@@ -159,11 +159,34 @@ void GlobalPrivate::initialisePlugins()
 QString GlobalPrivate::sharedDataPath() const
 {
 #if defined( QT_DEBUG )
-	return( QDir::current().absoluteFilePath( "../Fugio" ) );
-#elif defined( Q_OS_LINUX )
+	// In debug mode go relative to this source file
+
+	QDir		TmpDir = QDir( __FILE__ );
+
+	TmpDir.cdUp();
+	TmpDir.cdUp();
+
+	return( TmpDir.absoluteFilePath( "share" ) );
+#endif
+
+#if defined( Q_OS_WIN ) && !defined( QT_DEBUG )
+	return( QDir( QApplication::applicationDirPath() ).absoluteFilePath( "share" ) );
+#endif
+
+#if defined( Q_OS_MAC ) && !defined( QT_DEBUG )
+	QDir		TmpDir = QDir( QApplication::applicationDirPath() );
+
+	// Get out of the app bundle
+
+	TmpDir.cdUp();
+	TmpDir.cdUp();
+	TmpDir.cdUp();
+
+	return( TmpDir.absoluteFilePath( "share" ) );
+#endif
+
+#if defined( Q_OS_LINUX ) && !defined( QT_DEBUG )
 	return( "/usr/share/fugio" );
-#else
-	return( QDir::current().absolutePath() );
 #endif
 }
 

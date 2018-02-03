@@ -81,11 +81,8 @@ add_subdirectory( plugins )
 
 #------------------------------------------------------------------------------
 
-install( DIRECTORY include/fugio DESTINATION ${PATH_INCLUDE} )
-install( DIRECTORY examples DESTINATION ${PATH_SHARE} )
-install( DIRECTORY snippets DESTINATION ${PATH_SHARE} )
+install( DIRECTORY include/ DESTINATION ${PATH_INCLUDE} )
 install( DIRECTORY share/ DESTINATION ${PATH_SHARE} )
-install( DIRECTORY FugioApp/stylesheets DESTINATION ${PATH_SHARE} )
 
 #------------------------------------------------------------------------------
 # CPack
