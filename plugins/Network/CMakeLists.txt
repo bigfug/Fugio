@@ -66,8 +66,11 @@ install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 #—————————————————————————————————-
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Gui Network Widgets REQUIRED )
-find_package( Qt5 COMPONENTS WebSockets )
+find_package( Qt5 COMPONENTS Core Gui Network Widgets OPTIONAL_COMPONENTS WebSockets REQUIRED )
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Network Qt5::Widgets Qt5::WebSockets )
+
+if( Qt5WebSockets_DIR )
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE WEBSOCKET_SUPPORTED )
+endif()
 
