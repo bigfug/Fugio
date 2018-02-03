@@ -66,7 +66,7 @@ void BlockUpdatesNode::pinLinked( QSharedPointer<fugio::PinInterface> P1, QShare
 		return;
 	}
 
-	qDebug() << "link" << P1->node()->name() << ":" << P1->name() << "->" << P2->node()->name() << ":" << P2->name();
+//	qDebug() << "link" << P1->node()->name() << ":" << P1->name() << "->" << P2->node()->name() << ":" << P2->name();
 
 	QSharedPointer<fugio::PinControlInterface>	PCI = P1->control();
 
@@ -100,7 +100,7 @@ void BlockUpdatesNode::pinUnlinked(QSharedPointer<fugio::PinInterface> P1, QShar
 		return;
 	}
 
-	qDebug() << "unlink" << P1->node()->name() << ":" << P1->name() << "->" << P2->node()->name() << ":" << P2->name();
+//	qDebug() << "unlink" << P1->node()->name() << ":" << P1->name() << "->" << P2->node()->name() << ":" << P2->name();
 
 	for( fugio::NodeInterface::UuidPair UP : mNode->pairedPins() )
 	{
