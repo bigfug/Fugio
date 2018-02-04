@@ -43,8 +43,8 @@ ClassEntry		mNodeClasses[] =
 	ClassEntry( "Right",				"String", NID_RIGHT, &RightNode::staticMetaObject ),
 	ClassEntry( "Mid",					"String", NID_MID, &MidNode::staticMetaObject ),
 	ClassEntry( "Line Buffer",			"String", NID_LINE_BUFFER, &LineBufferNode::staticMetaObject ),
-	ClassEntry( "Strint To Integer",	"String", NID_STRING_TO_INTEGER, &StringToIntegerNode::staticMetaObject ),
-	ClassEntry( "Strint To Float",		"String", NID_STRING_TO_FLOAT, &StringToFloatNode::staticMetaObject ),
+	ClassEntry( "String To Integer",	"String", NID_STRING_TO_INTEGER, &StringToIntegerNode::staticMetaObject ),
+	ClassEntry( "String To Float",		"String", NID_STRING_TO_FLOAT, &StringToFloatNode::staticMetaObject ),
 	ClassEntry( "Text Editor",			"GUI", NID_TEXT_EDIT, &TextEditorNode::staticMetaObject ),
 	ClassEntry( "Text Editor Remote",	"Network", NID_TEXT_EDIT_REMOTE, &TextEditorRemoteNode::staticMetaObject ),
 	ClassEntry()
