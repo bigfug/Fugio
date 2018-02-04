@@ -30,7 +30,7 @@
 <context>
     <name>FrequencyBandsNode</name>
     <message>
-        <location filename="../frequencybandsnode.cpp" line="37"/>
+        <location filename="../frequencybandsnode.cpp" line="39"/>
         <source>The frequency information calculated using a Fast Fourier Transform (FFT) node</source>
         <translation type="unfinished"></translation>
     </message>
@@ -38,17 +38,17 @@
 <context>
     <name>MagnitudeNode</name>
     <message>
-        <location filename="../magnitudenode.cpp" line="28"/>
+        <location filename="../magnitudenode.cpp" line="26"/>
         <source>The source audio signal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../magnitudenode.cpp" line="30"/>
+        <location filename="../magnitudenode.cpp" line="28"/>
         <source>The number of samples to count in each calculation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../magnitudenode.cpp" line="32"/>
+        <location filename="../magnitudenode.cpp" line="30"/>
         <source>The largest magnitude of the audio signal</source>
         <translation type="unfinished"></translation>
     </message>

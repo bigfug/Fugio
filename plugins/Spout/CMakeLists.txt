@@ -68,7 +68,7 @@ endif( WIN32 )
 #------------------------------------------------------------------------------
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Gui OpenGL Widgets REQUIRED )
+find_package( Qt5 COMPONENTS Core Gui OpenGL Widgets LinguistTools REQUIRED )
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::OpenGL Qt5::Widgets )
 

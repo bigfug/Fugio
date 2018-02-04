@@ -4,12 +4,12 @@
 <context>
     <name>ContextPrivate</name>
     <message>
-        <location filename="../contextprivate.cpp" line="42"/>
+        <location filename="../contextprivate.cpp" line="46"/>
         <source>Untitled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextprivate.cpp" line="1414"/>
+        <location filename="../contextprivate.cpp" line="1521"/>
         <source>Node has no control class: missing plugin or error loading plugin?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -17,12 +17,12 @@
 <context>
     <name>GlobalPrivate</name>
     <message>
-        <location filename="../globalprivate.cpp" line="146"/>
+        <location filename="../globalprivate.cpp" line="154"/>
         <source>Plugins loaded: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../globalprivate.cpp" line="148"/>
+        <location filename="../globalprivate.cpp" line="156"/>
         <source>Nodes registered: %1</source>
         <translation type="unfinished"></translation>
     </message>

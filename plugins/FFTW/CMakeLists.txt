@@ -36,7 +36,7 @@ include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 #—————————————————————————————————-
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Widgets REQUIRED )
+find_package( Qt5 COMPONENTS Core Widgets LinguistTools REQUIRED )
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 

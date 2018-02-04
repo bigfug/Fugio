@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="fr_FR">
+<TS version="2.1" language="de_AT">
 <context>
     <name>ContextPrivate</name>
     <message>
-        <location filename="../contextprivate.cpp" line="42"/>
+        <location filename="../contextprivate.cpp" line="46"/>
         <source>Untitled</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../contextprivate.cpp" line="1414"/>
+        <location filename="../contextprivate.cpp" line="1521"/>
         <source>Node has no control class: missing plugin or error loading plugin?</source>
-        <translation type="unfinished"></translation>
+        <translation>Node hat keine Control Class: Fehlendes Plugin oder beim Laden des Plugins ist ein Fehler aufgetreten?</translation>
     </message>
 </context>
 <context>
     <name>GlobalPrivate</name>
     <message>
-        <location filename="../globalprivate.cpp" line="146"/>
+        <location filename="../globalprivate.cpp" line="154"/>
         <source>Plugins loaded: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Plugins geladen: %1</translation>
     </message>
     <message>
-        <location filename="../globalprivate.cpp" line="148"/>
+        <location filename="../globalprivate.cpp" line="156"/>
         <source>Nodes registered: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Nodes registriert: %1</translation>
     </message>
 </context>
 <context>
@@ -32,52 +32,52 @@
     <message>
         <location filename="../interpolation.cpp" line="20"/>
         <source>Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Standard</translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="21"/>
         <source>Linear</source>
-        <translation type="unfinished"></translation>
+        <translation>Linear</translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="22"/>
         <source>Cosine</source>
-        <translation type="unfinished"></translation>
+        <translation>Kosinus</translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="23"/>
         <source>Linear Fall</source>
-        <translation type="unfinished"></translation>
+        <translation>Linear Abfallend</translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="24"/>
         <source>Linear Rise</source>
-        <translation type="unfinished"></translation>
+        <translation>Linear Steigend</translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="25"/>
         <source>Time Forward</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit Vorwärts</translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="26"/>
         <source>Time Backward</source>
-        <translation type="unfinished"></translation>
+        <translation>Zeit Rückwärts</translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="27"/>
         <source>Hold</source>
-        <translation type="unfinished"></translation>
+        <translation>Halt</translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="29"/>
         <source>Gamma (2.2)</source>
-        <translation type="unfinished"></translation>
+        <translation>Gamma (2.2)</translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="30"/>
         <source>Gamma Correction (2.2)</source>
-        <translation type="unfinished"></translation>
+        <translation>Gamma Korrektur (2.2)</translation>
     </message>
 </context>
 </TS>

@@ -1,7 +1,4 @@
 <RCC>
     <qresource prefix="/">
-        <file>translations/fugio_core_de.qm</file>
-        <file>translations/fugio_core_es.qm</file>
-        <file>translations/fugio_core_fr.qm</file>
     </qresource>
 </RCC>

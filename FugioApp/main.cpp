@@ -330,7 +330,7 @@ int main( int argc, char *argv[] )
 
 	QTranslator		Translator;
 
-	if( Translator.load( SystemLocal, QLatin1String( "fugio_app" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( SystemLocal, QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}

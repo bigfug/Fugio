@@ -6,8 +6,6 @@ else()
 	project( Fugio LANGUAGES CXX )
 endif()
 
-set( UI_RESOURCES fugio.qrc )
-
 include_directories( ../FugioLib )
 
 #------------------------------------------------------------------------------
@@ -126,9 +124,11 @@ set( UIS_HDRS
 	stylesheetform.ui
 )
 
+set( UI_RESOURCES fugio.qrc fugio.rc )
+
 add_definitions( -DFUGIOLIB_STATIC )
 
-add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURCES} ${UIS_HDRS} fugio.rc )
+add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURCES} ${UIS_HDRS} )
 
 target_link_libraries( ${PROJECT_NAME} libfugio )
 
@@ -172,6 +172,22 @@ endif( APPLE )
 # Qt5
 
 include( ${CMAKE_SOURCE_DIR}/cmake/DeployApp.cmake )
+
+set( TS_FILES
+	translations/translations_de.ts
+	translations/translations_es.ts
+	translations/translations_fr.ts
+	)
+
+qt5_create_translation( QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${TS_FILES} )
+
+configure_file( ${CMAKE_SOURCE_DIR}/translations.qrc ${CMAKE_CURRENT_BINARY_DIR} COPYONLY )
+
+target_sources( ${PROJECT_NAME} PRIVATE
+	${TS_FILES}
+	${QM_FILES}
+	${CMAKE_CURRENT_BINARY_DIR}/translations.qrc
+	)
 
 #------------------------------------------------------------------------------
 # Raspberry Pi

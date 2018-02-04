@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="de_AT">
+<TS version="2.1" language="fr_FR">
 <context>
     <name>AudioMixerNode</name>
     <message>
         <location filename="../audiomixernode.cpp" line="15"/>
         <source>The first audio source</source>
-        <translation>Erster Audio Eingang</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../audiomixernode.cpp" line="17"/>
         <source>The audio mix from all the input channels added together</source>
-        <translation>Audio Mix von allen Eingängen kombiniert</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -19,38 +19,38 @@
     <message>
         <location filename="../centroidnode.cpp" line="19"/>
         <source>The frequency information calculated using a Fast Fourier Transform (FFT) node</source>
-        <translation>Die Frequenz Information per Fast Fourier Transform (FFT) Node berechnet</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../centroidnode.cpp" line="21"/>
         <source>The centroid frequency - the most pronounced frequency in the FFT</source>
-        <translation>Die Schwerpunkt-Frequenz - die stärkste Frequenz im FFT</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>FrequencyBandsNode</name>
     <message>
-        <location filename="../frequencybandsnode.cpp" line="37"/>
+        <location filename="../frequencybandsnode.cpp" line="39"/>
         <source>The frequency information calculated using a Fast Fourier Transform (FFT) node</source>
-        <translation>Die Frequenz Information per Fast Fourier Transform (FFT) Node berechnet</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>MagnitudeNode</name>
     <message>
-        <location filename="../magnitudenode.cpp" line="28"/>
+        <location filename="../magnitudenode.cpp" line="26"/>
         <source>The source audio signal</source>
-        <translation>Audio Eingangs Signal</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../magnitudenode.cpp" line="28"/>
+        <source>The number of samples to count in each calculation</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../magnitudenode.cpp" line="30"/>
-        <source>The number of samples to count in each calculation</source>
-        <translation>Anzahl der Samples für jede Berechnung</translation>
-    </message>
-    <message>
-        <location filename="../magnitudenode.cpp" line="32"/>
         <source>The largest magnitude of the audio signal</source>
-        <translation>Grösster Ausschlag des Audio Signals</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -58,52 +58,52 @@
     <message>
         <location filename="../signalnode.cpp" line="36"/>
         <source>Signal Type</source>
-        <translation>Signal Typ</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../signalnode.cpp" line="42"/>
         <source>Frequency (Hz)</source>
-        <translation>Frequenz (Hz)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../signalnode.cpp" line="46"/>
         <source>Volume</source>
-        <translation>Lautstärke</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../signalnode.cpp" line="50"/>
         <source>Phase Center</source>
-        <translation>Phasen-Mitte</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../signalnode.cpp" line="54"/>
         <source>Phase Offset</source>
-        <translation>Phasen-Verschub</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../signalnode.cpp" line="58"/>
         <source>Bias</source>
-        <translation>Verzerrung</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../signalnode.cpp" line="64"/>
         <source>The freqency to generate in hertz (Hz)</source>
-        <translation>Die zu generierende Frequenz in Hertz(Hz)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../signalnode.cpp" line="66"/>
         <source>The volume of the frequency (usually 0.0 - 1.0)</source>
-        <translation>Die Lautstärke der Frequenz(normalerweise 0.0 - 1.0)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../signalnode.cpp" line="68"/>
         <source>The phase offset between positive and minus</source>
-        <translation>Der Phasenverschub zwischen Positiv und Negativ</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../signalnode.cpp" line="70"/>
         <source>The generated frequency as an audio output</source>
-        <translation>Die generierte Frequenz aus Audio Signal</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

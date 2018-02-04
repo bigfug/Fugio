@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="es_ES">
+<TS version="2.1" language="fr_FR">
 <context>
     <name>AnyTriggerNode</name>
     <message>
@@ -11,6 +11,27 @@
     <message>
         <location filename="../anytriggernode.h" line="13"/>
         <source>Takes any number of trigger inputs and fires off a trigger if any of them activate.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>BitsToBoolNode</name>
+    <message>
+        <location filename="../bitstoboolnode.h" line="15"/>
+        <source>Takes a BitArray and outputs a Bool when triggered</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>BlockUpdatesNode</name>
+    <message>
+        <location filename="../blockupdatesnode.cpp" line="14"/>
+        <source>Block</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../blockupdatesnode.cpp" line="16"/>
+        <source>Input</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -33,27 +54,43 @@
     </message>
 </context>
 <context>
+    <name>BoolToBits</name>
+    <message>
+        <location filename="../booltobitsnode.h" line="15"/>
+        <source>Reads the input bool when triggered and outputs a bit array</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CorePlugin</name>
     <message>
-        <location filename="../coreplugin.cpp" line="71"/>
+        <location filename="../coreplugin.cpp" line="80"/>
         <source>Any Trigger</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>JoinPointNode</name>
+    <message>
+        <location filename="../joinpointnode.cpp" line="19"/>
+        <source>Point</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>JoinSizeNode</name>
     <message>
-        <location filename="../joinsizenode.cpp" line="10"/>
+        <location filename="../joinsizenode.cpp" line="16"/>
         <source>Width</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../joinsizenode.cpp" line="11"/>
+        <location filename="../joinsizenode.cpp" line="17"/>
         <source>Height</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../joinsizenode.cpp" line="13"/>
+        <location filename="../joinsizenode.cpp" line="19"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
@@ -69,32 +106,37 @@
 <context>
     <name>SignalNumberNode</name>
     <message>
-        <location filename="../signalnumbernode.cpp" line="29"/>
+        <location filename="../signalnumbernode.cpp" line="30"/>
         <source>Signal Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../signalnumbernode.cpp" line="35"/>
+        <location filename="../signalnumbernode.cpp" line="36"/>
         <source>Frequency (Hz)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../signalnumbernode.cpp" line="39"/>
+        <location filename="../signalnumbernode.cpp" line="40"/>
         <source>Volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../signalnumbernode.cpp" line="43"/>
+        <location filename="../signalnumbernode.cpp" line="44"/>
         <source>Offset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../signalnumbernode.cpp" line="49"/>
+        <location filename="../signalnumbernode.cpp" line="48"/>
+        <source>Bias</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../signalnumbernode.cpp" line="54"/>
         <source>The freqency to generate in hertz (Hz)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../signalnumbernode.cpp" line="51"/>
+        <location filename="../signalnumbernode.cpp" line="56"/>
         <source>The volume of the frequency (usually 0.0 - 1.0)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -125,18 +167,36 @@
 <context>
     <name>SplitPointNode</name>
     <message>
-        <location filename="../splitpointnode.cpp" line="11"/>
+        <location filename="../splitpointnode.cpp" line="17"/>
         <source>Point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../splitpointnode.cpp" line="15"/>
+        <location filename="../splitpointnode.cpp" line="21"/>
         <source>X</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../splitpointnode.cpp" line="17"/>
+        <location filename="../splitpointnode.cpp" line="23"/>
         <source>Y</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SplitRectNode</name>
+    <message>
+        <location filename="../splitrectnode.cpp" line="17"/>
+        <source>Rect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../splitrectnode.cpp" line="21"/>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../splitrectnode.cpp" line="23"/>
+        <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

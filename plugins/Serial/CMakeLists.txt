@@ -37,7 +37,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 #—————————————————————————————————-
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Widgets REQUIRED OPTIONAL_COMPONENTS SerialPort )
+find_package( Qt5 COMPONENTS Core Widgets LinguistTools REQUIRED OPTIONAL_COMPONENTS SerialPort )
 
 target_link_libraries( ${PROJECT_NAME} PUBLIC Qt5::Core Qt5::Widgets )
 

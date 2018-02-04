@@ -1,7 +1,7 @@
 
 find_package( Qt5
 	COMPONENTS Core Concurrent Gui OpenGL Network Widgets
-	OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml
+	OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml LinguistTools
 	QUIET )
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Concurrent Qt5::Gui Qt5::Network Qt5::OpenGL Qt5::Widgets )
