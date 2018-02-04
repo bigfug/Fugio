@@ -26,7 +26,7 @@ void AbsNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::PinVariantIterator	Input( mPinInput );
 
-	bool	OutputUpdated = mValOutput->variantCount() != Input.size();
+	bool	OutputUpdated = mValOutput->variantCount() != Input.size() || mPinOutput->alwaysUpdate();
 
 	mValOutput->setVariantCount( Input.size() );
 
