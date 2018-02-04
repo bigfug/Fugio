@@ -101,6 +101,7 @@ set( SOURCE_FILES
 	undo/cmdpinremoveglobal.h
 	undo/cmdpinsplit.h
 	undo/cmdremove.h
+	undo/cmdsetalwaysupdate.h
 	undo/cmdsetcolour.h
 	undo/cmdsetdefaultvalue.h
 	undo/cmdsetduration.h

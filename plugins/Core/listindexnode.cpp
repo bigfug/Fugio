@@ -35,10 +35,11 @@ void ListIndexNode::inputsUpdated( qint64 pTimeStamp )
 	fugio::PinVariantIterator	 PinVar( mPinInputList );
 
 	const QVariant				 VarVal = PinVar.index( LstIdx );
+	QMetaType::Type				 VarTyp = QMetaType::Type( VarVal.type() );
 
-	if( mValOutputValue->variant() != VarVal )
+	if( mPinOutputValue->alwaysUpdate() || mValOutputValue->variantType() != VarTyp || mValOutputValue->variant() != VarVal )
 	{
-		mValOutputValue->setVariantType( QMetaType::Type( VarVal.type() ) );
+		mValOutputValue->setVariantType( VarTyp );
 
 		mValOutputValue->setVariant( VarVal );
 

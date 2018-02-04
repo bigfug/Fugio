@@ -150,6 +150,16 @@ public:
 		return( mPairedId );
 	}
 
+	inline virtual void setAlwaysUpdate( bool pAlwaysUpdate = true )
+	{
+		mFlags.setFlag( AlwaysUpdate, pAlwaysUpdate );
+	}
+
+	inline virtual bool alwaysUpdate( void ) const
+	{
+		return( mFlags.testFlag( AlwaysUpdate ) );
+	}
+
 	//-------------------------------------------------------------------------
 
 	void setPairedUuid( const QUuid &pUuid )
@@ -190,10 +200,11 @@ public:
 	void update( qint64 pTimeStamp, bool pUpdatedConnectedNode = true );
 
 	enum Option {
-		Removable	= 1 << 0,
-		Hidden		= 1 << 1,
-		Updatable	= 1 << 2,
-		AutoRename	= 1 << 3
+		Removable		= 1 << 0,
+		Hidden			= 1 << 1,
+		Updatable		= 1 << 2,
+		AutoRename		= 1 << 3,
+		AlwaysUpdate	= 1 << 4
 	};
 
 	Q_DECLARE_FLAGS( Options, Option )

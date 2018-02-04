@@ -109,6 +109,7 @@ protected slots:
 	void menuRemove( void );
 	void menuHide( void );
 	void menuUpdatable( void );
+	void menuAlwaysUpdate( void );
 	void menuImport( void );
 	void menuExport( void );
 	void menuJoin( const QString &pUuid );

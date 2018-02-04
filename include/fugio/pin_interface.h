@@ -119,6 +119,10 @@ public:
 
 	virtual QString description( void ) const = 0;
 
+	virtual void setAlwaysUpdate( bool pAlwaysUpdate = true ) = 0;
+
+	virtual bool alwaysUpdate( void ) const = 0;
+
 	//-------------------------------------------------------------------------
 	// Paired pins - id's are PinInterface::localId()
 

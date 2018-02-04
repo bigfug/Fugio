@@ -21,7 +21,7 @@ void StringToFloatNode::inputsUpdated( qint64 pTimeStamp )
 	bool		C;
 	double		V = S.toDouble( &C );
 
-	if( C && V != mValOutputValue->variant().toDouble() )
+	if( C && ( mPinOutputValue->alwaysUpdate() || V != mValOutputValue->variant().toDouble() ) )
 	{
 		mValOutputValue->setVariant( V );
 
