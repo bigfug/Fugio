@@ -2,8 +2,6 @@ cmake_minimum_required( VERSION 3.1 )
 
 project( libfugio )
 
-find_package( Qt5 REQUIRED COMPONENTS Core Concurrent Network Widgets )
-
 set( UI_RESOURCES resources.qrc )
 
 set( SOURCE_FILES
@@ -53,11 +51,19 @@ set( SOURCE_FILES
 
 add_library( ${PROJECT_NAME} STATIC ${SOURCE_FILES} ${UI_RESOURCES} ) 
 
+target_compile_definitions( ${PROJECT_NAME} PRIVATE
+	FUGIOLIB_STATIC
+	GLOBAL_THREADED
+	)
+
+#------------------------------------------------------------------------------
+# Qt5
+
+find_package( Qt5 REQUIRED COMPONENTS Core Concurrent Network Widgets LinguistTools )
+
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::Widgets )
 
-target_compile_definitions( ${PROJECT_NAME} PRIVATE FUGIOLIB_STATIC )
-
-target_compile_definitions( ${PROJECT_NAME} PRIVATE GLOBAL_THREADED )
+include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 
 #------------------------------------------------------------------------------
 # Unit Testing

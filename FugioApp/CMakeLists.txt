@@ -6,8 +6,6 @@ else()
 	project( Fugio LANGUAGES CXX )
 endif()
 
-set( UI_RESOURCES fugio.qrc )
-
 include_directories( ../FugioLib )
 
 #------------------------------------------------------------------------------
@@ -101,6 +99,7 @@ set( SOURCE_FILES
 	undo/cmdpinremoveglobal.h
 	undo/cmdpinsplit.h
 	undo/cmdremove.h
+	undo/cmdsetalwaysupdate.h
 	undo/cmdsetcolour.h
 	undo/cmdsetdefaultvalue.h
 	undo/cmdsetduration.h
@@ -125,9 +124,11 @@ set( UIS_HDRS
 	stylesheetform.ui
 )
 
+set( UI_RESOURCES fugio.qrc fugio.rc )
+
 add_definitions( -DFUGIOLIB_STATIC )
 
-add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURCES} ${UIS_HDRS} fugio.rc )
+add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURCES} ${UIS_HDRS} )
 
 target_link_libraries( ${PROJECT_NAME} libfugio )
 
@@ -171,6 +172,8 @@ endif( APPLE )
 # Qt5
 
 include( ${CMAKE_SOURCE_DIR}/cmake/DeployApp.cmake )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 
 #------------------------------------------------------------------------------
 # Raspberry Pi

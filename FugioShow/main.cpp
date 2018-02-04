@@ -1,5 +1,7 @@
 #include <QApplication>
 #include <QSurfaceFormat>
+#include <QLibraryInfo>
+#include <QTranslator>
 
 #include "show.h"
 
@@ -21,6 +23,31 @@ int main( int argc, char *argv[] )
 	QSurfaceFormat::setDefaultFormat( SurfaceFormat );
 
 	QApplication	 A( argc, argv );
+
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	QLocale		SystemLocal;
+
+	QTranslator qtTranslator;
+
+	if( QFileInfo::exists( QLibraryInfo::location( QLibraryInfo::TranslationsPath ) ) )
+	{
+		qtTranslator.load( SystemLocal, QLatin1String( "qt" ), QLatin1String( "_" ), QLibraryInfo::location( QLibraryInfo::TranslationsPath ) );
+	}
+
+	if( !qtTranslator.isEmpty() )
+	{
+		qApp->installTranslator( &qtTranslator );
+	}
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+
 
 	fugio::Show		 S;
 

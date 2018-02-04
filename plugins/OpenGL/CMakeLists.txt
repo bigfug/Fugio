@@ -120,7 +120,7 @@ set( SOURCE_FILES
 )
 
 set( QRC_FILES
-	resources.qrc
+#	resources.qrc
 )
 
 #------------------------------------------------------------------------------
@@ -139,7 +139,9 @@ install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 #------------------------------------------------------------------------------
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Concurrent OpenGL Widgets REQUIRED )
+find_package( Qt5 COMPONENTS Core Concurrent OpenGL Widgets LinguistTools REQUIRED )
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Concurrent Qt5::OpenGL Qt5::Widgets )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 

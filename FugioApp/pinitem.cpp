@@ -41,6 +41,7 @@
 
 #include "undo/cmdsetdefaultvalue.h"
 #include "undo/cmdsetupdatable.h"
+#include "undo/cmdsetalwaysupdate.h"
 #include "undo/cmdpinimport.h"
 #include "undo/cmdpinremove.h"
 #include "undo/cmdlinkadd.h"
@@ -326,6 +327,12 @@ void PinItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 	}
 	else
 	{
+		if( QAction *A = Menu.addAction( tr( "Always Update" ), this, SLOT(menuAlwaysUpdate()) ) )
+		{
+			A->setCheckable( true );
+			A->setChecked( mPin->alwaysUpdate() );
+		}
+
 		Menu.addAction( tr( "Set Colour..." ), this, SLOT(menuSetColour()) );
 
 		if( isGlobal() )
@@ -947,6 +954,16 @@ void PinItem::menuUpdatable()
 	CmdSetUpdatable				*Cmd = new CmdSetUpdatable( mPin, !mPin->updatable() );
 
 	if( Cmd != 0 )
+	{
+		mContextView->widget()->undoStack()->push( Cmd );
+	}
+}
+
+void PinItem::menuAlwaysUpdate()
+{
+	CmdSetAlwaysUpdate				*Cmd = new CmdSetAlwaysUpdate( mPin, !mPin->alwaysUpdate() );
+
+	if( Cmd )
 	{
 		mContextView->widget()->undoStack()->push( Cmd );
 	}

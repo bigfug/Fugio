@@ -81,7 +81,7 @@ void ArrayToBufferNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( BufO->buffer() && BufO->buffer()->isCreated() && ( A->variantType() != BufO->type() || A->variantCount() != BufO->size() || A->variantStride() != BufO->stride() || A->variantElementCount() != BufO->count() ) )
+		if( BufO->buffer() && BufO->buffer()->isCreated() && ( A->variantType() != BufO->type() || A->variantElementCount() != BufO->size() || A->variantStride() != BufO->stride() || A->variantCount() != BufO->count() ) )
 		{
 			BufO->clear();
 		}
@@ -91,7 +91,7 @@ void ArrayToBufferNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( ( !BufO->buffer() || !BufO->buffer()->isCreated() ) && !BufO->alloc( A->variantType(), A->variantCount(), A->variantStride(), A->variantElementCount() ) )
+		if( ( !BufO->buffer() || !BufO->buffer()->isCreated() ) && !BufO->alloc( A->variantType(), A->variantElementCount(), A->variantStride(), A->variantCount() ) )
 		{
 			BufO->clear();
 

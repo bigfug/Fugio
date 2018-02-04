@@ -26,15 +26,16 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
   BUNDLE TRUE
 )
 
-#—————————————————————————————————-
+#------------------------------------------------------------------------------
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
-#—————————————————————————————————-
+#------------------------------------------------------------------------------
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Gui Widgets REQUIRED )
+find_package( Qt5 COMPONENTS Core Gui Widgets LinguistTools REQUIRED )
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 
+include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )

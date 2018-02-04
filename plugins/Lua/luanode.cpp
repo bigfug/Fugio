@@ -220,11 +220,7 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 
 		if( true )
 		{
-#if defined( QT_DEBUG )
-			QString		LuaInc = QDir::current().absoluteFilePath( "../Fugio/share/lua" );
-#else
-			QString		LuaInc = QDir::current().absoluteFilePath( "share/lua" );
-#endif
+			QString		LuaInc = LuaPlugin::instance()->app()->sharedDataPath() + "/lua";
 
 			if( QFileInfo::exists( LuaInc ) )
 			{

@@ -13,7 +13,7 @@ set( SOURCE_FILES
 )
 
 set( QRC_FILES
-	resources.qrc
+#	resources.qrc
 )
 
 add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} )
@@ -22,7 +22,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
   BUNDLE TRUE
 )
 
-#—————————————————————————————————-
+#------------------------------------------------------------------------------
 # Install
 
 if( WIN32 )
@@ -33,14 +33,16 @@ endif( WIN32 )
 
 include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
-#—————————————————————————————————-
+#------------------------------------------------------------------------------
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Widgets REQUIRED )
+find_package( Qt5 COMPONENTS Core Widgets LinguistTools REQUIRED )
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Widgets )
 
-#—————————————————————————————————-
+include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
+
+#------------------------------------------------------------------------------
 # fftw
 
 find_package( FFTW )

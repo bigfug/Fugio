@@ -142,7 +142,7 @@ int LuaArray::luaSet( lua_State *L )
 
 	fugio::VariantInterface		*VarInf = qobject_cast<fugio::VariantInterface *>( LstDat->mObject );
 
-	if( VarInf )
+	if( !VarInf )
 	{
 		return( luaL_error( L, "No variant found" ) );
 	}
@@ -611,18 +611,16 @@ int LuaArray::luaSetCount( lua_State *L )
 	LuaArrayUserData			*LstDat = checkarray( L );
 	const int					 LstCnt = lua_tointeger( L, 2 );
 
+	if( LstDat->mReadOnly )
+	{
+		return( luaL_error( L, "Can't set type on input array" ) );
+	}
+
 	fugio::ArrayInterface		*LstInt = qobject_cast<fugio::ArrayInterface *>( LstDat->mObject );
 
 	if( LstInt )
 	{
-		if( LstDat->mReadOnly )
-		{
-			return( luaL_error( L, "Can't set type on input array" ) );
-		}
-
 		LstInt->setCount( LstCnt );
-
-		return( 0 );
 	}
 
 	fugio::VariantInterface		*VarInt = qobject_cast<fugio::VariantInterface *>( LstDat->mObject );
@@ -630,11 +628,9 @@ int LuaArray::luaSetCount( lua_State *L )
 	if( VarInt )
 	{
 		VarInt->setVariantCount( LstCnt );
-
-		return( 0 );
 	}
 
-	return( luaL_error( L, "Invalid array" ) );
+	return( 0 );
 }
 
 int LuaArray::luaSetType( lua_State *L )

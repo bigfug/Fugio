@@ -57,6 +57,8 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE FUGIO_VERSION=${FUGIO_VERSIO
 
 include( ${CMAKE_SOURCE_DIR}/cmake/DeployApp.cmake )
 
+include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
+
 #------------------------------------------------------------------------------
 # Raspberry Pi
 

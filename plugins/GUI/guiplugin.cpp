@@ -23,6 +23,7 @@
 #include "dialnode.h"
 #include "screennode.h"
 #include "mousenode.h"
+#include "labelnode.h"
 
 #include "keyboardpin.h"
 #include "inputeventspin.h"
@@ -37,6 +38,7 @@ ClassEntry		GuiPlugin::mNodeClasses[] =
 	ClassEntry( "Choice", "GUI", NID_CHOICE, &ChoiceNode::staticMetaObject ),
 	ClassEntry( "Dial", "GUI", NID_GUI_DIAL, &DialNode::staticMetaObject ),
 	ClassEntry( "Keyboard", "GUI", NID_KEYBOARD, &KeyboardNode::staticMetaObject ),
+	ClassEntry( "Label", "GUI", NID_LABEL, &LabelNode::staticMetaObject ),
 	ClassEntry( "LCD Number", "GUI", NID_LCD_NUMBER, &LcdNumberNode::staticMetaObject ),
 	ClassEntry( "LED", "GUI", NID_LED, &LedNode::staticMetaObject ),
 	ClassEntry( "Main Window", "GUI", NID_MAIN_WINDOW, &MainWindowNode::staticMetaObject ),
@@ -65,7 +67,7 @@ GuiPlugin::GuiPlugin( void )
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_gui" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}

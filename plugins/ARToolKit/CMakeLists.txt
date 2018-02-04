@@ -20,7 +20,7 @@ set( SOURCE_FILES
 )
 
 set( QRC_FILES
-	resources.qrc
+#	resources.qrc
 )
 
 add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} )
@@ -64,14 +64,16 @@ else()
 	message( "ARToolKit is not configured" )
 endif()
 
-#—————————————————————————————————-
+#------------------------------------------------------------------------------
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Gui Widgets REQUIRED )
+find_package( Qt5 COMPONENTS Core Gui Widgets LinguistTools REQUIRED )
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets )
 
-#-------------------------------------
+include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
+
+#------------------------------------------------------------------------------
 # Lua
 
 find_package( Lua 5.2 )
@@ -99,7 +101,7 @@ if( LUA_FOUND )
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE LUA_SUPPORTED )
 endif( LUA_FOUND )
 
-#—————————————————————————————————-
+#------------------------------------------------------------------------------
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )

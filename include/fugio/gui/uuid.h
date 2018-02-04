@@ -17,5 +17,6 @@
 #define NID_GUI_DIAL				(QUuid("{02AFABAE-A99B-43D7-9FCD-252B45F4F989}"))
 #define NID_SCREEN					(QUuid("{781dd55d-6b95-47e7-a05b-95c3dcb5b9b1}"))
 #define NID_MOUSE					(QUuid("{519A6753-28B8-4628-BE40-63BD6C31FDC5}"))
+#define NID_LABEL					(QUuid("{32535156-74e6-4379-a723-159445ce3705}"))
 
 #endif // GUIUUID_H

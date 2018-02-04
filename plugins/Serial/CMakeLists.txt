@@ -25,7 +25,7 @@ set( SOURCE_FILES
 )
 
 set( QRC_FILES
-	resources.qrc
+#	resources.qrc
 )
 
 add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} )
@@ -34,10 +34,10 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
   BUNDLE TRUE
 )
 
-#—————————————————————————————————-
+#------------------------------------------------------------------------------
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Widgets REQUIRED OPTIONAL_COMPONENTS SerialPort )
+find_package( Qt5 COMPONENTS Core Widgets LinguistTools REQUIRED OPTIONAL_COMPONENTS SerialPort )
 
 target_link_libraries( ${PROJECT_NAME} PUBLIC Qt5::Core Qt5::Widgets )
 
@@ -48,6 +48,8 @@ if( Qt5SerialPort_DIR )
 else( Qt5SerialPort_DIR )
 	message( "Serial is not available" )
 endif( Qt5SerialPort_DIR )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 
 #------------------------------------------------------------------------------
 # Install

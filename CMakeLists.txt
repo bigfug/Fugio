@@ -81,11 +81,8 @@ add_subdirectory( plugins )
 
 #------------------------------------------------------------------------------
 
-install( DIRECTORY include/fugio DESTINATION ${PATH_INCLUDE} )
-install( DIRECTORY examples DESTINATION ${PATH_SHARE} )
-install( DIRECTORY snippets DESTINATION ${PATH_SHARE} )
+install( DIRECTORY include/ DESTINATION ${PATH_INCLUDE} )
 install( DIRECTORY share/ DESTINATION ${PATH_SHARE} )
-install( DIRECTORY FugioApp/stylesheets DESTINATION ${PATH_SHARE} )
 
 #------------------------------------------------------------------------------
 # CPack
@@ -166,7 +163,7 @@ elseif( UNIX )
 	if( "${UNIX_ID}" STREQUAL "Ubuntu" AND "${UNIX_RELEASE}" STREQUAL "16.04" )
 		set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
 			libicu55, libavcodec-ffmpeg56, libavdevice-ffmpeg56, libavformat-ffmpeg56, libavutil-ffmpeg54, libswscale-ffmpeg3,
-			libswresample-ffmpeg2, libavfilter-ffmpeg5, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2,
+			libswresample-ffmpeg1, libavfilter-ffmpeg5, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2,
 			libqt5serialport5" )
 	else()
 		set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
