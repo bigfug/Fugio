@@ -49,7 +49,7 @@ RaspberryPiPlugin::RaspberryPiPlugin() : mApp( 0 ), mPigPioInit( -1 )
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_raspberrypi" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}

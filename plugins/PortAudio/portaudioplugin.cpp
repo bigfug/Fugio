@@ -44,7 +44,7 @@ PortAudioPlugin::PortAudioPlugin( void )
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_portaudio" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}
