@@ -632,8 +632,33 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../patchpromptdialog.ui" line="59"/>
+        <source>Examples...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../patchpromptdialog.ui" line="66"/>
+        <source>The Fugio Zone...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../patchpromptdialog.ui" line="73"/>
+        <source>Tutorial Videos...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../patchpromptdialog.ui" line="80"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
+    </message>
+    <message>
+        <location filename="../patchpromptdialog.cpp" line="119"/>
+        <source>Fugio Examples</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../patchpromptdialog.cpp" line="119"/>
+        <source>A wide range of examples can be found under the File menu</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
