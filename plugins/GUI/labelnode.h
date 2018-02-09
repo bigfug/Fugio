@@ -27,7 +27,7 @@ public:
 
 	virtual QGraphicsItem *guiItem() Q_DECL_OVERRIDE;
 
-	virtual void inputsUpdated( qint64 pTimeStamp );
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
 signals:
 	void valueUpdated( QString pValue );
