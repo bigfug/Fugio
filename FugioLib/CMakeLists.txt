@@ -49,7 +49,7 @@ set( SOURCE_FILES
 	../include/fugio/paired_pins_helper_interface.h
 )
 
-add_library( ${PROJECT_NAME} STATIC ${SOURCE_FILES} ${UI_RESOURCES} ) 
+add_library( ${PROJECT_NAME} STATIC ${SOURCE_FILES} )
 
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	FUGIOLIB_STATIC
