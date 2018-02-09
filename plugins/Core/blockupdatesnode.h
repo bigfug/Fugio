@@ -25,7 +25,7 @@ public:
 
 	// NodeControlInterface interface
 
-	virtual void inputsUpdated( qint64 pTimeStamp );
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
 	virtual bool canAcceptPin( fugio::PinInterface *pPin ) const Q_DECL_OVERRIDE;
 

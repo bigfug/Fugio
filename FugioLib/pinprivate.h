@@ -150,12 +150,12 @@ public:
 		return( mPairedId );
 	}
 
-	inline virtual void setAlwaysUpdate( bool pAlwaysUpdate = true )
+	inline virtual void setAlwaysUpdate( bool pAlwaysUpdate = true ) Q_DECL_OVERRIDE
 	{
 		mFlags.setFlag( AlwaysUpdate, pAlwaysUpdate );
 	}
 
-	inline virtual bool alwaysUpdate( void ) const
+	inline virtual bool alwaysUpdate( void ) const Q_DECL_OVERRIDE
 	{
 		return( mFlags.testFlag( AlwaysUpdate ) );
 	}
