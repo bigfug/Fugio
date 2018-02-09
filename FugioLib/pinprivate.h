@@ -161,7 +161,7 @@ public:
 		}
 		else
 		{
-			mFlags ^= ~AlwaysUpdate;
+			mFlags &= ~AlwaysUpdate;
 		}
 #endif
 	}
