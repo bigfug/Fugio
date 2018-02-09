@@ -25,7 +25,7 @@ void CeilNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	bool		UpdateOutput = false;
+	bool		UpdateOutput = mPinOutput->alwaysUpdate();
 
 	fugio::PinVariantIterator	Input( mPinInput );
 

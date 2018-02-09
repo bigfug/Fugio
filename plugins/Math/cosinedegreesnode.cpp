@@ -22,7 +22,7 @@ void CosineDegreeNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::PinVariantIterator	Input( mPinInput );
 
-	bool	OutputUpdated = false;
+	bool	OutputUpdated = mPinOutput->alwaysUpdate();
 
 	variantSetCount( mValOutput, Input.size(), OutputUpdated );
 
