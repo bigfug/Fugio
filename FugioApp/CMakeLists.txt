@@ -124,7 +124,7 @@ set( UIS_HDRS
 	stylesheetform.ui
 )
 
-set( UI_RESOURCES fugio.qrc fugio.rc )
+set( UI_RESOURCES fugio.rc )
 
 add_definitions( -DFUGIOLIB_STATIC )
 
@@ -174,6 +174,10 @@ endif( APPLE )
 include( ${CMAKE_SOURCE_DIR}/cmake/DeployApp.cmake )
 
 include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
+
+qt5_add_resources( QRC_FILES fugio.qrc )
+
+target_sources( ${PROJECT_NAME} PRIVATE ${QRC_FILES} )
 
 #------------------------------------------------------------------------------
 # Raspberry Pi
