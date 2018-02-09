@@ -152,7 +152,18 @@ public:
 
 	inline virtual void setAlwaysUpdate( bool pAlwaysUpdate = true ) Q_DECL_OVERRIDE
 	{
+#if( QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 ) )
 		mFlags.setFlag( AlwaysUpdate, pAlwaysUpdate );
+#else
+		if( pAlwaysUpdate )
+		{
+			mFlags |= AlwaysUpdate;
+		}
+		else
+		{
+			mFlags ^= ~AlwaysUpdate;
+		}
+#endif
 	}
 
 	inline virtual bool alwaysUpdate( void ) const Q_DECL_OVERRIDE
