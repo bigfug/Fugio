@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QSettings>
+#include <QMetaClassInfo>
 
 #include <fugio/fugio.h>
 #include <fugio/global_interface.h>
@@ -88,11 +89,12 @@ void NodeNameDialog::setListHistory()
 
 			if( !NodeData.mFlags.testFlag( fugio::ClassEntry::Deprecated ) )
 			{
-				QListWidgetItem		*NodeItem = new QListWidgetItem( NodeData.friendlyName() );
+				QListWidgetItem		*NodeItem = fillWidgetItem( NodeData.friendlyName(), NodeData.mUuid );
 
-				NodeItem->setData( Qt::UserRole, NodeData.mUuid );
-
-				ui->listWidget->addItem( NodeItem );
+				if( NodeItem )
+				{
+					ui->listWidget->addItem( NodeItem );
+				}
 			}
 		}
 	}
@@ -135,11 +137,12 @@ void NodeNameDialog::setListCompare( const QString &pCmp )
 
 	if( !Match.second.isNull() )
 	{
-		QListWidgetItem		*NodeItem = new QListWidgetItem( Match.first );
+		QListWidgetItem		*NodeItem = fillWidgetItem( Match.first, Match.second );
 
-		NodeItem->setData( Qt::UserRole, Match.second );
-
-		ui->listWidget->addItem( NodeItem );
+		if( NodeItem )
+		{
+			ui->listWidget->addItem( NodeItem );
+		}
 	}
 
 	if( !MatchStart.isEmpty() )
@@ -150,11 +153,12 @@ void NodeNameDialog::setListCompare( const QString &pCmp )
 
 		for( const QString &S : NodeList )
 		{
-			QListWidgetItem		*NodeItem = new QListWidgetItem( S );
+			QListWidgetItem		*NodeItem = fillWidgetItem( S, MatchStart.value( S ) );
 
-			NodeItem->setData( Qt::UserRole, MatchStart.value( S ) );
-
-			ui->listWidget->addItem( NodeItem );
+			if( NodeItem )
+			{
+				ui->listWidget->addItem( NodeItem );
+			}
 		}
 	}
 
@@ -166,11 +170,12 @@ void NodeNameDialog::setListCompare( const QString &pCmp )
 
 		for( const QString &S : NodeList )
 		{
-			QListWidgetItem		*NodeItem = new QListWidgetItem( S );
+			QListWidgetItem		*NodeItem = fillWidgetItem( S, MatchContain.value( S ) );
 
-			NodeItem->setData( Qt::UserRole, MatchContain.value( S ) );
-
-			ui->listWidget->addItem( NodeItem );
+			if( NodeItem )
+			{
+				ui->listWidget->addItem( NodeItem );
+			}
 		}
 	}
 }
@@ -190,6 +195,32 @@ void NodeNameDialog::addToHistory( const QUuid &pNodeUuid )
 	{
 		mNodeList.pop_back();
 	}
+}
+
+QListWidgetItem *NodeNameDialog::fillWidgetItem( const QString &pName, const QUuid &pUuid )
+{
+	QListWidgetItem		*NodeItem = new QListWidgetItem( pName );
+
+	if( NodeItem )
+	{
+		NodeItem->setData( Qt::UserRole, pUuid );
+
+		const QMetaObject	*NodeMeta = gApp->global().findNodeMetaObject( pUuid );
+
+		if( NodeMeta )
+		{
+			int		InfIdx;
+
+			if( ( InfIdx = NodeMeta->indexOfClassInfo( "Description" ) ) != -1 )
+			{
+				QMetaClassInfo	InfInf = NodeMeta->classInfo( InfIdx );
+
+				NodeItem->setToolTip( InfInf.value() );
+			}
+		}
+	}
+
+	return( NodeItem );
 }
 
 void NodeNameDialog::on_listWidget_doubleClicked( const QModelIndex &index )
