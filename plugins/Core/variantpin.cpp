@@ -25,6 +25,15 @@ QString VariantPin::toString() const
 
 					L << QString( "%1,%2 (%3)" ).arg( V.x() ).arg( V.y() ).arg( QString( v.typeName() ) );
 				}
+				break;
+
+			case QMetaType::QPoint:
+				{
+					QPoint		V = v.value<QPoint>();
+
+					L << QString( "%1,%2 (%3)" ).arg( V.x() ).arg( V.y() ).arg( QString( v.typeName() ) );
+				}
+				break;
 
 			case QMetaType::QSizeF:
 				{
@@ -32,6 +41,15 @@ QString VariantPin::toString() const
 
 					L << QString( "%1,%2 (%3)" ).arg( V.width() ).arg( V.height() ).arg( QString( v.typeName() ) );
 				}
+				break;
+
+			case QMetaType::QSize:
+				{
+					QSize		V = v.value<QSize>();
+
+					L << QString( "%1,%2 (%3)" ).arg( V.width() ).arg( V.height() ).arg( QString( v.typeName() ) );
+				}
+				break;
 
 			default:
 				L << v.toString();
