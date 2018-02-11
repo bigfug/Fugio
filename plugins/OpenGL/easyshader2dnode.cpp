@@ -108,11 +108,6 @@ bool EasyShader2DNode::initialise( void )
 		}
 	}
 
-	if( !mVAO.isCreated() )
-	{
-		mVAO.create();
-	}
-
 	return( true );
 }
 
@@ -223,44 +218,17 @@ void EasyShader2DNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		 1,  1
 	};
 
-	if( !mVAO.isCreated() )
-	{
-		glVertexAttribPointer( VertexLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+	QOpenGLVertexArrayObject::Binder VAOBinder( &mVAO );
 
-		glEnableVertexAttribArray( VertexLocation );
-	}
-	else
-	{
-		mVAO.bind();
+	mQuadGeometry.create();
+	mQuadGeometry.bind();
+	mQuadGeometry.allocate( Verticies, sizeof( Verticies ) );
 
-		if( !mQuadGeometry.isCreated() )
-		{
-			if( mQuadGeometry.create() )
-			{
-				if( mQuadGeometry.bind() )
-				{
-					mQuadGeometry.allocate( Verticies, sizeof( Verticies ) );
-				}
-			}
+	glVertexAttribPointer( VertexLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
 
-			glVertexAttribPointer( VertexLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
-
-			glEnableVertexAttribArray( VertexLocation );
-
-			mQuadGeometry.release();
-		}
-	}
+	glEnableVertexAttribArray( VertexLocation );
 
 	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-
-	if( mVAO.isCreated() )
-	{
-		mVAO.release();
-	}
-	else
-	{
-		glDisableVertexAttribArray( VertexLocation );
-	}
 
 	mShaderCompilerData.mProgram->release();
 

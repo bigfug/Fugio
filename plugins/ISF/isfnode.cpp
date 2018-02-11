@@ -79,7 +79,7 @@ void checkErrors( const char *file, int line )
 #endif
 
 ISFNode::ISFNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mVAO( 0 ), mBuffer( 0 ), mProgram( 0 ), mFrameCounter( 0 ), mUniformTime( -1 ),
+	: NodeControlBase( pNode ), mVAO( 0 ),mProgram( 0 ), mFrameCounter( 0 ), mUniformTime( -1 ),
 	  mTextureIndexCount( 0 ), mStartTime( -1 ), mLastRenderTime( 0 )
 {
 	FUGID( PIN_INPUT_SOURCE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
@@ -127,10 +127,7 @@ bool ISFNode::deinitialise()
 	{
 		mVAO.destroy();
 
-		if( mBuffer )
-		{
-			glDeleteBuffers( 1, &mBuffer );
-		}
+		mBuffer.destroy();
 
 		if( mProgram )
 		{
@@ -185,7 +182,7 @@ bool ISFNode::deinitialise()
 		}
 	}
 
-	mBuffer = 0;
+	mBuffer.destroy();
 
 	mProgram = 0;
 
@@ -1513,31 +1510,19 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		mStartTime = pTimeStamp;
 	}
 
-	if( !mVAO.isCreated() )
-	{
-		mVAO.create();
-	}
+	QOpenGLVertexArrayObject::Binder VAOBinder( &mVAO );
 
-	if( !mVAO.isCreated() )
+	GLfloat		Verticies[][ 2 ] =
 	{
-		mVAO.bind();
-	}
+		{ -1, -1 },
+		{ -1,  1 },
+		{  1, -1 },
+		{  1,  1 }
+	};
 
-	if( !mBuffer )
-	{
-		GLfloat		Verticies[][ 2 ] =
-		{
-			{ -1, -1 },
-			{ -1,  1 },
-			{  1, -1 },
-			{  1,  1 }
-		};
-
-		glGenBuffers( 1, &mBuffer );
-		glBindBuffer( GL_ARRAY_BUFFER, mBuffer );
-		glBufferData( GL_ARRAY_BUFFER, sizeof( Verticies ), Verticies, GL_STATIC_DRAW );
-		glBindBuffer( GL_ARRAY_BUFFER, 0 );
-	}
+	mBuffer.create();
+	mBuffer.bind();
+	mBuffer.allocate( Verticies, sizeof( Verticies ) );
 
 	if( mProgram )
 	{
@@ -1546,8 +1531,6 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		glEnableVertexAttribArray( 0 );
-
-		glBindBuffer( GL_ARRAY_BUFFER, mBuffer );
 
 		glVertexAttribPointer(
 					0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
@@ -1671,6 +1654,4 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 			mFrameCounter++;
 		}
 	}
-
-	mVAO.release();
 }

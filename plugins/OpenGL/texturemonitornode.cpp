@@ -57,11 +57,6 @@ bool TextureMonitorNode::initialise()
 		return( false );
 	}
 
-	if( !mVAO.isCreated() )
-	{
-		mVAO.create();
-	}
-
 	return( true );
 }
 
@@ -185,33 +180,16 @@ void TextureMonitorNode::paintGL()
 		mVertexAttribLocation = mShader.attributeLocation( "position" );
 	}
 
-	if( mVAO.isCreated() )
-	{
-		mVAO.bind();
+	QOpenGLVertexArrayObject::Binder VAOBinder( &mVAO );
 
-		if( !mBuffer.isCreated() )
-		{
-			if( mBuffer.create() )
-			{
-				if( mBuffer.bind() )
-				{
-					mBuffer.allocate( Vertices, sizeof( Vertices ) );
+	mBuffer.create();
+	mBuffer.bind();
 
-					glVertexAttribPointer( mVertexAttribLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+	mBuffer.allocate( Vertices, sizeof( Vertices ) );
 
-					glEnableVertexAttribArray( mVertexAttribLocation );
+	glVertexAttribPointer( mVertexAttribLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
 
-					mBuffer.release();
-				}
-			}
-		}
-	}
-	else
-	{
-		glVertexAttribPointer( mVertexAttribLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
-
-		glEnableVertexAttribArray( mVertexAttribLocation );
-	}
+	glEnableVertexAttribArray( mVertexAttribLocation );
 
 	mShader.bind();
 
@@ -231,6 +209,8 @@ void TextureMonitorNode::paintGL()
 	{
 		return;
 	}
+
+	glActiveTexture( GL_TEXTURE0 );
 
 	double	tw = 1.0 / double( TexLst.size() );
 
@@ -257,15 +237,4 @@ void TextureMonitorNode::paintGL()
 	OPENGL_PLUGIN_DEBUG;
 
 	mShader.release();
-
-	if( mVAO.isCreated() )
-	{
-		mVAO.release();
-	}
-	else
-	{
-		glDisableVertexAttribArray( mVertexAttribLocation );
-	}
-
-	OPENGL_PLUGIN_DEBUG;
 }
