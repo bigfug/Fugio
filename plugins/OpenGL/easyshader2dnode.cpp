@@ -1,16 +1,18 @@
 #include "easyshader2dnode.h"
 
 #include <QOpenGLContext>
+#include <QOpenGLExtraFunctions>
 
 #include <fugio/core/uuid.h>
 #include <fugio/text/uuid.h>
 #include <fugio/opengl/uuid.h>
 #include <fugio/performance.h>
+#include <fugio/opengl/texture_interface.h>
 
 #include "openglplugin.h"
 
 EasyShader2DNode::EasyShader2DNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mQuadGeometry( QOpenGLBuffer::VertexBuffer )
+	: NodeControlBase( pNode ), mQuadGeometry( QOpenGLBuffer::VertexBuffer ), mFramebufferObject( 0 )
 {
 	FUGID( PIN_INPUT_VERTEX_SHADER, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 	FUGID( PIN_INPUT_FRAGMENT_SHADER, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
@@ -128,6 +130,8 @@ void EasyShader2DNode::inputsUpdated( qint64 pTimeStamp )
 		compileShader();
 
 		createInputPins();
+
+		createOutputPins();
 	}
 
 	if( !mShaderCompilerData.mProgram )
@@ -279,24 +283,51 @@ void EasyShader2DNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 void EasyShader2DNode::renderToTexture( qint64 pTimeStamp )
 {
-	fugio::OpenGLTextureInterface	*DstTex = output<fugio::OpenGLTextureInterface *>( mPinOutputTexture );
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
-	if( !DstTex || !DstTex->dstTexId() )
+	QSize					 DstSze;
+
+	if( mShaderCompilerData.mFragmentOutputs.isEmpty() )
+	{
+		fugio::OpenGLTextureInterface	*DstTex = output<fugio::OpenGLTextureInterface *>( mPinOutputTexture );
+
+		if( !DstTex || !DstTex->dstTexId() )
+		{
+			return;
+		}
+
+		DstSze = QSize( DstTex->size().x(), DstTex->size().y() );
+
+		glBindFramebuffer( GL_FRAMEBUFFER, DstTex->fbo() );
+	}
+	else if( mFramebufferObject )
+	{
+		DstSze = mFramebufferSize;
+
+		glBindFramebuffer( GL_FRAMEBUFFER, mFramebufferObject );
+
+		GLEX->glDrawBuffers( mShaderCompilerData.mFragmentOutputs.size(), mShaderCompilerData.mFragmentOutputs.constData() );
+	}
+
+	if( DstSze.isEmpty() )
 	{
 		return;
 	}
-
-	glBindFramebuffer( GL_FRAMEBUFFER, DstTex->fbo() );
 
 	GLint		VP[ 4 ];
 
 	glGetIntegerv( GL_VIEWPORT, VP );
 
-	glViewport( 0, 0, DstTex->size().x(), DstTex->size().y() );
+	glViewport( 0, 0, DstSze.width(), DstSze.height() );
 
 	render( pTimeStamp, QUuid() );
 
 	glViewport( VP[ 0 ], VP[ 1 ], VP[ 2 ], VP[ 3 ] );
+
+	if( !mShaderCompilerData.mFragmentOutputs.isEmpty() )
+	{
+//		GLEX->glDrawBuffers( mShaderCompilerData.mFragmentOutputs.size(), mShaderCompilerData.mFragmentOutputs.constData() );
+	}
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 }
@@ -393,6 +424,41 @@ void EasyShader2DNode::createInputPins()
 		if( NewPin )
 		{
 
+		}
+	}
+}
+
+void EasyShader2DNode::createOutputPins()
+{
+	QVector<GLenum>		FragmentOutputs = mShaderCompilerData.mFragmentOutputs;
+
+	for( int i = 0 ; i < FragmentOutputs.size() ; i++ )
+	{
+		QString			OutputName = QString( "Texture%1" ).arg( i );
+
+		QSharedPointer<fugio::PinInterface> P = mNode->findOutputPinByName( OutputName );
+
+		if( FragmentOutputs[ i ] == GL_NONE )
+		{
+			if( P && !P->isConnected() )
+			{
+				mNode->removePin( P );
+
+				P.clear();
+			}
+		}
+		else if( !P )
+		{
+			if( !i )
+			{
+				P = mPinOutputTexture;
+
+				P->setName( "Texture0" );
+			}
+			else
+			{
+				P = pinOutput( OutputName, QUuid::createUuid() );
+			}
 		}
 	}
 }
@@ -508,5 +574,80 @@ void EasyShader2DNode::updateInputPins()
 	}
 
 	mShaderCompilerData.mProgram->release();
+}
+
+void EasyShader2DNode::updateOutputPins()
+{
+	QSize		DstSze;
+
+	for( QSharedPointer<fugio::PinInterface> P : mNode->enumOutputPins() )
+	{
+		if( P == mPinOutputRender )
+		{
+			continue;
+		}
+
+		fugio::OpenGLTextureInterface	*TexInf = output<fugio::OpenGLTextureInterface *>( P );
+
+		if( !TexInf )
+		{
+			continue;
+		}
+
+		QSize		TexSze( TexInf->size().x(), TexInf->size().y() );
+
+		if( DstSze.isEmpty() || ( !TexSze.isEmpty() && DstSze != TexSze ) )
+		{
+			DstSze = TexSze;
+		}
+	}
+
+	if( DstSze.isEmpty() )
+	{
+		glDeleteFramebuffers( 1, &mFramebufferObject );
+
+		mFramebufferObject = 0;
+
+		mFramebufferSize = QSize();
+
+		return;
+	}
+
+	if( !mFramebufferObject )
+	{
+		glGenFramebuffers( 1, &mFramebufferObject );
+
+		if( !mFramebufferObject )
+		{
+			return;
+		}
+
+		glBindFramebuffer( GL_FRAMEBUFFER, mFramebufferObject );
+
+		QVector<GLenum>		FragmentOutputs = mShaderCompilerData.mFragmentOutputs;
+
+		for( int i = 0 ; i < FragmentOutputs.size() ; i++ )
+		{
+			if( FragmentOutputs[ i ] == GL_NONE )
+			{
+				continue;
+			}
+
+			QString			OutputName = QString( "Texture%1" ).arg( i );
+
+			QSharedPointer<fugio::PinInterface> P = mNode->findOutputPinByName( OutputName );
+
+			fugio::OpenGLTextureInterface	*TexInf = output<fugio::OpenGLTextureInterface *>( P );
+
+			if( !TexInf )
+			{
+				continue;
+			}
+
+			glFramebufferTexture2D( GL_FRAMEBUFFER, FragmentOutputs[ i ], TexInf->target(), TexInf->dstTexId(), 0 );
+		}
+
+		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+	}
 }
 

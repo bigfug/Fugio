@@ -7,6 +7,7 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
+#include <QOpenGLFramebufferObject>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -65,7 +66,11 @@ private:
 
 	void createInputPins( void );
 
+	void createOutputPins( void );
+
 	void updateInputPins( void );
+
+	void updateOutputPins( void );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputTrigger;
@@ -86,6 +91,9 @@ protected:
 	ShaderCompilerData							 mShaderCompilerData;
 
 	QOpenGLBuffer								 mQuadGeometry;
+
+	GLuint										 mFramebufferObject;
+	QSize										 mFramebufferSize;
 };
 
 #endif // EASYSHADER2DNODE_H
