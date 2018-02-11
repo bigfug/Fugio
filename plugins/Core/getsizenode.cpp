@@ -64,6 +64,8 @@ void GetSizeNode::inputsUpdated( qint64 pTimeStamp )
 					break;
 			}
 
+			VarO->setVariantCount( 1 );
+
 			if( VarO->variant() != Size )
 			{
 				VarO->setVariant( Size );
