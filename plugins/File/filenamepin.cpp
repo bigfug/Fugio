@@ -12,7 +12,9 @@ FilenamePin::FilenamePin( QSharedPointer<fugio::PinInterface> pPin )
 
 void FilenamePin::loadSettings( QSettings &pSettings )
 {
-	QString		FileName = pSettings.value( "filename", mValues.first() ).toString();
+	QString		FileName = ( mPin->direction() == PIN_INPUT ? mPin->value().toString() : mValues.first() );
+
+	FileName = pSettings.value( "filename", FileName ).toString();
 
 	if( !FileName.isEmpty() )
 	{
@@ -20,17 +22,29 @@ void FilenamePin::loadSettings( QSettings &pSettings )
 		QDir		FileDir( FileInfo.absolutePath() );
 		QFileInfo	DestInfo( FileDir.absoluteFilePath( FileName ) );
 
-		mValues[ 0 ] = DestInfo.exists() ? DestInfo.canonicalFilePath() : FileName;
+		FileName = DestInfo.exists() ? DestInfo.canonicalFilePath() : FileName;
+
+		if( mPin->direction() == PIN_INPUT )
+		{
+			mPin->setValue( FileName );
+		}
+		else
+		{
+			mValues[ 0 ] = FileName;
+		}
 	}
 }
 
 void FilenamePin::saveSettings( QSettings &pSettings ) const
 {
-	if( !mValues.first().isEmpty() )
+	QString		FileName = ( mPin->direction() == PIN_INPUT ? mPin->value().toString() : mValues.first() );
+
+	if( !FileName.isEmpty() )
 	{
 		QFileInfo	FileInfo( pSettings.fileName() );
 		QDir		FileDir( FileInfo.absolutePath() );
-		QString		FileName = FileDir.relativeFilePath( mValues.first() );
+
+		FileName = FileDir.relativeFilePath( FileName );
 
 		pSettings.setValue( "filename", FileName );
 	}
