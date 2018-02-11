@@ -300,7 +300,9 @@ bool MediaSegment::loadMedia( const QString &pFileName, bool pProcess )
 	{
 	}
 
-	setPlayhead( 0 );
+//	setPlayhead( 0 );
+
+	readNext();
 
 	return( true );
 #else
@@ -1547,28 +1549,35 @@ void MediaSegment::readNext()
 
 	if( VideoStream )
 	{
-		qreal	OldPlayHead = mPlayHead;
-
 		if( mVideo.mCurrIdx != -1 )
 		{
-			mPlayHead = mVidDat[ mVideo.mCurrIdx ].mPTS;
-		}
+			qreal	OldPlayHead = mPlayHead;
+			qreal	CurDuration = 0;
 
-		for( const VidDat &VD : mVidDat )
-		{
-			if( VD.mPTS <= mPlayHead )
+			mPlayHead = mVidDat[ mVideo.mCurrIdx ].mPTS;
+
+			for( const VidDat &VD : mVidDat )
 			{
-				continue;
+				CurDuration = VD.mDuration;
+
+				if( VD.mPTS <= mPlayHead )
+				{
+					continue;
+				}
+
+				mPlayHead = VD.mPTS;
+
+				break;
 			}
 
-			mPlayHead = VD.mPTS;
-
-			break;
+			if( OldPlayHead == mPlayHead )
+			{
+				mPlayHead += CurDuration;
+			}
 		}
-
-		if( OldPlayHead == mPlayHead )
+		else
 		{
-			mPlayHead += mVideo.mMaxDur;
+			mPlayHead = 0;
 		}
 	}
 	else if( AudioStream )
