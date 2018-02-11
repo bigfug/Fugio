@@ -56,6 +56,13 @@ order=0
 uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
 version=2
 
+[170d20c7-2b93-4b3d-a88c-bc973c9b0662]
+direction=1
+name=iChannel0
+order=6
+uuid=67ee23c2-a2a8-459c-ac66-5def0d4af1f4
+version=2
+
 [18f6ddf5-5c92-4b6d-9ee4-91f5d8043188]
 direction=2
 name=Week Number
@@ -138,9 +145,9 @@ inputs\1\e593f890-6c2d-459e-aebc-5794d24be2c2=00000000-0000-0000-0000-0000000000
 inputs\2\fa571d1f-e3fd-419b-9512-708481913369=35992a92-8571-4ac7-aaca-98ae7e0cd3d2
 inputs\3\a06f1190-b3a4-4ca4-afd1-ae05b061c17d=35992a92-8571-4ac7-aaca-98ae7e0cd3d2
 inputs\4\9b217101-cd2f-43d4-9fdd-1384740fcc38=00000000-0000-0000-0000-000000000000
-inputs\5\ac73632b-a459-450b-b7eb-13eb3ca516ad=00000000-0000-0000-0000-000000000000
-inputs\6\8859331e-fbdc-47e9-beac-79b484ed9bc4=00000000-0000-0000-0000-000000000000
-inputs\7\f160f059-9c11-4422-ace2-fe4b11016889=00000000-0000-0000-0000-000000000000
+inputs\5\e2b83f52-5038-406b-8b91-e3372d2df6e4=00000000-0000-0000-0000-000000000000
+inputs\6\992737f9-c676-47ec-b069-5151bd74c622=00000000-0000-0000-0000-000000000000
+inputs\7\170d20c7-2b93-4b3d-a88c-bc973c9b0662=00000000-0000-0000-0000-000000000000
 inputs\size=7
 name=Easy Shader 2D
 outputs\1\35c60cfc-7f99-4867-a863-c1f10a95b581=fc5472cd-03b2-42e1-8e65-6ada5c860962
@@ -386,14 +393,6 @@ order=0
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
 version=2
 
-[8859331e-fbdc-47e9-beac-79b484ed9bc4]
-direction=1
-name=iResolution
-order=5
-updatable=false
-uuid=a7a9be42-67d3-4b19-8f24-d4a0760a5df4
-version=2
-
 [894fea92-b624-4358-99aa-7ce51e99e29b]
 direction=2
 name=Vector3
@@ -459,6 +458,13 @@ order=3
 uuid=249f2932-f483-422f-b811-ab679f006381
 version=2
 
+[992737f9-c676-47ec-b069-5151bd74c622]
+direction=1
+name=iResolution
+order=5
+uuid=1790a5ba-72de-47d7-a36e-2aa59e70f279
+version=2
+
 [9b217101-cd2f-43d4-9fdd-1384740fcc38]
 direction=1
 name=iGlobalTime
@@ -469,7 +475,7 @@ version=2
 [9e5228bf-408a-4420-94ba-4fc0af1b73bd]
 direction=1
 name=Hide Cursor
-order=1
+order=2
 uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
 version=2
 
@@ -524,16 +530,8 @@ version=2
 [a890c2c6-3f96-4f34-8868-e8f482c8b045]
 direction=1
 name=State
-order=2
+order=3
 uuid=261cc653-d7fa-4c34-a08b-3603e8ae71d5
-version=2
-
-[ac73632b-a459-450b-b7eb-13eb3ca516ad]
-direction=1
-name=iMouse
-order=4
-updatable=false
-uuid=a9782dc0-2243-4f9c-8e43-1622d071fb03
 version=2
 
 [ad92c52e-30a2-4369-977f-0918eb6ea603]
@@ -548,7 +546,7 @@ version=2
 direction=1
 name=FileName
 order=0
-settings\filename\directory=../../images
+settings\filename\directory=/Users/bigfug/dev/Fugio/Fugio/share/images
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
 version=2
 
@@ -690,6 +688,7 @@ fd87303a-3694-4f48-8b9d-55ad12dd83e5\0e1f788b-5123-4ec6-833e-a08b84cf4ffb=@Varia
 version=2
 
 [connections]
+170d20c7-2b93-4b3d-a88c-bc973c9b0662=53a514ec-7520-4540-8cd7-7b1055eb7cd8
 1c30db00-b1a6-471e-b1f0-a683ec5054a6=5bc12f3e-ebab-4a9b-9a90-6505a352c489
 1d7452b5-aa16-4591-ad75-2fa7d9d85ea5=f4917ac8-ebd7-4082-8dd3-ca37229748e9
 2c9e460c-15f6-4840-8730-9855c191e352=6dce90f7-120e-4da3-9200-38a470878125
@@ -701,6 +700,7 @@ version=2
 62ac1ecb-8664-4c10-a799-a422155013d6=fff79bea-5fb0-46e8-bfdd-e8a275ad9d85
 70958169-fe9a-419c-ae15-a0f85889e196=5a0e0cb7-5572-4dd8-b76c-1c225ad5c804
 991a6412-1adb-4d95-a07e-5688a3975cbc=0e1f788b-5123-4ec6-833e-a08b84cf4ffb
+992737f9-c676-47ec-b069-5151bd74c622=8deaf06e-e3b8-4222-b61c-a0e7c40f40e6
 9b217101-cd2f-43d4-9fdd-1384740fcc38=facf8911-5fe6-428c-9a28-e229d50a965f
 a06f1190-b3a4-4ca4-afd1-ae05b061c17d=9e6b840c-696e-40ee-b060-6dd894c4a71f
 a863b76f-b39e-42c0-87e0-5e9fcd7d34bc=f6e1d05e-ea07-4d8a-b8b0-04fde225a4d9
@@ -766,6 +766,13 @@ order=5
 uuid=a2bbf374-0dc8-42cb-b85a-6a43b58a348f
 version=2
 
+[e2b83f52-5038-406b-8b91-e3372d2df6e4]
+direction=1
+name=iMouse
+order=4
+uuid=f6a10ac5-34df-4995-a409-9d99da896483
+version=2
+
 [e2fd5bc5-3a87-4fd7-b3c2-2e0ef728adb2]
 direction=1
 name=X
@@ -801,14 +808,6 @@ order=2
 uuid=249f2932-f483-422f-b811-ab679f006381
 version=2
 
-[f160f059-9c11-4422-ace2-fe4b11016889]
-direction=1
-name=iChannel0
-order=6
-updatable=false
-uuid=8c19c3eb-0080-46b2-b4f1-2b2609a364dd
-version=2
-
 [f26a1784-0232-4a34-8106-1b2e9adbb68a]
 direction=2
 name=Image
@@ -834,7 +833,7 @@ version=2
 [f6c440b8-3bcf-4fd0-85eb-4a885ac47a4d]
 direction=1
 name=Render
-order=0
+order=1
 uuid=249f2932-f483-422f-b811-ab679f006381
 version=2
 
@@ -944,5 +943,5 @@ version=2
 
 [view]
 group=00000000-0000-0000-0000-000000000000
-state\center=@Variant(\0\0\0\x1a@x0\0\0\0\0\0@``\0\0\0\0\0)
+state\center=@Variant(\0\0\0\x1a@s`\0\0\0\0\0@n\xa0\0\0\0\0\0)
 state\scale=1
