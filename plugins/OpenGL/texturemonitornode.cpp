@@ -238,7 +238,14 @@ void TextureMonitorNode::paintGL()
 	{
 		fugio::OpenGLTextureInterface *T = TexLst[ i ];
 
-		glViewport( tw * i * mWidget->width() * mWidget->devicePixelRatio(), 0, tw * mWidget->width() * mWidget->devicePixelRatio(), mWidget->height() * mWidget->devicePixelRatio() );
+		GLint		VP[ 4 ];
+
+		VP[ 0 ] = tw * i * mWidget->width() * mWidget->devicePixelRatio();
+		VP[ 1 ] = 0;
+		VP[ 2 ] = tw * mWidget->width() * mWidget->devicePixelRatio();
+		VP[ 3 ] = mWidget->height() * mWidget->devicePixelRatio();
+
+		glViewport( VP[ 0 ], VP[ 1 ], VP[ 2 ], VP[ 3 ] );
 
 		T->srcBind();
 

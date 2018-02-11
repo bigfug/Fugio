@@ -531,11 +531,17 @@ void TexturePin::srcBind()
 {
 	if( mSrcTex )
 	{
-		mSrcTex->bind();
+		if( mSrcTex->isCreated() )
+		{
+			mSrcTex->bind();
+		}
 	}
 	else if( mDstTex )
 	{
-		mDstTex->bind();
+		if( mDstTex->isCreated() )
+		{
+			mDstTex->bind();
+		}
 	}
 }
 

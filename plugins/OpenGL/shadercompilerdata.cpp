@@ -227,7 +227,7 @@ void ShaderCompilerData::process()
 			mFragmentOutputs[ i ] = ( FragData == -1 ? GL_NONE : GL_COLOR_ATTACHMENT0 + i );
 		}
 
-		while( !mFragmentOutputs.isEmpty() && mFragmentOutputs.last() != GL_NONE )
+		while( !mFragmentOutputs.isEmpty() && mFragmentOutputs.last() == GL_NONE )
 		{
 			mFragmentOutputs.removeLast();
 		}

@@ -84,8 +84,6 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinOutputRender;
 	fugio::RenderInterface						*mValOutputRender;
 
-	QSharedPointer<fugio::PinInterface>			 mPinOutputTexture;
-
 	QOpenGLVertexArrayObject					 mVAO;
 
 	ShaderCompilerData							 mShaderCompilerData;
