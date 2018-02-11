@@ -41,7 +41,7 @@ void SerialOutputNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::PinVariantIterator		Input( mPinInput );
 
-	const int		OutCnt = Input.size();
+	const int		OutCnt = Input.count();
 
 	if( !OutCnt )
 	{

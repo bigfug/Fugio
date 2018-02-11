@@ -34,12 +34,12 @@ void SplitPointNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::PinVariantIterator	P( mPinInputPoint );
 
-	if( !P.size() )
+	if( !P.count() )
 	{
 		return;
 	}
 
-	const int		OutCnt = P.size();
+	const int		OutCnt = P.count();
 
 	bool	UpdateOutputX = false;
 	bool	UpdateOutputY = false;

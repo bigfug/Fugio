@@ -67,7 +67,7 @@ void CircleNode::paint( QPainter &pPainter, const QRect &pRect )
 		return;
 	}
 
-	const std::vector<int>		 Cnt = { Center.size(), Radius.size(), Pen.size(), Brush.size(), Transform.size() };
+	const std::vector<int>		 Cnt = { Center.count(), Radius.count(), Pen.count(), Brush.count(), Transform.count() };
 
 	auto						 MinMax = std::minmax_element( Cnt.begin(), Cnt.end() );
 

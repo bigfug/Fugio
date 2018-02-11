@@ -31,7 +31,7 @@ void PacketEncodeNode::inputsUpdated( qint64 pTimeStamp )
 
 		fugio::PinVariantIterator	Data( mPinInputData );
 
-		for( int i = 0 ; i < Data.size() ; i++ )
+		for( int i = 0 ; i < Data.count() ; i++ )
 		{
 			processVariant( Data.index( i ) );
 		}

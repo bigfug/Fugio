@@ -18,7 +18,7 @@ void TransformNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	bool		OutputUpdated = false;
+	bool		OutputUpdated = mPinOutputTransform->alwaysUpdate();
 
 	typedef QPair<QString,fugio::PinVariantIterator>	NamedPinVariantIterator;
 
@@ -39,8 +39,8 @@ void TransformNode::inputsUpdated( qint64 pTimeStamp )
 
 	for( NamedPinVariantIterator &PI : ItrLst )
 	{
-		Min = std::min( Min, PI.second.size() );
-		Max = std::max( Max, PI.second.size() );
+		Min = std::min( Min, PI.second.count() );
+		Max = std::max( Max, PI.second.count() );
 	}
 
 	if( !Min || !Max )

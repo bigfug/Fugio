@@ -51,7 +51,7 @@ void UDPSendRawNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::PinVariantIterator	Data( mPinData );
 
-	for( int i = 0 ; i < Data.size() ; i++ )
+	for( int i = 0 ; i < Data.count() ; i++ )
 	{
 		const QVariant	VarDat = Data.index( i );
 

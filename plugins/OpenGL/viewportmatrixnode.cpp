@@ -89,7 +89,7 @@ void ViewportMatrixNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 	fugio::PinVariantIterator	Projection( mPinInputProjections );
 	fugio::PinVariantIterator	View( mPinInputViews );
 
-	QVector<int>	PinCnt = { Projection.size(), View.size() };
+	QVector<int>	PinCnt = { Projection.count(), View.count() };
 
 	auto			MinMax = std::minmax_element( PinCnt.begin(), PinCnt.end() );
 

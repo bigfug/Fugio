@@ -198,6 +198,14 @@ public:
 		return( mStride * mCount );
 	}
 
+	virtual QVariant variantSize( int pIndex = 0, int pOffset = 0 ) const Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pIndex )
+		Q_UNUSED( pOffset )
+
+		return( variantCount() );
+	}
+
 protected:
 	QVector<T>					 mValues;
 	const QMetaType::Type		 mBaseType;

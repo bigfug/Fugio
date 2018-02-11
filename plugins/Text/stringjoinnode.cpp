@@ -41,7 +41,7 @@ void StringJoinNode::inputsUpdated( qint64 pTimeStamp )
 
 		fugio::PinVariantIterator	String( P );
 
-		for( int i = 0 ; i < String.size() ; i++ )
+		for( int i = 0 ; i < String.count() ; i++ )
 		{
 			StrLst << String.index( i ).toString();
 		}

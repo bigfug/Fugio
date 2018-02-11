@@ -41,7 +41,7 @@ void SubtractNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		ItrLst << fugio::PinVariantIterator( P );
 
-		ItrMax = std::max( ItrMax, ItrLst.last().size() );
+		ItrMax = std::max( ItrMax, ItrLst.last().count() );
 
 		if( OutTyp == QMetaType::UnknownType )
 		{

@@ -40,9 +40,9 @@ void IntegerToFloatNode::inputsUpdated( qint64 pTimeStamp )
 		bool						OK;
 		bool						PinUpd = false;
 
-		VarO->setVariantCount( PinItr.size() );
+		VarO->setVariantCount( PinItr.count() );
 
-		for( int i = 0 ; i < PinItr.size() ; i++ )
+		for( int i = 0 ; i < PinItr.count() ; i++ )
 		{
 			float		V = PinItr.index( i ).toInt( &OK );
 

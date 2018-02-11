@@ -25,7 +25,7 @@ void SplitListNode::inputsUpdated( qint64 pTimeStamp )
 
 	QList<QSharedPointer<fugio::PinInterface>>	PinLst = mNode->enumOutputPins();
 
-	for( int i = PinLst.size() ; i < LstItr.size() ; i++ )
+	for( int i = PinLst.size() ; i < LstItr.count() ; i++ )
 	{
 		QSharedPointer<fugio::PinInterface>		 NewPin;
 		fugio::VariantInterface					*NewVar;
@@ -40,7 +40,7 @@ void SplitListNode::inputsUpdated( qint64 pTimeStamp )
 		}
 	}
 
-	for( int i = PinLst.size() ; i > LstItr.size() ; i-- )
+	for( int i = PinLst.size() ; i > LstItr.count() ; i-- )
 	{
 		QSharedPointer<fugio::PinInterface>		 OldPin;
 
@@ -68,7 +68,7 @@ void SplitListNode::inputsUpdated( qint64 pTimeStamp )
 		fugio::VariantInterface					*CurVar = qobject_cast<fugio::VariantInterface *>( CurPin->hasControl() ? CurPin->control()->qobject() : Q_NULLPTR );
 		int										 CurIdx = CurPin->setting( "i", -1 ).toInt();
 
-		if( CurVar && CurIdx >= 0 && CurIdx < LstItr.size() )
+		if( CurVar && CurIdx >= 0 && CurIdx < LstItr.count() )
 		{
 			QVariant		NewVar = LstItr.index( CurIdx );
 

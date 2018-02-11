@@ -29,9 +29,9 @@ void CeilNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::PinVariantIterator	Input( mPinInput );
 
-	variantSetCount( mValOutput, Input.size(), UpdateOutput );
+	variantSetCount( mValOutput, Input.count(), UpdateOutput );
 
-	for( int i = 0 ; i < Input.size() ; i++ )
+	for( int i = 0 ; i < Input.count() ; i++ )
 	{
 		variantSetValue( mValOutput, i, std::ceil( Input.index( i ).toFloat() ), UpdateOutput );
 	}

@@ -71,7 +71,7 @@ void DrawImageNode::paint( QPainter &pPainter, const QRect &pRect )
 		return;
 	}
 
-	const std::vector<int>		 Cnt = { Image.size(), Position.size(), Source.size(), Transform.size() };
+	const std::vector<int>		 Cnt = { Image.count(), Position.count(), Source.count(), Transform.count() };
 
 	const int					 Max = *std::max_element( Cnt.begin(), Cnt.end() );
 

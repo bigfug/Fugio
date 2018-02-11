@@ -32,7 +32,7 @@ void PointTransformNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::PinVariantIterator	Points( mPinInputPoints );
 
-	const int					PointCount = Points.size();
+	const int					PointCount = Points.count();
 
 	mValOutputPoints->setVariantCount( PointCount );
 

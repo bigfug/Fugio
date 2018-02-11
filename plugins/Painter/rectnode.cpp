@@ -56,12 +56,12 @@ void RectNode::paint( QPainter &pPainter, const QRect &pRect )
 	fugio::PinVariantIterator	 Brush( mPinInputBrush );
 	fugio::PinVariantIterator	 Transform( mPinInputTransform );
 
-	if( !Rect.size() )
+	if( !Rect.count() )
 	{
 		return;
 	}
 
-	const std::vector<int>		 ItrCnt = { Rect.size(), Pen.size(), Brush.size(), Transform.size() };
+	const std::vector<int>		 ItrCnt = { Rect.count(), Pen.count(), Brush.count(), Transform.count() };
 
 	auto						 MinMax = std::minmax_element( ItrCnt.begin(), ItrCnt.end() );
 

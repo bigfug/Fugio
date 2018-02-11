@@ -78,6 +78,13 @@ public:
 		return( variant( pIndex, pOffset ) );
 	}
 
+	virtual QVariant variantSize( int pIndex = 0, int pOffset = 0 ) const Q_DECL_OVERRIDE
+	{
+		QString		SzeVar = variant( pIndex, pOffset ).value<QString>();
+
+		return( SzeVar.length() );
+	}
+
 signals:
 //	void valueChanged( const QString &pValue );
 

@@ -28,7 +28,7 @@ void JoinSizeNode::inputsUpdated( qint64 pTimeStamp )
 	fugio::PinVariantIterator	W( mPinInputWidth );
 	fugio::PinVariantIterator	H( mPinInputHeight );
 
-	QVector<int>	PinCnt = {  W.size(), H.size() };
+	QVector<int>	PinCnt = {  W.count(), H.count() };
 
 	auto			MinMax = std::minmax_element( PinCnt.begin(), PinCnt.end() );
 

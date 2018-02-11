@@ -26,11 +26,11 @@ void AbsNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::PinVariantIterator	Input( mPinInput );
 
-	bool	OutputUpdated = mValOutput->variantCount() != Input.size() || mPinOutput->alwaysUpdate();
+	bool	OutputUpdated = mValOutput->variantCount() != Input.count() || mPinOutput->alwaysUpdate();
 
-	mValOutput->setVariantCount( Input.size() );
+	mValOutput->setVariantCount( Input.count() );
 
-	for( int i = 0 ; i < Input.size() ; i++ )
+	for( int i = 0 ; i < Input.count() ; i++ )
 	{
 		float		NewVal = std::abs( Input.index( i ).toFloat() );
 

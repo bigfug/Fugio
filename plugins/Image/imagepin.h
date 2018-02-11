@@ -35,6 +35,16 @@ public:
 	{
 		return( "Image" );
 	}
+
+	//-------------------------------------------------------------------------
+	// fugio::VariantInterface
+
+	virtual QVariant variantSize( int pIndex = 0, int pOffset = 0 ) const Q_DECL_OVERRIDE
+	{
+		fugio::Image	SzeImg = variant( pIndex, pOffset ).value<fugio::Image>();
+
+		return( SzeImg.size() );
+	}
 };
 
 #endif // IMAGEBUFFER_H

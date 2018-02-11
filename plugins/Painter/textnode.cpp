@@ -73,7 +73,7 @@ void TextNode::paint( QPainter &pPainter, const QRect &pRect )
 		return;
 	}
 
-	const std::vector<int>		 ItrCnt = { Text.size(), Font.size(), Pen.size(), Brush.size(), Transform.size() };
+	const std::vector<int>		 ItrCnt = { Text.count(), Font.count(), Pen.count(), Brush.count(), Transform.count() };
 
 	auto						 MinMax = std::minmax_element( ItrCnt.begin(), ItrCnt.end() );
 

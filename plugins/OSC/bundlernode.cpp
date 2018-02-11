@@ -75,7 +75,7 @@ void BundlerNode::inputsUpdated( qint64 pTimeStamp )
 
 		fugio::PinVariantIterator	Input( P );
 
-		for( int i = 0 ; i < Input.size() ; i++ )
+		for( int i = 0 ; i < Input.count() ; i++ )
 		{
 			const QVariant	Variant = Input.index( i );
 

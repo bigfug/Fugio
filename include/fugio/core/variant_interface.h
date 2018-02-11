@@ -37,6 +37,8 @@ public:
 
 	virtual int variantArraySize( void ) const = 0;
 
+	virtual QVariant variantSize( int pIndex = 0, int pOffset = 0 ) const = 0;
+
 
 	virtual void setVariant( const QVariant &pValue ) = 0;
 

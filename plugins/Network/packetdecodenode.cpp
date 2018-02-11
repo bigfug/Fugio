@@ -29,7 +29,7 @@ void PacketDecodeNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::PinVariantIterator	Packets( mPinInputPackets );
 
-	for( int i = 0 ; i < Packets.size() ; i++ )
+	for( int i = 0 ; i < Packets.count() ; i++ )
 	{
 		processVariant( Packets.index( i ) );
 	}

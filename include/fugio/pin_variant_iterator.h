@@ -28,8 +28,8 @@ public:
 			mValue = pPin->value();
 		}
 
-		mSize = calcsize();
-		mType = calctype();
+		mCount = calcCount();
+		mType = calcType();
 		mIsEmpty = calcisEmpty();
 	}
 
@@ -37,15 +37,15 @@ public:
 	{
 		if( mList )
 		{
-			return( mIsEmpty ? QVariant() : mList->listIndex( pIndex % mSize ) );
+			return( mIsEmpty ? QVariant() : mList->listIndex( pIndex % mCount ) );
 		}
 
-		return( mVariant ? mVariant->variant( pIndex % mSize ) : mValue );
+		return( mVariant ? mVariant->variant( pIndex % mCount ) : mValue );
 	}
 
-	inline int size( void ) const
+	inline int count( void ) const
 	{
-		return( mSize );
+		return( mCount );
 	}
 
 	inline bool isEmpty( void ) const
@@ -58,8 +58,18 @@ public:
 		return( mType );
 	}
 
+	inline QVariant size( int pIndex )
+	{
+		if( mList )
+		{
+			return( mList->listSize() );
+		}
+
+		return( mVariant ? mVariant->variantSize( pIndex % mCount ) : mCount );
+	}
+
 private:
-	int calcsize( void ) const
+	int calcCount( void ) const
 	{
 		if( mList )
 		{
@@ -89,7 +99,7 @@ private:
 		return( !mValue.isValid() );
 	}
 
-	QMetaType::Type calctype( void ) const
+	QMetaType::Type calcType( void ) const
 	{
 		if( mList )
 		{
@@ -109,7 +119,7 @@ protected:
 	fugio::ListInterface		*mList;
 	QVariant					 mValue;
 	QMetaType::Type				 mType;
-	int							 mSize;
+	int							 mCount;
 	bool						 mIsEmpty;
 };
 

@@ -302,6 +302,14 @@ public:
 		setArray( pArray );
 	}
 
+	virtual QVariant variantSize( int pIndex = 0, int pOffset = 0 ) const Q_DECL_OVERRIDE
+	{
+		Q_UNUSED( pIndex )
+		Q_UNUSED( pOffset )
+
+		return( variantElementCount() );
+	}
+
 	//-------------------------------------------------------------------------
 	// fugio::SerialiseInterface
 

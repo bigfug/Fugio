@@ -24,9 +24,9 @@ void SinRadianNode::inputsUpdated( qint64 pTimeStamp )
 
 	bool	OutputUpdated = false;
 
-	variantSetCount( mValOutput, Input.size(), OutputUpdated );
+	variantSetCount( mValOutput, Input.count(), OutputUpdated );
 
-	for( int i = 0 ; i < Input.size() ; i++ )
+	for( int i = 0 ; i < Input.count() ; i++ )
 	{
 		variantSetValue( mValOutput, i, std::cos( Input.index( i ).toDouble() ), OutputUpdated );
 	}

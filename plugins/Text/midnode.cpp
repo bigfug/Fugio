@@ -54,9 +54,9 @@ void MidNode::inputsUpdated( qint64 pTimeStamp )
 
 		bool								 DstUpd = false;
 
-		DstVar->setVariantCount( SrcVar.size() );
+		DstVar->setVariantCount( SrcVar.count() );
 
-		for( int i = 0 ; i < SrcVar.size() ; i++ )
+		for( int i = 0 ; i < SrcVar.count() ; i++ )
 		{
 			QString		NewVar = SrcVar.index( i ).toString().mid( Index, Count );
 

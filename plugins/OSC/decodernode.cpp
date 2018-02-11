@@ -27,7 +27,7 @@ void DecoderNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::PinVariantIterator	Input( mPinInput );
 
-	for( int i = 0 ; i < Input.size() ; i++ )
+	for( int i = 0 ; i < Input.count() ; i++ )
 	{
 		const QVariant	Variant = Input.index( i );
 
