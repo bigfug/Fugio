@@ -1,7 +1,10 @@
 #include "easyshader2dnode.h"
 
 #include <QOpenGLContext>
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 #include <QOpenGLExtraFunctions>
+#endif
 
 #include <fugio/core/uuid.h>
 #include <fugio/text/uuid.h>
@@ -601,13 +604,6 @@ void EasyShader2DNode::updateOutputPins()
 		return;
 	}
 
-	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
-
-	if( !GLEX )
-	{
-		return;
-	}
-
 	glGenFramebuffers( 1, &mFramebufferObject );
 
 	if( !mFramebufferObject )
@@ -642,7 +638,14 @@ void EasyShader2DNode::updateOutputPins()
 		glFramebufferTexture2D( GL_FRAMEBUFFER, FragmentOutputs[ i ], TexInf->target(), TexInf->dstTexId(), 0 );
 	}
 
-	GLEX->glDrawBuffers( mShaderCompilerData.mFragmentOutputs.size(), mShaderCompilerData.mFragmentOutputs.constData() );
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+
+	if( GLEX )
+	{
+		GLEX->glDrawBuffers( mShaderCompilerData.mFragmentOutputs.size(), mShaderCompilerData.mFragmentOutputs.constData() );
+	}
+#endif
 
 	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 }
