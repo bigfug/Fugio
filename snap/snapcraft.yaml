@@ -34,6 +34,8 @@
         - libportmidi-dev
         - libqt5serialport5-dev
         - libqt5websockets5-dev
+        - libopencv-dev
+        - libsnappy-dev
       stage-packages:
         - libqt5concurrent5
         - libqt5core5a
@@ -55,6 +57,13 @@
         - libportaudio2
         - libqt5serialport5
         - libqt5websockets5
+        - libopencv-core2.4v5
+        - libopencv-calib3d2.4v5
+        - libopencv-features2d2.4v5
+        - libopencv-imgproc2.4v5
+        - libopencv-objdetect2.4v5
+        - libopencv-photo2.4v5
+        - libopencv-video2.4v5
 
   apps:
     fugio:
