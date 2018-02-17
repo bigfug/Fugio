@@ -53,8 +53,6 @@
         - liblua5.3-0
         - libportaudio2
         - libqt5serialport5
-        - libqt5quickcontrols2-5
-        - libqt5quickwidgets5
         - libqt5websockets5
 
   apps:
