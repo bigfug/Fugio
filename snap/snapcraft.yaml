@@ -1,0 +1,17 @@
+
+  name: fugio
+  version: '3.0.0' # just for humans, typically '1.2+git' or '1.3.2'
+  summary: Fugio is an open visual programming system for creating digital art
+  description: |
+    Fugio is an open visual programming system for creating digital art,
+    learning programming, and making cool stuff with hardware such as the
+    Oculus Rift, Kinect, Arduino, Leap Motion, and any MIDI, OSC, TUIO,
+    or DMX enabled thing.
+
+  grade: devel # must be 'stable' to release into candidate/stable channels
+  confinement: devmode # use 'strict' once you have the right plugs and slots
+
+  parts:
+    cmake-build:
+      plugin: cmake
+  
