@@ -18,6 +18,7 @@
       plugin: cmake
       build-packages:
         - qtbase5-dev
+        - qttools5-dev-tools
         - libqt5opengl5-dev
         - libdlib-dev
         - portaudio19-dev
