@@ -14,4 +14,14 @@
   parts:
     cmake-build:
       plugin: cmake
-  
+      build-packages:
+      - qtbase5-dev
+      - libqt5opengl5-dev
+      - libdlib-dev
+      - portaudio19-dev
+      - liblua5.3-dev
+    stage-packages:
+      - libqt5gui5
+      - libqt5svg5
+      - libportaudio2
+      - liblua5.3-0
