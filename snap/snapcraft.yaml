@@ -14,45 +14,45 @@
   parts:
     cmake-build:
       plugin: cmake
-    build-packages:
-      - qtbase5-dev
-      - libqt5opengl5-dev
-      - libdlib-dev
-      - portaudio19-dev
-      - liblua5.3-dev
-      - libavfilter-dev
-      - libavcodec-dev
-      - libavdevice-dev
-      - libavformat-dev
-      - libavutil-dev
-      - libswscale-dev
-      - libavresample-dev
-      - libavfilter-dev
-      - libfftw3-dev
-      - libportmidi-dev
-      - libqt5serialport5-dev
-      - qtquickcontrols2-5-dev
-      - libqt5websockets5-dev
-    stage-packages:
-      - libqt5concurrent5
-      - libqt5core5a
-      - libqt5gui5
-      - libqt5opengl5
-      - libqt5network5
-      - libqt5widgets5
-      - libicu57
-      - libavcodec57
-      - libavdevice57
-      - libavformat57
-      - libavutil55
-      - libswscale4
-      - libswresample2
-      - libavfilter6
-      - libfftw3-single3
-      - libportmidi0
-      - liblua5.3-0
-      - libportaudio2
-      - libqt5serialport5
-      - libqt5quickcontrols2-5
-      - libqt5quickwidgets5
-      - libqt5websockets
+      build-packages:
+        - qtbase5-dev
+        - libqt5opengl5-dev
+        - libdlib-dev
+        - portaudio19-dev
+        - liblua5.3-dev
+        - libavfilter-dev
+        - libavcodec-dev
+        - libavdevice-dev
+        - libavformat-dev
+        - libavutil-dev
+        - libswscale-dev
+        - libavresample-dev
+        - libavfilter-dev
+        - libfftw3-dev
+        - libportmidi-dev
+        - libqt5serialport5-dev
+        - qtquickcontrols2-5-dev
+        - libqt5websockets5-dev
+      stage-packages:
+        - libqt5concurrent5
+        - libqt5core5a
+        - libqt5gui5
+        - libqt5opengl5
+        - libqt5network5
+        - libqt5widgets5
+        - libicu57
+        - libavcodec57
+        - libavdevice57
+        - libavformat57
+        - libavutil55
+        - libswscale4
+        - libswresample2
+        - libavfilter6
+        - libfftw3-single3
+        - libportmidi0
+        - liblua5.3-0
+        - libportaudio2
+        - libqt5serialport5
+        - libqt5quickcontrols2-5
+        - libqt5quickwidgets5
+        - libqt5websockets
