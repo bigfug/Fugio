@@ -53,4 +53,4 @@
         - libqt5serialport5
         - libqt5quickcontrols2-5
         - libqt5quickwidgets5
-        - libqt5websockets
+        - libqt5websockets5
