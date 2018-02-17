@@ -20,7 +20,6 @@
         - libdlib-dev
         - portaudio19-dev
         - liblua5.3-dev
-        - libavfilter-dev
         - libavcodec-dev
         - libavdevice-dev
         - libavformat-dev
