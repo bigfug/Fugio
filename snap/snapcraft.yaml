@@ -59,4 +59,4 @@
   apps:
     fugio:
       command: fugio
-      desktop: FugioApp/fugio.desktop
+      desktop: share/applications/fugio.desktop
