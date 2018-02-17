@@ -784,13 +784,13 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 		mGroupState.insert( QUuid(), GSE );
 	}
 
-#if !defined( Q_OS_RASPBERRY_PI )
-	if( !pPartial )
-	{
-		gApp->mainWindow()->restoreGeometry( pSettings.value( "mainwindow/geometry", gApp->mainWindow()->saveGeometry() ).toByteArray() );
-		gApp->mainWindow()->restoreState( pSettings.value( "mainwindow/state", gApp->mainWindow()->saveState() ).toByteArray() );
-	}
-#endif
+//#if !defined( Q_OS_RASPBERRY_PI )
+//	if( !pPartial )
+//	{
+//		gApp->mainWindow()->restoreGeometry( pSettings.value( "mainwindow/geometry", gApp->mainWindow()->saveGeometry() ).toByteArray() );
+//		gApp->mainWindow()->restoreState( pSettings.value( "mainwindow/state", gApp->mainWindow()->saveState() ).toByteArray() );
+//	}
+//#endif
 
 	if( !pPartial )
 	{

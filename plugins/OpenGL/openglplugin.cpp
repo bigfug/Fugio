@@ -617,7 +617,7 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_WRAP( GL_REPEAT );
 		INSERT_WRAP( GL_CLAMP_TO_EDGE );
 		INSERT_WRAP( GL_MIRRORED_REPEAT );
-#if !defined( Q_OS_RASPBERRY_PI )
+#if defined( GL_CLAMP_TO_BORDER )
 		INSERT_WRAP( GL_CLAMP_TO_BORDER );
 #endif
 	}

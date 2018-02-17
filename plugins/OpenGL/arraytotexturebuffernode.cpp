@@ -1,6 +1,6 @@
 #include "arraytotexturebuffernode.h"
 
-#if !defined( Q_OS_RASPBERRY_PI )
+#if !defined( QT_OPENGL_ES )
 #include <QOpenGLFunctions_3_1>
 #endif
 
@@ -37,7 +37,7 @@ bool ArrayToTextureBufferNode::initialise()
 		return( false );
 	}
 
-#if defined( Q_OS_RASPBERRY_PI )
+#if defined( QT_OPENGL_ES )
 	mNode->setStatus( fugio::NodeInterface::Error );
 
 	return( false );
@@ -69,7 +69,7 @@ void ArrayToTextureBufferNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-#if !defined( Q_OS_RASPBERRY_PI )
+#if !defined( QT_OPENGL_ES )
 	QOpenGLFunctions_3_1	*GL31 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_1>();
 
 	if( !GL31 || !GL31->initializeOpenGLFunctions() )

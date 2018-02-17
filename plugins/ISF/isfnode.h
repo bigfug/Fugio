@@ -1,7 +1,7 @@
 #ifndef ISFNODE_H
 #define ISFNODE_H
 
-#if !defined( Q_OS_RASPBERRY_PI )
+#if 1// !defined( Q_OS_RASPBERRY_PI )
 #include "../libs/exprtk/exprtk.hpp"
 #endif
 

@@ -60,7 +60,7 @@ void checkErrors( const char *file, int line )
 		return;
 	}
 
-#if defined( Q_OS_RASPBERRY_PI )
+#if defined( QT_OPENGL_ES )
 	for( GLenum e = eglGetError() ; e != EGL_SUCCESS ; e = eglGetError() )
 	{
 		qDebug() << "EGL" << file << line << ":" << QString::number( e, 16 );
