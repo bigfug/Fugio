@@ -30,7 +30,6 @@
         - libfftw3-dev
         - libportmidi-dev
         - libqt5serialport5-dev
-        - qtquickcontrols2-5-dev
         - libqt5websockets5-dev
       stage-packages:
         - libqt5concurrent5
