@@ -64,9 +64,11 @@
         - libopencv-objdetect2.4v5
         - libopencv-photo2.4v5
         - libopencv-video2.4v5
+      qt-version: qt5
+      after: [desktop-qt5]
 
   apps:
     fugio:
-      command: fugio
+      command: desktop-launch fugio
       desktop: share/applications/fugio.desktop
       plugs: [camera, desktop, home, network, opengl, x11, alsa, serial-port]
