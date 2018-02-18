@@ -27,6 +27,8 @@ public:
 private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputImage;
 
+	QSharedPointer<fugio::PinInterface>			 mPinInputROI;
+
 	QSharedPointer<fugio::PinInterface>			 mPinOutputCount;
 	fugio::VariantInterface						*mValOutputCount;
 };

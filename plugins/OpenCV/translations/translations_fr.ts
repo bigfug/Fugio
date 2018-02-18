@@ -4,12 +4,12 @@
 <context>
     <name>CountNonZeroNode</name>
     <message>
-        <location filename="../countnonzeronode.cpp" line="20"/>
+        <location filename="../countnonzeronode.cpp" line="23"/>
         <source>Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../countnonzeronode.cpp" line="24"/>
+        <location filename="../countnonzeronode.cpp" line="29"/>
         <source>Count</source>
         <translation type="unfinished"></translation>
     </message>
