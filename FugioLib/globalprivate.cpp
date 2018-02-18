@@ -186,7 +186,13 @@ QString GlobalPrivate::sharedDataPath() const
 #endif
 
 #if defined( Q_OS_LINUX ) && !defined( QT_DEBUG )
-	return( "/usr/share/fugio" );
+	QDir		TmpDir = QDir( QApplication::applicationDirPath() );
+
+	TmpDir.cdUp();
+
+	TmpDir.cd( "share" );
+
+	return( TmpDir.absoluteFilePath( "fugio" ) );
 #endif
 }
 

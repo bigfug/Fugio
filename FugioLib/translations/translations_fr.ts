@@ -4,12 +4,12 @@
 <context>
     <name>ContextPrivate</name>
     <message>
-        <location filename="../contextprivate.cpp" line="48"/>
+        <location filename="../contextprivate.cpp" line="46"/>
         <source>Untitled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextprivate.cpp" line="1536"/>
+        <location filename="../contextprivate.cpp" line="1521"/>
         <source>Node has no control class: missing plugin or error loading plugin?</source>
         <translation type="unfinished"></translation>
     </message>
