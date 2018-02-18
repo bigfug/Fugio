@@ -88,7 +88,9 @@ KinectNode::KinectNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	if( ( mNextColorFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL ) ) != INVALID_HANDLE_VALUE )
 	{
-		//mEventNotifier.setHandle( mNextFrameEvent );
+//		mEventNotifier.setHandle( mNextColorFrameEvent );
+
+//		mEventNotifier.setEnabled( true );
 	}
 
 	if( ( mNextDepthFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL ) ) != INVALID_HANDLE_VALUE )
@@ -218,17 +220,17 @@ void KinectNode::frameStart( qint64 pTimeStamp )
 		mLastElevationCommand = pTimeStamp;
 	}
 
-	LONG			Elevation;
+//	LONG			Elevation;
 
-	if( ( hr = m_pNuiSensor->NuiCameraElevationGetAngle( &Elevation ) ) >= 0 )
-	{
-		if( mValOutputElevation->variant().toInt() != Elevation )
-		{
-			mValOutputElevation->setVariant( int( Elevation ) );
+//	if( ( hr = m_pNuiSensor->NuiCameraElevationGetAngle( &Elevation ) ) >= 0 )
+//	{
+//		if( mValOutputElevation->variant().toInt() != Elevation )
+//		{
+//			mValOutputElevation->setVariant( int( Elevation ) );
 
-			pinUpdated( mPinOutputElevation );
-		}
-	}
+//			pinUpdated( mPinOutputElevation );
+//		}
+//	}
 
 	NUI_IMAGE_FRAME imageFrame;
 	NUI_LOCKED_RECT LockedRect;
@@ -320,7 +322,7 @@ void KinectNode::frameStart( qint64 pTimeStamp )
 							//-------------------------------------------------------------------------
 
 							fugio::Image	DepImg = mValOutputDepth->variant().value<fugio::Image>();
-							fugio::Image	UsrImg = mValOutputDepth->variant().value<fugio::Image>();
+							fugio::Image	UsrImg = mValOutputUser->variant().value<fugio::Image>();
 
 							QSize			S = nuiSize( imageFrame.eResolution );
 
@@ -514,20 +516,9 @@ void KinectNode::frameStart( qint64 pTimeStamp )
 #endif
 
 #endif
-
-	//disconnect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(frameStart(qint64)) );
 }
 
 #ifdef KINECT_SUPPORTED
-
-void KinectNode::eventTriggered( HANDLE pHandle )
-{
-	Q_UNUSED( pHandle )
-
-	//	connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(frameStart(qint64)) );
-
-	ResetEvent( pHandle );
-}
 
 QSize KinectNode::nuiSize( NUI_IMAGE_RESOLUTION pNuiRes )
 {

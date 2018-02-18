@@ -63,8 +63,6 @@ private slots:
 	void editConfig( void );
 
 #ifdef KINECT_SUPPORTED
-    void eventTriggered( HANDLE pHandle );
-
 	static QSize nuiSize( NUI_IMAGE_RESOLUTION pNuiRes );
 
 	static fugio::ImageFormat nuiFormat( NUI_IMAGE_TYPE pNuiType );
@@ -125,8 +123,6 @@ private:
 	HANDLE									     mInteractionEvent;
 
 	LONG										 mSensorElevation;
-
-	QWinEventNotifier							 mEventNotifier;
 
 	bool										 mFrameReceived;
 

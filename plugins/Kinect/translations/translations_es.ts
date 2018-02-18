@@ -69,17 +69,17 @@
 <context>
     <name>KinectNode</name>
     <message>
-        <location filename="../kinectnode.cpp" line="156"/>
+        <location filename="../kinectnode.cpp" line="158"/>
         <source>Kinect not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../kinectnode.cpp" line="602"/>
+        <location filename="../kinectnode.cpp" line="593"/>
         <source>No Kinect sensors detected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../kinectnode.cpp" line="754"/>
+        <location filename="../kinectnode.cpp" line="745"/>
         <source>Setup...</source>
         <translation type="unfinished"></translation>
     </message>
