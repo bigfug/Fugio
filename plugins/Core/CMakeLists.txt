@@ -85,6 +85,8 @@ set( SOURCE_FILES
 	integertofloatnode.h
 	blockupdatesnode.cpp
 	blockupdatesnode.h
+	processclicknode.cpp
+	processclicknode.h
 )
 
 set( QRC_FILES

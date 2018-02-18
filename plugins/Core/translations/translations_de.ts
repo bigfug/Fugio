@@ -64,7 +64,7 @@
 <context>
     <name>CorePlugin</name>
     <message>
-        <location filename="../coreplugin.cpp" line="80"/>
+        <location filename="../coreplugin.cpp" line="81"/>
         <source>Any Trigger</source>
         <translation>Any Trigger</translation>
     </message>
@@ -93,6 +93,29 @@
         <location filename="../joinsizenode.cpp" line="19"/>
         <source>Size</source>
         <translation>Grösse</translation>
+    </message>
+</context>
+<context>
+    <name>ProcessClickNode</name>
+    <message>
+        <location filename="../processclicknode.cpp" line="15"/>
+        <source>Boolean</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../processclicknode.cpp" line="17"/>
+        <source>Down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../processclicknode.cpp" line="19"/>
+        <source>Up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../processclicknode.cpp" line="21"/>
+        <source>Double</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

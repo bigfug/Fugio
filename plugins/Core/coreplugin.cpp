@@ -50,6 +50,7 @@
 #include "splitrectnode.h"
 #include "integertofloatnode.h"
 #include "blockupdatesnode.h"
+#include "processclicknode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -105,6 +106,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Number Range Map", NID_NUMBER_RANGE, &NumberRangeNode::staticMetaObject ),
 	ClassEntry( "Number Spread", NID_NUMBER_SPREAD, &NumberSpreadNode::staticMetaObject ),
 	ClassEntry( "Output Range", NID_OUTPUT_RANGE, &OutputRangeNode::staticMetaObject ),
+	ClassEntry( "Process Click", NID_PROCESS_CLICK, &ProcessClickNode::staticMetaObject ),
 	ClassEntry( "Random", "Number", NID_RANDOM_NUMBER, &RandomNumberNode::staticMetaObject ),
 	ClassEntry( "Rate Control", NID_RATE_CONTROL, &RateControlNode::staticMetaObject ),
 	ClassEntry( "Signal", "Number", NID_SIGNAL_NUMBER, &SignalNumberNode::staticMetaObject ),
