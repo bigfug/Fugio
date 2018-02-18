@@ -5,9 +5,9 @@
 #include <fugio/image/uuid.h>
 
 #include <fugio/image/image.h>
+#include <fugio/performance.h>
 
 #include "opencvplugin.h"
-
 
 BackgroundSubtractionNode::BackgroundSubtractionNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -66,6 +66,8 @@ void BackgroundSubtractionNode::process( BackgroundSubtractionNode *pNode )
 
 void BackgroundSubtractionNode::process( void )
 {
+	fugio::Performance	P( mNode, __FUNCTION__, mNode->context()->global()->timestamp() );
+
 #if defined( OPENCV_SUPPORTED )
 	fugio::Image	SrcImg = variantStatic<fugio::Image>( mPinInputImage );
 

@@ -7,6 +7,8 @@
 
 #include <fugio/context_signals.h>
 
+#include <fugio/performance.h>
+
 #include "devicedialog.h"
 
 VideoCaptureNode::VideoCaptureNode( QSharedPointer<fugio::NodeInterface> pNode )
@@ -44,7 +46,7 @@ bool VideoCaptureNode::deinitialise( void )
 #if defined( VIDEOCAPTURE_SUPPORTED )
 	mCapture.stop();
 
-	disconnect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(frameStart()) );
+	disconnect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(frameStart(qint64)) );
 
 	mCapture.close();
 #endif
@@ -65,6 +67,13 @@ void VideoCaptureNode::frameCallbackStatic( ca::PixelBuffer &pBuffer )
 
 void VideoCaptureNode::frameCallback( ca::PixelBuffer &pBuffer )
 {
+	if( !mNode->context()->active() )
+	{
+		return;
+	}
+
+	fugio::Performance	P( mNode, __FUNCTION__, mNode->context()->global()->timestamp() );
+
 	ca::PixelBuffer TmpBuf = pBuffer;
 
 	for( int i = 0 ; i < 3 ; i++ )
@@ -151,8 +160,10 @@ void VideoCaptureNode::frameCallback( ca::PixelBuffer &pBuffer )
 	pinUpdated( mPinOutputImage );
 }
 
-void VideoCaptureNode::frameStart()
+void VideoCaptureNode::frameStart( qint64 pTimeStamp )
 {
+	fugio::Performance	P( mNode, __FUNCTION__, pTimeStamp );
+
 	mCapture.update();
 }
 #endif
@@ -165,7 +176,7 @@ void VideoCaptureNode::setCurrentDevice( int pDevIdx, int pCfgIdx )
 	}
 
 #if defined( VIDEOCAPTURE_SUPPORTED )
-	disconnect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(frameStart()) );
+	disconnect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(frameStart(qint64)) );
 
 	mCapture.stop();
 	mCapture.close();
@@ -228,7 +239,7 @@ void VideoCaptureNode::setCurrentDevice( int pDevIdx, int pCfgIdx )
 	{
 		mNode->setStatus( fugio::NodeInterface::Initialised );
 
-		connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(frameStart()) );
+		connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(frameStart(qint64)) );
 	}
 #endif
 }

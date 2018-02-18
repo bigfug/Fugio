@@ -9,6 +9,7 @@
 #include <fugio/image/image.h>
 #include <fugio/pin_variant_iterator.h>
 #include <fugio/image/painter_interface.h>
+#include <fugio/performance.h>
 
 PainterNode::PainterNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -32,6 +33,8 @@ PainterNode::PainterNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void PainterNode::inputsUpdated( qint64 pTimeStamp )
 {
+	fugio::Performance	P( mNode, __FUNCTION__, pTimeStamp );
+
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
 	QSize			ImgSze = variant( mPinInputSize ).toSize();

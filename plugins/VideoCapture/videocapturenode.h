@@ -44,7 +44,7 @@ private:
 
 private slots:
 #if defined( VIDEOCAPTURE_SUPPORTED )
-	void frameStart( void );
+	void frameStart( qint64 pTimeStamp );
 #endif
 
 	void setCurrentDevice( int pDevIdx , int pCfgIdx);

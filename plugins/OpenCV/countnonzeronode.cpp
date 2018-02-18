@@ -11,6 +11,8 @@
 
 #include <fugio/image/image.h>
 
+#include <fugio/performance.h>
+
 #include "opencvplugin.h"
 
 CountNonZeroNode::CountNonZeroNode( QSharedPointer<fugio::NodeInterface> pNode )
@@ -31,6 +33,8 @@ CountNonZeroNode::CountNonZeroNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void CountNonZeroNode::inputsUpdated( qint64 pTimeStamp )
 {
+	fugio::Performance	P( mNode, __FUNCTION__, pTimeStamp );
+
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
 	bool				UpdateOutput = mPinOutputCount->alwaysUpdate();
