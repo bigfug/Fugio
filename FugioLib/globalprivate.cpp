@@ -682,6 +682,8 @@ QSharedPointer<fugio::ContextInterface> GlobalPrivate::newContext( void )
 
 	mContexts.append( C );
 
+	Lock.unlock();
+
 	emit contextAdded( C );
 
 	return( C );

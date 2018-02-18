@@ -259,6 +259,11 @@ public:
 		return( mNodeMap );
 	}
 
+	inline QMutex &contextMutex( void )
+	{
+		return( mContextMutex );
+	}
+
 protected:
 	bool registerNodeClass( const fugio::ClassEntry &E );
 
