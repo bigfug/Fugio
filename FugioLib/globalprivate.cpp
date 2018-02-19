@@ -55,9 +55,6 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 	mLastTime   = 0;
 	mFrameCount = 0;
 
-	mCommandLineParser.addHelpOption();
-	mCommandLineParser.addVersionOption();
-
 	connect( this, SIGNAL(frameEnd()), &mUniverse, SLOT(cast()) );
 }
 

@@ -12,7 +12,6 @@
 #include "global.h"
 
 class QWidget;
-class QCommandLineParser;
 
 FUGIO_NAMESPACE_BEGIN
 class GlobalSignals;
@@ -102,6 +101,9 @@ public:
 
 	virtual QThread *thread( void ) = 0;
 
+	virtual bool commandLineDefined( const QString &pKey ) const = 0;
+	virtual QString commandLineValue( const QString &pKey ) const = 0;
+
 	//-------------------------------------------------------------------------
 	// Paths
 
@@ -150,11 +152,6 @@ public:
 	virtual void pause( void ) = 0;
 
 	virtual void unpause( void ) = 0;
-
-	//-------------------------------------------------------------------------
-	// Access to the command line parser - respect other plugins!
-
-	virtual QCommandLineParser &commandLineParser( void ) = 0;
 
 	//-------------------------------------------------------------------------
 	// Interfaces

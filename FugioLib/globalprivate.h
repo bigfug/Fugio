@@ -8,7 +8,6 @@
 #include <QNetworkReply>
 #include <QMultiMap>
 #include <QElapsedTimer>
-#include <QCommandLineParser>
 #include <QThread>
 #include <QApplication>
 
@@ -124,6 +123,16 @@ public:
 #endif
 	}
 
+	virtual bool commandLineDefined( const QString &pKey ) const Q_DECL_OVERRIDE
+	{
+		return( mCommandLineVariables.contains( pKey ) );
+	}
+
+	virtual QString commandLineValue( const QString &pKey ) const Q_DECL_OVERRIDE
+	{
+		return( mCommandLineVariables.value( pKey ) );
+	}
+
 	virtual void sendToUniverse( qint64 pTimeStamp, const QUuid &pUuid, const QString &pName, const QUuid &pType, const QByteArray &pByteArray ) Q_DECL_OVERRIDE
 	{
 		mUniverse.addData( pTimeStamp, pUuid, pName, pType, pByteArray );
@@ -158,11 +167,6 @@ public:
 	}
 
 	//-------------------------------------------------------------------------
-
-	virtual QCommandLineParser &commandLineParser( void ) Q_DECL_OVERRIDE
-	{
-		return( mCommandLineParser );
-	}
 
 	virtual void registerInterface( const QUuid &pUuid, QObject *pInterface ) Q_DECL_OVERRIDE;
 	virtual void unregisterInterface( const QUuid &pUuid ) Q_DECL_OVERRIDE;
@@ -264,6 +268,11 @@ public:
 		return( mContextMutex );
 	}
 
+	void setCommandLineValues( const QMap<QString,QString> &pValueMap )
+	{
+		mCommandLineVariables = pValueMap;
+	}
+
 protected:
 	bool registerNodeClass( const fugio::ClassEntry &E );
 
@@ -307,8 +316,6 @@ private:
 	QMultiMap<QUuid,QUuid>			 mPinSplitters;
 	QMultiMap<QUuid,QUuid>			 mPinJoiners;
 
-	QCommandLineParser				 mCommandLineParser;
-
 	bool							 mPause;
 
 #if defined( GLOBAL_THREADED )
@@ -324,6 +331,8 @@ private:
 	QStringList						 mLoadedPlugins;
 
 	QMap<QMetaType::Type,QUuid>		 mMetaTypeToPinUuid;
+
+	QMap<QString,QString>			 mCommandLineVariables;
 };
 
 #if defined( GLOBAL_THREADED )

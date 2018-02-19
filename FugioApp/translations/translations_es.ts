@@ -1205,4 +1205,22 @@ p, li { white-space: pre-wrap; }
         <translation>Guardar Hoja Estilo</translation>
     </message>
 </context>
+<context>
+    <name>main</name>
+    <message>
+        <location filename="../main.cpp" line="146"/>
+        <source>Select OpenGL backend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="147"/>
+        <source>Select OpenGL ES backend</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="148"/>
+        <source>Select OpenGL software backend</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 </TS>

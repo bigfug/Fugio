@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <QSurfaceFormat>
 #include <QSplashScreen>
+#include <QCommandLineParser>
 
 #include "contextprivate.h"
 #include "contextsubwindow.h"
@@ -93,103 +94,7 @@ void logger_static( QtMsgType type, const QMessageLogContext &context, const QSt
 #define Q(x) #x
 #define QUOTE(x) Q(x)
 
-void checkLocale( App *APP )
-{
-	bool		FndLoc = false;
-
-	for( QString a : APP->arguments() )
-	{
-		if( FndLoc )
-		{
-			QLocale::setDefault( QLocale( a ) );
-
-			break;
-		}
-
-		if( a == "--locale" )
-		{
-			FndLoc = true;
-		}
-	}
-}
-
-void setOpenGLType( int argc, char *argv[] )
-{
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
-	QCoreApplication::setAttribute( Qt::AA_ShareOpenGLContexts );
-#endif
-
-	//-------------------------------------------------------------------------
-
-	typedef enum OpenGLType
-	{
-		GLT_DEFAULT,
-		GLT_DESKTOP,
-		GLT_ES,
-		GLT_SOFTWARE
-	} OpenGLType;
-
-	OpenGLType		GLType = GLT_DESKTOP;
-
-	for( int i = 1 ; i < argc ; i++ )
-	{
-		if( !strcmp( argv[ i ], "--opengl" ) )
-		{
-			GLType = GLT_DESKTOP;
-
-			continue;
-		}
-
-		if( !strcmp( argv[ i ], "--gles" ) )
-		{
-			GLType = GLT_ES;
-
-			continue;
-		}
-
-
-		if( !strcmp( argv[ i ], "--glsw" ) )
-		{
-			GLType = GLT_SOFTWARE;
-
-			continue;
-		}
-	}
-
-	QSurfaceFormat	SurfaceFormat;
-
-	if( GLType == GLT_DESKTOP )
-	{
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 3, 0 )
-		QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
-#endif
-
-#if !defined( QT_OPENGL_ES_2 )
-		SurfaceFormat.setDepthBufferSize( 24 );
-		SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
-		SurfaceFormat.setSamples( 4 );
-		SurfaceFormat.setVersion( 4, 5 );
-#endif
-	}
-	else if( GLType == GLT_ES )
-	{
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 3, 0 )
-		QCoreApplication::setAttribute( Qt::AA_UseOpenGLES );
-#endif
-	}
-	else if( GLType == GLT_SOFTWARE )
-	{
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
-		QCoreApplication::setAttribute( Qt::AA_UseSoftwareOpenGL );
-#endif
-	}
-
-#if defined( QT_DEBUG )
-	SurfaceFormat.setOption( QSurfaceFormat::DebugContext );
-#endif
-
-	QSurfaceFormat::setDefaultFormat( SurfaceFormat );
-}
+//-------------------------------------------------------------------------
 
 int main( int argc, char *argv[] )
 {
@@ -224,8 +129,103 @@ int main( int argc, char *argv[] )
 	qDebug() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName() ).arg( QApplication::applicationVersion() ).arg( "started" );
 
 	//-------------------------------------------------------------------------
+	// Command Line Parser
 
-	setOpenGLType( argc, argv );
+	QCommandLineParser		CLP;
+
+	CLP.setSingleDashWordOptionMode( QCommandLineParser::ParseAsLongOptions );
+
+	CLP.setApplicationDescription( "Fugio" );
+	CLP.addHelpOption();
+	CLP.addVersionOption();
+
+	QCommandLineOption OptionClearSettings( "clear-settings", "Clear all settings (mainly for testing purposes)" );
+
+	CLP.addOption( OptionClearSettings );
+
+	QCommandLineOption OptionOpenGL( "opengl", QCoreApplication::translate( "main", "Select OpenGL backend" ) );
+	QCommandLineOption OptionGLES( "gles", QCoreApplication::translate( "main", "Select OpenGL ES backend" ) );
+	QCommandLineOption OptionGLSW( "glsw", QCoreApplication::translate( "main", "Select OpenGL software backend" ) );
+
+	CLP.addOption( OptionOpenGL );
+	CLP.addOption( OptionGLES );
+	CLP.addOption( OptionGLSW );
+
+	QCommandLineOption OptionPluginPath( QStringList() << "pp" << "plugin-path", "Look for plugins in <path>", "path" );
+	QCommandLineOption OptionEnablePlugin( QStringList() << "pe" << "enable-plugin", "Enable plugin <plugin>.", "plugin" );
+	QCommandLineOption OptionDisablePlugin( QStringList() << "pd" << "disable-plugin", "Disable plugin <plugin>.", "plugin" );
+
+	CLP.addOption( OptionPluginPath );
+	CLP.addOption( OptionEnablePlugin );
+	CLP.addOption( OptionDisablePlugin );
+
+	QCommandLineOption OptionLocale( QStringList() << "l" << "locale", "Set language locale to <locale>.", QLocale().bcp47Name() );
+
+	CLP.addOption( OptionLocale );
+
+	QCommandLineOption OptionDefine( QStringList() << "d" << "define", "Define a <variable>.", "variable" );
+
+	CLP.addOption( OptionDefine );
+
+	QStringList		Args;
+
+	for( int i = 0 ; i < argc ; i++ )
+	{
+		Args << QString::fromLocal8Bit( argv[ i ] );
+	}
+
+	CLP.parse( Args );
+
+	//-------------------------------------------------------------------------
+	// Command Line OpenGL
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
+	QCoreApplication::setAttribute( Qt::AA_ShareOpenGLContexts );
+#endif
+
+	QSurfaceFormat	SurfaceFormat;
+
+	if( CLP.isSet( OptionGLSW ) )
+	{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
+		QCoreApplication::setAttribute( Qt::AA_UseSoftwareOpenGL );
+#endif
+	}
+	else if( CLP.isSet( OptionGLES ) )
+	{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 3, 0 )
+		QCoreApplication::setAttribute( Qt::AA_UseOpenGLES );
+#endif
+	}
+	else
+	{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 3, 0 )
+		QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
+#endif
+
+#if !defined( QT_OPENGL_ES_2 )
+		SurfaceFormat.setDepthBufferSize( 24 );
+		SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
+		SurfaceFormat.setSamples( 4 );
+		SurfaceFormat.setVersion( 4, 5 );
+#endif
+	}
+
+#if defined( QT_DEBUG )
+	SurfaceFormat.setOption( QSurfaceFormat::DebugContext );
+#endif
+
+	QSurfaceFormat::setDefaultFormat( SurfaceFormat );
+
+	//-------------------------------------------------------------------------
+	// Command Line Locale
+
+	if( CLP.isSet( OptionLocale ) )
+	{
+		const QString	Locale = CLP.value( OptionLocale );
+
+		QLocale::setDefault( QLocale( Locale ) );
+	}
 
 	//-------------------------------------------------------------------------
 
@@ -265,10 +265,6 @@ int main( int argc, char *argv[] )
 
 		APP->processEvents();
 	}
-
-	//-------------------------------------------------------------------------
-
-	checkLocale( APP );
 
 	//-------------------------------------------------------------------------
 	// Create QSettings
@@ -336,28 +332,36 @@ int main( int argc, char *argv[] )
 	}
 
 	//-------------------------------------------------------------------------
-	// Initialise Command Line Parser
+	// Set command line variables
 
-	QCommandLineParser		&CLP = APP->global().commandLineParser();
+	GlobalPrivate	*PBG = &APP->global();
 
-	CLP.setApplicationDescription( "Fugio Editor" );
+	if( CLP.isSet( OptionDefine ) )
+	{
+		QMap<QString,QString>		CommandLineVariables;
 
-	QCommandLineOption		ClearSettingsOption( "clear-settings", "Clear all settings (mainly for testing purposes)" );
-	QCommandLineOption		SetLocaleOption( "locale", "Set default locale", "locale", QLocale().bcp47Name() );
-	QCommandLineOption		OpenGLDesktop( "opengl", "Use Desktop OpenGL" );
-	QCommandLineOption		OpenGLES( "gles", "Use OpenGL ES" );
-	QCommandLineOption		OpenGLSW( "glsw", "Use OpenGL Software" );
+		for( QString S : CLP.values( OptionDefine ) )
+		{
+			const int	SepPos = S.indexOf( ':' );
 
-	CLP.addOption( ClearSettingsOption );
-	CLP.addOption( SetLocaleOption );
-	CLP.addOption( OpenGLDesktop );
-	CLP.addOption( OpenGLES );
-	CLP.addOption( OpenGLSW );
+			if( SepPos > 0 )
+			{
+				QString		K = S.left( SepPos );
+				QString		V = S.mid( SepPos + 1 );
+
+				CommandLineVariables.insert( V, K );
+			}
+			else
+			{
+				CommandLineVariables.insert( S, "" );
+			}
+		}
+
+		PBG->setCommandLineValues( CommandLineVariables );
+	}
 
 	//-------------------------------------------------------------------------
 	// Register and load plugins
-
-	GlobalPrivate	*PBG = &APP->global();
 
 	QDir	PluginsDir = QDir( qApp->applicationDirPath() );
 
@@ -394,19 +398,23 @@ int main( int argc, char *argv[] )
 
 		WND->initBegin();
 
-#if defined( QT_DEBUG )
-//		PBG->setEnabledPlugins(
-//			QStringList() <<
-//			"fugio-core" <<
-//			"fugio-raspberrypi" );
-#endif
+		//-------------------------------------------------------------------------
+		// Process command line enabled/disabled plugins
+
+		if( CLP.isSet( OptionEnablePlugin ) )
+		{
+			PBG->setEnabledPlugins( CLP.values( OptionEnablePlugin ) );
+		}
+
+		if( CLP.isSet( OptionDisablePlugin ) )
+		{
+			PBG->setDisabledPlugins( CLP.values( OptionDisablePlugin ) );
+		}
 
 #if defined( Q_OS_MACX ) || defined( Q_OS_LINUX )
 		if( !PluginsDir.isRoot() && PluginsDir.isReadable())
 		{
 			PBG->loadPlugins( PluginsDir );
-
-			PBG->initialisePlugins();
 		}
 #else
 		if( !PluginsDir.isRoot() && PluginsDir.isReadable() )
@@ -419,14 +427,25 @@ int main( int argc, char *argv[] )
 			PBG->loadPlugins( QDir::current() );
 
 			QDir::setCurrent( CurDir );
-
-			PBG->initialisePlugins();
 		}
 #endif
 
-		APP->processEvents();
+		//-------------------------------------------------------------------------
+		// Load plugins from additional paths
 
-		CLP.process( *APP );
+		if( CLP.isSet( OptionPluginPath ) )
+		{
+			for( QString PluginPath : CLP.values( OptionPluginPath ) )
+			{
+				PBG->loadPlugins( QDir( PluginPath ) );
+			}
+		}
+
+		PBG->initialisePlugins();
+
+		//-------------------------------------------------------------------------
+
+		APP->processEvents();
 
 		WND->createDeviceMenu();
 
@@ -510,7 +529,7 @@ int main( int argc, char *argv[] )
 
 	qApp->removeTranslator( &qtTranslator );
 
-	if( CLP.isSet( ClearSettingsOption ) )
+	if( CLP.isSet( OptionClearSettings ) )
 	{
 		qInfo() << "Settings cleared";
 

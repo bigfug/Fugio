@@ -74,21 +74,21 @@ int fugio::Show::exec( QApplication &pApp )
 
 bool fugio::Show::parseCommandLine( GlobalPrivate *G, QCoreApplication &pApp)
 {
-	QCommandLineParser		&CLP = G->commandLineParser();
+//	QCommandLineParser		&CLP = G->commandLineParser();
 
-	CLP.addHelpOption();
-	CLP.addVersionOption();
+//	CLP.addHelpOption();
+//	CLP.addVersionOption();
 
-	CLP.addPositionalArgument( "patch", "Patch" );
+//	CLP.addPositionalArgument( "patch", "Patch" );
 
-	CLP.process( pApp );
+//	CLP.process( pApp );
 
-	QStringList args = CLP.positionalArguments();
+//	QStringList args = CLP.positionalArguments();
 
-	if( args.size() > 0 )
-	{
-		mPatchFileName = args.takeFirst();
-	}
+//	if( args.size() > 0 )
+//	{
+//		mPatchFileName = args.takeFirst();
+//	}
 
 	return( !mPatchFileName.isEmpty() );
 }

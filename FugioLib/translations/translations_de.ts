@@ -17,12 +17,12 @@
 <context>
     <name>GlobalPrivate</name>
     <message>
-        <location filename="../globalprivate.cpp" line="154"/>
+        <location filename="../globalprivate.cpp" line="151"/>
         <source>Plugins loaded: %1</source>
         <translation>Plugins geladen: %1</translation>
     </message>
     <message>
-        <location filename="../globalprivate.cpp" line="156"/>
+        <location filename="../globalprivate.cpp" line="153"/>
         <source>Nodes registered: %1</source>
         <translation>Nodes registriert: %1</translation>
     </message>

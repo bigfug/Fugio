@@ -5,7 +5,6 @@
 
 #include <QObject>
 #include <QThread>
-#include <QCommandLineOption>
 #include <QOpenGLTexture>
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
@@ -152,8 +151,6 @@ private:
 	static OpenGLPlugin		*mInstance;
 
 	GlobalInterface			*mApp;
-
-	QCommandLineOption		 mOpenGLFullScreenOption;
 
 	int						 mTriangleCount;
 };
