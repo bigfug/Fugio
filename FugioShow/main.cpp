@@ -26,21 +26,6 @@ int main( int argc, char *argv[] )
 	bcm_host_init();
 #endif
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
-	QCoreApplication::setAttribute( Qt::AA_ShareOpenGLContexts );
-#endif
-
-	QApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
-
-	QSurfaceFormat	SurfaceFormat;
-
-	SurfaceFormat.setDepthBufferSize( 24 );
-	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
-	SurfaceFormat.setSamples( 4 );
-	SurfaceFormat.setVersion( 4, 5 );
-
-	QSurfaceFormat::setDefaultFormat( SurfaceFormat );
-
 	ShowApp		 A( argc, argv );
 
 	A.processCommandLine();

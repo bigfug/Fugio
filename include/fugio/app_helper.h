@@ -10,6 +10,7 @@
 #include <QSettings>
 #include <QLibraryInfo>
 #include <QDir>
+#include <QSurfaceFormat>
 
 #include "global_interface.h"
 
@@ -58,15 +59,51 @@ public:
 	void processCommandLine( void )
 	{
 		CLP.process( *QCoreApplication::instance() );
-	}
 
-	void initialiseTranslator( void )
-	{
+		QSurfaceFormat  SurfaceFormat;
+
+		if( CLP.isSet( OptionGLSW ) )
+		{
+	  #if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
+		  QCoreApplication::setAttribute( Qt::AA_UseSoftwareOpenGL );
+	  #endif
+		}
+		else if( CLP.isSet( OptionGLES ) )
+		{
+	  #if QT_VERSION >= QT_VERSION_CHECK( 5, 3, 0 )
+		  QCoreApplication::setAttribute( Qt::AA_UseOpenGLES );
+	  #endif
+		}
+		else
+		{
+	  #if QT_VERSION >= QT_VERSION_CHECK( 5, 3, 0 )
+		  QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
+	  #endif
+
+	  #if !defined( QT_OPENGL_ES_2 )
+		  SurfaceFormat.setDepthBufferSize( 24 );
+		  SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
+		  SurfaceFormat.setSamples( 4 );
+		  SurfaceFormat.setVersion( 4, 5 );
+	  #endif
+		}
+
+	  #if defined( QT_DEBUG )
+		SurfaceFormat.setOption( QSurfaceFormat::DebugContext );
+	  #endif
+
+		QSurfaceFormat::setDefaultFormat( SurfaceFormat );
+
+		//-------------------------------------------------------------------------
+
 		if( CLP.isSet( OptionLocale ) )
 		{
 			QLocale::setDefault( QLocale( CLP.value( OptionLocale ) ) );
 		}
+	}
 
+	void initialiseTranslator( void )
+	{
 		//-------------------------------------------------------------------------
 		// Install translator
 
@@ -218,6 +255,8 @@ public:
 
 public:
 	QCommandLineParser		CLP;
+
+protected:
 	QCommandLineOption		OptionClearSettings;
 	QCommandLineOption		OptionOpenGL;
 	QCommandLineOption		OptionGLES;
