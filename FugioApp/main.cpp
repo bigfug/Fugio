@@ -97,7 +97,7 @@ void logger_static( QtMsgType type, const QMessageLogContext &context, const QSt
 class FugioApp
 {
 public:
-	FugioApp( int argc, char *argv[] )
+	FugioApp( void )
 		: OptionClearSettings( "clear-settings", "Clear all settings (mainly for testing purposes)" ),
 		  OptionOpenGL( "opengl", QCoreApplication::translate( "main", "Select OpenGL backend" ) ),
 		  OptionGLES( "gles", QCoreApplication::translate( "main", "Select OpenGL ES backend" ) ),
@@ -130,20 +130,15 @@ public:
 		CLP.addOption( OptionLocale );
 
 		CLP.addOption( OptionDefine );
-
-		QStringList		Args;
-
-		for( int i = 0 ; i < argc ; i++ )
-		{
-			Args << QString::fromLocal8Bit( argv[ i ] );
-		}
-
-		CLP.parse( Args );
-
 	}
 
 	void installTranslator( void )
 	{
+		if( CLP.isSet( OptionLocale ) )
+		{
+			QLocale::setDefault( QLocale( CLP.value( OptionLocale ) ) );
+		}
+
 		//-------------------------------------------------------------------------
 		// Install translator
 
@@ -341,8 +336,6 @@ int main( int argc, char *argv[] )
 
 	qDebug() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName() ).arg( QApplication::applicationVersion() ).arg( "started" );
 
-	FugioApp		LocalApp( argc, argv );
-
 	//-------------------------------------------------------------------------
 
 	int		 RET = 0;
@@ -352,6 +345,12 @@ int main( int argc, char *argv[] )
 	{
 		return( -1 );
 	}
+
+	FugioApp		LocalApp;
+
+	LocalApp.CLP.process( *APP );
+
+	LocalApp.installTranslator();
 
 	//-------------------------------------------------------------------------
 	// SplashImage
