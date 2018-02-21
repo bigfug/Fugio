@@ -49,7 +49,14 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 	mTimeSync = std::unique_ptr<fugio::TimeSync>( new fugio::TimeSync( this ) );
 
 #if defined( GLOBAL_THREADED )
-	mGlobalThread = std::unique_ptr<GlobalThread>( new GlobalThread( this ) );
+	GlobalThread	*GT = new GlobalThread( this );
+
+	if( GT )
+	{
+		mGlobalThread = std::unique_ptr<GlobalThread>( GT );
+
+		connect( this, SIGNAL(signalFrameExecute()), GT, SLOT(update()) );
+	}
 #endif
 
 	mLastTime   = 0;
@@ -546,7 +553,7 @@ QString GlobalPrivate::pinName(const QUuid &pUuid) const
 //-----------------------------------------------------------------------------
 // MAIN TIMER ENTRY POINT
 
-void GlobalPrivate::timeout( void )
+void GlobalPrivate::executeFrame( void )
 {
 	QMutexLocker	Lock( &mContextMutex );
 
@@ -621,7 +628,7 @@ void GlobalPrivate::timeout( void )
 	}
 
 #if !defined( GLOBAL_THREADED )
-	QTimer::singleShot( 1, this, SLOT(timeout()) );
+	QTimer::singleShot( 1, this, SLOT(executeFrame()) );
 #endif
 }
 
@@ -812,7 +819,7 @@ void GlobalPrivate::registerPinForMetaType(const QUuid &pUuid, QMetaType::Type p
 void GlobalPrivate::start()
 {
 #if !defined( GLOBAL_THREADED )
-	QTimer::singleShot( 1000, this, SLOT(timeout()) );
+	QTimer::singleShot( 1000, this, SLOT(executeFrame()) );
 #else
 	mGlobalThread->start();
 #endif

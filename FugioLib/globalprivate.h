@@ -123,6 +123,13 @@ public:
 #endif
 	}
 
+	virtual void scheduleFrame( void ) Q_DECL_OVERRIDE
+	{
+#if defined( GLOBAL_THREADED )
+		emit signalFrameExecute();
+#endif
+	}
+
 	virtual bool commandLineDefined( const QString &pKey ) const Q_DECL_OVERRIDE
 	{
 		return( mCommandLineVariables.contains( pKey ) );
@@ -288,8 +295,10 @@ signals:
 	void globalStart( qint64 pTimeStamp );
 	void globalEnd( qint64 pTimeStamp );
 
-private slots:
-	void timeout( void );
+	void signalFrameExecute( void );
+
+public slots:
+	virtual void executeFrame( void ) Q_DECL_OVERRIDE;
 
 private:
 	static GlobalPrivate			*mInstance;
@@ -350,6 +359,12 @@ public:
 
 	}
 
+public slots:
+	void update( void )
+	{
+		mGlobalPrivate->executeFrame();
+	}
+
 protected:
 	virtual void run() Q_DECL_OVERRIDE
 	{
@@ -364,12 +379,14 @@ protected:
 		Timer->start( 1000 / 100 );
 
 		exec();
+
+		Timer->stop();
 	}
 
 protected slots:
 	void timeout( void )
 	{
-		mGlobalPrivate->timeout();
+		mGlobalPrivate->executeFrame();
 	}
 
 private:

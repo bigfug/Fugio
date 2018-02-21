@@ -101,10 +101,20 @@ public:
 
 	virtual qint64 timestamp( void ) const = 0;				// arbitrary global timestamp that always increases (only valid on local machine)
 
-	virtual void start( void ) = 0;
-	virtual void stop( void ) = 0;
+	//-------------------------------------------------------------------------
+	// Patch Execution
+
+	virtual void start( void ) = 0;			// start global execution timer
+	virtual void stop( void ) = 0;			// stop global execution timer
 
 	virtual QThread *thread( void ) = 0;
+
+	virtual void executeFrame( void ) = 0;	// only call for single step execution
+
+	virtual void scheduleFrame( void ) = 0; // schedule a frame execution
+
+	//-------------------------------------------------------------------------
+	// Command line values
 
 	virtual bool commandLineDefined( const QString &pKey ) const = 0;
 	virtual QString commandLineValue( const QString &pKey ) const = 0;
