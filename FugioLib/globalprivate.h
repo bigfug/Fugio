@@ -36,15 +36,15 @@ class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public 
 public:
 	virtual ~GlobalPrivate( void );
 
-    void loadPlugins( QDir pDir );
+    virtual void loadPlugins( QDir pDir ) Q_DECL_OVERRIDE;
 
-	void unloadPlugins( void );
+	virtual void unloadPlugins( void ) Q_DECL_OVERRIDE;
+
+	virtual void initialisePlugins( void ) Q_DECL_OVERRIDE;
 
 	bool loadPlugin( const QString &pFileName );
 
 	void registerPlugin( QObject *pPluginInstance );
-
-	void initialisePlugins( void );
 
 	virtual QStringList loadedPluginNames( void ) const Q_DECL_OVERRIDE
 	{
@@ -268,7 +268,7 @@ public:
 		return( mContextMutex );
 	}
 
-	void setCommandLineValues( const QMap<QString,QString> &pValueMap )
+	virtual void setCommandLineValues( const QMap<QString,QString> &pValueMap ) Q_DECL_OVERRIDE
 	{
 		mCommandLineVariables = pValueMap;
 	}

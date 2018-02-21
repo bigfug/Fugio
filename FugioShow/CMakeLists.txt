@@ -11,13 +11,12 @@ include_directories( ../FugioLib )
 #------------------------------------------------------------------------------
 
 set( SOURCE_FILES
+	../include/fugio/app_helper.h
 	../include/fugio/global.h
 	../include/fugio/utils.h
 	../stable.h
 	
 	main.cpp
-	show.cpp
-	show.h
 )
 
 set( UIS_HDRS

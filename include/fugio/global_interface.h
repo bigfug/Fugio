@@ -12,6 +12,7 @@
 #include "global.h"
 
 class QWidget;
+class QDir;
 
 FUGIO_NAMESPACE_BEGIN
 class GlobalSignals;
@@ -94,6 +95,10 @@ public:
 
 	virtual void clear( void ) = 0;
 
+	virtual void loadPlugins( QDir pDir ) = 0;
+	virtual void initialisePlugins( void ) = 0;
+	virtual void unloadPlugins( void ) = 0;
+
 	virtual qint64 timestamp( void ) const = 0;				// arbitrary global timestamp that always increases (only valid on local machine)
 
 	virtual void start( void ) = 0;
@@ -103,6 +108,8 @@ public:
 
 	virtual bool commandLineDefined( const QString &pKey ) const = 0;
 	virtual QString commandLineValue( const QString &pKey ) const = 0;
+
+	virtual void setCommandLineValues( const QMap<QString,QString> &pValueMap ) = 0;
 
 	//-------------------------------------------------------------------------
 	// Paths

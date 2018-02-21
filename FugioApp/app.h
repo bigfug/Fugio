@@ -13,6 +13,7 @@
 #include "globalprivate.h"
 
 #include <fugio/global_interface.h>
+#include <fugio/app_helper.h>
 
 FUGIO_NAMESPACE_BEGIN
 class PinInterface;
@@ -21,7 +22,7 @@ FUGIO_NAMESPACE_END
 class MainWindow;
 class QOpenGLContext;
 
-class App : public QApplication
+class App : public QApplication, public fugio::AppHelper
 {
 	Q_OBJECT
 

@@ -94,218 +94,6 @@ void logger_static( QtMsgType type, const QMessageLogContext &context, const QSt
 #define Q(x) #x
 #define QUOTE(x) Q(x)
 
-class FugioApp
-{
-public:
-	FugioApp( void )
-		: OptionClearSettings( "clear-settings", "Clear all settings (mainly for testing purposes)" ),
-		  OptionOpenGL( "opengl", QCoreApplication::translate( "main", "Select OpenGL backend" ) ),
-		  OptionGLES( "gles", QCoreApplication::translate( "main", "Select OpenGL ES backend" ) ),
-		  OptionGLSW( "glsw", QCoreApplication::translate( "main", "Select OpenGL software backend" ) ),
-		  OptionPluginPath( QStringList() << "pp" << "plugin-path", "Look for plugins in <path>", "path" ),
-		  OptionEnablePlugin( QStringList() << "pe" << "enable-plugin", "Enable plugin <plugin>.", "plugin" ),
-		  OptionDisablePlugin( QStringList() << "pd" << "disable-plugin", "Disable plugin <plugin>.", "plugin" ),
-		  OptionLocale( QStringList() << "l" << "locale", "Set language locale to <locale>.", QLocale().bcp47Name() ),
-		  OptionDefine( QStringList() << "d" << "define", "Define a <variable>.", "variable" )
-	{
-		//-------------------------------------------------------------------------
-		// Command Line Parser
-
-		CLP.setSingleDashWordOptionMode( QCommandLineParser::ParseAsLongOptions );
-
-		CLP.setApplicationDescription( "Fugio" );
-		CLP.addHelpOption();
-		CLP.addVersionOption();
-
-		CLP.addOption( OptionClearSettings );
-
-		CLP.addOption( OptionOpenGL );
-		CLP.addOption( OptionGLES );
-		CLP.addOption( OptionGLSW );
-
-		CLP.addOption( OptionPluginPath );
-		CLP.addOption( OptionEnablePlugin );
-		CLP.addOption( OptionDisablePlugin );
-
-		CLP.addOption( OptionLocale );
-
-		CLP.addOption( OptionDefine );
-	}
-
-	void installTranslator( void )
-	{
-		if( CLP.isSet( OptionLocale ) )
-		{
-			QLocale::setDefault( QLocale( CLP.value( OptionLocale ) ) );
-		}
-
-		//-------------------------------------------------------------------------
-		// Install translator
-
-		QLocale		SystemLocal;
-
-		const QString		TranslatorSource = QDir::current().absoluteFilePath( "translations" );
-
-		if( QFileInfo::exists( QLibraryInfo::location( QLibraryInfo::TranslationsPath ) ) )
-		{
-			qtTranslator.load( SystemLocal, QLatin1String( "qt" ), QLatin1String( "_" ), QLibraryInfo::location( QLibraryInfo::TranslationsPath ) );
-		}
-		else if( QFileInfo::exists( TranslatorSource ) )
-		{
-			qtTranslator.load( SystemLocal, QLatin1String( "qt" ), QLatin1String( "_" ), TranslatorSource, QLatin1String( ".qm" ) );
-		}
-
-		if( !qtTranslator.isEmpty() )
-		{
-			qApp->installTranslator( &qtTranslator );
-		}
-
-		if( Translator.load( SystemLocal, QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
-		{
-			qApp->installTranslator( &Translator );
-		}
-	}
-
-	//-------------------------------------------------------------------------
-	// Set command line variables
-
-	void setCommandLineVariables( void )
-	{
-		GlobalPrivate	*PBG = static_cast<GlobalPrivate *>( fugio::fugio() );
-
-		if( CLP.isSet( OptionDefine ) )
-		{
-			QMap<QString,QString>		CommandLineVariables;
-
-			for( QString S : CLP.values( OptionDefine ) )
-			{
-				const int	SepPos = S.indexOf( ':' );
-
-				if( SepPos > 0 )
-				{
-					QString		K = S.left( SepPos );
-					QString		V = S.mid( SepPos + 1 );
-
-					CommandLineVariables.insert( V, K );
-				}
-				else
-				{
-					CommandLineVariables.insert( S, "" );
-				}
-			}
-
-			PBG->setCommandLineValues( CommandLineVariables );
-		}
-	}
-
-	void registerAndLoadPlugins( void )
-	{
-		//-------------------------------------------------------------------------
-		// Register and load plugins
-
-		QDir	PluginsDir = QDir( qApp->applicationDirPath() );
-
-	#if defined( Q_OS_LINUX ) && !defined( QT_DEBUG )
-		PluginsDir.cdUp();
-		PluginsDir.cd( "lib" );
-		PluginsDir.cd( "fugio" );
-	#else
-
-	#if defined( Q_OS_MAC )
-		PluginsDir.cdUp();
-		PluginsDir.cdUp();
-		PluginsDir.cdUp();
-	#endif
-
-		while( !PluginsDir.isRoot() && PluginsDir.isReadable() && !PluginsDir.cd( "plugins" ) )
-		{
-			PluginsDir.cdUp();
-		}
-	#endif
-
-		if( !PluginsDir.isRoot() && PluginsDir.isReadable() )
-		{
-			qInfo() << "Plugin Directory:" << PluginsDir.absolutePath();
-		}
-
-		GlobalPrivate	*PBG = static_cast<GlobalPrivate *>( fugio::fugio() );
-
-		//-------------------------------------------------------------------------
-		// Process command line enabled/disabled plugins
-
-		if( CLP.isSet( OptionEnablePlugin ) )
-		{
-			PBG->setEnabledPlugins( CLP.values( OptionEnablePlugin ) );
-		}
-
-		if( CLP.isSet( OptionDisablePlugin ) )
-		{
-			PBG->setDisabledPlugins( CLP.values( OptionDisablePlugin ) );
-		}
-
-#if defined( Q_OS_MACX ) || defined( Q_OS_LINUX )
-		if( !PluginsDir.isRoot() && PluginsDir.isReadable())
-		{
-			PBG->loadPlugins( PluginsDir );
-		}
-#else
-		if( !PluginsDir.isRoot() && PluginsDir.isReadable() )
-		{
-			QString		CurDir = QDir::currentPath();
-			QString		NxtDir = PluginsDir.absolutePath();
-
-			QDir::setCurrent( NxtDir );
-
-			PBG->loadPlugins( QDir::current() );
-
-			QDir::setCurrent( CurDir );
-		}
-#endif
-
-		//-------------------------------------------------------------------------
-		// Load plugins from additional paths
-
-		if( CLP.isSet( OptionPluginPath ) )
-		{
-			for( QString PluginPath : CLP.values( OptionPluginPath ) )
-			{
-				PBG->loadPlugins( QDir( PluginPath ) );
-			}
-		}
-
-		PBG->initialisePlugins();
-	}
-
-	void cleanup( void )
-	{
-		qApp->removeTranslator( &Translator );
-
-		qApp->removeTranslator( &qtTranslator );
-
-		if( CLP.isSet( OptionClearSettings ) )
-		{
-			qInfo() << "Settings cleared";
-
-			QSettings().clear();
-		}
-	}
-
-public:
-	QCommandLineParser		CLP;
-	QCommandLineOption		OptionClearSettings;
-	QCommandLineOption		OptionOpenGL;
-	QCommandLineOption		OptionGLES;
-	QCommandLineOption		OptionGLSW;
-	QCommandLineOption		OptionPluginPath;
-	QCommandLineOption		OptionEnablePlugin;
-	QCommandLineOption		OptionDisablePlugin;
-	QCommandLineOption		OptionLocale;
-	QCommandLineOption		OptionDefine;
-
-	QTranslator qtTranslator;
-	QTranslator		Translator;
-};
-
 //-------------------------------------------------------------------------
 
 int main( int argc, char *argv[] )
@@ -341,16 +129,14 @@ int main( int argc, char *argv[] )
 	int		 RET = 0;
 	App		*APP = new App( argc, argv );
 
-	if( APP == 0 )
+	if( !APP )
 	{
 		return( -1 );
 	}
 
-	FugioApp		LocalApp;
+	APP->processCommandLine();
 
-	LocalApp.CLP.process( *APP );
-
-	LocalApp.installTranslator();
+	APP->initialiseTranslator();
 
 	//-------------------------------------------------------------------------
 	// SplashImage
@@ -402,7 +188,7 @@ int main( int argc, char *argv[] )
 
 	GlobalPrivate	*PBG = &APP->global();
 
-	LocalApp.setCommandLineVariables();
+	APP->setCommandLineVariables();
 
 	MainWindow	*WND = new MainWindow();
 
@@ -414,7 +200,7 @@ int main( int argc, char *argv[] )
 
 		WND->initBegin();
 
-		LocalApp.registerAndLoadPlugins();
+		APP->registerAndLoadPlugins();
 
 		//-------------------------------------------------------------------------
 
@@ -451,7 +237,7 @@ int main( int argc, char *argv[] )
 
 		// Load patches that were specified on the command line
 
-		for( QString PatchName : LocalApp.CLP.positionalArguments() )
+		for( QString PatchName : APP->CLP.positionalArguments() )
 		{
 			qDebug() << "Loading" << PatchName << "...";
 
@@ -498,7 +284,7 @@ int main( int argc, char *argv[] )
 
 	APP->incrementStatistic( "finished" );
 
-	LocalApp.cleanup();
+	APP->cleanup();
 
 	delete APP;
 

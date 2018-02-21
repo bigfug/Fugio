@@ -11,6 +11,7 @@ include_directories( ../FugioLib )
 #------------------------------------------------------------------------------
 
 set( SOURCE_FILES
+	../include/fugio/app_helper.h
 	../include/fugio/context_widget_interface.h
 	../include/fugio/context_widget_signals.h
 	../include/fugio/editor_interface.h
