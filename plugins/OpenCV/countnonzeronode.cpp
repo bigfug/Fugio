@@ -55,7 +55,7 @@ void CountNonZeroNode::inputsUpdated( qint64 pTimeStamp )
 			{
 				cv::Rect	MatROI;
 
-				SrcROI.intersected( QRect( QPoint(), SrcImg.size() ) );
+				SrcROI = SrcROI.intersected( QRect( QPoint(), SrcImg.size() ) );
 
 				if( SrcROI.isValid() )
 				{
