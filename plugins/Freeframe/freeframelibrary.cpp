@@ -36,33 +36,33 @@ bool FreeframeLibrary::initialise()
 #if defined( __FFGL_H__ )
 	if( testCapability( FF_CAP_SETTIME ) )
 	{
-		mFlags.setFlag( CAP_SETTIME );
+		mFlags |= CAP_SETTIME;
 	}
 
 	if( testCapability( FF_CAP_PROCESSOPENGL ) )
 	{
-		mFlags.setFlag( FFGL );
+		mFlags |= FFGL;
 	}
 #endif
 
 	if( testCapability( FF_CAP_16BITVIDEO ) )
 	{
-		mFlags.setFlag( CAP_16BIT );
+		mFlags |= CAP_16BIT;
 	}
 
 	if( testCapability( FF_CAP_24BITVIDEO ) )
 	{
-		mFlags.setFlag( CAP_24BIT );
+		mFlags |= CAP_24BIT;
 	}
 
 	if( testCapability( FF_CAP_32BITVIDEO ) )
 	{
-		mFlags.setFlag( CAP_32BIT );
+		mFlags |= CAP_32BIT;
 	}
 
 	if( testCapability( FF_CAP_PROCESSFRAMECOPY ) )
 	{
-		mFlags.setFlag( PROCESSFRAMECOPY );
+		mFlags |= PROCESSFRAMECOPY;
 	}
 
 	PMU.UIntValue = FF_CAP_MINIMUMINPUTFRAMES;
@@ -80,7 +80,7 @@ bool FreeframeLibrary::initialise()
 
 	if( !mMinInputFrames )
 	{
-		mFlags.setFlag( SOURCE );
+		mFlags |= SOURCE;
 	}
 
 	PMU.UIntValue = FF_CAP_MAXIMUMINPUTFRAMES;
