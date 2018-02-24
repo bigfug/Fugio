@@ -84,12 +84,6 @@ add_subdirectory( plugins )
 install( DIRECTORY include/ DESTINATION ${PATH_INCLUDE} )
 install( DIRECTORY share/ DESTINATION ${PATH_SHARE} )
 
-if( WIN32 )
-	set( CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${PATH_APP}" )
-
-	include( InstallRequiredSystemLibraries )
-endif( WIN32 )
-
 #------------------------------------------------------------------------------
 # CPack
 
