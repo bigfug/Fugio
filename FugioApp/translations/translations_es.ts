@@ -692,162 +692,162 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>PinItem</name>
     <message>
-        <location filename="../pinitem.cpp" line="242"/>
+        <location filename="../pinitem.cpp" line="244"/>
         <source>Rename</source>
         <translation>Renombrar</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="244"/>
+        <location filename="../pinitem.cpp" line="246"/>
         <source>Edit Default</source>
         <translation>Editar Defecto</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="246"/>
+        <location filename="../pinitem.cpp" line="248"/>
         <source>Remove</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="251"/>
+        <location filename="../pinitem.cpp" line="253"/>
         <source>Hide</source>
         <translation>Ocultar</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="256"/>
+        <location filename="../pinitem.cpp" line="258"/>
         <source>Updatable</source>
         <translation>Cargar Tabla</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="262"/>
+        <location filename="../pinitem.cpp" line="264"/>
         <source>Import</source>
         <translation>Importar</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="263"/>
+        <location filename="../pinitem.cpp" line="265"/>
         <source>Export</source>
         <translation>Exportar</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="269"/>
+        <location filename="../pinitem.cpp" line="271"/>
         <source>Disconnect Global</source>
         <translation>Desconectar Global</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="275"/>
+        <location filename="../pinitem.cpp" line="277"/>
         <source>Connect Global...</source>
         <translation>Conectar Global</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="284"/>
+        <location filename="../pinitem.cpp" line="286"/>
         <source>Remove Group Input</source>
         <translation>Eliminar Grupo Entradas</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="294"/>
+        <location filename="../pinitem.cpp" line="296"/>
         <source>Add Group Input</source>
         <translation>Añadir Grupo Entradas</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="311"/>
+        <location filename="../pinitem.cpp" line="313"/>
         <source>Joiners</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="330"/>
+        <location filename="../pinitem.cpp" line="332"/>
         <source>Always Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="336"/>
+        <location filename="../pinitem.cpp" line="338"/>
         <source>Set Colour...</source>
         <translation>Seleccionar Color...</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="340"/>
+        <location filename="../pinitem.cpp" line="342"/>
         <source>Remove Global</source>
         <translation>Eliminar Global</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="346"/>
+        <location filename="../pinitem.cpp" line="348"/>
         <source>Make Global</source>
         <translation>Hacer Global</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="355"/>
+        <location filename="../pinitem.cpp" line="357"/>
         <source>Remove Group Output</source>
         <translation>Eliminar Grupo Salidas</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="372"/>
+        <location filename="../pinitem.cpp" line="374"/>
         <source>Add Group Output</source>
         <translation>Añadir Grupo Salidas</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="384"/>
+        <location filename="../pinitem.cpp" line="386"/>
         <source>Splitters</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="406"/>
+        <location filename="../pinitem.cpp" line="408"/>
         <source>Help...</source>
         <translation>Ayuda...</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="446"/>
+        <location filename="../pinitem.cpp" line="448"/>
         <source>Value</source>
         <translation>Valor</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="453"/>
+        <location filename="../pinitem.cpp" line="455"/>
         <source>Description</source>
         <translation>Descripción</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="846"/>
+        <location filename="../pinitem.cpp" line="878"/>
         <source>Choose Default Value</source>
         <translation>Seleccionar Valor por Defecto</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="865"/>
+        <location filename="../pinitem.cpp" line="897"/>
         <source>Select file...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="886"/>
+        <location filename="../pinitem.cpp" line="918"/>
         <source>Choose Colour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="905"/>
+        <location filename="../pinitem.cpp" line="937"/>
         <source>Choose Font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="923"/>
+        <location filename="../pinitem.cpp" line="955"/>
         <source>Edit Default Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="974"/>
+        <location filename="../pinitem.cpp" line="1006"/>
         <source>Import Data</source>
         <translation>Importar Datos</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="989"/>
+        <location filename="../pinitem.cpp" line="1021"/>
         <source>Export Data</source>
         <translation>Exportar Datos</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1100"/>
+        <location filename="../pinitem.cpp" line="1132"/>
         <source>No Global Pins</source>
         <translation>Pins No Globales</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1100"/>
+        <location filename="../pinitem.cpp" line="1132"/>
         <source>There are no global pins defined</source>
         <translation>No hay pines definidos globales</translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1117"/>
+        <location filename="../pinitem.cpp" line="1149"/>
         <source>Choose Global</source>
         <translation>Seleccionar Global</translation>
     </message>

@@ -3,6 +3,7 @@
 
 #include <QGraphicsObject>
 #include <QMouseEvent>
+#include <QTimer>
 
 #include <memory>
 
@@ -67,6 +68,13 @@ public:
 		return( mPin->setting( "global", false ).toBool() );
 	}
 
+	static QTimer &longPressTimer( void )
+	{
+		static QTimer	LongPressTimer;
+
+		return( LongPressTimer );
+	}
+
 public slots:
 	void setColour( const QColor &pColur );
 
@@ -74,6 +82,8 @@ public slots:
 	{
 		mPinName = pName;
 	}
+
+	void longPressTimeout( void );
 
 protected:
 	virtual void mousePressEvent( QGraphicsSceneMouseEvent *pEvent );
@@ -98,6 +108,7 @@ private:
 	PinItem *findDest( const QPointF &pPoint );
 
 	QString helpUrl( void );
+
 signals:
 	void colourUpdated( const QColor &pColor );
 

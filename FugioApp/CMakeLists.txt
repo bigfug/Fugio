@@ -111,6 +111,9 @@ set( SOURCE_FILES
 	wizards/firsttimewizard.h
 	wizards/nodeeditorwizard.cpp
 	wizards/nodeeditorwizard.h
+
+	pinpopupfloat.cpp
+	pinpopupfloat.h
 )
 
 set( UIS_HDRS
