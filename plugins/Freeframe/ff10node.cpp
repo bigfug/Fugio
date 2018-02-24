@@ -177,7 +177,7 @@ void FF10Node::inputsUpdated( qint64 pTimeStamp )
 		{
 			PMU.UIntValue = 0;
 
-			PMU = MainFunc( FF_DEINSTANTIATEGL, PMU, mInstanceId );
+			PMU = MainFunc( FF_DEINSTANTIATE, PMU, mInstanceId );
 
 			mInstanceId = 0;
 		}

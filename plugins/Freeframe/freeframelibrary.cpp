@@ -33,6 +33,7 @@ bool FreeframeLibrary::initialise()
 
 	FFMixed		PMU;
 
+#if defined( __FFGL_H__ )
 	if( testCapability( FF_CAP_SETTIME ) )
 	{
 		mFlags.setFlag( CAP_SETTIME );
@@ -42,6 +43,7 @@ bool FreeframeLibrary::initialise()
 	{
 		mFlags.setFlag( FFGL );
 	}
+#endif
 
 	if( testCapability( FF_CAP_16BITVIDEO ) )
 	{

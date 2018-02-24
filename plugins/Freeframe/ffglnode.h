@@ -13,8 +13,6 @@
 
 #include "freeframelibrary.h"
 
-#include "FFGL.h"
-
 class FFGLNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface, protected QOpenGLFunctions
 {
 	Q_OBJECT

@@ -5,7 +5,11 @@
 #include <QLibrary>
 #include <QVariant>
 
-#include <FFGL.h>
+#if !defined( QT_OPENGL_ES )
+#include "FFGL.h"
+#else
+#include "FreeFrame.h"
+#endif
 
 class FreeframeLibrary
 {

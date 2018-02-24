@@ -117,6 +117,7 @@ void FFGLNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( mSize != DstSze )
 	{
+#if defined( __FFGL_H__ )
 		if( mInstanceId )
 		{
 			PMU.UIntValue = 0;
@@ -148,6 +149,7 @@ void FFGLNode::inputsUpdated( qint64 pTimeStamp )
 		{
 			mInstanceId = PMU.PointerValue;
 		}
+#endif
 	}
 
 	if( !mInstanceId )
@@ -196,6 +198,7 @@ void FFGLNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( FBO )
 	{
+#if defined( __FFGL_H__ )
 		QVector<FFGLTextureStruct>		TexDat( mInputs.size() );
 		QVector<FFGLTextureStruct *>	TexPtr;
 
@@ -252,6 +255,7 @@ void FFGLNode::inputsUpdated( qint64 pTimeStamp )
 		}
 
 		glActiveTexture( GL_TEXTURE0 );
+#endif
 	}
 
 	pinUpdated( mPinOutputTexture );
