@@ -511,3 +511,19 @@ void PinPrivate::setNode( fugio::NodeInterface *pNode )
 {
 	mNode = pNode;
 }
+
+
+void PinPrivate::setDisplayLabel(QString pDisplayLabel)
+{
+	if( mDisplayLabel != pDisplayLabel )
+	{
+		mDisplayLabel = pDisplayLabel;
+
+		emit displayLabelChanged( mDisplayLabel );
+	}
+}
+
+QString PinPrivate::displayLabel() const
+{
+	return( mDisplayLabel );
+}

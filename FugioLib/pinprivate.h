@@ -171,6 +171,9 @@ public:
 		return( mFlags.testFlag( AlwaysUpdate ) );
 	}
 
+	virtual void setDisplayLabel(QString pDisplayLabel) Q_DECL_OVERRIDE;
+	virtual QString displayLabel() const Q_DECL_OVERRIDE;
+
 	//-------------------------------------------------------------------------
 
 	void setPairedUuid( const QUuid &pUuid )
@@ -243,6 +246,7 @@ private:
 	QMap<QUuid,QObject *>						 mInterfaces;
 	QList<QUuid>								 mInputTypeList;
 	QString										 mDescription;
+	QString										 mDisplayLabel;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( PinPrivate::Options )

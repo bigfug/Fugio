@@ -123,6 +123,10 @@ public:
 
 	virtual bool alwaysUpdate( void ) const = 0;
 
+	virtual void setDisplayLabel( QString pDisplayLabel ) = 0;
+
+	virtual QString displayLabel( void ) const = 0;
+
 	//-------------------------------------------------------------------------
 	// Paired pins - id's are PinInterface::localId()
 

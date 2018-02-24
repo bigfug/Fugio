@@ -184,6 +184,15 @@ void FFGLNode::inputsUpdated( qint64 pTimeStamp )
 
 			MainFunc( FF_SETPARAMETER, PMU, mInstanceId );
 		}
+
+		PMU.UIntValue = i;
+
+		PMU = MainFunc( FF_GETPARAMETERDISPLAY, PMU, mInstanceId );
+
+		if( PMU.UIntValue != FF_FAIL )
+		{
+			PrmPin->setDisplayLabel( QString::fromLatin1( QByteArray( (const char *)PMU.PointerValue, 16 ) ) );
+		}
 	}
 
 	GLint		Viewport[ 4 ];
