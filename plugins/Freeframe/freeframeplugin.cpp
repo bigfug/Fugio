@@ -5,12 +5,15 @@
 #include <QFileInfo>
 #include <QLibrary>
 #include <QCryptographicHash>
+#include <QSettings>
 
 #include <fugio/global.h>
 
 #include <fugio/freeframe/uuid.h>
 
 #include <FreeFrame.h>
+
+#include "settingswidget.h"
 
 #include "ff10node.h"
 #include "ffglnode.h"
@@ -40,30 +43,62 @@ FreeframeLibrary *FreeframePlugin::findPluginInfo( const QUuid &pUuid )
 	return( it.value() );
 }
 
+void FreeframePlugin::loadPluginPaths()
+{
+	QSettings			 Settings;
+
+	Settings.beginGroup( "freeframe" );
+
+	int		PathCount = Settings.beginReadArray( "paths" );
+
+	mPluginPaths.clear();
+
+	for( int i = 0 ; i < PathCount ; i++ )
+	{
+		Settings.setArrayIndex( i );
+
+		mPluginPaths << Settings.value( "path" ).toString();
+	}
+
+	Settings.endArray();
+
+	Settings.endGroup();
+}
+
 PluginInterface::InitResult FreeframePlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
 	Q_UNUSED( pLastChance )
 
-	static QDir FFDir( "/Users/bigfug/dev/Freeframe/deploy-debug-x86_64" );
-
 	mApp = pApp;
 
-	pluginDirScan( FFDir );
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mApp->findInterface( IID_EDITOR ) );
+
+	if( EI )
+	{
+		EI->registerSettings( this );
+	}
 
 	mApp->registerNodeClasses( NodeClasses );
 
-	mApp->registerNodeClasses( mNodeClasses );
-
 	mApp->registerPinClasses( PinClasses );
+
+	loadPluginPaths();
+
+	reloadPlugins();
 
 	return( INIT_OK );
 }
 
 void FreeframePlugin::deinitialise( void )
 {
-	mApp->unregisterPinClasses( PinClasses );
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mApp->findInterface( IID_EDITOR ) );
 
-	mApp->unregisterNodeClasses( mNodeClasses );
+	if( EI )
+	{
+		EI->unregisterSettings( this );
+	}
+
+	mApp->unregisterPinClasses( PinClasses );
 
 	mApp->unregisterNodeClasses( NodeClasses );
 
@@ -156,6 +191,63 @@ void FreeframePlugin::pluginProcess( QLibrary &pPlgLib )
 
 		mPluginMap.insert( CE.mUuid, new FreeframeLibrary( LibNam ) );
 
-		mNodeClasses.append( CE );
+		mPluginClasses.append( CE );
 	}
+}
+
+void FreeframePlugin::reloadPlugins()
+{
+	mApp->unregisterNodeClasses( mPluginClasses );
+
+	mPluginClasses.clear();
+
+	for( QString Path : mPluginPaths )
+	{
+		pluginDirScan( QDir( Path ) );
+	}
+
+	mApp->registerNodeClasses( mPluginClasses );
+}
+
+QWidget *FreeframePlugin::settingsWidget()
+{
+	SettingsWidget		*SW = new SettingsWidget();
+
+	if( !SW )
+	{
+		return( nullptr );
+	}
+
+	SW->setPluginPaths( mPluginPaths );
+
+	return( SW );
+}
+
+void FreeframePlugin::settingsAccept( QWidget *pWidget )
+{
+	SettingsWidget		*SW = qobject_cast<SettingsWidget *>( pWidget );
+
+	if( !SW )
+	{
+		return;
+	}
+
+	mPluginPaths = SW->pluginPaths();
+
+	QSettings			 Settings;
+
+	Settings.beginGroup( "freeframe" );
+
+	Settings.beginWriteArray( "paths", mPluginPaths.size() );
+
+	for( int i = 0 ; i < mPluginPaths.size() ; i++ )
+	{
+		Settings.setArrayIndex( i );
+
+		Settings.setValue( "path", mPluginPaths[ i ] );
+	}
+
+	Settings.endArray();
+
+	Settings.endGroup();
 }

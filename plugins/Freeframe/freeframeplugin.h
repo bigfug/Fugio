@@ -3,6 +3,7 @@
 
 #include <fugio/global_interface.h>
 #include <fugio/plugin_interface.h>
+#include <fugio/editor_interface.h>
 
 #include "freeframelibrary.h"
 
@@ -11,7 +12,7 @@ class QLibrary;
 
 using namespace fugio;
 
-class FreeframePlugin : public QObject, public fugio::PluginInterface
+class FreeframePlugin : public QObject, public fugio::PluginInterface, public fugio::SettingsInterface
 {
 	Q_OBJECT
 	Q_PLUGIN_METADATA( IID "com.bigfug.fugio.freeframe.plugin" )
@@ -31,13 +32,24 @@ public:
 
 	virtual void deinitialise( void ) Q_DECL_OVERRIDE;
 
+	//-------------------------------------------------------------------------
+	// SettingsInterface interface
+public:
+	virtual QWidget *settingsWidget() Q_DECL_OVERRIDE;
+	virtual void settingsAccept(QWidget *pWidget) Q_DECL_OVERRIDE;
+
 protected:
 	void pluginDirScan( QDir &pDir );
 	void pluginProcess( QLibrary &pPlgLib );
 
+	void reloadPlugins( void );
+
+	void loadPluginPaths();
+
 private:
 	fugio::GlobalInterface					*mApp;
-	fugio::ClassEntryList					 mNodeClasses;
+	fugio::ClassEntryList					 mPluginClasses;
+	QStringList								 mPluginPaths;
 
 	static QMap<QUuid,FreeframeLibrary*>	 mPluginMap;
 };
