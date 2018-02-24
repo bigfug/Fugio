@@ -131,7 +131,11 @@ void VideoCaptureNode::frameCallback( ca::PixelBuffer &pBuffer )
 				break;
 
 			case CA_RGB24:                                                              /* RGB 8:8:8 24bit */
+#if defined( Q_OS_WIN )
+				Output.setFormat( fugio::ImageFormat::BGR8 );
+#else
 				Output.setFormat( fugio::ImageFormat::RGB8 );
+#endif
 				break;
 		}
 
