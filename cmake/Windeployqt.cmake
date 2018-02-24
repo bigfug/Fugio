@@ -63,7 +63,7 @@ function(windeployqt target directory)
     # runtime files to the appropriate directory for installation
     install(CODE
         "
-		file(READ \"${CMAKE_CURRENT_BINARY_DIR}/${target}_$<CONFIG>_path\" _file)
+		file(READ \"${CMAKE_CURRENT_BINARY_DIR}/${target}_${CMAKE_BUILD_TYPE}_path\" _file)
         execute_process(
             COMMAND \"${CMAKE_COMMAND}\" -E
                 env PATH=\"${_qt_bin_dir}\" \"${WINDEPLOYQT_EXECUTABLE}\"
