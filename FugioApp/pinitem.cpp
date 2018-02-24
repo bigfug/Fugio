@@ -71,6 +71,8 @@ PinItem::PinItem( ContextView *pContextView, QSharedPointer<fugio::PinInterface>
 	mPinName = mPin->name();
 
 	mPinColour = QColor( Qt::lightGray );
+
+	longPressTimer().setSingleShot( true );
 }
 
 PinItem::PinItem( ContextView *pContextView, const QUuid &pId, NodeItem *pParent )
@@ -477,6 +479,10 @@ void PinItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *pEvent)
 //	QGraphicsObject::hoverLeaveEvent( pEvent );
 	Q_UNUSED( pEvent )
 
+	disconnect( &longPressTimer(), SIGNAL(timeout()), this, SLOT(longPressTimeout()) );
+
+	longPressTimer().stop();
+
 	QToolTip::hideText();
 }
 
@@ -581,6 +587,19 @@ void PinItem::setColour( const QColor &pColour )
 	}
 }
 
+#include "pinpopupfloat.h"
+
+void PinItem::longPressTimeout()
+{
+	qDebug() << "longPressTimeout()";
+
+	PinPopupFloat	*Popup = new PinPopupFloat( mDragStartPoint, mPin );
+
+	scene()->addItem( Popup );
+
+	Popup->grabMouse();
+}
+
 void PinItem::mousePressEvent( QGraphicsSceneMouseEvent *pEvent )
 {
 	if( pEvent->button() == Qt::LeftButton )
@@ -590,6 +609,15 @@ void PinItem::mousePressEvent( QGraphicsSceneMouseEvent *pEvent )
 		if( mPin->direction() == PIN_OUTPUT || !mPin->isConnected() )
 		{
 			mDragStartPoint = pEvent->pos();
+		}
+
+		if( mPin->direction() == PIN_INPUT )
+		{
+			connect( &longPressTimer(), SIGNAL(timeout()), this, SLOT(longPressTimeout()) );
+
+			mDragStartPoint = pEvent->scenePos();
+
+			longPressTimer().start( 1000 );
 		}
 	}
 }
@@ -673,6 +701,10 @@ void PinItem::mouseMoveEvent( QGraphicsSceneMouseEvent *pEvent )
 
 void PinItem::mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent )
 {
+	disconnect( &longPressTimer(), SIGNAL(timeout()), this, SLOT(longPressTimeout()) );
+
+	longPressTimer().stop();
+
 	if( mLink )
 	{
 		mLink->setZValue( -1.0 );
