@@ -54,6 +54,8 @@ FF10Node::FF10Node( QSharedPointer<fugio::NodeInterface> pNode )
 				mParams << PrmPin;
 
 				ParamUuid = QUuid::fromRfc4122( QCryptographicHash::hash( ParamUuid.toRfc4122(), QCryptographicHash::Md5 ) );
+
+				PrmPin->setUpdatable( false );
 			}
 		}
 	}
@@ -104,11 +106,15 @@ void FF10Node::inputsUpdated( qint64 pTimeStamp )
 		{
 			DstImg.setFormat( fugio::ImageFormat::RGBA8 );
 
-			mBitDepth = FF_CAP_32BITVIDEO;
+//			mBitDepth = FF_CAP_32BITVIDEO;
 		}
 		else */if( mLibrary->flags().testFlag( FreeframeLibrary::CAP_24BIT ) )
 		{
+#if defined( Q_OS_WIN )
+			DstImg.setFormat( fugio::ImageFormat::BGR8 );
+#else
 			DstImg.setFormat( fugio::ImageFormat::RGB8 );
+#endif
 
 			mBitDepth = FF_CAP_24BITVIDEO;
 		}

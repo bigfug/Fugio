@@ -57,6 +57,8 @@ FFGLNode::FFGLNode( QSharedPointer<fugio::NodeInterface> pNode )
 				mParams << PrmPin;
 
 				ParamUuid = QUuid::fromRfc4122( QCryptographicHash::hash( ParamUuid.toRfc4122(), QCryptographicHash::Md5 ) );
+
+				PrmPin->setUpdatable( false );
 			}
 		}
 	}

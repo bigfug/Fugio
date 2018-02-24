@@ -42,27 +42,25 @@ bool FreeframeLibrary::initialise()
 	{
 		mFlags.setFlag( FFGL );
 	}
-	else
+
+	if( testCapability( FF_CAP_16BITVIDEO ) )
 	{
-		if( testCapability( FF_CAP_16BITVIDEO ) )
-		{
-			mFlags.setFlag( CAP_16BIT );
-		}
+		mFlags.setFlag( CAP_16BIT );
+	}
 
-		if( testCapability( FF_CAP_24BITVIDEO ) )
-		{
-			mFlags.setFlag( CAP_24BIT );
-		}
+	if( testCapability( FF_CAP_24BITVIDEO ) )
+	{
+		mFlags.setFlag( CAP_24BIT );
+	}
 
-		if( testCapability( FF_CAP_32BITVIDEO ) )
-		{
-			mFlags.setFlag( CAP_32BIT );
-		}
+	if( testCapability( FF_CAP_32BITVIDEO ) )
+	{
+		mFlags.setFlag( CAP_32BIT );
+	}
 
-		if( testCapability( FF_CAP_PROCESSFRAMECOPY ) )
-		{
-			mFlags.setFlag( PROCESSFRAMECOPY );
-		}
+	if( testCapability( FF_CAP_PROCESSFRAMECOPY ) )
+	{
+		mFlags.setFlag( PROCESSFRAMECOPY );
 	}
 
 	PMU.UIntValue = FF_CAP_MINIMUMINPUTFRAMES;
@@ -211,6 +209,17 @@ bool FreeframeLibrary::testCapability(FFUInt32 pType) const
 	PMU.UIntValue = pType;
 
 	PMU = mMainFunc( FF_GETPLUGINCAPS, PMU, 0 );
+
+	return( PMU.UIntValue == FF_SUPPORTED );
+}
+
+bool FreeframeLibrary::testCapability( FF_Main_FuncPtr pFuncPtr, FFUInt32 pType )
+{
+	FFMixed		PMU;
+
+	PMU.UIntValue = pType;
+
+	PMU = pFuncPtr( FF_GETPLUGINCAPS, PMU, 0 );
 
 	return( PMU.UIntValue == FF_SUPPORTED );
 }

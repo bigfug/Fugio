@@ -75,6 +75,8 @@ public:
 
 	bool testCapability( FFUInt32 pType ) const;
 
+	static bool testCapability( FF_Main_FuncPtr pFuncPtr, FFUInt32 pType );
+
 	typedef struct ParamEntry
 	{
 		QString		mName;

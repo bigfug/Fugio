@@ -170,19 +170,17 @@ void FreeframePlugin::pluginProcess( QLibrary &pPlgLib )
 	CE.mName = QString::fromLatin1( QByteArray( (const char *)PluginInfo->PluginName, 16 ) );
 	CE.mUuid = QUuid::fromRfc4122( IDHash );
 
-	PMU.UIntValue = FF_CAP_PROCESSOPENGL;
-
-	PMU = InitModuleProcFunc( FF_GETPLUGINCAPS, PMU, NULL );
-
-	if( PMU.UIntValue == FF_SUPPORTED )
-	{
-		CE.mMetaObject = &FFGLNode::staticMetaObject;
-		CE.mGroup      = "FFGL";
-	}
-	else
+	if( FreeframeLibrary::testCapability( InitModuleProcFunc, FF_CAP_16BITVIDEO ) ||
+		FreeframeLibrary::testCapability( InitModuleProcFunc, FF_CAP_24BITVIDEO ) ||
+		FreeframeLibrary::testCapability( InitModuleProcFunc, FF_CAP_32BITVIDEO ) )
 	{
 		CE.mMetaObject = &FF10Node::staticMetaObject;
 		CE.mGroup      = "FreeFrame";
+	}
+	else
+	{
+		CE.mMetaObject = &FFGLNode::staticMetaObject;
+		CE.mGroup      = "FFGL";
 	}
 
 	if( !CE.mUuid.isNull() )
