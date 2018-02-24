@@ -46,7 +46,11 @@ function(windeployqt target directory)
                 --no-compiler-runtime
                 --no-angle
                 --no-opengl-sw
-                \"$<TARGET_FILE:${target}>\"
+				--concurrent
+				--opengl
+				--serialport
+				--websockets
+				\"$<TARGET_FILE:${target}>\"
     )
 
     # install(CODE ...) doesn't support generator expressions, but

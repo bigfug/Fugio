@@ -41,15 +41,15 @@ endif()
 get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 
-if( WIN32 )
+#if( WIN32 )
 
-find_program( WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}" )
+#find_program( WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}" )
 
-install( CODE "execute_process( COMMAND \"${WINDEPLOYQT_EXECUTABLE}\" --no-compiler-runtime --concurrent --opengl --serialport --websockets --no-angle --no-opengl-sw --force --verbose 2 --qmldir \"${CMAKE_SOURCE_DIR}/qml\" \"${CMAKE_INSTALL_PREFIX}/${PATH_APP}/${PROJECT_NAME}.exe\" )"
-    COMMENT "Running windeployqt..."
-)
+#install( CODE "execute_process( COMMAND \"${WINDEPLOYQT_EXECUTABLE}\" --no-compiler-runtime --concurrent --opengl --serialport --websockets --no-angle --no-opengl-sw --force --verbose 2 --qmldir \"${CMAKE_SOURCE_DIR}/qml\" \"${CMAKE_INSTALL_PREFIX}/${PATH_APP}/${PROJECT_NAME}.exe\" )"
+#    COMMENT "Running windeployqt..."
+#)
 
-endif( WIN32 )
+#endif( WIN32 )
 
 if( APPLE )
 
