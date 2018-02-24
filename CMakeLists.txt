@@ -84,6 +84,10 @@ add_subdirectory( plugins )
 install( DIRECTORY include/ DESTINATION ${PATH_INCLUDE} )
 install( DIRECTORY share/ DESTINATION ${PATH_SHARE} )
 
+set( CMAKE_INSTALL_UCRT_LIBRARIES TRUE )
+
+include( InstallRequiredSystemLibraries )
+
 #------------------------------------------------------------------------------
 # CPack
 
