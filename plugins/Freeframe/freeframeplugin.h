@@ -16,7 +16,7 @@ class FreeframePlugin : public QObject, public fugio::PluginInterface, public fu
 {
 	Q_OBJECT
 	Q_PLUGIN_METADATA( IID "com.bigfug.fugio.freeframe.plugin" )
-	Q_INTERFACES( fugio::PluginInterface )
+	Q_INTERFACES( fugio::PluginInterface fugio::SettingsInterface )
 
 public:
 	Q_INVOKABLE explicit FreeframePlugin( void ) : mApp( 0 ) {}
