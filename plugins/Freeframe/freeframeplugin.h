@@ -39,7 +39,7 @@ public:
 	virtual void settingsAccept(QWidget *pWidget) Q_DECL_OVERRIDE;
 
 protected:
-	void pluginDirScan( QDir &pDir );
+	void pluginDirScan( QDir pDir );
 	void pluginProcess( QLibrary &pPlgLib );
 
 	void reloadPlugins( void );

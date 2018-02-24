@@ -105,7 +105,7 @@ void FreeframePlugin::deinitialise( void )
 	mApp = 0;
 }
 
-void FreeframePlugin::pluginDirScan( QDir &pDir )
+void FreeframePlugin::pluginDirScan( QDir pDir )
 {
 	QFileInfoList		InfLst = pDir.entryInfoList( QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDir::DirsFirst | QDir::Name );
 
