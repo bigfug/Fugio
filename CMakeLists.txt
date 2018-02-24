@@ -95,8 +95,12 @@ set( CPACK_PACKAGE_EXECUTABLES "Fugio;Fugio" )
 set( CPACK_PACKAGE_INSTALL_DIRECTORY "Fugio" )
 set( CPACK_PACKAGE_INSTALL_REGISTRY_KEY "Fugio" )
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE" )
-#set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "ExecWait '\\\"$INSTDIR\\\\vcredist_x86.exe\\\" /q:a'" )
-#set( CPACK_NSIS_HELP_LINK "http:\\\\\\\\wiki.bigfug.com" )
+
+if( WIN32 AND NOT UNIX )
+	set( CPACK_NSIS_EXECUTABLES_DIRECTORY "${PATH_APP}" )
+	#set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "ExecWait '\\\"$INSTDIR\\\\vcredist_x86.exe\\\" /q:a'" )
+	#set( CPACK_NSIS_HELP_LINK "http:\\\\\\\\wiki.bigfug.com" )
+endif()
 
 # Set the output package filename
 
