@@ -19,10 +19,6 @@ VideoCaptureNode::VideoCaptureNode( QSharedPointer<fugio::NodeInterface> pNode )
 	FUGID( PIN_OUTPUT_IMAGE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 
 	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
-
-#if defined( VIDEOCAPTURE_SUPPORTED )
-	memset( &mPrvDat, 0, sizeof( ca::PixelBuffer ) );
-#endif
 }
 
 bool VideoCaptureNode::initialise( void )
@@ -60,7 +56,6 @@ void VideoCaptureNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		fugio::Performance	P( mNode, __FUNCTION__, pTimeStamp );
 
-#if defined( VIDEOCAPTURE_SUPPORTED )
 		fugio::Image				Output = mValOutputImage->variant().value<fugio::Image>();
 
 		for( int i = 0 ; i < 3 ; i++ )
@@ -68,25 +63,14 @@ void VideoCaptureNode::inputsUpdated( qint64 pTimeStamp )
 			Output.setBuffer( i, nullptr );
 		}
 
-		mVideoFrame = mDevice->frame();
+		VideoFrame	VF = mDevice->frame();
 
-		ca::PixelBuffer				TF = mVideoFrame.pixelBuffer();
-
-		for( int i = 0 ; i < 3 ; i++ )
+		if( VF.width() != mVideoFrame.width() || VF.height() != mVideoFrame.height() || VF.pixelFormat() != mVideoFrame.pixelFormat() )
 		{
-			TF.plane[ i ] = 0;
-		}
+			Output.setSize( VF.width(), VF.height() );
 
-		TF.pixels = 0;
-		TF.user   = 0;
-
-		if( memcmp( &TF, &mPrvDat, sizeof( ca::PixelBuffer ) ) != 0 )
-		{
-			mPrvDat = TF;
-
-			Output.setSize( mVideoFrame.width(), mVideoFrame.height() );
-
-			switch( TF.pixel_format )
+#if defined( VIDEOCAPTURE_SUPPORTED )
+			switch( VF.pixelFormat() )
 			{
 				case CA_YUV422P:                                                             /* YUV422 Planar */
 				case CA_YUVJ420P:                                                          /* YUV420 Planar Full Range (JPEG), J comes from the JPEG. (values 0-255 used) */
@@ -132,23 +116,25 @@ void VideoCaptureNode::inputsUpdated( qint64 pTimeStamp )
 	#endif
 					break;
 			}
+#endif
 
 			for( int i = 0 ; i < 3 ; i++ )
 			{
-				Output.setLineSize( i, TF.stride[ i ] );
+				Output.setLineSize( i, VF.stride( i ) );
 			}
 		}
 
 		if( Output.isValid() )
 		{
+			mVideoFrame = VF;
+
 			for( int i = 0 ; i < 3 ; i++ )
 			{
-				Output.setBuffer( i, TF.plane[ i ] );
+				Output.setBuffer( i, mVideoFrame.plane( i ) );
 			}
 
 			pinUpdated( mPinOutputImage );
 		}
-#endif
 
 		mLastFrameTimeStamp = mDevice->timestamp();
 	}

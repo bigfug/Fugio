@@ -54,10 +54,6 @@ protected:
 
 	QSharedPointer<VideoCaptureDevice>			 mDevice;
 
-#if defined( VIDEOCAPTURE_SUPPORTED )
-	ca::PixelBuffer								 mPrvDat;
-#endif
-
 	VideoFrame									 mVideoFrame;
 };
 
