@@ -20,7 +20,7 @@
 <context>
     <name>SpoutSenderNode</name>
     <message>
-        <location filename="../spoutsendernode.cpp" line="110"/>
+        <location filename="../spoutsendernode.cpp" line="118"/>
         <source>Spout not supported on this platform</source>
         <translation type="unfinished"></translation>
     </message>
