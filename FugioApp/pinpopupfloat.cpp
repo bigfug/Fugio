@@ -25,11 +25,14 @@ void PinPopupFloat::mouseMoveEvent( QGraphicsSceneMouseEvent *event )
 
 	mPin->setValue( qBound( 0.0, Value, 1.0 ) );
 
-	fugio::NodeInterface	*N = mPin->node();
-
-	if( N )
+	if( mPin->updatable() )
 	{
-		N->context()->updateNode( N->context()->findNode( N->uuid() ) );
+		fugio::NodeInterface	*N = mPin->node();
+
+		if( N )
+		{
+			N->context()->updateNode( N->context()->findNode( N->uuid() ) );
+		}
 	}
 
 	update();
