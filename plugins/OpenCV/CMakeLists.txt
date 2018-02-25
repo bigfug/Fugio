@@ -90,7 +90,6 @@ include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 #------------------------------------------------------------------------------
 # OpenCV
 
-#find_package( OpenCV COMPONENTS core OPTIONAL_COMPONENTS highgui imgproc features2d objdetect photo video videoio )
 find_package( OpenCV COMPONENTS core OPTIONAL_COMPONENTS imgproc features2d objdetect photo video )
 
 if( OpenCV_FOUND )
@@ -102,6 +101,7 @@ if( OpenCV_FOUND )
 		set( OpenCV_DLL
 			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_core${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
 			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_highgui${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
+			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_imgcodecs${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
 			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_imgproc${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
 			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_features2d${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
 			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_flann${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
@@ -111,8 +111,6 @@ if( OpenCV_FOUND )
 			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_video${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
 			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_videoio${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
 		)
-
-#		message( ${OpenCV_DLL} )
 
 		if( OpenCV_DLL )
 			install( FILES ${OpenCV_DLL} DESTINATION "${PATH_APP}" )
