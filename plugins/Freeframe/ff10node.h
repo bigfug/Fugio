@@ -36,6 +36,11 @@ public:
 
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
+private:
+	static void processStatic( FF10Node *pNode, qint64 pTimeStamp );
+
+	void process( qint64 pTimeStamp );
+
 protected:
 	FreeframeLibrary								*mLibrary;
 	FFInstanceID									 mInstanceId;

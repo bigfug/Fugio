@@ -2,6 +2,7 @@
 
 #include <QImage>
 #include <QCryptographicHash>
+#include <QtConcurrent/QtConcurrentRun>
 
 #include "freeframeplugin.h"
 
@@ -87,9 +88,19 @@ typedef FFMixed plugMainUnion;
 
 void FF10Node::inputsUpdated( qint64 pTimeStamp )
 {
-	fugio::Performance		Perf( mNode, __FUNCTION__, pTimeStamp );
-
 	NodeControlBase::inputsUpdated( pTimeStamp );
+
+	mNode->context()->futureSync( QtConcurrent::run( &FF10Node::processStatic, this, pTimeStamp ) );
+}
+
+void FF10Node::processStatic( FF10Node *pNode, qint64 pTimeStamp )
+{
+	pNode->process( pTimeStamp );
+}
+
+void FF10Node::process( qint64 pTimeStamp )
+{
+	fugio::Performance		Perf( mNode, __FUNCTION__, pTimeStamp );
 
 	FF_Main_FuncPtr		MainFunc = mLibrary->func();
 
