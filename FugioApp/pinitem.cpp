@@ -61,6 +61,8 @@
 #include "undo/cmdpinconnectglobal.h"
 #include "undo/cmdpindisconnectglobal.h"
 
+#include "pinpopupfloat.h"
+
 PinItem::PinItem( ContextView *pContextView, QSharedPointer<fugio::PinInterface> pPin, NodeItem *pParent ) :
 	QGraphicsObject( pParent ), mContextView( pContextView ), mPin( pPin ), mPinId( pPin->globalId() )
 {
@@ -587,17 +589,17 @@ void PinItem::setColour( const QColor &pColour )
 	}
 }
 
-#include "pinpopupfloat.h"
-
 void PinItem::longPressTimeout()
 {
-	qDebug() << "longPressTimeout()";
-
 	PinPopupFloat	*Popup = new PinPopupFloat( mDragStartPoint, mPin );
 
 	scene()->addItem( Popup );
 
 	Popup->grabMouse();
+
+	QToolTip::hideText();
+
+	mLink.reset();
 }
 
 void PinItem::mousePressEvent( QGraphicsSceneMouseEvent *pEvent )
@@ -611,13 +613,13 @@ void PinItem::mousePressEvent( QGraphicsSceneMouseEvent *pEvent )
 			mDragStartPoint = pEvent->pos();
 		}
 
-		if( mPin->direction() == PIN_INPUT )
+		if( mPin->direction() == PIN_INPUT && !mPin->isConnected() )
 		{
 			connect( &longPressTimer(), SIGNAL(timeout()), this, SLOT(longPressTimeout()) );
 
 			mDragStartPoint = pEvent->scenePos();
 
-			longPressTimer().start( 1000 );
+			longPressTimer().start( 750 );
 		}
 	}
 }
@@ -630,6 +632,10 @@ void PinItem::mouseMoveEvent( QGraphicsSceneMouseEvent *pEvent )
 		{
 			if( ( pEvent->pos() - mDragStartPoint ).manhattanLength() >= QApplication::startDragDistance() )
 			{
+				disconnect( &longPressTimer(), SIGNAL(timeout()), this, SLOT(longPressTimeout()) );
+
+				longPressTimer().stop();
+
 				mLink = std::unique_ptr<LinkItem>( new LinkItem() );
 
 				if( mLink )

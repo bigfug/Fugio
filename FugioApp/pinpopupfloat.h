@@ -28,7 +28,6 @@ protected slots:
 protected:
 	QSharedPointer<fugio::PinInterface>		 mPin;
 	QPointF									 mCenter;
-	QString									 mLabel;
 
 	// QGraphicsItem interface
 public:

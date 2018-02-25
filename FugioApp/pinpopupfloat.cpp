@@ -15,8 +15,6 @@
 PinPopupFloat::PinPopupFloat( QPointF pMousePosition, QSharedPointer<fugio::PinInterface> P )
 	: mPin( P ), mCenter( pMousePosition )
 {
-	qDebug() << "PinPopupFloat";
-
 	connect( P->qobject(), SIGNAL(displayLabelChanged(QString)), this, SLOT(displayLabelChanged(QString)) );
 }
 
@@ -33,26 +31,19 @@ void PinPopupFloat::mouseMoveEvent( QGraphicsSceneMouseEvent *event )
 	{
 		N->context()->updateNode( N->context()->findNode( N->uuid() ) );
 	}
+
+	update();
 }
 
 void PinPopupFloat::mouseReleaseEvent( QGraphicsSceneMouseEvent *event )
 {
 	deleteLater();
-
-	qDebug() << "mouseReleaseEvent";
 }
 
 bool PinPopupFloat::sceneEvent(QEvent *event)
 {
-	if( event->type() == QEvent::GrabMouse )
-	{
-		qDebug() << "QEvent::GrabMouse";
-	}
-
 	if( event->type() == QEvent::UngrabMouse )
 	{
-		qDebug() << "QEvent::UngrabMouse";
-
 		deleteLater();
 
 		return( true );
@@ -63,9 +54,7 @@ bool PinPopupFloat::sceneEvent(QEvent *event)
 
 void PinPopupFloat::displayLabelChanged( QString pDisplayLabel )
 {
-	qDebug() << pDisplayLabel;
-
-	mLabel = pDisplayLabel;
+	Q_UNUSED( pDisplayLabel )
 
 	update();
 }
@@ -84,17 +73,36 @@ void PinPopupFloat::paint( QPainter *painter, const QStyleOptionGraphicsItem *op
 	Q_UNUSED( option )
 	Q_UNUSED( widget )
 
-	painter->setPen( Qt::black );
+	painter->setPen( Qt::NoPen );
 	painter->setBrush( Qt::white );
 
 	painter->drawRect( boundingRect() );
 
-	if( !mLabel.isEmpty() )
+	QRectF		R = boundingRect();
+
+	R.setWidth( mPin->value().toFloat() * R.width() );
+
+	if( R.width() > 0 )
 	{
-		painter->drawText( boundingRect(), Qt::AlignCenter, mLabel );
+		painter->setPen( Qt::NoPen );
+		painter->setBrush( Qt::lightGray );
+
+		painter->drawRect( R );
+	}
+
+	painter->setPen( Qt::black );
+	painter->setBrush( Qt::NoBrush );
+
+	painter->drawRect( boundingRect() );
+
+	painter->setCompositionMode( QPainter::CompositionMode_Xor );
+
+	if( !mPin->displayLabel().isEmpty() )
+	{
+		painter->drawText( boundingRect(), Qt::AlignCenter, mPin->displayLabel() );
 	}
 	else
 	{
-		painter->drawText( boundingRect(), Qt::AlignCenter, mPin->value().toString() );
+		painter->drawText( boundingRect(), Qt::AlignCenter, QString::number( mPin->value().toDouble(), 'g', 4 ) );
 	}
 }
