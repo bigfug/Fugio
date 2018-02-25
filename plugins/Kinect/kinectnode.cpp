@@ -599,7 +599,7 @@ void KinectNode::deviceOpen( int pDeviceIndex )
 	if( FAILED( hr ) ) { return; }
 
 	hr = pNuiSensor->NuiStatus();
-	if (FAILED(hr) ) { deviceClose(); return; }
+	if (FAILED(hr) ) { pNuiSensor->Release(); return; }
 
 	m_pNuiSensor = pNuiSensor;
 
