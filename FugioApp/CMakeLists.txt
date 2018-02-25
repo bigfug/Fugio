@@ -183,11 +183,11 @@ qt5_add_resources( QRC_FILES fugio.qrc )
 
 target_sources( ${PROJECT_NAME} PRIVATE ${QRC_FILES} )
 
-if( WIN32 )
+if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 	include( Windeployqt )
 
 	windeployqt( ${PROJECT_NAME} ${PATH_APP} )
-endif( WIN32 )
+endif()
 
 #------------------------------------------------------------------------------
 # Raspberry Pi
