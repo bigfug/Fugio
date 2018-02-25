@@ -95,7 +95,7 @@ function(windeployqt target directory)
 
     # windeployqt doesn't work correctly with the system runtime libraries,
     # so we fall back to one of CMake's own modules for copying them over
-	#set(CMAKE_INSTALL_UCRT_LIBRARIES TRUE)
+	set( CMAKE_INSTALL_UCRT_LIBRARIES TRUE )
 	set( CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION . )
     include(InstallRequiredSystemLibraries)
     foreach(lib ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS})
