@@ -28,7 +28,7 @@ void TextureToImageNode::inputsUpdated( qint64 pTimeStamp )
 {
 	OpenGLTextureInterface		*TexInf = input<OpenGLTextureInterface *>( mPinInputTexture );
 
-	if( !TexInf || !TexInf->dstTexId() )
+	if( !TexInf || !TexInf->srcTexId() )
 	{
 		return;
 	}
@@ -52,15 +52,32 @@ void TextureToImageNode::inputsUpdated( qint64 pTimeStamp )
 		Output.setLineSize( 0, TexSze.x() * 4 );
 	}
 
-	glBindFramebuffer( GL_FRAMEBUFFER, TexInf->fbo() );
+	if( Output.isValid() )
+	{
+#if !defined( GL_ES_VERSION_2_0 )
+//		QOpenGLFunctions_2_0	*GL20 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_2_0>();
 
-#if defined( GL_ES_VERSION_2_0 )
-	glReadPixels( 0, 0, TexSze.x(), TexSze.y(), GL_RGBA, GL_UNSIGNED_BYTE, Output.internalBuffer( 0 ) );
-#else
-	glReadPixels( 0, 0, TexSze.x(), TexSze.y(), GL_BGRA, GL_UNSIGNED_BYTE, Output.internalBuffer( 0 ) );
+//		if( GL20 && GL20->initializeOpenGLFunctions() )
+//		{
+//			qDebug() << "GL20";
+
+//			GL20->glGetTexImage( TexInf->target(), 0, GL_BGR, GL_UNSIGNED_BYTE, Output.internalBuffer( 0 ) );
+//		}
+
+		QOpenGLFunctions_3_2_Core	*GL32 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_2_Core>();
+
+		if( GL32 && GL32->initializeOpenGLFunctions() )
+		{
+			GL32->glActiveTexture( GL_TEXTURE0 );
+
+			TexInf->srcBind();
+
+			GL32->glGetTexImage( TexInf->target(), 0, GL_BGRA, GL_UNSIGNED_BYTE, Output.internalBuffer( 0 ) );
+
+			TexInf->release();
+		}
 #endif
 
-	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-	pinUpdated( mPinOutputImage );
+		pinUpdated( mPinOutputImage );
+	}
 }

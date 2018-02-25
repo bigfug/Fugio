@@ -3,6 +3,11 @@
 
 #include <QObject>
 
+#if !defined( GL_ES_VERSION_2_0 )
+#include <QOpenGLFunctions_2_0>
+#include <QOpenGLFunctions_3_2_Core>
+#endif
+
 #include "opengl_includes.h"
 
 #include <fugio/nodecontrolbase.h>
