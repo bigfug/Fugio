@@ -98,23 +98,9 @@ if( OpenCV_FOUND )
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE OPENCV_SUPPORTED )
 
 	if( WIN32 )
-		set( OpenCV_DLL
-			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_core${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
-			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_highgui${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
-			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_imgcodecs${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
-			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_imgproc${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
-			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_features2d${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
-			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_flann${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
-			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_ml${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
-			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_objdetect${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
-			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_photo${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
-			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_video${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
-			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_videoio${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
-		)
+		file( GLOB OpenCV_DLL "${OpenCV_INSTALL_PATH}/bin/Release/opencv_*${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll" )
 
-		if( OpenCV_DLL )
-			install( FILES ${OpenCV_DLL} DESTINATION "${PATH_APP}" )
-		endif()
+		install( FILES ${OpenCV_DLL} DESTINATION "${PATH_APP}" )
 	endif()
 else()
 	message( "OpenCV is not configured" )
