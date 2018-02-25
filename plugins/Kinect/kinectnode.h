@@ -70,6 +70,12 @@ private slots:
 	void deviceOpen( int pDeviceIndex );
 
 	void deviceClose( void );
+
+	void colourFrame( HANDLE pHandle );
+
+	void depthFrame( HANDLE pHandle );
+
+	void skeletonFrame( HANDLE pHandle );
 #endif
 
 private:
@@ -125,6 +131,10 @@ private:
 	LONG										 mSensorElevation;
 
 	bool										 mFrameReceived;
+
+	QWinEventNotifier							 mColourFrameNotifier;
+	QWinEventNotifier							 mDepthFrameNotifier;
+	QWinEventNotifier							 mSkeletonFrameNotifier;
 
 #if defined( InteractionClient )
 	InteractionClient							 mInteractionClient;

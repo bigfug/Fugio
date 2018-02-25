@@ -84,23 +84,31 @@ KinectNode::KinectNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mInteractionEvent    = INVALID_HANDLE_VALUE;
 	mSkeletonEvent       = INVALID_HANDLE_VALUE;
 
-	//connect( &mEventNotifier, &QWinEventNotifier::activated, this, &KinectNode::eventTriggered );
-
 	if( ( mNextColorFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL ) ) != INVALID_HANDLE_VALUE )
 	{
-//		mEventNotifier.setHandle( mNextColorFrameEvent );
+		mColourFrameNotifier.setHandle( mNextColorFrameEvent );
 
-//		mEventNotifier.setEnabled( true );
+		mColourFrameNotifier.setEnabled( true );
+
+		connect( &mColourFrameNotifier, &QWinEventNotifier::activated, this, &KinectNode::colourFrame );
 	}
 
 	if( ( mNextDepthFrameEvent = CreateEvent( NULL, TRUE, FALSE, NULL ) ) != INVALID_HANDLE_VALUE )
 	{
-		//mEventNotifier.setHandle( mNextFrameEvent );
+		mDepthFrameNotifier.setHandle( mNextDepthFrameEvent );
+
+		mDepthFrameNotifier.setEnabled( true );
+
+		connect( &mDepthFrameNotifier, &QWinEventNotifier::activated, this, &KinectNode::depthFrame );
 	}
 
 	if( ( mSkeletonEvent = CreateEvent( NULL, TRUE, FALSE, NULL ) ) != INVALID_HANDLE_VALUE )
 	{
-		//mEventNotifier.setHandle( mNextFrameEvent );
+		mSkeletonFrameNotifier.setHandle( mSkeletonEvent );
+
+		mSkeletonFrameNotifier.setEnabled( true );
+
+		connect( &mSkeletonFrameNotifier, &QWinEventNotifier::activated, this, &KinectNode::skeletonFrame );
 	}
 
 	if( ( mInteractionEvent = CreateEvent( NULL, TRUE, FALSE, NULL ) ) != INVALID_HANDLE_VALUE )
@@ -201,6 +209,7 @@ void KinectNode::inputsUpdated( qint64 pTimeStamp )
 
 void KinectNode::frameStart( qint64 pTimeStamp )
 {
+	/*
 #if !defined( KINECT_SUPPORTED )
 	Q_UNUSED( pTimeStamp )
 #else
@@ -232,259 +241,6 @@ void KinectNode::frameStart( qint64 pTimeStamp )
 //		}
 //	}
 
-	NUI_IMAGE_FRAME imageFrame;
-	NUI_LOCKED_RECT LockedRect;
-
-	if( mNextColorFrameEvent != INVALID_HANDLE_VALUE && WaitForSingleObject( mNextColorFrameEvent, 0 ) == WAIT_OBJECT_0 )
-	{
-		if( m_pColorStreamHandle )
-		{
-			hr = m_pNuiSensor->NuiImageStreamGetNextFrame( m_pColorStreamHandle, 0, &imageFrame);
-
-			if( SUCCEEDED( hr ) )
-			{
-				hr = imageFrame.pFrameTexture->LockRect(0, &LockedRect, NULL, 0);
-
-				if( SUCCEEDED( hr ) )
-				{
-					//-------------------------------------------------------------------------
-
-					//if( mPinOutputCamera->isConnected() )
-					{
-						fugio::Image	ImgDat = mValOutputCamera->variant().value<fugio::Image>();
-
-						QSize			S = nuiSize( imageFrame.eResolution );
-
-						ImgDat.setSize( S.width(), S.height() );
-						ImgDat.setLineSize( 0, LockedRect.Pitch );
-						ImgDat.setFormat( nuiFormat( imageFrame.eImageType ) );
-
-						if( imageFrame.eImageType == NUI_IMAGE_TYPE_COLOR )
-						{
-							const quint8	*SrcPtr = LockedRect.pBits;
-							quint8			*DstPtr = ImgDat.internalBuffer( 0 );
-							const int		 SrcSze = ImgDat.bufferSize( 0 );
-
-							for( int i = 0 ; i < SrcSze ; i += 4 )
-							{
-								DstPtr[ i + 0 ] = SrcPtr[ i + 0 ];
-								DstPtr[ i + 1 ] = SrcPtr[ i + 1 ];
-								DstPtr[ i + 2 ] = SrcPtr[ i + 2 ];
-								DstPtr[ i + 3 ] = 0xff;
-							}
-						}
-						else
-						{
-							memcpy( ImgDat.internalBuffer( 0 ), LockedRect.pBits, ImgDat.bufferSize( 0 ) );
-						}
-
-						pinUpdated( mPinOutputCamera );
-					}
-
-					//-------------------------------------------------------------------------
-
-					hr = imageFrame.pFrameTexture->UnlockRect(0);
-					//if ( FAILED(hr) ) { return; };
-				}
-
-				hr = m_pNuiSensor->NuiImageStreamReleaseFrame( m_pColorStreamHandle, &imageFrame );
-			}
-		}
-
-		ResetEvent( mNextColorFrameEvent );
-	}
-
-	//-------------------------------------------------------------------------
-
-	if( mNextDepthFrameEvent != INVALID_HANDLE_VALUE && WaitForSingleObject( mNextDepthFrameEvent, 0 ) == WAIT_OBJECT_0 )
-	{
-		if( m_pDepthStreamHandle ) //( mPinOutputDepth->isConnected() || mPinOutputUser->isConnected() ) &&  != 0 )
-		{
-			BOOL bNearMode = false;
-			INuiFrameTexture * pTexture = NULL;
-
-			hr = m_pNuiSensor->NuiImageStreamGetNextFrame( m_pDepthStreamHandle, 0, &imageFrame );
-
-			if( SUCCEEDED( hr ) )
-			{
-				hr = m_pNuiSensor->NuiImageFrameGetDepthImagePixelFrameTexture(m_pDepthStreamHandle, &imageFrame, &bNearMode, &pTexture);
-
-				if( SUCCEEDED( hr ) )
-				{
-					hr = pTexture->LockRect(0, &LockedRect, NULL, 0);
-
-					if( SUCCEEDED( hr ) )
-					{
-						if( LockedRect.Pitch > 0 )
-						{
-							const NUI_DEPTH_IMAGE_PIXEL		*DepthImage = reinterpret_cast<const NUI_DEPTH_IMAGE_PIXEL *>( LockedRect.pBits );
-
-							//-------------------------------------------------------------------------
-
-							fugio::Image	DepImg = mValOutputDepth->variant().value<fugio::Image>();
-							fugio::Image	UsrImg = mValOutputUser->variant().value<fugio::Image>();
-
-							QSize			S = nuiSize( imageFrame.eResolution );
-
-							DepImg.setSize( S.width(), S.height() );
-							DepImg.setLineSize( 0, S.width() * 2 );
-							DepImg.setFormat( fugio::ImageFormat::GRAY16 );
-
-							UsrImg.setSize( S.width(), S.height() );
-							UsrImg.setLineSize( 0, S.width() * 2 );
-							UsrImg.setFormat( fugio::ImageFormat::GRAY16 );
-
-							quint16		*DepDst = reinterpret_cast<quint16 *>( DepImg.internalBuffer( 0 ) );
-							quint16		*UsrDst = reinterpret_cast<quint16 *>( UsrImg.internalBuffer( 0 ) );
-
-							for( int y = 0 ; y < S.height() ; y++ )
-							{
-								const NUI_DEPTH_IMAGE_PIXEL		*SRC = &DepthImage[ y * S.width() ];
-								quint16							*DEP = &DepDst[ y * S.width() ];
-								quint16							*USR = &UsrDst[ y * S.width() ];
-
-								for( int x = 0 ; x < S.width() ; x++ )
-								{
-									DEP[ x ] = SRC[ x ].depth;
-									USR[ x ] = SRC[ x ].playerIndex;
-								}
-							}
-
-							pinUpdated( mPinOutputDepth );
-
-							if( imageFrame.eImageType == NUI_IMAGE_TYPE_DEPTH_AND_PLAYER_INDEX )
-							{
-								pinUpdated( mPinOutputUser );
-							}
-						}
-
-						//-------------------------------------------------------------------------
-
-#if defined( InteractionClient )
-						if( mInteractionStream )
-						{
-							hr = mInteractionStream->ProcessDepth( LockedRect.size, PBYTE( LockedRect.pBits ), imageFrame.liTimeStamp );
-						}
-#endif
-
-						//-------------------------------------------------------------------------
-
-						hr = imageFrame.pFrameTexture->UnlockRect(0);
-					}
-				}
-
-				hr = m_pNuiSensor->NuiImageStreamReleaseFrame( m_pDepthStreamHandle, &imageFrame );
-			}
-		}
-
-		ResetEvent( mNextDepthFrameEvent );
-	}
-
-	if( mSkeletonEvent != INVALID_HANDLE_VALUE && WaitForSingleObject( mSkeletonEvent, 0 ) == WAIT_OBJECT_0 )
-	{
-		static NUI_TRANSFORM_SMOOTH_PARAMETERS defaultParams = {0.5f, 0.5f, 0.5f, 0.05f, 0.04f};
-
-		NUI_SKELETON_FRAME		SkeletonFrame;
-
-		hr = m_pNuiSensor->NuiSkeletonGetNextFrame( 0, &SkeletonFrame );
-
-		if( SUCCEEDED( hr ) )
-		{
-			QVector4D		FloorClipPlane( SkeletonFrame.vFloorClipPlane.x,
-											SkeletonFrame.vFloorClipPlane.y,
-											SkeletonFrame.vFloorClipPlane.z,
-											SkeletonFrame.vFloorClipPlane.w );
-
-			if( FloorClipPlane != mValOutputFloorClipPlane->variant().value<QVector4D>() )
-			{
-				mValOutputFloorClipPlane->setVariant( FloorClipPlane );
-
-				pinUpdated( mPinOutputFloorClipPlane );
-			}
-
-			// Smooth the skeleton joint positions
-			m_pNuiSensor->NuiTransformSmooth( &SkeletonFrame, &defaultParams );
-
-			QVariantList		SklLst;
-
-			for( int i = 0 ; i < NUI_SKELETON_COUNT ; i++ )
-			{
-				const NUI_SKELETON_DATA &Skeleton = SkeletonFrame.SkeletonData[ i ];
-
-				QVariantMap		SklMap;
-
-				SklMap.insert( "state", Skeleton.eTrackingState );
-				SklMap.insert( "id", int( Skeleton.dwTrackingID ) );
-
-				if( Skeleton.eTrackingState != NUI_SKELETON_NOT_TRACKED )
-				{
-					SklMap.insert( "position", QVector3D( Skeleton.Position.x, Skeleton.Position.y, Skeleton.Position.z ) );
-				}
-				else
-				{
-					SklMap.insert( "position", QVector3D() );
-				}
-
-				QVariantList		SklPos;
-				QVariantList		SklState;
-				QVariantList		SklColour;
-				QVariantList		SklDepth;
-
-				if( Skeleton.eTrackingState == NUI_SKELETON_TRACKED )
-				{
-					for( int j = 0 ; j < NUI_SKELETON_POSITION_COUNT ; j++ )
-					{
-						const Vector4	&v1 = Skeleton.SkeletonPositions[ j ];
-
-						SklPos.append( QVector3D( v1.x, v1.y, v1.z ) );
-						SklState.append( Skeleton.eSkeletonPositionTrackingState[ j ] );
-
-						QVector2D		v;
-						LONG			dx, dy;
-						USHORT			dz;
-						LONG			cx, cy;
-
-						NuiTransformSkeletonToDepthImage( v1, &dx, &dy, &dz, NUI_IMAGE_RESOLUTION_640x480 );
-
-						SklDepth.append( QVector3D( dx, dy, dz ) );
-
-						if( SUCCEEDED( NuiImageGetColorPixelCoordinatesFromDepthPixelAtResolution( NUI_IMAGE_RESOLUTION_640x480, NUI_IMAGE_RESOLUTION_640x480, nullptr, dx, dy, dz, &cx, &cy ) ) )
-						{
-							v = QVector2D( cx, cy );
-						}
-
-						SklColour.append( v );
-					}
-				}
-
-				SklMap.insert( "positions", SklPos );
-				SklMap.insert( "states", SklState );
-				SklMap.insert( "colourCoords", SklColour );
-				SklMap.insert( "depthCoords", SklDepth );
-
-				SklLst.append( SklMap );
-			}
-
-			mValOutputSkeleton->setVariant( SklLst );
-
-			pinUpdated( mPinOutputSkeleton );
-
-			//-------------------------------------------------------------------------
-
-#if defined( InteractionClient )
-			if( mInteractionStream )
-			{
-				Vector4		V4;
-
-				m_pNuiSensor->NuiAccelerometerGetCurrentReading( &V4 );
-
-				hr = mInteractionStream->ProcessSkeleton( NUI_SKELETON_COUNT, SkeletonFrame.SkeletonData, &V4, SkeletonFrame.liTimeStamp );
-			}
-#endif
-		}
-
-		ResetEvent( mSkeletonEvent );
-	}
 
 #if defined( InteractionClient )
 	if( mInteractionEvent != INVALID_HANDLE_VALUE && WaitForSingleObject( mInteractionEvent, 0 ) == WAIT_OBJECT_0 )
@@ -516,6 +272,7 @@ void KinectNode::frameStart( qint64 pTimeStamp )
 #endif
 
 #endif
+*/
 }
 
 #ifdef KINECT_SUPPORTED
@@ -581,8 +338,6 @@ void KinectNode::deviceOpen( int pDeviceIndex )
 			break;
 	}
 
-	INuiSensor		*pNuiSensor = NULL;
-
 	int iSensorCount = 0;
 	hr = NuiGetSensorCount( &iSensorCount );
 	if( FAILED( hr ) ) { return; }
@@ -595,11 +350,55 @@ void KinectNode::deviceOpen( int pDeviceIndex )
 		return;
 	}
 
+	INuiSensor		*pNuiSensor = NULL;
+
 	hr = NuiCreateSensorByIndex( pDeviceIndex, &pNuiSensor );
 	if( FAILED( hr ) ) { return; }
 
 	hr = pNuiSensor->NuiStatus();
-	if (FAILED(hr) ) { pNuiSensor->Release(); return; }
+
+	if( FAILED( hr ) )
+	{
+		switch( hr )
+		{
+			case S_NUI_INITIALIZING:
+				mNode->setStatusMessage( "The device is connected, but still initializing." );
+				break;
+
+			case E_NUI_NOTCONNECTED:
+				mNode->setStatusMessage( "The device is not connected." );
+				break;
+
+			case E_NUI_NOTGENUINE:
+				mNode->setStatusMessage( "The device is not a valid Kinect." );
+				break;
+
+			case E_NUI_NOTSUPPORTED:
+				mNode->setStatusMessage( "The device is an unsupported model." );
+				break;
+
+			case E_NUI_INSUFFICIENTBANDWIDTH:
+				mNode->setStatusMessage( "The device is connected to a hub without the necessary bandwidth requirements." );
+				break;
+
+			case E_NUI_NOTPOWERED:
+				mNode->setStatusMessage( "The device is connected, but unpowered." );
+				break;
+
+			case E_NUI_NOTREADY:
+				mNode->setStatusMessage( "There was some other unspecified error." );
+				break;
+		}
+
+		mNode->setStatus( fugio::NodeInterface::Error );
+
+		pNuiSensor->Release();
+
+		return;
+	}
+
+	mNode->setStatus( fugio::NodeInterface::Initialised );
+	mNode->setStatusMessage( QStringLiteral( "" ) );
 
 	m_pNuiSensor = pNuiSensor;
 
@@ -735,6 +534,273 @@ void KinectNode::deviceClose()
 		mInteractionStream = 0;
 #endif
 	}
+}
+
+void KinectNode::colourFrame( HANDLE pHandle )
+{
+	fugio::Performance	Perf( mNode, "colourFrame", mNode->context()->global()->timestamp() );
+
+	HRESULT			hr;
+	NUI_IMAGE_FRAME imageFrame;
+	NUI_LOCKED_RECT LockedRect;
+
+	if( m_pColorStreamHandle )
+	{
+		hr = m_pNuiSensor->NuiImageStreamGetNextFrame( m_pColorStreamHandle, 0, &imageFrame);
+
+		if( SUCCEEDED( hr ) )
+		{
+			hr = imageFrame.pFrameTexture->LockRect(0, &LockedRect, NULL, 0);
+
+			if( SUCCEEDED( hr ) )
+			{
+				//-------------------------------------------------------------------------
+
+				//if( mPinOutputCamera->isConnected() )
+				{
+					fugio::Image	ImgDat = mValOutputCamera->variant().value<fugio::Image>();
+
+					QSize			S = nuiSize( imageFrame.eResolution );
+
+					ImgDat.setSize( S.width(), S.height() );
+					ImgDat.setLineSize( 0, LockedRect.Pitch );
+					ImgDat.setFormat( nuiFormat( imageFrame.eImageType ) );
+
+					if( imageFrame.eImageType == NUI_IMAGE_TYPE_COLOR )
+					{
+						const quint8	*SrcPtr = LockedRect.pBits;
+						quint8			*DstPtr = ImgDat.internalBuffer( 0 );
+						const int		 SrcSze = ImgDat.bufferSize( 0 );
+
+						for( int i = 0 ; i < SrcSze ; i += 4 )
+						{
+							DstPtr[ i + 0 ] = SrcPtr[ i + 0 ];
+							DstPtr[ i + 1 ] = SrcPtr[ i + 1 ];
+							DstPtr[ i + 2 ] = SrcPtr[ i + 2 ];
+							DstPtr[ i + 3 ] = 0xff;
+						}
+					}
+					else
+					{
+						memcpy( ImgDat.internalBuffer( 0 ), LockedRect.pBits, ImgDat.bufferSize( 0 ) );
+					}
+
+					pinUpdated( mPinOutputCamera );
+				}
+
+				//-------------------------------------------------------------------------
+
+				hr = imageFrame.pFrameTexture->UnlockRect(0);
+				//if ( FAILED(hr) ) { return; };
+			}
+
+			hr = m_pNuiSensor->NuiImageStreamReleaseFrame( m_pColorStreamHandle, &imageFrame );
+		}
+	}
+
+	ResetEvent( mNextColorFrameEvent );
+
+	mNode->context()->global()->scheduleFrame();
+}
+
+void KinectNode::depthFrame( HANDLE pHandle )
+{
+	fugio::Performance	Perf( mNode, "depthFrame", mNode->context()->global()->timestamp() );
+
+	HRESULT			hr;
+	NUI_IMAGE_FRAME imageFrame;
+	NUI_LOCKED_RECT LockedRect;
+
+	if( m_pDepthStreamHandle )
+	{
+		BOOL bNearMode = false;
+		INuiFrameTexture * pTexture = NULL;
+
+		hr = m_pNuiSensor->NuiImageStreamGetNextFrame( m_pDepthStreamHandle, 0, &imageFrame );
+
+		if( SUCCEEDED( hr ) )
+		{
+			hr = m_pNuiSensor->NuiImageFrameGetDepthImagePixelFrameTexture(m_pDepthStreamHandle, &imageFrame, &bNearMode, &pTexture);
+
+			if( SUCCEEDED( hr ) )
+			{
+				hr = pTexture->LockRect(0, &LockedRect, NULL, 0);
+
+				if( SUCCEEDED( hr ) )
+				{
+					if( LockedRect.Pitch > 0 )
+					{
+						const NUI_DEPTH_IMAGE_PIXEL		*DepthImage = reinterpret_cast<const NUI_DEPTH_IMAGE_PIXEL *>( LockedRect.pBits );
+
+						//-------------------------------------------------------------------------
+
+						fugio::Image	DepImg = mValOutputDepth->variant().value<fugio::Image>();
+						fugio::Image	UsrImg = mValOutputUser->variant().value<fugio::Image>();
+
+						QSize			S = nuiSize( imageFrame.eResolution );
+
+						DepImg.setSize( S.width(), S.height() );
+						DepImg.setLineSize( 0, S.width() * 2 );
+						DepImg.setFormat( fugio::ImageFormat::GRAY16 );
+
+						UsrImg.setSize( S.width(), S.height() );
+						UsrImg.setLineSize( 0, S.width() * 2 );
+						UsrImg.setFormat( fugio::ImageFormat::GRAY16 );
+
+						quint16		*DepDst = reinterpret_cast<quint16 *>( DepImg.internalBuffer( 0 ) );
+						quint16		*UsrDst = reinterpret_cast<quint16 *>( UsrImg.internalBuffer( 0 ) );
+
+						for( int y = 0 ; y < S.height() ; y++ )
+						{
+							const NUI_DEPTH_IMAGE_PIXEL		*SRC = &DepthImage[ y * S.width() ];
+							quint16							*DEP = &DepDst[ y * S.width() ];
+							quint16							*USR = &UsrDst[ y * S.width() ];
+
+							for( int x = 0 ; x < S.width() ; x++ )
+							{
+								DEP[ x ] = SRC[ x ].depth;
+								USR[ x ] = SRC[ x ].playerIndex;
+							}
+						}
+
+						pinUpdated( mPinOutputDepth );
+
+						if( imageFrame.eImageType == NUI_IMAGE_TYPE_DEPTH_AND_PLAYER_INDEX )
+						{
+							pinUpdated( mPinOutputUser );
+						}
+					}
+
+					//-------------------------------------------------------------------------
+
+	#if defined( InteractionClient )
+					if( mInteractionStream )
+					{
+						hr = mInteractionStream->ProcessDepth( LockedRect.size, PBYTE( LockedRect.pBits ), imageFrame.liTimeStamp );
+					}
+	#endif
+
+					//-------------------------------------------------------------------------
+
+					hr = imageFrame.pFrameTexture->UnlockRect(0);
+				}
+			}
+
+			hr = m_pNuiSensor->NuiImageStreamReleaseFrame( m_pDepthStreamHandle, &imageFrame );
+		}
+	}
+
+	ResetEvent( mNextDepthFrameEvent );
+}
+
+void KinectNode::skeletonFrame( HANDLE pHandle )
+{
+	fugio::Performance	Perf( mNode, "skeletonFrame", mNode->context()->global()->timestamp() );
+
+	HRESULT			 hr;
+
+	static NUI_TRANSFORM_SMOOTH_PARAMETERS defaultParams = {0.5f, 0.5f, 0.5f, 0.05f, 0.04f};
+
+	NUI_SKELETON_FRAME		SkeletonFrame;
+
+	hr = m_pNuiSensor->NuiSkeletonGetNextFrame( 0, &SkeletonFrame );
+
+	if( SUCCEEDED( hr ) )
+	{
+		QVector4D		FloorClipPlane( SkeletonFrame.vFloorClipPlane.x,
+										SkeletonFrame.vFloorClipPlane.y,
+										SkeletonFrame.vFloorClipPlane.z,
+										SkeletonFrame.vFloorClipPlane.w );
+
+		if( FloorClipPlane != mValOutputFloorClipPlane->variant().value<QVector4D>() )
+		{
+			mValOutputFloorClipPlane->setVariant( FloorClipPlane );
+
+			pinUpdated( mPinOutputFloorClipPlane );
+		}
+
+		// Smooth the skeleton joint positions
+		m_pNuiSensor->NuiTransformSmooth( &SkeletonFrame, &defaultParams );
+
+		QVariantList		SklLst;
+
+		for( int i = 0 ; i < NUI_SKELETON_COUNT ; i++ )
+		{
+			const NUI_SKELETON_DATA &Skeleton = SkeletonFrame.SkeletonData[ i ];
+
+			QVariantMap		SklMap;
+
+			SklMap.insert( "state", Skeleton.eTrackingState );
+			SklMap.insert( "id", int( Skeleton.dwTrackingID ) );
+
+			if( Skeleton.eTrackingState != NUI_SKELETON_NOT_TRACKED )
+			{
+				SklMap.insert( "position", QVector3D( Skeleton.Position.x, Skeleton.Position.y, Skeleton.Position.z ) );
+			}
+			else
+			{
+				SklMap.insert( "position", QVector3D() );
+			}
+
+			QVariantList		SklPos;
+			QVariantList		SklState;
+			QVariantList		SklColour;
+			QVariantList		SklDepth;
+
+			if( Skeleton.eTrackingState == NUI_SKELETON_TRACKED )
+			{
+				for( int j = 0 ; j < NUI_SKELETON_POSITION_COUNT ; j++ )
+				{
+					const Vector4	&v1 = Skeleton.SkeletonPositions[ j ];
+
+					SklPos.append( QVector3D( v1.x, v1.y, v1.z ) );
+					SklState.append( Skeleton.eSkeletonPositionTrackingState[ j ] );
+
+					QVector2D		v;
+					LONG			dx, dy;
+					USHORT			dz;
+					LONG			cx, cy;
+
+					NuiTransformSkeletonToDepthImage( v1, &dx, &dy, &dz, NUI_IMAGE_RESOLUTION_640x480 );
+
+					SklDepth.append( QVector3D( dx, dy, dz ) );
+
+					if( SUCCEEDED( NuiImageGetColorPixelCoordinatesFromDepthPixelAtResolution( NUI_IMAGE_RESOLUTION_640x480, NUI_IMAGE_RESOLUTION_640x480, nullptr, dx, dy, dz, &cx, &cy ) ) )
+					{
+						v = QVector2D( cx, cy );
+					}
+
+					SklColour.append( v );
+				}
+			}
+
+			SklMap.insert( "positions", SklPos );
+			SklMap.insert( "states", SklState );
+			SklMap.insert( "colourCoords", SklColour );
+			SklMap.insert( "depthCoords", SklDepth );
+
+			SklLst.append( SklMap );
+		}
+
+		mValOutputSkeleton->setVariant( SklLst );
+
+		pinUpdated( mPinOutputSkeleton );
+
+		//-------------------------------------------------------------------------
+
+#if defined( InteractionClient )
+		if( mInteractionStream )
+		{
+			Vector4		V4;
+
+			m_pNuiSensor->NuiAccelerometerGetCurrentReading( &V4 );
+
+			hr = mInteractionStream->ProcessSkeleton( NUI_SKELETON_COUNT, SkeletonFrame.SkeletonData, &V4, SkeletonFrame.liTimeStamp );
+		}
+#endif
+	}
+
+	ResetEvent( mSkeletonEvent );
 }
 
 #endif
