@@ -104,6 +104,8 @@ if( OpenCV_FOUND )
 			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_highgui${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
 			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_imgproc${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
 			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_features2d${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
+			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_flann${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
+			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_ml${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
 			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_objdetect${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
 			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_photo${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
 			"${OpenCV_INSTALL_PATH}/bin/Release/opencv_video${OpenCV_VERSION_MAJOR}${OpenCV_VERSION_MINOR}${OpenCV_VERSION_PATCH}.dll"
