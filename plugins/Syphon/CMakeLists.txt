@@ -51,6 +51,8 @@ if( APPLE )
 	find_library( Quartz_LIBRARY Quartz )
 
 	if( Syphon_LIBRARY )
+		message( "Syphon: YES" )
+
 		target_sources( ${PROJECT_NAME} PRIVATE
 			syphonsender.h
 			syphonsender.mm
@@ -73,10 +75,10 @@ if( APPLE )
 			VERBATIM
 		)
 	else( Syphon_LIBRARY )
-		message( "Syphon is not configured" )
+		message( "Syphon: NO" )
 	endif( Syphon_LIBRARY )
 else( APPLE )
-	message( "Syphon is not supported on this platform" )
+	message( "Syphon: unsupported" )
 endif( APPLE )
 
 #------------------------------------------------------------------------------

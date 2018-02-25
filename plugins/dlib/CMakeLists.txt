@@ -47,19 +47,27 @@ if( WIN32 )
 	find_library( DLIB_LIB NAMES dlib HINTS ${DLIB_DIR} )
 
 	if( DLIB_DIR AND DLIB_LIB )
+		message( "dlib: YES" )
+
 		target_include_directories( ${PROJECT_NAME} PRIVATE ${DLIB_DIR} )
 
 		target_link_libraries( ${PROJECT_NAME} ${DLIB_LIB} )
 
 		target_compile_definitions( ${PROJECT_NAME} PRIVATE DLIB_SUPPORTED )
-	endif( DLIB_DIR AND DLIB_LIB )
+	else()
+		message( "dlib: NO" )
+	endif()
 else( WIN32 )
 	find_package( dlib )
 
 	if( dlib_LIBS )
+		message( "dlib: YES" )
+
 		target_link_libraries( ${PROJECT_NAME} ${dlib_LIBS} )
 
 		target_compile_definitions( ${PROJECT_NAME} PRIVATE DLIB_SUPPORTED )
+	else()
+		message( "dlib: NO" )
 	endif()
 endif( WIN32 )
 

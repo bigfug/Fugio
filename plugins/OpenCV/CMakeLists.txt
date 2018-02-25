@@ -93,6 +93,8 @@ include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 find_package( OpenCV COMPONENTS core OPTIONAL_COMPONENTS imgproc features2d objdetect photo video )
 
 if( OpenCV_FOUND )
+	message( "OpenCV: YES" )
+
 	target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE OPENCV_SUPPORTED )
@@ -103,6 +105,6 @@ if( OpenCV_FOUND )
 		install( FILES ${OpenCV_DLL} DESTINATION "${PATH_APP}" )
 	endif()
 else()
-	message( "OpenCV is not configured" )
+	message( "OpenCV: NO" )
 endif()
 

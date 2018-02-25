@@ -57,6 +57,8 @@ if( WIN32 )
 	find_library( LEAP_LIB NAMES Leap )
 
 	if( LEAP_INCLUDE_DIR AND LEAP_LIB )
+		message( "LeapMotion: YES" )
+
 		include_directories( ${LEAP_INCLUDE_DIR} )
 
 		target_link_libraries( ${PROJECT_NAME} ${LEAP_LIB} )
@@ -66,6 +68,10 @@ if( WIN32 )
 		string( REPLACE ".lib" ".dll" LEAP_DLL ${LEAP_LIB} )
 
 		install( FILES ${LEAP_DLL} DESTINATION ${PATH_APP} )
-	endif( LEAP_INCLUDE_DIR AND LEAP_LIB )
+	else()
+		message( "LeapMotion: NO" )
+	endif()
+else( WIN32 )
+	message( "LeapMotion: unsupported" )
 endif( WIN32 )
 

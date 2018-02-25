@@ -34,8 +34,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 find_package( ARToolKit )
 
 if( ARTOOLKIT_FOUND )
-#	message( "--- ARToolKit" )
-#	message( ${ARTOOLKIT_LIBRARIES} )
+	message( "ARToolKit: YES" )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE ${ARTOOLKIT_DEFINITIONS} )
 
@@ -61,7 +60,7 @@ if( ARTOOLKIT_FOUND )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE ARTOOLKIT_SUPPORTED )
 else()
-	message( "ARToolKit is not configured" )
+	message( "ARToolKit: NO" )
 endif()
 
 #------------------------------------------------------------------------------

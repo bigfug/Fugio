@@ -44,6 +44,8 @@ include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 find_package( FFTW )
 
 if( FFTW_FOUND )
+	message( "FFTW: YES" )
+
 	target_link_libraries( ${PROJECT_NAME} ${FFTW_F_LIB} )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE FFTW_SUPPORTED )
@@ -55,5 +57,5 @@ if( FFTW_FOUND )
 	endif( WIN32 )
 
 else()
-	message( "FFTW not configured" )
+	message( "FFTW: NO" )
 endif()

@@ -51,13 +51,17 @@ if( WIN32 )
 	find_library( KINECT_LIB NAMES Kinect10 )
 
 	if( KINECT_INCLUDE_DIR AND KINECT_LIB )
+		message( "Kinect: YES" )
+
 		include_directories( ${KINECT_INCLUDE_DIR} )
 
 		target_link_libraries( ${PROJECT_NAME} ${KINECT_LIB} )
 
 		target_compile_definitions( ${PROJECT_NAME} PRIVATE KINECT_SUPPORTED )
-	endif( KINECT_INCLUDE_DIR AND KINECT_LIB )
+	else()
+		message( "Kinect: NO" )
+	endif()
 else()
-	message( "Kinect is not supported on this platform" )
+	message( "Kinect: unsupported" )
 endif( WIN32 )
 

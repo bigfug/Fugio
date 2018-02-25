@@ -43,6 +43,8 @@ include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 find_package( PortMidi QUIET )
 
 if( PORTMIDI_FOUND )
+	message( "PortMidi: YES" )
+
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${PORTMIDI_INCLUDE_DIR} ${PORTTIME_INCLUDE_DIR} )
 
 	target_link_libraries( ${PROJECT_NAME} ${PORTMIDI_LIBRARIES} )
@@ -69,7 +71,7 @@ if( PORTMIDI_FOUND )
 			)
 	endif( APPLE )
 else()
-	message( "PortMidi is not configured" )
+	message( "PortMidi: NO" )
 endif()
 
 #------------------------------------------------------------------------------

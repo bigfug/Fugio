@@ -55,6 +55,8 @@ include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 find_package( NDI QUIET )
 
 if( NDI_FOUND )
+	message( "NDI: YES" )
+
 	target_link_libraries( ${PROJECT_NAME} ${NDI_LIBRARY} )
 
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${NDI_INCLUDE_DIR} )
@@ -64,4 +66,6 @@ if( NDI_FOUND )
 	if( WIN32 )
 		install( FILES ${NDI_DLL} DESTINATION ${PATH_APP} )
 	endif( WIN32 )
+else( NDI_FOUND )
+	message( "NDI: NO" )
 endif( NDI_FOUND )

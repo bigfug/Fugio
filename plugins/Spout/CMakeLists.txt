@@ -43,6 +43,8 @@ if( WIN32 )
 endif( WIN32 )
 
 if( SPOUT_FOUND )
+	message( "Spout: YES" )
+
 	target_include_directories( ${PROJECT_NAME} PRIVATE ${SPOUT_INCLUDE_DIR} )
 
 	target_link_libraries( ${PROJECT_NAME} ${SPOUT_LIBRARIES} )
@@ -53,7 +55,7 @@ if( SPOUT_FOUND )
 
 	install( FILES ${SPOUT_DLL} DESTINATION ${PATH_APP} )
 elseif( WIN32 )
-	message( "Spout not found" )
+	message( "Spout: NO" )
 endif()
 
 #------------------------------------------------------------------------------
