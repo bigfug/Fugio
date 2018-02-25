@@ -65,11 +65,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 #------------------------------------------------------------------------------
 # Install
 
-if( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/ffmpeg )
-else( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
-endif( WIN32 )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
@@ -102,7 +98,7 @@ if( SNAPPY_FOUND )
 	if( WIN32 )
 		string( REPLACE ".lib" ".dll" SNAPPY_DLL ${SNAPPY_LIBRARY} )
 
-		install( FILES ${SNAPPY_DLL} DESTINATION ${PATH_PLUGIN}/ffmpeg )
+		install( FILES ${SNAPPY_DLL} DESTINATION ${PATH_APP} )
 	endif( WIN32 )
 
 else()
@@ -138,7 +134,7 @@ if( SNAPPY_FOUND AND FFMPEG_FOUND )
 		file( GLOB dlls "${FFMPEG_DIR}/bin/*.dll" )
 		
 		if( dlls )
-			install( FILES ${dlls} DESTINATION "${PATH_PLUGIN}/ffmpeg" )
+			install( FILES ${dlls} DESTINATION ${PATH_APP} )
 		endif()
 
 	endif( WIN32 )

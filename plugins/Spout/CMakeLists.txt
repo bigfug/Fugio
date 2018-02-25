@@ -51,7 +51,7 @@ if( SPOUT_FOUND )
 
 	string( REPLACE ".lib" ".dll" SPOUT_DLL ${SPOUT_LIBRARY} )
 
-	install( FILES ${SPOUT_DLL} DESTINATION ${PATH_PLUGIN}/spout )
+	install( FILES ${SPOUT_DLL} DESTINATION ${PATH_APP} )
 elseif( WIN32 )
 	message( "Spout not found" )
 endif()
@@ -59,11 +59,7 @@ endif()
 #------------------------------------------------------------------------------
 # Install
 
-if( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/spout )
-else( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
-endif( WIN32 )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 #------------------------------------------------------------------------------
 # Qt5

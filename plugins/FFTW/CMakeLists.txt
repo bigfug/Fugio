@@ -25,11 +25,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 #------------------------------------------------------------------------------
 # Install
 
-if( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/fftw )
-else( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
-endif( WIN32 )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
@@ -55,7 +51,7 @@ if( FFTW_FOUND )
 	if( WIN32 )
 		string( REPLACE ".lib" ".dll" FFTW_DLL ${FFTW_F_LIB} )
 
-		install( FILES ${FFTW_DLL} DESTINATION ${PATH_PLUGIN}/fftw )
+		install( FILES ${FFTW_DLL} DESTINATION ${PATH_APP} )
 	endif( WIN32 )
 
 else()

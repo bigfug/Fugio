@@ -35,11 +35,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 #------------------------------------------------------------------------------
 # Install
 
-if( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/leapmotion )
-else( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
-endif( WIN32 )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
@@ -69,7 +65,7 @@ if( WIN32 )
 
 		string( REPLACE ".lib" ".dll" LEAP_DLL ${LEAP_LIB} )
 
-		install( FILES ${LEAP_DLL} DESTINATION ${PATH_PLUGIN}/leapmotion )
+		install( FILES ${LEAP_DLL} DESTINATION ${PATH_APP} )
 	endif( LEAP_INCLUDE_DIR AND LEAP_LIB )
 endif( WIN32 )
 

@@ -52,7 +52,7 @@ if( PORTMIDI_FOUND )
 	if( WIN32 )
 		string( REPLACE ".lib" ".dll" PORTMIDI_DLL ${PORTMIDI_LIBRARY} )
 
-		install( FILES ${PORTMIDI_DLL} DESTINATION ${PATH_PLUGIN}/portmidi )
+		install( FILES ${PORTMIDI_DLL} DESTINATION ${PATH_APP} )
 	endif( WIN32 )
 
 	if( APPLE )
@@ -75,11 +75,7 @@ endif()
 #------------------------------------------------------------------------------
 # Install
 
-if( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/portmidi )
-else( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
-endif( WIN32 )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 

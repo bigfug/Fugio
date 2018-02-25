@@ -74,11 +74,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 #------------------------------------------------------------------------------
 # Install
 
-if( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/opencv )
-else( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
-endif( WIN32 )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
@@ -117,7 +113,7 @@ if( OpenCV_FOUND )
 #		message( ${OpenCV_DLL} )
 
 		if( OpenCV_DLL )
-			install( FILES ${OpenCV_DLL} DESTINATION "${PATH_PLUGIN}/opencv" )
+			install( FILES ${OpenCV_DLL} DESTINATION "${PATH_APP}" )
 		endif()
 	endif()
 else()

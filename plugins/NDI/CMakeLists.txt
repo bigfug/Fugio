@@ -29,11 +29,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 #------------------------------------------------------------------------------
 # Install
 
-if( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN}/ndi )
-else( WIN32 )
-	install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
-endif( WIN32 )
+install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
@@ -66,6 +62,6 @@ if( NDI_FOUND )
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE NDI_SUPPORTED )
 
 	if( WIN32 )
-		install( FILES ${NDI_DLL} DESTINATION ${PATH_PLUGIN}/ndi )
+		install( FILES ${NDI_DLL} DESTINATION ${PATH_APP} )
 	endif( WIN32 )
 endif( NDI_FOUND )
