@@ -19,7 +19,7 @@ class DeviceDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit DeviceDialog( ca::Capture &pCapture, int pDevIdx, int pCfgIdx, QWidget *parent = 0);
+	explicit DeviceDialog( int pDevIdx, int pCfgIdx, QWidget *parent = 0);
 
 	virtual ~DeviceDialog();
 
@@ -43,7 +43,7 @@ private:
 	Ui::DeviceDialog	*ui;
 
 #if defined( VIDEOCAPTURE_SUPPORTED )
-	ca::Capture			&mCapture;
+	ca::Capture			 mCapture;
 #endif
 
 	int					 mDevIdx;

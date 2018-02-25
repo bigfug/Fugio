@@ -15,6 +15,9 @@ set( SOURCE_FILES
 	videocaptureplugin.cpp
 	videocaptureplugin.h
 	
+	videocapturedevice.cpp
+	videocapturedevice.h
+
 	devicedialog.ui
 )
 

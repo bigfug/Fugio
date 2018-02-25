@@ -1,11 +1,11 @@
 #include "devicedialog.h"
 #include "ui_devicedialog.h"
 
-DeviceDialog::DeviceDialog( ca::Capture &pCapture, int pDevIdx, int pCfgIdx, QWidget *parent) :
+DeviceDialog::DeviceDialog( int pDevIdx, int pCfgIdx, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::DeviceDialog),
 #if defined( VIDEOCAPTURE_SUPPORTED )
-	mCapture( pCapture ),
+	mCapture( nullptr, nullptr ),
 #endif
 	mDevIdx( pDevIdx ), mCfgIdx( pCfgIdx )
 {
