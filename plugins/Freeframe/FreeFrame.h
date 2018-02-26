@@ -73,7 +73,9 @@
 #include <windows.h>
 
 typedef unsigned __int32 FFUInt32; 
-#else
+#endif
+
+#ifndef _WIN32
 
 extern "C" {
 
