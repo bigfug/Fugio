@@ -137,23 +137,6 @@ OpenGLPlugin::OpenGLPlugin( void )
 {
 	mInstance = this;
 
-//	QSurfaceFormat	SurfaceFormat;
-
-//	SurfaceFormat.setDepthBufferSize( 24 );
-//	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
-//	SurfaceFormat.setSamples( 4 );
-//	SurfaceFormat.setVersion( 4, 5 );
-
-//#if defined( OPENGL_DEBUG_ENABLE )
-//	SurfaceFormat.setOption( QSurfaceFormat::DebugContext );
-//#endif
-
-////	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
-////	SurfaceFormat.setVersion( 4, 5 );
-////	SurfaceFormat.setSwapInterval( 0 );
-
-//	QSurfaceFormat::setDefaultFormat( SurfaceFormat );
-
 	//-------------------------------------------------------------------------
 	// Install translator
 

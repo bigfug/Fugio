@@ -18,9 +18,11 @@
 #include <fugio/text/syntax_highlighter_factory_interface.h>
 #include <fugio/text/syntax_highlighter_instance_interface.h>
 
+#if defined( QT_DEBUG )
 #define OPENGL_DEBUG_ENABLE
+#endif
 
-#if 0 //defined( OPENGL_DEBUG_ENABLE )
+#if defined( OPENGL_DEBUG_ENABLE )
 #define OPENGL_PLUGIN_DEBUG 	OpenGLPlugin::instance()->checkErrors( __FILE__, __LINE__ );
 #define OPENGL_DEBUG(x) 	OpenGLPlugin::instance()->checkErrors( x, __FILE__, __LINE__ );
 #else

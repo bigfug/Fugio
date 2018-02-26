@@ -17,8 +17,6 @@
 #include "openglplugin.h"
 #include "windownode.h"
 
-//#define OPENGL_DEBUG_ENABLE
-
 QOpenGLDebugLogger			*DeviceOpenGLOutput::mDebugLogger = nullptr;
 
 void DeviceOpenGLOutput::deviceInitialise()
