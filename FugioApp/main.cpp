@@ -20,6 +20,8 @@
 #include <fugio/plugin_interface.h>
 #include <fugio/node_control_interface.h>
 
+#include <fugio/app_helper.h>
+
 #if defined( Q_OS_RASPBERRY_PI )
 #include <bcm_host.h>
 #endif

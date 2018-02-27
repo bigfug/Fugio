@@ -20,7 +20,9 @@ class AppHelper
 {
 public:
 	AppHelper( void )
-		: OptionClearSettings( "clear-settings", QCoreApplication::translate( "main", "Clear all settings (mainly for testing purposes)" ) ),
+		: OptionHelp( "help" ),
+		  OptionVersion( "version" ),
+		  OptionClearSettings( "clear-settings", QCoreApplication::translate( "main", "Clear all settings (mainly for testing purposes)" ) ),
 		  OptionOpenGL( "opengl", QCoreApplication::translate( "main", "Select OpenGL backend" ) ),
 		  OptionGLES( "gles", QCoreApplication::translate( "main", "Select OpenGL ES backend" ) ),
 		  OptionGLSW( "glsw", QCoreApplication::translate( "main", "Select OpenGL software backend" ) ),
@@ -40,8 +42,9 @@ public:
 		CLP.setSingleDashWordOptionMode( QCommandLineParser::ParseAsLongOptions );
 
 		CLP.setApplicationDescription( "Fugio" );
-		CLP.addHelpOption();
-		CLP.addVersionOption();
+
+//		OptionHelp    = CLP.addHelpOption();
+		OptionVersion = CLP.addVersionOption();
 
 		CLP.addPositionalArgument( "patches", QCoreApplication::translate( "main", "Patches to open (optional)."), "[patches...]" );
 
@@ -69,7 +72,26 @@ public:
 			ArgLst << QString::fromLocal8Bit( argv[ i ] );
 		}
 
-		CLP.process( ArgLst );
+		if( !CLP.parse( ArgLst ) )
+		{
+			fputs( qPrintable( CLP.errorText() ), stderr );
+
+			exit( 1 );
+		}
+
+		if( CLP.isSet( OptionVersion ) )
+		{
+			CLP.showVersion();
+
+			Q_UNREACHABLE();
+		}
+
+		if( CLP.isSet( OptionHelp ) )
+		{
+			CLP.showHelp();
+
+			Q_UNREACHABLE();
+		}
 
 		QSurfaceFormat  SurfaceFormat;
 
@@ -268,6 +290,9 @@ public:
 	QCommandLineParser		CLP;
 
 protected:
+	QCommandLineOption		OptionHelp;
+	QCommandLineOption		OptionVersion;
+
 	QCommandLineOption		OptionClearSettings;
 	QCommandLineOption		OptionOpenGL;
 	QCommandLineOption		OptionGLES;

@@ -13,7 +13,6 @@
 #include "globalprivate.h"
 
 #include <fugio/global_interface.h>
-#include <fugio/app_helper.h>
 
 FUGIO_NAMESPACE_BEGIN
 class PinInterface;
