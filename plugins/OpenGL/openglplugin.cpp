@@ -290,9 +290,9 @@ void OpenGLPlugin::deinitialise()
 	mInstance = 0;
 }
 
-#if defined( OPENGL_DEBUG_ENABLE )
 void OpenGLPlugin::checkErrors( void )
 {
+#if defined( OPENGL_DEBUG_ENABLE )
 	if( !hasContext() )
 	{
 		return;
@@ -313,15 +313,12 @@ void OpenGLPlugin::checkErrors( void )
 		qDebug() << "GL" << QString::number( e, 16 );
 #endif
 	}
+#endif
 }
 
 void OpenGLPlugin::checkErrors( const char *file, int line )
 {
-#if !defined( GLU_VERSION )
-	Q_UNUSED( file )
-	Q_UNUSED( line )
-#endif
-
+#if defined( OPENGL_DEBUG_ENABLE )
 	if( !hasContext() )
 	{
 		return;
@@ -342,15 +339,12 @@ void OpenGLPlugin::checkErrors( const char *file, int line )
 		qDebug() << "GL" << file << line << ":" << QString::number( e, 16 );
 #endif
 	}
+#endif
 }
 
 void OpenGLPlugin::checkErrors(const QString &pContext, const char *file, int line)
 {
-#if !defined( GLU_VERSION )
-	Q_UNUSED( file )
-	Q_UNUSED( line )
-#endif
-
+#if defined( OPENGL_DEBUG_ENABLE )
 	if( !hasContext() )
 	{
 		return;
@@ -371,8 +365,8 @@ void OpenGLPlugin::checkErrors(const QString &pContext, const char *file, int li
 		qDebug() << "GL" << pContext << file << line << ":" << QString::number( e, 16 );
 #endif
 	}
-}
 #endif
+}
 
 void OpenGLPlugin::registerOutputWindowHook(QObject *pObject, const char *pMember)
 {
