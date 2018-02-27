@@ -10,73 +10,76 @@
 #include <fugio/core/variant_interface.h>
 
 EveryNode::EveryNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mLastTime( -1 )
+	: NodeControlBase( pNode ), mTimer( nullptr )
 {
-	mPinNumber = pinInput( "Number" );
+	FUGID( PIN_INPUT_NUMBER, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_OUTPUT_TRIGGER, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+
+	mPinNumber = pinInput( "Milliseconds", PIN_INPUT_NUMBER );
 
 	mPinNumber->setValue( 1000 );
 
-	pinOutput<fugio::PinControlInterface *>( "Trigger", mPinTrigger, PID_TRIGGER );
+	pinOutput<fugio::PinControlInterface *>( "Trigger", mPinTrigger, PID_TRIGGER, PIN_OUTPUT_TRIGGER );
 }
 
-bool EveryNode::initialise( void )
+bool EveryNode::initialise()
 {
 	if( !NodeControlBase::initialise() )
 	{
 		return( false );
 	}
 
-	mLastTime = -1;
+	mTimer = new QTimer( this );
 
-	connect( mNode->context()->qobject(), SIGNAL(frameStart(qint64)), this, SLOT(frameStart(qint64)) );
+	if( mTimer )
+	{
+		connect( mTimer, &QTimer::timeout, this, &EveryNode::timeout );
+	}
 
 	return( true );
 }
 
 bool EveryNode::deinitialise()
 {
-	mNode->context()->qobject()->disconnect( this );
+	if( mTimer )
+	{
+		delete mTimer;
+
+		mTimer = nullptr;
+	}
 
 	return( NodeControlBase::deinitialise() );
 }
 
-void EveryNode::frameStart( qint64 pTimeStamp )
+void EveryNode::inputsUpdated( qint64 pTimeStamp )
 {
-	qint64			ClockTime = pTimeStamp;
+	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	if( mLastTime < 0 || mLastTime > ClockTime )
+	if( mTimer )
 	{
-		mLastTime = ClockTime;
+		if( mTimer->isActive() )
+		{
+			pinUpdated( mPinTrigger );
+		}
 
-		return;
+		int			Interval = variant<int>( mPinNumber );
+
+		if( Interval != mTimer->interval() )
+		{
+			mTimer->stop();
+
+			if( Interval > 0 )
+			{
+				mTimer->start( Interval );
+			}
+		}
 	}
-
-	qint64			TriggerTime = variant( mPinNumber ).toInt();
-
-	if( TriggerTime <= 0 )
-	{
-		return;
-	}
-
-	if( ClockTime - mLastTime < TriggerTime )
-	{
-		return;
-	}
-
-	// here we have two options, either use the current time as the trigger time,
-	// which will possibly result in missed triggers, or increment the last time,
-	// which might cause a whole bunch of triggers if there's been a clock delay
-
-	// instead. let's check the ClockTime isn't TriggerTime * 2 ahead
-
-	if( ClockTime - mLastTime - TriggerTime >= TriggerTime )
-	{
-		mLastTime = ClockTime;
-	}
-	else
-	{
-		mLastTime += TriggerTime;
-	}
-
-	pinUpdated( mPinTrigger );
 }
+
+void EveryNode::timeout()
+{
+	mNode->context()->updateNode( mNode );
+
+	mNode->context()->global()->scheduleFrame();
+}
+

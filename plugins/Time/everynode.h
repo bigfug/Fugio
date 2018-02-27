@@ -2,6 +2,7 @@
 #define EVERYNODE_H
 
 #include <QObject>
+#include <QTimer>
 
 #include <fugio/core/variant_interface.h>
 
@@ -22,20 +23,23 @@ public:
 	virtual ~EveryNode( void ) {}
 
 	//-------------------------------------------------------------------------
-	// NodeControlInterface
+	// NodeControlInterface interface
 
+public:
 	virtual bool initialise( void ) Q_DECL_OVERRIDE;
 	virtual bool deinitialise( void ) Q_DECL_OVERRIDE;
 
+	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
+
 private slots:
-	void frameStart( qint64 pTimeStamp );
+	void timeout( void );
 
 private:
 	QSharedPointer<fugio::PinInterface>	 mPinNumber;
 
 	QSharedPointer<fugio::PinInterface>	 mPinTrigger;
 
-	qint64							 mLastTime;
+	QTimer								*mTimer;
 };
 
 #endif // EVERYNODE_H
