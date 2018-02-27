@@ -320,6 +320,8 @@ void OpenGLPlugin::checkErrors( const char *file, int line )
 		return;
 	}
 
+	initializeOpenGLFunctions();
+
 	for( GLenum e = glGetError() ; e != GL_NO_ERROR ; e = glGetError() )
 	{
 #if defined( GLU_VERSION )
@@ -341,6 +343,8 @@ void OpenGLPlugin::checkErrors(const QString &pContext, const char *file, int li
 	{
 		return;
 	}
+
+	initializeOpenGLFunctions();
 
 	for( GLenum e = glGetError() ; e != GL_NO_ERROR ; e = glGetError() )
 	{

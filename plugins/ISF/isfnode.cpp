@@ -339,6 +339,8 @@ void ISFNode::contextProcess( qint64 pTimeStamp )
 
 void ISFNode::inputsUpdated( qint64 pTimeStamp )
 {
+	initializeOpenGLFunctions();
+
 	if( pTimeStamp && mPinInputFilename->isUpdated( pTimeStamp ) )
 	{
 		QString		SrcPth = variant( mPinInputFilename ).toString();
@@ -1488,6 +1490,8 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 	{
 		return;
 	}
+
+	initializeOpenGLFunctions();
 
 	GLint		Viewport[ 4 ];
 
