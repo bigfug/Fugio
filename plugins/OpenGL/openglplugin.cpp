@@ -681,6 +681,8 @@ void OpenGLPlugin::initGLEW()
 		qInfo() << "RGB:" << Format.redBufferSize() << Format.greenBufferSize() << Format.blueBufferSize();
 
 		qInfo() << "Debug:" << ( Format.options().testFlag( QSurfaceFormat::DebugContext ) ? "Yes" : "No" );
+
+		qInfo() << "Deprecated Functions:" << ( Format.options().testFlag( QSurfaceFormat::DeprecatedFunctions ) ? "Yes" : "No" );
 	}
 }
 
