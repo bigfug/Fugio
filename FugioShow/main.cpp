@@ -32,6 +32,8 @@ int main( int argc, char *argv[] )
 
 	ShowApp		 A( argc, argv );
 
+	H.checkForHelpOption();
+
 	H.initialiseTranslator();
 
 	H.setCommandLineVariables();

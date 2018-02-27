@@ -43,7 +43,7 @@ public:
 
 		CLP.setApplicationDescription( "Fugio" );
 
-//		OptionHelp    = CLP.addHelpOption();
+		OptionHelp    = CLP.addHelpOption();
 		OptionVersion = CLP.addVersionOption();
 
 		CLP.addPositionalArgument( "patches", QCoreApplication::translate( "main", "Patches to open (optional)."), "[patches...]" );
@@ -82,13 +82,6 @@ public:
 		if( CLP.isSet( OptionVersion ) )
 		{
 			CLP.showVersion();
-
-			Q_UNREACHABLE();
-		}
-
-		if( CLP.isSet( OptionHelp ) )
-		{
-			CLP.showHelp();
 
 			Q_UNREACHABLE();
 		}
@@ -132,6 +125,16 @@ public:
 		if( CLP.isSet( OptionLocale ) )
 		{
 			QLocale::setDefault( QLocale( CLP.value( OptionLocale ) ) );
+		}
+	}
+
+	void checkForHelpOption( void )
+	{
+		if( CLP.isSet( OptionHelp ) )
+		{
+			CLP.showHelp();
+
+			Q_UNREACHABLE();
 		}
 	}
 

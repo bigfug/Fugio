@@ -124,8 +124,6 @@ int main( int argc, char *argv[] )
 		QDir( CfgDir ).rmdir( "dummy" );
 	}
 
-	qDebug() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName() ).arg( QApplication::applicationVersion() ).arg( "started" );
-
 	//-------------------------------------------------------------------------
 
 	fugio::AppHelper	HLP;
@@ -139,6 +137,10 @@ int main( int argc, char *argv[] )
 	{
 		return( -1 );
 	}
+
+	HLP.checkForHelpOption();
+
+	qDebug() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName() ).arg( QApplication::applicationVersion() ).arg( "started" );
 
 	HLP.initialiseTranslator();
 
