@@ -146,6 +146,18 @@ public:
 
 	}
 
+	Image( Image &&pOther )
+	{
+		std::swap( mData, pOther.mData );
+	}
+
+	Image &operator =( Image &&pOther )
+	{
+		std::swap( mData, pOther.mData );
+
+		return( *this );
+	}
+
 	~Image( void )
 	{
 	}
@@ -429,6 +441,11 @@ public:
 		}
 
 		return( IM );
+	}
+
+	void detach( void )
+	{
+		mData.reset( new ImageData() );
 	}
 
 private:
