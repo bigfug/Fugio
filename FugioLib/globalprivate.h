@@ -117,11 +117,7 @@ public:
 
 	virtual QThread *thread( void ) Q_DECL_OVERRIDE
 	{
-#if defined( GLOBAL_THREADED )
-		return( mGlobalThread );
-#else
-		return( QApplication::instance()->thread() );
-#endif
+		return( QObject::thread() );
 	}
 
 	virtual void scheduleFrame( void ) Q_DECL_OVERRIDE

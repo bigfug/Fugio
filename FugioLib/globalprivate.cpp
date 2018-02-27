@@ -675,10 +675,12 @@ QSharedPointer<fugio::ContextInterface> GlobalPrivate::newContext( void )
 
 	ContextPrivate		*CP = new ContextPrivate( this );
 
-	if( CP == 0 )
+	if( !CP )
 	{
 		return( QSharedPointer<fugio::ContextInterface>() );
 	}
+
+	CP->moveToThread( thread() );
 
 	QSharedPointer<fugio::ContextInterface>	C = QSharedPointer<fugio::ContextInterface>( CP );
 
@@ -815,6 +817,10 @@ void GlobalPrivate::start()
 	{
 		mGlobalThread = new QThread( this );
 
+		mGlobalTimer.moveToThread( mGlobalThread );
+
+		moveToThread( mGlobalThread );
+
 		GlobalThread	*GlobalWorker = new GlobalThread( this );
 
 		GlobalWorker->moveToThread( mGlobalThread );
@@ -839,6 +845,10 @@ void GlobalPrivate::stop()
 #if defined( GLOBAL_THREADED )
 	if( mGlobalThread )
 	{
+		mGlobalTimer.moveToThread( QCoreApplication::instance()->thread() );
+
+		moveToThread( QCoreApplication::instance()->thread() );
+
 		mGlobalThread->quit();
 		mGlobalThread->wait();
 
