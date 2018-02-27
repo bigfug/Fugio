@@ -33,6 +33,9 @@ GlobalPrivate *GlobalPrivate::mInstance = 0;
 
 GlobalPrivate::GlobalPrivate( QObject * ) :
 	GlobalSignals( this ), mPause( false )
+#if defined( GLOBAL_THREADED )
+  , mGlobalThread( nullptr )
+#endif
 {
 	//-------------------------------------------------------------------------
 	// Install translator
@@ -48,28 +51,21 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 
 	mTimeSync = std::unique_ptr<fugio::TimeSync>( new fugio::TimeSync( this ) );
 
-#if defined( GLOBAL_THREADED )
-	GlobalThread	*GT = new GlobalThread( this );
-
-	if( GT )
-	{
-		mGlobalThread = std::unique_ptr<GlobalThread>( GT );
-
-		connect( this, SIGNAL(signalFrameExecute()), GT, SLOT(update()) );
-	}
-#endif
-
 	mLastTime   = 0;
 	mFrameCount = 0;
 
 	connect( this, SIGNAL(frameEnd()), &mUniverse, SLOT(cast()) );
+
+#if !defined( GLOBAL_THREADED )
+	connect( &mGlobalTimer, &QTimer::timeout, this, &GlobalPrivate::executeFrame );
+#endif
 }
 
 GlobalPrivate::~GlobalPrivate( void )
 {
-	mTimeSync.reset();
+	stop();
 
-	mGlobalThread.reset();
+	mTimeSync.reset();
 
 	for( UuidClassEntryMap::const_iterator it = mNodeMap.constBegin() ; it != mNodeMap.constEnd() ; it++ )
 	{
@@ -626,10 +622,6 @@ void GlobalPrivate::executeFrame( void )
 
 		mFrameCount = 0;
 	}
-
-#if !defined( GLOBAL_THREADED )
-	QTimer::singleShot( 1, this, SLOT(executeFrame()) );
-#endif
 }
 
 QUuid GlobalPrivate::findNodeByClass( const QString &pClassName ) const
@@ -818,18 +810,41 @@ void GlobalPrivate::registerPinForMetaType(const QUuid &pUuid, QMetaType::Type p
 
 void GlobalPrivate::start()
 {
-#if !defined( GLOBAL_THREADED )
-	QTimer::singleShot( 1000, this, SLOT(executeFrame()) );
-#else
-	mGlobalThread->start();
+#if defined( GLOBAL_THREADED )
+	if( !mGlobalThread )
+	{
+		mGlobalThread = new QThread( this );
+
+		GlobalThread	*GlobalWorker = new GlobalThread( this );
+
+		GlobalWorker->moveToThread( mGlobalThread );
+
+		connect( this, SIGNAL(signalFrameExecute()), GlobalWorker, SLOT(update()) );
+
+		connect( &mGlobalTimer, &QTimer::timeout, GlobalWorker, &GlobalThread::update );
+
+		connect( mGlobalThread, &QThread::finished, GlobalWorker, &GlobalThread::deleteLater );
+
+		mGlobalThread->start();
+	}
 #endif
+
+	mGlobalTimer.start( 10 );
 }
 
 void GlobalPrivate::stop()
 {
-#if defined( GLOBAL_THREADED )
-	mGlobalThread->quit();
+	mGlobalTimer.stop();
 
-	mGlobalThread->wait();
+#if defined( GLOBAL_THREADED )
+	if( mGlobalThread )
+	{
+		mGlobalThread->quit();
+		mGlobalThread->wait();
+
+		delete mGlobalThread;
+
+		mGlobalThread = nullptr;
+	}
 #endif
 }

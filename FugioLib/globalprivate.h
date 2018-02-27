@@ -10,6 +10,7 @@
 #include <QElapsedTimer>
 #include <QThread>
 #include <QApplication>
+#include <QTimer>
 
 #include <memory>
 
@@ -117,7 +118,7 @@ public:
 	virtual QThread *thread( void ) Q_DECL_OVERRIDE
 	{
 #if defined( GLOBAL_THREADED )
-		return( mGlobalThread.get() );
+		return( mGlobalThread );
 #else
 		return( QApplication::instance()->thread() );
 #endif
@@ -327,8 +328,10 @@ private:
 
 	bool							 mPause;
 
+	QTimer							 mGlobalTimer;
+
 #if defined( GLOBAL_THREADED )
-	std::unique_ptr<QThread>		 mGlobalThread;
+	QThread							*mGlobalThread;
 #endif
 
 	std::unique_ptr<fugio::TimeSync> mTimeSync;
@@ -346,45 +349,18 @@ private:
 
 #if defined( GLOBAL_THREADED )
 
-#include <QTimer>
-
-class GlobalThread : public QThread
+class GlobalThread : public QObject
 {
 	Q_OBJECT
 
 public:
 	GlobalThread( GlobalPrivate *pGlobalPrivate )
-		: QThread( pGlobalPrivate ), mGlobalPrivate( pGlobalPrivate )
+		: mGlobalPrivate( pGlobalPrivate )
 	{
-
 	}
 
 public slots:
 	void update( void )
-	{
-		mGlobalPrivate->executeFrame();
-	}
-
-protected:
-	virtual void run() Q_DECL_OVERRIDE
-	{
-		QTimer			*Timer = new QTimer();
-
-		Timer->setTimerType( Qt::PreciseTimer );
-
-		connect( Timer, SIGNAL(timeout()), this, SLOT(timeout()) );
-
-		connect( this, SIGNAL(finished()), Timer, SLOT(deleteLater()) );
-
-		Timer->start( 1000 / 100 );
-
-		exec();
-
-		Timer->stop();
-	}
-
-protected slots:
-	void timeout( void )
 	{
 		mGlobalPrivate->executeFrame();
 	}
