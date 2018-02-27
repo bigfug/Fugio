@@ -135,30 +135,7 @@ public:
 		return( ImageFormat::UNKNOWN );
 	}
 
-	Image( void )
-		: mData( new ImageData() )
-	{
-	}
-
-	Image( const Image &pOther )
-		: mData( pOther.mData )
-	{
-
-	}
-
-	Image( Image &&pOther )
-	{
-		std::swap( mData, pOther.mData );
-	}
-
-	Image &operator =( Image &&pOther )
-	{
-		std::swap( mData, pOther.mData );
-
-		return( *this );
-	}
-
-	~Image( void )
+	Image( void ) : mData( new ImageData() )
 	{
 	}
 
