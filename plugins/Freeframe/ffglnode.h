@@ -42,6 +42,11 @@ public:
 	virtual void render( qint64 pTimeStamp, QUuid pSourcePinId ) Q_DECL_OVERRIDE;
 
 protected:
+	void initialiseInstance( QPoint pPoint, QSize pSize );
+
+	void render( void );
+
+protected:
 	FreeframeLibrary								*mLibrary;
 	FFInstanceID									 mInstanceId;
 
@@ -50,11 +55,10 @@ protected:
 	QSharedPointer<fugio::PinInterface>				 mPinOutputRender;
 	fugio::NodeRenderInterface						*mValOutputRender;
 
-	QSharedPointer<fugio::PinInterface>				 mPinOutputTexture;
-
 	QVector<QSharedPointer<fugio::PinInterface>>	 mInputs;
 	QVector<QSharedPointer<fugio::PinInterface>>	 mParams;
 
+	QPoint											 mPoint;
 	QSize											 mSize;
 };
 
