@@ -1035,6 +1035,11 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../undo/cmdsetalwaysupdate.h" line="17"/>
+        <source>Set always update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../undo/cmdsetcolour.h" line="21"/>
         <source>Change colour of Nodes/Links</source>
         <translation type="unfinished"></translation>
@@ -1062,11 +1067,6 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdungroup.h" line="21"/>
         <source>Ungroup</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../undo/cmdsetalwaysupdate.h" line="17"/>
-        <source>Set always update</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
