@@ -75,33 +75,33 @@ public:
 
 		if( CLP.isSet( OptionGLSW ) )
 		{
-	  #if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
-		  QCoreApplication::setAttribute( Qt::AA_UseSoftwareOpenGL );
-	  #endif
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
+			QCoreApplication::setAttribute( Qt::AA_UseSoftwareOpenGL );
+#endif
 		}
 		else if( CLP.isSet( OptionGLES ) )
 		{
-	  #if QT_VERSION >= QT_VERSION_CHECK( 5, 3, 0 )
-		  QCoreApplication::setAttribute( Qt::AA_UseOpenGLES );
-	  #endif
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 3, 0 )
+			QCoreApplication::setAttribute( Qt::AA_UseOpenGLES );
+#endif
 		}
 		else
 		{
-	  #if QT_VERSION >= QT_VERSION_CHECK( 5, 3, 0 )
-		  QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
-	  #endif
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 3, 0 )
+			QCoreApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
+#endif
 
-	  #if !defined( QT_OPENGL_ES_2 )
-		  SurfaceFormat.setDepthBufferSize( 24 );
-		  SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
-		  SurfaceFormat.setSamples( 4 );
-		  SurfaceFormat.setVersion( 4, 5 );
-	  #endif
+#if !defined( QT_OPENGL_ES_2 )
+			SurfaceFormat.setDepthBufferSize( 24 );
+			SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
+			SurfaceFormat.setSamples( 4 );
+			SurfaceFormat.setVersion( 4, 5 );
+#endif
 		}
 
-	  #if defined( QT_DEBUG )
+#if defined( QT_DEBUG )
 		SurfaceFormat.setOption( QSurfaceFormat::DebugContext );
-	  #endif
+#endif
 
 		QSurfaceFormat::setDefaultFormat( SurfaceFormat );
 

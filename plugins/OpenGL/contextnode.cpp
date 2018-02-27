@@ -4,9 +4,12 @@
 
 #include <QCoreApplication>
 
+#include "openglplugin.h"
+
 ContextNode::ContextNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
+	connect( &mDebugLogger, &QOpenGLDebugLogger::messageLogged, this, &ContextNode::handleLoggedMessage );
 }
 
 bool ContextNode::initialise()
@@ -61,6 +64,13 @@ bool ContextNode::initialise()
 	}
 
 	OpenGLPlugin::instance()->initGLEW();
+
+#if defined( OPENGL_DEBUG_ENABLE )
+	if( mDebugLogger.initialize() )
+	{
+		mDebugLogger.startLogging( QOpenGLDebugLogger::SynchronousLogging );
+	}
+#endif
 
 	if( !OpenGLPlugin::hasContextStatic() )
 	{

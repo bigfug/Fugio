@@ -298,6 +298,13 @@ void OpenGLPlugin::checkErrors( void )
 		return;
 	}
 
+	initializeOpenGLFunctions();
+
+	if( QOpenGLContext::currentContext()->format().options().testFlag( QSurfaceFormat::DebugContext ) )
+	{
+		return;
+	}
+
 	for( GLenum e = glGetError() ; e != GL_NO_ERROR ; e = glGetError() )
 	{
 #if defined( GLU_VERSION )
@@ -322,6 +329,11 @@ void OpenGLPlugin::checkErrors( const char *file, int line )
 
 	initializeOpenGLFunctions();
 
+	if( QOpenGLContext::currentContext()->format().options().testFlag( QSurfaceFormat::DebugContext ) )
+	{
+		return;
+	}
+
 	for( GLenum e = glGetError() ; e != GL_NO_ERROR ; e = glGetError() )
 	{
 #if defined( GLU_VERSION )
@@ -345,6 +357,11 @@ void OpenGLPlugin::checkErrors(const QString &pContext, const char *file, int li
 	}
 
 	initializeOpenGLFunctions();
+
+	if( QOpenGLContext::currentContext()->format().options().testFlag( QSurfaceFormat::DebugContext ) )
+	{
+		return;
+	}
 
 	for( GLenum e = glGetError() ; e != GL_NO_ERROR ; e = glGetError() )
 	{
@@ -647,7 +664,9 @@ void OpenGLPlugin::initGLEW()
 
 		//qDebug() << context()->extensions();
 
-		switch( Context->format().profile() )
+		QSurfaceFormat	Format = Context->format();
+
+		switch( Format.profile() )
 		{
 			case QSurfaceFormat::NoProfile:
 				qInfo() << "Profile: None";
@@ -662,10 +681,12 @@ void OpenGLPlugin::initGLEW()
 				break;
 		}
 
-		qInfo() << "Samples:" << Context->format().samples();
-		qInfo() << "Alpha:" << Context->format().alphaBufferSize();
-		qInfo() << "Depth:" << Context->format().depthBufferSize();
-		qInfo() << "RGB:" << Context->format().redBufferSize() << Context->format().greenBufferSize() << Context->format().blueBufferSize();
+		qInfo() << "Samples:" << Format.samples();
+		qInfo() << "Alpha:" << Format.alphaBufferSize();
+		qInfo() << "Depth:" << Format.depthBufferSize();
+		qInfo() << "RGB:" << Format.redBufferSize() << Format.greenBufferSize() << Format.blueBufferSize();
+
+		qInfo() << "Debug:" << ( Format.options().testFlag( QSurfaceFormat::DebugContext ) ? "Yes" : "No" );
 	}
 }
 
