@@ -51,7 +51,7 @@ get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 
 #endif( WIN32 )
 
-if( APPLE )
+if( APPLE AND CMAKE_BUILD_TYPE STREQUAL Release )
 
 find_program( MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}" )
 
@@ -64,5 +64,5 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMENT "Running macdeployqt..."
 )
 
-endif( APPLE )
+endif()
 

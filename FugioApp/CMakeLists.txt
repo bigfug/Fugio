@@ -205,7 +205,7 @@ endif()
 #-------------------------------------
 # Lua
 
-if( APPLE )
+if( APPLE AND CMAKE_BUILD_TYPE STREQUAL Release )
 	find_package( Lua 5.2 )
 
 	if( NOT LUA_FOUND )
@@ -232,4 +232,4 @@ if( APPLE )
 		COMMAND install_name_tool -id ${LUA_LIB} "${BUNDLE_PATH}/Contents/Frameworks/${LUA_LIB}"
 		VERBATIM
 	)
-endif( APPLE )
+endif( APPLE AND CMAKE_BUILD_TYPE STREQUAL Release )
