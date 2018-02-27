@@ -126,6 +126,10 @@ int main( int argc, char *argv[] )
 
 	//-------------------------------------------------------------------------
 
+	fugio::AppHelper	HLP;
+
+	HLP.processCommandLine( argc, argv );
+
 	int		 RET = 0;
 	App		*APP = new App( argc, argv );
 
@@ -134,9 +138,7 @@ int main( int argc, char *argv[] )
 		return( -1 );
 	}
 
-	APP->processCommandLine();
-
-	APP->initialiseTranslator();
+	HLP.initialiseTranslator();
 
 	//-------------------------------------------------------------------------
 	// SplashImage
@@ -188,7 +190,7 @@ int main( int argc, char *argv[] )
 
 	GlobalPrivate	*PBG = &APP->global();
 
-	APP->setCommandLineVariables();
+	HLP.setCommandLineVariables();
 
 	MainWindow	*WND = new MainWindow();
 
@@ -200,7 +202,7 @@ int main( int argc, char *argv[] )
 
 		WND->initBegin();
 
-		APP->registerAndLoadPlugins();
+		HLP.registerAndLoadPlugins();
 
 		//-------------------------------------------------------------------------
 
@@ -237,7 +239,7 @@ int main( int argc, char *argv[] )
 
 		// Load patches that were specified on the command line
 
-		for( QString PatchName : APP->CLP.positionalArguments() )
+		for( QString PatchName : HLP.CLP.positionalArguments() )
 		{
 			qDebug() << "Loading" << PatchName << "...";
 
@@ -284,7 +286,7 @@ int main( int argc, char *argv[] )
 
 	APP->incrementStatistic( "finished" );
 
-	APP->cleanup();
+	HLP.cleanup();
 
 	delete APP;
 

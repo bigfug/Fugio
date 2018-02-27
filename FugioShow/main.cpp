@@ -10,7 +10,7 @@
 #include <bcm_host.h>
 #endif
 
-class ShowApp : public QApplication, public fugio::AppHelper
+class ShowApp : public QApplication
 {
 public:
 	ShowApp( int &argc, char **argv )
@@ -26,19 +26,21 @@ int main( int argc, char *argv[] )
 	bcm_host_init();
 #endif
 
+	fugio::AppHelper	H;
+
+	H.processCommandLine( argc, argv );
+
 	ShowApp		 A( argc, argv );
 
-	A.processCommandLine();
+	H.initialiseTranslator();
 
-	A.initialiseTranslator();
+	H.setCommandLineVariables();
 
-	A.setCommandLineVariables();
-
-	A.registerAndLoadPlugins();
+	H.registerAndLoadPlugins();
 
 	fugio::GlobalInterface	*G = fugio::fugio();
 
-	for( QString PatchName : A.CLP.positionalArguments() )
+	for( QString PatchName : H.CLP.positionalArguments() )
 	{
 		QSharedPointer<fugio::ContextInterface>	C;
 
@@ -63,7 +65,7 @@ int main( int argc, char *argv[] )
 
 	G->unloadPlugins();
 
-	A.cleanup();
+	H.cleanup();
 
 	return( R );
 }

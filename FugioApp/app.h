@@ -22,7 +22,7 @@ FUGIO_NAMESPACE_END
 class MainWindow;
 class QOpenGLContext;
 
-class App : public QApplication, public fugio::AppHelper
+class App : public QApplication
 {
 	Q_OBJECT
 

@@ -30,6 +30,10 @@ public:
 		  OptionLocale( QStringList() << "l" << "locale", QCoreApplication::translate( "main", "Set language locale to <locale>." ), QLocale().bcp47Name() ),
 		  OptionDefine( QStringList() << "d" << "define", QCoreApplication::translate( "main", "Define a <variable>." ), "variable" )
 	{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
+		QCoreApplication::setAttribute( Qt::AA_ShareOpenGLContexts );
+#endif
+
 		//-------------------------------------------------------------------------
 		// Command Line Parser
 
@@ -56,9 +60,16 @@ public:
 		CLP.addOption( OptionDefine );
 	}
 
-	void processCommandLine( void )
+	void processCommandLine( int argc, char **argv )
 	{
-		CLP.process( *QCoreApplication::instance() );
+		QStringList		ArgLst;
+
+		for( int i = 0 ; i < argc ; i++ )
+		{
+			ArgLst << QString::fromLocal8Bit( argv[ i ] );
+		}
+
+		CLP.process( ArgLst );
 
 		QSurfaceFormat  SurfaceFormat;
 
