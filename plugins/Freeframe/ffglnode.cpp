@@ -92,6 +92,13 @@ void FFGLNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+	InterfaceOpenGL			*GL = qobject_cast<InterfaceOpenGL *>( FreeframePlugin::instance()->app()->findInterface( IID_OPENGL ) );
+
+	if( GL )
+	{
+		GL->checkErrors( __FILE__, __LINE__ );
+	}
+
 	initializeOpenGLFunctions();
 
 	FF_Main_FuncPtr		MainFunc = mLibrary->func();
@@ -191,11 +198,23 @@ void FFGLNode::inputsUpdated( qint64 pTimeStamp )
 
 void FFGLNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 {
+	InterfaceOpenGL			*GL = qobject_cast<InterfaceOpenGL *>( FreeframePlugin::instance()->app()->findInterface( IID_OPENGL ) );
+
+	if( GL )
+	{
+		GL->checkErrors( __FILE__, __LINE__ );
+	}
+
 	fugio::NodeRenderInterface	*ParentRender = input<fugio::NodeRenderInterface *>( mPinInputRender );
 
 	if( ParentRender )
 	{
 		ParentRender->render( pTimeStamp, pSourcePinId );
+	}
+
+	if( GL )
+	{
+		GL->checkErrors( __FILE__, __LINE__ );
 	}
 
 	initializeOpenGLFunctions();
@@ -216,7 +235,14 @@ void FFGLNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 void FFGLNode::initialiseInstance( QPoint pPoint, QSize pSize )
 {
-	FFMixed		PMU;
+	InterfaceOpenGL			*GL = qobject_cast<InterfaceOpenGL *>( FreeframePlugin::instance()->app()->findInterface( IID_OPENGL ) );
+
+	if( GL )
+	{
+		GL->checkErrors( __FILE__, __LINE__ );
+	}
+
+	FFMixed					 PMU;
 
 	if( mPoint != pPoint || mSize != pSize )
 	{
@@ -228,6 +254,11 @@ void FFGLNode::initialiseInstance( QPoint pPoint, QSize pSize )
 			PMU.UIntValue = 0;
 
 			PMU = MainFunc( FF_DEINSTANTIATEGL, PMU, mInstanceId );
+
+			if( GL )
+			{
+				GL->checkErrors( __FILE__, __LINE__ );
+			}
 
 			mInstanceId = 0;
 		}
@@ -242,6 +273,11 @@ void FFGLNode::initialiseInstance( QPoint pPoint, QSize pSize )
 		PMU.PointerValue = &VPS;
 
 		PMU = MainFunc( FF_INSTANTIATEGL, PMU, 0 );
+
+		if( GL )
+		{
+			GL->checkErrors( __FILE__, __LINE__ );
+		}
 
 		if( PMU.UIntValue == FF_FAIL )
 		{
@@ -261,6 +297,13 @@ void FFGLNode::initialiseInstance( QPoint pPoint, QSize pSize )
 
 void FFGLNode::render()
 {
+	InterfaceOpenGL			*GL = qobject_cast<InterfaceOpenGL *>( FreeframePlugin::instance()->app()->findInterface( IID_OPENGL ) );
+
+	if( GL )
+	{
+		GL->checkErrors( __FILE__, __LINE__ );
+	}
+
 	FFMixed		PMU;
 
 #if defined( __FFGL_H__ )
@@ -308,7 +351,17 @@ void FFGLNode::render()
 
 	FF_Main_FuncPtr		MainFunc = mLibrary->func();
 
+	if( GL )
+	{
+		GL->checkErrors( __FILE__, __LINE__ );
+	}
+
 	PMU = MainFunc( FF_PROCESSOPENGL, PMU, mInstanceId );
+
+	if( GL )
+	{
+		GL->checkErrors( __FILE__, __LINE__ );
+	}
 
 	glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
 

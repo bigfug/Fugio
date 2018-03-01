@@ -336,7 +336,32 @@ void OpenGLPlugin::checkErrors( const char *file, int line )
 #if defined( GLU_VERSION )
 		qDebug() << "GL" << file << line << ":" << QString::fromLatin1( (const char *)gluErrorString( e ) );
 #else
-		qDebug() << "GL" << file << line << ":" << QString::number( e, 16 );
+		switch( e )
+		{
+			case GL_INVALID_OPERATION:
+				qDebug() << "GL" << file << line << ":" << "GL_INVALID_OPERATION";
+				break;
+
+			case GL_INVALID_ENUM:
+				qDebug() << "GL" << file << line << ":" << "GL_INVALID_ENUM";
+				break;
+
+			case GL_INVALID_VALUE:
+				qDebug() << "GL" << file << line << ":" << "GL_INVALID_VALUE";
+				break;
+
+			case GL_OUT_OF_MEMORY:
+				qDebug() << "GL" << file << line << ":" << "GL_OUT_OF_MEMORY";
+				break;
+
+			case GL_INVALID_FRAMEBUFFER_OPERATION:
+				qDebug() << "GL" << file << line << ":" << "GL_INVALID_FRAMEBUFFER_OPERATION";
+				break;
+
+			default:
+				qDebug() << "GL" << file << line << ":" << QString::number( e, 16 );
+				break;
+		}
 #endif
 	}
 #endif

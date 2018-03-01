@@ -2,6 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="fr_FR">
 <context>
+    <name>FreeframePlugin</name>
+    <message>
+        <location filename="../freeframeplugin.cpp" line="105"/>
+        <source>Freeframe can&apos;t initialise without OpenGL</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>SettingsWidget</name>
     <message>
         <location filename="../settingswidget.ui" line="14"/>

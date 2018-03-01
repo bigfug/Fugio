@@ -19,11 +19,18 @@ class FreeframePlugin : public QObject, public fugio::PluginInterface, public fu
 	Q_INTERFACES( fugio::PluginInterface fugio::SettingsInterface )
 
 public:
-	Q_INVOKABLE explicit FreeframePlugin( void ) : mApp( 0 ) {}
+	Q_INVOKABLE explicit FreeframePlugin( void );
 
 	virtual ~FreeframePlugin( void ) {}
 
 	static FreeframeLibrary *findPluginInfo( const QUuid &pUuid );
+
+	static FreeframePlugin *instance( void );
+
+	fugio::GlobalInterface *app( void ) const
+	{
+		return( mApp );
+	}
 
 	//-------------------------------------------------------------------------
 	// InterfacePlugin
@@ -47,6 +54,8 @@ protected:
 	void loadPluginPaths();
 
 private:
+	static FreeframePlugin					*mInstance;
+
 	fugio::GlobalInterface					*mApp;
 	fugio::ClassEntryList					 mPluginClasses;
 	QStringList								 mPluginPaths;

@@ -6,17 +6,21 @@
 #include <QLibrary>
 #include <QCryptographicHash>
 #include <QSettings>
+#include <QTranslator>
+#include <QCoreApplication>
 
 #include <fugio/global.h>
 
 #include <fugio/freeframe/uuid.h>
-
+#include <fugio/opengl/uuid.h>
 #include <FreeFrame.h>
 
 #include "settingswidget.h"
 
 #include "ff10node.h"
 #include "ffglnode.h"
+
+FreeframePlugin							*FreeframePlugin::mInstance = nullptr;
 
 QList<QUuid>							fugio::NodeControlBase::PID_UUID;
 QMap<QUuid,FreeframeLibrary*>			FreeframePlugin::mPluginMap;
@@ -31,6 +35,22 @@ fugio::ClassEntry PinClasses[] =
 	ClassEntry()
 };
 
+FreeframePlugin::FreeframePlugin()
+	: mApp( 0 )
+{
+	mInstance = this;
+
+	//-------------------------------------------------------------------------
+	// Install translator
+
+	static QTranslator		Translator;
+
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
+	{
+		qApp->installTranslator( &Translator );
+	}
+}
+
 FreeframeLibrary *FreeframePlugin::findPluginInfo( const QUuid &pUuid )
 {
 	QMap<QUuid,FreeframeLibrary*>::iterator	it = mPluginMap.find( pUuid );
@@ -41,6 +61,11 @@ FreeframeLibrary *FreeframePlugin::findPluginInfo( const QUuid &pUuid )
 	}
 
 	return( it.value() );
+}
+
+FreeframePlugin *FreeframePlugin::instance()
+{
+	return( mInstance );
 }
 
 void FreeframePlugin::loadPluginPaths()
@@ -70,6 +95,20 @@ PluginInterface::InitResult FreeframePlugin::initialise( fugio::GlobalInterface 
 	Q_UNUSED( pLastChance )
 
 	mApp = pApp;
+
+	InterfaceOpenGL			*GL = qobject_cast<InterfaceOpenGL *>( pApp->findInterface( IID_OPENGL ) );
+
+	if( !GL )
+	{
+		if( pLastChance )
+		{
+			qWarning() << tr( "Freeframe can't initialise without OpenGL" );
+
+			return( INIT_FAILED );
+		}
+
+		return( INIT_DEFER );
+	}
 
 	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mApp->findInterface( IID_EDITOR ) );
 
