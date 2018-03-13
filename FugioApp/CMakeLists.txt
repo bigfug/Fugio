@@ -205,7 +205,7 @@ endif()
 #-------------------------------------
 # Lua
 
-if( APPLE AND CMAKE_BUILD_TYPE STREQUAL Release )
+if( APPLE )
 	find_package( Lua 5.2 )
 
 	if( NOT LUA_FOUND )
@@ -228,8 +228,9 @@ if( APPLE AND CMAKE_BUILD_TYPE STREQUAL Release )
 	set( BUNDLE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.app" )
 
 	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E make_directory "${BUNDLE_PATH}/Contents/Frameworks"
 		COMMAND ${CMAKE_COMMAND} -E copy "${LUA_LIBRARY}" "${BUNDLE_PATH}/Contents/Frameworks/"
 		COMMAND install_name_tool -id ${LUA_LIB} "${BUNDLE_PATH}/Contents/Frameworks/${LUA_LIB}"
 		VERBATIM
 	)
-endif( APPLE AND CMAKE_BUILD_TYPE STREQUAL Release )
+endif( APPLE )
