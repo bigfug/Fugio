@@ -99,7 +99,6 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinLoopCount;
 	QSharedPointer<fugio::PinInterface>			 mPinInputFrameNumber;
 	QSharedPointer<fugio::PinInterface>			 mPinInputTime;
-	QSharedPointer<fugio::PinInterface>			 mPinInputLoop;
 
 	QSharedPointer<fugio::PinInterface>			 mPinImage;
 	fugio::VariantInterface						*mValImage;

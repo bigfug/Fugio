@@ -58,8 +58,6 @@ MediaNode::MediaNode( QSharedPointer<fugio::NodeInterface> pNode )
 	const static QUuid	PIN_LOOPED		= QUuid( "{920d9df7-869c-4df1-aff6-991032b32ae2}" );
 	const static QUuid	PIN_LOOP_NUMBER	= QUuid( "{6ca2277a-9ca4-4ba5-ad47-87635e4f1db2}" );
 
-	FUGID( PIN_INPUT_LOOP, "9A7C8C49-1C70-43E3-B60A-3E0468DEBDAC" );
-
 	mPinTrigger = pinInput( "Trigger", PID_FUGIO_NODE_TRIGGER );
 
 	mPinFileName = pinInput( "Filename", PIN_FILENAME );
@@ -76,10 +74,6 @@ MediaNode::MediaNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInputFrameNumber = pinInput( "Frame #", PIN_FRAME_NUM );
 
 	mPinInputTime = pinInput( "Time", PIN_FRAME_TIME );
-
-	mPinInputLoop = pinInput( tr( "Loop" ), PIN_INPUT_LOOP );
-
-	mPinInputLoop->setValue( true );
 
 	mValImage = pinOutput<fugio::VariantInterface *>( "Image", mPinImage, PID_IMAGE, PIN_IMAGE );
 
@@ -119,8 +113,6 @@ MediaNode::MediaNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinLooped->setDescription( tr( "This pin is triggered everytime the media file is looped" ) );
 	mPinLoopNumber->setDescription( tr( "This pin is the number of times the media has looped since it started playback" ) );
-
-	mPinInputLoop->setDescription( tr( "Set to true (the default) to loop the media, or false for a single shot" ) );
 }
 
 MediaNode::~MediaNode( void )
@@ -275,13 +267,24 @@ void MediaNode::onContextFrame( qint64 pTimeStamp )
 	const qint64		SegDur = qint64( mSegment->duration() * 1000.0 );
 	qint64				TimCur = ( pTimeStamp - mTimeOffset ) + mTimePause;
 
-	if( TimCur >= SegDur && !variant<bool>( mPinInputLoop ) )
-	{
-		mNextMediaState = STOP;
-	}
-
 	if( SegDur > 0 )
 	{
+		if( mCurrMediaState == PLAY )
+		{
+			mLoopCount = TimCur / SegDur;
+
+			int		LC = variant<int>( mPinLoopCount );
+
+			if( LC > 0 && mLoopCount >= LC )
+			{
+				mNextMediaState = STOP;
+			}
+		}
+		else
+		{
+			mLoopCount = 0;
+		}
+
 		TimCur %= SegDur;
 	}
 
@@ -359,42 +362,16 @@ void MediaNode::onContextFrame( qint64 pTimeStamp )
 		mTargetTime = -1;
 	}
 
-	TimCur = ( pTimeStamp - mTimeOffset ) + mTimePause;
-
-	if( SegDur > 0 && TimCur >= SegDur )
+	if( mValLoopNumber->variant().toInt() != mLoopCount )
 	{
-		//audioResetOffset();
+		mValLoopNumber->setVariant( mLoopCount );
 
-		if( mCurrMediaState == PLAY )
+		pinUpdated( mPinLoopNumber );
+
+		if( mLoopCount > 0 )
 		{
-			mLoopCount = TimCur / SegDur;
-
-			if( variant( mPinLoopCount ).toInt() > 0 && variant( mPinLoopCount ).toInt() <= mLoopCount )
-			{
-				mCurrMediaState = STOP;
-
-				mValLoopNumber->setVariant( mLoopCount );
-
-				pinUpdated( mPinLoopNumber );
-
-				return;
-			}
-		}
-		else
-		{
-			mLoopCount = 0;
-		}
-
-		if( mValLoopNumber->variant().toInt() != mLoopCount )
-		{
-			mValLoopNumber->setVariant( mLoopCount );
-
-			pinUpdated( mPinLoopNumber );
-
 			pinUpdated( mPinLooped );
 		}
-
-		TimCur %= SegDur;
 	}
 
 	if( TimCur != mTimeLast )
