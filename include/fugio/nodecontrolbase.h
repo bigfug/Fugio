@@ -210,9 +210,12 @@ public:
 
 	//-------------------------------------------------------------------------
 
-	void pinUpdated( QSharedPointer<fugio::PinInterface> &pPin, qint64 pGlobalTimestamp = -1 )
+	void pinUpdated( QSharedPointer<fugio::PinInterface> &pPin, bool pUpdated = true, qint64 pGlobalTimestamp = -1 )
 	{
-		mNode->context()->pinUpdated( pPin, pGlobalTimestamp );
+		if( pUpdated )
+		{
+			mNode->context()->pinUpdated( pPin, pGlobalTimestamp );
+		}
 	}
 
 	//-------------------------------------------------------------------------
