@@ -251,12 +251,6 @@ void MediaNode::onContextFrame( qint64 pTimeStamp )
 		pinUpdated( mPinLoaded );
 	}
 
-	// record the various status
-
-	const bool		CurrPlay  = mValPlaying->variant().toBool();
-	const bool		CurrPause = mValPaused->variant().toBool();
-	const bool		CurrStop  = mValStopped->variant().toBool();
-
 	// if we don't have any media there's nothing more to do
 
 	if( !mSegment )
@@ -346,6 +340,18 @@ void MediaNode::onContextFrame( qint64 pTimeStamp )
 
 	}
 
+	if( mValLoopNumber->variant().toInt() != mLoopCount )
+	{
+		mValLoopNumber->setVariant( mLoopCount );
+
+		pinUpdated( mPinLoopNumber );
+
+		if( mLoopCount > 0 )
+		{
+			pinUpdated( mPinLooped );
+		}
+	}
+
 	if( mTargetFrameNumber >= 0 )
 	{
 		mTimeOffset = pTimeStamp;
@@ -362,47 +368,41 @@ void MediaNode::onContextFrame( qint64 pTimeStamp )
 		mTargetTime = -1;
 	}
 
-	if( mValLoopNumber->variant().toInt() != mLoopCount )
-	{
-		mValLoopNumber->setVariant( mLoopCount );
+	const qint64	TimNxt = ( SegDur > 0 ? ( ( pTimeStamp - mTimeOffset ) + mTimePause ) % SegDur : ( pTimeStamp - mTimeOffset ) + mTimePause );
 
-		pinUpdated( mPinLoopNumber );
-
-		if( mLoopCount > 0 )
-		{
-			pinUpdated( mPinLooped );
-		}
-	}
-
-	if( TimCur != mTimeLast )
+	if( TimNxt != mTimeLast )
 	{
 		fugio::Performance	Perf( mNode, "onContextFrame", pTimeStamp );
 
-		updateVideo( qreal( TimCur ) / 1000.0 );
+		updateVideo( qreal( TimNxt ) / 1000.0 );
 
-		mTimeLast = TimCur;
+		mTimeLast = TimNxt;
 	}
+
+	bool	UpdatePlaying = false;
+	bool	UpdatePaused  = false;
+	bool	UpdateStopped = false;
 
 	// update the status
 
 	switch( mCurrMediaState )
 	{
 		case STOP:
-			mValPlaying->setVariant( false );
-			mValPaused->setVariant( false );
-			mValStopped->setVariant( true );
+			variantSetValue( mValPlaying, 0, false, UpdatePlaying );
+			variantSetValue( mValPaused,  0, false, UpdatePaused );
+			variantSetValue( mValStopped, 0, true,  UpdateStopped );
 			break;
 
 		case PLAY:
-			mValPlaying->setVariant( true );
-			mValPaused->setVariant( false );
-			mValStopped->setVariant( false );
+			variantSetValue( mValPlaying, 0, true,  UpdatePlaying );
+			variantSetValue( mValPaused,  0, false, UpdatePaused );
+			variantSetValue( mValStopped, 0, false, UpdateStopped );
 			break;
 
 		case PAUSE:
-			mValPlaying->setVariant( false );
-			mValPaused->setVariant( true );
-			mValStopped->setVariant( false );
+			variantSetValue( mValPlaying, 0, false, UpdatePlaying );
+			variantSetValue( mValPaused,  0, true,  UpdatePaused );
+			variantSetValue( mValStopped, 0, false, UpdateStopped );
 			break;
 
 		default:
@@ -411,20 +411,9 @@ void MediaNode::onContextFrame( qint64 pTimeStamp )
 
 	// set the new playing status flags if changed
 
-	if( mValPlaying->variant().toBool() != CurrPlay )
-	{
-		pinUpdated( mPinPlaying );
-	}
-
-	if( mValPaused->variant().toBool() != CurrPause )
-	{
-		pinUpdated( mPinPaused );
-	}
-
-	if( mValStopped->variant().toBool() != CurrStop )
-	{
-		pinUpdated( mPinStopped );
-	}
+	pinUpdated( mPinPlaying, UpdatePlaying );
+	pinUpdated( mPinPaused,  UpdatePaused );
+	pinUpdated( mPinStopped, UpdateStopped );
 }
 
 bool MediaNode::loadMedia( const QString &pFileName )

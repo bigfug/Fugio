@@ -489,10 +489,8 @@ void MediaSegment::processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 void MediaSegment::processAudioFrame( qreal TargetPTS, qreal PacketTS, bool pForce )
 {
 #if defined( FFMPEG_SUPPORTED )
-	AVRational tb = AVRational{ 1, mAudio.mFrame->sample_rate };
-	//double		TimeBase = av_q2d( mFormatContext->streams[ mAudio.mStreamId ]->time_base );
-	double		TimeBase = av_q2d( tb );
-	qreal		FrameTS = mAudio.mFrame->pts; //av_frame_get_best_effort_timestamp( mAudio.mFrame );
+	double		TimeBase = av_q2d( mFormatContext->streams[ mAudio.mStreamId ]->time_base );
+	qreal		FrameTS = av_frame_get_best_effort_timestamp( mAudio.mFrame );
 
 	if( FrameTS != AV_NOPTS_VALUE )
 	{
@@ -509,10 +507,8 @@ void MediaSegment::processAudioFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 
 	if( mAudio.mSamplePTS == -1 )
 	{
-		mAudio.mSamplePTS = qCeil( mAudio.mPTS * 48000 );
+		mAudio.mSamplePTS = qCeil( mAudio.mPTS * 48000.0 );
 	}
-
-	//qDebug() << "mAudioPTS:" << mAudioPTS << qCeil( mAudioPTS * 48000 ) << mAudioSamplePTS;
 
 #if defined( TL_USE_LIB_AV )
 #else
