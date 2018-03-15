@@ -268,7 +268,11 @@ public:
 		{
 			for( QString PluginPath : CLP.values( OptionPluginPath ) )
 			{
-				PBG->loadPlugins( QDir( PluginPath ) );
+				QDir		AdditionalPluginPath( PluginPath );
+
+				qInfo() << "Additional Plugin Directory:" << AdditionalPluginPath.absolutePath();
+
+				PBG->loadPlugins( AdditionalPluginPath );
 			}
 		}
 
