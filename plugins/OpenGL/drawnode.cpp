@@ -9,6 +9,8 @@
 
 #include <qmath.h>
 
+#include <QOpenGLContext>
+
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
 
@@ -97,7 +99,7 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 	Q_UNUSED( pTimeStamp )
 	Q_UNUSED( pSourcePinId )
 
-	if( !OpenGLPlugin::hasContextStatic() )
+	if( !QOpenGLContext::currentContext() )
 	{
 		return;
 	}
@@ -127,23 +129,24 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 			if( Count > 0 )
 			{
-				B->bind();
-
-				if( Instances > 0 )
+				if( B->bind() )
 				{
-#if defined( QOPENGLEXTRAFUNCTIONS_H )
-					if( GLEX )
+					if( Instances > 0 )
 					{
-						GLEX->glDrawElementsInstanced( Mode, Count, GL_UNSIGNED_INT, 0, Instances );
-					}
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
+						if( GLEX )
+						{
+							GLEX->glDrawElementsInstanced( Mode, Count, GL_UNSIGNED_INT, 0, Instances );
+						}
 #endif
-				}
-				else
-				{
-					glDrawElements( Mode, Count, GL_UNSIGNED_INT, 0 );
-				}
+					}
+					else
+					{
+						glDrawElements( Mode, Count, GL_UNSIGNED_INT, 0 );
+					}
 
-				B->release();
+					B->release();
+				}
 			}
 		}
 	}

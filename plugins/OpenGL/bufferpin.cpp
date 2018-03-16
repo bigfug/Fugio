@@ -36,9 +36,9 @@ bool BufferPin::alloc( QMetaType::Type pType, int pSize, int pStride, int pCount
 {
 	clear();
 
-	if( !pSize )
+	if( !pStride )
 	{
-		pSize = QMetaType::sizeOf( pType );
+		pStride = QMetaType::sizeOf( pType ) * pSize;
 	}
 
 	if( !pCount || !pStride || !pSize )

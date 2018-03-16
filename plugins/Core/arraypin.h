@@ -156,22 +156,22 @@ public:
 
 	virtual void setVariantCount(int pCount) Q_DECL_OVERRIDE
 	{
-		mSize = pCount;
+		mCount = pCount;
 	}
 
 	virtual int variantCount() const Q_DECL_OVERRIDE
 	{
-		return( mSize );
+		return( mCount );
 	}
 
 	virtual void setVariantElementCount(int pElementCount) Q_DECL_OVERRIDE
 	{
-		mCount = pElementCount;
+		mSize = pElementCount;
 	}
 
 	virtual int variantElementCount() const Q_DECL_OVERRIDE
 	{
-		return( mCount );
+		return( mSize );
 	}
 
 	virtual void variantReserve(int pCount) Q_DECL_OVERRIDE
@@ -191,7 +191,7 @@ public:
 
 	virtual int variantArraySize() const Q_DECL_OVERRIDE
 	{
-		return( mSize * mStride );
+		return( mCount * mStride );
 	}
 
 	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
@@ -213,19 +213,19 @@ public:
 			return;
 		}
 
-		if( pIndex < 0 || pIndex >= mSize )
+		if( pIndex < 0 || pIndex >= mCount )
 		{
 			return;
 		}
 
-		if( pOffset < 0 || pOffset >= mCount )
+		if( pOffset < 0 || pOffset >= mSize )
 		{
 			return;
 		}
 
 		int				L = QMetaType::sizeOf( mType );
 
-		A += ( L * pIndex ) + ( L * pOffset );
+		A += ( mStride * pIndex ) + ( L * pOffset );
 
 		QMetaType::construct( mType, A, pValue.constData() );
 	}
@@ -239,19 +239,19 @@ public:
 			return( QVariant() );
 		}
 
-		if( pIndex < 0 || pIndex >= mSize )
+		if( pIndex < 0 || pIndex >= mCount )
 		{
 			return( QVariant() );
 		}
 
-		if( pOffset < 0 || pOffset >= mCount )
+		if( pOffset < 0 || pOffset >= mSize )
 		{
 			return( QVariant() );
 		}
 
 		int				L = QMetaType::sizeOf( mType );
 
-		A += ( L * pIndex ) + ( L * pOffset );
+		A += ( mStride * pIndex ) + ( L * pOffset );
 
 		QVariant		 V( mType, (const void *)A );
 
@@ -322,11 +322,11 @@ public:
 
 		if( mData )
 		{
-			pDataStream.writeRawData( static_cast<const char *>( mData ), mSize );
+			pDataStream.writeRawData( static_cast<const char *>( mData ), variantArraySize() );
 		}
 		else
 		{
-			pDataStream.writeRawData( (const char *)mArray.data(), mSize );
+			pDataStream.writeRawData( (const char *)mArray.data(), mArray.size() );
 		}
 	}
 
@@ -341,9 +341,9 @@ public:
 
 		mType = QMetaType::Type( TmpInt );
 
-		mArray.resize( mSize );
+		mArray.resize( variantArraySize() );
 
-		pDataStream.readRawData( (char *)mArray.data(), mSize );
+		pDataStream.readRawData( (char *)mArray.data(), mArray.size() );
 	}
 
 private:

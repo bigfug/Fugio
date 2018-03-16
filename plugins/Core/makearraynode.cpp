@@ -35,6 +35,8 @@ void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
 	}
 
 	mValOutput->setVariantType( CurrType );
+	mValOutput->setVariantElementCount( 1 );
+	mValOutput->variantSetStride( QMetaType::sizeOf( CurrType ) );
 
 	QList<QSharedPointer<fugio::PinInterface>>	PinLst = mNode->enumInputPins();
 
