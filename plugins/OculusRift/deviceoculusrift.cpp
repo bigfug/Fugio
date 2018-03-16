@@ -463,6 +463,8 @@ bool DeviceOculusRift::deviceOpen()
 
 	QOpenGLContext::currentContext()->setFormat( Format );
 
+	initializeOpenGLFunctions();
+
 //#if defined( Q_OS_WIN )
 //	PFNWGLSWAPINTERVALEXTPROC       wglSwapIntervalEXT = NULL;
 //	PFNWGLGETSWAPINTERVALEXTPROC    wglGetSwapIntervalEXT = NULL;
