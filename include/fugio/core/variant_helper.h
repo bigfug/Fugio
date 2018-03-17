@@ -12,11 +12,9 @@ template <class T> class VariantHelper : public VariantInterface
 {
 public:
 	VariantHelper( QMetaType::Type M, QUuid P )
-		: mBaseType( M ), mType( M ), mUuid( P ), mElementCount( 1 ), mArray( nullptr ), mCount( 1 )
+		: mBaseType( M ), mType( M ), mUuid( P ), mElementCount( 1 ), mStride( 0 ), mArray( nullptr ), mCount( 1 )
 	{
 		mValues.resize( 1 );
-
-		mStride = variantElementCount() * QMetaType::sizeOf( mType );
 	}
 
 	virtual ~VariantHelper( void )
@@ -146,8 +144,6 @@ public:
 		{
 			mValues.resize( mCount * mElementCount );
 		}
-
-		mStride = variantElementCount() * QMetaType::sizeOf( mType );
 	}
 
 	inline virtual int variantElementCount() const Q_DECL_OVERRIDE
@@ -170,7 +166,7 @@ public:
 
 	virtual int variantStride() const Q_DECL_OVERRIDE
 	{
-		return( mStride );
+		return( mStride ? mStride : ( mBaseType == QMetaType::UnknownType ? QMetaType::sizeOf( QMetaType::QVariant ) : QMetaType::sizeOf( mType ) ) * variantElementCount() );
 	}
 
 	virtual void *variantArray() Q_DECL_OVERRIDE
@@ -190,12 +186,12 @@ public:
 
 	inline int variantIndex( int pIndex, int pOffset ) const
 	{
-		return( ( pIndex * mElementCount ) + pOffset );
+		return( ( pIndex * variantElementCount() ) + pOffset );
 	}
 
 	inline virtual int variantArraySize( void ) const Q_DECL_OVERRIDE
 	{
-		return( mStride * mCount );
+		return( variantStride() * mCount );
 	}
 
 	virtual QVariant variantSize( int pIndex = 0, int pOffset = 0 ) const Q_DECL_OVERRIDE

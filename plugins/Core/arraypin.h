@@ -95,35 +95,9 @@ public:
 		return( mSize );
 	}
 
-	virtual void *array() Q_DECL_OVERRIDE
-	{
-		if( mData )
-		{
-			return( mData );
-		}
+	virtual void *array() Q_DECL_OVERRIDE;
 
-		mArray.resize( ( ( mStride * qMax( mCount, mReserve ) ) / sizeof( qlonglong ) ) + 1 );
-
-		return( mArray.data() );
-
-	}
-
-	virtual const void *array() const Q_DECL_OVERRIDE
-	{
-		if( mData )
-		{
-			return( mData );
-		}
-
-		int		ArrayCount = ( ( mStride * qMax( mCount, mReserve ) ) / sizeof( qlonglong ) ) + 1;
-
-		if( mArray.size() == ArrayCount )
-		{
-			return( mArray.constData() );
-		}
-
-		return( nullptr );
-	}
+	virtual const void *array() const Q_DECL_OVERRIDE;
 
 	virtual void setArray(void *pArray) Q_DECL_OVERRIDE
 	{
@@ -204,59 +178,9 @@ public:
 		setVariant( pIndex, 0, pValue );
 	}
 
-	virtual void setVariant( int pIndex, int pOffset, const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		quint8	*A = (quint8 *)( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
+	virtual void setVariant( int pIndex, int pOffset, const QVariant &pValue ) Q_DECL_OVERRIDE;
 
-		if( !A )
-		{
-			return;
-		}
-
-		if( pIndex < 0 || pIndex >= mCount )
-		{
-			return;
-		}
-
-		if( pOffset < 0 || pOffset >= mSize )
-		{
-			return;
-		}
-
-		int				L = QMetaType::sizeOf( mType );
-
-		A += ( mStride * pIndex ) + ( L * pOffset );
-
-		QMetaType::construct( mType, A, pValue.constData() );
-	}
-
-	virtual QVariant variant( int pIndex, int pOffset ) const Q_DECL_OVERRIDE
-	{
-		const quint8	*A = (const quint8 *)( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
-
-		if( !A )
-		{
-			return( QVariant() );
-		}
-
-		if( pIndex < 0 || pIndex >= mCount )
-		{
-			return( QVariant() );
-		}
-
-		if( pOffset < 0 || pOffset >= mSize )
-		{
-			return( QVariant() );
-		}
-
-		int				L = QMetaType::sizeOf( mType );
-
-		A += ( mStride * pIndex ) + ( L * pOffset );
-
-		QVariant		 V( mType, (const void *)A );
-
-		return( V );
-	}
+	virtual QVariant variant( int pIndex, int pOffset ) const Q_DECL_OVERRIDE;
 
 	virtual void setFromBaseVariant(const QVariant &pValue) Q_DECL_OVERRIDE
 	{
