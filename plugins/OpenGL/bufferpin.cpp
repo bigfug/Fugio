@@ -14,6 +14,11 @@ BufferPin::~BufferPin()
 	clear();
 }
 
+QString BufferPin::toString() const
+{
+	return( QString( "<p>Type: %1</p><p>Count: %2</p><p>Size: %3</p><p>Total Size: %4</p><p>Id: %5</p>" ).arg( QString( QMetaType::typeName( type() ) ) ).arg( count() ).arg( size() ).arg( count() * stride() ).arg( mBuffer1 ? mBuffer1->bufferId() : 0 ) );
+}
+
 bool BufferPin::bind()
 {
 	if( !mBuffer1 || !mBuffer1->isCreated() )
