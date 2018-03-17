@@ -5,6 +5,8 @@
 
 #include <fugio/nodecontrolbase.h>
 
+#include <fugio/core/array_interface.h>
+
 class MakeArrayNode : public fugio::NodeControlBase
 {
 	Q_OBJECT
@@ -23,27 +25,15 @@ public:
 
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
-//	virtual QWidget *gui() Q_DECL_OVERRIDE;
-
-//	virtual QList<QUuid> pinAddTypesInput() const Q_DECL_OVERRIDE;
-
 	virtual bool canAcceptPin( fugio::PinInterface *pPin ) const Q_DECL_OVERRIDE;
 
 	virtual bool pinShouldAutoRename(fugio::PinInterface *pPin) const Q_DECL_OVERRIDE;
-
-//	virtual void loadSettings(QSettings &pSettings) Q_DECL_OVERRIDE;
-//	virtual void saveSettings(QSettings &pSettings) const Q_DECL_OVERRIDE;
-
-protected slots:
-//	void setType( int pIndex );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::VariantInterface						*mValOutput;
-
-//	QMetaType::Type								 mType;
+	fugio::ArrayInterface						*mValOutput;
 };
 
 #endif // MAKEARRAYNODE_H

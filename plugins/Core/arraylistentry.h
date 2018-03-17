@@ -56,7 +56,7 @@ public:
 		return( mCount );
 	}
 
-	inline virtual int size( void ) const Q_DECL_OVERRIDE
+	inline virtual int elementCount( void ) const Q_DECL_OVERRIDE
 	{
 		return( mSize );
 	}
@@ -98,7 +98,7 @@ public:
 		mCount = pCount;
 	}
 
-	inline virtual void setSize( int pSize ) Q_DECL_OVERRIDE
+	inline virtual void setElementCount( int pSize ) Q_DECL_OVERRIDE
 	{
 		mSize = pSize;
 	}

@@ -85,12 +85,12 @@ public:
 		mReserve = pCount;
 	}
 
-	virtual void setSize(int pSize) Q_DECL_OVERRIDE
+	virtual void setElementCount(int pSize) Q_DECL_OVERRIDE
 	{
 		mSize = pSize;
 	}
 
-	virtual int size() const Q_DECL_OVERRIDE
+	virtual int elementCount() const Q_DECL_OVERRIDE
 	{
 		return( mSize );
 	}
@@ -232,6 +232,11 @@ public:
 		Q_UNUSED( pOffset )
 
 		return( variantElementCount() );
+	}
+
+	virtual int byteCount() const Q_DECL_OVERRIDE
+	{
+		return( mStride * mCount );
 	}
 
 	//-------------------------------------------------------------------------
