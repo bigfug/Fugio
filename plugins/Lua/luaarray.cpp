@@ -526,10 +526,10 @@ int LuaArray::luaResize( lua_State *L )
 //		return( luaL_error( L, "Can't resize array list (yet)" ) );
 //	}
 
-//	if( LstDat->mReadOnly )
-//	{
-//		return( luaL_error( L, "Can't resize input list" ) );
-//	}
+	if( LstDat->mReadOnly )
+	{
+		return( luaL_error( L, "Can't resize input list" ) );
+	}
 
 //	if( LstSiz < 0 )
 //	{
@@ -647,76 +647,58 @@ int LuaArray::luaSetType( lua_State *L )
 
 	if( ArrInt )
 	{
+		ArrInt->setVariantCount( 1 );
+
 		if( strcmp( LstTyp, "float" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::Float );
-			ArrInt->variantSetStride( sizeof( float ) );
-			ArrInt->setVariantCount( 1 );
 		}
 		else if( strcmp( LstTyp, "int" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::Int );
-			ArrInt->variantSetStride( sizeof( int ) );
-			ArrInt->setVariantCount( 1 );
 		}
 		else if( strcmp( LstTyp, "point" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QPointF );
-			ArrInt->variantSetStride( sizeof( float ) * 2 );
-			ArrInt->setVariantCount( 1 );
 		}
 		else if( strcmp( LstTyp, "vec2" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QVector2D );
-			ArrInt->variantSetStride( sizeof( float ) * 2 );
-			ArrInt->setVariantCount( 1 );
 		}
 		else if( strcmp( LstTyp, "vec3" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QVector3D );
-			ArrInt->variantSetStride( sizeof( float ) * 3 );
-			ArrInt->setVariantCount( 1 );
 		}
 		else if( strcmp( LstTyp, "vec4" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QVector4D );
-			ArrInt->variantSetStride( sizeof( float ) * 4 );
-			ArrInt->setVariantCount( 1 );
 		}
 		else if( strcmp( LstTyp, "mat4" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QMatrix4x4 );
-			ArrInt->variantSetStride( sizeof( float ) * 4 * 4 );
-			ArrInt->setVariantCount( 1 );
 		}
 		else if( strcmp( LstTyp, "rect" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QRect );
-			ArrInt->variantSetStride( sizeof( QRect ) );
-			ArrInt->setVariantCount( 1 );
 		}
 		else if( strcmp( LstTyp, "rectf" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QRectF );
-			ArrInt->variantSetStride( sizeof( QRectF ) );
-			ArrInt->setVariantCount( 1 );
 		}
 		else if( strcmp( LstTyp, "line" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QLine );
-			ArrInt->variantSetStride( sizeof( QLine ) );
-			ArrInt->setVariantCount( 1 );
 		}
 		else if( strcmp( LstTyp, "linef" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QLineF );
-			ArrInt->variantSetStride( sizeof( QLineF ) );
-			ArrInt->setVariantCount( 1 );
 		}
 		else
 		{
 			return( luaL_error( L, "Unknown list type: %s", LstTyp ) );
 		}
+
+		ArrInt->variantSetStride( QMetaType::sizeOf( ArrInt->variantType() ) );
 
 		return( 0 );
 	}
