@@ -275,12 +275,9 @@ void TrackerNode::inputsUpdated( qint64 pTimeStamp )
 
 		pinUpdated( mPinOutputCenter );
 
-		float		*PntPtr = (float *)mValOutputPoints->variantArray();
-
 		for( int i = 0 ; i < 4 ; i++ )
 		{
-			*PntPtr++ = MrkInf->vertex[ i ][ 0 ];
-			*PntPtr++ = MrkInf->vertex[ i ][ 1 ];
+			mValOutputPoints->setVariant( i, QPointF( MrkInf->vertex[ i ][ 0 ], MrkInf->vertex[ i ][ 1 ] ) );
 		}
 
 		pinUpdated( mPinOutputPoints );
