@@ -11,10 +11,10 @@ DeviceDialog::DeviceDialog( int pDevIdx, int pCfgIdx, QWidget *parent) :
 {
 	ui->setupUi( this );
 
+	int		DevIdx = -1;
+
 #if defined( VIDEOCAPTURE_SUPPORTED )
 	const std::vector<ca::Device>	DevLst = mCapture.getDevices();
-
-	int		DevIdx = -1;
 
 	for( const ca::Device &Dev : DevLst )
 	{
@@ -25,14 +25,18 @@ DeviceDialog::DeviceDialog( int pDevIdx, int pCfgIdx, QWidget *parent) :
 
 		ui->mDevice->addItem( QString::fromStdString( Dev.name ), Dev.index );
 	}
+#endif
 
 	if( DevIdx >= 0 )
 	{
 		ui->mDevice->setCurrentIndex( DevIdx );
 	}
+	else if( ui->mDevice->count() > 0 )
+	{
+		mDevIdx = ui->mDevice->currentData().toInt();
+	}
 
 	updateFormatList();
-#endif
 
 	connect( ui->mDevice, SIGNAL(currentIndexChanged(int)), this, SLOT(deviceChanged(int)) );
 
