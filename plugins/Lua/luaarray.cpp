@@ -621,6 +621,8 @@ int LuaArray::luaSetCount( lua_State *L )
 	if( LstInt )
 	{
 		LstInt->setCount( LstCnt );
+
+		return( 0 );
 	}
 
 	fugio::VariantInterface		*VarInt = qobject_cast<fugio::VariantInterface *>( LstDat->mObject );
@@ -628,6 +630,8 @@ int LuaArray::luaSetCount( lua_State *L )
 	if( VarInt )
 	{
 		VarInt->setVariantCount( LstCnt );
+
+		return( 0 );
 	}
 
 	return( 0 );
@@ -647,7 +651,7 @@ int LuaArray::luaSetType( lua_State *L )
 
 	if( ArrInt )
 	{
-		ArrInt->setVariantCount( 1 );
+		ArrInt->setVariantElementCount( 1 );
 
 		if( strcmp( LstTyp, "float" ) == 0 )
 		{
