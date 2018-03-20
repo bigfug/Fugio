@@ -184,7 +184,14 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 		}
 		else
 		{
-			I.setInternalFormat( mSegment->imageFormat() );
+			if( I.internalFormat() != mSegment->imageFormat() )
+			{
+				I.setInternalFormat( mSegment->imageFormat() );
+
+#if defined( FFMPEG_SUPPORTED )
+				qDebug() << QString::fromLatin1( av_get_pix_fmt_name( AVPixelFormat( mSegment->imageFormat() ) ) );
+#endif
+			}
 
 #if defined( FFMPEG_SUPPORTED )
 			switch( AVPixelFormat( mSegment->imageFormat() ) )
