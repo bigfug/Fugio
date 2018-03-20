@@ -86,7 +86,7 @@ void TrackerNode::inputsUpdated( qint64 pTimeStamp )
 		freeTracker();
 	}
 
-	if( !ImgInt.isEmpty() )
+	if( !ImgInt.isValid() )
 	{
 		return;
 	}
