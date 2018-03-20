@@ -13,7 +13,7 @@
 #include "luapointf.h"
 #include "luarectf.h"
 
-const char *LuaVector3D::UserData::TypeName = "qt.vector3d";
+const char *LuaVector3D::mTypeName = "qt.vector3d";
 
 #if defined( LUA_SUPPORTED )
 
@@ -61,7 +61,7 @@ int LuaVector3D::luaOpen (lua_State *L )
 //		luaL_newlib( L, mLuaInstance );
 //	}
 
-	if( luaL_newmetatable( L, UserData::TypeName ) == 1 )
+	if( luaL_newmetatable( L, mTypeName ) == 1 )
 	{
 		luaL_setfuncs( L, mLuaMetaMethods, 0 );
 
@@ -72,6 +72,47 @@ int LuaVector3D::luaOpen (lua_State *L )
 }
 
 int LuaVector3D::luaNew( lua_State *L )
+{
+	QVector3D		V;
+
+	if( lua_gettop( L ) == 1 )
+	{
+		if( lua_type( L, 1 ) == LUA_TTABLE )
+		{
+			for( int i = 1 ; i <= 3 ; i++ )
+			{
+				lua_rawgeti( L, 1, i );
+
+				if( lua_isnil( L, -1 ) )
+				{
+					lua_pop( L, 1 );
+
+					break;
+				}
+
+				if( i == 1 ) V.setX( lua_tonumber( L, -1 ) );
+				if( i == 2 ) V.setY( lua_tonumber( L, -1 ) );
+				if( i == 3 ) V.setZ( lua_tonumber( L, -1 ) );
+
+				lua_pop( L, 1 );
+			}
+		}
+	}
+	else if( lua_gettop( L ) == 3 )
+	{
+		float		x = luaL_checknumber( L, 1 );
+		float		y = luaL_checknumber( L, 2 );
+		float		z = luaL_checknumber( L, 3 );
+
+		V = QVector3D( x, y, z );
+	}
+
+	pushvector3d( L, V );
+
+	return( 1 );
+}
+
+int LuaVector3D::luaNewQt( lua_State *L )
 {
 	QVector3D		V;
 

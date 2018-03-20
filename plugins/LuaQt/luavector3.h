@@ -7,21 +7,19 @@
 
 #include <QUuid>
 #include <QVector3D>
+#include <QVariant>
 
 class LuaVector3D
 {
 private:
 	typedef struct UserData
 	{
-		static const char *TypeName;
-
-		qreal	x, y;
-
 		QVector3D			mVector3D;
-
 	} UserData;
 
 public:
+	static const char *mTypeName;
+
 	LuaVector3D( void ) {}
 
 	virtual ~LuaVector3D( void ) {}
@@ -30,6 +28,7 @@ public:
 	static int luaOpen( lua_State *L );
 
 	static int luaNew( lua_State *L );
+	static int luaNewQt( lua_State *L );
 
 	static int luaPinGet( const QUuid &pPinLocalId, lua_State *L );
 	static int luaPinSet( const QUuid &pPinLocalId, lua_State *L, int pIndex );
@@ -43,7 +42,7 @@ public:
 			return( 0 );
 		}
 
-		luaL_getmetatable( L, UserData::TypeName );
+		luaL_getmetatable( L, mTypeName );
 		lua_setmetatable( L, -2 );
 
 		new( &UD->mVector3D ) QVector3D( pVector3D );
@@ -53,7 +52,7 @@ public:
 
 	static bool isVector3D( lua_State *L, int i = 1 )
 	{
-		return( luaL_testudata( L, i, UserData::TypeName ) != nullptr );
+		return( luaL_testudata( L, i, mTypeName ) != nullptr );
 	}
 
 	static QVector3D checkvector3d( lua_State *L, int i = 1 )
@@ -63,10 +62,22 @@ public:
 		return( UD->mVector3D );
 	}
 
+	static int pushVariant( lua_State *L, const QVariant &V )
+	{
+		return( pushvector3d( L, V.value<QVector3D>() ) );
+	}
+
+	static QVariant popVariant( lua_State *L, int pIndex )
+	{
+		UserData *UD = checkuserdata( L, pIndex );
+
+		return( UD ? UD->mVector3D : QVector3D() );
+	}
+
 private:
 	static UserData *checkuserdata( lua_State *L, int i = 1 )
 	{
-		UserData *UD = (UserData *)luaL_checkudata( L, i, UserData::TypeName );
+		UserData *UD = (UserData *)luaL_checkudata( L, i, mTypeName );
 
 		luaL_argcheck( L, UD != NULL, i, "Vector3D expected" );
 
