@@ -1,6 +1,7 @@
 #include "trackernode.h"
 
 #include <QMatrix4x4>
+#include <QFile>
 
 #include <fugio/artoolkit/uuid.h>
 #include <fugio/image/uuid.h>
@@ -207,9 +208,9 @@ void TrackerNode::inputsUpdated( qint64 pTimeStamp )
 			mPatternIndex = -1;
 		}
 
-		QString		PatternFilename = variant( mPinInputPattern ).toString();
+		QString		PatternFilename = variant<QString>( mPinInputPattern );
 
-		if( !PatternFilename.isEmpty() )
+		if( !PatternFilename.isEmpty() && QFile::exists( PatternFilename ) )
 		{
 			try
 			{

@@ -1,6 +1,7 @@
 #include "paramloadnode.h"
 
 #include <QMatrix4x4>
+#include <QFile>
 
 #include <fugio/artoolkit/uuid.h>
 
@@ -25,8 +26,10 @@ void ParamLoadNode::inputsUpdated( qint64 pTimeStamp )
 
 	QString			FN = variant( mPinInputFilename ).toString();
 
-	if( FN.isEmpty() )
+	if( FN.isEmpty() || !QFile::exists( FN ) )
 	{
+		mNode->setStatus( fugio::NodeInterface::Error );
+
 		return;
 	}
 
