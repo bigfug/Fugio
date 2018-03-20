@@ -32,6 +32,8 @@ set( SOURCE_FILES
 	imagesavenode.h
 	imagesizenode.cpp
 	imagesizenode.h
+	imagesplitnode.cpp
+	imagesplitnode.h
 	painterpin.cpp
 	painterpin.h
 	painterwindow.cpp

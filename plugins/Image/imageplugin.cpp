@@ -15,6 +15,7 @@
 #include "imagefilternode.h"
 #include "imagesavenode.h"
 #include "copynode.h"
+#include "imagesplitnode.h"
 
 #include "painterwindownode.h"
 
@@ -38,6 +39,7 @@ ClassEntry		mNodeClasses[] =
 	ClassEntry( "Scale", "Image", ClassEntry::Deprecated, NID_SCALE_IMAGE, &ScaleImageNode::staticMetaObject ),
 	ClassEntry( "Save", "Image", NID_IMAGE_SAVE, &ImageSaveNode::staticMetaObject ),
 	ClassEntry( "Size", "Image", ClassEntry::Deprecated, NID_IMAGE_SIZE, &ImageSizeNode::staticMetaObject ),
+	ClassEntry( "Split", "Image", NID_IMAGE_SPLIT, &ImageSplitNode::staticMetaObject ),
 	ClassEntry()
 };
 
