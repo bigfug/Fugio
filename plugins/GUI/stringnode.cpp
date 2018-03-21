@@ -23,11 +23,7 @@ StringNode::StringNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInput->registerPinInputType( PID_BOOL );
 
-	mString = pinOutput<fugio::VariantInterface *>( "String", mPinValue, PID_STRING );
-}
-
-StringNode::~StringNode( void )
-{
+	mValOutputString = pinOutput<fugio::VariantInterface *>( "String", mPinValue, PID_STRING );
 }
 
 QWidget *StringNode::gui()
@@ -52,7 +48,7 @@ void StringNode::loadSettings( QSettings &pSettings )
 
 void StringNode::saveSettings( QSettings &pSettings ) const
 {
-	pSettings.setValue( "Value", mString->variant().toString() );
+	pSettings.setValue( "Value", mValOutputString->variant().toString() );
 }
 
 void StringNode::inputsUpdated( qint64 pTimeStamp )
@@ -102,7 +98,7 @@ void StringNode::contextFrameStart()
 {
 	if( mLastUpdate < mLastText )
 	{
-		mString->setVariant( QString( mText.toLatin1().constData() ) );
+		mValOutputString->setVariant( mText );
 
 		pinUpdated( mPinValue );
 
