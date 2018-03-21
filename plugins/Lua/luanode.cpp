@@ -214,7 +214,7 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 
 			if( QFileInfo::exists( LuaUsr ) )
 			{
-				luaSetPath( mL, QDir::toNativeSeparators( LuaUsr.append( "/?.lua" ) ).toLatin1().constData() );
+				luaSetPath( mL, QDir::toNativeSeparators( LuaUsr.append( "/?.lua" ) ).toUtf8().constData() );
 			}
 		}
 
@@ -224,7 +224,7 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 
 			if( QFileInfo::exists( LuaInc ) )
 			{
-				luaSetPath( mL, QDir::toNativeSeparators( LuaInc.append( "/?.lua" ) ).toLatin1().constData() );
+				luaSetPath( mL, QDir::toNativeSeparators( LuaInc.append( "/?.lua" ) ).toUtf8().constData() );
 			}
 		}
 

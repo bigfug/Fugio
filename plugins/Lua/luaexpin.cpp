@@ -317,7 +317,7 @@ int LuaExPin::luaPinGetName( lua_State *L )
 		return( 0 );
 	}
 
-	lua_pushfstring( L, "%s", P->name().toLatin1().data() );
+	lua_pushfstring( L, "%s", P->name().toUtf8().data() );
 
 	return( 1 );
 }
@@ -472,7 +472,7 @@ int LuaExPin::luaPinGetValue( lua_State *L )
 
 	if( !ArgCnt )
 	{
-		lua_pushfstring( L, "%s", V.toString().toLatin1().data() );
+		lua_pushfstring( L, "%s", V.toString().toUtf8().data() );
 
 		ArgCnt = 1;
 	}
