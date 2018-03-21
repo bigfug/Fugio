@@ -307,7 +307,7 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 #if defined( QOPENGLEXTRAFUNCTIONS_H )
 					if( GLEX )
 					{
-						GLEX->glVertexAttribIPointer( UniformData.mLocation, 1, GL_INT, 0, BUFFER_OFFSET( 0 ) );
+						GLEX->glVertexAttribIPointer( UniformData.mLocation, 1, GL_INT, Buffer->stride(), BUFFER_OFFSET( 0 ) );
 
 						glEnableVertexAttribArray( UniformData.mLocation );
 					}
@@ -324,9 +324,9 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 				if( Buffer->bind() )
 				{
 #if defined( GL_DOUBLE )
-					glVertexAttribPointer( UniformData.mLocation, 1, Buffer->stride() == 8 ? GL_DOUBLE : GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+					glVertexAttribPointer( UniformData.mLocation, 1, Buffer->stride() == 8 ? GL_DOUBLE : GL_FLOAT, GL_FALSE, Buffer->stride(), BUFFER_OFFSET( 0 ) );
 #else
-					glVertexAttribPointer( UniformData.mLocation, 1, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+					glVertexAttribPointer( UniformData.mLocation, 1, GL_FLOAT, GL_FALSE, Buffer->stride(), BUFFER_OFFSET( 0 ) );
 #endif
 
 					glEnableVertexAttribArray( UniformData.mLocation );
@@ -346,7 +346,7 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 #if defined( QOPENGLEXTRAFUNCTIONS_H )
 					if( GLEX )
 					{
-						GLEX->glVertexAttribIPointer( UniformData.mLocation, 2, GL_INT, 0, BUFFER_OFFSET( 0 ) );
+						GLEX->glVertexAttribIPointer( UniformData.mLocation, 2, GL_INT, Buffer->stride(), BUFFER_OFFSET( 0 ) );
 
 						glEnableVertexAttribArray( UniformData.mLocation );
 					}
@@ -364,9 +364,9 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 				if( Buffer->bind() )
 				{
 #if defined( GL_DOUBLE )
-					glVertexAttribPointer( UniformData.mLocation, 2, Buffer->stride() == 16 ? GL_DOUBLE : GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+					glVertexAttribPointer( UniformData.mLocation, 2, Buffer->stride() == 16 ? GL_DOUBLE : GL_FLOAT, GL_FALSE, Buffer->stride(), BUFFER_OFFSET( 0 ) );
 #else
-					glVertexAttribPointer( UniformData.mLocation, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+					glVertexAttribPointer( UniformData.mLocation, 2, GL_FLOAT, GL_FALSE, Buffer->stride(), BUFFER_OFFSET( 0 ) );
 #endif
 
 					glEnableVertexAttribArray( UniformData.mLocation );
@@ -384,9 +384,9 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 				if( Buffer->bind() )
 				{
 #if defined( GL_DOUBLE )
-					glVertexAttribPointer( UniformData.mLocation, 3, Buffer->stride() == 24 ? GL_DOUBLE : GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+					glVertexAttribPointer( UniformData.mLocation, 3, Buffer->stride() == 24 ? GL_DOUBLE : GL_FLOAT, GL_FALSE, Buffer->stride(), BUFFER_OFFSET( 0 ) );
 #else
-					glVertexAttribPointer( UniformData.mLocation, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+					glVertexAttribPointer( UniformData.mLocation, 3, GL_FLOAT, GL_FALSE, Buffer->stride(), BUFFER_OFFSET( 0 ) );
 #endif
 
 					glEnableVertexAttribArray( UniformData.mLocation );
@@ -406,9 +406,9 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 				if( Buffer->bind() )
 				{
 #if defined( GL_DOUBLE )
-					glVertexAttribPointer( UniformData.mLocation, 4, Buffer->stride() == 32 ? GL_DOUBLE : GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+					glVertexAttribPointer( UniformData.mLocation, 4, Buffer->stride() == 32 ? GL_DOUBLE : GL_FLOAT, GL_FALSE, Buffer->stride(), BUFFER_OFFSET( 0 ) );
 #else
-					glVertexAttribPointer( UniformData.mLocation, 4, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET( 0 ) );
+					glVertexAttribPointer( UniformData.mLocation, 4, GL_FLOAT, GL_FALSE, Buffer->stride(), BUFFER_OFFSET( 0 ) );
 #endif
 
 					glEnableVertexAttribArray( UniformData.mLocation );
