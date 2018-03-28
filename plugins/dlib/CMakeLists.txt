@@ -68,7 +68,15 @@ else( WIN32 )
 			target_include_directories( ${PROJECT_NAME} PRIVATE ${DLIB_INCLUDE_DIR} )
 
 			target_compile_definitions( ${PROJECT_NAME} PRIVATE DLIB_SUPPORTED )
-	else()
+
+			if( APPLE )
+				find_library( Accelerate_LIBRARY Accelerate )
+
+				target_link_libraries( ${PROJECT_NAME}
+					${Accelerate_LIBRARY}
+					)
+			endif( APPLE )
+		else()
 			message( "dlib: NO" )
 	endif()
 endif( WIN32 )
