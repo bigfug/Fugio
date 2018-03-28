@@ -92,6 +92,11 @@ void ImageLoaderNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+	if( IMG.format() == QImage::Format_Indexed8 )
+	{
+		IMG = IMG.convertToFormat( QImage::Format_ARGB32 );
+	}
+
 	mImageData = IMG;
 
 	fugio::Image		NewImg = mImage->variant().value<fugio::Image>();
