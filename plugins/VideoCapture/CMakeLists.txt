@@ -50,7 +50,7 @@ include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 #------------------------------------------------------------------------------
 # PortMidi
 
-find_package( videocapture QUIET )
+find_package( VideoCapture QUIET )
 
 if( VIDEOCAPTURE_FOUND )
 	message( "VideoCapture: YES" )

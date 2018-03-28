@@ -60,14 +60,16 @@ if( WIN32 )
 else( WIN32 )
 	find_package( dlib )
 
-	if( dlib_LIBS )
-		message( "dlib: YES" )
+	if( DLIB_FOUND )
+			message( "dlib: YES" )
 
-		target_link_libraries( ${PROJECT_NAME} ${dlib_LIBS} )
+			target_link_libraries( ${PROJECT_NAME} ${DLIB_LIBRARIES} )
 
-		target_compile_definitions( ${PROJECT_NAME} PRIVATE DLIB_SUPPORTED )
+			target_include_directories( ${PROJECT_NAME} PRIVATE ${DLIB_INCLUDE_DIR} )
+
+			target_compile_definitions( ${PROJECT_NAME} PRIVATE DLIB_SUPPORTED )
 	else()
-		message( "dlib: NO" )
+			message( "dlib: NO" )
 	endif()
 endif( WIN32 )
 
