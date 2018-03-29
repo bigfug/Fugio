@@ -73,6 +73,26 @@ if( UNIX AND NOT APPLE )
 endif()
 
 #------------------------------------------------------------------------------
+# Lua (minimum 5.2)
+
+find_package( Lua 5.2 )
+
+if( NOT LUA_FOUND )
+	find_path( LUA_INCLUDE_DIR lua.hpp )
+
+	find_library( LUA_LIBRARY
+	  NAMES lua
+	)
+
+	set( LUA_INCLUDE_DIRS ${LUA_INCLUDE_DIR} )
+	set( LUA_LIBRARIES ${LUA_LIBRARY} )
+
+	if( LUA_INCLUDE_DIR AND LUA_LIBRARY )
+		set( LUA_FOUND ON )
+	endif()
+endif()
+
+#------------------------------------------------------------------------------
 
 add_subdirectory( FugioLib )
 add_subdirectory( FugioApp )

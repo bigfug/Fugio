@@ -12,6 +12,7 @@ if( APPLE )
 
 	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND install_name_tool -change "${LUA_LIB}" "@executable_path/../Frameworks/${LUA_LIB}" "${BUNDLE_PATH}/Contents/MacOS/${PROJECT_NAME}"
+		COMMAND ${CMAKE_COMMAND} -E remove "${BUNDLE_PATH}/Contents/Frameworks/${LUA_LIB}"
 		VERBATIM
 		)
 endif( APPLE )

@@ -205,24 +205,7 @@ endif()
 #-------------------------------------
 # Lua
 
-if( APPLE )
-	find_package( Lua 5.2 )
-
-	if( NOT LUA_FOUND )
-		find_path( LUA_INCLUDE_DIR lua.hpp )
-
-		find_library( LUA_LIBRARY
-		  NAMES lua
-		)
-
-		set( LUA_INCLUDE_DIRS ${LUA_INCLUDE_DIR} )
-		set( LUA_LIBRARIES ${LUA_LIBRARY} )
-
-		if( LUA_INCLUDE_DIR AND LUA_LIBRARY )
-			set( LUA_FOUND ON )
-		endif()
-	endif()
-
+if( APPLE AND LUA_FOUND )
 	get_filename_component( LUA_LIB ${LUA_LIBRARY} NAME )
 
 	set( BUNDLE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.app" )
@@ -231,6 +214,7 @@ if( APPLE )
 		COMMAND ${CMAKE_COMMAND} -E make_directory "${BUNDLE_PATH}/Contents/Frameworks"
 		COMMAND ${CMAKE_COMMAND} -E copy "${LUA_LIBRARY}" "${BUNDLE_PATH}/Contents/Frameworks/"
 		COMMAND install_name_tool -id ${LUA_LIB} "${BUNDLE_PATH}/Contents/Frameworks/${LUA_LIB}"
+		COMMENT "Copying ${LUA_LIBRARY}..."
 		VERBATIM
 	)
-endif( APPLE )
+endif( APPLE AND LUA_FOUND )
