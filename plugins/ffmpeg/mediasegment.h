@@ -65,6 +65,8 @@ public:
 
 	virtual void setPlayhead( qreal pTimeStamp ) Q_DECL_OVERRIDE;
 
+	virtual void rewind( void ) Q_DECL_OVERRIDE;
+
 	virtual void mixAudio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, float pVol ) const Q_DECL_OVERRIDE;
 
 	virtual qreal videoFrameTimeStamp( void ) const Q_DECL_OVERRIDE

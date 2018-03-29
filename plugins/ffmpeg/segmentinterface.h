@@ -37,6 +37,8 @@ public:
 
 	virtual qreal duration( void ) const = 0;
 
+	virtual void rewind( void ) = 0;
+
 	virtual void setPlayhead( qreal pTimeStamp ) = 0;
 
 	virtual void mixAudio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, float pVol ) const = 0;

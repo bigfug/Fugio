@@ -1284,6 +1284,33 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 #endif // FFMPEG_SUPPORTED
 }
 
+void MediaSegment::rewind()
+{
+	mPlayHead = 0.0;
+
+	if( avformat_seek_file( mFormatContext, -1, INT64_MIN, 0, INT64_MAX, 0 ) < 0 )
+	{
+		avformat_seek_file( mFormatContext, -1, INT64_MIN, 0, INT64_MAX, AVSEEK_FLAG_ANY );
+	}
+
+	mAudio.mPTS          = -1;
+	mVideo.mPTS          = -1;
+	mAudio.mSamplePTS    = -1;
+
+	if( mVideo.mCodecContext )
+	{
+		avcodec_flush_buffers( mVideo.mCodecContext );
+	}
+
+	if( mAudio.mCodecContext )
+	{
+		avcodec_flush_buffers( mAudio.mCodecContext );
+	}
+
+	clearVideo();
+	clearAudio();
+}
+
 void MediaSegment::mixAudio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, float pVol ) const
 {
 #if defined( FFMPEG_SUPPORTED )

@@ -124,7 +124,7 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( mPinRewind->isUpdated( pTimeStamp ) )
 	{
-		mSegment->setPlayhead( 0 );
+		mSegment->rewind();
 
 		mLstPts = -1;
 	}
