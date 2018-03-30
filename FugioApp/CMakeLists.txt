@@ -183,6 +183,8 @@ qt5_add_resources( QRC_FILES fugio.qrc )
 
 target_sources( ${PROJECT_NAME} PRIVATE ${QRC_FILES} )
 
+set_property( SOURCE ${CMAKE_CURRENT_BINARY_DIR}/qrc_fugio.cpp PROPERTY SKIP_AUTOGEN ON )
+
 if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 	include( Windeployqt )
 
