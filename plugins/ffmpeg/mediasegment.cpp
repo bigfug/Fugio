@@ -1286,6 +1286,7 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 
 void MediaSegment::rewind()
 {
+#if defined( FFMPEG_SUPPORTED )
 	mPlayHead = 0.0;
 
 	if( avformat_seek_file( mFormatContext, -1, INT64_MIN, 0, INT64_MAX, 0 ) < 0 )
@@ -1309,6 +1310,7 @@ void MediaSegment::rewind()
 
 	clearVideo();
 	clearAudio();
+#endif
 }
 
 void MediaSegment::mixAudio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, float pVol ) const
