@@ -15,6 +15,24 @@
     </message>
 </context>
 <context>
+    <name>AudioToArrayNode</name>
+    <message>
+        <location filename="../audiotoarraynode.cpp" line="30"/>
+        <source>Samples</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../audiotoarraynode.cpp" line="34"/>
+        <source>An audio input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../audiotoarraynode.cpp" line="36"/>
+        <source>The number of samples to buffer</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CentroidNode</name>
     <message>
         <location filename="../centroidnode.cpp" line="19"/>

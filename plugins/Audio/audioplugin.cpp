@@ -17,6 +17,7 @@
 #include "audiofilternode.h"
 #include "vcfnode.h"
 #include "ringmodulatornode.h"
+#include "audiotoarraynode.h"
 
 #include "audiopin.h"
 #include "fftpin.h"
@@ -26,6 +27,7 @@ QList<QUuid>				NodeControlBase::PID_UUID;
 
 ClassEntry		mNodeClasses[] =
 {
+	ClassEntry( "Audio To Array", "Audio", NID_AUDIO_TO_ARRAY, &AudioToArrayNode::staticMetaObject ),
 	ClassEntry( "Centroid", "FFT", NID_CENTROID, &CentroidNode::staticMetaObject ),
 	ClassEntry( "Frequency Bands", "FFT", NID_FREQUENCY_BANDS, &FrequencyBandsNode::staticMetaObject ),
 	ClassEntry( "Magnitude", "Audio",  NID_AUDIO_MAGNITUDE, &MagnitudeNode::staticMetaObject ),

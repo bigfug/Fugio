@@ -36,6 +36,8 @@ set( SOURCE_FILES
 	vcfnode.h
 	mononode.h
 	ringmodulatornode.h
+	audiotoarraynode.cpp
+	audiotoarraynode.h
 )
 
 set( QRC_FILES
