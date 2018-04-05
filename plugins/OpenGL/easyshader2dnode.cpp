@@ -483,6 +483,109 @@ void EasyShader2DNode::updateInputPins()
 			continue;
 		}
 
+		if( UniDat.mSize > 1 )
+		{
+			fugio::VariantInterface			*ArrInt = input<fugio::VariantInterface *>( P );
+
+			if( ArrInt )
+			{
+				int			CpyCnt = qMin( ArrInt->variantCount(), UniDat.mSize );
+
+				if( !CpyCnt )
+				{
+					continue;
+				}
+
+				void		*ArrDat = ArrInt->variantArray();
+
+				if( !ArrDat )
+				{
+					continue;
+				}
+
+				switch( UniDat.mType )
+				{
+					case GL_FLOAT:
+						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == sizeof( float ) )
+						{
+							mShaderCompilerData.mProgram->setUniformValueArray( UniDat.mLocation, static_cast<GLfloat *>( ArrDat ), CpyCnt, 1 );
+						}
+						break;
+
+					case GL_FLOAT_VEC2:
+						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 2 && ArrInt->variantStride() == 2 * sizeof( float ) )
+						{
+							mShaderCompilerData.mProgram->setUniformValueArray( UniDat.mLocation, static_cast<GLfloat *>( ArrDat ), CpyCnt, 2 );
+						}
+						else if( ArrInt->variantType() == QMetaType::QVector2D && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 2 * sizeof( float ) )
+						{
+							mShaderCompilerData.mProgram->setUniformValueArray( UniDat.mLocation, static_cast<const QVector2D *>( ArrDat ), CpyCnt );
+						}
+						else if( ArrInt->variantType() == QMetaType::QPointF && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 2 * sizeof( float ) )
+						{
+							glUniform2fv( UniDat.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
+						}
+						break;
+
+					case GL_FLOAT_VEC3:
+						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 3 && ArrInt->variantStride() == 3 * sizeof( float ) )
+						{
+							mShaderCompilerData.mProgram->setUniformValueArray( UniDat.mLocation, static_cast<GLfloat *>( ArrDat ), CpyCnt, 3 );
+						}
+						else if( ArrInt->variantType() == QMetaType::QVector3D && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 3 * sizeof( float ) )
+						{
+							glUniform3fv( UniDat.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
+						}
+						break;
+
+					case GL_FLOAT_VEC4:
+						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 4 && ArrInt->variantStride() == 4 * sizeof( float ) )
+						{
+							mShaderCompilerData.mProgram->setUniformValueArray( UniDat.mLocation, static_cast<GLfloat *>( ArrDat ), CpyCnt, 4 );
+						}
+						else if( ArrInt->variantType() == QMetaType::QVector4D && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 4 * sizeof( float ) )
+						{
+							glUniform4fv( UniDat.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
+						}
+						break;
+
+					case GL_INT_VEC2:
+						if( ArrInt->variantType() == QMetaType::Int && ArrInt->variantElementCount() == 2 && ArrInt->variantStride() == 2 * sizeof( int ) )
+						{
+							glUniform2iv( UniDat.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
+						}
+						else if( ArrInt->variantType() == QMetaType::QPoint && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 2 * sizeof( int ) )
+						{
+							glUniform2iv( UniDat.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
+						}
+						break;
+
+					case GL_INT_VEC3:
+						if( ArrInt->variantType() == QMetaType::Int && ArrInt->variantElementCount() == 3 && ArrInt->variantStride() == 3 * sizeof( int ) )
+						{
+							glUniform3iv( UniDat.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
+						}
+						break;
+
+					case GL_INT_VEC4:
+						if( ArrInt->variantType() == QMetaType::Int && ArrInt->variantElementCount() == 4 && ArrInt->variantStride() == 4 * sizeof( int ) )
+						{
+							glUniform4iv( UniDat.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
+						}
+						break;
+
+					case GL_FLOAT_MAT4:
+						if( ArrInt->variantType() == QMetaType::QMatrix4x4 && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == sizeof( QMatrix4x4 ) )
+						{
+							mShaderCompilerData.mProgram->setUniformValueArray( UniDat.mLocation, static_cast<QMatrix4x4 *>( ArrDat ), CpyCnt );
+						}
+						break;
+				}
+			}
+
+			continue;
+		}
+
 		QVariant			UniVar = variant( P );
 		QMetaType::Type		UniTyp = QMetaType::Type( UniVar.type() );
 
