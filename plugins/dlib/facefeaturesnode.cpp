@@ -239,13 +239,8 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		fugio::Image				I = variant( mPinInputImage ).value<fugio::Image>();
 
-		if( I.isEmpty() )
+		if( I.isValid() && I.format() == fugio::ImageFormat::GRAY8 )
 		{
-			if( I.format() != fugio::ImageFormat::GRAY8 )
-			{
-				return;
-			}
-
 			fugio::Performance		Perf( mNode, "inputsUpdated", pTimeStamp );
 
 #if defined( DLIB_SUPPORTED )
