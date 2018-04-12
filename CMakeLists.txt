@@ -194,7 +194,9 @@ elseif( UNIX )
 		set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
 			libicu57, libavcodec57, libavdevice57, libavformat57, libavutil55, libswscale4,
 			libswresample2, libavfilter6, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2,
-			libqt5serialport5, libqt5quickcontrols2-5, libqt5quickwidgets5, libqt5websockets5" )
+			libqt5serialport5, libqt5quickcontrols2-5, libqt5quickwidgets5, libqt5websockets5,
+			libdlib18, libopencv-calib3d3.1, libopencv-core3.1, libopencv-features2d3.1,
+			libopencv-highgui3.1, libopencv-imgproc3.1, libopencv-objdetect3.1, libopencv-videoio3.1" )
 	endif()
 endif()
 
