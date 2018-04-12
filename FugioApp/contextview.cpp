@@ -831,7 +831,10 @@ void ContextView::loadEnded( QSettings &pSettings, bool pPartial )
 
 	m_GroupId = QUuid::createUuid();	// dummy value
 
-	setGroupId( QUuid() );
+	if( !pPartial )
+	{
+		setGroupId( QUuid() );
+	}
 }
 
 void ContextView::saveContext( QSettings &pSettings ) const
