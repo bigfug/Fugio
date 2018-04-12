@@ -784,6 +784,11 @@ void FirmataNode::addPin( int pIdx, int pType )
 
 	//qDebug() << "PIN_STATE_RESPONSE" << PinIdx << PinMode << PinState;
 
+	if( mPinNames.size() <= pIdx )
+	{
+		return;
+	}
+	
 	QString		PinNam = mPinNames.at( pIdx );
 
 	QSharedPointer<fugio::PinInterface>		P;
