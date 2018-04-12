@@ -47,10 +47,16 @@ bool FirmataNode::initialise()
 	for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
 	{
 		int			PinIdx = P->setting( "firmata-idx", -1 ).toInt();
+		int			PinTyp = P->setting( "firmata-type", -1 ).toInt();
 
 		if( PinIdx >= 0 && PinIdx <= 127 )
 		{
 			mPinMapInput.insert( PinIdx, P );
+
+			if( PinTyp > -1 )
+			{
+				mPinMapType.insert( PinIdx, PinTyp );
+			}
 		}
 	}
 
@@ -61,12 +67,25 @@ bool FirmataNode::initialise()
 		if( V )
 		{
 			int			PinIdx = P->setting( "firmata-idx", -1 ).toInt();
+			int			PinTyp = P->setting( "firmata-type", -1 ).toInt();
 
 			if( PinIdx >= 0 && PinIdx <= 127 )
 			{
 				mPinMapOutput.insert( PinIdx, PinOut( P, V ) );
+
+				if( PinTyp > -1 )
+				{
+					mPinMapType.insert( PinIdx, PinTyp );
+				}
 			}
 		}
+	}
+
+	for( QMap<int,int>::const_iterator it = mPinMapType.cbegin() ; it != mPinMapType.cend() ; it++ )
+	{
+		mOutputCommands.append( char( SET_PIN_MODE ) );
+		mOutputCommands.append( char( it.key() ) );
+		mOutputCommands.append( char( it.value() ) );
 	}
 
 	connect( mNode->qobject(), SIGNAL(pinRemoved(QSharedPointer<fugio::PinInterface>)), this, SLOT(pinRemoved(QSharedPointer<fugio::PinInterface>)) );
@@ -874,6 +893,7 @@ void FirmataNode::addPin( int pIdx, int pType )
 	if( P )
 	{
 		P->setSetting( "firmata-idx", pIdx );
+		P->setSetting( "firmata-type", pType );
 
 		if( P->direction() == PIN_INPUT )
 		{
