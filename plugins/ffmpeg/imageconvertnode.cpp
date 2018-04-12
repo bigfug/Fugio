@@ -240,7 +240,7 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 
 	QSize			NewSze = SrcImg.size();
 
-	if( !pTimeStamp || !mScaleContext || mPinInputWidth->isUpdated( pTimeStamp ) || mPinInputHeight->isUpdated( pTimeStamp ) )
+	if( true )
 	{
 		qreal			 Xscl = variant( mPinInputWidth  ).toReal();
 		qreal			 Yscl = variant( mPinInputHeight ).toReal();
