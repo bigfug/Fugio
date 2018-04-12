@@ -68,10 +68,9 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( BufO->target() != QOpenGLBuffer::IndexBuffer )
-		{
-			BufO->setTarget( QOpenGLBuffer::IndexBuffer );
-		}
+		BufO->setTarget( QOpenGLBuffer::IndexBuffer );
+
+		BufO->setIndex( true );
 
 		fugio::VariantInterface			*A;
 
@@ -100,8 +99,6 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 		{
 			continue;
 		}
-
-		BufO->setIndex( true );
 
 		BufO->buffer()->write( 0, A->variantArray(), A->variantArraySize() );
 
