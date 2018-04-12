@@ -85,7 +85,17 @@ public:
 				QList< QSharedPointer<fugio::PinInterface> >	InpPinLst = Node->enumInputPins();
 				QList< QSharedPointer<fugio::PinInterface> >	OutPinLst = Node->enumOutputPins();
 
-				if( !InpPinLst.isEmpty() )
+				if( InpPinLst.size() > 1 )
+				{
+					for( QSharedPointer<fugio::PinInterface> P : InpPinLst )
+					{
+						if( P->localId() != PID_FUGIO_NODE_TRIGGER )
+						{
+							mIntDstPinUuid = P->globalId();
+						}
+					}
+				}
+				else if( !InpPinLst.isEmpty() )
 				{
 					mIntDstPinUuid = InpPinLst.first()->globalId();
 				}

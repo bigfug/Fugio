@@ -41,7 +41,8 @@
 bool ContextView::mShownWizard = false;
 
 ContextView::ContextView( QWidget *pParent ) :
-	QGraphicsView( pParent ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 )
+	QGraphicsView( pParent ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 ),
+	mLinkDragTarget( nullptr )
 {
 	setScene( &mContextScene );
 
@@ -1734,11 +1735,32 @@ void ContextView::dropEvent( QDropEvent *pEvent )
 {
 	if( pEvent->mimeData()->hasFormat( "application/x-qabstractitemmodeldatalist" ) )
 	{
+		LinkItem		*Link = qgraphicsitem_cast<LinkItem *>( itemAt( pEvent->pos() ) );
+
+		if( mLinkDragTarget && ( !Link || Link != mLinkDragTarget ) )
+		{
+			mLinkDragTarget->clrStatusColour();
+		}
+
+		mLinkDragTarget = Link;
+
+		QUuid			 SrcUuid, DstUuid;
+
+		if( mLinkDragTarget )
+		{
+			SrcUuid = Link->srcPin()->pin()->globalId();
+			DstUuid = Link->dstPin()->pin()->globalId();
+
+			mLinkDragTarget->clrStatusColour();
+
+			mLinkDragTarget = nullptr;
+		}
+
 		QByteArray encoded = pEvent->mimeData()->data( "application/x-qabstractitemmodeldatalist" );
 
 		QDataStream stream(&encoded, QIODevice::ReadOnly);
 
-		while (!stream.atEnd())
+		while( !stream.atEnd() )
 		{
 			int row, col;
 			QMap<int,  QVariant> roleDataMap;
@@ -1755,16 +1777,6 @@ void ContextView::dropEvent( QDropEvent *pEvent )
 				}
 				else
 				{
-					QGraphicsItem	*Item = itemAt( pEvent->pos() );
-					LinkItem		*Link = qgraphicsitem_cast<LinkItem *>( Item );
-					QUuid			 SrcUuid, DstUuid;
-
-					if( Link )
-					{
-						SrcUuid = Link->srcPin()->pin()->globalId();
-						DstUuid = Link->dstPin()->pin()->globalId();
-					}
-
 					CmdNodeAdd		*Cmd = new CmdNodeAdd( widget(), NodeName, NodeUuid, SrcUuid, DstUuid );
 
 					setNodePositionFlag();
@@ -1823,6 +1835,24 @@ void ContextView::dragMoveEvent( QDragMoveEvent *pEvent )
 {
 	if( pEvent->mimeData()->hasFormat( "application/x-qabstractitemmodeldatalist" ) )
 	{
+		LinkItem		*Link = qgraphicsitem_cast<LinkItem *>( itemAt( pEvent->pos() ) );
+
+		if( mLinkDragTarget && ( !Link || Link != mLinkDragTarget ) )
+		{
+			mLinkDragTarget->clrStatusColour();
+
+			mLinkDragTarget = nullptr;
+		}
+
+		if( !mLinkDragTarget && Link )
+		{
+			Link->setSelected( false );
+
+			Link->setStatusColour( Qt::blue );
+
+			mLinkDragTarget = Link;
+		}
+
 		pEvent->acceptProposedAction();
 	}
 	else if( pEvent->mimeData()->hasUrls() )
