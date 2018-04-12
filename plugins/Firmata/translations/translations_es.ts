@@ -4,7 +4,7 @@
 <context>
     <name>FirmataNode</name>
     <message>
-        <location filename="../firmatanode.cpp" line="911"/>
+        <location filename="../firmatanode.cpp" line="916"/>
         <source>Edit Pins</source>
         <translation type="unfinished"></translation>
     </message>
