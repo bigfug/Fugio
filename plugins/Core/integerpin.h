@@ -52,7 +52,14 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString( "%1" ).arg( mValues.first() ) );
+		QStringList		L;
+
+		for( int v : mValues )
+		{
+			L << QString::number( v );
+		}
+
+		return( L.join( ',' ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE

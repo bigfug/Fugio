@@ -28,7 +28,14 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString() ); //QString( "%1,%2,%3" ).arg( mValue.x() ).arg( mValue.y() ).arg( mValue.z() ) );
+		QStringList		L;
+
+		for( QVector3D v : mValues )
+		{
+			L << QString( "{%1,%2,%3}" ).arg( v.x() ).arg( v.y() ).arg( v.z() );
+		}
+
+		return( L.join( ',' ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
