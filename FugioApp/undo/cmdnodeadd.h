@@ -16,8 +16,8 @@
 class CmdNodeAdd : public QUndoCommand
 {
 public:
-	explicit CmdNodeAdd( ContextWidgetPrivate *pContextWidget, const QString &pName, const QUuid &pUuid )
-		: mContextWidget( pContextWidget ), mName( pName ), mControlId( pUuid )
+	explicit CmdNodeAdd( ContextWidgetPrivate *pContextWidget, const QString &pName, const QUuid &pUuid, const QUuid &pSrcPinUuid = QUuid(), const QUuid &pDstPinUuid = QUuid() )
+		: mContextWidget( pContextWidget ), mName( pName ), mControlId( pUuid ), mExtSrcPinUuid( pSrcPinUuid ), mExtDstPinUuid( pDstPinUuid )
 	{
 		setText( QObject::tr( "Add Node" ) );
 
@@ -35,6 +35,21 @@ public:
 
 	virtual void undo( void )
 	{
+		if( !mExtSrcPinUuid.isNull() && !mIntDstPinUuid.isNull() )
+		{
+			mContext->disconnectPins( mExtSrcPinUuid, mIntDstPinUuid );
+		}
+
+		if( !mExtDstPinUuid.isNull() && !mIntSrcPinUuid.isNull() )
+		{
+			mContext->disconnectPins( mIntSrcPinUuid, mExtDstPinUuid );
+		}
+
+		if( !mExtSrcPinUuid.isNull() && !mExtDstPinUuid.isNull() )
+		{
+			mContext->connectPins( mExtSrcPinUuid, mExtDstPinUuid );
+		}
+
 		QSharedPointer<fugio::NodeInterface>	Node = mContext->findNode( mNodeId );
 
 		if( Node )
@@ -64,6 +79,31 @@ public:
 			mContextWidget->saveRecovery();
 
 			mContext->registerNode( Node );
+
+			if( !mExtSrcPinUuid.isNull() && !mExtDstPinUuid.isNull() )
+			{
+				QList< QSharedPointer<fugio::PinInterface> >	InpPinLst = Node->enumInputPins();
+				QList< QSharedPointer<fugio::PinInterface> >	OutPinLst = Node->enumOutputPins();
+
+				if( !InpPinLst.isEmpty() )
+				{
+					mIntDstPinUuid = InpPinLst.first()->globalId();
+				}
+
+				if( !OutPinLst.isEmpty() )
+				{
+					mIntSrcPinUuid = OutPinLst.first()->globalId();
+				}
+
+				if( !mIntDstPinUuid.isNull() && !mIntSrcPinUuid.isNull() )
+				{
+					mContext->disconnectPins( mExtSrcPinUuid, mExtDstPinUuid );
+
+					mContext->connectPins( mExtSrcPinUuid, mIntDstPinUuid );
+
+					mContext->connectPins( mIntSrcPinUuid, mExtDstPinUuid );
+				}
+			}
 		}
 	}
 
@@ -73,6 +113,10 @@ private:
 	QString									 mName;
 	QUuid									 mNodeId;
 	QUuid									 mControlId;
+	const QUuid								 mExtSrcPinUuid;
+	QUuid									 mIntDstPinUuid;
+	QUuid									 mIntSrcPinUuid;
+	const QUuid								 mExtDstPinUuid;
 };
 
 #endif // CMDNODEADD_H

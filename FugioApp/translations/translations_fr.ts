@@ -4,17 +4,17 @@
 <context>
     <name>ContextView</name>
     <message>
-        <location filename="../contextview.cpp" line="2555"/>
+        <location filename="../contextview.cpp" line="2565"/>
         <source>New Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextview.cpp" line="2557"/>
+        <location filename="../contextview.cpp" line="2567"/>
         <source>Group Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextview.cpp" line="2557"/>
+        <location filename="../contextview.cpp" line="2567"/>
         <source>Enter a name for this group</source>
         <translation type="unfinished"></translation>
     </message>

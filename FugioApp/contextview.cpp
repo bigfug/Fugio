@@ -1755,7 +1755,17 @@ void ContextView::dropEvent( QDropEvent *pEvent )
 				}
 				else
 				{
-					CmdNodeAdd		*Cmd = new CmdNodeAdd( widget(), NodeName, NodeUuid );
+					QGraphicsItem	*Item = itemAt( pEvent->pos() );
+					LinkItem		*Link = qgraphicsitem_cast<LinkItem *>( Item );
+					QUuid			 SrcUuid, DstUuid;
+
+					if( Link )
+					{
+						SrcUuid = Link->srcPin()->pin()->globalId();
+						DstUuid = Link->dstPin()->pin()->globalId();
+					}
+
+					CmdNodeAdd		*Cmd = new CmdNodeAdd( widget(), NodeName, NodeUuid, SrcUuid, DstUuid );
 
 					setNodePositionFlag();
 
