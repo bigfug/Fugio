@@ -12,27 +12,27 @@
 <context>
     <name>NetworkPlugin</name>
     <message>
-        <location filename="../networkplugin.cpp" line="105"/>
+        <location filename="../networkplugin.cpp" line="107"/>
         <source>Network Information...</source>
         <translation>Netzwerk Informationen...</translation>
     </message>
     <message>
-        <location filename="../networkplugin.cpp" line="135"/>
+        <location filename="../networkplugin.cpp" line="137"/>
         <source>Network Address Information</source>
         <translation>Netzwerk Adresse</translation>
     </message>
     <message>
-        <location filename="../networkplugin.cpp" line="187"/>
+        <location filename="../networkplugin.cpp" line="189"/>
         <source>No network interfaces found</source>
         <translation>Keine Netzwerkkarten gefunden</translation>
     </message>
     <message>
-        <location filename="../networkplugin.cpp" line="222"/>
+        <location filename="../networkplugin.cpp" line="224"/>
         <source>Local Domain Name</source>
         <translation>Lokaler Domänen Name</translation>
     </message>
     <message>
-        <location filename="../networkplugin.cpp" line="224"/>
+        <location filename="../networkplugin.cpp" line="226"/>
         <source>Local Host Name</source>
         <translation>Lokaler Host Name</translation>
     </message>
@@ -64,6 +64,14 @@
         <location filename="../udpreceiverawnode.cpp" line="167"/>
         <source>Can&apos;t bind to port %1</source>
         <translation>Port %1 kann nicht gebunden werden</translation>
+    </message>
+</context>
+<context>
+    <name>WebSocketServerNode</name>
+    <message>
+        <location filename="../websocketservernode.cpp" line="21"/>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

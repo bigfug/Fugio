@@ -18,6 +18,7 @@ set( SOURCE_FILES
 	getnode.cpp
 	getnode.h
 	networkplugin.cpp
+	networkplugin.h
 	packetdecodenode.cpp
 	packetdecodenode.h
 	packetencodenode.cpp
@@ -46,6 +47,9 @@ set( SOURCE_FILES
 	websocketclientnode.h
 	websocketdataservernode.cpp
 	websocketdataservernode.h
+
+	websocketservernode.cpp
+	websocketservernode.h
 )
 
 set( QRC_FILES
