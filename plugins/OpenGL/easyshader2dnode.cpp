@@ -617,7 +617,9 @@ void EasyShader2DNode::updateInputPins()
 				}
 				else if( UniTyp == QMetaType::QColor )
 				{
-					mShaderCompilerData.mProgram->setUniformValue( UniDat.mLocation, UniVar.value<QColor>() );
+					QColor		C = UniVar.value<QColor>();
+
+					mShaderCompilerData.mProgram->setUniformValue( UniDat.mLocation, C.redF(), C.greenF(), C.blueF() );
 				}
 				break;
 
