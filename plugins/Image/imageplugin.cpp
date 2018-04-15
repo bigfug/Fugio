@@ -18,6 +18,7 @@
 #include "imagesplitnode.h"
 
 #include "painterwindownode.h"
+#include "replacealphanode.h"
 
 #include "imagepin.h"
 #include "painterpin.h"
@@ -40,6 +41,7 @@ ClassEntry		mNodeClasses[] =
 	ClassEntry( "Save", "Image", NID_IMAGE_SAVE, &ImageSaveNode::staticMetaObject ),
 	ClassEntry( "Size", "Image", ClassEntry::Deprecated, NID_IMAGE_SIZE, &ImageSizeNode::staticMetaObject ),
 	ClassEntry( "Split", "Image", NID_IMAGE_SPLIT, &ImageSplitNode::staticMetaObject ),
+	ClassEntry( "Replace Alpha", "Image", NID_IMAGE_REPLACE_ALPHA, &ReplaceAlphaNode::staticMetaObject ),
 	ClassEntry()
 };
 

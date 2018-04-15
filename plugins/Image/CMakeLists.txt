@@ -44,6 +44,8 @@ set( SOURCE_FILES
 	scaleimagenode.h
 	copynode.cpp
 	copynode.h
+	replacealphanode.cpp
+	replacealphanode.h
 )
 
 set( QRC_FILES
