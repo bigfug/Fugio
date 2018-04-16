@@ -104,46 +104,65 @@ void WebSocketServerNode::socketTextMessageReceived(QString pMessage)
 		return;
 	}
 
+	qDebug() << Socket << pMessage << "(text)";
+
 	QJsonDocument	JD = QJsonDocument::fromJson( pMessage.toLatin1() );
 
-	if( !JD.isArray() )
+	if( JD.isArray() )
 	{
-		return;
-	}
-
-	for( QJsonValue JV : JD.array() )
-	{
-		if( !JV.isObject() )
+		for( QJsonValue JV : JD.array() )
 		{
-			continue;
+			if( !JV.isObject() )
+			{
+				continue;
+			}
+
+			updateFromObject( JV.toObject() );
+		}
+	}
+	else if( JD.isObject() )
+	{
+		updateFromObject( JD.object() );
+	}
+}
+
+void WebSocketServerNode::updateFromObject( const QJsonObject &JO )
+{
+	QString		PN = JO.value( "name" ).toString();
+	QString		PT = JO.value( "type" ).toString();
+
+	QJsonArray	JA = JO.value( "values" ).toArray();
+
+	if( JA.isEmpty() )
+	{
+		QJsonValue	JV = JO.value( "value" );
+
+		if( JV.isUndefined() )
+		{
+			return;
 		}
 
-		QJsonObject	JO = JV.toObject();
+		JA.append( JV );
+	}
 
-		QString		PN = JO.value( "name" ).toString();
-		QString		PT = JO.value( "type" ).toString();
+	QSharedPointer<fugio::PinInterface>		PI = mNode->findOutputPinByName( PN );
 
-		QJsonArray	JA = JO.value( "values" ).toArray();
+	if( PI && PI->hasControl() )
+	{
+		fugio::VariantInterface	*V = qobject_cast<fugio::VariantInterface *>( PI->control()->qobject() );
 
-		QSharedPointer<fugio::PinInterface>		PI = mNode->findOutputPinByName( PN );
-
-		if( PI && PI->hasControl() )
+		if( V )
 		{
-			fugio::VariantInterface	*V = qobject_cast<fugio::VariantInterface *>( PI->control()->qobject() );
+			V->setVariantType( QMetaType::Type( QVariant::nameToType( PT.toLatin1().constData() ) ) );
 
-			if( V )
+			V->setVariantCount( JA.size() );
+
+			for( int i = 0 ; i < JA.size() ; i++ )
 			{
-				V->setVariantType( QMetaType::Type( QVariant::nameToType( PT.toLatin1().constData() ) ) );
-
-				V->setVariantCount( JA.size() );
-
-				for( int i = 0 ; i < JA.size() ; i++ )
-				{
-					V->setVariant( i, JA.at( i ).toVariant() );
-				}
-
-				pinUpdated( PI );
+				V->setVariant( i, JA.at( i ).toVariant() );
 			}
+
+			pinUpdated( PI );
 		}
 	}
 }
@@ -207,6 +226,12 @@ void WebSocketServerNode::sendUpdates( qint64 pTimeStamp )
 
 	mLastSend = pTimeStamp;
 }
+
+void WebSocketServerNode::receiveUpdates()
+{
+
+}
+
 #endif
 
 void WebSocketServerNode::inputsUpdated( qint64 pTimeStamp )

@@ -50,6 +50,9 @@ protected slots:
 	void socketBinaryMessageReceived( QByteArray pMessage );
 
 	void sendUpdates( qint64 pTimeStamp );
+	void receiveUpdates( void );
+
+	void updateFromObject( const QJsonObject &JD );
 #endif
 
 	void pinLinked( QSharedPointer<fugio::PinInterface> P1, QSharedPointer<fugio::PinInterface> P2 );
