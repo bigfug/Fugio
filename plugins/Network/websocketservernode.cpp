@@ -214,9 +214,9 @@ void WebSocketServerNode::sendUpdates( qint64 pTimeStamp )
 	{
 		JD.setArray( JA );
 
-		QByteArray	JS = JD.toJson();
+		QByteArray	JS = JD.toJson( QJsonDocument::Compact );
 
-		qDebug() << JS;
+//		qDebug() << JS;
 
 		for( QWebSocket *S : mClients )
 		{
