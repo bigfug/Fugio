@@ -26,8 +26,8 @@ public:
 	virtual void inputsUpdated( qint64 pTimeStamp );
 
 protected:
-	QSharedPointer<fugio::PinInterface>			 mPinInputInteger;
 	QSharedPointer<fugio::PinInterface>			 mPinInputBits;
+	QSharedPointer<fugio::PinInterface>			 mPinInputInteger;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputBitArray;
 	fugio::VariantInterface						*mValOutputBitArray;

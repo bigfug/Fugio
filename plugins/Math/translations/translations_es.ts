@@ -20,6 +20,19 @@
     </message>
 </context>
 <context>
+    <name>BitsToIntNode</name>
+    <message>
+        <location filename="../bitstointnode.cpp" line="29"/>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitstointnode.cpp" line="31"/>
+        <source>Integer</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BooleanLatchNode</name>
     <message>
         <location filename="../booleanlatchnode.cpp" line="14"/>

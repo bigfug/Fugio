@@ -4,6 +4,8 @@
 
 #include <fugio/context_interface.h>
 
+#include <fugio/pin_variant_iterator.h>
+
 XorNode::XorNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
@@ -18,30 +20,43 @@ XorNode::XorNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void XorNode::inputsUpdated( qint64 pTimeStamp )
 {
-	Q_UNUSED( pTimeStamp )
+	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	bool		OutVal;
-	bool		OutHas = false;
+	QList<fugio::PinVariantIterator>	ItrLst;
+	int									ItrMax = 0;
 
 	for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
 	{
-		bool		v = variant( P ).toBool();
+		ItrLst << fugio::PinVariantIterator( P );
 
-		if( !OutHas )
-		{
-			OutVal = v;
-			OutHas = true;
-		}
-		else
-		{
-			OutVal ^= v;
-		}
+		ItrMax = std::max( ItrMax, ItrLst.last().count() );
 	}
 
-	if( OutVal != mValOutput->variant().toBool() )
+	if( !ItrMax )
 	{
-		mValOutput->setVariant( OutVal );
+		return;
+	}
 
+	bool		UpdateOutput = mPinOutput->alwaysUpdate();
+
+	variantSetCount( mValOutput, ItrMax, UpdateOutput );
+
+	for( int i = 0 ; i < ItrMax ; i++ )
+	{
+		bool		OutVal;
+
+		for( int j = 0 ; j < ItrLst.size() ; j++ )
+		{
+			bool	NewVal = ItrLst.at( j ).index( i ).toBool();
+
+			OutVal = ( !j ? NewVal : OutVal ^ NewVal );
+		}
+
+		variantSetValue<bool>( mValOutput, i, OutVal, UpdateOutput );
+	}
+
+	if( UpdateOutput )
+	{
 		pinUpdated( mPinOutput );
 	}
 }

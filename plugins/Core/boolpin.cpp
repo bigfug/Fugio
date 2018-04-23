@@ -7,3 +7,15 @@ BoolPin::BoolPin( QSharedPointer<fugio::PinInterface> pPin )
 {
 
 }
+
+QString BoolPin::toString() const
+{
+	QStringList		L;
+
+	for( bool v : mValues )
+	{
+		L << ( v ? "1" : "0" );
+	}
+
+	return( L.join( ',' ) );
+}

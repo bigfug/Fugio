@@ -140,6 +140,8 @@ set( SOURCE_FILES
 	pownode.h
 	sumnode.cpp
 	sumnode.h
+	bitstointnode.cpp
+	bitstointnode.h
 )
 
 set( QRC_FILES

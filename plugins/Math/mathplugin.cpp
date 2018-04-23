@@ -89,6 +89,7 @@
 #include "xorbitsnode.h"
 
 #include "flipflopnode.h"
+#include "bitstointnode.h"
 
 #include "pointtransformnode.h"
 #include "pownode.h"
@@ -109,6 +110,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "AND Bits", "Logic", NID_AND_BITS, &AndBitsNode::staticMetaObject ),
 	ClassEntry( "ArcCos", "Number", NID_ARCCOS, &ArcCosNode::staticMetaObject ),
 	ClassEntry( "Bits To Pins", "Math", NID_BITS_TO_PINS, &BitsToPinsNode::staticMetaObject ),
+	ClassEntry( "Bits To Integer", "Math", NID_BITS_TO_INT, &BitsToIntNode::staticMetaObject ),
 	ClassEntry( "Boolean Latch", "Math", NID_BOOLEAN_LATCH, &BooleanLatchNode::staticMetaObject ),
 	ClassEntry( "Compare", "Number", NID_COMPARE_NUMBERS, &CompareNumbersNode::staticMetaObject ),
 	ClassEntry( "Cross Product", "Vector3", NID_CROSS_PRODUCT, &CrossProductNode::staticMetaObject ),

@@ -20,6 +20,27 @@
     </message>
 </context>
 <context>
+    <name>BitsToIntNode</name>
+    <message>
+        <source>The first number to add together</source>
+        <translation type="obsolete">Erste Zahl zum Addieren</translation>
+    </message>
+    <message>
+        <source>The sum of the input pins added together</source>
+        <translation type="obsolete">Summe aller Input Pins addiert</translation>
+    </message>
+    <message>
+        <location filename="../bitstointnode.cpp" line="29"/>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../bitstointnode.cpp" line="31"/>
+        <source>Integer</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BooleanLatchNode</name>
     <message>
         <location filename="../booleanlatchnode.cpp" line="14"/>
