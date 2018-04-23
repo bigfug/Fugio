@@ -64,8 +64,26 @@
 <context>
     <name>CorePlugin</name>
     <message>
-        <location filename="../coreplugin.cpp" line="81"/>
+        <location filename="../coreplugin.cpp" line="82"/>
         <source>Any Trigger</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DecimateNode</name>
+    <message>
+        <location filename="../decimatenode.cpp" line="15"/>
+        <source>Count</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../decimatenode.cpp" line="17"/>
+        <source>Reset</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../decimatenode.cpp" line="19"/>
+        <source>Input</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

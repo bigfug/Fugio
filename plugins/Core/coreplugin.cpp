@@ -51,6 +51,7 @@
 #include "integertofloatnode.h"
 #include "blockupdatesnode.h"
 #include "processclicknode.h"
+#include "decimatenode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -85,6 +86,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Bool Range", NID_BOOL_RANGE, &BoolRangeNode::staticMetaObject ),
 	ClassEntry( "Bool To Trigger", NID_BOOL_TO_TRIGGER, &BoolToTriggerNode::staticMetaObject ),
 	ClassEntry( "Counter", NID_COUNTER, &CounterNode::staticMetaObject ),
+	ClassEntry( "Decimate", NID_DECIMATE, &DecimateNode::staticMetaObject ),
 	ClassEntry( "Duplicate Pins", "Fugio", NID_DUPLICATE_PINS, &DuplicatePinsNode::staticMetaObject ),
 	ClassEntry( "Envelope", "Number", NID_ENVELOPE, &EnvelopeNode::staticMetaObject ),
 	ClassEntry( "Float Threshold", NID_FLOAT_THRESHOLD, &FloatThresholdNode::staticMetaObject ),
