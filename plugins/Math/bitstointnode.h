@@ -12,6 +12,8 @@
 class BitsToIntNode : public fugio::NodeControlBase, public fugio::PairedPinsHelperInterface
 {
 	Q_OBJECT
+	Q_INTERFACES( fugio::PairedPinsHelperInterface )
+
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
 	Q_CLASSINFO( "Description", "" )
