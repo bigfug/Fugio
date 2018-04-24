@@ -385,7 +385,11 @@ void MediaRecorderNode::record( const QString &pFileName )
 
 		if( ( mOutputFormat->flags & AVFMT_GLOBALHEADER ) != 0 )
 		{
+#if defined( CODEC_FLAG_GLOBAL_HEADER )
 			mCodecContextVideo->flags |= CODEC_FLAG_GLOBAL_HEADER;
+#elif defined( AV_CODEC_FLAG_GLOBAL_HEADER )
+			mCodecContextVideo->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+#endif
 		}
 	}
 
@@ -400,10 +404,12 @@ void MediaRecorderNode::record( const QString &pFileName )
 
 		avcodec_parameters_from_context( mStreamVideo->codecpar, mCodecContextVideo );
 
+#if defined( AVFMT_RAWPICTURE )
 		if( ( mOutputFormat->flags & AVFMT_RAWPICTURE ) != 0 )
 		{
 
 		}
+#endif
 	}
 
 	//-------------------------------------------------------------------------
@@ -435,7 +441,11 @@ void MediaRecorderNode::record( const QString &pFileName )
 
 		if( mOutputFormat->flags & AVFMT_GLOBALHEADER )
 		{
-			mCodecContextAudio->flags |= CODEC_FLAG_GLOBAL_HEADER;
+#if defined( CODEC_FLAG_GLOBAL_HEADER )
+			mCodecContextVideo->flags |= CODEC_FLAG_GLOBAL_HEADER;
+#elif defined( AV_CODEC_FLAG_GLOBAL_HEADER )
+			mCodecContextVideo->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+#endif
 		}
 	}
 
@@ -663,6 +673,7 @@ void MediaRecorderNode::recordEntry()
 		mFrameVideo->pts    = av_rescale_q( mFrameCount, mCodecContextVideo->time_base, mStreamVideo->time_base );
 		mFrameVideo->format = mCodecContextVideo->pix_fmt;
 
+#if defined( AVFMT_RAWPICTURE )
 		if( ( mFormatContext->flags & AVFMT_RAWPICTURE ) != 0 )
 		{
 			mPacketVideo.flags			|= AV_PKT_FLAG_KEY;
@@ -678,6 +689,7 @@ void MediaRecorderNode::recordEntry()
 			}
 		}
 		else
+#endif
 		{
 			if( avcodec_send_frame( mCodecContextVideo, mFrameVideo ) == 0 )
 			{
