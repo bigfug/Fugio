@@ -19,6 +19,8 @@ IntToBitsNode::IntToBitsNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInputBits->setValue( 8 );
 
 	mValOutputBitArray = pinOutput<fugio::VariantInterface *>( "Bits", mPinOutputBitArray, PID_BOOL, PIN_OUTPUT_ARRAY );
+
+	mNode->pairPins( mPinInputInteger, mPinOutputBitArray );
 }
 
 void IntToBitsNode::inputsUpdated( qint64 pTimeStamp )
