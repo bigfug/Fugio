@@ -33,12 +33,12 @@ install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
-if( APPLE )
+if( APPLE AND CMAKE_BUILD_TYPE STREQUAL Release )
 	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND install_name_tool -change "@rpath/libndi.dylib" "@loader_path/../Frameworks/libndi.dylib" "${BUNDLE_PATH}/Contents/MacOS/${PROJECT_NAME}"
 		VERBATIM
 		)
-endif( APPLE )
+endif()
 
 #------------------------------------------------------------------------------
 # Qt5

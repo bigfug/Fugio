@@ -1,4 +1,4 @@
-if( APPLE )
+if( APPLE AND CMAKE_BUILD_TYPE STREQUAL Release )
 	set( BUNDLE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.bundle" )
 
 	get_filename_component( LUA_LIB ${LUA_LIBRARY} NAME )
@@ -15,4 +15,4 @@ if( APPLE )
 		COMMAND ${CMAKE_COMMAND} -E remove "${BUNDLE_PATH}/Contents/Frameworks/${LUA_LIB}"
 		VERBATIM
 		)
-endif( APPLE )
+endif()
