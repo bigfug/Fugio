@@ -145,9 +145,9 @@ public slots:
 protected:
 	typedef QPair<QGraphicsSimpleTextItem *, PinItem *>		PinPair;
 
-	PinPair *findPinPair( QSharedPointer<fugio::PinInterface> pPin );
-	PinPair *findPinPairInput( const QUuid &pId );
-	PinPair *findPinPairOutput( const QUuid &pId );
+	PinPair findPinPair( QSharedPointer<fugio::PinInterface> pPin );
+	PinPair findPinPairInput( const QUuid &pId );
+	PinPair findPinPairOutput( const QUuid &pId );
 	int findPinPairInputIndex( const QUuid &pId ) const;
 	int findPinPairOutputIndex( const QUuid &pId ) const;
 
