@@ -38,6 +38,11 @@ if( APPLE AND CMAKE_BUILD_TYPE STREQUAL Release )
 		COMMAND install_name_tool -change "@rpath/libndi.dylib" "@loader_path/../Frameworks/libndi.dylib" "${BUNDLE_PATH}/Contents/MacOS/${PROJECT_NAME}"
 		VERBATIM
 		)
+
+	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND install_name_tool -change "@rpath/libndi.3.dylib" "@loader_path/../Frameworks/libndi.3.dylib" "${BUNDLE_PATH}/Contents/MacOS/${PROJECT_NAME}"
+		VERBATIM
+		)
 endif()
 
 #------------------------------------------------------------------------------
