@@ -829,12 +829,11 @@ void ContextView::loadEnded( QSettings &pSettings, bool pPartial )
 		}
 	}
 
+	QUuid		OldGrp = groupId();
+
 	m_GroupId = QUuid::createUuid();	// dummy value
 
-	if( !pPartial )
-	{
-		setGroupId( QUuid() );
-	}
+	setGroupId( OldGrp );
 }
 
 void ContextView::saveContext( QSettings &pSettings ) const
