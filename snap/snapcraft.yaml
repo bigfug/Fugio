@@ -44,7 +44,6 @@
         - libqt5network5
         - libqt5widgets5
         - libicu55
-        - libdlib
         - libavcodec-ffmpeg56
         - libavdevice-ffmpeg56
         - libavformat-ffmpeg56
