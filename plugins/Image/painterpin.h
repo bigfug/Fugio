@@ -5,7 +5,7 @@
 
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/image/uuid.h>
 
 #include <fugio/pincontrolbase.h>
@@ -39,7 +39,7 @@ public:
 	// fugio::PainterInterface
 
 	virtual void setSource(fugio::PainterInterface *pSource) Q_DECL_OVERRIDE;
-	virtual void render(QPainter &pPainter) Q_DECL_OVERRIDE;
+	virtual void paint( QPainter &pPainter, const QRect &pRect ) Q_DECL_OVERRIDE;
 
 private:
 	fugio::PainterInterface			*mSource;

@@ -4,7 +4,8 @@
 #include <fugio/context_interface.h>
 #include <fugio/core/uuid.h>
 #include <fugio/context_signals.h>
-#include <fugio/core/array_interface.h>
+#include <fugio/core/variant_interface.h>
+#include <fugio/pin_variant_iterator.h>
 
 #include <QComboBox>
 
@@ -38,21 +39,28 @@ void SerialOutputNode::inputsUpdated( qint64 pTimeStamp )
 
 	QByteArray		SerDat;
 
-	fugio::ArrayInterface	*A;
-	fugio::VariantInterface	*V;
+	fugio::PinVariantIterator		Input( mPinInput );
 
-	if( ( A = input<fugio::ArrayInterface *>( mPinInput ) ) )
+	const int		OutCnt = Input.count();
+
+	if( !OutCnt )
 	{
-		SerDat.append( (const char *)A->array(), A->stride() * A->count() );
-	}
-	else if( ( V = input<fugio::VariantInterface *>( mPinInput ) ) )
-	{
-		SerDat = V->variant().toByteArray();
+		return;
 	}
 
-	if( !SerDat.isEmpty() )
+	for( int i = 0 ; i < OutCnt ; i++ )
 	{
-		mDevice->append( SerDat );
+		const QVariant	&V = Input.index( i );
+
+		switch( QMetaType::Type( V.type() ) )
+		{
+			case QMetaType::QByteArray:
+				mDevice->append( V.toByteArray() );
+				break;
+
+			default:
+				break;
+		}
 	}
 }
 

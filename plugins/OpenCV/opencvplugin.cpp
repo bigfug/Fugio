@@ -3,7 +3,7 @@
 #include <QTranslator>
 #include <QApplication>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #include "grayscalenode.h"
 #include "imagethresholdnode.h"
@@ -26,14 +26,18 @@
 #include "flipnode.h"
 #include "houghlinesnode.h"
 #include "simpleblobdetectornode.h"
+#include "absdiffnode.h"
+#include "countnonzeronode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
 ClassEntry	OpenCVPlugin::mNodeEntries[] =
 {
+	ClassEntry( "AbsDiff", "OpenCV", NID_OPENCV_ABSDIFF, &AbsDiffNode::staticMetaObject ),
 	ClassEntry( "Add", "OpenCV", NID_OPENCV_ADD, &AddNode::staticMetaObject ),
 	ClassEntry( "Cascade Classifier", "OpenCV", NID_OPENCV_CASCADE_CLASSIFER, &CascadeClassifierNode::staticMetaObject ),
 	ClassEntry( "ConvertTo", "OpenCV", NID_OPENCV_CONVERT_TO, &ConvertToNode::staticMetaObject ),
+	ClassEntry( "Count Non Zero", "OpenCV", NID_OPENCV_COUNT_NON_ZERO, &CountNonZeroNode::staticMetaObject ),
 	ClassEntry( "Distance Transform", "OpenCV", NID_OPENCV_DISTANCE_TRANSFORM, &DistanceTransformNode::staticMetaObject ),
 	ClassEntry( "Dilate", "OpenCV", NID_OPENCV_DILATE, &DilateNode::staticMetaObject ),
 	ClassEntry( "Erode", "OpenCV", NID_OPENCV_ERODE, &ErodeNode::staticMetaObject ),
@@ -68,7 +72,7 @@ OpenCVPlugin::OpenCVPlugin()
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_opencv" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}
@@ -105,44 +109,44 @@ void OpenCVPlugin::deinitialise()
 
 #if defined( OPENCV_SUPPORTED )
 
-cv::Mat OpenCVPlugin::image2mat( fugio::ImageInterface *pSrcImg )
+cv::Mat OpenCVPlugin::image2mat( const fugio::Image &pSrcImg )
 {
 	cv::Mat		MatImg;
 
 //	FORMAT_YUYV422,
 
-	switch( pSrcImg->format() )
+	switch( pSrcImg.format() )
 	{
-		case fugio::ImageInterface::FORMAT_RGB8:
-		case fugio::ImageInterface::FORMAT_BGR8:
-		case fugio::ImageInterface::FORMAT_HSV8:
-			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_8UC3, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
+		case fugio::ImageFormat::RGB8:
+		case fugio::ImageFormat::BGR8:
+		case fugio::ImageFormat::HSV8:
+			MatImg = cv::Mat( pSrcImg.size().height(), pSrcImg.size().width(), CV_8UC3, (void *)pSrcImg.buffer( 0 ), pSrcImg.lineSize( 0 ) );
 			break;
 
-		case fugio::ImageInterface::FORMAT_RGBA8:
-		case fugio::ImageInterface::FORMAT_BGRA8:
-			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_8UC4, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
+		case fugio::ImageFormat::RGBA8:
+		case fugio::ImageFormat::BGRA8:
+			MatImg = cv::Mat( pSrcImg.size().height(), pSrcImg.size().width(), CV_8UC4, (void *)pSrcImg.buffer( 0 ), pSrcImg.lineSize( 0 ) );
 			break;
 
-		case fugio::ImageInterface::FORMAT_GRAY8:
-			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_8UC1, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
+		case fugio::ImageFormat::GRAY8:
+			MatImg = cv::Mat( pSrcImg.size().height(), pSrcImg.size().width(), CV_8UC1, (void *)pSrcImg.buffer( 0 ), pSrcImg.lineSize( 0 ) );
 			break;
 
-		case fugio::ImageInterface::FORMAT_GRAY16:
-			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_16UC1, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
+		case fugio::ImageFormat::GRAY16:
+			MatImg = cv::Mat( pSrcImg.size().height(), pSrcImg.size().width(), CV_16UC1, (void *)pSrcImg.buffer( 0 ), pSrcImg.lineSize( 0 ) );
 			break;
 
-		case fugio::ImageInterface::FORMAT_YUYV422:
-		case fugio::ImageInterface::FORMAT_UYVY422:
-			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_8UC2, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
+		case fugio::ImageFormat::YUYV422:
+		case fugio::ImageFormat::UYVY422:
+			MatImg = cv::Mat( pSrcImg.size().height(), pSrcImg.size().width(), CV_8UC2, (void *)pSrcImg.buffer( 0 ), pSrcImg.lineSize( 0 ) );
 			break;
 
-		case fugio::ImageInterface::FORMAT_R32F:
-			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_32FC1, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
+		case fugio::ImageFormat::R32F:
+			MatImg = cv::Mat( pSrcImg.size().height(), pSrcImg.size().width(), CV_32FC1, (void *)pSrcImg.buffer( 0 ), pSrcImg.lineSize( 0 ) );
 			break;
 
-		case fugio::ImageInterface::FORMAT_R32S:
-			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_32SC1, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
+		case fugio::ImageFormat::R32S:
+			MatImg = cv::Mat( pSrcImg.size().height(), pSrcImg.size().width(), CV_32SC1, (void *)pSrcImg.buffer( 0 ), pSrcImg.lineSize( 0 ) );
 			break;
 
 		default:
@@ -152,41 +156,41 @@ cv::Mat OpenCVPlugin::image2mat( fugio::ImageInterface *pSrcImg )
 	return( MatImg );
 }
 
-void OpenCVPlugin::mat2image( cv::Mat &pSrcMat, fugio::ImageInterface *pDstImg, fugio::ImageInterface::Format pDstFmt )
+void OpenCVPlugin::mat2image( cv::Mat &pSrcMat, fugio::Image &pDstImg, fugio::ImageFormat pDstFmt )
 {
-	pDstImg->setSize( pSrcMat.cols, pSrcMat.rows );
-	pDstImg->setLineSize( 0, pSrcMat.step );
+	pDstImg.setSize( pSrcMat.cols, pSrcMat.rows );
+	pDstImg.setLineSize( 0, pSrcMat.step );
 
-	if( pDstFmt != fugio::ImageInterface::FORMAT_UNKNOWN )
+	if( pDstFmt != fugio::ImageFormat::UNKNOWN )
 	{
-		pDstImg->setFormat( pDstFmt );
+		pDstImg.setFormat( pDstFmt );
 	}
 	else
 	{
 		switch( pSrcMat.type() )
 		{
 			case CV_8UC1:
-				pDstImg->setFormat( fugio::ImageInterface::FORMAT_GRAY8 );
+				pDstImg.setFormat( fugio::ImageFormat::GRAY8 );
 				break;
 
 			case CV_8UC3:
-				pDstImg->setFormat( fugio::ImageInterface::FORMAT_RGB8 );
+				pDstImg.setFormat( fugio::ImageFormat::RGB8 );
 				break;
 
 			case CV_8UC4:
-				pDstImg->setFormat( fugio::ImageInterface::FORMAT_RGBA8 );
+				pDstImg.setFormat( fugio::ImageFormat::RGBA8 );
 				break;
 
 			case CV_16UC1:
-				pDstImg->setFormat( fugio::ImageInterface::FORMAT_GRAY16 );
+				pDstImg.setFormat( fugio::ImageFormat::GRAY16 );
 				break;
 
 			case CV_32SC1:
-				pDstImg->setFormat( fugio::ImageInterface::FORMAT_R32S );
+				pDstImg.setFormat( fugio::ImageFormat::R32S );
 				break;
 
 			case CV_32FC1:
-				pDstImg->setFormat( fugio::ImageInterface::FORMAT_R32F );
+				pDstImg.setFormat( fugio::ImageFormat::R32F );
 				break;
 
 #if defined( QT_DEBUG )
@@ -197,7 +201,7 @@ void OpenCVPlugin::mat2image( cv::Mat &pSrcMat, fugio::ImageInterface *pDstImg, 
 		}
 	}
 
-	pDstImg->setBuffer( 0, pSrcMat.ptr() );
+	pDstImg.setBuffer( 0, pSrcMat.ptr() );
 }
 
 #endif // defined( OPENCV_SUPPORTED )

@@ -9,7 +9,6 @@
 #include <fugio/core/variant_interface.h>
 #include <fugio/midi/uuid.h>
 #include <fugio/midi/midi_interface.h>
-#include <fugio/core/array_interface.h>
 
 #include <fugio/context_signals.h>
 
@@ -176,17 +175,17 @@ void PortMidiOutputNode::onFrameEnd( qint64 pTimeStamp )
 			continue;
 		}
 
-		fugio::ArrayInterface		*A = input<fugio::ArrayInterface *>( P );
+//		fugio::ArrayInterface		*A = input<fugio::ArrayInterface *>( P );
 
-		if( A )
-		{
-			if( A->type() == QMetaType::Int && A->size() == 1 && A->stride() == sizeof( int ) )
-			{
-				mDevice->output( (const int32_t *)A->array(), A->count() );
-			}
+//		if( A )
+//		{
+//			if( A->type() == QMetaType::Int && A->size() == 1 && A->stride() == sizeof( int ) )
+//			{
+//				mDevice->output( (const int32_t *)A->array(), A->count() );
+//			}
 
-			continue;
-		}
+//			continue;
+//		}
 
 		fugio::VariantInterface		*V = input<fugio::VariantInterface *>( P );
 
@@ -194,19 +193,14 @@ void PortMidiOutputNode::onFrameEnd( qint64 pTimeStamp )
 		{
 			if( P->controlUuid() == PID_BYTEARRAY )
 			{
-				mDevice->outputSysEx( V->variant().toByteArray() );
-			}
-			else if( P->controlUuid() == PID_BYTEARRAY_LIST )
-			{
-				for( const QVariant &L : V->variant().toList() )
+				for( int i = 0 ; i < V->variantCount() ; i++ )
 				{
-					const QByteArray	&BA = L.toByteArray();
-
-					if( !BA.isEmpty() )
-					{
-						mDevice->outputSysEx( BA );
-					}
+					mDevice->outputSysEx( V->variant( i ).toByteArray() );
 				}
+			}
+			else if( P->controlUuid() == PID_INTEGER )
+			{
+				mDevice->output( (const int32_t *)V->variantArray(), V->variantCount() * V->variantElementCount() );
 			}
 		}
 	}
@@ -317,7 +311,7 @@ QList<QUuid> PortMidiOutputNode::pinAddTypesInput() const
 	if( PinLst.isEmpty() )
 	{
 		PinLst << PID_MIDI_OUTPUT;
-		PinLst << PID_BYTEARRAY_LIST;
+		PinLst << PID_BYTEARRAY;
 	}
 
 	return( PinLst );

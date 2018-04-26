@@ -3,7 +3,7 @@
 #include <fugio/core/uuid.h>
 #include <fugio/image/uuid.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/colour/colour_interface.h>
 
 #include <fugio/performance.h>
@@ -195,23 +195,23 @@ ImageFilterNode::ImageFilterNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinFilter->setValue( FilterNames.first() );
 
-	mValOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE );
 }
 
 void ImageFilterNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	fugio::ImageInterface	*SrcImg1 = input<fugio::ImageInterface *>( mPinInputImage1 );
+	fugio::Image	SrcImg1 = variant<fugio::Image>( mPinInputImage1 );
 
-	if( !SrcImg1 || SrcImg1->size().isEmpty() )
+	if( !SrcImg1.isValid() )
 	{
 		mNode->setStatus( fugio::NodeInterface::Warning );
 
 		return;
 	}
 
-	if( SrcImg1->format() != fugio::ImageInterface::FORMAT_RGB8 )
+	if( SrcImg1.format() != fugio::ImageFormat::RGB8 )
 	{
 		mNode->setStatus( fugio::NodeInterface::Warning );
 
@@ -220,34 +220,36 @@ void ImageFilterNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::Performance	Perf( mNode, "inputsUpdated", pTimeStamp );
 
-	if( mValOutputImage->size() != SrcImg1->size() )
-	{
-		mValOutputImage->setFormat( fugio::ImageInterface::FORMAT_RGB8 );
-		mValOutputImage->setSize( SrcImg1->width(), SrcImg1->height() );
-		mValOutputImage->setLineSize( 0, SrcImg1->width() * 3 );
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
 
-		memcpy( mValOutputImage->internalBuffer( 0 ), SrcImg1->buffer( 0 ), mValOutputImage->bufferSize( 0 ) );
+	if( DstImg.size() != SrcImg1.size() )
+	{
+		DstImg.setFormat( fugio::ImageFormat::RGB8 );
+		DstImg.setSize( SrcImg1.width(), SrcImg1.height() );
+		DstImg.setLineSize( 0, SrcImg1.width() * 3 );
+
+		memcpy( DstImg.internalBuffer( 0 ), SrcImg1.buffer( 0 ), DstImg.bufferSize( 0 ) );
 
 		pinUpdated( mPinOutputImage );
 	}
 
-	fugio::ImageInterface	*SrcImg2 = input<fugio::ImageInterface *>( mPinInputImage2 );
+	fugio::Image	SrcImg2 = variant<fugio::Image>( mPinInputImage2 );
 
-	if( !SrcImg2 || SrcImg2->size().isEmpty() )
+	if( !SrcImg2.isValid() )
 	{
 		mNode->setStatus( fugio::NodeInterface::Warning );
 
 		return;
 	}
 
-	if( SrcImg2->format() != fugio::ImageInterface::FORMAT_RGB8 )
+	if( SrcImg2.format() != fugio::ImageFormat::RGB8 )
 	{
 		mNode->setStatus( fugio::NodeInterface::Warning );
 
 		return;
 	}
 
-	if( SrcImg1->size() != SrcImg2->size() )
+	if( SrcImg1.size() != SrcImg2.size() )
 	{
 		mNode->setStatus( fugio::NodeInterface::Warning );
 
@@ -256,13 +258,13 @@ void ImageFilterNode::inputsUpdated( qint64 pTimeStamp )
 
 	mNode->setStatus( fugio::NodeInterface::Initialised );
 
-	for( int y = 0 ; y < SrcImg1->height() ; y++ )
+	for( int y = 0 ; y < SrcImg1.height() ; y++ )
 	{
-		const quint8		*SrcPtr1 = SrcImg1->buffer( 0 ) + SrcImg1->lineSize( 0 ) * y;
-		const quint8		*SrcPtr2 = SrcImg2->buffer( 0 ) + SrcImg2->lineSize( 0 ) * y;
-		quint8				*DstPtr = mValOutputImage->internalBuffer( 0 ) + mValOutputImage->lineSize( 0 ) * y;
+		const quint8		*SrcPtr1 = SrcImg1.buffer( 0 ) + SrcImg1.lineSize( 0 ) * y;
+		const quint8		*SrcPtr2 = SrcImg2.buffer( 0 ) + SrcImg2.lineSize( 0 ) * y;
+		quint8				*DstPtr = DstImg.internalBuffer( 0 ) + DstImg.lineSize( 0 ) * y;
 
-		for( int x = 0 ; x < SrcImg1->width() ; x++ )
+		for( int x = 0 ; x < SrcImg1.width() ; x++ )
 		{
 			ColorBlend_Darken( DstPtr, SrcPtr1, SrcPtr2 );
 

@@ -27,13 +27,17 @@ public:
 
 	virtual void reserve( int pCount ) = 0;
 
-	virtual void setSize( int pSize ) = 0;
+	virtual void setElementCount( int pSize ) = 0;
 
-	virtual int size( void ) const = 0;
+	virtual int elementCount( void ) const = 0;
 
 	virtual void *array( void ) = 0;
 
+	virtual const void *array( void ) const = 0;
+
 	virtual void setArray( void *pArray ) = 0;
+
+	virtual int byteCount( void ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

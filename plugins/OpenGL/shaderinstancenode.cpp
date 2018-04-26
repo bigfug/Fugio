@@ -8,7 +8,10 @@
 #include <QVector4D>
 #include <QOpenGLVertexArrayObject>
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 #include <QOpenGLExtraFunctions>
+#endif
+
 #include <QOpenGLFunctions_3_2_Core>
 
 #include <fugio/core/uuid.h>
@@ -24,7 +27,6 @@
 #include <fugio/opengl/buffer_interface.h>
 #include <fugio/opengl/buffer_entry_interface.h>
 #include <fugio/opengl/vertex_array_object_interface.h>
-#include <fugio/core/array_interface.h>
 
 #include "openglplugin.h"
 
@@ -216,7 +218,7 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 
 	//-------------------------------------------------------------------------
 
-#if !defined( GL_ES_VERSION_2_0 )
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 #endif
 
@@ -258,10 +260,12 @@ void ShaderInstanceNode::inputsUpdated( qint64 pTimeStamp )
 					Buffers.append( GL_NONE );
 				}
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 				if( GLEX )
 				{
 					GLEX->glDrawBuffers( Buffers.size(), Buffers.data() );
 				}
+#endif
 
 				OPENGL_DEBUG( mNode->name() );
 
@@ -630,6 +634,9 @@ void ShaderInstanceNode::bindOutputBuffers( QVector<GLenum> &Buffers, QList< QSh
 
 				Buffers.append( GL_COLOR_ATTACHMENT0 + Buffers.size() );
 				break;
+
+			default:
+				break;
 		}
 	}
 
@@ -779,7 +786,9 @@ void ShaderInstanceNode::bindUniforms( QList<ShaderBindData> &Bindings )
 {
 	bool		NumberOK;
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+#endif
 
 	OpenGLShaderInterface					*Shader = input<OpenGLShaderInterface *>( mPinShader );
 	fugio::NodeInterface					*CompilerNode = mPinShader->connectedNode();
@@ -843,18 +852,18 @@ void ShaderInstanceNode::bindUniforms( QList<ShaderBindData> &Bindings )
 				continue;
 			}
 
-			fugio::ArrayInterface	*ArrInt = qobject_cast<fugio::ArrayInterface *>( PinControl->qobject() );
+			fugio::VariantInterface	*ArrInt = qobject_cast<fugio::VariantInterface *>( PinControl->qobject() );
 
 			if( ArrInt )
 			{
-				int			CpyCnt = qMin( ArrInt->count(), UniformData.mSize );
+				int			CpyCnt = qMin( ArrInt->variantCount(), UniformData.mSize );
 
 				if( !CpyCnt )
 				{
 					continue;
 				}
 
-				void		*ArrDat = ArrInt->array();
+				void		*ArrDat = ArrInt->variantArray();
 
 				if( !ArrDat )
 				{
@@ -864,76 +873,76 @@ void ShaderInstanceNode::bindUniforms( QList<ShaderBindData> &Bindings )
 				switch( UniformData.mType )
 				{
 					case GL_FLOAT:
-						if( ArrInt->type() == QMetaType::Float && ArrInt->size() == 1 && ArrInt->stride() == sizeof( float ) )
+						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == sizeof( float ) )
 						{
 							glUniform1fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
 						}
 						break;
 
 					case GL_FLOAT_VEC2:
-						if( ArrInt->type() == QMetaType::Float && ArrInt->size() == 2 && ArrInt->stride() == 2 * sizeof( float ) )
+						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 2 && ArrInt->variantStride() == 2 * sizeof( float ) )
 						{
 							glUniform2fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
 						}
-						else if( ArrInt->type() == QMetaType::QVector2D && ArrInt->size() == 1 && ArrInt->stride() == 2 * sizeof( float ) )
+						else if( ArrInt->variantType() == QMetaType::QVector2D && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 2 * sizeof( float ) )
 						{
 							glUniform2fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
 						}
-						else if( ArrInt->type() == QMetaType::QPointF && ArrInt->size() == 1 && ArrInt->stride() == 2 * sizeof( float ) )
+						else if( ArrInt->variantType() == QMetaType::QPointF && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 2 * sizeof( float ) )
 						{
 							glUniform2fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
 						}
 						break;
 
 					case GL_FLOAT_VEC3:
-						if( ArrInt->type() == QMetaType::Float && ArrInt->size() == 3 && ArrInt->stride() == 3 * sizeof( float ) )
+						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 3 && ArrInt->variantStride() == 3 * sizeof( float ) )
 						{
 							glUniform3fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
 						}
-						else if( ArrInt->type() == QMetaType::QVector3D && ArrInt->size() == 1 && ArrInt->stride() == 3 * sizeof( float ) )
+						else if( ArrInt->variantType() == QMetaType::QVector3D && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 3 * sizeof( float ) )
 						{
 							glUniform3fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
 						}
 						break;
 
 					case GL_FLOAT_VEC4:
-						if( ArrInt->type() == QMetaType::Float && ArrInt->size() == 4 && ArrInt->stride() == 4 * sizeof( float ) )
+						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 4 && ArrInt->variantStride() == 4 * sizeof( float ) )
 						{
 							glUniform4fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
 						}
-						else if( ArrInt->type() == QMetaType::QVector4D && ArrInt->size() == 1 && ArrInt->stride() == 4 * sizeof( float ) )
+						else if( ArrInt->variantType() == QMetaType::QVector4D && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 4 * sizeof( float ) )
 						{
 							glUniform4fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
 						}
 						break;
 
 					case GL_INT_VEC2:
-						if( ArrInt->type() == QMetaType::Int && ArrInt->size() == 2 && ArrInt->stride() == 2 * sizeof( int ) )
+						if( ArrInt->variantType() == QMetaType::Int && ArrInt->variantElementCount() == 2 && ArrInt->variantStride() == 2 * sizeof( int ) )
 						{
 							glUniform2iv( UniformData.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
 						}
-						else if( ArrInt->type() == QMetaType::QPoint && ArrInt->size() == 1 && ArrInt->stride() == 2 * sizeof( int ) )
+						else if( ArrInt->variantType() == QMetaType::QPoint && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 2 * sizeof( int ) )
 						{
 							glUniform2iv( UniformData.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
 						}
 						break;
 
 					case GL_INT_VEC3:
-						if( ArrInt->type() == QMetaType::Int && ArrInt->size() == 3 && ArrInt->stride() == 3 * sizeof( int ) )
+						if( ArrInt->variantType() == QMetaType::Int && ArrInt->variantElementCount() == 3 && ArrInt->variantStride() == 3 * sizeof( int ) )
 						{
 							glUniform3iv( UniformData.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
 						}
 						break;
 
 					case GL_INT_VEC4:
-						if( ArrInt->type() == QMetaType::Int && ArrInt->size() == 4 && ArrInt->stride() == 4 * sizeof( int ) )
+						if( ArrInt->variantType() == QMetaType::Int && ArrInt->variantElementCount() == 4 && ArrInt->variantStride() == 4 * sizeof( int ) )
 						{
 							glUniform4iv( UniformData.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
 						}
 						break;
 
 					case GL_FLOAT_MAT4:
-						if( ArrInt->type() == QMetaType::QMatrix4x4 && ArrInt->size() == 1 && ArrInt->stride() == 16 * sizeof( float ) )
+						if( ArrInt->variantType() == QMetaType::QMatrix4x4 && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 16 * sizeof( float ) )
 						{
 							glUniformMatrix4fv( UniformData.mLocation, CpyCnt, GL_FALSE, static_cast<float *>( ArrDat ) );
 						}
@@ -985,11 +994,13 @@ void ShaderInstanceNode::bindUniforms( QList<ShaderBindData> &Bindings )
 				{
 					GLboolean		NewVal = PinVar.toBool();
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 					if( GLEX )
 					{
 						GLEX->glUniform1ui( UniformData.mLocation, NewVal );
 					}
 					else
+#endif
 					{
 						glUniform1i( UniformData.mLocation, NewVal );
 					}

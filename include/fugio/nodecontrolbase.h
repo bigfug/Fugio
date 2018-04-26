@@ -88,32 +88,32 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::NodeInterface
 
-	virtual QObject *qobject( void ) Q_DECL_OVERRIDE
+	inline virtual QObject *qobject( void ) Q_DECL_OVERRIDE
 	{
 		return( this );
 	}
 
-	virtual QGraphicsItem *guiItem( void ) Q_DECL_OVERRIDE
+	inline virtual QGraphicsItem *guiItem( void ) Q_DECL_OVERRIDE
 	{
-		return( 0 );
+		return( Q_NULLPTR );
 	}
 
-	virtual QWidget *gui( void ) Q_DECL_OVERRIDE
+	inline virtual QWidget *gui( void ) Q_DECL_OVERRIDE
 	{
-		return( 0 );
+		return( Q_NULLPTR );
 	}
 
-	virtual QSharedPointer<fugio::NodeInterface> node( void ) Q_DECL_OVERRIDE
-	{
-		return( mNode );
-	}
-
-	virtual QSharedPointer<fugio::NodeInterface> node( void ) const Q_DECL_OVERRIDE
+	inline virtual QSharedPointer<fugio::NodeInterface> node( void ) Q_DECL_OVERRIDE
 	{
 		return( mNode );
 	}
 
-	virtual void inputsUpdated( qint64 ) Q_DECL_OVERRIDE
+	inline virtual QSharedPointer<fugio::NodeInterface> node( void ) const Q_DECL_OVERRIDE
+	{
+		return( mNode );
+	}
+
+	inline virtual void inputsUpdated( qint64 ) Q_DECL_OVERRIDE
 	{
 	}
 
@@ -145,76 +145,77 @@ public:
 		return( true );
 	}
 
-	virtual bool wasInitialiseCalled( void ) const Q_DECL_OVERRIDE
+	inline virtual bool wasInitialiseCalled( void ) const Q_DECL_OVERRIDE
 	{
 		return( mInitialisedCalled );
 	}
 
-	virtual bool wasDeinitialiseCalled( void ) const Q_DECL_OVERRIDE
+	inline virtual bool wasDeinitialiseCalled( void ) const Q_DECL_OVERRIDE
 	{
 		return( mDeinitialisedCalled );
 	}
 
-	virtual void loadSettings( QSettings & ) Q_DECL_OVERRIDE
+	inline virtual void loadSettings( QSettings & ) Q_DECL_OVERRIDE
 	{
 	}
 
-	virtual void saveSettings( QSettings & ) const Q_DECL_OVERRIDE
+	inline virtual void saveSettings( QSettings & ) const Q_DECL_OVERRIDE
 	{
 	}
 
-	virtual QStringList availableInputPins( void ) const Q_DECL_OVERRIDE
+	inline virtual QStringList availableInputPins( void ) const Q_DECL_OVERRIDE
 	{
 		return( QStringList() );
 	}
 
-	virtual QList<AvailablePinEntry> availableOutputPins( void ) const Q_DECL_OVERRIDE
+	inline virtual QList<AvailablePinEntry> availableOutputPins( void ) const Q_DECL_OVERRIDE
 	{
 		return( QList<NodeControlInterface::AvailablePinEntry>() );
 	}
 
-	virtual QList<QUuid> pinAddTypesInput( void ) const Q_DECL_OVERRIDE
+	inline virtual QList<QUuid> pinAddTypesInput( void ) const Q_DECL_OVERRIDE
 	{
 		return( QList<QUuid>() );
 	}
 
-	virtual QList<QUuid> pinAddTypesOutput( void ) const Q_DECL_OVERRIDE
+	inline virtual QList<QUuid> pinAddTypesOutput( void ) const Q_DECL_OVERRIDE
 	{
 		return( QList<QUuid>() );
 	}
 
-	virtual bool canAcceptPin( fugio::PinInterface *pPin ) const Q_DECL_OVERRIDE
-	{
-		Q_UNUSED( pPin )
-
-		return( false );
-	}
-
-	virtual bool mustChooseNamedInputPin( void ) const Q_DECL_OVERRIDE
+	inline virtual bool canAcceptPin( fugio::PinInterface * ) const Q_DECL_OVERRIDE
 	{
 		return( false );
 	}
 
-	virtual bool mustChooseNamedOutputPin( void ) const Q_DECL_OVERRIDE
+	inline virtual bool mustChooseNamedInputPin( void ) const Q_DECL_OVERRIDE
 	{
 		return( false );
 	}
 
-	virtual QUuid pinAddControlUuid( fugio::PinInterface * ) const Q_DECL_OVERRIDE
+	inline virtual bool mustChooseNamedOutputPin( void ) const Q_DECL_OVERRIDE
+	{
+		return( false );
+	}
+
+	inline virtual QUuid pinAddControlUuid( fugio::PinInterface * ) const Q_DECL_OVERRIDE
 	{
 		return( QUuid() );
 	}
 
-	virtual bool pinShouldAutoRename( fugio::PinInterface * ) const Q_DECL_OVERRIDE
+	inline virtual bool pinShouldAutoRename( fugio::PinInterface * ) const Q_DECL_OVERRIDE
 	{
 		return( false );
 	}
 
 	//-------------------------------------------------------------------------
 
-	void pinUpdated( QSharedPointer<fugio::PinInterface> &pPin, qint64 pGlobalTimestamp = -1 )
+	void pinUpdated( QSharedPointer<fugio::PinInterface> &pPin, bool pUpdated = true, qint64 pGlobalTimestamp = -1 )
 	{
-		mNode->context()->pinUpdated( pPin, pGlobalTimestamp );
+		if( pUpdated )
+		{
+			mNode->context()->pinUpdated( pPin, pGlobalTimestamp );
+		}
 	}
 
 	//-------------------------------------------------------------------------
@@ -387,6 +388,18 @@ public:
 		return( V ? V->variant() : pPin->value() );
 	}
 
+	template <class T> static T variantStatic( QSharedPointer<fugio::PinInterface> &pPin )
+	{
+		if( !pPin->isConnected() || !pPin->connectedPin()->hasControl() )
+		{
+			return( pPin->value().value<T>() );
+		}
+
+		VariantInterface	*V = qobject_cast<VariantInterface *>( pPin->connectedPin()->control()->qobject() );
+
+		return( V ? V->variant().value<T>() : pPin->value().value<T>() );
+	}
+
 	QVariant variant( QSharedPointer<fugio::PinInterface> &pPin ) const
 	{
 		VariantInterface	*V = input<VariantInterface *>( pPin );
@@ -399,6 +412,13 @@ public:
 		VariantInterface	*V = input<VariantInterface *>( pPin );
 
 		return( V ? V->variant() : pPin->value() );
+	}
+
+	template <class T> T variant( const QSharedPointer<fugio::PinInterface> &pPin ) const
+	{
+		VariantInterface	*V = input<VariantInterface *>( pPin );
+
+		return( V ? V->variant().value<T>() : pPin->value().value<T>() );
 	}
 
 	//-------------------------------------------------------------------------
@@ -436,6 +456,33 @@ public:
 		}
 
 		return( IntLst );
+	}
+
+	//-------------------------------------------------------------------------
+	// fugio::VariantInterface helpers
+
+	void variantSetCount( fugio::VariantInterface *I, int C, bool &U )
+	{
+		if( I->variantCount() != C )
+		{
+			I->setVariantCount( C );
+
+			U = true;
+		}
+	}
+
+	template <typename T> void variantSetValue( fugio::VariantInterface *I, int pIndex, const T &D, bool &U )
+	{
+		QVariant	V;
+
+		V.setValue( D );
+
+		if( I->variant( pIndex ) != V )
+		{
+			I->setVariant( pIndex, V );
+
+			U = true;
+		}
 	}
 
 	//-------------------------------------------------------------------------

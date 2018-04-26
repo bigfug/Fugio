@@ -6,6 +6,8 @@
 
 #include <fugio/context_interface.h>
 
+#include <fugio/pin_variant_iterator.h>
+
 #include "crc32.h"
 
 PacketDecodeNode::PacketDecodeNode( QSharedPointer<fugio::NodeInterface> pNode )
@@ -16,18 +18,25 @@ PacketDecodeNode::PacketDecodeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputPackets = pinInput( "Packets", PIN_INPUT_PACKETS );
 
-	mValOutputData = pinOutput<fugio::ListInterface *>( "Data", mPinOutputData, PID_BYTEARRAY_LIST, PIN_OUTPUT_DATA );
+	mValOutputData = pinOutput<fugio::VariantInterface *>( "Data", mPinOutputData, PID_BYTEARRAY, PIN_OUTPUT_DATA );
 }
 
 void PacketDecodeNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	if( mPinInputPackets->isUpdated( pTimeStamp ) )
-	{
-		mValOutputData->listClear();
+	mValOutputData->variantClear();
 
-		processVariant( variant( mPinInputPackets ) );
+	fugio::PinVariantIterator	Packets( mPinInputPackets );
+
+	for( int i = 0 ; i < Packets.count() ; i++ )
+	{
+		processVariant( Packets.index( i ) );
+	}
+
+	if( mValOutputData->variantCount() )
+	{
+		pinUpdated( mPinOutputData );
 	}
 }
 
@@ -79,8 +88,6 @@ void PacketDecodeNode::processByteArray( QByteArray A )
 
 	if( PacketHeader.mLength > sizeof( PacketHeader ) )
 	{
-		mValOutputData->listAppend( A.mid( sizeof( PacketHeader ) ) );
-
-		pinUpdated( mPinOutputData );
+		mValOutputData->variantAppend( A.mid( sizeof( PacketHeader ) ) );
 	}
 }

@@ -2,6 +2,8 @@
 #include "ui_patchpromptdialog.h"
 
 #include <QSettings>
+#include <QDesktopServices>
+#include <QMessageBox>
 
 #include "mainwindow.h"
 #include "app.h"
@@ -110,4 +112,19 @@ void PatchPromptDialog::on_mRecentPatches_itemDoubleClicked( QListWidgetItem *pI
 
 		accept();
 	}
+}
+
+void PatchPromptDialog::on_mButtonExamples_clicked()
+{
+	QMessageBox::information( this, tr( "Fugio Examples" ), tr( "A wide range of examples can be found under the File menu" ), QMessageBox::Ok );
+}
+
+void PatchPromptDialog::on_mButtonTheFugioZone_clicked()
+{
+    QDesktopServices::openUrl( QUrl( "http://the.fugio.zone/?utm_source=fugio&utm_medium=patch_prompt") );
+}
+
+void PatchPromptDialog::on_mButtonTutorialVideos_clicked()
+{
+	QDesktopServices::openUrl( QUrl( "https://youtu.be/Kin3mNjPShk") );
 }

@@ -18,9 +18,9 @@ LeapNode::LeapNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mHandRight = pinOutput<LeapHandPin *>( tr( "Right Hand" ), mPinHandRight, PID_LEAP_HAND );
 
-	mImage1 = pinOutput<fugio::ImageInterface *>( "Image 1", mPinImage1, PID_IMAGE );
+	mImage1 = pinOutput<fugio::VariantInterface *>( "Image 1", mPinImage1, PID_IMAGE );
 
-	mDistortionImage = pinOutput<fugio::ImageInterface *>( "Distortion", mPinDistortionImage, PID_IMAGE );
+	mDistortionImage = pinOutput<fugio::VariantInterface *>( "Distortion", mPinDistortionImage, PID_IMAGE );
 }
 
 bool LeapNode::initialise( void )
@@ -74,29 +74,33 @@ void LeapNode::onContextFrameStart( qint64 pTimeStamp )
 		{
 			Image CurrentImage = CurrentImages[ 0 ];
 
-			if( mImage1->size() != QSize( CurrentImage.width(), CurrentImage.height() ) )
+			fugio::Image	Image1 = mImage1->variant().value<fugio::Image>();
+
+			if( Image1.size() != QSize( CurrentImage.width(), CurrentImage.height() ) )
 			{
-				mImage1->setFormat( fugio::ImageInterface::FORMAT_GRAY8 );
-				mImage1->setSize( CurrentImage.width(), CurrentImage.height() );
-				mImage1->setLineSize( 0, CurrentImage.width() * CurrentImage.bytesPerPixel() );
+				Image1.setFormat( fugio::ImageFormat::GRAY8 );
+				Image1.setSize( CurrentImage.width(), CurrentImage.height() );
+				Image1.setLineSize( 0, CurrentImage.width() * CurrentImage.bytesPerPixel() );
 			}
 
-			if( !mImage1->size().isEmpty() )
+			if( Image1.isValid() )
 			{
-				memcpy( mImage1->internalBuffer( 0 ), CurrentImage.data(), mImage1->bufferSize( 0 ) );
+				memcpy( Image1.internalBuffer( 0 ), CurrentImage.data(), Image1.bufferSize( 0 ) );
 
 				pinUpdated( mPinImage1 );
 			}
 
-			if( mDistortionImage->size() != QSize( CurrentImage.distortionWidth() / 2, CurrentImage.distortionHeight() ) )
+			fugio::Image	DstImg = mDistortionImage->variant().value<fugio::Image>();
+
+			if( DstImg.size() != QSize( CurrentImage.distortionWidth() / 2, CurrentImage.distortionHeight() ) )
 			{
-				mDistortionImage->setFormat( fugio::ImageInterface::FORMAT_RG32 );
+				DstImg.setFormat( fugio::ImageFormat::RG32 );
 
-				mDistortionImage->setSize( CurrentImage.distortionWidth() / 2, CurrentImage.distortionHeight() );
+				DstImg.setSize( CurrentImage.distortionWidth() / 2, CurrentImage.distortionHeight() );
 
-				mDistortionImage->setLineSize( 0, CurrentImage.distortionWidth() * sizeof( float ) );
+				DstImg.setLineSize( 0, CurrentImage.distortionWidth() * sizeof( float ) );
 
-				memcpy( mDistortionImage->internalBuffer( 0 ), CurrentImage.distortion(), mDistortionImage->bufferSize( 0 ) );
+				memcpy( DstImg.internalBuffer( 0 ), CurrentImage.distortion(), DstImg.bufferSize( 0 ) );
 
 				pinUpdated( mPinDistortionImage );
 			}

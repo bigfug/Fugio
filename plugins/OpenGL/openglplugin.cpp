@@ -133,34 +133,16 @@ OpenGLPlugin		*OpenGLPlugin::mInstance = 0;
 #include <QCoreApplication>
 
 OpenGLPlugin::OpenGLPlugin( void )
-	: mApp( 0 ),
-	   mOpenGLFullScreenOption( "opengl-full-screen", "Open all OpenGL windows as full screen" ), mTriangleCount( 0 )
+	: mApp( 0 ), mTriangleCount( 0 )
 {
 	mInstance = this;
-
-//	QSurfaceFormat	SurfaceFormat;
-
-//	SurfaceFormat.setDepthBufferSize( 24 );
-//	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
-//	SurfaceFormat.setSamples( 4 );
-//	SurfaceFormat.setVersion( 4, 5 );
-
-//#if defined( OPENGL_DEBUG_ENABLE )
-//	SurfaceFormat.setOption( QSurfaceFormat::DebugContext );
-//#endif
-
-////	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
-////	SurfaceFormat.setVersion( 4, 5 );
-////	SurfaceFormat.setSwapInterval( 0 );
-
-//	QSurfaceFormat::setDefaultFormat( SurfaceFormat );
 
 	//-------------------------------------------------------------------------
 	// Install translator
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_opengl" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}
@@ -264,7 +246,7 @@ PluginInterface::InitResult OpenGLPlugin::initialise( fugio::GlobalInterface *pA
 
 	mApp = pApp;
 
-	mApp->commandLineParser().addOption( mOpenGLFullScreenOption );
+	//mApp->commandLineParser().addOption( mOpenGLFullScreenOption );
 
 	mApp->registerInterface( IID_OPENGL, this );
 
@@ -308,10 +290,17 @@ void OpenGLPlugin::deinitialise()
 	mInstance = 0;
 }
 
-#if defined( OPENGL_DEBUG_ENABLE )
 void OpenGLPlugin::checkErrors( void )
 {
+#if defined( OPENGL_DEBUG_ENABLE )
 	if( !hasContext() )
+	{
+		return;
+	}
+
+	initializeOpenGLFunctions();
+
+	if( QOpenGLContext::currentContext()->format().options().testFlag( QSurfaceFormat::DebugContext ) )
 	{
 		return;
 	}
@@ -324,16 +313,20 @@ void OpenGLPlugin::checkErrors( void )
 		qDebug() << "GL" << QString::number( e, 16 );
 #endif
 	}
+#endif
 }
 
 void OpenGLPlugin::checkErrors( const char *file, int line )
 {
-#if !defined( GLU_VERSION )
-	Q_UNUSED( file )
-	Q_UNUSED( line )
-#endif
-
+#if defined( OPENGL_DEBUG_ENABLE )
 	if( !hasContext() )
+	{
+		return;
+	}
+
+	initializeOpenGLFunctions();
+
+	if( QOpenGLContext::currentContext()->format().options().testFlag( QSurfaceFormat::DebugContext ) )
 	{
 		return;
 	}
@@ -343,19 +336,48 @@ void OpenGLPlugin::checkErrors( const char *file, int line )
 #if defined( GLU_VERSION )
 		qDebug() << "GL" << file << line << ":" << QString::fromLatin1( (const char *)gluErrorString( e ) );
 #else
-		qDebug() << "GL" << file << line << ":" << QString::number( e, 16 );
+		switch( e )
+		{
+			case GL_INVALID_OPERATION:
+				qDebug() << "GL" << file << line << ":" << "GL_INVALID_OPERATION";
+				break;
+
+			case GL_INVALID_ENUM:
+				qDebug() << "GL" << file << line << ":" << "GL_INVALID_ENUM";
+				break;
+
+			case GL_INVALID_VALUE:
+				qDebug() << "GL" << file << line << ":" << "GL_INVALID_VALUE";
+				break;
+
+			case GL_OUT_OF_MEMORY:
+				qDebug() << "GL" << file << line << ":" << "GL_OUT_OF_MEMORY";
+				break;
+
+			case GL_INVALID_FRAMEBUFFER_OPERATION:
+				qDebug() << "GL" << file << line << ":" << "GL_INVALID_FRAMEBUFFER_OPERATION";
+				break;
+
+			default:
+				qDebug() << "GL" << file << line << ":" << QString::number( e, 16 );
+				break;
+		}
 #endif
 	}
+#endif
 }
 
 void OpenGLPlugin::checkErrors(const QString &pContext, const char *file, int line)
 {
-#if !defined( GLU_VERSION )
-	Q_UNUSED( file )
-	Q_UNUSED( line )
-#endif
-
+#if defined( OPENGL_DEBUG_ENABLE )
 	if( !hasContext() )
+	{
+		return;
+	}
+
+	initializeOpenGLFunctions();
+
+	if( QOpenGLContext::currentContext()->format().options().testFlag( QSurfaceFormat::DebugContext ) )
 	{
 		return;
 	}
@@ -368,8 +390,8 @@ void OpenGLPlugin::checkErrors(const QString &pContext, const char *file, int li
 		qDebug() << "GL" << pContext << file << line << ":" << QString::number( e, 16 );
 #endif
 	}
-}
 #endif
+}
 
 void OpenGLPlugin::registerOutputWindowHook(QObject *pObject, const char *pMember)
 {
@@ -391,9 +413,13 @@ QString OpenGLPlugin::framebufferError( GLenum pErrorCode )
 		case GL_FRAMEBUFFER_COMPLETE:	return( "GL_FRAMEBUFFER_COMPLETE" );
 		case GL_FRAMEBUFFER_UNDEFINED:	return( "GL_FRAMEBUFFER_UNDEFINED" );
 		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:	return( "GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE" );
-#if !defined( Q_OS_RASPBERRY_PI )
+#if defined( GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS )
 		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:	return( "GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS" );
+#endif
+#if defined( GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER )
 		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:	return( "GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER" );
+#endif
+#if defined( GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER )
 		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:	return( "GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER" );
 #endif
 	}
@@ -413,7 +439,7 @@ bool OpenGLPlugin::hasContextStatic()
 
 bool OpenGLPlugin::openWindowFullScreen() const
 {
-	return( mApp->commandLineParser().isSet( mOpenGLFullScreenOption ) );
+	return( mApp->commandLineDefined( "OPENGL_FULLSCREEN" ) );
 }
 
 void OpenGLPlugin::onWindowCreate( QWindow *pWindow )
@@ -613,7 +639,7 @@ void OpenGLPlugin::initStaticData( void )
 		INSERT_WRAP( GL_REPEAT );
 		INSERT_WRAP( GL_CLAMP_TO_EDGE );
 		INSERT_WRAP( GL_MIRRORED_REPEAT );
-#if !defined( Q_OS_RASPBERRY_PI )
+#if defined( GL_CLAMP_TO_BORDER )
 		INSERT_WRAP( GL_CLAMP_TO_BORDER );
 #endif
 	}
@@ -657,7 +683,9 @@ void OpenGLPlugin::initGLEW()
 
 		//qDebug() << context()->extensions();
 
-		switch( Context->format().profile() )
+		QSurfaceFormat	Format = Context->format();
+
+		switch( Format.profile() )
 		{
 			case QSurfaceFormat::NoProfile:
 				qInfo() << "Profile: None";
@@ -672,10 +700,14 @@ void OpenGLPlugin::initGLEW()
 				break;
 		}
 
-		qInfo() << "Samples:" << Context->format().samples();
-		qInfo() << "Alpha:" << Context->format().alphaBufferSize();
-		qInfo() << "Depth:" << Context->format().depthBufferSize();
-		qInfo() << "RGB:" << Context->format().redBufferSize() << Context->format().greenBufferSize() << Context->format().blueBufferSize();
+		qInfo() << "Samples:" << Format.samples();
+		qInfo() << "Alpha:" << Format.alphaBufferSize();
+		qInfo() << "Depth:" << Format.depthBufferSize();
+		qInfo() << "RGB:" << Format.redBufferSize() << Format.greenBufferSize() << Format.blueBufferSize();
+
+		qInfo() << "Debug:" << ( Format.options().testFlag( QSurfaceFormat::DebugContext ) ? "Yes" : "No" );
+
+		qInfo() << "Deprecated Functions:" << ( Format.options().testFlag( QSurfaceFormat::DeprecatedFunctions ) ? "Yes" : "No" );
 	}
 }
 

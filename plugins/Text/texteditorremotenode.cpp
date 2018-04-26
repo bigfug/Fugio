@@ -29,7 +29,7 @@ TextEditorRemoteNode::TextEditorRemoteNode( QSharedPointer<fugio::NodeInterface>
 
 	mValInputText = pinInput<fugio::SyntaxErrorInterface *>( "Text", mPinInputText, PID_SYNTAX_ERROR, PIN_INPUT_TEXT );
 
-	mValOutputPackets = pinOutput<fugio::ListInterface *>( "Packets", mPinOutputPackets, PID_BYTEARRAY_LIST, PIN_OUTPUT_PACKETS );
+	mValOutputPackets = pinOutput<fugio::VariantInterface *>( "Packets", mPinOutputPackets, PID_BYTEARRAY, PIN_OUTPUT_PACKETS );
 
 	mValOutputText = pinOutput<fugio::VariantInterface *>( "Text", mPinOutputText, PID_STRING, PIN_OUTPUT_TEXT );
 
@@ -191,15 +191,12 @@ void TextEditorRemoteNode::appendPacket( const TextEditorRemoteNode::Packet &P )
 
 	if( mLastTime < CurrTime )
 	{
-		if( !mValOutputPackets->listIsEmpty() )
-		{
-			mValOutputPackets->listClear();
-		}
+		mValOutputPackets->variantClear();
 
 		mLastTime = CurrTime;
 	}
 
-	mValOutputPackets->listAppend( P.array() );
+	mValOutputPackets->variantAppend( P.array() );
 
 	pinUpdated( mPinOutputPackets );
 }

@@ -1,6 +1,6 @@
 #include "arraytotexturebuffernode.h"
 
-#if !defined( Q_OS_RASPBERRY_PI )
+#if !defined( QT_OPENGL_ES )
 #include <QOpenGLFunctions_3_1>
 #endif
 
@@ -10,7 +10,7 @@
 
 #include <fugio/context_interface.h>
 #include <fugio/core/variant_interface.h>
-#include <fugio/core/array_interface.h>
+//#include <fugio/core/array_interface.h>
 #include <fugio/node_signals.h>
 
 #include "openglplugin.h"
@@ -37,7 +37,7 @@ bool ArrayToTextureBufferNode::initialise()
 		return( false );
 	}
 
-#if defined( Q_OS_RASPBERRY_PI )
+#if defined( QT_OPENGL_ES )
 	mNode->setStatus( fugio::NodeInterface::Error );
 
 	return( false );
@@ -69,7 +69,7 @@ void ArrayToTextureBufferNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-#if !defined( Q_OS_RASPBERRY_PI )
+#if !defined( QT_OPENGL_ES )
 	QOpenGLFunctions_3_1	*GL31 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_1>();
 
 	if( !GL31 || !GL31->initializeOpenGLFunctions() )
@@ -93,16 +93,16 @@ void ArrayToTextureBufferNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		fugio::ArrayInterface			*A;
+		fugio::VariantInterface			*A;
 
-		if( ( A = input<fugio::ArrayInterface *>( PinI ) ) == nullptr )
+		if( ( A = input<fugio::VariantInterface *>( PinI ) ) == nullptr )
 		{
 			continue;
 		}
 
 		GLenum	InternalFormat = 0;
 
-		switch( A->type() )
+		switch( A->variantType() )
 		{
 			case QMetaType::UChar:
 				InternalFormat = GL_R8UI;
@@ -137,7 +137,6 @@ void ArrayToTextureBufferNode::inputsUpdated( qint64 pTimeStamp )
 				InternalFormat = GL_RG32I;
 				break;
 
-
 			case QMetaType::QVector2D:
 			case QMetaType::QSizeF:
 			case QMetaType::QPointF:
@@ -151,6 +150,9 @@ void ArrayToTextureBufferNode::inputsUpdated( qint64 pTimeStamp )
 			case QMetaType::QVector4D:
 				InternalFormat = GL_RGBA32F;
 				break;
+
+			default:
+				break;
 		}
 
 		if( !InternalFormat )
@@ -158,12 +160,12 @@ void ArrayToTextureBufferNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( BufO->size().x() != A->count() )
+		if( BufO->size().x() != A->variantCount() )
 		{
 			BufO->free();
 		}
 
-		if( A->count() <= 0 )
+		if( A->variantCount() <= 0 )
 		{
 			continue;
 		}
@@ -181,7 +183,7 @@ void ArrayToTextureBufferNode::inputsUpdated( qint64 pTimeStamp )
 		}
 
 		glBindBuffer( GL_TEXTURE_BUFFER, TBO );
-		glBufferData( GL_TEXTURE_BUFFER, A->count() * A->stride(), A->array(), GL_STATIC_DRAW );
+		glBufferData( GL_TEXTURE_BUFFER, A->variantCount() * A->variantStride(), A->variantArray(), GL_STATIC_DRAW );
 		glBindBuffer( GL_TEXTURE_BUFFER, 0 );
 
 		BufO->dstTex()->create();

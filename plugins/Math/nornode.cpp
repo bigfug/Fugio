@@ -4,46 +4,60 @@
 
 #include <fugio/context_interface.h>
 
+#include <fugio/pin_variant_iterator.h>
+
 NorNode::NorNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
-	static const QUuid	PII_NUMBER1( "{c13a41c6-544b-46bb-a9f2-19dd156d236c}" );
-	static const QUuid	PII_NUMBER2( "{608ac771-490b-4ae6-9c81-12b9af526d09}" );
+	FUGID( PII_NUMBER1, "c13a41c6-544b-46bb-a9f2-19dd156d236c" );
+	FUGID( PII_NUMBER2, "608ac771-490b-4ae6-9c81-12b9af526d09" );
+	FUGID( PIN_OUTPUT_BOOL, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 
 	pinInput( "Boolean", PII_NUMBER1 );
 	pinInput( "Boolean", PII_NUMBER2 );
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "Boolean", mPinOutput, PID_BOOL );
+	mValOutput = pinOutput<fugio::VariantInterface *>( "Boolean", mPinOutput, PID_BOOL, PIN_OUTPUT_BOOL );
 }
 
 void NorNode::inputsUpdated( qint64 pTimeStamp )
 {
-	Q_UNUSED( pTimeStamp )
+	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	bool		OutVal;
-	bool		OutHas = false;
+	QList<fugio::PinVariantIterator>	ItrLst;
+	int									ItrMax = 0;
 
 	for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
 	{
-		bool		v = variant( P ).toBool();
+		ItrLst << fugio::PinVariantIterator( P );
 
-		if( !OutHas )
-		{
-			OutVal = v;
-			OutHas = true;
-		}
-		else
-		{
-			OutVal |= v;
-		}
+		ItrMax = std::max( ItrMax, ItrLst.last().count() );
 	}
 
-	OutVal = !OutVal;
-
-	if( OutVal != mValOutput->variant().toBool() )
+	if( !ItrMax )
 	{
-		mValOutput->setVariant( OutVal );
+		return;
+	}
 
+	bool		UpdateOutput = mPinOutput->alwaysUpdate();
+
+	variantSetCount( mValOutput, ItrMax, UpdateOutput );
+
+	for( int i = 0 ; i < ItrMax ; i++ )
+	{
+		bool		OutVal;
+
+		for( int j = 0 ; j < ItrLst.size() ; j++ )
+		{
+			bool	NewVal = ItrLst.at( j ).index( i ).toBool();
+
+			OutVal = ( !j ? NewVal : OutVal | NewVal );
+		}
+
+		variantSetValue<bool>( mValOutput, i, !OutVal, UpdateOutput );
+	}
+
+	if( UpdateOutput )
+	{
 		pinUpdated( mPinOutput );
 	}
 }

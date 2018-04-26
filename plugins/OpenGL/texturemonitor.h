@@ -5,6 +5,7 @@
 
 #include <QObject>
 #include <QOpenGLWidget>
+#include <QOpenGLDebugLogger>
 
 class TextureMonitorNode;
 
@@ -25,8 +26,12 @@ protected:
 	virtual void resizeGL(int w, int h) Q_DECL_OVERRIDE;
 	virtual void paintGL() Q_DECL_OVERRIDE;
 
+private slots:
+	void handleLoggedMessage( const QOpenGLDebugMessage &debugMessage );
+
 protected:
-	TextureMonitorNode		*mNode;
+	TextureMonitorNode			*mNode;
+	QOpenGLDebugLogger			 mDebugLogger;
 };
 
 #endif // TEXTUREMONITOR_H

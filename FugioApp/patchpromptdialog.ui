@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>511</width>
     <height>300</height>
    </rect>
   </property>
@@ -50,6 +50,27 @@
       <widget class="QPushButton" name="mButtonOpenPatch">
        <property name="text">
         <string>Open Patch...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="mButtonExamples">
+       <property name="text">
+        <string>Examples...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="mButtonTheFugioZone">
+       <property name="text">
+        <string>The Fugio Zone...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="mButtonTutorialVideos">
+       <property name="text">
+        <string>Tutorial Videos...</string>
        </property>
       </widget>
      </item>

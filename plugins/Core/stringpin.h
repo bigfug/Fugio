@@ -6,17 +6,17 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/variant_helper.h>
 
 #include <fugio/pincontrolbase.h>
 
 #include <fugio/serialise_interface.h>
 
-class StringPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::SerialiseInterface
+class StringPin : public fugio::PinControlBase, public fugio::VariantHelper<QString>
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface )
-	Q_PROPERTY( QString mValue READ value WRITE setValue NOTIFY valueChanged )
+	Q_INTERFACES( fugio::VariantInterface )
+//	Q_PROPERTY( QString mValue READ value WRITE setValue NOTIFY valueChanged )
 
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
@@ -27,32 +27,32 @@ class StringPin : public fugio::PinControlBase, public fugio::VariantInterface, 
 public:
 	Q_INVOKABLE explicit StringPin( QSharedPointer<fugio::PinInterface> pPin );
 
-	virtual ~StringPin( void );
+	virtual ~StringPin( void ) {}
 
 	//-------------------------------------------------------------------------
 	// Q_PROPERTY
 
-	Q_INVOKABLE QString value( void ) const
-	{
-		return( mValue );
-	}
+//	Q_INVOKABLE QString value( void ) const
+//	{
+//		return( mValue );
+//	}
 
-	Q_INVOKABLE void setValue( const QString &pValue )
-	{
-		if( pValue != mValue )
-		{
-			mValue = pValue;
+//	Q_INVOKABLE void setValue( const QString &pValue )
+//	{
+//		if( pValue != mValue )
+//		{
+//			mValue = pValue;
 
-			emit valueChanged( pValue );
-		}
-	}
+//			emit valueChanged( pValue );
+//		}
+//	}
 
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( mValue );
+		return( mValues.first() );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
@@ -63,48 +63,33 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::VariantInterface
 
-	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setValue( pValue.toString() );
-	}
-
-	virtual QVariant variant( void ) const Q_DECL_OVERRIDE
-	{
-		return( mValue );
-	}
-
 	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		setVariant( pValue );
+		setFromBaseVariant( 0, pValue );
 	}
 
-	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE
+	virtual void setFromBaseVariant( int pIndex, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		return( variant() );
+		setVariant( pIndex, pValue );
 	}
 
-	//-------------------------------------------------------------------------
-	// fugio::SerialiseInterface
-
-	virtual void serialise( QDataStream &pDataStream ) const Q_DECL_OVERRIDE
+	virtual QVariant baseVariant( int pIndex, int pOffset ) const Q_DECL_OVERRIDE
 	{
-		pDataStream << mValue;
+		return( variant( pIndex, pOffset ) );
 	}
 
-	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE
+	virtual QVariant variantSize( int pIndex = 0, int pOffset = 0 ) const Q_DECL_OVERRIDE
 	{
-		QString		NewVal;
+		QString		SzeVar = variant( pIndex, pOffset ).value<QString>();
 
-		pDataStream >> NewVal;
-
-		setValue( NewVal );
+		return( SzeVar.length() );
 	}
 
 signals:
-	void valueChanged( const QString &pValue );
+//	void valueChanged( const QString &pValue );
 
 private:
-	QString			mValue;
+//	QVector<QString>			mValues;
 };
 
 #endif // STRINGPIN_H

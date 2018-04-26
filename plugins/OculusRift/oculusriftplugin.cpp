@@ -39,7 +39,7 @@ OculusRiftPlugin::OculusRiftPlugin( void )
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_oculusrift" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}
@@ -53,18 +53,6 @@ bool OculusRiftPlugin::hasOpenGLContext()
 	{
 		return( false );
 	}
-
-#if defined( OCULUS_PLUGIN_SUPPORTED )
-	if( glewExperimental == GL_FALSE )
-	{
-		glewExperimental = GL_TRUE;
-
-		if( glewInit() != GLEW_OK )
-		{
-			return( false );
-		}
-	}
-#endif
 
 	return( true );
 }

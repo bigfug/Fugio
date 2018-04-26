@@ -30,6 +30,8 @@ signals:
 
 	void valueChanged( const QVariant &pValue );
 
+	void displayLabelChanged( const QString &pDisplayLabel );
+
 protected:
 	PinSignals( QObject *pParent = 0 );
 

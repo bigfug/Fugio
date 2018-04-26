@@ -33,7 +33,7 @@ InRangeNode::InRangeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInputLow->setValue( QVector3D( 0, 0, 0 ) );
 	mPinInputHigh->setValue( QVector3D( 1, 1, 1 ) );
 
-	if( ( mOutputImage = pinOutput<fugio::ImageInterface *>( "Output", mPinOutputImage, PID_IMAGE ) ) == 0 )
+	if( ( mValOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE ) ) == 0 )
 	{
 		return;
 	}
@@ -53,9 +53,9 @@ void InRangeNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	fugio::ImageInterface			*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image		SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || SrcImg->size().isEmpty() )
+	if( SrcImg.isEmpty() )
 	{
 		return;
 	}
@@ -75,7 +75,12 @@ void InRangeNode::inputsUpdated( qint64 pTimeStamp )
 void InRangeNode::conversion( InRangeNode *pNode )
 {
 #if defined( OPENCV_SUPPORTED )
-	fugio::ImageInterface				*SrcImg = pNode->input<fugio::ImageInterface *>( pNode->mPinInputImage );
+	fugio::Image		SrcImg = variantStatic<fugio::Image>( pNode->mPinInputImage );
+
+	if( SrcImg.isEmpty() )
+	{
+		return;
+	}
 
 	cv::Mat						 MatSrc = OpenCVPlugin::image2mat( SrcImg );
 
@@ -90,7 +95,9 @@ void InRangeNode::conversion( InRangeNode *pNode )
 
 	cv::inRange( MatSrc, cv::Scalar( l1, l2, l3 ), cv::Scalar( h1, h2, h3 ), pNode->mMatImg );
 
-	OpenCVPlugin::mat2image( pNode->mMatImg, pNode->mOutputImage );
+	fugio::Image	DstImg = pNode->mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( pNode->mMatImg, DstImg );
 
 	pNode->pinUpdated( pNode->mPinOutputImage );
 #endif

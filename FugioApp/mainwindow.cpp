@@ -119,7 +119,7 @@ bool MainWindow::addExamplesPath( const QString &pPath )
 {
 	if( QFileInfo( pPath ).exists() )
 	{
-		qInfo() << "Adding examples from" << pPath;
+		qInfo() << "Loading examples:" << pPath;
 
 		populateExamples( pPath, ui->menuExamples );
 
@@ -213,56 +213,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	//-------------------------------------------------------------------------
 
-	bool		FoundExamples = false;
+	addExamplesPath( gApp->global().sharedDataPath() + "/examples" );
 
-	if( !FoundExamples )
-	{
-		FoundExamples = addExamplesPath( QDir::current().absoluteFilePath( "examples" ) );
-	}
-
-	if( !FoundExamples )
-	{
-		FoundExamples = addExamplesPath( QDir::current().absoluteFilePath( "../Fugio/examples" ) );
-	}
-
-	if( !FoundExamples )
-	{
-		FoundExamples = addExamplesPath( QDir( QApplication::applicationDirPath() ).absoluteFilePath( "examples" ) );
-	}
-
-	if( !FoundExamples )
-	{
-		FoundExamples = addExamplesPath( QDir( QApplication::applicationDirPath() ).absoluteFilePath( "../Fugio/examples" ) );
-	}
-
-#if defined( Q_OS_LINUX )
-	if( !FoundExamples )
-	{
-		FoundExamples = addExamplesPath( "/usr/share/fugio/examples" );
-	}
-#endif
-
-	if( !FoundExamples )
-	{
-		QDir	ExamplesDir = QDir( qApp->applicationDirPath() );
-
-	#if defined( Q_OS_WIN )
-	//	if( PluginsDir.dirName().toLower() == "debug" || PluginsDir.dirName().toLower() == "release" )
-	//	{
-	//		PluginsDir.cdUp();
-	//	}
-	#elif defined( Q_OS_MAC )
-		ExamplesDir.cdUp();
-		ExamplesDir.cdUp();
-		ExamplesDir.cdUp();
-	#endif
-
-		ExamplesDir.cd( "examples" );
-
-		qInfo() << "Examples Directory:" << ExamplesDir.absolutePath();
-
-		FoundExamples = addExamplesPath( ExamplesDir.absolutePath() );
-	}
+	//-------------------------------------------------------------------------
 
 	ui->actionRescan->setVisible( false );
 

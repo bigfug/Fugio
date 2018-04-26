@@ -7,6 +7,7 @@
 #include <QApplication>
 #include <QStandardPaths>
 #include <QMainWindow>
+#include <QTranslator>
 #include <QFileInfo>
 
 #include <QXmlStreamWriter>
@@ -32,36 +33,40 @@ GlobalPrivate *GlobalPrivate::mInstance = 0;
 
 GlobalPrivate::GlobalPrivate( QObject * ) :
 	GlobalSignals( this ), mPause( false )
+#if defined( GLOBAL_THREADED )
+  , mGlobalThread( nullptr )
+#endif
 {
 	//-------------------------------------------------------------------------
 	// Install translator
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_lib" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}
 
 	//-------------------------------------------------------------------------
 
-	mTimeSync = new fugio::TimeSync( this );
-
-#if defined( GLOBAL_THREADED )
-	mGlobalThread = new GlobalThread( this );
-#endif
+	mTimeSync = std::unique_ptr<fugio::TimeSync>( new fugio::TimeSync( this ) );
 
 	mLastTime   = 0;
 	mFrameCount = 0;
 
-	mCommandLineParser.addHelpOption();
-	mCommandLineParser.addVersionOption();
-
 	connect( this, SIGNAL(frameEnd()), &mUniverse, SLOT(cast()) );
+
+#if !defined( GLOBAL_THREADED )
+	connect( &mGlobalTimer, &QTimer::timeout, this, &GlobalPrivate::executeFrame );
+#endif
 }
 
 GlobalPrivate::~GlobalPrivate( void )
 {
+	stop();
+
+	mTimeSync.reset();
+
 	for( UuidClassEntryMap::const_iterator it = mNodeMap.constBegin() ; it != mNodeMap.constEnd() ; it++ )
 	{
 		qWarning() << "Node Class not removed:" << it.value().mMetaObject->className();
@@ -154,11 +159,40 @@ void GlobalPrivate::initialisePlugins()
 QString GlobalPrivate::sharedDataPath() const
 {
 #if defined( QT_DEBUG )
-	return( QDir::current().absoluteFilePath( "../Fugio" ) );
-#elif defined( Q_OS_LINUX )
-	return( "/usr/share/fugio" );
-#else
-	return( QDir::current().absolutePath() );
+	// In debug mode go relative to this source file
+
+	QDir		TmpDir = QDir( __FILE__ );
+
+	TmpDir.cdUp();
+	TmpDir.cdUp();
+
+	return( TmpDir.absoluteFilePath( "share" ) );
+#endif
+
+#if defined( Q_OS_WIN ) && !defined( QT_DEBUG )
+	return( QDir( QApplication::applicationDirPath() ).absoluteFilePath( "share" ) );
+#endif
+
+#if defined( Q_OS_MAC ) && !defined( QT_DEBUG )
+	QDir		TmpDir = QDir( QApplication::applicationDirPath() );
+
+	// Get out of the app bundle
+
+	TmpDir.cdUp();
+	TmpDir.cdUp();
+	TmpDir.cdUp();
+
+	return( TmpDir.absoluteFilePath( "share" ) );
+#endif
+
+#if defined( Q_OS_LINUX ) && !defined( QT_DEBUG )
+	QDir		TmpDir = QDir( QApplication::applicationDirPath() );
+
+	TmpDir.cdUp();
+
+	TmpDir.cd( "share" );
+
+	return( TmpDir.absoluteFilePath( "fugio" ) );
 #endif
 }
 
@@ -252,10 +286,7 @@ void GlobalPrivate::unloadPlugins()
 		}
 	}
 
-	for( QList<QObject *>::iterator it = mPluginInstances.begin() ; it != mPluginInstances.end() ; it++ )
-	{
-		delete *it;
-	}
+	qDeleteAll( mPluginInstances );
 
 	mPluginInstances.clear();
 
@@ -518,7 +549,7 @@ QString GlobalPrivate::pinName(const QUuid &pUuid) const
 //-----------------------------------------------------------------------------
 // MAIN TIMER ENTRY POINT
 
-void GlobalPrivate::timeout( void )
+void GlobalPrivate::executeFrame( void )
 {
 	QMutexLocker	Lock( &mContextMutex );
 
@@ -591,10 +622,6 @@ void GlobalPrivate::timeout( void )
 
 		mFrameCount = 0;
 	}
-
-#if !defined( GLOBAL_THREADED )
-	QTimer::singleShot( 1, this, SLOT(timeout()) );
-#endif
 }
 
 QUuid GlobalPrivate::findNodeByClass( const QString &pClassName ) const
@@ -648,14 +675,18 @@ QSharedPointer<fugio::ContextInterface> GlobalPrivate::newContext( void )
 
 	ContextPrivate		*CP = new ContextPrivate( this );
 
-	if( CP == 0 )
+	if( !CP )
 	{
 		return( QSharedPointer<fugio::ContextInterface>() );
 	}
 
+	CP->moveToThread( thread() );
+
 	QSharedPointer<fugio::ContextInterface>	C = QSharedPointer<fugio::ContextInterface>( CP );
 
 	mContexts.append( C );
+
+	Lock.unlock();
 
 	emit contextAdded( C );
 
@@ -769,20 +800,61 @@ QList<QUuid> GlobalPrivate::pinJoiners(const QUuid &pPinId) const
 	return( mPinJoiners.values( pPinId ) );
 }
 
+QUuid GlobalPrivate::findPinForMetaType(QMetaType::Type pType) const
+{
+	return( mMetaTypeToPinUuid.value( pType ) );
+}
+
+void GlobalPrivate::registerPinForMetaType(const QUuid &pUuid, QMetaType::Type pType)
+{
+	mMetaTypeToPinUuid.insert( pType, pUuid );
+}
+
 void GlobalPrivate::start()
 {
-#if !defined( GLOBAL_THREADED )
-	QTimer::singleShot( 1000, this, SLOT(timeout()) );
-#else
-	mGlobalThread->start();
+#if defined( GLOBAL_THREADED )
+	if( !mGlobalThread )
+	{
+		mGlobalThread = new QThread( this );
+
+		mGlobalTimer.moveToThread( mGlobalThread );
+
+		moveToThread( mGlobalThread );
+
+		GlobalThread	*GlobalWorker = new GlobalThread( this );
+
+		GlobalWorker->moveToThread( mGlobalThread );
+
+		connect( this, SIGNAL(signalFrameExecute()), GlobalWorker, SLOT(update()) );
+
+		connect( &mGlobalTimer, &QTimer::timeout, GlobalWorker, &GlobalThread::update );
+
+		connect( mGlobalThread, &QThread::finished, GlobalWorker, &GlobalThread::deleteLater );
+
+		mGlobalThread->start();
+	}
 #endif
+
+	mGlobalTimer.start( 10 );
 }
 
 void GlobalPrivate::stop()
 {
-#if defined( GLOBAL_THREADED )
-	mGlobalThread->quit();
+	mGlobalTimer.stop();
 
-	mGlobalThread->wait();
+#if defined( GLOBAL_THREADED )
+	if( mGlobalThread )
+	{
+		mGlobalTimer.moveToThread( QCoreApplication::instance()->thread() );
+
+		moveToThread( QCoreApplication::instance()->thread() );
+
+		mGlobalThread->quit();
+		mGlobalThread->wait();
+
+		delete mGlobalThread;
+
+		mGlobalThread = nullptr;
+	}
 #endif
 }

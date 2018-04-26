@@ -6,7 +6,6 @@
 
 #include <fugio/context_interface.h>
 #include <fugio/core/variant_interface.h>
-#include <fugio/core/array_interface.h>
 #include <fugio/node_signals.h>
 
 #include "openglplugin.h"
@@ -20,7 +19,7 @@ ArrayToIndexNode::ArrayToIndexNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputArray  = pinInput( "Array", PIN_INPUT_ARRAY );
 
-	mPinInputArray->registerPinInputType( PID_ARRAY );
+//	mPinInputArray->registerPinInputType( PID_ARRAY );
 
 	mValOutputBuffer = pinOutput<fugio::OpenGLBufferInterface *>( "Index", mPinOutputBuffer, PID_OPENGL_BUFFER, PIN_OUTPUT_BUFFER );
 
@@ -69,29 +68,28 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( BufO->target() != QOpenGLBuffer::IndexBuffer )
-		{
-			BufO->setTarget( QOpenGLBuffer::IndexBuffer );
-		}
+		BufO->setTarget( QOpenGLBuffer::IndexBuffer );
 
-		fugio::ArrayInterface			*A;
+		BufO->setIndex( true );
 
-		if( ( A = input<fugio::ArrayInterface *>( PinI ) ) == nullptr )
+		fugio::VariantInterface			*A;
+
+		if( ( A = input<fugio::VariantInterface *>( PinI ) ) == nullptr )
 		{
 			continue;
 		}
 
-		if( BufO->buffer() && BufO->buffer()->isCreated() && ( A->type() != BufO->type() || A->size() != BufO->size() || A->stride() != BufO->stride() || A->count() != BufO->count() ) )
+		if( BufO->buffer() && BufO->buffer()->isCreated() && ( A->variantType() != BufO->type() || A->variantElementCount() != BufO->size() || A->variantStride() != BufO->stride() || A->variantCount() != BufO->count() ) )
 		{
 			BufO->clear();
 		}
 
-		if( A->count() <= 0 )
+		if( A->variantCount() <= 0 )
 		{
 			continue;
 		}
 
-		if( ( !BufO->buffer() || !BufO->buffer()->isCreated() ) && !BufO->alloc( A->type(), A->size(), A->stride(), A->count() ) )
+		if( ( !BufO->buffer() || !BufO->buffer()->isCreated() ) && !BufO->alloc( A->variantType(), A->variantElementCount(), A->variantStride(), A->variantCount() ) )
 		{
 			BufO->clear();
 
@@ -102,9 +100,7 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		BufO->setIndex( true );
-
-		BufO->buffer()->write( 0, A->array(), A->stride() * A->count() );
+		BufO->buffer()->write( 0, A->variantArray(), A->variantArraySize() );
 
 		BufO->release();
 

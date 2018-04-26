@@ -7,7 +7,7 @@
 #include <fugio/opencv/uuid.h>
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/choice_interface.h>
 
 #include <fugio/nodecontrolbase.h>
@@ -46,7 +46,7 @@ private:
 	fugio::ChoiceInterface						*mValInputType;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface						*mValOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 
 	static QMap<QString,int>					 mTypeMap;
 

@@ -72,7 +72,7 @@ ARToolKitPlugin::ARToolKitPlugin()
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_artoolkit" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}
@@ -137,6 +137,8 @@ int ARToolKitPlugin::luaOpen( lua_State *L )
 int ARToolKitPlugin::luaParamLoad( lua_State *L )
 {
 #if !defined( ARTOOLKIT_SUPPORTED )
+	Q_UNUSED( L )
+
 	return( 0 );
 #else
 	const char	*Filename = luaL_checkstring( L, 1 );

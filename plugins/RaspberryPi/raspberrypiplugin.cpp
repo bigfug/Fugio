@@ -23,12 +23,14 @@
 
 #include "sourcenode.h"
 #include "gpionode.h"
+#include "pwmnode.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
 ClassEntry	NodeClasses[] =
 {
 	ClassEntry( "GPIO",   "RPi", NID_RPI_GPIO, &GPIONode::staticMetaObject ),
+	ClassEntry( "PWM",	"RPi", NID_RPI_PWM, &PWMNode::staticMetaObject ),
 	ClassEntry( "Source", "OMX", NID_OMX_SOURCE, &SourceNode::staticMetaObject ),
 	ClassEntry()
 };
@@ -47,7 +49,7 @@ RaspberryPiPlugin::RaspberryPiPlugin() : mApp( 0 ), mPigPioInit( -1 )
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_raspberrypi" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}

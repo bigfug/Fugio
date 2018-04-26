@@ -5,7 +5,6 @@
 
 #include <QObject>
 #include <QThread>
-#include <QCommandLineOption>
 #include <QOpenGLTexture>
 #include <QOpenGLFunctions>
 #include <QOpenGLShaderProgram>
@@ -18,16 +17,6 @@
 
 #include <fugio/text/syntax_highlighter_factory_interface.h>
 #include <fugio/text/syntax_highlighter_instance_interface.h>
-
-#define OPENGL_DEBUG_ENABLE
-
-#if 0 //defined( OPENGL_DEBUG_ENABLE )
-#define OPENGL_PLUGIN_DEBUG 	OpenGLPlugin::instance()->checkErrors( __FILE__, __LINE__ );
-#define OPENGL_DEBUG(x) 	OpenGLPlugin::instance()->checkErrors( x, __FILE__, __LINE__ );
-#else
-#define OPENGL_PLUGIN_DEBUG
-#define OPENGL_DEBUG(x)
-#endif
 
 using namespace fugio;
 
@@ -60,13 +49,11 @@ public:
 	//-------------------------------------------------------------------------
 	// InterfaceOpenGL
 
-#if defined( OPENGL_DEBUG_ENABLE )
-	virtual void checkErrors( void );
+	virtual void checkErrors( void ) Q_DECL_OVERRIDE;
 
-	virtual void checkErrors( const char *file, int line );
+	virtual void checkErrors( const char *file, int line ) Q_DECL_OVERRIDE;
 
 	virtual void checkErrors( const QString &pContext, const char *file, int line );
-#endif
 
 	virtual void registerOutputWindowHook( QObject *pObject, const char *pMember ) Q_DECL_OVERRIDE;
 
@@ -152,8 +139,6 @@ private:
 	static OpenGLPlugin		*mInstance;
 
 	GlobalInterface			*mApp;
-
-	QCommandLineOption		 mOpenGLFullScreenOption;
 
 	int						 mTriangleCount;
 };

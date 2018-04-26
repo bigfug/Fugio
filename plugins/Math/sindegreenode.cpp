@@ -6,6 +6,8 @@
 
 #include <qmath.h>
 
+#include <fugio/pin_variant_iterator.h>
+
 SinDegreeNode::SinDegreeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
@@ -16,22 +18,21 @@ SinDegreeNode::SinDegreeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void SinDegreeNode::inputsUpdated( qint64 pTimeStamp )
 {
-	Q_UNUSED( pTimeStamp )
+	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	bool		b;
-	double		v = variant( mPinInput ).toDouble( &b );
+	fugio::PinVariantIterator	Input( mPinInput );
 
-	if( !b )
+	bool	OutputUpdated = false;
+
+	variantSetCount( mValOutput, Input.count(), OutputUpdated );
+
+	for( int i = 0 ; i < Input.count() ; i++ )
 	{
-		return;
+		variantSetValue( mValOutput, i, std::sin( ( Input.index( i ).toDouble() / 180.0 ) * M_PI ), OutputUpdated );
 	}
 
-	v = std::sin( ( v / 180.0 ) * M_PI );
-
-	if( v != mValOutput->variant().toDouble() )
+	if( OutputUpdated )
 	{
-		mValOutput->setVariant( v );
-
 		pinUpdated( mPinOutput );
 	}
 }

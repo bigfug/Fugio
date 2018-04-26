@@ -41,7 +41,7 @@ ImageThresholdNode::ImageThresholdNode( QSharedPointer<fugio::NodeInterface> pNo
 
 	mValInputType->setChoices( mTypeList.keys() );
 
-	mOutputImage = pinOutput<fugio::ImageInterface *>( "Output", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 
 	mPinInputThreshold->setValue( "THRESH_BINARY" );
 	mPinInputThreshold->setValue( 128 );
@@ -52,9 +52,9 @@ void ImageThresholdNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	fugio::ImageInterface							*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image		SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || !SrcImg->isValid() )
+	if( SrcImg.isEmpty() )
 	{
 		return;
 	}
@@ -70,7 +70,9 @@ void ImageThresholdNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		cv::threshold( MatSrc, mMatImg, Threshold, MaxVal, Type );
 
-		OpenCVPlugin::mat2image( mMatImg, mOutputImage, SrcImg->format() );
+		fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
+		OpenCVPlugin::mat2image( mMatImg, DstImg );
 
 		pinUpdated( mPinOutputImage );
 	}

@@ -27,7 +27,7 @@ class StringNode : public fugio::NodeControlBase
 public:
 	Q_INVOKABLE explicit StringNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~StringNode( void );
+	virtual ~StringNode( void ) {}
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
@@ -54,10 +54,11 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
 
 	QSharedPointer<fugio::PinInterface>			 mPinValue;
-	fugio::VariantInterface						*mString;
+	fugio::VariantInterface						*mValOutputString;
 
 	qint64										 mLastUpdate;
 	qint64										 mLastText;
 	QString										 mText;
 };
+
 #endif // STRINGNODE_H

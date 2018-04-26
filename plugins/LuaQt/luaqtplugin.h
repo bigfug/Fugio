@@ -8,10 +8,6 @@
 #include <fugio/plugin_interface.h>
 #include <fugio/lua/lua_interface.h>
 
-FUGIO_NAMESPACE_BEGIN
-class ImageInterface;
-FUGIO_NAMESPACE_END
-
 using namespace fugio;
 
 class LuaQtPlugin : public QObject, public PluginInterface

@@ -25,12 +25,12 @@ public:
 	virtual void inputsUpdated( qint64 pTimeStamp );
 
 protected:
-	QSharedPointer<fugio::PinInterface>			 mPinWidth;
-	QSharedPointer<fugio::PinInterface>			 mPinHeight;
+	QSharedPointer<fugio::PinInterface>			 mPinInputWidth;
+	QSharedPointer<fugio::PinInterface>			 mPinInputHeight;
 
-	QSharedPointer<fugio::PinInterface>			 mPinSize;
+	QSharedPointer<fugio::PinInterface>			 mPinOutputSize;
 
-	fugio::VariantInterface						*mSize;
+	fugio::VariantInterface						*mValOutputSize;
 };
 
 #endif // JOINSIZENODE_H

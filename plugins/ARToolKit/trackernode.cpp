@@ -1,6 +1,7 @@
 #include "trackernode.h"
 
 #include <QMatrix4x4>
+#include <QFile>
 
 #include <fugio/artoolkit/uuid.h>
 #include <fugio/image/uuid.h>
@@ -10,7 +11,7 @@
 
 #include <fugio/performance.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/file/filename_interface.h>
 
 TrackerNode::TrackerNode( QSharedPointer<fugio::NodeInterface> pNode )
@@ -51,14 +52,11 @@ TrackerNode::TrackerNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mValOutputCenter = pinOutput<fugio::VariantInterface *>( "Center", mPinOutputCenter, PID_POINT, PIN_OUTPUT_CENTER );
 
-	mValOutputPoints = pinOutput<fugio::ArrayInterface *>( "Points", mPinOutputPoints, PID_ARRAY, PIN_OUTPUT_POINTS );
+	mValOutputPoints = pinOutput<fugio::VariantInterface *>( "Points", mPinOutputPoints, PID_POINT, PIN_OUTPUT_POINTS );
 
 	mValOutputConfidence = pinOutput<fugio::VariantInterface *>( "Confidence", mPinOutputConfidence, PID_FLOAT, PIN_OUTPUT_CONFIDENCE );
 
-	mValOutputPoints->setSize( 1 );
-	mValOutputPoints->setStride( sizeof( float ) * 2 );
-	mValOutputPoints->setType( QMetaType::QPointF );
-	mValOutputPoints->setCount( 4 );
+	mValOutputPoints->setVariantCount( 4 );
 }
 
 bool TrackerNode::deinitialise()
@@ -80,16 +78,16 @@ void TrackerNode::updateConfidence( float cf )
 
 void TrackerNode::inputsUpdated( qint64 pTimeStamp )
 {
-	fugio::Performance			Perf( mNode, "inputsUpdated", pTimeStamp );
+	fugio::Performance				 Perf( mNode, "inputsUpdated", pTimeStamp );
 
-	fugio::ImageInterface			*ImgInt = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image					 ImgInt = variant( mPinInputImage ).value<fugio::Image>();
 
 	if( mPinInputParam->isUpdated( pTimeStamp ) )
 	{
 		freeTracker();
 	}
 
-	if( !ImgInt || !ImgInt->isValid() )
+	if( !ImgInt.isValid() )
 	{
 		return;
 	}
@@ -99,33 +97,33 @@ void TrackerNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		AR_PIXEL_FORMAT			PixFmt = mPixFmt;
 
-		switch( ImgInt->format() )
+		switch( ImgInt.format() )
 		{
-			case fugio::ImageInterface::FORMAT_RGB8:
+			case fugio::ImageFormat::RGB8:
 				PixFmt = AR_PIXEL_FORMAT_RGB;
 				break;
 
-			case fugio::ImageInterface::FORMAT_RGBA8:
+			case fugio::ImageFormat::RGBA8:
 				PixFmt = AR_PIXEL_FORMAT_RGBA;
 				break;
 
-			case fugio::ImageInterface::FORMAT_BGR8:
+			case fugio::ImageFormat::BGR8:
 				PixFmt = AR_PIXEL_FORMAT_BGR;
 				break;
 
-			case fugio::ImageInterface::FORMAT_BGRA8:
+			case fugio::ImageFormat::BGRA8:
 				PixFmt = AR_PIXEL_FORMAT_BGRA;
 				break;
 
-			case fugio::ImageInterface::FORMAT_UYVY422:
+			case fugio::ImageFormat::UYVY422:
 				PixFmt = AR_PIXEL_FORMAT_UYVY;
 				break;
 
-			case fugio::ImageInterface::FORMAT_YUYV422:
+			case fugio::ImageFormat::YUYV422:
 				PixFmt = AR_PIXEL_FORMAT_YUY2;
 				break;
 
-			case fugio::ImageInterface::FORMAT_GRAY8:
+			case fugio::ImageFormat::GRAY8:
 				PixFmt = AR_PIXEL_FORMAT_MONO;
 				break;
 
@@ -148,7 +146,7 @@ void TrackerNode::inputsUpdated( qint64 pTimeStamp )
 
 		if( mParamLT )
 		{
-			const QSize			ImgSze = ImgInt->size();
+			const QSize			ImgSze = ImgInt.size();
 
 			if( mParamLT->param.xsize != ImgSze.width() || mParamLT->param.ysize != ImgSze.height() )
 			{
@@ -163,7 +161,7 @@ void TrackerNode::inputsUpdated( qint64 pTimeStamp )
 
 		ARParam							 Param = PrmInt->param();
 
-		arParamChangeSize( &Param, ImgInt->size().width(), ImgInt->size().height(), &Param );
+		arParamChangeSize( &Param, ImgInt.size().width(), ImgInt.size().height(), &Param );
 
 		if( !( mParamLT = arParamLTCreate( &Param, AR_PARAM_LT_DEFAULT_OFFSET ) ) )
 		{
@@ -210,9 +208,9 @@ void TrackerNode::inputsUpdated( qint64 pTimeStamp )
 			mPatternIndex = -1;
 		}
 
-		QString		PatternFilename = variant( mPinInputPattern ).toString();
+		QString		PatternFilename = variant<QString>( mPinInputPattern );
 
-		if( !PatternFilename.isEmpty() )
+		if( !PatternFilename.isEmpty() && QFile::exists( PatternFilename ) )
 		{
 			try
 			{
@@ -232,7 +230,7 @@ void TrackerNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( mPinInputImage->isUpdated( pTimeStamp ) )
 	{
-		if( arDetectMarker( mHandle, (ARUint8 *)ImgInt->buffer( 0 ) ) < 0 )
+		if( arDetectMarker( mHandle, (ARUint8 *)ImgInt.buffer( 0 ) ) < 0 )
 		{
 			updateConfidence( -1 );
 
@@ -277,12 +275,9 @@ void TrackerNode::inputsUpdated( qint64 pTimeStamp )
 
 		pinUpdated( mPinOutputCenter );
 
-		float		*PntPtr = (float *)mValOutputPoints->array();
-
 		for( int i = 0 ; i < 4 ; i++ )
 		{
-			*PntPtr++ = MrkInf->vertex[ i ][ 0 ];
-			*PntPtr++ = MrkInf->vertex[ i ][ 1 ];
+			mValOutputPoints->setVariant( i, QPointF( MrkInf->vertex[ i ][ 0 ], MrkInf->vertex[ i ][ 1 ] ) );
 		}
 
 		pinUpdated( mPinOutputPoints );

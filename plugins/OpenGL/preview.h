@@ -4,6 +4,7 @@
 #include "opengl_includes.h"
 
 #include <QOpenGLWidget>
+#include <QOpenGLDebugLogger>
 
 #include <fugio/node_interface.h>
 #include <fugio/render_interface.h>
@@ -28,8 +29,12 @@ protected:
 signals:
 	void resized( const QSize &pSize );
 
+private slots:
+	void handleLoggedMessage( const QOpenGLDebugMessage &debugMessage );
+
 private:
 	QWeakPointer<fugio::NodeInterface>	 mNode;
+	QOpenGLDebugLogger					 mDebugLogger;
 };
 
 #endif // PREVIEW_H

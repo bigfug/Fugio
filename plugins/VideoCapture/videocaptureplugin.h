@@ -1,9 +1,14 @@
 #ifndef VIDEOCAPTUREPLUGIN_H
 #define VIDEOCAPTUREPLUGIN_H
 
+#include <QVector>
+#include <QWeakPointer>
+
 #include <fugio/plugin_interface.h>
 
 using namespace fugio;
+
+#include "videocapturedevice.h"
 
 class VideoCapturePlugin : public QObject, public PluginInterface
 {
@@ -16,6 +21,18 @@ public:
 
 	virtual ~VideoCapturePlugin( void ) {}
 
+	static VideoCapturePlugin *instance( void )
+	{
+		return( mInstance );
+	}
+
+	GlobalInterface *app( void )
+	{
+		return( mApp );
+	}
+
+	QSharedPointer<VideoCaptureDevice> device( int pDeviceIndex, int pFormatIndex );
+
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
 
@@ -24,7 +41,10 @@ public:
 	virtual void deinitialise( void );
 
 private:
-	GlobalInterface			*mApp;
+	static VideoCapturePlugin					*mInstance;
+
+	GlobalInterface								*mApp;
+	QVector<QWeakPointer<VideoCaptureDevice>>	 mDevices;
 };
 
 #endif // VIDEOCAPTUREPLUGIN_H

@@ -32,6 +32,7 @@
 
 #include "websocketdataservernode.h"
 #include "websocketclientnode.h"
+#include "websocketservernode.h"
 
 #include "packetencodenode.h"
 #include "packetdecodenode.h"
@@ -62,6 +63,7 @@ ClassEntry	NodeClasses[] =
 	ClassEntry( "Universe Send", "Network", NID_UNIVERSE_RECEIVE, &UniverseSendNode::staticMetaObject ),
 	ClassEntry( "WebSocket Data Server", "Network", NID_WEBSOCKET_DATA_SERVER, &WebSocketDataServerNode::staticMetaObject ),
 	ClassEntry( "WebSocket Client", "Network", NID_WEBSOCKET_CLIENT, &WebSocketClientNode::staticMetaObject ),
+	ClassEntry( "WebSocket Server", "Network", NID_WEBSOCKET_SERVER, &WebSocketServerNode::staticMetaObject ),
 	ClassEntry()
 };
 
@@ -80,7 +82,7 @@ NetworkPlugin::NetworkPlugin()
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_network" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}

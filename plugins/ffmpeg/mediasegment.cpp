@@ -138,7 +138,7 @@ bool MediaSegment::loadMedia( const QString &pFileName, bool pProcess )
 
 	AVDictionary		*Opts = 0;
 
-//	av_dict_set( &Opts, "refcounted_frames", "1", 0 );
+	//	av_dict_set( &Opts, "refcounted_frames", "1", 0 );
 
 	//-------------------------------------------------------------------------
 	// Open Video Stream
@@ -300,7 +300,9 @@ bool MediaSegment::loadMedia( const QString &pFileName, bool pProcess )
 	{
 	}
 
-	setPlayhead( 0 );
+	//	setPlayhead( 0 );
+
+	readNext();
 
 	return( true );
 #else
@@ -361,9 +363,10 @@ bool MediaSegment::ptsInRange( qreal pPTS, qreal pTarget, qreal Min, qreal Max )
 
 void MediaSegment::audioRange( qint64 &pMinPTS, qint64 &pMaxPTS ) const
 {
-	QMutexLocker	L( &mAudDatLck );
-
 	pMinPTS = pMaxPTS = -1;
+
+#if defined( FFMPEG_SUPPORTED )
+	QMutexLocker	L( &mAudDatLck );
 
 	for( const AudioBuffer &AB : mAudDat )
 	{
@@ -377,12 +380,14 @@ void MediaSegment::audioRange( qint64 &pMinPTS, qint64 &pMaxPTS ) const
 			pMaxPTS = AB.mAudPts;
 		}
 	}
+#endif
 }
 
 void MediaSegment::videoRange(qreal &pMinPTS, qreal &pMaxPTS) const
 {
 	pMinPTS = pMaxPTS = -1;
 
+#if defined( FFMPEG_SUPPORTED )
 	for( const VidDat &VD : mVidDat )
 	{
 		if( pMinPTS == -1 || VD.mPTS < pMinPTS )
@@ -395,6 +400,7 @@ void MediaSegment::videoRange(qreal &pMinPTS, qreal &pMaxPTS) const
 			pMaxPTS = VD.mPTS;
 		}
 	}
+#endif
 }
 
 void MediaSegment::processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pForce )
@@ -419,7 +425,7 @@ void MediaSegment::processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 		}
 		else if( PacketTS != AV_NOPTS_VALUE )
 		{
-//			mVideo.mPTS = mVideo.mPTS;
+			//			mVideo.mPTS = mVideo.mPTS;
 		}
 		else
 		{
@@ -438,12 +444,12 @@ void MediaSegment::processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 		}
 		else
 		{
-	//		if( mFrameReadDuration != -1 && mFrameReadPTS >= 0 && VD.mPTS > mFrameReadPTS )
-	//		{
-	//			//mFrameDurationAverage += ( mFrameDurationAverage - ( VD.mPTS - mFrameReadPTS ) ) / 10.0;
-	//		}
+			//		if( mFrameReadDuration != -1 && mFrameReadPTS >= 0 && VD.mPTS > mFrameReadPTS )
+			//		{
+			//			//mFrameDurationAverage += ( mFrameDurationAverage - ( VD.mPTS - mFrameReadPTS ) ) / 10.0;
+			//		}
 
-	//		VD.mDuration = mFrameDurationAverage;
+			//		VD.mDuration = mFrameDurationAverage;
 		}
 	}
 
@@ -483,10 +489,8 @@ void MediaSegment::processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 void MediaSegment::processAudioFrame( qreal TargetPTS, qreal PacketTS, bool pForce )
 {
 #if defined( FFMPEG_SUPPORTED )
-	AVRational tb = AVRational{ 1, mAudio.mFrame->sample_rate };
-	//double		TimeBase = av_q2d( mFormatContext->streams[ mAudio.mStreamId ]->time_base );
-	double		TimeBase = av_q2d( tb );
-	qreal		FrameTS = mAudio.mFrame->pts; //av_frame_get_best_effort_timestamp( mAudio.mFrame );
+	double		TimeBase = av_q2d( mFormatContext->streams[ mAudio.mStreamId ]->time_base );
+	qreal		FrameTS = av_frame_get_best_effort_timestamp( mAudio.mFrame );
 
 	if( FrameTS != AV_NOPTS_VALUE )
 	{
@@ -503,10 +507,8 @@ void MediaSegment::processAudioFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 
 	if( mAudio.mSamplePTS == -1 )
 	{
-		mAudio.mSamplePTS = qCeil( mAudio.mPTS * 48000 );
+		mAudio.mSamplePTS = qCeil( mAudio.mPTS * 48000.0 );
 	}
-
-	//qDebug() << "mAudioPTS:" << mAudioPTS << qCeil( mAudioPTS * 48000 ) << mAudioSamplePTS;
 
 #if defined( TL_USE_LIB_AV )
 #else
@@ -718,16 +720,16 @@ bool MediaSegment::hapProcess( qreal TargetPTS, qreal PacketTS, bool pForce )
 	}
 	else
 	{
-//		if( mFrameReadDuration != -1 && mFrameReadPTS >= 0 && VD.mPTS > mFrameReadPTS )
-//		{
-//			//mFrameDurationAverage += ( mFrameDurationAverage - ( VD.mPTS - mFrameReadPTS ) ) / 10.0;
-//		}
+		//		if( mFrameReadDuration != -1 && mFrameReadPTS >= 0 && VD.mPTS > mFrameReadPTS )
+		//		{
+		//			//mFrameDurationAverage += ( mFrameDurationAverage - ( VD.mPTS - mFrameReadPTS ) ) / 10.0;
+		//		}
 
-//		VD.mDuration = mFrameDurationAverage;
+		//		VD.mDuration = mFrameDurationAverage;
 	}
 
-//	mFrameReadPTS      = VD.mPTS;
-//	mFrameReadDuration = VD.mDuration;
+	//	mFrameReadPTS      = VD.mPTS;
+	//	mFrameReadDuration = VD.mDuration;
 
 	if( hasVideoFrame( VD.mPTS ) )
 	{
@@ -1282,6 +1284,35 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 #endif // FFMPEG_SUPPORTED
 }
 
+void MediaSegment::rewind()
+{
+#if defined( FFMPEG_SUPPORTED )
+	mPlayHead = 0.0;
+
+	if( avformat_seek_file( mFormatContext, -1, INT64_MIN, 0, INT64_MAX, 0 ) < 0 )
+	{
+		avformat_seek_file( mFormatContext, -1, INT64_MIN, 0, INT64_MAX, AVSEEK_FLAG_ANY );
+	}
+
+	mAudio.mPTS          = -1;
+	mVideo.mPTS          = -1;
+	mAudio.mSamplePTS    = -1;
+
+	if( mVideo.mCodecContext )
+	{
+		avcodec_flush_buffers( mVideo.mCodecContext );
+	}
+
+	if( mAudio.mCodecContext )
+	{
+		avcodec_flush_buffers( mAudio.mCodecContext );
+	}
+
+	clearVideo();
+	clearAudio();
+#endif
+}
+
 void MediaSegment::mixAudio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, float pVol ) const
 {
 #if defined( FFMPEG_SUPPORTED )
@@ -1330,7 +1361,7 @@ void MediaSegment::mixAudio( qint64 pSamplePosition, qint64 pSampleCount, int pC
 		Q_ASSERT( DstPos + AudLen <= pSampleCount );
 #endif
 
-//		qDebug() << SrcPos << QString( "(%1)" ).arg( AD.mAudSmp ) << "->" << DstPos << AudLen;
+		//		qDebug() << SrcPos << QString( "(%1)" ).arg( AD.mAudSmp ) << "->" << DstPos << AudLen;
 
 		for( int i = 0 ; i < pChannelCount ; i++ )
 		{
@@ -1543,32 +1574,48 @@ void MediaSegment::readNext()
 
 	if( VideoStream )
 	{
-		qreal	OldPlayHead = mPlayHead;
-
 		if( mVideo.mCurrIdx != -1 )
 		{
-			mPlayHead = mVidDat[ mVideo.mCurrIdx ].mPTS;
-		}
+			qreal	OldPlayHead = mPlayHead;
+			qreal	CurDuration = 0;
 
-		for( const VidDat &VD : mVidDat )
-		{
-			if( VD.mPTS <= mPlayHead )
+			mPlayHead = mVidDat[ mVideo.mCurrIdx ].mPTS;
+
+			for( const VidDat &VD : mVidDat )
 			{
-				continue;
+				CurDuration = VD.mDuration;
+
+				if( VD.mPTS <= mPlayHead )
+				{
+					continue;
+				}
+
+				mPlayHead = VD.mPTS;
+
+				break;
 			}
 
-			mPlayHead = VD.mPTS;
-
-			break;
+			if( OldPlayHead == mPlayHead )
+			{
+				mPlayHead += CurDuration;
+			}
 		}
-
-		if( OldPlayHead == mPlayHead )
+		else
 		{
-			mPlayHead += mVideo.mMaxDur;
+			mPlayHead = 0;
 		}
 	}
 	else if( AudioStream )
 	{
+		for( const AudioBuffer &AB : mAudDat )
+		{
+			qreal  NxtPts = qreal( AB.mAudPts + AB.mAudSmp ) / 48000.0;
+
+			if( NxtPts > mPlayHead )
+			{
+				mPlayHead = NxtPts;
+			}
+		}
 	}
 
 	while( true )
@@ -1665,11 +1712,6 @@ void MediaSegment::readNext()
 
 	if( AudioStream )
 	{
-		if( !VideoStream && !mAudDat.isEmpty() )
-		{
-			mPlayHead = qreal( mAudDat.last().mAudPts ) / 48000.0;
-		}
-
 		removeAudioFrames();
 	}
 #endif

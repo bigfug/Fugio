@@ -27,7 +27,7 @@ HoughLinesNode::HoughLinesNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputImage->registerPinInputType( PID_IMAGE );
 
-	mValOutputLines = pinOutput<fugio::ArrayInterface *>( "Lines", mPinOutputLines, PID_ARRAY, PIN_OUTPUT_LINES );
+	mValOutputLines = pinOutput<fugio::VariantInterface *>( "Lines", mPinOutputLines, PID_LINE, PIN_OUTPUT_LINES );
 
 	mPinInputRho           = pinInput( "Rho", PIN_INPUT_RHO );
 	mPinInputTheta         = pinInput( "Theta", PIN_INPUT_THETA );
@@ -41,18 +41,16 @@ HoughLinesNode::HoughLinesNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInputMinLineLength->setValue( 0 );
 	mPinInputMaxLineGap->setValue( 0 );
 
-	mValOutputLines->setSize( 1 );
-	mValOutputLines->setStride( sizeof( QLineF ) );
-	mValOutputLines->setType( QMetaType::QLineF );
+	mValOutputLines->variantClear();
 }
 
 void HoughLinesNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	fugio::ImageInterface			*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image	SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || SrcImg->size().isEmpty() )
+	if( !SrcImg.isValid() )
 	{
 		return;
 	}
@@ -66,8 +64,7 @@ void HoughLinesNode::inputsUpdated( qint64 pTimeStamp )
 #if defined( OPENCV_SUPPORTED )
 	cv::Mat							 MatSrc = OpenCVPlugin::image2mat( SrcImg );
 
-	mValOutputLines->setArray( Q_NULLPTR );
-	mValOutputLines->setCount( 0 );
+	mValOutputLines->variantClear();
 
 	try
 	{
@@ -96,13 +93,13 @@ void HoughLinesNode::inputsUpdated( qint64 pTimeStamp )
 
 		cv::HoughLinesP( MatSrc, lines, Rho, Theta, Threshold, MinLineLength, MaxLineGap );
 
-		mLineData.resize( lines.size() );
+		mValOutputLines->setVariantCount( lines.size() );
 
 		for( size_t i = 0; i < lines.size() ; i++ )
 		{
 			const cv::Vec4i &v = lines[ i ];
 
-			mLineData[ i ] = QLineF( QPointF( v[0], v[1] ), QPointF( v[ 2 ], v[ 3 ] ) );
+			mValOutputLines->setVariant( i, QLineF( QPointF( v[0], v[1] ), QPointF( v[ 2 ], v[ 3 ] ) ) );
 		}
 #endif
 	}
@@ -121,12 +118,6 @@ void HoughLinesNode::inputsUpdated( qint64 pTimeStamp )
 	}
 
 	mNode->setStatus( fugio::NodeInterface::Initialised );
-
-	if( !mLineData.isEmpty() )
-	{
-		mValOutputLines->setArray( mLineData.data() );
-		mValOutputLines->setCount( mLineData.size() );
-	}
 
 	pinUpdated( mPinOutputLines );
 #endif

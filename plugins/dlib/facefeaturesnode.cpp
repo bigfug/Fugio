@@ -4,7 +4,7 @@
 
 #include <fugio/core/uuid.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/performance.h>
 
 #if defined( DLIB_SUPPORTED )
@@ -22,7 +22,7 @@ public:
 	typedef pixel_type type;
 	typedef default_memory_manager mem_manager_type;
 
-	fugio_image( fugio::ImageInterface *pImgInt )
+	fugio_image( fugio::Image *pImgInt )
 	{
 		//			DLIB_CASSERT(img.depth() == cv::DataType<typename pixel_traits<pixel_type>::basic_pixel_type>::depth &&
 		//						 img.channels() == pixel_traits<pixel_type>::num,
@@ -78,7 +78,7 @@ public:
 		return *this;
 	}
 
-	fugio_image& operator=( const fugio::ImageInterface* img)
+	fugio_image& operator=( const fugio::VariantInterface* img)
 	{
 		init(img);
 		return *this;
@@ -86,7 +86,7 @@ public:
 
 private:
 
-	void init (const fugio::ImageInterface* img)
+	void init (const fugio::Image* img)
 	{
 		//			DLIB_CASSERT( img->dataOrder == 0, "Only interleaved color channels are supported with fugio_image");
 		//			DLIB_CASSERT((img->depth&0xFF)/8*img->nChannels == sizeof(pixel_type),
@@ -95,7 +95,7 @@ private:
 		_data = img;
 	}
 
-	const fugio::ImageInterface* _data;
+	const fugio::Image* _data;
 };
 
 // ----------------------------------------------------------------------------------------
@@ -175,15 +175,17 @@ FaceFeaturesNode::FaceFeaturesNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputData = pinInput( "Data", PIN_INPUT_DATA );
 
-	mValOutputRects = pinOutput<fugio::ArrayInterface *>( "Rects", mPinOutputRects, PID_ARRAY, PIN_OUTPUT_RECTS );
+	mValOutputRects = pinOutput<fugio::VariantInterface *>( "Rects", mPinOutputRects, PID_RECT, PIN_OUTPUT_RECTS );
 
-	mValOutputRects->setSize( 1 );
-	mValOutputRects->setStride( sizeof( QRectF ) );
-	mValOutputRects->setType( QMetaType::QRectF );
+	mValOutputShapes = pinOutput<fugio::VariantInterface *>( "Shapes", mPinOutputShapes, PID_POLYGON, PIN_OUTPUT_SHAPES );
 
-	mValOutputShapes = pinOutput<fugio::ArrayListInterface *>( "Shapes", mPinOutputShapes, PID_ARRAY_LIST, PIN_OUTPUT_SHAPES );
+	mValOutputChips = pinOutput<fugio::VariantInterface *>( "Chips", mPinOutputChips, PID_POLYGON, PIN_OUTPUT_CHIPS );
 
-	mValOutputChips = pinOutput<fugio::ArrayListInterface *>( "Chips", mPinOutputChips, PID_ARRAY_LIST, PIN_OUTPUT_CHIPS );
+	mValOutputRects->variantClear();
+
+	mValOutputShapes->variantClear();
+
+	mValOutputChips->variantClear();
 
 #if defined( DLIB_SUPPORTED )
 	mDetector = get_frontal_face_detector();
@@ -235,15 +237,10 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( mPinInputImage->isUpdated( pTimeStamp ) )
 	{
-		fugio::ImageInterface		*I = input<fugio::ImageInterface *>( mPinInputImage );
+		fugio::Image				I = variant( mPinInputImage ).value<fugio::Image>();
 
-		if( I && I->isValid() )
+		if( I.isValid() && I.format() == fugio::ImageFormat::GRAY8 )
 		{
-			if( I->format() != fugio::ImageInterface::FORMAT_GRAY8 )
-			{
-				return;
-			}
-
 			fugio::Performance		Perf( mNode, "inputsUpdated", pTimeStamp );
 
 #if defined( DLIB_SUPPORTED )
@@ -251,27 +248,25 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 			{
 				dlib::matrix<unsigned char>		SrcMat;
 
-				assign_image( SrcMat, fugio_image<unsigned char>( I ) );
+				assign_image( SrcMat, fugio_image<unsigned char>( &I ) );
 
 				std::vector<rectangle> dets = mDetector( SrcMat );
 
-				mValOutputRects->setCount( dets.size() );
+				mValOutputRects->setVariantCount( dets.size() );
 
-				mValOutputShapes->setCount( mLoaded ? dets.size() : 0 );
+				mValOutputShapes->setVariantCount( mLoaded ? dets.size() : 0 );
 
-				mValOutputChips->setCount( mLoaded ? dets.size() : 0 );
+				mValOutputChips->setVariantCount( mLoaded ? dets.size() : 0 );
 
 				if( !dets.empty() )
 				{
 					std::vector<full_object_detection> shapes;
 
-					QRectF		*R = (QRectF *)mValOutputRects->array();
-
 					for( unsigned long j = 0; j < dets.size(); ++j )
 					{
 						const rectangle	&r = dets[ j ];
 
-						*R++ = QRectF( r.left(), r.top(), r.width(), r.height() );
+						mValOutputRects->setVariant( j, QRectF( r.left(), r.top(), r.width(), r.height() ) );
 
 						if( mLoaded )
 						{
@@ -279,21 +274,16 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 
 							shapes.push_back( shape );
 
-							fugio::ArrayInterface	*ShapeArray = mValOutputShapes->arrayIndex( j );
-
-							ShapeArray->setSize( 1 );
-							ShapeArray->setStride( sizeof( int ) * 2 );
-							ShapeArray->setType( QMetaType::QPoint );
-							ShapeArray->setCount( shape.num_parts() );
-
-							int		*P = (int *)ShapeArray->array();
+							QPolygonF		Polygon;
 
 							for( unsigned long i = 0; i < shape.num_parts() ; ++i )
 							{
 								const point &p = shape.part( i );
 
-								*P++ = p.x();	*P++ = p.y();
+								Polygon << QPointF( p.x(), p.y() );
 							}
+
+							mValOutputShapes->setVariant( j, Polygon );
 						}
 					}
 
@@ -312,19 +302,14 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 							const dlib::vector<double,2> r2 = rotate_point<double>( cent, c.rect.br_corner(), c.angle );
 							const dlib::vector<double,2> r3 = rotate_point<double>( cent, c.rect.bl_corner(), c.angle );
 
-							fugio::ArrayInterface	*ChipArray = mValOutputChips->arrayIndex( j );
+							QPolygonF		Polygon;
 
-							ChipArray->setSize( 1 );
-							ChipArray->setStride( sizeof( float ) * 2 );
-							ChipArray->setType( QMetaType::QPointF );
-							ChipArray->setCount( 4 );
+							Polygon << QPointF( r0.x(), r0.y() );
+							Polygon << QPointF( r1.x(), r1.y() );
+							Polygon << QPointF( r2.x(), r2.y() );
+							Polygon << QPointF( r3.x(), r3.y() );
 
-							float		*P = (float *)ChipArray->array();
-
-							*P++ = r0.x();	*P++ = r0.y();
-							*P++ = r1.x();	*P++ = r1.y();
-							*P++ = r2.x();	*P++ = r2.y();
-							*P++ = r3.x();	*P++ = r3.y();
+							mValOutputChips->setVariant( j, Polygon );
 						}
 					}
 				}

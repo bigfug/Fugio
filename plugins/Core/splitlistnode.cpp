@@ -4,6 +4,9 @@
 
 #include <fugio/context_interface.h>
 #include <fugio/core/list_interface.h>
+#include <fugio/pin_variant_iterator.h>
+
+#include "coreplugin.h"
 
 SplitListNode::SplitListNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -17,68 +20,64 @@ void SplitListNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	fugio::ListInterface	*LstInf = input<fugio::ListInterface *>( mPinInputList );
+	fugio::PinVariantIterator	LstItr( mPinInputList );
+	QUuid						LstTyp = CorePlugin::instance()->app()->findPinForMetaType( LstItr.type() );
 
-	if( LstInf )
+	QList<QSharedPointer<fugio::PinInterface>>	PinLst = mNode->enumOutputPins();
+
+	for( int i = PinLst.size() ; i < LstItr.count() ; i++ )
 	{
-		QList<QSharedPointer<fugio::PinInterface>>	PinLst = mNode->enumOutputPins();
+		QSharedPointer<fugio::PinInterface>		 NewPin;
+		fugio::VariantInterface					*NewVar;
 
-		for( int i = PinLst.size() ; i < LstInf->listSize() ; i++ )
+		NewVar = pinOutput<fugio::VariantInterface *>( QString::number( i ), NewPin, LstTyp, QUuid::createUuid() );
+
+		if( NewPin )
 		{
-			QSharedPointer<fugio::PinInterface>		 NewPin;
-			fugio::VariantInterface					*NewVar;
+			NewPin->setSetting( "i", i );
 
-			NewVar = pinOutput<fugio::VariantInterface *>( QString::number( i ), NewPin, LstInf->listPinControl(), QUuid::createUuid() );
-
-			if( NewPin )
-			{
-				NewPin->setSetting( "i", i );
-
-				PinLst << NewPin;
-			}
+			PinLst << NewPin;
 		}
+	}
 
-		for( int i = PinLst.size() ; i > LstInf->listSize() ; i-- )
+	for( int i = PinLst.size() ; i > LstItr.count() ; i-- )
+	{
+		QSharedPointer<fugio::PinInterface>		 OldPin;
+
+		for( int j = 0 ; j < PinLst.size() ; j++ )
 		{
-			QSharedPointer<fugio::PinInterface>		 OldPin;
+			OldPin = PinLst[ j ];
 
-			for( int j = 0 ; j < PinLst.size() ; j++ )
+			if( i == OldPin->setting( "i", -1 ).toInt() )
 			{
-				OldPin = PinLst[ j ];
-
-				if( i == OldPin->setting( "i", -1 ).toInt() )
+				if( !OldPin->isConnected() )
 				{
-					if( !OldPin->isConnected() )
-					{
-						PinLst.removeAt( j );
+					PinLst.removeAt( j );
 
-						mNode->removePin( OldPin );
-					}
-
-					break;
+					mNode->removePin( OldPin );
 				}
+
+				break;
 			}
 		}
+	}
 
-		for( int i = 0 ; i < PinLst.size() ; i++ )
+	for( int i = 0 ; i < PinLst.size() ; i++ )
+	{
+		QSharedPointer<fugio::PinInterface>		 CurPin = PinLst[ i ];
+		fugio::VariantInterface					*CurVar = qobject_cast<fugio::VariantInterface *>( CurPin->hasControl() ? CurPin->control()->qobject() : Q_NULLPTR );
+		int										 CurIdx = CurPin->setting( "i", -1 ).toInt();
+
+		if( CurVar && CurIdx >= 0 && CurIdx < LstItr.count() )
 		{
-			QSharedPointer<fugio::PinInterface>		 CurPin = PinLst[ i ];
-			fugio::VariantInterface					*CurVar = qobject_cast<fugio::VariantInterface *>( CurPin->hasControl() ? CurPin->control()->qobject() : Q_NULLPTR );
-			int										 CurIdx = CurPin->setting( "i", -1 ).toInt();
+			QVariant		NewVar = LstItr.index( CurIdx );
 
-			if( CurVar && CurIdx >= 0 && CurIdx < LstInf->listSize() )
+			if( NewVar != CurVar->variant() )
 			{
-				QVariant		NewVar = LstInf->listIndex( CurIdx );
+				CurVar->setVariant( NewVar );
 
-				if( NewVar != CurVar->variant() )
-				{
-					CurVar->setVariant( NewVar );
-
-					pinUpdated( CurPin );
-				}
+				pinUpdated( CurPin );
 			}
 		}
-
-		return;
 	}
 }

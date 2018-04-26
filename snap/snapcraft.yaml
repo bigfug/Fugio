@@ -1,0 +1,74 @@
+
+  name: fugio
+  version: '3.0.0'
+  summary: Fugio is an open visual programming system for creating digital art
+  description: |
+    Fugio is an open visual programming system for creating digital art,
+    learning programming, and making cool stuff with hardware such as the
+    Oculus Rift, Kinect, Arduino, Leap Motion, and any MIDI, OSC, TUIO,
+    or DMX enabled thing.
+
+  icon: FugioApp/fugio.png
+
+  grade: stable # must be 'stable' to release into candidate/stable channels
+  confinement: strict # use 'strict' once you have the right plugs and slots
+
+  parts:
+    cmake-build:
+      plugin: cmake
+      build-packages:
+        - qtbase5-dev
+        - qttools5-dev-tools
+        - libqt5opengl5-dev
+        - libdlib-dev
+        - portaudio19-dev
+        - liblua5.3-dev
+        - libavcodec-dev
+        - libavdevice-dev
+        - libavformat-dev
+        - libavutil-dev
+        - libswscale-dev
+        - libavresample-dev
+        - libavfilter-dev
+        - libfftw3-dev
+        - libportmidi-dev
+        - libqt5serialport5-dev
+        - libqt5websockets5-dev
+        - libopencv-dev
+        - libsnappy-dev
+      stage-packages:
+        - libqt5concurrent5
+        - libqt5core5a
+        - libqt5gui5
+        - libqt5opengl5
+        - libqt5network5
+        - libqt5widgets5
+        - libicu55
+        - libdlib
+        - libavcodec-ffmpeg56
+        - libavdevice-ffmpeg56
+        - libavformat-ffmpeg56
+        - libavutil-ffmpeg54
+        - libswscale-ffmpeg3
+        - libswresample-ffmpeg1
+        - libavfilter-ffmpeg5
+        - libfftw3-single3
+        - libportmidi0
+        - liblua5.3-0
+        - libportaudio2
+        - libqt5serialport5
+        - libqt5websockets5
+        - libopencv-core2.4v5
+        - libopencv-calib3d2.4v5
+        - libopencv-features2d2.4v5
+        - libopencv-imgproc2.4v5
+        - libopencv-objdetect2.4v5
+        - libopencv-photo2.4v5
+        - libopencv-video2.4v5
+      after: [desktop-qt5]
+
+  apps:
+    fugio:
+      command: desktop-launch fugio
+      desktop: share/applications/fugio.desktop
+      plugs: [camera, desktop, home, network, opengl, x11, alsa, serial-port, unity7]

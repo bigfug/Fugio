@@ -3,8 +3,8 @@
 
 #include <QObject>
 
-#include <fugio/image/image_interface.h>
-#include <fugio/core/array_interface.h>
+#include <fugio/image/image.h>
+#include <fugio/core/variant_interface.h>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -31,13 +31,10 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputImage;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputPoints;
-	fugio::ArrayInterface						*mValOutputPoints;
+	fugio::VariantInterface						*mValOutputPoints;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputSizes;
-	fugio::ArrayInterface						*mValOutputSizes;
-
-	QVector<QPointF>							 mPoints;
-	QVector<float>								 mSizes;
+	fugio::VariantInterface						*mValOutputSizes;
 
 #if defined( OPENCV_SUPPORTED )
 	cv::Mat										 mMatImg;

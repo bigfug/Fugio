@@ -18,7 +18,7 @@ class GeometryPlugin : public QObject, public fugio::PluginInterface
 public:
 	explicit GeometryPlugin( void );
 
-	virtual ~GeometryPlugin( void );
+	virtual ~GeometryPlugin( void ) {}
 
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface

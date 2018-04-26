@@ -214,21 +214,17 @@ void LuaNode::inputsUpdated( qint64 pTimeStamp )
 
 			if( QFileInfo::exists( LuaUsr ) )
 			{
-				luaSetPath( mL, QDir::toNativeSeparators( LuaUsr.append( "/?.lua" ) ).toLatin1().constData() );
+				luaSetPath( mL, QDir::toNativeSeparators( LuaUsr.append( "/?.lua" ) ).toUtf8().constData() );
 			}
 		}
 
 		if( true )
 		{
-#if defined( QT_DEBUG )
-			QString		LuaInc = QDir::current().absoluteFilePath( "../Fugio/share/lua" );
-#else
-			QString		LuaInc = QDir::current().absoluteFilePath( "share/lua" );
-#endif
+			QString		LuaInc = LuaPlugin::instance()->app()->sharedDataPath() + "/lua";
 
 			if( QFileInfo::exists( LuaInc ) )
 			{
-				luaSetPath( mL, QDir::toNativeSeparators( LuaInc.append( "/?.lua" ) ).toLatin1().constData() );
+				luaSetPath( mL, QDir::toNativeSeparators( LuaInc.append( "/?.lua" ) ).toUtf8().constData() );
 			}
 		}
 

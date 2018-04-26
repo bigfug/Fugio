@@ -8,17 +8,17 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/variant_helper.h>
 #include <fugio/core/size_interface.h>
 
 #include <fugio/pincontrolbase.h>
 
 #include <fugio/serialise_interface.h>
 
-class BitArrayPin : public fugio::PinControlBase, public fugio::VariantInterface, public fugio::SerialiseInterface, public fugio::SizeInterface
+class BitArrayPin : public fugio::PinControlBase, public fugio::VariantHelper<QBitArray>
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::VariantInterface fugio::SerialiseInterface fugio::SizeInterface )
+	Q_INTERFACES( fugio::VariantInterface )
 
 	Q_CLASSINFO( "Author", "Alex May" )
 	Q_CLASSINFO( "Version", "1.0" )
@@ -36,7 +36,14 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString( "%1 bits" ).arg( mValue.size() ) );
+		QStringList		L;
+
+		for( const QBitArray &V : mValues )
+		{
+			L << QString( "%1 bits" ).arg( V.size() );
+		}
+
+		return( L.join( ',' ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
@@ -47,53 +54,33 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::VariantInterface
 
-	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
+	virtual void setFromBaseVariant( int pIndex, int pOffset, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		mValue = pValue.toBitArray();
+		QList<QVariant>     L = pValue.toList();
+		QBitArray			V;
+
+		V.resize( L.size() );
+
+		for( int i = 0 ; i < L.size() ; i++ )
+		{
+			V.setBit( i, L.at( i ).toBool() );
+		}
+
+		setVariant( pIndex, pOffset, V );
 	}
 
-	virtual QVariant variant( void ) const Q_DECL_OVERRIDE
+	virtual QVariant baseVariant( int pIndex, int pOffset ) const Q_DECL_OVERRIDE
 	{
-		return( mValue );
+		QList<QVariant>		L;
+		QBitArray			V = variant( pIndex, pOffset ).toBitArray();
+
+		for( int i = 0 ; i < V.size() ; i++ )
+		{
+			L << V.testBit( i );
+		}
+
+		return( L );
 	}
-
-	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setVariant( pValue );
-	}
-
-	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE
-	{
-		return( variant() );
-	}
-
-	//-------------------------------------------------------------------------
-	// fugio::SerialiseInterface
-
-	virtual void serialise( QDataStream &pDataStream ) const Q_DECL_OVERRIDE
-	{
-		pDataStream << mValue;
-	}
-
-	virtual void deserialise( QDataStream &pDataStream ) Q_DECL_OVERRIDE
-	{
-		pDataStream >> mValue;
-	}
-
-	//-------------------------------------------------------------------------
-	// fugio::SizeInterface interface
-
-public:
-	virtual int sizeDimensions() const Q_DECL_OVERRIDE;
-	virtual float size(int pDimension) const Q_DECL_OVERRIDE;
-	virtual float sizeWidth() const Q_DECL_OVERRIDE;
-	virtual float sizeHeight() const Q_DECL_OVERRIDE;
-	virtual float sizeDepth() const Q_DECL_OVERRIDE;
-	virtual QSizeF toSizeF() const Q_DECL_OVERRIDE;
-	virtual QVector3D toVector3D() const Q_DECL_OVERRIDE;
-
-private:
-	QBitArray		mValue;
 };
 
 #endif // BITARRAYPIN_H

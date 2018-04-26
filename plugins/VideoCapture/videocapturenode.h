@@ -3,11 +3,9 @@
 
 #include <fugio/nodecontrolbase.h>
 #include <fugio/core/variant_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
-#if defined( VIDEOCAPTURE_SUPPORTED )
-#include <videocapture/Capture.h>
-#endif
+#include "videocapturedevice.h"
 
 class VideoCaptureNode : public fugio::NodeControlBase
 {
@@ -35,39 +33,28 @@ public:
 	virtual void loadSettings(QSettings &pSettings) Q_DECL_OVERRIDE;
 	virtual void saveSettings(QSettings &pSettings) const Q_DECL_OVERRIDE;
 
-private:
-#if defined( VIDEOCAPTURE_SUPPORTED )
-	static void frameCallbackStatic( ca::PixelBuffer &pBuffer );
-
-	void frameCallback( ca::PixelBuffer &pBuffer );
-#endif
-
 private slots:
-#if defined( VIDEOCAPTURE_SUPPORTED )
-	void frameStart( void );
-#endif
-
 	void setCurrentDevice( int pDevIdx , int pCfgIdx);
 
 	void chooseDevice( void );
+
+	void frameUpdated( void );
 
 signals:
 	void deviceIndexUpdated( int pIndex );
 
 protected:
-//	QSharedPointer<fugio::PinInterface>			 mPinInput;
-
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface						*mValOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 
 	int											 mDeviceIndex;
 	int											 mFormatIndex;
 
-#if defined( VIDEOCAPTURE_SUPPORTED )
-	ca::Capture									 mCapture;
-	ca::PixelBuffer								 mPrvDat;
-#endif
-};
+	qint64										 mLastFrameTimeStamp;
 
+	QSharedPointer<VideoCaptureDevice>			 mDevice;
+
+	VideoFrame									 mVideoFrame;
+};
 
 #endif // VIDEOCAPTURENODE_H

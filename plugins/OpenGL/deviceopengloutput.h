@@ -115,7 +115,7 @@ protected:
 
 	bool											 mUpdatePending;
 
-	static QOpenGLDebugLogger						*mDebugLogger;
+	QOpenGLDebugLogger								 mDebugLogger;
 };
 
 #endif // DEVICEOPENGLOUTPUT_H

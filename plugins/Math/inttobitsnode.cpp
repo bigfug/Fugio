@@ -13,12 +13,14 @@ IntToBitsNode::IntToBitsNode( QSharedPointer<fugio::NodeInterface> pNode )
 	FUGID( PIN_INPUT_BITS, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
 	FUGID( PIN_OUTPUT_ARRAY, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
 
-	mPinInputInteger = pinInput( "Integer", PIN_INPUT_INTEGER );
 	mPinInputBits    = pinInput( "Bits", PIN_INPUT_BITS );
+	mPinInputInteger = pinInput( "Integer", PIN_INPUT_INTEGER );
 
 	mPinInputBits->setValue( 8 );
 
-	mValOutputBitArray = pinOutput<fugio::VariantInterface *>( "Bits", mPinOutputBitArray, PID_BITARRAY, PIN_OUTPUT_ARRAY );
+	mValOutputBitArray = pinOutput<fugio::VariantInterface *>( "Bits", mPinOutputBitArray, PID_BOOL, PIN_OUTPUT_ARRAY );
+
+	mNode->pairPins( mPinInputInteger, mPinOutputBitArray );
 }
 
 void IntToBitsNode::inputsUpdated( qint64 pTimeStamp )
@@ -33,21 +35,16 @@ void IntToBitsNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	QBitArray		A;
+	bool	Update = mPinOutputBitArray->alwaysUpdate();
 
-	A.resize( Bits );
+	variantSetCount( mValOutputBitArray, Bits, Update );
 
 	for( int i = 0 ; i < Bits ; i++, Value >>= 1 )
 	{
 		bool	v = ( Value & 1 );
 
-		A.setBit( Bits - 1 - i, v );
+		variantSetValue( mValOutputBitArray, Bits - 1 - i, v, Update );
 	}
 
-	if( A != mValOutputBitArray->variant().toBitArray() )
-	{
-		mValOutputBitArray->setVariant( A );
-
-		pinUpdated( mPinOutputBitArray );
-	}
+	pinUpdated( mPinOutputBitArray, Update );
 }

@@ -488,48 +488,38 @@ void NodeItem::setGroupId(const QUuid &pGroupId)
 
 PinItem *NodeItem::findPinInput(const QUuid &pId)
 {
-	if( PinPair *PP = findPinPairInput( pId ) )
-	{
-		return( PP->second );
-	}
-
-	return( nullptr );
+	return( findPinPairInput( pId ).second );
 }
 
 PinItem *NodeItem::findPinOutput(const QUuid &pId)
 {
-	if( PinPair *PP = findPinPairOutput( pId ) )
-	{
-		return( PP->second );
-	}
-
-	return( nullptr );
+	return( findPinPairOutput( pId ).second );
 }
 
-NodeItem::PinPair *NodeItem::findPinPairInput(const QUuid &pId)
+NodeItem::PinPair NodeItem::findPinPairInput(const QUuid &pId)
 {
-	for( PinPair &PP : mInputs )
+	for( PinPair PP : mInputs )
 	{
 		if( PP.second->uuid() == pId )
 		{
-			return( &PP );
+			return( PP );
 		}
 	}
 
-	return( nullptr );
+	return( PinPair() );
 }
 
-NodeItem::PinPair *NodeItem::findPinPairOutput(const QUuid &pId)
+NodeItem::PinPair NodeItem::findPinPairOutput(const QUuid &pId)
 {
-	for( PinPair &PP : mOutputs )
+	for( PinPair PP : mOutputs )
 	{
 		if( PP.second->uuid() == pId )
 		{
-			return( &PP );
+			return( PP );
 		}
 	}
 
-	return( nullptr );
+	return( PinPair() );
 }
 
 int NodeItem::findPinPairInputIndex(const QUuid &pId) const
@@ -992,9 +982,9 @@ void NodeItem::moveStarted()
 	mUndoId++;
 }
 
-NodeItem::PinPair *NodeItem::findPinPair(QSharedPointer<fugio::PinInterface> pPin)
+NodeItem::PinPair NodeItem::findPinPair(QSharedPointer<fugio::PinInterface> pPin)
 {
-	PinPair		*PP = nullptr;
+	PinPair		PP;
 
 	if( pPin->direction() == PIN_INPUT )
 	{
@@ -1015,9 +1005,11 @@ bool NodeItem::comparePinPair( const PinPair &P1, const PinPair &P2 )
 
 void NodeItem::pinNameChanged( QSharedPointer<fugio::PinInterface> pPin )
 {
-	if( PinPair *PP = findPinPair( pPin ) )
+	PinPair PP = findPinPair( pPin );
+
+	if( PP.first )
 	{
-		PP->first->setText( pPin->name() );
+		PP.first->setText( pPin->name() );
 
 		layoutPins();
 	}
@@ -1353,20 +1345,10 @@ void NodeItem::pinOutputRemove( QSharedPointer<fugio::PinInterface> pPin )
 
 PinItem *NodeItem::findPinInput( QSharedPointer<fugio::PinInterface> pPin )
 {
-	if( PinPair *PP = findPinPairInput( pPin->globalId() ) )
-	{
-		return( PP->second );
-	}
-
-	return( nullptr );
+	return( findPinPairInput( pPin->globalId() ).second );
 }
 
 PinItem *NodeItem::findPinOutput( QSharedPointer<fugio::PinInterface> pPin )
 {
-	if( PinPair *PP = findPinPairOutput( pPin->globalId() ) )
-	{
-		return( PP->second );
-	}
-
-	return( nullptr );
+	return( findPinPairOutput( pPin->globalId() ).second );
 }

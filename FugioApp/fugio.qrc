@@ -6,9 +6,4 @@
     <qresource prefix="/html">
         <file>about.html</file>
     </qresource>
-    <qresource prefix="/">
-        <file>translations/fugio_app_de.qm</file>
-        <file>translations/fugio_app_es.qm</file>
-        <file>translations/fugio_app_fr.qm</file>
-    </qresource>
 </RCC>

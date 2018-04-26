@@ -59,11 +59,9 @@ public:
 
 //	virtual void unregisterContext( QOpenGLContext *pContext ) = 0;
 
-#if defined( OPENGL_DEBUG_ENABLE )
 	virtual void checkErrors( void ) = 0;
 
 	virtual void checkErrors( const char *file, int line ) = 0;
-#endif
 
 	virtual void registerOutputWindowHook( QObject *pObject, const char *pMember ) = 0;
 

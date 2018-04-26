@@ -35,6 +35,7 @@ public:
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinTexture;
 	QSharedPointer<fugio::PinInterface>			 mPinName;
+	QSharedPointer<fugio::PinInterface>			 mPinInputFlip;
 
 #if defined( SPOUT_SUPPORTED )
 	SpoutSender								 mSender;

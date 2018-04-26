@@ -295,6 +295,8 @@ void PinPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 
 	setHidden( pSettings.value( "hidden", hidden() ).toBool() );
 
+	setAlwaysUpdate( pSettings.value( "always-update", alwaysUpdate() ).toBool() );
+
 	setValue( pSettings.value( "default", mDefaultValue ) );
 
 	setLocalId( fugio::utils::string2uuid( pSettings.value( "uuid", fugio::utils::uuid2string( localId() ) ).toString() ) );
@@ -341,12 +343,17 @@ void PinPrivate::saveSettings( QSettings &pSettings ) const
 
 	if( removable() )
 	{
-		pSettings.setValue( "removable", removable() );
+		pSettings.setValue( "removable", true );
 	}
 
 	if( hidden() )
 	{
-		pSettings.setValue( "hidden", hidden() );
+		pSettings.setValue( "hidden", true );
+	}
+
+	if( alwaysUpdate() )
+	{
+		pSettings.setValue( "always-update", true );
 	}
 
 	if( direction() == PIN_INPUT )
@@ -503,4 +510,20 @@ void PinPrivate::setDirection( PinDirection pDirection )
 void PinPrivate::setNode( fugio::NodeInterface *pNode )
 {
 	mNode = pNode;
+}
+
+
+void PinPrivate::setDisplayLabel(QString pDisplayLabel)
+{
+	if( mDisplayLabel != pDisplayLabel )
+	{
+		mDisplayLabel = pDisplayLabel;
+
+		emit displayLabelChanged( mDisplayLabel );
+	}
+}
+
+QString PinPrivate::displayLabel() const
+{
+	return( mDisplayLabel );
 }

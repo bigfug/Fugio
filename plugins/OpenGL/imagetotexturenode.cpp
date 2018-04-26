@@ -184,9 +184,9 @@ void ImageToTextureNode::transferTexture( qint64 pTimeStamp )
 {
 	fugio::Performance	Perf( mNode, __FUNCTION__, pTimeStamp );
 
-	fugio::ImageInterface	*I = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image	I = variant<fugio::Image>( mPinInputImage );
 
-	mTexture->update( I->buffer( 0 ), I->bufferSize( 0 ), I->lineSize( 0 ) );
+	mTexture->update( I.buffer( 0 ), I.bufferSize( 0 ), I.lineSize( 0 ) );
 
 	OPENGL_DEBUG( mNode->name() );
 
@@ -220,9 +220,9 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 
 	QVector3D		TexSze = mTexture->size();
 
-	fugio::ImageInterface	*I = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image		I = variant( mPinInputImage ).value<fugio::Image>();
 
-	if( !I || !I->isValid() )
+	if( !I.isValid() )
 	{
 		if( QVector3D() != mOutputTextureSize->variant().value<QVector3D>() )
 		{
@@ -234,7 +234,7 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	QVector3D		S = QVector3D( I->size().width(), I->size().height(), 0 );
+	QVector3D		S = QVector3D( I.size().width(), I.size().height(), 0 );
 
 	if( TexSze != S )
 	{
@@ -242,33 +242,33 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 
 		mTexture->setType( QOpenGLTexture::UInt8 );
 
-		switch( I->format() )
+		switch( I.format() )
 		{
-			case fugio::ImageInterface::FORMAT_BGR8:
+			case fugio::ImageFormat::BGR8:
 				mTexture->setFormat( QOpenGLTexture::BGR );
 
 				mTexture->setInternalFormat( QOpenGLTexture::RGB8_UNorm );
 				break;
 
-			case fugio::ImageInterface::FORMAT_RGB8:
+			case fugio::ImageFormat::RGB8:
 				mTexture->setFormat( QOpenGLTexture::RGB );
 
 				mTexture->setInternalFormat( QOpenGLTexture::RGB8_UNorm );
 				break;
 
-			case fugio::ImageInterface::FORMAT_RGBA8:
+			case fugio::ImageFormat::RGBA8:
 				mTexture->setFormat( QOpenGLTexture::RGBA );
 
 				mTexture->setInternalFormat( QOpenGLTexture::RGBA8_UNorm );
 				break;
 
-			case fugio::ImageInterface::FORMAT_BGRA8:
+			case fugio::ImageFormat::BGRA8:
 				mTexture->setFormat( QOpenGLTexture::BGRA );
 
 				mTexture->setInternalFormat( QOpenGLTexture::RGBA8_UNorm );
 				break;
 
-			case fugio::ImageInterface::FORMAT_GRAY16:
+			case fugio::ImageFormat::GRAY16:
 				mTexture->setType( QOpenGLTexture::UInt16 );
 
 				if( !QOpenGLContext::currentContext()->isOpenGLES() )
@@ -285,7 +285,7 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 				}
 				break;
 
-			case fugio::ImageInterface::FORMAT_GRAY8:
+			case fugio::ImageFormat::GRAY8:
 				if( !QOpenGLContext::currentContext()->isOpenGLES() )
 				{
 					mTexture->setFormat( QOpenGLTexture::Red_Integer );
@@ -300,14 +300,14 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 				}
 				break;
 
-			case fugio::ImageInterface::FORMAT_YUYV422:
-			case fugio::ImageInterface::FORMAT_UYVY422:
+			case fugio::ImageFormat::YUYV422:
+			case fugio::ImageFormat::UYVY422:
 				mTexture->setFormat( QOpenGLTexture::RG );
 
 				mTexture->setInternalFormat( QOpenGLTexture::RG8_UNorm );
 				break;
 
-			case fugio::ImageInterface::FORMAT_R32F:
+			case fugio::ImageFormat::R32F:
 				mTexture->setFormat( QOpenGLTexture::Red );
 
 				mTexture->setType( QOpenGLTexture::Float32 );
@@ -315,7 +315,7 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 				mTexture->setInternalFormat( QOpenGLTexture::R32F );
 				break;
 
-			case fugio::ImageInterface::FORMAT_R32S:
+			case fugio::ImageFormat::R32S:
 				mTexture->setFormat( QOpenGLTexture::Red_Integer );
 
 				mTexture->setType( QOpenGLTexture::Int32 );
@@ -323,7 +323,7 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 				mTexture->setInternalFormat( QOpenGLTexture::R32I );
 				break;
 
-			case fugio::ImageInterface::FORMAT_RG32:
+			case fugio::ImageFormat::RG32:
 				mTexture->setFormat( QOpenGLTexture::RG );
 
 				mTexture->setType( QOpenGLTexture::Float32 );
@@ -331,14 +331,14 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 				mTexture->setInternalFormat( QOpenGLTexture::RG32F );
 				break;
 
-			case fugio::ImageInterface::FORMAT_DXT1:
+			case fugio::ImageFormat::DXT1:
 				mTexture->setFormat( QOpenGLTexture::RGBA );
 
 				mTexture->setInternalFormat( QOpenGLTexture::RGBA_DXT1 );
 				break;
 
-			case fugio::ImageInterface::FORMAT_DXT5:
-			case fugio::ImageInterface::FORMAT_YCoCg_DXT5:
+			case fugio::ImageFormat::DXT5:
+			case fugio::ImageFormat::YCoCg_DXT5:
 				mTexture->setFormat( QOpenGLTexture::RGBA );
 
 				mTexture->setInternalFormat( QOpenGLTexture::RGBA_DXT5 );

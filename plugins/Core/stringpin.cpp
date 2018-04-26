@@ -1,11 +1,9 @@
 #include "stringpin.h"
 #include <QSettings>
 
-StringPin::StringPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin )
-{
-}
+#include <fugio/core/uuid.h>
 
-StringPin::~StringPin()
+StringPin::StringPin( QSharedPointer<fugio::PinInterface> pPin )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::QString, PID_STRING )
 {
 }

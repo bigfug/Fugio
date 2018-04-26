@@ -15,7 +15,7 @@
 #include <fugio/utils.h>
 
 App::App( int &argc, char **argv ) :
-	QApplication( argc, argv ), mMainWindow( 0 ), mGlobal( 0 )
+	QApplication( argc, argv ), mMainWindow( 0 )
 {
 	QSettings		Settings;
 
@@ -32,18 +32,10 @@ App::App( int &argc, char **argv ) :
 
 		mUserSnippetsDirectory = UsrDir.absoluteFilePath( "snippets" );
 	}
-
-	mGlobal = qobject_cast<GlobalPrivate *>( fugio::fugio()->qobject() );
 }
 
 App::~App( void )
 {
-	if( mGlobal )
-	{
-		delete mGlobal;
-
-		mGlobal = 0;
-	}
 }
 
 void App::setMainWindow( MainWindow *pMainWindow )

@@ -7,7 +7,7 @@
 #include <fugio/core/uuid.h>
 #include <fugio/image/uuid.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/colour/colour_interface.h>
 
 #include <fugio/performance.h>
@@ -78,9 +78,9 @@ void ImageSaveNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( mPinInputImage->isUpdated( pTimeStamp ) )
 	{
-		fugio::ImageInterface	*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+		fugio::Image	SrcImg = variant<fugio::Image>( mPinInputImage );
 
-		if( !SrcImg || !SrcImg->isValid() )
+		if( !SrcImg.isValid() )
 		{
 			mNode->setStatus( fugio::NodeInterface::Warning );
 
@@ -124,7 +124,7 @@ void ImageSaveNode::inputsUpdated( qint64 pTimeStamp )
 			}
 		}
 
-		if( SrcImg->image().save( OutNam ) )
+		if( SrcImg.image().save( OutNam ) )
 		{
 			mFileNumber++;
 

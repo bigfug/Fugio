@@ -11,6 +11,7 @@
 #include <fugio/file/filename_interface.h>
 
 #include <fugio/image/uuid.h>
+#include <fugio/image/image.h>
 
 ImageLoaderNode::ImageLoaderNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -20,7 +21,7 @@ ImageLoaderNode::ImageLoaderNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mValInputFilename = pinInput<fugio::FilenameInterface *>( "Filename", mPinFileName, PID_FILENAME, PIN_INPUT_FILENAME );
 
-	mImage = pinOutput<fugio::ImageInterface *>( "Image", mPinImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
+	mImage = pinOutput<fugio::VariantInterface *>( "Image", mPinImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 }
 
 QWidget *ImageLoaderNode::gui( void )
@@ -91,24 +92,31 @@ void ImageLoaderNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+	if( IMG.format() == QImage::Format_Indexed8 )
+	{
+		IMG = IMG.convertToFormat( QImage::Format_ARGB32 );
+	}
+
 	mImageData = IMG;
 
-	mImage->setSize( mImageData.width(), mImageData.height() );
+	fugio::Image		NewImg = mImage->variant().value<fugio::Image>();
 
-	mImage->setLineSize( 0, mImageData.bytesPerLine() );
+	NewImg.setSize( mImageData.width(), mImageData.height() );
+
+	NewImg.setLineSize( 0, mImageData.bytesPerLine() );
 
 	if( mImageData.format() == QImage::Format_RGB32 )
 	{
-		mImage->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+		NewImg.setFormat( fugio::ImageFormat::BGRA8 );
 	}
 	else if( mImageData.format() == QImage::Format_ARGB32 )
 	{
-		mImage->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+		NewImg.setFormat( fugio::ImageFormat::BGRA8 );
 	}
 
-	memcpy( mImage->internalBuffer( 0 ), mImageData.constBits(), mImageData.byteCount() );
+	memcpy( NewImg.internalBuffer( 0 ), mImageData.constBits(), mImageData.byteCount() );
 
-	mNode->context()->pinUpdated( mPinImage );
+	pinUpdated( mPinImage );
 
 	emit pixmapUpdated( QPixmap::fromImage( mImageData.scaledToWidth( 80 ) ) );
 }

@@ -41,6 +41,11 @@ extern "C"
 #include <libswresample/swresample.h>
 #endif
 }
+
+#if LIBAVFORMAT_VERSION_MAJOR <= 56
+#undef FFMPEG_SUPPORTED
+#endif
+
 #endif
 
 class QImage;
@@ -59,6 +64,8 @@ public:
 	virtual bool loadMedia( const QString &pFileName, bool pProcess ) Q_DECL_OVERRIDE;
 
 	virtual void setPlayhead( qreal pTimeStamp ) Q_DECL_OVERRIDE;
+
+	virtual void rewind( void ) Q_DECL_OVERRIDE;
 
 	virtual void mixAudio( qint64 pSamplePosition, qint64 pSampleCount, int pChannelOffset, int pChannelCount, void **pBuffers, float pVol ) const Q_DECL_OVERRIDE;
 

@@ -15,28 +15,28 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #endif
 
-QMap<QString,fugio::ImageInterface::Format>	 ImageConvertNode::mFormats;
+QMap<QString,fugio::ImageFormat>	 ImageConvertNode::mFormats;
 
 
 ImageConvertNode::ImageConvertNode( QSharedPointer<fugio::NodeInterface> pNode ) :
-	NodeControlBase( pNode ), mDestinationFormat( fugio::ImageInterface::FORMAT_RGB8 )
+	NodeControlBase( pNode ), mDestinationFormat( fugio::ImageFormat::RGB8 )
 {
 	mPinInputImage = pinInput( "Input" );
 
-	mOutputImage = pinOutput<fugio::ImageInterface *>( "Output", mPinOutputImage, PID_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE );
 
 	if( mFormats.isEmpty() )
 	{
-		mFormats[ "RGB8" ] = fugio::ImageInterface::FORMAT_RGB8;
-		mFormats[ "RGBA8" ] = fugio::ImageInterface::FORMAT_RGBA8;
-		mFormats[ "BGR8" ] = fugio::ImageInterface::FORMAT_BGR8;
-		mFormats[ "BGRA8" ] = fugio::ImageInterface::FORMAT_BGRA8;
-		mFormats[ "YUYV422" ] = fugio::ImageInterface::FORMAT_YUYV422;
-		mFormats[ "UYVY422" ] = fugio::ImageInterface::FORMAT_UYVY422;
-		mFormats[ "YUV420P" ] = fugio::ImageInterface::FORMAT_YUV420P;
-		mFormats[ "GRAY16" ] = fugio::ImageInterface::FORMAT_GRAY16;
-		mFormats[ "GRAY8" ] = fugio::ImageInterface::FORMAT_GRAY8;
-		mFormats[ "HSV8" ] = fugio::ImageInterface::FORMAT_HSV8;
+		mFormats[ "RGB8" ] = fugio::ImageFormat::RGB8;
+		mFormats[ "RGBA8" ] = fugio::ImageFormat::RGBA8;
+		mFormats[ "BGR8" ] = fugio::ImageFormat::BGR8;
+		mFormats[ "BGRA8" ] = fugio::ImageFormat::BGRA8;
+		mFormats[ "YUYV422" ] = fugio::ImageFormat::YUYV422;
+		mFormats[ "UYVY422" ] = fugio::ImageFormat::UYVY422;
+		mFormats[ "YUV420P" ] = fugio::ImageFormat::YUV420P;
+		mFormats[ "GRAY16" ] = fugio::ImageFormat::GRAY16;
+		mFormats[ "GRAY8" ] = fugio::ImageFormat::GRAY8;
+		mFormats[ "HSV8" ] = fugio::ImageFormat::HSV8;
 	}
 }
 
@@ -44,7 +44,7 @@ QWidget *ImageConvertNode::gui( void )
 {
 	QComboBox		*GUI = new QComboBox();
 
-	for( QMap<QString,fugio::ImageInterface::Format>::const_iterator it = mFormats.begin() ; it != mFormats.end() ; it++ )
+	for( QMap<QString,fugio::ImageFormat>::const_iterator it = mFormats.begin() ; it != mFormats.end() ; it++ )
 	{
 		GUI->addItem( it.key(), int( it.value() ) );
 	}
@@ -61,7 +61,7 @@ QWidget *ImageConvertNode::gui( void )
 void ImageConvertNode::loadSettings( QSettings &pSettings )
 {
 	QString								 FmtNam = pSettings.value( "format", mFormats.firstKey() ).toString();
-	fugio::ImageInterface::Format		 ImgFmt = fugio::ImageInterface::Format( mFormats.value( FmtNam, mDestinationFormat ) );
+	fugio::ImageFormat		 ImgFmt = fugio::ImageFormat( mFormats.value( FmtNam, mDestinationFormat ) );
 
 	if( ImgFmt != mDestinationFormat )
 	{
@@ -80,7 +80,7 @@ void ImageConvertNode::saveSettings( QSettings &pSettings ) const
 
 void ImageConvertNode::targetChanged( const QString &pName )
 {
-	fugio::ImageInterface::Format		 ImgFmt = mFormats.value( pName );
+	fugio::ImageFormat		 ImgFmt = mFormats.value( pName );
 
 	if( ImgFmt == mDestinationFormat )
 	{
@@ -98,9 +98,9 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	fugio::ImageInterface							*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image		SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || SrcImg->size().isEmpty() )
+	if( !SrcImg.isValid() )
 	{
 		mNode->setStatus( NodeInterface::Warning );
 		mNode->setStatusMessage( "No valid input image" );
@@ -122,16 +122,16 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 
 	int							CvtCod = -1;
 
-	switch( SrcImg->format() )
+	switch( SrcImg.format() )
 	{
-		case fugio::ImageInterface::FORMAT_HSV8:
+		case fugio::ImageFormat::HSV8:
 			switch( mDestinationFormat )
 			{
-				case fugio::ImageInterface::FORMAT_BGR8:
+				case fugio::ImageFormat::BGR8:
 					CvtCod = CV_HSV2BGR;
 					break;
 
-				case fugio::ImageInterface::FORMAT_RGB8:
+				case fugio::ImageFormat::RGB8:
 					CvtCod = CV_HSV2RGB;
 					break;
 
@@ -140,14 +140,14 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			}
 			break;
 
-		case fugio::ImageInterface::FORMAT_RGB8:
+		case fugio::ImageFormat::RGB8:
 			switch( mDestinationFormat )
 			{
-				case fugio::ImageInterface::FORMAT_GRAY8:
+				case fugio::ImageFormat::GRAY8:
 					CvtCod = CV_RGB2GRAY;
 					break;
 
-				case fugio::ImageInterface::FORMAT_HSV8:
+				case fugio::ImageFormat::HSV8:
 					CvtCod = CV_RGB2HSV;
 					break;
 
@@ -156,10 +156,10 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			}
 			break;
 
-		case fugio::ImageInterface::FORMAT_RGBA8:
+		case fugio::ImageFormat::RGBA8:
 			switch( mDestinationFormat )
 			{
-				case fugio::ImageInterface::FORMAT_RGB8:
+				case fugio::ImageFormat::RGB8:
 					CvtCod = CV_RGBA2RGB;
 					break;
 
@@ -168,18 +168,18 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			}
 			break;
 
-		case fugio::ImageInterface::FORMAT_BGR8:
+		case fugio::ImageFormat::BGR8:
 			switch( mDestinationFormat )
 			{
-				case fugio::ImageInterface::FORMAT_GRAY8:
+				case fugio::ImageFormat::GRAY8:
 					CvtCod = CV_BGR2GRAY;
 					break;
 
-				case fugio::ImageInterface::FORMAT_RGB8:
+				case fugio::ImageFormat::RGB8:
 					CvtCod = CV_BGR2RGB;
 					break;
 
-				case fugio::ImageInterface::FORMAT_HSV8:
+				case fugio::ImageFormat::HSV8:
 					CvtCod = CV_BGR2HSV;
 					break;
 
@@ -188,14 +188,14 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			}
 			break;
 
-		case fugio::ImageInterface::FORMAT_BGRA8:
+		case fugio::ImageFormat::BGRA8:
 			switch( mDestinationFormat )
 			{
-				case fugio::ImageInterface::FORMAT_GRAY8:
+				case fugio::ImageFormat::GRAY8:
 					CvtCod = CV_BGRA2GRAY;
 					break;
 
-				case fugio::ImageInterface::FORMAT_RGB8:
+				case fugio::ImageFormat::RGB8:
 					CvtCod = CV_BGRA2RGB;
 					break;
 
@@ -204,14 +204,14 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			}
 			break;
 
-		case fugio::ImageInterface::FORMAT_YUYV422:
+		case fugio::ImageFormat::YUYV422:
 			switch( mDestinationFormat )
 			{
-				case fugio::ImageInterface::FORMAT_RGB8:
+				case fugio::ImageFormat::RGB8:
 					CvtCod = CV_YUV2RGB_Y422;
 					break;
 
-				case fugio::ImageInterface::FORMAT_GRAY8:
+				case fugio::ImageFormat::GRAY8:
 					CvtCod = CV_YUV2GRAY_Y422;
 					break;
 
@@ -220,25 +220,25 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			}
 			break;
 
-		case fugio::ImageInterface::FORMAT_GRAY8:
-		case fugio::ImageInterface::FORMAT_GRAY16:
-		case fugio::ImageInterface::FORMAT_R32F:
-		case fugio::ImageInterface::FORMAT_R32S:
+		case fugio::ImageFormat::GRAY8:
+		case fugio::ImageFormat::GRAY16:
+		case fugio::ImageFormat::R32F:
+		case fugio::ImageFormat::R32S:
 			switch( mDestinationFormat )
 			{
-				case fugio::ImageInterface::FORMAT_RGB8:
+				case fugio::ImageFormat::RGB8:
 					CvtCod = CV_GRAY2RGB;
 					break;
 
-				case fugio::ImageInterface::FORMAT_RGBA8:
+				case fugio::ImageFormat::RGBA8:
 					CvtCod = CV_GRAY2RGBA;
 					break;
 
-				case fugio::ImageInterface::FORMAT_BGR8:
+				case fugio::ImageFormat::BGR8:
 					CvtCod = CV_GRAY2BGR;
 					break;
 
-				case fugio::ImageInterface::FORMAT_BGRA8:
+				case fugio::ImageFormat::BGRA8:
 					CvtCod = CV_GRAY2BGRA;
 					break;
 
@@ -249,7 +249,7 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 
 		default:
 			mNode->setStatus( NodeInterface::Error );
-			mNode->setStatusMessage( tr( "Unknown source format: %1" ).arg( SrcImg->format() ) );
+			mNode->setStatusMessage( tr( "Unknown source format: %1" ).arg( SrcImg.format() ) );
 			return;
 	}
 
@@ -283,7 +283,9 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 		cv::cvtColor( MatSrc, mMatImg, CvtCod );
 	}
 
-	OpenCVPlugin::mat2image( mMatImg, mOutputImage, mDestinationFormat );
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( mMatImg, DstImg );
 #endif
 
 	pinUpdated( mPinOutputImage );

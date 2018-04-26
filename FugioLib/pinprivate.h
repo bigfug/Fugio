@@ -150,6 +150,30 @@ public:
 		return( mPairedId );
 	}
 
+	inline virtual void setAlwaysUpdate( bool pAlwaysUpdate = true ) Q_DECL_OVERRIDE
+	{
+#if( QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 ) )
+		mFlags.setFlag( AlwaysUpdate, pAlwaysUpdate );
+#else
+		if( pAlwaysUpdate )
+		{
+			mFlags |= AlwaysUpdate;
+		}
+		else
+		{
+			mFlags &= ~AlwaysUpdate;
+		}
+#endif
+	}
+
+	inline virtual bool alwaysUpdate( void ) const Q_DECL_OVERRIDE
+	{
+		return( mFlags.testFlag( AlwaysUpdate ) );
+	}
+
+	virtual void setDisplayLabel(QString pDisplayLabel) Q_DECL_OVERRIDE;
+	virtual QString displayLabel() const Q_DECL_OVERRIDE;
+
 	//-------------------------------------------------------------------------
 
 	void setPairedUuid( const QUuid &pUuid )
@@ -190,10 +214,11 @@ public:
 	void update( qint64 pTimeStamp, bool pUpdatedConnectedNode = true );
 
 	enum Option {
-		Removable	= 1 << 0,
-		Hidden		= 1 << 1,
-		Updatable	= 1 << 2,
-		AutoRename	= 1 << 3
+		Removable		= 1 << 0,
+		Hidden			= 1 << 1,
+		Updatable		= 1 << 2,
+		AutoRename		= 1 << 3,
+		AlwaysUpdate	= 1 << 4
 	};
 
 	Q_DECLARE_FLAGS( Options, Option )
@@ -221,6 +246,7 @@ private:
 	QMap<QUuid,QObject *>						 mInterfaces;
 	QList<QUuid>								 mInputTypeList;
 	QString										 mDescription;
+	QString										 mDisplayLabel;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( PinPrivate::Options )

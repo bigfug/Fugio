@@ -17,10 +17,6 @@
 #include "openglplugin.h"
 #include "windownode.h"
 
-//#define OPENGL_DEBUG_ENABLE
-
-QOpenGLDebugLogger			*DeviceOpenGLOutput::mDebugLogger = nullptr;
-
 void DeviceOpenGLOutput::deviceInitialise()
 {
 }
@@ -65,6 +61,7 @@ QSharedPointer<DeviceOpenGLOutput> DeviceOpenGLOutput::newDevice( void )
 DeviceOpenGLOutput::DeviceOpenGLOutput( void )
 	: mInputEvents( nullptr ), mUpdatePending( false )
 {
+	connect( &mDebugLogger, &QOpenGLDebugLogger::messageLogged, this, &DeviceOpenGLOutput::handleLoggedMessage );
 }
 
 DeviceOpenGLOutput::~DeviceOpenGLOutput( void )
@@ -153,6 +150,8 @@ void DeviceOpenGLOutput::renderNow()
 
 bool DeviceOpenGLOutput::renderInit()
 {
+	makeCurrent();
+
 	return( true );
 }
 
@@ -198,7 +197,16 @@ void DeviceOpenGLOutput::screengrab()
 
 void DeviceOpenGLOutput::handleLoggedMessage( const QOpenGLDebugMessage &pDebugMessage )
 {
-	qDebug() << pDebugMessage;
+	QSharedPointer<fugio::NodeInterface>	CurNod = mNode.toStrongRef();
+
+	if( CurNod )
+	{
+		qDebug() << CurNod->name() << pDebugMessage;
+	}
+	else
+	{
+		qDebug() << pDebugMessage;
+	}
 }
 
 #if 0
@@ -332,17 +340,9 @@ void DeviceOpenGLOutput::exposeEvent( QExposeEvent * )
 		OpenGLPlugin::instance()->initGLEW();
 
 #if defined( OPENGL_DEBUG_ENABLE )
-		if( !mDebugLogger )
+		if( mDebugLogger.initialize() )
 		{
-			if( ( mDebugLogger = new QOpenGLDebugLogger( this ) ) != nullptr )
-			{
-				if( mDebugLogger->initialize() )
-				{
-					connect( mDebugLogger, &QOpenGLDebugLogger::messageLogged, this, &DeviceOpenGLOutput::handleLoggedMessage );
-
-					mDebugLogger->startLogging( QOpenGLDebugLogger::SynchronousLogging );
-				}
-			}
+			mDebugLogger.startLogging( QOpenGLDebugLogger::SynchronousLogging );
 		}
 #endif
 

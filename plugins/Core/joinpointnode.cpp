@@ -4,6 +4,8 @@
 
 #include <QPointF>
 
+#include <fugio/pin_variant_iterator.h>
+
 JoinPointNode::JoinPointNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
@@ -21,16 +23,34 @@ void JoinPointNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	qreal			NewX = variant( mPinInputX ).toReal();
-	qreal			NewY = variant( mPinInputY ).toReal();
+	bool	UpdateOutput = false;
 
-	QPointF			CurPnt = mValOutputPoint->variant().toPointF();
-	QPointF			NewPnt = QPointF( NewX, NewY );
+	fugio::PinVariantIterator	X( mPinInputX );
+	fugio::PinVariantIterator	Y( mPinInputY );
 
-	if( CurPnt != NewPnt )
+	QVector<int>	PinCnt = { X.count(), Y.count() };
+
+	auto			MinMax = std::minmax_element( PinCnt.begin(), PinCnt.end() );
+
+	if( !*MinMax.first )
 	{
-		mValOutputPoint->setVariant( NewPnt );
+		return;
+	}
 
+	const int		OutCnt = *MinMax.second;
+
+	variantSetCount( mValOutputPoint, OutCnt, UpdateOutput );
+
+	for( int i = 0 ; i < OutCnt ; i++ )
+	{
+		qreal		x = X.index( i ).toReal();
+		qreal		y = Y.index( i ).toReal();
+
+		variantSetValue( mValOutputPoint, i, QPointF( x, y ), UpdateOutput );
+	}
+
+	if( UpdateOutput )
+	{
 		pinUpdated( mPinOutputPoint );
 	}
 }

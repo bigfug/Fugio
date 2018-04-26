@@ -10,12 +10,14 @@
 #include <QUrl>
 #include <QMimeData>
 #include <QFileDialog>
+#include <QFontDialog>
 #include <QTextStream>
 #include <QStyleOptionGraphicsItem>
 #include <QColorDialog>
 #include <QSignalMapper>
 #include <QMessageBox>
 #include <QDesktopServices>
+#include <QMetaClassInfo>
 #include <QColorDialog>
 #include <QMetaClassInfo>
 #include <QFileDialog>
@@ -35,9 +37,11 @@
 #include "contextview.h"
 
 #include "contextwidgetprivate.h"
+#include "pinprivate.h"
 
 #include "undo/cmdsetdefaultvalue.h"
 #include "undo/cmdsetupdatable.h"
+#include "undo/cmdsetalwaysupdate.h"
 #include "undo/cmdpinimport.h"
 #include "undo/cmdpinremove.h"
 #include "undo/cmdlinkadd.h"
@@ -57,8 +61,10 @@
 #include "undo/cmdpinconnectglobal.h"
 #include "undo/cmdpindisconnectglobal.h"
 
+#include "pinpopupfloat.h"
+
 PinItem::PinItem( ContextView *pContextView, QSharedPointer<fugio::PinInterface> pPin, NodeItem *pParent ) :
-	QGraphicsObject( pParent ), mContextView( pContextView ), mPin( pPin ), mLink( 0 ), mPinId( pPin->globalId() )
+	QGraphicsObject( pParent ), mContextView( pContextView ), mPin( pPin ), mPinId( pPin->globalId() )
 {
 	setAcceptHoverEvents( true );
 
@@ -67,10 +73,12 @@ PinItem::PinItem( ContextView *pContextView, QSharedPointer<fugio::PinInterface>
 	mPinName = mPin->name();
 
 	mPinColour = QColor( Qt::lightGray );
+
+	longPressTimer().setSingleShot( true );
 }
 
 PinItem::PinItem( ContextView *pContextView, const QUuid &pId, NodeItem *pParent )
-	: QGraphicsObject( pParent ), mContextView( pContextView ), mLink( 0 ), mPinId( pId )
+	: QGraphicsObject( pParent ), mContextView( pContextView ), mPinId( pId )
 {
 	setAcceptHoverEvents( true );
 
@@ -136,7 +144,10 @@ void PinItem::paint( QPainter *pPainter, const QStyleOptionGraphicsItem *pOption
 		NodeItem		*SrcNod = mContextView->findNodeItem( ConPin->node()->uuid() ).data();
 		PinItem			*SrcPin = SrcNod->findPinOutput( ConPin->globalId() );
 
-		PinColour = SrcPin->colour();
+		if( SrcPin )
+		{
+			PinColour = SrcPin->colour();
+		}
 	}
 
 	NodeItem			*Node  = qobject_cast<NodeItem *>( parentObject() );
@@ -320,6 +331,12 @@ void PinItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 	}
 	else
 	{
+		if( QAction *A = Menu.addAction( tr( "Always Update" ), this, SLOT(menuAlwaysUpdate()) ) )
+		{
+			A->setCheckable( true );
+			A->setChecked( mPin->alwaysUpdate() );
+		}
+
 		Menu.addAction( tr( "Set Colour..." ), this, SLOT(menuSetColour()) );
 
 		if( isGlobal() )
@@ -410,8 +427,13 @@ void PinItem::hoverEnterEvent( QGraphicsSceneHoverEvent *pEvent )
 	if( mPin->control() )
 	{
 		QString		PinTyp = gApp->global().pinName( mPin->controlUuid() );
+		QString		CtlDsc = mPin->control()->description();
 
-		if( !PinTyp.isEmpty() )
+		if( !CtlDsc.isEmpty() )
+		{
+			PinDat << CtlDsc;
+		}
+		else if( !PinTyp.isEmpty() )
 		{
 			PinDat << PinTyp;
 		}
@@ -428,9 +450,11 @@ void PinItem::hoverEnterEvent( QGraphicsSceneHoverEvent *pEvent )
 		PinMap.insert( tr( "Value" ), mPin->value().toString() );
 	}
 
-	if( !mPin->description().isEmpty() )
+	QString	PinDsc = mPin->description();
+
+	if( !PinDsc.isEmpty() )
 	{
-		PinMap.insert( tr( "Description" ), mPin->description() );
+		PinMap.insert( tr( "Description" ), PinDsc );
 	}
 
 	for( QString &S : PinDat )
@@ -456,6 +480,10 @@ void PinItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *pEvent)
 {
 //	QGraphicsObject::hoverLeaveEvent( pEvent );
 	Q_UNUSED( pEvent )
+
+	disconnect( &longPressTimer(), SIGNAL(timeout()), this, SLOT(longPressTimeout()) );
+
+	longPressTimer().stop();
 
 	QToolTip::hideText();
 }
@@ -561,42 +589,70 @@ void PinItem::setColour( const QColor &pColour )
 	}
 }
 
+void PinItem::longPressTimeout()
+{
+	PinPopupFloat	*Popup = new PinPopupFloat( mDragStartPoint, mPin );
+
+	scene()->addItem( Popup );
+
+	Popup->grabMouse();
+
+	QToolTip::hideText();
+
+	mLink.reset();
+}
+
 void PinItem::mousePressEvent( QGraphicsSceneMouseEvent *pEvent )
 {
 	if( pEvent->button() == Qt::LeftButton )
 	{
-		if( mLink != 0 )
-		{
-			delete mLink;
+		mLink.reset();
 
-			mLink = 0;
+		if( mPin->direction() == PIN_OUTPUT || !mPin->isConnected() )
+		{
+			mDragStartPoint = pEvent->pos();
 		}
 
-		if( mPin->direction() == PIN_INPUT && !mPin->connectedPin().isNull() )
+		if( mPin->direction() == PIN_INPUT && !mPin->isConnected() )
 		{
-			pEvent->accept();
+			connect( &longPressTimer(), SIGNAL(timeout()), this, SLOT(longPressTimeout()) );
 
-			return;
-		}
+			mDragStartPoint = pEvent->scenePos();
 
-		if( ( mLink = new LinkItem() ) != 0 )
-		{
-			scene()->addItem( mLink );
-
-			mLink->setZValue( 1.0 );
-
-			mLink->setSrcPin( this );
-
-			mLink->setDstPnt( mapToScene( 5, 5 ) );
+			longPressTimer().start( 750 );
 		}
 	}
-
-	pEvent->accept();
 }
 
 void PinItem::mouseMoveEvent( QGraphicsSceneMouseEvent *pEvent )
 {
-	if( mLink != 0 )
+	if( !mLink )
+	{
+		if( !mDragStartPoint.isNull() )
+		{
+			if( ( pEvent->pos() - mDragStartPoint ).manhattanLength() >= QApplication::startDragDistance() )
+			{
+				disconnect( &longPressTimer(), SIGNAL(timeout()), this, SLOT(longPressTimeout()) );
+
+				longPressTimer().stop();
+
+				mLink = std::unique_ptr<LinkItem>( new LinkItem() );
+
+				if( mLink )
+				{
+					scene()->addItem( mLink.get() );
+
+					mLink->setZValue( 1.0 );
+
+					mLink->setSrcPin( this );
+
+					mLink->setDstPnt( mapToScene( 5, 5 ) );
+				}
+			}
+		}
+	}
+
+	if( mLink )
 	{
 		PinItem		*PI = findDest( pEvent->scenePos() );
 
@@ -629,7 +685,7 @@ void PinItem::mouseMoveEvent( QGraphicsSceneMouseEvent *pEvent )
 			{
 				NodeItem	*Node = qgraphicsitem_cast<NodeItem *>( Items.at( i ) );
 
-				if( Node == 0 )
+				if( !Node )
 				{
 					continue;
 				}
@@ -647,12 +703,14 @@ void PinItem::mouseMoveEvent( QGraphicsSceneMouseEvent *pEvent )
 			}
 		}
 	}
-
-	pEvent->accept();
 }
 
 void PinItem::mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent )
 {
+	disconnect( &longPressTimer(), SIGNAL(timeout()), this, SLOT(longPressTimeout()) );
+
+	longPressTimer().stop();
+
 	if( mLink )
 	{
 		mLink->setZValue( -1.0 );
@@ -720,14 +778,21 @@ void PinItem::mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent )
 			}
 		}
 
-		delete mLink;
-
-		mLink = nullptr;
+		mLink.reset();
 	}
 
-	pEvent->accept();
+	mDragStartPoint = QPointF();
 }
 
+void PinItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent *pEvent )
+{
+	PinPrivate	*PP = qobject_cast<PinPrivate *>( mPin->qobject() );
+
+	if( PP && PP->direction() == PIN_INPUT )
+	{
+		PP->update( std::numeric_limits<qint64>::max() );
+	}
+}
 
 PinItem *PinItem::findDest( const QPointF &pPoint )
 {
@@ -871,6 +936,25 @@ void PinItem::menuEditDefault()
 		return;
 	}
 
+	if( QMetaType::Type( PinVal.type() ) == QMetaType::QFont )
+	{
+		bool			OK;
+		QFont			CurVal = mPin->value().value<QFont>();
+		QFont			NewVal = QFontDialog::getFont( &OK, CurVal, nullptr, tr( "Choose Font" ) );
+
+		if( OK )
+		{
+			CmdSetDefaultValue		*Cmd = new CmdSetDefaultValue( mPin, NewVal );
+
+			if( Cmd )
+			{
+				mContextView->widget()->undoStack()->push( Cmd );
+			}
+		}
+
+		return;
+	}
+
 	{
 		bool	OK;
 
@@ -908,6 +992,16 @@ void PinItem::menuUpdatable()
 	CmdSetUpdatable				*Cmd = new CmdSetUpdatable( mPin, !mPin->updatable() );
 
 	if( Cmd != 0 )
+	{
+		mContextView->widget()->undoStack()->push( Cmd );
+	}
+}
+
+void PinItem::menuAlwaysUpdate()
+{
+	CmdSetAlwaysUpdate				*Cmd = new CmdSetAlwaysUpdate( mPin, !mPin->alwaysUpdate() );
+
+	if( Cmd )
 	{
 		mContextView->widget()->undoStack()->push( Cmd );
 	}

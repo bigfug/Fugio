@@ -2,9 +2,14 @@
 
 #include <QMatrix4x4>
 #include <QTime>
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 #include <QOpenGLExtraFunctions>
+#endif
 
 #include <qmath.h>
+
+#include <QOpenGLContext>
 
 #include <fugio/core/uuid.h>
 #include <fugio/opengl/uuid.h>
@@ -94,7 +99,7 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 	Q_UNUSED( pTimeStamp )
 	Q_UNUSED( pSourcePinId )
 
-	if( !OpenGLPlugin::hasContextStatic() )
+	if( !QOpenGLContext::currentContext() )
 	{
 		return;
 	}
@@ -110,7 +115,9 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		Count = std::numeric_limits<int>::max();
 	}
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+#endif
 
 	fugio::OpenGLBufferInterface	*B;
 
@@ -122,30 +129,35 @@ void DrawNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 			if( Count > 0 )
 			{
-				B->bind();
-
-				if( Instances > 0 )
+				if( B->bind() )
 				{
-					if( GLEX )
+					if( Instances > 0 )
 					{
-						GLEX->glDrawElementsInstanced( Mode, Count, GL_UNSIGNED_INT, 0, Instances );
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
+						if( GLEX )
+						{
+							GLEX->glDrawElementsInstanced( Mode, Count, GL_UNSIGNED_INT, 0, Instances );
+						}
+#endif
 					}
-				}
-				else
-				{
-					glDrawElements( Mode, Count, GL_UNSIGNED_INT, 0 );
-				}
+					else
+					{
+						glDrawElements( Mode, Count, GL_UNSIGNED_INT, 0 );
+					}
 
-				B->release();
+					B->release();
+				}
 			}
 		}
 	}
 	else if( Instances > 0 )
 	{
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 		if( GLEX )
 		{
 			GLEX->glDrawArraysInstanced( Mode, 0, Count, Instances );
 		}
+#endif
 	}
 	else if( Count > 0 && Count < std::numeric_limits<int>::max() )
 	{

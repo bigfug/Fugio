@@ -7,7 +7,7 @@
 #include <fugio/opencv/uuid.h>
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -36,10 +36,10 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputImage;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface						*mValOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputLabels;
-	fugio::ImageInterface						*mValOutputLabels;
+	fugio::VariantInterface						*mValOutputLabels;
 
 #if defined( OPENCV_SUPPORTED )
 	cv::Mat										 mMatImg;

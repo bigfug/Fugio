@@ -41,7 +41,8 @@
 bool ContextView::mShownWizard = false;
 
 ContextView::ContextView( QWidget *pParent ) :
-	QGraphicsView( pParent ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 )
+	QGraphicsView( pParent ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 ),
+	mLinkDragTarget( nullptr )
 {
 	setScene( &mContextScene );
 
@@ -777,20 +778,20 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 		GSE.load( pSettings );
 
-		m_GroupId = fugio::utils::string2uuid( pSettings.value( "group", fugio::utils::uuid2string( m_GroupId ) ).toString() );
+		m_GroupId = fugio::utils::string2uuid( pSettings.value( "group", fugio::utils::uuid2string( groupId() ) ).toString() );
 
 		pSettings.endGroup();
 
 		mGroupState.insert( QUuid(), GSE );
 	}
 
-#if !defined( Q_OS_RASPBERRY_PI )
-	if( !pPartial )
-	{
-		gApp->mainWindow()->restoreGeometry( pSettings.value( "mainwindow/geometry", gApp->mainWindow()->saveGeometry() ).toByteArray() );
-		gApp->mainWindow()->restoreState( pSettings.value( "mainwindow/state", gApp->mainWindow()->saveState() ).toByteArray() );
-	}
-#endif
+//#if !defined( Q_OS_RASPBERRY_PI )
+//	if( !pPartial )
+//	{
+//		gApp->mainWindow()->restoreGeometry( pSettings.value( "mainwindow/geometry", gApp->mainWindow()->saveGeometry() ).toByteArray() );
+//		gApp->mainWindow()->restoreState( pSettings.value( "mainwindow/state", gApp->mainWindow()->saveState() ).toByteArray() );
+//	}
+//#endif
 
 	if( !pPartial )
 	{
@@ -828,9 +829,11 @@ void ContextView::loadEnded( QSettings &pSettings, bool pPartial )
 		}
 	}
 
+	QUuid		OldGrp = groupId();
+
 	m_GroupId = QUuid::createUuid();	// dummy value
 
-	setGroupId( QUuid() );
+	setGroupId( OldGrp );
 }
 
 void ContextView::saveContext( QSettings &pSettings ) const
@@ -1070,7 +1073,7 @@ void ContextView::saveContext( QSettings &pSettings ) const
 
 		GSE.save( pSettings );
 
-		pSettings.setValue( "group", fugio::utils::uuid2string( m_GroupId ) );
+		pSettings.setValue( "group", fugio::utils::uuid2string( groupId() ) );
 
 		pSettings.endGroup();
 
@@ -1411,19 +1414,19 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 		RealLink->setSelected( true );
 	}
 
-	if( NodeItem1->groupId() != m_GroupId || NodeItem2->groupId() != m_GroupId || NodeItem1->groupId() != NodeItem2->groupId() )
+	if( NodeItem1->groupId() != groupId() || NodeItem2->groupId() != groupId() || NodeItem1->groupId() != NodeItem2->groupId() )
 	{
 		RealLink->setVisible( false );
 		RealLink->setSelected( false );
 
-		if( NodeItem1->groupId() != m_GroupId )
+		if( NodeItem1->groupId() != groupId() )
 		{
 			NodeItem1 = mNodeList.value( NodeItem1->groupId() );
 
 			PinItem1 = NodeItem1->findPinInput( Pin1 );
 		}
 
-		if( NodeItem2->groupId() != m_GroupId )
+		if( NodeItem2->groupId() != groupId() )
 		{
 			NodeItem2 = mNodeList.value( NodeItem2->groupId() );
 
@@ -1511,7 +1514,7 @@ void ContextView::updateItemVisibility()
 
 		if( NI )
 		{
-			NI->setVisible( NI->groupId() == m_GroupId );
+			NI->setVisible( NI->groupId() == groupId() );
 
 			continue;
 		}
@@ -1528,7 +1531,7 @@ void ContextView::updateItemVisibility()
 				NodeItem		*SrcNod = qgraphicsitem_cast<NodeItem *>( SrcPin->parentItem() );
 				NodeItem		*DstNod = qgraphicsitem_cast<NodeItem *>( DstPin->parentItem() );
 
-				if( SrcNod->groupId() != m_GroupId || DstNod->groupId() != m_GroupId )
+				if( SrcNod->groupId() != groupId() || DstNod->groupId() != groupId() )
 				{
 					LI->setVisible( false );
 				}
@@ -1545,7 +1548,7 @@ void ContextView::updateItemVisibility()
 
 		if( TI )
 		{
-			TI->setVisible( TI->groupId() == m_GroupId );
+			TI->setVisible( TI->groupId() == groupId() );
 
 			continue;
 		}
@@ -1734,11 +1737,32 @@ void ContextView::dropEvent( QDropEvent *pEvent )
 {
 	if( pEvent->mimeData()->hasFormat( "application/x-qabstractitemmodeldatalist" ) )
 	{
+		LinkItem		*Link = qgraphicsitem_cast<LinkItem *>( itemAt( pEvent->pos() ) );
+
+		if( mLinkDragTarget && ( !Link || Link != mLinkDragTarget ) )
+		{
+			mLinkDragTarget->clrStatusColour();
+		}
+
+		mLinkDragTarget = Link;
+
+		QUuid			 SrcUuid, DstUuid;
+
+		if( mLinkDragTarget )
+		{
+			SrcUuid = Link->srcPin()->pin()->globalId();
+			DstUuid = Link->dstPin()->pin()->globalId();
+
+			mLinkDragTarget->clrStatusColour();
+
+			mLinkDragTarget = nullptr;
+		}
+
 		QByteArray encoded = pEvent->mimeData()->data( "application/x-qabstractitemmodeldatalist" );
 
 		QDataStream stream(&encoded, QIODevice::ReadOnly);
 
-		while (!stream.atEnd())
+		while( !stream.atEnd() )
 		{
 			int row, col;
 			QMap<int,  QVariant> roleDataMap;
@@ -1755,7 +1779,7 @@ void ContextView::dropEvent( QDropEvent *pEvent )
 				}
 				else
 				{
-					CmdNodeAdd		*Cmd = new CmdNodeAdd( widget(), NodeName, NodeUuid );
+					CmdNodeAdd		*Cmd = new CmdNodeAdd( widget(), NodeName, NodeUuid, SrcUuid, DstUuid );
 
 					setNodePositionFlag();
 
@@ -1813,6 +1837,24 @@ void ContextView::dragMoveEvent( QDragMoveEvent *pEvent )
 {
 	if( pEvent->mimeData()->hasFormat( "application/x-qabstractitemmodeldatalist" ) )
 	{
+		LinkItem		*Link = qgraphicsitem_cast<LinkItem *>( itemAt( pEvent->pos() ) );
+
+		if( mLinkDragTarget && ( !Link || Link != mLinkDragTarget ) )
+		{
+			mLinkDragTarget->clrStatusColour();
+
+			mLinkDragTarget = nullptr;
+		}
+
+		if( !mLinkDragTarget && Link )
+		{
+			Link->setSelected( false );
+
+			Link->setStatusColour( Qt::blue );
+
+			mLinkDragTarget = Link;
+		}
+
 		pEvent->acceptProposedAction();
 	}
 	else if( pEvent->mimeData()->hasUrls() )

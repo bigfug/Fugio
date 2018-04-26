@@ -25,13 +25,13 @@ public:
 	virtual void inputsUpdated( qint64 pTimeStamp );
 
 protected:
-	QSharedPointer<fugio::PinInterface>			 mPinInput;
+	QSharedPointer<fugio::PinInterface>			 mPinInputPoint;
 
-	QSharedPointer<fugio::PinInterface>			 mPinX;
-	QSharedPointer<fugio::PinInterface>			 mPinY;
+	QSharedPointer<fugio::PinInterface>			 mPinOutputX;
+	QSharedPointer<fugio::PinInterface>			 mPinOutputY;
 
-	fugio::VariantInterface						*mX;
-	fugio::VariantInterface						*mY;
+	fugio::VariantInterface						*mValOutputX;
+	fugio::VariantInterface						*mValOutputY;
 };
 
 #endif // SPLITPOINTNODE_H

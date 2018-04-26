@@ -6,6 +6,8 @@
 
 #include <fugio/context_interface.h>
 
+#include <fugio/pin_variant_iterator.h>
+
 #include "crc32.h"
 
 PacketEncodeNode::PacketEncodeNode( QSharedPointer<fugio::NodeInterface> pNode )
@@ -16,7 +18,7 @@ PacketEncodeNode::PacketEncodeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputData = pinInput( "Data", PIN_INPUT_DATA );
 
-	mValOutputPacket = pinOutput<fugio::ListInterface *>( "Packet", mPinOutputPacket, PID_BYTEARRAY_LIST, PIN_OUTPUT_PACKET );
+	mValOutputPacket = pinOutput<fugio::VariantInterface *>( "Packet", mPinOutputPacket, PID_BYTEARRAY, PIN_OUTPUT_PACKET );
 }
 
 void PacketEncodeNode::inputsUpdated( qint64 pTimeStamp )
@@ -25,9 +27,19 @@ void PacketEncodeNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( mPinInputData->isUpdated( pTimeStamp ) )
 	{
-		mValOutputPacket->listClear();
+		mValOutputPacket->variantClear();
 
-		processVariant( variant( mPinInputData ) );
+		fugio::PinVariantIterator	Data( mPinInputData );
+
+		for( int i = 0 ; i < Data.count() ; i++ )
+		{
+			processVariant( Data.index( i ) );
+		}
+
+		if( mValOutputPacket->variantCount() )
+		{
+			pinUpdated( mPinOutputPacket );
+		}
 	}
 }
 
@@ -85,7 +97,5 @@ void PacketEncodeNode::processByteArray( QByteArray A )
 
 	memcpy( A.data() + offsetof( PktHdr, mCRC ), &CRC, sizeof( CRC ) );
 
-	mValOutputPacket->listAppend( A );
-
-	pinUpdated( mPinOutputPacket );
+	mValOutputPacket->variantAppend( A );
 }

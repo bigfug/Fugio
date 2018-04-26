@@ -15,6 +15,7 @@
 Preview::Preview( QWeakPointer<fugio::NodeInterface> pNode, QWidget *pParent )
 	: QOpenGLWidget( pParent ), mNode( pNode )
 {
+	connect( &mDebugLogger, &QOpenGLDebugLogger::messageLogged, this, &Preview::handleLoggedMessage );
 }
 
 Preview::~Preview()
@@ -31,6 +32,13 @@ void Preview::initializeGL()
 	}
 
 	OpenGLPlugin::instance()->initGLEW();
+
+#if defined( OPENGL_DEBUG_ENABLE )
+	if( mDebugLogger.initialize() )
+	{
+		mDebugLogger.startLogging( QOpenGLDebugLogger::SynchronousLogging );
+	}
+#endif
 }
 
 void Preview::resizeGL( int w, int h )
@@ -50,5 +58,19 @@ void Preview::paintGL()
 		{
 			Render->render( NI->context()->global()->timestamp() );
 		}
+	}
+}
+
+void Preview::handleLoggedMessage(const QOpenGLDebugMessage &debugMessage)
+{
+	QSharedPointer<fugio::NodeInterface>	NI = mNode.toStrongRef();
+
+	if( NI )
+	{
+		qDebug() << NI->name() << debugMessage;
+	}
+	else
+	{
+		qDebug() << debugMessage;
 	}
 }

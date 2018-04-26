@@ -4,7 +4,7 @@
 #include <fugio/node_control_interface.h>
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/context_interface.h>
 
 #include "luaqtplugin.h"
@@ -82,7 +82,7 @@ int LuaImage::luaPinGet( const QUuid &pPinLocalId, lua_State *L )
 		return( luaL_error( L, "No image pin" ) );
 	}
 
-	fugio::ImageInterface					*SrcImg = qobject_cast<fugio::ImageInterface *>( PinSrc->control()->qobject() );
+	fugio::VariantInterface					*SrcImg = qobject_cast<fugio::VariantInterface *>( PinSrc->control()->qobject() );
 
 	if( !SrcImg )
 	{
@@ -209,9 +209,11 @@ int LuaImage::luaSetSize( lua_State *L )
 
 	if( IUD->mImgInf )
 	{
-		IUD->mImgInf->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
-		IUD->mImgInf->setSize( S.width(), S.height() );
-		IUD->mImgInf->setLineSize( 0, S.width() * 4 );
+		fugio::Image	DstImg = IUD->mImgInf->variant().value<fugio::Image>();
+
+		DstImg.setFormat( fugio::ImageFormat::BGRA8 );
+		DstImg.setSize( S.width(), S.height() );
+		DstImg.setLineSize( 0, S.width() * 4 );
 
 		IUD->updateImage();
 	}

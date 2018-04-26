@@ -109,11 +109,11 @@ void NDISendNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( mPinInputImage->isUpdated( pTimeStamp ) )
 	{
-		fugio::ImageInterface		*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+		fugio::Image	SrcImg = variant<fugio::Image>( mPinInputImage );
 
-		if( SrcImg && SrcImg->isValid() )
+		if( SrcImg.isValid() )
 		{
-			if( SrcImg->format() != fugio::ImageInterface::FORMAT_BGRA8 && SrcImg->format() != fugio::ImageInterface::FORMAT_RGBA8 && SrcImg->format() != fugio::ImageInterface::FORMAT_YUYV422 )
+			if( SrcImg.format() != fugio::ImageFormat::BGRA8 && SrcImg.format() != fugio::ImageFormat::RGBA8 && SrcImg.format() != fugio::ImageFormat::YUYV422 )
 			{
 				return;
 			}
@@ -129,33 +129,36 @@ void NDISendNode::inputsUpdated( qint64 pTimeStamp )
 
 			memset( &VideoFrame, 0, sizeof( VideoFrame ) );
 
-			switch( SrcImg->format() )
+			switch( SrcImg.format() )
 			{
-				case fugio::ImageInterface::FORMAT_BGRA8:
+				case fugio::ImageFormat::BGRA8:
 					VideoFrame.FourCC = NDIlib_FourCC_type_BGRA;
 					break;
 
-				case fugio::ImageInterface::FORMAT_RGBA8:
+				case fugio::ImageFormat::RGBA8:
 					VideoFrame.FourCC = NDIlib_FourCC_type_RGBA;
 					break;
 
-				case fugio::ImageInterface::FORMAT_YUYV422:
+				case fugio::ImageFormat::YUYV422:
 					VideoFrame.FourCC = NDIlib_FourCC_type_UYVY;
 					break;
+
+				default:
+					return;
 			}
 
-			VideoFrame.xres = SrcImg->width();
-			VideoFrame.yres = SrcImg->height();
+			VideoFrame.xres = SrcImg.width();
+			VideoFrame.yres = SrcImg.height();
 			VideoFrame.frame_rate_N = 25;
 			VideoFrame.frame_rate_D = 1;
 			VideoFrame.picture_aspect_ratio = float( VideoFrame.xres ) / float( VideoFrame.yres );
 			VideoFrame.frame_format_type = NDIlib_frame_format_type_progressive;
 			VideoFrame.timecode = 0LL;
-			VideoFrame.line_stride_in_bytes = SrcImg->lineSize( 0 );
+			VideoFrame.line_stride_in_bytes = SrcImg.lineSize( 0 );
 
-			mImageBuffer.resize( SrcImg->bufferSize( 0 ) );
+			mImageBuffer.resize( SrcImg.bufferSize( 0 ) );
 
-			memcpy( mImageBuffer.data(), SrcImg->buffer( 0 ), mImageBuffer.size() );
+			memcpy( mImageBuffer.data(), SrcImg.buffer( 0 ), mImageBuffer.size() );
 
 			VideoFrame.p_data = mImageBuffer.data();
 

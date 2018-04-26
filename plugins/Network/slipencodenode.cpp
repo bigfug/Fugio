@@ -3,6 +3,7 @@
 #include <fugio/core/uuid.h>
 #include <fugio/core/list_interface.h>
 #include <fugio/performance.h>
+#include <fugio/pin_variant_iterator.h>
 
 #define END             0300    /* indicates end of packet */
 #define ESC             0333    /* indicates byte stuffing */
@@ -17,7 +18,7 @@ SLIPEncodeNode::SLIPEncodeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInput = pinInput( "Input", PIN_INPUT_ARRAY );
 
-	mPinInput->registerPinInputType( PID_BYTEARRAY_LIST );
+	mPinInput->registerPinInputType( PID_BYTEARRAY );
 
 	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_BYTEARRAY, PIN_OUTPUT_STREAM );
 }
@@ -28,23 +29,11 @@ void SLIPEncodeNode::inputsUpdated( qint64 pTimeStamp )
 
 	QByteArray				DatOut;
 
-	fugio::ListInterface	*LI = input<fugio::ListInterface *>( mPinInput );
+	fugio::PinVariantIterator	Input( mPinInput );
 
-	if( LI )
+	for( int i = 0 ; i < Input.count() ; i++ )
 	{
-		for( int i = 0 ; i < LI->listSize() ; i++ )
-		{
-			if( !LI->listIndex( i ).canConvert( QVariant::ByteArray ) )
-			{
-				continue;
-			}
-
-			processByteArray( LI->listIndex( i ).toByteArray(), DatOut );
-		}
-	}
-	else
-	{
-		const QVariant		VarInt = variant( mPinInput );
+		const QVariant		VarInt = Input.index( i );
 
 		if( VarInt.type() == QVariant::ByteArray )
 		{

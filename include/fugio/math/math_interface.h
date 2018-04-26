@@ -13,25 +13,28 @@
 FUGIO_NAMESPACE_BEGIN
 
 class PinInterface;
+class PinVariantIterator;
+class VariantInterface;
 
 class MathInterface
 {
 public:
-    typedef enum MathOperator
-    {
-        OP_ADD,
-        OP_SUBTRACT,
-        OP_MULTIPLY,
-        OP_DIVIDE
-    } MathOperator;
+	typedef enum MathOperator
+	{
+		OP_ADD,
+		OP_SUBTRACT,
+		OP_MULTIPLY,
+		OP_DIVIDE,
+		OP_SUM
+	} MathOperator;
 
-    typedef QVariant (*MathOperatorFunction)( const QList< QSharedPointer<PinInterface> > pInputPins );
+	typedef void (*MathOperatorFunction)( const QList<fugio::PinVariantIterator> &pItrLst, fugio::VariantInterface *pOutDst, int pItrMax );
 
-    virtual ~MathInterface( void ) {}
+	virtual ~MathInterface( void ) {}
 
-    virtual void registerMetaTypeMathOperator( QMetaType::Type pType, MathOperator pOperator, MathOperatorFunction pFunction ) = 0;
-    virtual void deregisterMetaTypeMathOperator( QMetaType::Type pType, MathOperator pOperator ) = 0;
-    virtual MathOperatorFunction findMetaTypeMathOperator( QMetaType::Type pType, MathOperator pOperator ) const = 0;
+	virtual void registerMetaTypeMathOperator( QMetaType::Type pType, MathOperator pOperator, MathOperatorFunction pFunction ) = 0;
+	virtual void deregisterMetaTypeMathOperator( QMetaType::Type pType, MathOperator pOperator ) = 0;
+	virtual MathOperatorFunction findMetaTypeMathOperator( QMetaType::Type pType, MathOperator pOperator ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

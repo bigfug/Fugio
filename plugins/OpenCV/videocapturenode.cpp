@@ -21,7 +21,7 @@
 VideoCaptureNode::VideoCaptureNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mVidCapDev( nullptr ), mFrmNum( 0 ), mCameraIndex( -1 )
 {
-	if( ( mOutputImage = pinOutput<fugio::ImageInterface *>( "Output", mPinOutputImage, PID_IMAGE ) ) == 0 )
+	if( ( mOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE ) ) == 0 )
 	{
 		return;
 	}
@@ -75,35 +75,37 @@ void VideoCaptureNode::onFrameStart( qint64 pTimeStamp )
 //	int		C = mMatImg.channels();
 //	int		G = CV_8UC3;
 
+	fugio::Image		I = mOutputImage->variant().value<fugio::Image>();
+
 	if( mOutputSize->variant().toSize() != QSize( mMatImg.cols, mMatImg.rows ) )
 	{
 		mOutputSize->setVariant( QSize( mMatImg.cols, mMatImg.rows ) );
 	}
 
-	mOutputImage->setSize( mMatImg.cols, mMatImg.rows );
-	mOutputImage->setLineSize( 0, mMatImg.step );
+	I.setSize( mMatImg.cols, mMatImg.rows );
+	I.setLineSize( 0, mMatImg.step );
 
 //	switch( mMatImg.format() )
 //	{
-//		case fugio::ImageInterface::FORMAT_RGB8:
-//		case fugio::ImageInterface::FORMAT_BGR8:
+//		case fugio::ImageFormat::RGB8:
+//		case fugio::ImageFormat::BGR8:
 //			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_8UC3, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
 //			break;
 
-//		case fugio::ImageInterface::FORMAT_RGBA8:
-//		case fugio::ImageInterface::FORMAT_BGRA8:
+//		case fugio::ImageFormat::RGBA8:
+//		case fugio::ImageFormat::BGRA8:
 //			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_8UC4, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
 //			break;
 
-//		case fugio::ImageInterface::FORMAT_GRAY8:
+//		case fugio::ImageFormat::GRAY8:
 //			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_8U, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
 //			break;
 
-//		case fugio::ImageInterface::FORMAT_GRAY16:
+//		case fugio::ImageFormat::GRAY16:
 //			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_16U, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
 //			break;
 
-//		case fugio::ImageInterface::FORMAT_YUYV422:
+//		case fugio::ImageFormat::YUYV422:
 //			MatImg = cv::Mat( pSrcImg->size().height(), pSrcImg->size().width(), CV_8UC2, (void *)pSrcImg->buffer( 0 ), pSrcImg->lineSize( 0 ) );
 //			break;
 //	}
@@ -113,28 +115,28 @@ void VideoCaptureNode::onFrameStart( qint64 pTimeStamp )
 		case CV_8U:
 			if( mMatImg.channels() == 1 )
 			{
-				mOutputImage->setFormat( fugio::ImageInterface::FORMAT_GRAY8 );
+				I.setFormat( fugio::ImageFormat::GRAY8 );
 			}
 			else if( mMatImg.channels() == 3 )
 			{
-				mOutputImage->setFormat( fugio::ImageInterface::FORMAT_BGR8 );
+				I.setFormat( fugio::ImageFormat::BGR8 );
 			}
 			else if( mMatImg.channels() == 4 )
 			{
-				mOutputImage->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+				I.setFormat( fugio::ImageFormat::BGRA8 );
 			}
 			break;
 
 		case CV_16U:
-			mOutputImage->setFormat( fugio::ImageInterface::FORMAT_GRAY16 );
+			I.setFormat( fugio::ImageFormat::GRAY16 );
 			break;
 
 		case CV_8UC3:
-			mOutputImage->setFormat( fugio::ImageInterface::FORMAT_BGR8 );
+			I.setFormat( fugio::ImageFormat::BGR8 );
 			break;
 	}
 
-	mOutputImage->setBuffer( 0, mMatImg.data );
+	I.setBuffer( 0, mMatImg.data );
 
 	pinUpdated( mPinOutputImage );
 #endif

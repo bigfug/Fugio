@@ -3,8 +3,9 @@
 #include <QResizeEvent>
 #include <QApplication>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/image/painter_interface.h>
+#include <fugio/core/variant_interface.h>
 
 PainterWindow::PainterWindow(QWindow *parent)
 	: QWindow(parent)
@@ -28,7 +29,11 @@ void PainterWindow::resizeEvent(QResizeEvent *resizeEvent)
 {
 	m_backingStore->resize(resizeEvent->size());
 	if (isExposed())
+	{
 		renderNow();
+	}
+
+	emit windowUpdated();
 }
 
 void PainterWindow::renderNow()
@@ -66,15 +71,15 @@ void PainterWindow::renderPin( QSharedPointer<fugio::PinInterface> P )
 
 	QPainter painter(device);
 
-	if( fugio::ImageInterface *I = input<fugio::ImageInterface *>( P ) )
+	if( fugio::VariantInterface *I = input<fugio::VariantInterface *>( P ) )
 	{
-		const QImage		IM = I->image();
+		const QImage		IM = I->variant().value<fugio::Image>().image();
 
 		painter.drawImage( 0, 0, IM );
 	}
 	else if( fugio::PainterInterface *I = input<fugio::PainterInterface *>( P ) )
 	{
-		I->render( painter );
+		I->paint( painter, rect );
 	}
 
 	m_backingStore->endPaint();

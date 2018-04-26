@@ -28,17 +28,14 @@ SimpleBlobDetectorNode::SimpleBlobDetectorNode( QSharedPointer<fugio::NodeInterf
 
 	mPinInputImage->registerPinInputType( PID_IMAGE );
 
-	mValOutputPoints = pinOutput<fugio::ArrayInterface *>( "Points", mPinOutputPoints, PID_ARRAY, PIN_OUTPUT_POINTS );
+	mValOutputPoints = pinOutput<fugio::VariantInterface *>( "Points", mPinOutputPoints, PID_POINT, PIN_OUTPUT_POINTS );
 
-	mValOutputPoints->setType( QMetaType::QPointF );
-	mValOutputPoints->setSize( 1 );
-	mValOutputPoints->setStride( sizeof( QPointF ) );
+	mValOutputSizes = pinOutput<fugio::VariantInterface *>( "Sizes", mPinOutputSizes, PID_FLOAT, PIN_OUTPUT_SIZES );
 
-	mValOutputSizes = pinOutput<fugio::ArrayInterface *>( "Sizes", mPinOutputSizes, PID_ARRAY, PIN_OUTPUT_SIZES );
+	mValOutputPoints->variantClear();
+	mValOutputSizes->variantClear();
 
-	mValOutputSizes->setType( QMetaType::Float );
-	mValOutputSizes->setSize( 1 );
-	mValOutputSizes->setStride( sizeof( float ) );
+#if defined( OPENCV_SUPPORTED )
 
 	cv::SimpleBlobDetector::Params	BlbPrm;
 
@@ -53,10 +50,12 @@ SimpleBlobDetectorNode::SimpleBlobDetectorNode( QSharedPointer<fugio::NodeInterf
 
 	BlbPrm.minDistBetweenBlobs = 0.1f;
 
-#if defined( Q_OS_RASPBERRY_PI )
-	mDetector = Q_NULLPTR;
+#if ( CV_MAJOR_VERSION <= 2 )
+	mDetector = new cv::SimpleBlobDetector( BlbPrm );
 #else
 	mDetector = cv::SimpleBlobDetector::create( BlbPrm );
+#endif
+
 #endif
 }
 
@@ -69,18 +68,15 @@ void SimpleBlobDetectorNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	fugio::ImageInterface		*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image		SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || SrcImg->size().isEmpty() )
+	if( SrcImg.isEmpty() )
 	{
 		return;
 	}
 
-	mValOutputPoints->setArray( Q_NULLPTR );
-	mValOutputPoints->setCount( 0 );
-
-	mValOutputSizes->setArray( Q_NULLPTR );
-	mValOutputSizes->setCount( 0 );
+	mValOutputPoints->variantClear();
+	mValOutputSizes->variantClear();
 
 #if defined( OPENCV_SUPPORTED )
 	try
@@ -93,16 +89,16 @@ void SimpleBlobDetectorNode::inputsUpdated( qint64 pTimeStamp )
 
 		qDebug() << "keyPoints" << KeyPoints.size();
 
-		mPoints.resize( KeyPoints.size() );
-		mSizes.resize( KeyPoints.size() );
+		mValOutputPoints->setVariantCount( KeyPoints.size() );
+		mValOutputSizes->setVariantCount( KeyPoints.size() );
 
 		for( unsigned int i = 0 ; i < KeyPoints.size() ; i++ )
 		{
 			const cv::KeyPoint &kp = KeyPoints[ i ];
 
-			mPoints[ i ] = QPointF( kp.pt.x, kp.pt.y );
+			mValOutputPoints->setVariant( i, QPointF( kp.pt.x, kp.pt.y ) );
 
-			mSizes[ i ] = kp.size;
+			mValOutputSizes->setVariant( i, kp.size );
 		}
 	}
 	catch( cv::Exception e )
@@ -120,15 +116,6 @@ void SimpleBlobDetectorNode::inputsUpdated( qint64 pTimeStamp )
 	}
 
 	mNode->setStatus( fugio::NodeInterface::Initialised );
-
-	if( !mPoints.isEmpty() )
-	{
-		mValOutputPoints->setArray( mPoints.data() );
-		mValOutputPoints->setCount( mPoints.size() );
-
-		mValOutputSizes->setArray( mSizes.data() );
-		mValOutputSizes->setCount( mSizes.size() );
-	}
 
 	pinUpdated( mPinOutputPoints );
 	pinUpdated( mPinOutputSizes );

@@ -6,6 +6,8 @@
 
 #include <qmath.h>
 
+#include <fugio/pin_variant_iterator.h>
+
 SinRadianNode::SinRadianNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
@@ -16,22 +18,21 @@ SinRadianNode::SinRadianNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void SinRadianNode::inputsUpdated( qint64 pTimeStamp )
 {
-	Q_UNUSED( pTimeStamp )
+	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	bool		b;
-	double		v = variant( mPinInput ).toDouble( &b );
+	fugio::PinVariantIterator	Input( mPinInput );
 
-	if( !b )
+	bool	OutputUpdated = false;
+
+	variantSetCount( mValOutput, Input.count(), OutputUpdated );
+
+	for( int i = 0 ; i < Input.count() ; i++ )
 	{
-		return;
+		variantSetValue( mValOutput, i, std::cos( Input.index( i ).toDouble() ), OutputUpdated );
 	}
 
-	v = std::sin( v );
-
-	if( v != mValOutput->variant().toDouble() )
+	if( OutputUpdated )
 	{
-		mValOutput->setVariant( v );
-
 		pinUpdated( mPinOutput );
 	}
 }

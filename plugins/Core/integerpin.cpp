@@ -1,11 +1,7 @@
 #include "integerpin.h"
-#include <QSettings>
+#include <fugio/core/uuid.h>
 
 IntegerPin::IntegerPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mValue( 0 )
-{
-}
-
-IntegerPin::~IntegerPin( void )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::Int, PID_INTEGER )
 {
 }

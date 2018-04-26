@@ -10,14 +10,13 @@ TriggerBooleanNode::TriggerBooleanNode( QSharedPointer<fugio::NodeInterface> pNo
 	: NodeControlBase( pNode ), mTimeStart( 0 )
 {
 	FUGID( PIN_INPUT_DURATION, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
-	FUGID( PIN_INPUT_TRIGGER, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 	FUGID( PIN_OUTPUT_BOOLEAN, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
+
+	mPinInput  = pinInput( "Trigger", PID_FUGIO_NODE_TRIGGER );
 
 	mPinInputDuration = pinInput( "Duration", PIN_INPUT_DURATION );
 
 	mPinInputDuration->setValue( 250 );
-
-	mPinInput  = pinInput( "Trigger", PIN_INPUT_TRIGGER );
 
 	mValOutput = pinOutput<fugio::VariantInterface *>( "Boolean", mPinOutput, PID_BOOL, PIN_OUTPUT_BOOLEAN );
 

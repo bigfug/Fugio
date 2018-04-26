@@ -12,6 +12,13 @@
 #include "linebuffernode.h"
 #include "texteditorremotenode.h"
 #include "stringsplitnode.h"
+#include "stringtofloatnode.h"
+#include "stringtointegernode.h"
+#include "midnode.h"
+#include "leftnode.h"
+#include "rightnode.h"
+#include "containsnode.h"
+#include "chopnode.h"
 
 #include "syntaxerrorpin.h"
 
@@ -26,11 +33,18 @@ using namespace fugio;
 
 ClassEntry		mNodeClasses[] =
 {
+	ClassEntry( "Chop",					"String", NID_CHOP, &ChopNode::staticMetaObject ),
+	ClassEntry( "Contains",				"String", NID_CONTAINS, &ContainsNode::staticMetaObject ),
 	ClassEntry( "Number To String",		"String", NID_NUMBER_TO_STRING, &NumberToStringNode::staticMetaObject ),
 	ClassEntry( "RegExp",				"String", NID_REGEXP, &RegExpNode::staticMetaObject ),
 	ClassEntry( "Join",					"String", NID_STRING_JOIN, &StringJoinNode::staticMetaObject ),
 	ClassEntry( "Split",				"String", NID_STRING_SPLIT, &StringSplitNode::staticMetaObject ),
+	ClassEntry( "Left",					"String", NID_LEFT, &LeftNode::staticMetaObject ),
+	ClassEntry( "Right",				"String", NID_RIGHT, &RightNode::staticMetaObject ),
+	ClassEntry( "Mid",					"String", NID_MID, &MidNode::staticMetaObject ),
 	ClassEntry( "Line Buffer",			"String", NID_LINE_BUFFER, &LineBufferNode::staticMetaObject ),
+	ClassEntry( "String To Integer",	"String", NID_STRING_TO_INTEGER, &StringToIntegerNode::staticMetaObject ),
+	ClassEntry( "String To Float",		"String", NID_STRING_TO_FLOAT, &StringToFloatNode::staticMetaObject ),
 	ClassEntry( "Text Editor",			"GUI", NID_TEXT_EDIT, &TextEditorNode::staticMetaObject ),
 	ClassEntry( "Text Editor Remote",	"Network", NID_TEXT_EDIT_REMOTE, &TextEditorRemoteNode::staticMetaObject ),
 	ClassEntry()
@@ -51,7 +65,7 @@ TextPlugin::TextPlugin()
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_text" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}

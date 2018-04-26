@@ -3,6 +3,9 @@
 #include <fugio/core/uuid.h>
 
 #include <fugio/context_interface.h>
+#include <fugio/pin_variant_iterator.h>
+
+#include <cmath>
 
 AbsNode::AbsNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -19,14 +22,28 @@ AbsNode::AbsNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void AbsNode::inputsUpdated( qint64 pTimeStamp )
 {
-	Q_UNUSED( pTimeStamp )
+	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	float		NewVal = qAbs( variant( mPinInput ).toFloat() );
+	fugio::PinVariantIterator	Input( mPinInput );
 
-	if( NewVal != mValOutput->variant().toFloat() )
+	bool	OutputUpdated = mValOutput->variantCount() != Input.count() || mPinOutput->alwaysUpdate();
+
+	mValOutput->setVariantCount( Input.count() );
+
+	for( int i = 0 ; i < Input.count() ; i++ )
 	{
-		mValOutput->setVariant( NewVal );
+		float		NewVal = std::abs( Input.index( i ).toFloat() );
 
+		if( NewVal != mValOutput->variant( i ).toFloat() )
+		{
+			mValOutput->setVariant( i, NewVal );
+
+			OutputUpdated = true;
+		}
+	}
+
+	if( OutputUpdated )
+	{
 		pinUpdated( mPinOutput );
 	}
 }

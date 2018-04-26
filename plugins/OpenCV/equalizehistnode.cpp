@@ -24,7 +24,7 @@ EqualizeHistNode::EqualizeHistNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputImage->registerPinInputType( PID_IMAGE );
 
-	mValOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE );
 }
 
 void EqualizeHistNode::inputsUpdated( qint64 pTimeStamp )
@@ -36,9 +36,9 @@ void EqualizeHistNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	fugio::ImageInterface			*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image	SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || SrcImg->size().isEmpty() )
+	if( !SrcImg.isValid() )
 	{
 		return;
 	}
@@ -60,9 +60,9 @@ void EqualizeHistNode::inputsUpdated( qint64 pTimeStamp )
 void EqualizeHistNode::conversion( EqualizeHistNode *pNode )
 {
 #if defined( OPENCV_SUPPORTED )
-	fugio::ImageInterface		*SrcImg = pNode->input<fugio::ImageInterface *>( pNode->mPinInputImage );
+	fugio::Image	SrcImg = variantStatic<fugio::Image>( pNode->mPinInputImage );
 
-	cv::Mat						 MatSrc = OpenCVPlugin::image2mat( SrcImg );
+	cv::Mat			MatSrc = OpenCVPlugin::image2mat( SrcImg );
 
 	try
 	{
@@ -80,7 +80,9 @@ void EqualizeHistNode::conversion( EqualizeHistNode *pNode )
 
 	}
 
-	OpenCVPlugin::mat2image( pNode->mMatImg, pNode->mValOutputImage );
+	fugio::Image	DstImg = pNode->mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( pNode->mMatImg, DstImg );
 
 	pNode->pinUpdated( pNode->mPinOutputImage );
 #endif

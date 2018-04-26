@@ -7,11 +7,11 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/variant_helper.h>
 
 #include <fugio/pincontrolbase.h>
 
-class SizePin : public fugio::PinControlBase, public fugio::VariantInterface
+class SizePin : public fugio::PinControlBase, public fugio::VariantHelper<QSizeF>
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface )
@@ -32,7 +32,7 @@ public:
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString( "%1,%2" ).arg( mValue.width() ).arg( mValue.height() ) );
+		return( QString( "%1,%2" ).arg( mValues.first().width() ).arg( mValues.first().height() ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
@@ -43,37 +43,28 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::VariantInterface
 
-	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
+	virtual void setFromBaseVariant( int pIndex, int pOffset, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		mValue = pValue.toSizeF();
+		const int			i = variantIndex( pIndex, pOffset );
+		QList<QVariant>     L = pValue.toList();
+		QSizeF				V;
+
+		if( L.size() > 0 ) V.setWidth( L.at( 0 ).toReal() );
+		if( L.size() > 1 ) V.setHeight( L.at( 1 ).toReal() );
+
+		mValues[ i ] = V;
 	}
 
-	virtual QVariant variant( void ) const Q_DECL_OVERRIDE
-	{
-		return( QVariant::fromValue<QSizeF>( mValue ) );
-	}
-
-	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		QList<QVariant>		L = pValue.toList();
-
-		if( L.size() > 0 ) mValue.setWidth( L.at( 0 ).toReal() );
-		if( L.size() > 1 ) mValue.setHeight( L.at( 1 ).toReal() );
-	}
-
-	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE
+	virtual QVariant baseVariant( int pIndex, int pOffset ) const Q_DECL_OVERRIDE
 	{
 		QList<QVariant>		L;
+		QSizeF				V = mValues.at( variantIndex( pIndex, pOffset ) );
 
-		L << mValue.width();
-		L << mValue.height();
+		L << V.width();
+		L << V.height();
 
 		return( L );
 	}
-
-private:
-	QSizeF		mValue;
 };
-
 
 #endif // SIZEPIN_H

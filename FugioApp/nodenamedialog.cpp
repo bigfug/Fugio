@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QSettings>
+#include <QMetaClassInfo>
 
 #include <fugio/fugio.h>
 #include <fugio/global_interface.h>
@@ -88,11 +89,12 @@ void NodeNameDialog::setListHistory()
 
 			if( !NodeData.mFlags.testFlag( fugio::ClassEntry::Deprecated ) )
 			{
-				QListWidgetItem		*NodeItem = new QListWidgetItem( NodeData.friendlyName() );
+				QListWidgetItem		*NodeItem = fillWidgetItem( NodeData.friendlyName(), NodeData.mUuid );
 
-				NodeItem->setData( Qt::UserRole, NodeData.mUuid );
-
-				ui->listWidget->addItem( NodeItem );
+				if( NodeItem )
+				{
+					ui->listWidget->addItem( NodeItem );
+				}
 			}
 		}
 	}
@@ -104,6 +106,11 @@ void NodeNameDialog::setListCompare( const QString &pCmp )
 
 	ui->listWidget->clear();
 
+	const QString					CmpLwr = pCmp.toLower();
+	QPair<QString,QUuid>			Match;
+	QMap<QString,QUuid>				MatchStart;
+	QMap<QString,QUuid>				MatchContain;
+
 	for( const fugio::ClassEntry &NodeEntry : NodeList.values() )
 	{
 		if( NodeEntry.mFlags.testFlag( fugio::ClassEntry::Deprecated ) )
@@ -111,15 +118,64 @@ void NodeNameDialog::setListCompare( const QString &pCmp )
 			continue;
 		}
 
-		QString		LocalName = NodeEntry.friendlyName();
+		const QString		LocalName = NodeEntry.friendlyName();
+		const QString		LocalLower = LocalName.toLower();
 
-		if( LocalName.toLower().contains( pCmp.toLower() ) )
+		if( LocalLower == CmpLwr )
 		{
-			QListWidgetItem		*NodeItem = new QListWidgetItem( LocalName );
+			Match = QPair<QString,QUuid>( LocalName, NodeEntry.mUuid );
+		}
+		else if( LocalLower.startsWith( CmpLwr ) )
+		{
+			MatchStart.insert( LocalName, NodeEntry.mUuid );
+		}
+		else if( LocalLower.contains( CmpLwr ) )
+		{
+			MatchContain.insert( LocalName, NodeEntry.mUuid );
+		}
+	}
 
-			NodeItem->setData( Qt::UserRole, NodeEntry.mUuid );
+	if( !Match.second.isNull() )
+	{
+		QListWidgetItem		*NodeItem = fillWidgetItem( Match.first, Match.second );
 
+		if( NodeItem )
+		{
 			ui->listWidget->addItem( NodeItem );
+		}
+	}
+
+	if( !MatchStart.isEmpty() )
+	{
+		QStringList			NodeList = MatchStart.keys();
+
+		std::sort( NodeList.begin(), NodeList.end() );
+
+		for( const QString &S : NodeList )
+		{
+			QListWidgetItem		*NodeItem = fillWidgetItem( S, MatchStart.value( S ) );
+
+			if( NodeItem )
+			{
+				ui->listWidget->addItem( NodeItem );
+			}
+		}
+	}
+
+	if( !MatchContain.isEmpty() )
+	{
+		QStringList			NodeList = MatchContain.keys();
+
+		std::sort( NodeList.begin(), NodeList.end() );
+
+		for( const QString &S : NodeList )
+		{
+			QListWidgetItem		*NodeItem = fillWidgetItem( S, MatchContain.value( S ) );
+
+			if( NodeItem )
+			{
+				ui->listWidget->addItem( NodeItem );
+			}
 		}
 	}
 }
@@ -139,6 +195,32 @@ void NodeNameDialog::addToHistory( const QUuid &pNodeUuid )
 	{
 		mNodeList.pop_back();
 	}
+}
+
+QListWidgetItem *NodeNameDialog::fillWidgetItem( const QString &pName, const QUuid &pUuid )
+{
+	QListWidgetItem		*NodeItem = new QListWidgetItem( pName );
+
+	if( NodeItem )
+	{
+		NodeItem->setData( Qt::UserRole, pUuid );
+
+		const QMetaObject	*NodeMeta = gApp->global().findNodeMetaObject( pUuid );
+
+		if( NodeMeta )
+		{
+			int		InfIdx;
+
+			if( ( InfIdx = NodeMeta->indexOfClassInfo( "Description" ) ) != -1 )
+			{
+				QMetaClassInfo	InfInf = NodeMeta->classInfo( InfIdx );
+
+				NodeItem->setToolTip( InfInf.value() );
+			}
+		}
+	}
+
+	return( NodeItem );
 }
 
 void NodeNameDialog::on_listWidget_doubleClicked( const QModelIndex &index )

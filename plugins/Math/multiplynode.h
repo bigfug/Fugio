@@ -1,11 +1,12 @@
 #ifndef MULTIPLYNODE_H
 #define MULTIPLYNODE_H
 
-#include <QObject>
+#include <QPoint>
+#include <QPointF>
 
 #include <fugio/nodecontrolbase.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/pin_variant_iterator.h>
 
 class MultiplyNode : public fugio::NodeControlBase
 {
@@ -18,11 +19,9 @@ class MultiplyNode : public fugio::NodeControlBase
 
 	class Operator
 	{
-		public:
-			template<typename T> static T op0( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-			template<typename T> static T op1( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-			template<typename T> static T op2( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-			template<typename T> static T op3( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
+	public:
+		template<typename T, typename S = T> static void mul( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
+		template<typename T, typename S = T> static void muls( const QList<fugio::PinVariantIterator> &ItrLst, fugio::VariantInterface *OutDst, int ItrMax );
 	};
 
 public:
@@ -38,14 +37,11 @@ public:
 
 	virtual bool canAcceptPin(fugio::PinInterface *pPin) const;
 
-private:
-	static QVariant multiplyNumber( const QList< QSharedPointer<fugio::PinInterface> > pInputPins );
-
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
 
-	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::VariantInterface						*mValOutput;
+	QSharedPointer<fugio::PinInterface>			 mPinOutputArray;
+	fugio::VariantInterface						*mValOutputArray;
 };
 
 #endif // MULTIPLYNODE_H

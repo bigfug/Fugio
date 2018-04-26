@@ -15,5 +15,13 @@
 #define NID_DATE				(QUuid("{0de6dbf7-3639-4cf9-aec2-0a265d51e1ef}"))
 #define NID_PLAYHEAD_FRAMES		(QUuid("{603A8DE7-C895-4A54-AF6D-587BA45ED5F5}"))
 #define NID_UNIVERSE_TIME		(QUuid("{D7A4303F-F558-46C4-B741-32D7D11D172D}"))
+#define NID_DATETIMETOSTRING	(QUuid("{ab9f83de-14f3-4769-a7a5-d2ef3d86c202}"))
+#define NID_LOCALTIME			(QUuid("{3b13acc0-3a02-4a35-9c0f-f2edd4e6056d}"))
+#define NID_SPLIT_DATETIME		(QUuid("{70ab8126-4bee-499b-ac1a-5c4a1252d3ea}"))
+#define NID_UTCTIME				(QUuid("{fefba9e3-d3c5-48f6-818f-414e26205030}"))
+
+#define PID_TIME				(QUuid("{5d8eb31f-7af5-497e-ad6e-782f0cc82cd9}"))
+#define PID_DATE				(QUuid("{3bf56227-8449-42ac-b403-bbb41cb4aea1}"))
+#define PID_DATETIME			(QUuid("{715b27a2-f8cc-4152-ba19-d4f8b1a8fbf8}"))
 
 #endif // FUGIO_TIME_H

@@ -13,7 +13,7 @@ ImageNode::ImageNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinSize->registerPinInputType( PID_SIZE );
 
-	mImage = pinOutput<fugio::ImageInterface *>( "Image", mPinImage, PID_IMAGE );
+	mImage = pinOutput<fugio::VariantInterface *>( "Image", mPinImage, PID_IMAGE );
 }
 
 QWidget *ImageNode::gui( void )
@@ -25,13 +25,15 @@ void ImageNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	QSize		ImgSze = variant( mPinSize ).toSize();
+	fugio::Image	DstImg = mImage->variant().value<fugio::Image>();
 
-	if( ImgSze != mImage->size() )
+	QSize			ImgSze = variant( mPinSize ).toSize();
+
+	if( ImgSze != DstImg.size() )
 	{
-		mImage->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
-		mImage->setLineSize( 0, 4 * ImgSze.width() );
-		mImage->setSize( ImgSze.width(), ImgSze.height() );
+		DstImg.setFormat( fugio::ImageFormat::BGRA8 );
+		DstImg.setLineSize( 0, 4 * ImgSze.width() );
+		DstImg.setSize( ImgSze.width(), ImgSze.height() );
 
 		pinUpdated( mPinImage );
 	}

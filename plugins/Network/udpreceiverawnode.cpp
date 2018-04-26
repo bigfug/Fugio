@@ -26,7 +26,7 @@ UDPReceiveRawNode::UDPReceiveRawNode( QSharedPointer<fugio::NodeInterface> pNode
 
 	mPinPort->setValue( 7878 );
 
-	mValOutputBuffer = pinOutput<fugio::VariantInterface *>( "Data", mPinOutputBuffer, PID_BYTEARRAY_LIST, PIN_OUTPUT_DATA );
+	mValOutputBuffer = pinOutput<fugio::VariantInterface *>( "Data", mPinOutputBuffer, PID_BYTEARRAY, PIN_OUTPUT_DATA );
 
 	mValOutputCount = pinOutput<fugio::VariantInterface *>( "Count", mPinOutputCount, PID_INTEGER, PIN_OUTPUT_COUNT );
 }
@@ -121,7 +121,7 @@ void UDPReceiveRawNode::frameStart( qint64 pTimeStamp )
 	{
 		fugio::Performance	Perf( mNode, "frameStart", pTimeStamp );
 
-		QVariantList	DatagramList;
+		mValOutputBuffer->variantClear();
 
 		while( mSocket.hasPendingDatagrams() )
 		{
@@ -131,12 +131,10 @@ void UDPReceiveRawNode::frameStart( qint64 pTimeStamp )
 
 			mBytesReceived += mSocket.readDatagram( Datagram.data(), Datagram.size() );
 
-			DatagramList.append( Datagram );
+			mValOutputBuffer->variantAppend( Datagram );
 		}
 
-		mValOutputBuffer->setVariant( DatagramList );
-
-		if( !DatagramList.isEmpty() )
+		if( mValOutputBuffer->variantCount() )
 		{
 			pinUpdated( mPinOutputBuffer );
 		}

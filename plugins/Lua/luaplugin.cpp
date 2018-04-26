@@ -56,7 +56,7 @@ LuaPlugin::LuaPlugin() : mApp( 0 )
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_lua" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}
@@ -297,7 +297,7 @@ int LuaPlugin::pushVariant( lua_State *L, const QVariant &V )
 				{
 					const QVariant		VI = VL[ K ];
 
-					lua_pushfstring( L, "%s", K.toLatin1().data() );
+					lua_pushfstring( L, "%s", K.toUtf8().data() );
 
 					pushVariant( L, VI );
 
@@ -309,7 +309,7 @@ int LuaPlugin::pushVariant( lua_State *L, const QVariant &V )
 
 		case QMetaType::QString:
 			{
-				lua_pushfstring( L, "%s", V.toString().toLatin1().data() );
+				lua_pushfstring( L, "%s", V.toString().toUtf8().data() );
 
 				return( 1 );
 			}
@@ -515,7 +515,7 @@ QVariant LuaPlugin::popVariant( lua_State *L, int idx )
 			lua_pushstring( L, "__name" );
 			lua_rawget( L, -2 );
 
-			TypeName = QString::fromLatin1( lua_tostring( L, -1 ) );
+			TypeName = QString::fromUtf8( lua_tostring( L, -1 ) );
 
 			lua_pop( L, 2 );
 		}
@@ -568,7 +568,7 @@ QVariant LuaPlugin::popVariant( lua_State *L, int idx )
 	{
 		size_t		RawLen = lua_rawlen( L, idx );
 
-		return( QString::fromLatin1( lua_tostring( L, idx ), RawLen ) );
+		return( QString::fromUtf8( lua_tostring( L, idx ), RawLen ) );
 	}
 
 	if( lua_type( L, idx ) == LUA_TNUMBER )

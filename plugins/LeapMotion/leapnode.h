@@ -5,7 +5,7 @@
 #include <fugio/nodecontrolbase.h>
 #include <fugio/pin_interface.h>
 #include <fugio/core/variant_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #include "leaphandpin.h"
 
@@ -46,10 +46,10 @@ private:
 	LeapHandPin							*mHandRight;
 
 	QSharedPointer<fugio::PinInterface>		 mPinImage1;
-	fugio::ImageInterface						*mImage1;
+	fugio::VariantInterface						*mImage1;
 
 	QSharedPointer<fugio::PinInterface>		 mPinDistortionImage;
-	fugio::ImageInterface						*mDistortionImage;
+	fugio::VariantInterface						*mDistortionImage;
 };
 
 #endif // LEAPNODE_H

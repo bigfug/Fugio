@@ -4,6 +4,7 @@
 #include <QUuid>
 
 #define NID_AUDIO_MIXER				(QUuid("{17DDFF49-2C4F-4b84-B348-8497070E1780}"))
+#define NID_AUDIO_TO_ARRAY			(QUuid("{8B8188D9-8809-40C2-808B-8F325F011CCF}"))
 #define NID_CENTROID				(QUuid("{c09746e3-fcc8-4113-ab3c-a173008b3604}"))
 #define NID_SIGNAL					(QUuid("{dc02a717-9317-4941-ae8f-1e22ad7760a3}"))
 #define NID_AUDIO_MAGNITUDE			(QUuid("{91992438-fa8b-4a47-ae73-e5b6151576a1}"))

@@ -20,7 +20,7 @@
 #endif
 
 #include <fugio/choice_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/audio/audio_producer_interface.h>
 #include <fugio/audio/audio_instance_base.h>
 
@@ -120,7 +120,7 @@ protected:
 	fugio::ChoiceInterface						*mValInputSource;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface						*mValOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputAudio;
 	fugio::AudioProducerInterface				*mValOutputAudio;

@@ -7,6 +7,7 @@
 #include <fugio/performance.h>
 #include "luaqtplugin.h"
 #include "luajsonarray.h"
+#include "luajsonobject.h"
 
 const char *LuaJsonDocument::JsonDocumentUserData::TypeName = "qt.jsondocument";
 
@@ -25,6 +26,7 @@ const luaL_Reg LuaJsonDocument::mLuaMethods[] =
 	{ "fromVariant",		LuaJsonDocument::luaFromVariant },
 	{ "isArray",			LuaJsonDocument::luaIsArray },
 	{ "isObject",			LuaJsonDocument::luaIsObject },
+	{ "object",				LuaJsonDocument::luaObject },
 	{ 0, 0 }
 };
 
@@ -147,6 +149,15 @@ int LuaJsonDocument::luaArray( lua_State *L )
 	JsonDocumentUserData		*UserData = checkjsondocumentdata( L );
 
 	LuaJsonArray::pushjsonarray( L, UserData->mJsonDocument->array() );
+
+	return( 1 );
+}
+
+int LuaJsonDocument::luaObject(lua_State *L)
+{
+	JsonDocumentUserData		*UserData = checkjsondocumentdata( L );
+
+	LuaJsonObject::pushjsonobject( L, UserData->mJsonDocument->object() );
 
 	return( 1 );
 }

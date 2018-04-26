@@ -1,7 +1,7 @@
 #ifndef ISFNODE_H
 #define ISFNODE_H
 
-#if !defined( Q_OS_RASPBERRY_PI )
+#if 1// !defined( Q_OS_RASPBERRY_PI )
 #include "../libs/exprtk/exprtk.hpp"
 #endif
 
@@ -13,6 +13,7 @@
 #include <QSize>
 
 #include <QOpenGLVertexArrayObject>
+#include <QOpenGLBuffer>
 
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
@@ -168,7 +169,7 @@ private:
 	QList<ISFPass>								 mISFPasses;
 
 	QOpenGLVertexArrayObject					 mVAO;
-	GLuint										 mBuffer;
+	QOpenGLBuffer								 mBuffer;
 	GLuint										 mProgram;
 	GLuint										 mFrameCounter;
 

@@ -8,7 +8,7 @@
 #include <fugio/opencv/uuid.h>
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/core/variant_interface.h>
 
 #include <fugio/nodecontrolbase.h>
@@ -40,7 +40,7 @@ private slots:
 
 private:
 	QSharedPointer<fugio::PinInterface>		 mPinOutputImage;
-	fugio::ImageInterface							*mOutputImage;
+	fugio::VariantInterface							*mOutputImage;
 
 	QSharedPointer<fugio::PinInterface>		 mPinOutputSize;
 	fugio::VariantInterface					*mOutputSize;

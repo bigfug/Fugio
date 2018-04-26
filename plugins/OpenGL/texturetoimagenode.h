@@ -3,11 +3,16 @@
 
 #include <QObject>
 
+#if !defined( GL_ES_VERSION_2_0 )
+#include <QOpenGLFunctions_2_0>
+#include <QOpenGLFunctions_3_2_Core>
+#endif
+
 #include "opengl_includes.h"
 
 #include <fugio/nodecontrolbase.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 class TextureToImageNode : public fugio::NodeControlBase, protected QOpenGLFunctions
 {
@@ -30,7 +35,7 @@ public:
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputTexture;
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface								*mValOutputImage;
+	fugio::VariantInterface								*mValOutputImage;
 };
 
 

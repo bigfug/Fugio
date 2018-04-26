@@ -14,10 +14,14 @@
 #include "imagesizenode.h"
 #include "imagefilternode.h"
 #include "imagesavenode.h"
+#include "copynode.h"
+#include "imagesplitnode.h"
 
 #include "painterwindownode.h"
+#include "replacealphanode.h"
 
 #include "imagepin.h"
+#include "painterpin.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -26,6 +30,7 @@ using namespace fugio;
 ClassEntry		mNodeClasses[] =
 {
 	ClassEntry( "Colour Mask", "Image", NID_COLOUR_MASK, &ColourMaskNode::staticMetaObject ),
+	ClassEntry( "Copy", "Image", NID_IMAGE_COPY, &CopyNode::staticMetaObject ),
 	ClassEntry( "Filter", "Image", NID_IMAGE_FILTER, &ImageFilterNode::staticMetaObject ),
 	ClassEntry( "Grab Screen", "Image", NID_GRAB_SCREEN, &GrabScreenNode::staticMetaObject ),
 	ClassEntry( "Image", "Image", NID_IMAGE, &ImageNode::staticMetaObject ),
@@ -35,12 +40,15 @@ ClassEntry		mNodeClasses[] =
 	ClassEntry( "Scale", "Image", ClassEntry::Deprecated, NID_SCALE_IMAGE, &ScaleImageNode::staticMetaObject ),
 	ClassEntry( "Save", "Image", NID_IMAGE_SAVE, &ImageSaveNode::staticMetaObject ),
 	ClassEntry( "Size", "Image", ClassEntry::Deprecated, NID_IMAGE_SIZE, &ImageSizeNode::staticMetaObject ),
+	ClassEntry( "Split", "Image", NID_IMAGE_SPLIT, &ImageSplitNode::staticMetaObject ),
+	ClassEntry( "Replace Alpha", "Image", NID_IMAGE_REPLACE_ALPHA, &ReplaceAlphaNode::staticMetaObject ),
 	ClassEntry()
 };
 
 ClassEntry		mPinClasses[] =
 {
 	ClassEntry( "Image", PID_IMAGE, &ImagePin::staticMetaObject ),
+	ClassEntry( "Painter", PID_PAINTER, &PainterPin::staticMetaObject ),
 	ClassEntry()
 };
 
@@ -52,7 +60,7 @@ ImagePlugin::ImagePlugin()
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_image" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}
@@ -67,6 +75,8 @@ PluginInterface::InitResult ImagePlugin::initialise( fugio::GlobalInterface *pAp
 	mApp->registerNodeClasses( mNodeClasses );
 
 	mApp->registerPinClasses( mPinClasses );
+
+	mApp->registerPinForMetaType( PID_IMAGE, QMetaType::Type( qMetaTypeId<fugio::Image>() ) );
 
 	return( INIT_OK );
 }

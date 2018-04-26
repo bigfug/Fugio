@@ -7,6 +7,7 @@
 #include <fugio/core/variant_interface.h>
 #include <fugio/serialise_interface.h>
 #include <fugio/performance.h>
+#include <fugio/pin_variant_iterator.h>
 
 #include "networkplugin.h"
 
@@ -41,57 +42,23 @@ void UDPSendRawNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	sendData( pTimeStamp );
-}
-
-void UDPSendRawNode::sendData( qint64 pTimeStamp )
-{
 	if( !mPinData->isUpdated( mWriteTime ) )
 	{
 		return;
 	}
 
-	QByteArray				 A;
+	int							Port = variant<int>( mPinPort );
 
-	QSharedPointer<fugio::PinInterface>		P = mPinData->connectedPin();
+	fugio::PinVariantIterator	Data( mPinData );
 
-	if( P )
+	for( int i = 0 ; i < Data.count() ; i++ )
 	{
-		fugio::PinControlInterface		*I = input<fugio::PinControlInterface *>( mPinData );
+		const QVariant	VarDat = Data.index( i );
 
-		if( !I )
+		if( VarDat.canConvert( QVariant::ByteArray ) )
 		{
-			return;
+			mSocket.writeDatagram( VarDat.toByteArray(), mAddress, Port );
 		}
-
-		if( P->controlUuid() == PID_BYTEARRAY_LIST )
-		{
-			fugio::VariantInterface		*V = qobject_cast<fugio::VariantInterface *>( I->qobject() );
-
-			if( V )
-			{
-				const QVariantList	VarLst = V->variant().toList();
-
-				for( const QVariant VI : VarLst )
-				{
-					QByteArray	ByteArray = VI.toByteArray();
-
-					if( !ByteArray.isEmpty() )
-					{
-						mSocket.writeDatagram( ByteArray, mAddress, variant( mPinPort ).toInt() );
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		A = mPinData->value().toByteArray();
-	}
-
-	if( !A.isEmpty() )
-	{
-		mSocket.writeDatagram( A, mAddress, variant( mPinPort ).toInt() );
 	}
 
 	mWriteTime = pTimeStamp + 1;
@@ -102,5 +69,7 @@ void UDPSendRawNode::hostLookup( QHostInfo pHostInfo )
 	if( !pHostInfo.addresses().isEmpty() )
 	{
 		mAddress = pHostInfo.addresses().first();
+
+		mNode->context()->updateNode( mNode );
 	}
 }

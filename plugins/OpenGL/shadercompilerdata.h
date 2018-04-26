@@ -13,6 +13,7 @@ typedef struct ShaderCompilerData
 
 	QStringList								 mUniformNames;
 	QStringList								 mAttributeNames;
+	QVector<GLenum>							 mFragmentOutputs;
 
 	QOpenGLShaderProgram					*mProgram;
 

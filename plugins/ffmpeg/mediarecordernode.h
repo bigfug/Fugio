@@ -26,6 +26,10 @@ extern "C"
 #endif
 }
 
+#if LIBAVFORMAT_VERSION_MAJOR <= 56
+#undef FFMPEG_SUPPORTED
+#endif
+
 #endif
 
 #include <fugio/node_interface.h>

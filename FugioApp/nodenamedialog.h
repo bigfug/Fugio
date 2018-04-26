@@ -38,6 +38,8 @@ protected:
 
 	void addToHistory( const QUuid &pNodeUuid );
 
+	QListWidgetItem *fillWidgetItem( const QString &pName, const QUuid &pUuid );
+
 private:
 	Ui::NodeNameDialog		*ui;
 

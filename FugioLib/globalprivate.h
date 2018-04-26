@@ -8,9 +8,11 @@
 #include <QNetworkReply>
 #include <QMultiMap>
 #include <QElapsedTimer>
-#include <QCommandLineParser>
 #include <QThread>
 #include <QApplication>
+#include <QTimer>
+
+#include <memory>
 
 #include <fugio/global.h>
 
@@ -35,15 +37,15 @@ class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public 
 public:
 	virtual ~GlobalPrivate( void );
 
-    void loadPlugins( QDir pDir );
+    virtual void loadPlugins( QDir pDir ) Q_DECL_OVERRIDE;
 
-	void unloadPlugins( void );
+	virtual void unloadPlugins( void ) Q_DECL_OVERRIDE;
+
+	virtual void initialisePlugins( void ) Q_DECL_OVERRIDE;
 
 	bool loadPlugin( const QString &pFileName );
 
 	void registerPlugin( QObject *pPluginInstance );
-
-	void initialisePlugins( void );
 
 	virtual QStringList loadedPluginNames( void ) const Q_DECL_OVERRIDE
 	{
@@ -115,11 +117,24 @@ public:
 
 	virtual QThread *thread( void ) Q_DECL_OVERRIDE
 	{
+		return( QObject::thread() );
+	}
+
+	virtual void scheduleFrame( void ) Q_DECL_OVERRIDE
+	{
 #if defined( GLOBAL_THREADED )
-		return( mGlobalThread );
-#else
-		return( QApplication::instance()->thread() );
+		emit signalFrameExecute();
 #endif
+	}
+
+	virtual bool commandLineDefined( const QString &pKey ) const Q_DECL_OVERRIDE
+	{
+		return( mCommandLineVariables.contains( pKey ) );
+	}
+
+	virtual QString commandLineValue( const QString &pKey ) const Q_DECL_OVERRIDE
+	{
+		return( mCommandLineVariables.value( pKey ) );
 	}
 
 	virtual void sendToUniverse( qint64 pTimeStamp, const QUuid &pUuid, const QString &pName, const QUuid &pType, const QByteArray &pByteArray ) Q_DECL_OVERRIDE
@@ -156,11 +171,6 @@ public:
 	}
 
 	//-------------------------------------------------------------------------
-
-	virtual QCommandLineParser &commandLineParser( void ) Q_DECL_OVERRIDE
-	{
-		return( mCommandLineParser );
-	}
 
 	virtual void registerInterface( const QUuid &pUuid, QObject *pInterface ) Q_DECL_OVERRIDE;
 	virtual void unregisterInterface( const QUuid &pUuid ) Q_DECL_OVERRIDE;
@@ -226,6 +236,12 @@ public:
 	virtual QList<QUuid> pinJoiners( const QUuid &pPinId ) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
+	// QMetaType
+
+	virtual QUuid findPinForMetaType( QMetaType::Type pType ) const Q_DECL_OVERRIDE;
+	virtual void registerPinForMetaType( const QUuid &pUuid, QMetaType::Type pType ) Q_DECL_OVERRIDE;
+
+	//-------------------------------------------------------------------------
 
 	QUuid instanceId( void ) const;
 
@@ -251,6 +267,16 @@ public:
 		return( mNodeMap );
 	}
 
+	inline QMutex &contextMutex( void )
+	{
+		return( mContextMutex );
+	}
+
+	virtual void setCommandLineValues( const QMap<QString,QString> &pValueMap ) Q_DECL_OVERRIDE
+	{
+		mCommandLineVariables = pValueMap;
+	}
+
 protected:
 	bool registerNodeClass( const fugio::ClassEntry &E );
 
@@ -266,8 +292,10 @@ signals:
 	void globalStart( qint64 pTimeStamp );
 	void globalEnd( qint64 pTimeStamp );
 
-private slots:
-	void timeout( void );
+	void signalFrameExecute( void );
+
+public slots:
+	virtual void executeFrame( void ) Q_DECL_OVERRIDE;
 
 private:
 	static GlobalPrivate			*mInstance;
@@ -294,58 +322,43 @@ private:
 	QMultiMap<QUuid,QUuid>			 mPinSplitters;
 	QMultiMap<QUuid,QUuid>			 mPinJoiners;
 
-	QCommandLineParser				 mCommandLineParser;
-
 	bool							 mPause;
+
+	QTimer							 mGlobalTimer;
 
 #if defined( GLOBAL_THREADED )
 	QThread							*mGlobalThread;
 #endif
 
-	fugio::TimeSync					*mTimeSync;
+	std::unique_ptr<fugio::TimeSync> mTimeSync;
 
 	Universe						 mUniverse;
 
 	QStringList						 mEnabledPlugins;
 	QStringList						 mDisabledPlugins;
 	QStringList						 mLoadedPlugins;
+
+	QMap<QMetaType::Type,QUuid>		 mMetaTypeToPinUuid;
+
+	QMap<QString,QString>			 mCommandLineVariables;
 };
 
 #if defined( GLOBAL_THREADED )
 
-#include <QTimer>
-
-class GlobalThread : public QThread
+class GlobalThread : public QObject
 {
 	Q_OBJECT
 
 public:
 	GlobalThread( GlobalPrivate *pGlobalPrivate )
-		: QThread( pGlobalPrivate ), mGlobalPrivate( pGlobalPrivate )
+		: mGlobalPrivate( pGlobalPrivate )
 	{
-
 	}
 
-protected:
-	virtual void run() Q_DECL_OVERRIDE
+public slots:
+	void update( void )
 	{
-		QTimer			*Timer = new QTimer();
-
-		Timer->setTimerType( Qt::PreciseTimer );
-
-		connect( Timer, SIGNAL(timeout()), this, SLOT(timeout()) );
-
-		connect( this, SIGNAL(finished()), Timer, SLOT(deleteLater()) );
-
-		Timer->start( 1000 / 100 );
-
-		exec();
-	}
-
-protected slots:
-	void timeout( void )
-	{
-		mGlobalPrivate->timeout();
+		mGlobalPrivate->executeFrame();
 	}
 
 private:

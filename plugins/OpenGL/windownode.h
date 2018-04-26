@@ -14,7 +14,7 @@
 #include <fugio/pin_control_interface.h>
 #include "fugio/output_interface.h"
 #include <fugio/core/variant_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/gui/input_events_interface.h>
 
 #include <fugio/opengl/uuid.h>

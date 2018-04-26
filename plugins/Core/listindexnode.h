@@ -28,6 +28,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputIndex;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputValue;
+	fugio::VariantInterface						*mValOutputValue;
 };
 
 

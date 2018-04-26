@@ -50,12 +50,12 @@ void BufferToArrayNode::inputsUpdated( qint64 pTimeStamp )
 	}
 
 	if( BufInt->type() != mValArray->type() ||
-		BufInt->size() != mValArray->size() ||
+		BufInt->size() != mValArray->elementCount() ||
 		BufInt->count() != mValArray->count() ||
 		BufInt->stride() != mValArray->stride() )
 	{
 		mValArray->setCount( BufInt->count() );
-		mValArray->setSize( BufInt->size() );
+		mValArray->setElementCount( BufInt->size() );
 		mValArray->setStride( BufInt->stride() );
 		mValArray->setType( BufInt->type() );
 	}

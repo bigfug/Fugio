@@ -11,12 +11,14 @@
 #include <fugio/nodecontrolbase.h>
 
 #include "polygonnode.h"
+#include "trianglestripnode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
 ClassEntry		GeometryPlugin::mNodeClasses[] =
 {
-	ClassEntry( "Polygon", "Geometry", NID_POLYGON, &PolygonNode::staticMetaObject ),
+	ClassEntry( "Polygon",			"Geometry", NID_POLYGON, &PolygonNode::staticMetaObject ),
+	ClassEntry( "Triangle Strip",	"Geometry", NID_TRIANGLE_STRIP, &TriangleStripNode::staticMetaObject ),
 	ClassEntry()
 };
 
@@ -33,14 +35,10 @@ GeometryPlugin::GeometryPlugin( void )
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_geometry" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}
-}
-
-GeometryPlugin::~GeometryPlugin( void )
-{
 }
 
 PluginInterface::InitResult GeometryPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )

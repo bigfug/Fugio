@@ -8,7 +8,7 @@
 
 #include <fugio/context_interface.h>
 #include <fugio/opengl/state_interface.h>
-#include <fugio/core/array_interface.h>
+#include <fugio/pin_variant_iterator.h>
 #include <fugio/core/list_interface.h>
 
 #include "openglplugin.h"
@@ -16,24 +16,34 @@
 ViewportMatrixNode::ViewportMatrixNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mUpdateViewport( true )
 {
-	mPinInputRender = pinInput( "Render" );
+	FUGID( PIN_INPUT_RENDER, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_INPUT_X, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+	FUGID( PIN_INPUT_Y, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
+	FUGID( PIN_INPUT_PROJECTION, "249f2932-f483-422f-b811-ab679f006381" );
+	FUGID( PIN_INPUT_VIEW, "ce8d578e-c5a4-422f-b3c4-a1bdf40facdb" );
+	FUGID( PIN_OUTPUT_RENDER, "e6bf944e-5f46-4994-bd51-13c2aa6415b7" );
+	FUGID( PIN_OUTPUT_PROJECTION, "a2bbf374-0dc8-42cb-b85a-6a43b58a348f" );
+	FUGID( PIN_OUTPUT_VIEW, "51297977-7b4b-4e08-9dea-89a8add4abe0" );
+	FUGID( PIN_OUTPUT_INDEX, "c997473a-2016-466b-9128-beacb99870a2" );
 
-	mPinX = pinInput( "X" );
-	mPinY = pinInput( "Y" );
+	mPinInputRender = pinInput( "Render", PIN_INPUT_RENDER );
 
-	mPinInputProjections = pinInput( "Projections" );
-	mPinInputViews       = pinInput( "Views" );
+	mPinX = pinInput( "X", PIN_INPUT_X );
+	mPinY = pinInput( "Y", PIN_INPUT_Y );
+
+	mPinInputProjections = pinInput( "Projection", PIN_INPUT_PROJECTION );
+	mPinInputViews       = pinInput( "View", PIN_INPUT_VIEW );
 
 	mPinX->setValue( 1 );
 	mPinY->setValue( 1 );
 
-	mValOutput = pinOutput<fugio::RenderInterface *>( "Render", mPinOutput, PID_RENDER );
+	mValOutput = pinOutput<fugio::RenderInterface *>( "Render", mPinOutput, PID_RENDER, PIN_OUTPUT_RENDER );
 
-	mValOutputProjection = pinOutput<fugio::VariantInterface *>( "Projection", mPinOutputProjection, PID_MATRIX4 );
+	mValOutputProjection = pinOutput<fugio::VariantInterface *>( "Projection", mPinOutputProjection, PID_MATRIX4, PIN_OUTPUT_PROJECTION );
 
-	mValOutputView = pinOutput<fugio::VariantInterface *>( "View", mPinOutputView, PID_MATRIX4 );
+	mValOutputView = pinOutput<fugio::VariantInterface *>( "View", mPinOutputView, PID_MATRIX4, PIN_OUTPUT_VIEW );
 
-	mValOutputIndex = pinOutput<fugio::VariantInterface *>( "Index", mPinOutputIndex, PID_INTEGER );
+	mValOutputIndex = pinOutput<fugio::VariantInterface *>( "Index", mPinOutputIndex, PID_INTEGER, PIN_OUTPUT_INDEX );
 }
 
 void ViewportMatrixNode::inputsUpdated( qint64 pTimeStamp )
@@ -76,30 +86,16 @@ void ViewportMatrixNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		return;
 	}
 
-	fugio::ArrayInterface		*PrjArr = input<fugio::ArrayInterface *>( mPinInputProjections );
-	fugio::ArrayInterface		*CamArr = input<fugio::ArrayInterface *>( mPinInputViews );
+	fugio::PinVariantIterator	Projection( mPinInputProjections );
+	fugio::PinVariantIterator	View( mPinInputViews );
 
-	if( PrjArr && PrjArr->type() != QMetaType::QMatrix4x4 )
+	QVector<int>	PinCnt = { Projection.count(), View.count() };
+
+	auto			MinMax = std::minmax_element( PinCnt.begin(), PinCnt.end() );
+
+	if( !*MinMax.first )
 	{
-		PrjArr = 0;
-	}
-
-	if( CamArr && CamArr->type() != QMetaType::QMatrix4x4 )
-	{
-		CamArr = 0;
-	}
-
-	fugio::ListInterface		*PrjLst = input<fugio::ListInterface *>( mPinInputProjections );
-	fugio::ListInterface		*CamLst = input<fugio::ListInterface *>( mPinInputViews );
-
-	if( PrjLst && PrjLst->listPinControl() != PID_MATRIX4 )
-	{
-		PrjLst = 0;
-	}
-
-	if( CamLst && CamLst->listPinControl() != PID_MATRIX4 )
-	{
-		CamLst = 0;
+		return;
 	}
 
 	GLint			TmpVP[ 4 ];
@@ -122,14 +118,14 @@ void ViewportMatrixNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		{
 			const int			MatIdx = ( y * CntX ) + x;
 
-			if( PrjArr && PrjArr->count() > MatIdx )
+			if( !Projection.isEmpty() )
 			{
-				MatPrj = QMatrix4x4( &reinterpret_cast<const float *>( PrjArr->array() )[ MatIdx * 16 ] );
+				MatPrj = Projection.index( MatIdx ).value<QMatrix4x4>();
 			}
 
-			if( CamArr && CamArr->count() > MatIdx )
+			if( !View.isEmpty() )
 			{
-				MatCam = QMatrix4x4( &reinterpret_cast<const float *>( CamArr->array() )[ MatIdx * 16 ] );
+				MatCam = View.index( MatIdx ).value<QMatrix4x4>();
 			}
 
 			mValOutputProjection->setVariant( MatPrj );

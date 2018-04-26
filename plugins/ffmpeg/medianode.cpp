@@ -22,7 +22,7 @@
 
 #include <fugio/global_interface.h>
 #include <fugio/context_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/core/variant_interface.h>
 #include <fugio/file/filename_interface.h>
 #include <fugio/audio/audio_producer_interface.h>
@@ -75,7 +75,7 @@ MediaNode::MediaNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputTime = pinInput( "Time", PIN_FRAME_TIME );
 
-	mValImage = pinOutput<fugio::ImageInterface *>( "Image", mPinImage, PID_IMAGE, PIN_IMAGE );
+	mValImage = pinOutput<fugio::VariantInterface *>( "Image", mPinImage, PID_IMAGE, PIN_IMAGE );
 
 	mValAudio = pinOutput<fugio::AudioProducerInterface *>( "Audio", mPinAudio, PID_AUDIO, PIN_AUDIO );
 
@@ -251,12 +251,6 @@ void MediaNode::onContextFrame( qint64 pTimeStamp )
 		pinUpdated( mPinLoaded );
 	}
 
-	// record the various status
-
-	const bool		CurrPlay  = mValPlaying->variant().toBool();
-	const bool		CurrPause = mValPaused->variant().toBool();
-	const bool		CurrStop  = mValStopped->variant().toBool();
-
 	// if we don't have any media there's nothing more to do
 
 	if( !mSegment )
@@ -269,6 +263,22 @@ void MediaNode::onContextFrame( qint64 pTimeStamp )
 
 	if( SegDur > 0 )
 	{
+		if( mCurrMediaState == PLAY )
+		{
+			mLoopCount = TimCur / SegDur;
+
+			int		LC = variant<int>( mPinLoopCount );
+
+			if( LC > 0 && mLoopCount >= LC )
+			{
+				mNextMediaState = STOP;
+			}
+		}
+		else
+		{
+			mLoopCount = 0;
+		}
+
 		TimCur %= SegDur;
 	}
 
@@ -330,6 +340,18 @@ void MediaNode::onContextFrame( qint64 pTimeStamp )
 
 	}
 
+	if( mValLoopNumber->variant().toInt() != mLoopCount )
+	{
+		mValLoopNumber->setVariant( mLoopCount );
+
+		pinUpdated( mPinLoopNumber );
+
+		if( mLoopCount > 0 )
+		{
+			pinUpdated( mPinLooped );
+		}
+	}
+
 	if( mTargetFrameNumber >= 0 )
 	{
 		mTimeOffset = pTimeStamp;
@@ -346,73 +368,41 @@ void MediaNode::onContextFrame( qint64 pTimeStamp )
 		mTargetTime = -1;
 	}
 
-	TimCur = ( pTimeStamp - mTimeOffset ) + mTimePause;
+	const qint64	TimNxt = ( SegDur > 0 ? ( ( pTimeStamp - mTimeOffset ) + mTimePause ) % SegDur : ( pTimeStamp - mTimeOffset ) + mTimePause );
 
-	if( SegDur > 0 && TimCur >= SegDur )
-	{
-		//audioResetOffset();
-
-		if( mCurrMediaState == PLAY )
-		{
-			mLoopCount = TimCur / SegDur;
-
-			if( variant( mPinLoopCount ).toInt() > 0 && variant( mPinLoopCount ).toInt() <= mLoopCount )
-			{
-				mCurrMediaState = STOP;
-
-				mValLoopNumber->setVariant( mLoopCount );
-
-				pinUpdated( mPinLoopNumber );
-
-				return;
-			}
-		}
-		else
-		{
-			mLoopCount = 0;
-		}
-
-		if( mValLoopNumber->variant().toInt() != mLoopCount )
-		{
-			mValLoopNumber->setVariant( mLoopCount );
-
-			pinUpdated( mPinLoopNumber );
-
-			pinUpdated( mPinLooped );
-		}
-
-		TimCur %= SegDur;
-	}
-
-	if( TimCur != mTimeLast )
+	if( TimNxt != mTimeLast )
 	{
 		fugio::Performance	Perf( mNode, "onContextFrame", pTimeStamp );
 
-		updateVideo( qreal( TimCur ) / 1000.0 );
+		updateVideo( qreal( TimNxt ) / 1000.0 );
 
-		mTimeLast = TimCur;
+		mTimeLast = TimNxt;
 	}
+
+	bool	UpdatePlaying = false;
+	bool	UpdatePaused  = false;
+	bool	UpdateStopped = false;
 
 	// update the status
 
 	switch( mCurrMediaState )
 	{
 		case STOP:
-			mValPlaying->setVariant( false );
-			mValPaused->setVariant( false );
-			mValStopped->setVariant( true );
+			variantSetValue( mValPlaying, 0, false, UpdatePlaying );
+			variantSetValue( mValPaused,  0, false, UpdatePaused );
+			variantSetValue( mValStopped, 0, true,  UpdateStopped );
 			break;
 
 		case PLAY:
-			mValPlaying->setVariant( true );
-			mValPaused->setVariant( false );
-			mValStopped->setVariant( false );
+			variantSetValue( mValPlaying, 0, true,  UpdatePlaying );
+			variantSetValue( mValPaused,  0, false, UpdatePaused );
+			variantSetValue( mValStopped, 0, false, UpdateStopped );
 			break;
 
 		case PAUSE:
-			mValPlaying->setVariant( false );
-			mValPaused->setVariant( true );
-			mValStopped->setVariant( false );
+			variantSetValue( mValPlaying, 0, false, UpdatePlaying );
+			variantSetValue( mValPaused,  0, true,  UpdatePaused );
+			variantSetValue( mValStopped, 0, false, UpdateStopped );
 			break;
 
 		default:
@@ -421,20 +411,9 @@ void MediaNode::onContextFrame( qint64 pTimeStamp )
 
 	// set the new playing status flags if changed
 
-	if( mValPlaying->variant().toBool() != CurrPlay )
-	{
-		pinUpdated( mPinPlaying );
-	}
-
-	if( mValPaused->variant().toBool() != CurrPause )
-	{
-		pinUpdated( mPinPaused );
-	}
-
-	if( mValStopped->variant().toBool() != CurrStop )
-	{
-		pinUpdated( mPinStopped );
-	}
+	pinUpdated( mPinPlaying, UpdatePlaying );
+	pinUpdated( mPinPaused,  UpdatePaused );
+	pinUpdated( mPinStopped, UpdateStopped );
 }
 
 bool MediaNode::loadMedia( const QString &pFileName )
@@ -489,9 +468,11 @@ void MediaNode::updateVideo( qreal pTimeCurr )
 
 	const fugio::SegmentInterface::VidDat	*VD = mSegment->viddat();
 
+	fugio::Image		SrcImg = mValImage->variant().value<fugio::Image>();
+
 	if( !VD )
 	{
-		mValImage->unsetBuffers();
+		SrcImg.unsetBuffers();
 
 		return;
 	}
@@ -503,75 +484,75 @@ void MediaNode::updateVideo( qreal pTimeCurr )
 
 	mImgPts = VD->mPTS;
 
-	mValImage->setSize( mSegment->imageSize().width(), mSegment->imageSize().height() );
+	SrcImg.setSize( mSegment->imageSize().width(), mSegment->imageSize().height() );
 
-	mValImage->setLineSizes( VD->mLineSizes );
+	SrcImg.setLineSizes( VD->mLineSizes );
 
 	if( mSegment->imageIsHap() )
 	{
 		switch( HapTextureFormat( mSegment->imageFormat() ) )
 		{
 			case HapTextureFormat_RGB_DXT1:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_DXT1 );
+				SrcImg.setFormat( fugio::ImageFormat::DXT1 );
 				break;
 
 			case HapTextureFormat_RGBA_DXT5:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_DXT5 );
+				SrcImg.setFormat( fugio::ImageFormat::DXT5 );
 				break;
 
 			case HapTextureFormat_YCoCg_DXT5:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_YCoCg_DXT5 );
+				SrcImg.setFormat( fugio::ImageFormat::YCoCg_DXT5 );
 				break;
 
 			default:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_UNKNOWN );
+				SrcImg.setFormat( fugio::ImageFormat::UNKNOWN );
 				break;
 		}
 	}
 	else
 	{
-		mValImage->setInternalFormat( mSegment->imageFormat() );
+		SrcImg.setInternalFormat( mSegment->imageFormat() );
 
 		switch( AVPixelFormat( mSegment->imageFormat() ) )
 		{
 			case AV_PIX_FMT_RGB24:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_RGB8 );
+				SrcImg.setFormat( fugio::ImageFormat::RGB8 );
 				break;
 
 			case AV_PIX_FMT_RGBA:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_RGBA8 );
+				SrcImg.setFormat( fugio::ImageFormat::RGBA8 );
 				break;
 
 			case AV_PIX_FMT_BGR24:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_BGR8 );
+				SrcImg.setFormat( fugio::ImageFormat::BGR8 );
 				break;
 
 			case AV_PIX_FMT_BGRA:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_BGRA8 );
+				SrcImg.setFormat( fugio::ImageFormat::BGRA8 );
 				break;
 
 			case AV_PIX_FMT_YUYV422:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_YUYV422 );
+				SrcImg.setFormat( fugio::ImageFormat::YUYV422 );
 				break;
 
 			case AV_PIX_FMT_GRAY8:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_GRAY8 );
+				SrcImg.setFormat( fugio::ImageFormat::GRAY8 );
 				break;
 
 			case AV_PIX_FMT_GRAY16:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_GRAY16 );
+				SrcImg.setFormat( fugio::ImageFormat::GRAY16 );
 				break;
 
 			default:
-				mValImage->setFormat( fugio::ImageInterface::FORMAT_INTERNAL );
+				SrcImg.setFormat( fugio::ImageFormat::INTERNAL );
 				break;
 		}
 	}
 
-	mValImage->setBuffers( VD->mData );
-	mValImage->setLineSizes( VD->mLineSizes );
+	SrcImg.setBuffers( VD->mData );
+	SrcImg.setLineSizes( VD->mLineSizes );
 
-	if( mValImage->format() != fugio::ImageInterface::FORMAT_UNKNOWN )
+	if( SrcImg.format() != fugio::ImageFormat::UNKNOWN )
 	{
 		pinUpdated( mPinImage );
 	}

@@ -26,6 +26,12 @@ private slots:
 
 	void on_mRecentPatches_itemDoubleClicked( QListWidgetItem *item );
 
+	void on_mButtonExamples_clicked();
+
+	void on_mButtonTheFugioZone_clicked();
+
+	void on_mButtonTutorialVideos_clicked();
+
 private:
 	Ui::PatchPromptDialog *ui;
 };

@@ -3,34 +3,60 @@
 #include <QPointF>
 #include <QSizeF>
 
+#include <fugio/core/uuid.h>
+
 VariantPin::VariantPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::UnknownType, PID_VARIANT )
 {
 
 }
 
 QString VariantPin::toString() const
 {
-	switch( QMetaType::Type( mValue.type() ) )
+	QStringList		L;
+
+	for( QVariant v : mValues )
 	{
-		case QMetaType::QPointF:
-			{
-				QPointF		V = mValue.value<QPointF>();
+		switch( QMetaType::Type( v.type() ) )
+		{
+			case QMetaType::QPointF:
+				{
+					QPointF		V = v.value<QPointF>();
 
-				return( QString( "%1,%2 (%3)" ).arg( V.x() ).arg( V.y() ) ).arg( QString( mValue.typeName() ) );
-			}
+					L << QString( "%1,%2 (%3)" ).arg( V.x() ).arg( V.y() ).arg( QString( v.typeName() ) );
+				}
+				break;
 
-		case QMetaType::QSizeF:
-			{
-				QSizeF		V = mValue.value<QSizeF>();
+			case QMetaType::QPoint:
+				{
+					QPoint		V = v.value<QPoint>();
 
-				return( QString( "%1,%2 (%3)" ).arg( V.width() ).arg( V.height() ) ).arg( QString( mValue.typeName() ) );
-			}
+					L << QString( "%1,%2 (%3)" ).arg( V.x() ).arg( V.y() ).arg( QString( v.typeName() ) );
+				}
+				break;
 
-		default:
-			break;
+			case QMetaType::QSizeF:
+				{
+					QSizeF		V = v.value<QSizeF>();
+
+					L << QString( "%1,%2 (%3)" ).arg( V.width() ).arg( V.height() ).arg( QString( v.typeName() ) );
+				}
+				break;
+
+			case QMetaType::QSize:
+				{
+					QSize		V = v.value<QSize>();
+
+					L << QString( "%1,%2 (%3)" ).arg( V.width() ).arg( V.height() ).arg( QString( v.typeName() ) );
+				}
+				break;
+
+			default:
+				L << v.toString();
+				break;
+		}
 	}
 
-	return( QString( "%1 (%2)" ).arg( mValue.toString() ).arg( QString( mValue.typeName() ) ) );
+	return( L.join( ',' ) );
 }
 

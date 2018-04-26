@@ -9,7 +9,7 @@
 #include <fugio/opencv/uuid.h>
 
 #include <fugio/pin_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/core/variant_interface.h>
 
 #if defined( OPENCV_SUPPORTED )
@@ -54,7 +54,7 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputWarp;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface							*mOutputImage;
+	fugio::VariantInterface							*mOutputImage;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputMatrix;
 	fugio::VariantInterface						*mOutputMatrix;

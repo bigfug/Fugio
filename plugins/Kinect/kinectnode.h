@@ -8,7 +8,7 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/choice_interface.h>
 
 #include <fugio/nodecontrolbase.h>
@@ -63,15 +63,19 @@ private slots:
 	void editConfig( void );
 
 #ifdef KINECT_SUPPORTED
-    void eventTriggered( HANDLE pHandle );
-
 	static QSize nuiSize( NUI_IMAGE_RESOLUTION pNuiRes );
 
-	static fugio::ImageInterface::Format nuiFormat( NUI_IMAGE_TYPE pNuiType );
+	static fugio::ImageFormat nuiFormat( NUI_IMAGE_TYPE pNuiType );
 
 	void deviceOpen( int pDeviceIndex );
 
 	void deviceClose( void );
+
+	void colourFrame( HANDLE pHandle );
+
+	void depthFrame( HANDLE pHandle );
+
+	void skeletonFrame( HANDLE pHandle );
 #endif
 
 private:
@@ -83,13 +87,13 @@ private:
 	fugio::VariantInterface						*mValOutputFloorClipPlane;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputCamera;
-	fugio::ImageInterface						*mValOutputCamera;
+	fugio::VariantInterface						*mValOutputCamera;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputDepth;
-	fugio::ImageInterface						*mValOutputDepth;
+	fugio::VariantInterface						*mValOutputDepth;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputUser;
-	fugio::ImageInterface						*mValOutputUser;
+	fugio::VariantInterface						*mValOutputUser;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputElevation;
 	fugio::VariantInterface						*mValOutputElevation;
@@ -126,9 +130,11 @@ private:
 
 	LONG										 mSensorElevation;
 
-	QWinEventNotifier							 mEventNotifier;
-
 	bool										 mFrameReceived;
+
+	QWinEventNotifier							 mColourFrameNotifier;
+	QWinEventNotifier							 mDepthFrameNotifier;
+	QWinEventNotifier							 mSkeletonFrameNotifier;
 
 #if defined( InteractionClient )
 	InteractionClient							 mInteractionClient;

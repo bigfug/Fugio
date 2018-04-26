@@ -7,11 +7,11 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/variant_helper.h>
 
 #include <fugio/pincontrolbase.h>
 
-class PointPin : public fugio::PinControlBase, public fugio::VariantInterface
+class PointPin : public fugio::PinControlBase, public fugio::VariantHelper<QPointF>
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface )
@@ -25,14 +25,21 @@ class PointPin : public fugio::PinControlBase, public fugio::VariantInterface
 public:
 	Q_INVOKABLE explicit PointPin( QSharedPointer<fugio::PinInterface> pPin );
 
-	virtual ~PointPin( void );
+	virtual ~PointPin( void ) {}
 
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
 	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( QString( "%1,%2" ).arg( mValue.x() ).arg( mValue.y() ) );
+		QStringList		L;
+
+		for( const QPointF &V : mValues )
+		{
+			L << QString( "(%1,%2)" ).arg( V.x() ).arg( V.y() );
+		}
+
+		return( L.join( ',' ) );
 	}
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
@@ -43,36 +50,28 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::VariantInterface
 
-	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
+	virtual void setFromBaseVariant( int pIndex, int pOffset, const QVariant &pValue ) Q_DECL_OVERRIDE
 	{
-		mValue = pValue.toPointF();
+		const int			i = variantIndex( pIndex, pOffset );
+		QList<QVariant>     L = pValue.toList();
+		QPointF				V;
+
+		if( L.size() > 0 ) V.setX( L.at( 0 ).toReal() );
+		if( L.size() > 1 ) V.setY( L.at( 1 ).toReal() );
+
+		mValues[ i ] = V;
 	}
 
-	virtual QVariant variant( void ) const Q_DECL_OVERRIDE
-	{
-		return( QVariant::fromValue<QPointF>( mValue ) );
-	}
-
-	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		QList<QVariant>		L = pValue.toList();
-
-		if( L.size() > 0 ) mValue.setX( L.at( 0 ).toReal() );
-		if( L.size() > 1 ) mValue.setY( L.at( 1 ).toReal() );
-	}
-
-	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE
+	virtual QVariant baseVariant( int pIndex, int pOffset ) const Q_DECL_OVERRIDE
 	{
 		QList<QVariant>		L;
+		QPointF				V = mValues.at( variantIndex( pIndex, pOffset ) );
 
-		L << mValue.x();
-		L << mValue.y();
+		L << V.x();
+		L << V.y();
 
 		return( L );
 	}
-
-private:
-	QPointF		mValue;
 };
 
 #endif // POINTPIN_H

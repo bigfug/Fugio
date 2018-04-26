@@ -15,7 +15,7 @@
 #include <fugio/math/uuid.h>
 #include <fugio/core/uuid.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #include "luapainter.h"
 #include "luapen.h"
@@ -73,7 +73,7 @@ const luaL_Reg LuaQtPlugin::mLuaFunctions[] =
 	{ "rect", LuaRectF::luaNew },
 	{ "size", LuaSizeF::luaNew },
 	{ "transform", LuaTransform::luaNew },
-	{ "vector3d", LuaVector3D::luaNew },
+	{ "vector3d", LuaVector3D::luaNewQt },
 #endif
 	{ 0, 0 }
 };
@@ -92,7 +92,7 @@ LuaQtPlugin::LuaQtPlugin()
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_luaqt" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}
@@ -162,9 +162,11 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 
 	LUA->luaAddPushVariantFunction( QMetaType::QLineF, LuaLine::pushVariant );
 	LUA->luaAddPushVariantFunction( QMetaType::QPointF, LuaPointF::pushVariant );
+	LUA->luaAddPushVariantFunction( QMetaType::QVector3D, LuaVector3D::pushVariant );
 
 	LUA->luaAddPopVariantFunction( LuaLine::mTypeName, LuaLine::popVariant );
 	LUA->luaAddPopVariantFunction( LuaPointF::mTypeName, LuaPointF::popVariant );
+	LUA->luaAddPopVariantFunction( LuaVector3D::mTypeName, LuaVector3D::popVariant );
 #endif
 
 	return( INIT_OK );

@@ -11,12 +11,12 @@
 #include <fugio/vst/uuid.h>
 
 #include "vst3node.h"
-#include "vst2node.h"
+//#include "vst2node.h"
 
 #if defined( VST_SUPPORTED )
 
-#include <pluginterfaces/vst2.x/aeffect.h>
-#include <pluginterfaces/vst2.x/aeffectx.h>
+//#include <pluginterfaces/vst2.x/aeffect.h>
+//#include <pluginterfaces/vst2.x/aeffectx.h>
 
 #if defined( Q_OS_WIN )
 #include <windows.h>
@@ -26,7 +26,7 @@ extern "C"
 	typedef bool (PLUGIN_API *InitModuleProc) ();
 	typedef bool (PLUGIN_API *ExitModuleProc) ();
 
-	typedef AEffect *(PLUGIN_API *VSTPluginMain)( audioMasterCallback audioMaster );
+//	typedef AEffect *(PLUGIN_API *VSTPluginMain)( audioMasterCallback audioMaster );
 }
 
 #elif defined( Q_OS_MAC )
@@ -40,8 +40,7 @@ extern "C"
 	typedef bool (PLUGIN_API *InitModuleProc) ();
 	typedef bool (PLUGIN_API *ExitModuleProc) ();
 
-	typedef AEffect *(PLUGIN_API *VSTPluginMain)( audioMasterCallback audioMaster );
-
+//	typedef AEffect *(PLUGIN_API *VSTPluginMain)( audioMasterCallback audioMaster );
 }
 
 #endif
@@ -58,10 +57,10 @@ extern "C"
 
 extern "C"
 {
-VstIntPtr audioMaster( AEffect*, VstInt32, VstInt32, VstIntPtr, void*, float )
-{
-	return( 0 );
-}
+//VstIntPtr audioMaster( AEffect*, VstInt32, VstInt32, VstIntPtr, void*, float )
+//{
+//	return( 0 );
+//}
 }
 #endif
 
@@ -86,7 +85,7 @@ VSTPlugin::VSTPlugin( void )
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_vst" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}
@@ -117,6 +116,8 @@ PluginInterface::InitResult VSTPlugin::initialise( GlobalInterface *pApp, bool p
 
 	mApp = pApp;
 
+#if defined( VST_SUPPORTED )
+
 #if defined( Q_OS_WIN )
 	QString		ProgramFiles64Path( getenv( "PROGRAMFILES" ) );
 	QString		ProgramFiles32Path( getenv( "PROGRAMW6432" ) );
@@ -137,6 +138,8 @@ PluginInterface::InitResult VSTPlugin::initialise( GlobalInterface *pApp, bool p
 	pluginDirScan( QDir( "/Library/Audio/Plug-Ins/VST3" ) );
 	pluginDirScan( QDir( "/Network/Library/Audio/Plug-ins/VST3" ) );
 #endif
+
+#endif	// VST_SUPPORTED
 
 	mApp->registerNodeClasses( mNodeClasses );
 
@@ -171,19 +174,19 @@ void VSTPlugin::pluginDirScan( QDir pDir )
 				continue;
 			}
 
-			if( InfDat.suffix().toLower() == "vst" )
-			{
-				QString		FN = pDir.absoluteFilePath( QString( "%1/Contents/MacOS/%2" ).arg( InfDat.fileName() ).arg( InfDat.baseName() ) );
+//			if( InfDat.suffix().toLower() == "vst" )
+//			{
+//				QString		FN = pDir.absoluteFilePath( QString( "%1/Contents/MacOS/%2" ).arg( InfDat.fileName() ).arg( InfDat.baseName() ) );
 
-				QLibrary		PlgLib( FN );
+//				QLibrary		PlgLib( FN );
 
-				if( PlgLib.load() )
-				{
-					pluginProcess2( PlgLib );
-				}
+//				if( PlgLib.load() )
+//				{
+//					pluginProcess2( PlgLib );
+//				}
 
-				continue;
-			}
+//				continue;
+//			}
 #endif
 
 			if( pDir.cd( InfDat.fileName() ) )
@@ -217,6 +220,7 @@ void VSTPlugin::pluginDirScan( QDir pDir )
 	}
 }
 
+#if 0
 bool VSTPlugin::pluginProcess2( QLibrary &pPlgLib )
 {
 #if !defined( VST_SUPPORTED )
@@ -276,6 +280,8 @@ bool VSTPlugin::pluginProcess2( QLibrary &pPlgLib )
 
 	return( false );
 }
+
+#endif
 
 bool VSTPlugin::pluginProcess3( QLibrary &pPlgLib )
 {

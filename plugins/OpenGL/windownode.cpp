@@ -99,22 +99,6 @@ bool WindowNode::initialise()
 	connect( mNode->context()->qobject(), SIGNAL(frameInitialise()), this, SLOT(contextFrameInitialise()) );
 	connect( mNode->context()->qobject(), SIGNAL(frameEnd()), this, SLOT(contextFrameEnd()) );
 
-#if defined( USE_TEXTURE_PIN )
-	// set texture settings
-
-	mTexture->setFilter( GL_LINEAR, GL_LINEAR );
-	mTexture->setFormat( GL_RGBA );
-	mTexture->setGenMipMaps( false );
-#if !defined( GL_ES_VERSION_2_0 )
-	mTexture->setInternalFormat( GL_RGBA8 );
-#else
-	mTexture->setInternalFormat( GL_RGBA );
-#endif
-	mTexture->setTarget( GL_TEXTURE_2D );
-	mTexture->setType( QOpenGLTexture::UInt8 );
-	mTexture->setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-#endif
-
 	return( true );
 }
 
@@ -231,46 +215,6 @@ void WindowNode::render( qint64 pTimeStamp )
 
 	OPENGL_DEBUG( mNode->name() );
 
-#if defined( USE_TEXTURE_PIN )
-	if( mTexture->textureSize() != QVector3D( WindowSize.width(), WindowSize.height(), 0 ) )
-	{
-		mTexture->free();
-
-		mTexture->setSize( WindowSize.width(), WindowSize.height() );
-	}
-
-	const bool CaptureWindow = ( !mGrabFileNames.isEmpty() || mPinTexture->isConnectedToActiveNode() );
-#endif
-
-	GLuint		FBOId   = 0;
-
-#if defined( USE_TEXTURE_PIN )
-	const bool	CaptureWindow = !mGrabFileNames.isEmpty();
-
-	const int	TextureSamples = qMax( OutputSamples, 1 );
-
-	if( CaptureWindow )
-	{
-		mTexture->update( 0, 0 );
-
-#if !defined( GL_ES_VERSION_2_0 )
-		if( TextureSamples > 1 )
-		{
-			FBOId = mTexture->fboMultiSample( TextureSamples, true );
-		}
-		else
-#endif
-		{
-			FBOId = mTexture->fbo( true );
-		}
-	}
-#endif
-
-	if( FBOId )
-	{
-		glBindFramebuffer( GL_FRAMEBUFFER, FBOId );
-	}
-
 	glViewport( 0, 0, WindowSize.width(), WindowSize.height() );
 
 	glClearColor( 0.0, 0.0, 0.0, 0.0 );
@@ -308,59 +252,6 @@ void WindowNode::render( qint64 pTimeStamp )
 
 	OPENGL_DEBUG( mNode->name() );
 
-	/*
-	if( FBOId )
-	{
-#if !defined( GL_ES_VERSION_2_0 )
-		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-		OPENGL_DEBUG( mNode->name() );
-#endif
-
-		if( CaptureWindow )
-		{
-#if !defined( GL_ES_VERSION_2_0 )
-			if( TextureSamples > 1 )
-			{
-				glBindFramebuffer( GL_READ_FRAMEBUFFER, FBOId );
-				glBindFramebuffer( GL_DRAW_FRAMEBUFFER, mTexture->fbo() );
-
-				glBlitFramebuffer( 0, 0, WindowSize.width(), WindowSize.height(), 0, 0, WindowSize.width(), WindowSize.height(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
-
-				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-				OPENGL_DEBUG( mNode->name() );
-			}
-
-			glBindFramebuffer( GL_READ_FRAMEBUFFER, mTexture->fbo() );
-			glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-
-			glBlitFramebuffer( 0, 0, WindowSize.width(), WindowSize.height(), 0, 0, WindowSize.width(), WindowSize.height(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
-
-			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-			OPENGL_DEBUG( mNode->name() );
-#endif
-			pinUpdated( mPinTexture );
-		}
-		else
-		{
-			// Our WindowSize is the same as our window size so we can blit straight from the MS FBO
-
-#if !defined( GL_ES_VERSION_2_0 )
-			glBindFramebuffer( GL_READ_FRAMEBUFFER, FBOId );
-			glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-
-			glBlitFramebuffer( 0, 0, WindowSize.width(), WindowSize.height(), 0, 0, WindowSize.width(), WindowSize.height(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
-
-			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-			OPENGL_DEBUG( mNode->name() );
-#endif
-		}
-	}
-*/
-
 	if( !mOutput )
 	{
 		return;
@@ -369,50 +260,6 @@ void WindowNode::render( qint64 pTimeStamp )
 	mOutput->renderEnd();
 
 	OPENGL_DEBUG( mNode->name() );
-
-/*
-	if( mTexture->fbo() && !mGrabFileNames.isEmpty() )
-	{
-		glBindFramebuffer( GL_FRAMEBUFFER, mTexture->fbo() );
-
-		if( mBufferImage.width() != WindowSize.width() || mBufferImage.height() != WindowSize.height() )
-		{
-			mBufferImage = QImage( WindowSize, QImage::Format_ARGB32 );
-		}
-
-#if !defined( GL_ES_VERSION_2_0 )
-		glReadPixels( 0, 0, WindowSize.width(), WindowSize.height(), GL_BGRA, GL_UNSIGNED_BYTE, mBufferImage.bits() );
-#else
-		glReadPixels( 0, 0, WindowSize.width(), WindowSize.height(), GL_RGBA, GL_UNSIGNED_BYTE, mBufferImage.bits() );
-#endif
-
-		glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-		if( !mGrabFileNames.isEmpty() )
-		{
-			mBufferImage = mBufferImage.mirrored();
-
-			if( mBufferImage.format() == QImage::Format_ARGB32_Premultiplied )
-			{
-				QImage		TmpImg( mBufferImage.constBits(), mBufferImage.width(), mBufferImage.height(), QImage::Format_ARGB32 );
-
-				for( const QString &FN : mGrabFileNames )
-				{
-					TmpImg.save( FN, 0, 100 );
-				}
-			}
-			else
-			{
-				for( const QString &FN : mGrabFileNames )
-				{
-					mBufferImage.save( FN, 0, 100 );
-				}
-			}
-
-			mGrabFileNames.clear();
-		}
-	}
-*/
 
 	if( !mGrabFileNames.isEmpty() )
 	{

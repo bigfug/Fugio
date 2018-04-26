@@ -31,10 +31,7 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
-	virtual QString toString( void ) const Q_DECL_OVERRIDE
-	{
-		return( QString::number( mBuffer1 ? mBuffer1->bufferId() : 0 ) );
-	}
+	virtual QString toString( void ) const Q_DECL_OVERRIDE;
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
 	{

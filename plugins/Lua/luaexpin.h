@@ -27,6 +27,9 @@ public:
 
 private:
 	static int luaGet( lua_State *L );
+	static int luaSet( lua_State *L );
+	static int luaPinSetCount( lua_State *L );
+	static int luaPinLen( lua_State *L );
 	static int luaToString( lua_State *L );
 	static int luaUpdated( lua_State *L );
 	static int luaIsUpdated( lua_State *L );

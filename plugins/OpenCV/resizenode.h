@@ -5,7 +5,7 @@
 #include <fugio/opencv/uuid.h>
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -42,7 +42,7 @@ private:
 	fugio::ChoiceInterface						*mValInputInterpolation;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface						*mValOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 
 #if defined( OPENCV_SUPPORTED )
 	static QMap<int,QString>					 mInterpolationMap;

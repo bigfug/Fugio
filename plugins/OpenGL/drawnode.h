@@ -11,7 +11,7 @@
 #include <fugio/choice_interface.h>
 #include <fugio/opengl/node_render_interface.h>
 
-class DrawNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface, public QOpenGLFunctions
+class DrawNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface, protected QOpenGLFunctions
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::NodeRenderInterface )

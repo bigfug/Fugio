@@ -4,6 +4,7 @@
 #include "opengl_includes.h"
 
 #include <QOffscreenSurface>
+#include <QOpenGLDebugLogger>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -29,9 +30,16 @@ public:
 
 	virtual bool deinitialise( void ) Q_DECL_OVERRIDE;
 
+private slots:
+	void handleLoggedMessage( const QOpenGLDebugMessage &debugMessage )
+	{
+		qDebug() << mNode->name() << debugMessage;
+	}
+
 private:
 	QOffscreenSurface					 mSurface;
 	QOpenGLContext						 mContext;
+	QOpenGLDebugLogger					 mDebugLogger;
 };
 
 

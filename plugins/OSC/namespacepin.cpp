@@ -112,11 +112,6 @@ QList<fugio::NodeControlInterface::AvailablePinEntry> NamespacePin::oscPins( con
 						PinUid = PID_BYTEARRAY;
 						break;
 
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
-					case QMetaType::QByteArrayList:
-						PinUid = PID_BYTEARRAY_LIST;
-						break;
-#endif
 					case QMetaType::QColor:
 						PinUid = PID_COLOUR;
 						break;

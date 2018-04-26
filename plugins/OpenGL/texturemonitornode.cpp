@@ -1,7 +1,6 @@
 #include "texturemonitornode.h"
 
 #include <QMainWindow>
-#include <QOpenGLExtraFunctions>
 
 #include "openglplugin.h"
 
@@ -56,11 +55,6 @@ bool TextureMonitorNode::initialise()
 	if( !QOpenGLContext::currentContext() )
 	{
 		return( false );
-	}
-
-	if( !mVAO.isCreated() )
-	{
-		mVAO.create();
 	}
 
 	return( true );
@@ -186,33 +180,16 @@ void TextureMonitorNode::paintGL()
 		mVertexAttribLocation = mShader.attributeLocation( "position" );
 	}
 
-	if( mVAO.isCreated() )
-	{
-		mVAO.bind();
+	QOpenGLVertexArrayObject::Binder VAOBinder( &mVAO );
 
-		if( !mBuffer.isCreated() )
-		{
-			if( mBuffer.create() )
-			{
-				if( mBuffer.bind() )
-				{
-					mBuffer.allocate( Vertices, sizeof( Vertices ) );
+	mBuffer.create();
+	mBuffer.bind();
 
-					glVertexAttribPointer( mVertexAttribLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+	mBuffer.allocate( Vertices, sizeof( Vertices ) );
 
-					glEnableVertexAttribArray( mVertexAttribLocation );
+	glVertexAttribPointer( mVertexAttribLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
 
-					mBuffer.release();
-				}
-			}
-		}
-	}
-	else
-	{
-		glVertexAttribPointer( mVertexAttribLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
-
-		glEnableVertexAttribArray( mVertexAttribLocation );
-	}
+	glEnableVertexAttribArray( mVertexAttribLocation );
 
 	mShader.bind();
 
@@ -233,13 +210,22 @@ void TextureMonitorNode::paintGL()
 		return;
 	}
 
+	glActiveTexture( GL_TEXTURE0 );
+
 	double	tw = 1.0 / double( TexLst.size() );
 
 	for( int i = 0 ; i < TexLst.size() ; i++ )
 	{
 		fugio::OpenGLTextureInterface *T = TexLst[ i ];
 
-		glViewport( tw * i * mWidget->width() * mWidget->devicePixelRatio(), 0, tw * mWidget->width() * mWidget->devicePixelRatio(), mWidget->height() * mWidget->devicePixelRatio() );
+		GLint		VP[ 4 ];
+
+		VP[ 0 ] = tw * i * mWidget->width() * mWidget->devicePixelRatio();
+		VP[ 1 ] = 0;
+		VP[ 2 ] = tw * mWidget->width() * mWidget->devicePixelRatio();
+		VP[ 3 ] = mWidget->height() * mWidget->devicePixelRatio();
+
+		glViewport( VP[ 0 ], VP[ 1 ], VP[ 2 ], VP[ 3 ] );
 
 		T->srcBind();
 
@@ -251,15 +237,4 @@ void TextureMonitorNode::paintGL()
 	OPENGL_PLUGIN_DEBUG;
 
 	mShader.release();
-
-	if( mVAO.isCreated() )
-	{
-		mVAO.release();
-	}
-	else
-	{
-		glDisableVertexAttribArray( mVertexAttribLocation );
-	}
-
-	OPENGL_PLUGIN_DEBUG;
 }

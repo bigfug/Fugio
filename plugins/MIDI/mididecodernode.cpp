@@ -18,7 +18,7 @@ MidiDecoderNode::MidiDecoderNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mValOutputSystem = pinOutput<fugio::MidiInterface *>( "System", mPinOutputSystem, PID_MIDI_OUTPUT, PIN_OUTPUT_SYSTEM );
 
-	mValOutputSysEx = pinOutput<fugio::ListInterface *>( "SysEx", mPinOutputSysEx, PID_BYTEARRAY_LIST, PIN_OUTPUT_SYSEX );
+	mValOutputSysEx = pinOutput<fugio::VariantInterface *>( "SysEx", mPinOutputSysEx, PID_BYTEARRAY, PIN_OUTPUT_SYSEX );
 
 	mOutputChannels.resize( 16 );
 
@@ -46,10 +46,7 @@ void MidiDecoderNode::midiProcessInput( const fugio::MidiEvent *pMessages, quint
 		mValOutputSystem->clearData();
 	}
 
-	if( !mValOutputSysEx->listIsEmpty() )
-	{
-		mValOutputSysEx->listClear();
-	}
+	mValOutputSysEx->variantClear();
 
 	mSysExEvents.clear();
 
@@ -119,7 +116,7 @@ void MidiDecoderNode::midiProcessInput( const fugio::MidiEvent *pMessages, quint
 		updateMidiPin( mPinOutputSystem, mValOutputSystem );
 	}
 
-	if( !mValOutputSysEx->listIsEmpty() )
+	if( mValOutputSysEx->variantCount() )
 	{
 		for( fugio::MidiInputInterface *MII : outputs<fugio::MidiInputInterface *>( mPinOutputSysEx ) )
 		{

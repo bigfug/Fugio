@@ -10,7 +10,11 @@
 #include <QImage>
 #include <QDateTime>
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 #include <QOpenGLExtraFunctions>
+#else
+#warning Qt < 5.6 so ISF multipass render disabled
+#endif
 
 #include <fugio/core/uuid.h>
 #include <fugio/colour/uuid.h>
@@ -26,8 +30,6 @@
 
 #include <fugio/audio/fft_interface.h>
 #include <fugio/audio/audio_producer_interface.h>
-
-#include <fugio/core/array_interface.h>
 
 #include <fugio/file/uuid.h>
 
@@ -58,7 +60,7 @@ void checkErrors( const char *file, int line )
 		return;
 	}
 
-#if defined( Q_OS_RASPBERRY_PI )
+#if defined( QT_OPENGL_ES )
 	for( GLenum e = eglGetError() ; e != EGL_SUCCESS ; e = eglGetError() )
 	{
 		qDebug() << "EGL" << file << line << ":" << QString::number( e, 16 );
@@ -77,7 +79,7 @@ void checkErrors( const char *file, int line )
 #endif
 
 ISFNode::ISFNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mVAO( 0 ), mBuffer( 0 ), mProgram( 0 ), mFrameCounter( 0 ), mUniformTime( -1 ),
+	: NodeControlBase( pNode ), mVAO( 0 ),mProgram( 0 ), mFrameCounter( 0 ), mUniformTime( -1 ),
 	  mTextureIndexCount( 0 ), mStartTime( -1 ), mLastRenderTime( 0 )
 {
 	FUGID( PIN_INPUT_SOURCE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
@@ -125,10 +127,7 @@ bool ISFNode::deinitialise()
 	{
 		mVAO.destroy();
 
-		if( mBuffer )
-		{
-			glDeleteBuffers( 1, &mBuffer );
-		}
+		mBuffer.destroy();
 
 		if( mProgram )
 		{
@@ -183,7 +182,7 @@ bool ISFNode::deinitialise()
 		}
 	}
 
-	mBuffer = 0;
+	mBuffer.destroy();
 
 	mProgram = 0;
 
@@ -340,6 +339,8 @@ void ISFNode::contextProcess( qint64 pTimeStamp )
 
 void ISFNode::inputsUpdated( qint64 pTimeStamp )
 {
+	initializeOpenGLFunctions();
+
 	if( pTimeStamp && mPinInputFilename->isUpdated( pTimeStamp ) )
 	{
 		QString		SrcPth = variant( mPinInputFilename ).toString();
@@ -1276,7 +1277,9 @@ void ISFNode::renderImports()
 
 void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 {
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+#endif
 
 	for( ISFPass &PassData : mISFPasses )
 	{
@@ -1356,12 +1359,14 @@ void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, PassData.mTextureId, 0 );
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 		GLenum DrawBuffers[ 1 ] = { GL_COLOR_ATTACHMENT0 };
 
 		if( GLEX )
 		{
 			GLEX->glDrawBuffers( 1, DrawBuffers );
 		}
+#endif
 
 		if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
 		{
@@ -1486,6 +1491,8 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		return;
 	}
 
+	initializeOpenGLFunctions();
+
 	GLint		Viewport[ 4 ];
 
 	glGetIntegerv( GL_VIEWPORT, Viewport );
@@ -1507,31 +1514,19 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		mStartTime = pTimeStamp;
 	}
 
-	if( !mVAO.isCreated() )
-	{
-		mVAO.create();
-	}
+	QOpenGLVertexArrayObject::Binder VAOBinder( &mVAO );
 
-	if( !mVAO.isCreated() )
+	GLfloat		Verticies[][ 2 ] =
 	{
-		mVAO.bind();
-	}
+		{ -1, -1 },
+		{ -1,  1 },
+		{  1, -1 },
+		{  1,  1 }
+	};
 
-	if( !mBuffer )
-	{
-		GLfloat		Verticies[][ 2 ] =
-		{
-			{ -1, -1 },
-			{ -1,  1 },
-			{  1, -1 },
-			{  1,  1 }
-		};
-
-		glGenBuffers( 1, &mBuffer );
-		glBindBuffer( GL_ARRAY_BUFFER, mBuffer );
-		glBufferData( GL_ARRAY_BUFFER, sizeof( Verticies ), Verticies, GL_STATIC_DRAW );
-		glBindBuffer( GL_ARRAY_BUFFER, 0 );
-	}
+	mBuffer.create();
+	mBuffer.bind();
+	mBuffer.allocate( Verticies, sizeof( Verticies ) );
 
 	if( mProgram )
 	{
@@ -1540,8 +1535,6 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 		glEnableVertexAttribArray( 0 );
-
-		glBindBuffer( GL_ARRAY_BUFFER, mBuffer );
 
 		glVertexAttribPointer(
 					0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
@@ -1665,6 +1658,4 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 			mFrameCounter++;
 		}
 	}
-
-	mVAO.release();
 }

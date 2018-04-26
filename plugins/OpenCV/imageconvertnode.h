@@ -8,7 +8,7 @@
 #include <fugio/opencv/uuid.h>
 
 #include <fugio/pin_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 
 #if defined( OPENCV_SUPPORTED )
 #include <opencv2/core/core.hpp>
@@ -41,11 +41,11 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinInputThreshold;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface						*mOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 
-	fugio::ImageInterface::Format				 mDestinationFormat;
+	fugio::ImageFormat				 mDestinationFormat;
 
-	static QMap<QString,fugio::ImageInterface::Format>	 mFormats;
+	static QMap<QString,fugio::ImageFormat>	 mFormats;
 
 #if defined( OPENCV_SUPPORTED )
 	cv::Mat										 mMatImg;

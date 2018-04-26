@@ -20,7 +20,7 @@ ArrayToBufferNode::ArrayToBufferNode( QSharedPointer<fugio::NodeInterface> pNode
 
 	mPinInputArray  = pinInput( "Array", PIN_INPUT_ARRAY );
 
-	mPinInputArray->registerPinInputType( PID_ARRAY );
+//	mPinInputArray->registerPinInputType( PID_ARRAY );
 
 	mValOutputBuffer = pinOutput<fugio::OpenGLBufferInterface *>( "Buffer", mPinOutputBuffer, PID_OPENGL_BUFFER, PIN_OUTPUT_BUFFER );
 
@@ -74,24 +74,24 @@ void ArrayToBufferNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		fugio::ArrayInterface			*A;
+		fugio::VariantInterface			*A;
 
-		if( ( A = input<fugio::ArrayInterface *>( PinI ) ) == nullptr )
+		if( ( A = input<fugio::VariantInterface *>( PinI ) ) == nullptr )
 		{
 			continue;
 		}
 
-		if( BufO->buffer() && BufO->buffer()->isCreated() && ( A->type() != BufO->type() || A->size() != BufO->size() || A->stride() != BufO->stride() || A->count() != BufO->count() ) )
+		if( BufO->buffer() && BufO->buffer()->isCreated() && ( A->variantType() != BufO->type() || A->variantElementCount() != BufO->size() || A->variantStride() != BufO->stride() || A->variantCount() != BufO->count() ) )
 		{
 			BufO->clear();
 		}
 
-		if( A->count() <= 0 )
+		if( A->variantCount() <= 0 )
 		{
 			continue;
 		}
 
-		if( ( !BufO->buffer() || !BufO->buffer()->isCreated() ) && !BufO->alloc( A->type(), A->size(), A->stride(), A->count() ) )
+		if( ( !BufO->buffer() || !BufO->buffer()->isCreated() ) && !BufO->alloc( A->variantType(), A->variantElementCount(), A->variantStride(), A->variantCount() ) )
 		{
 			BufO->clear();
 
@@ -102,7 +102,7 @@ void ArrayToBufferNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		BufO->buffer()->write( 0, A->array(), A->stride() * A->count() );
+		BufO->buffer()->write( 0, A->variantArray(), A->variantArraySize() );
 
 		BufO->release();
 

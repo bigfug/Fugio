@@ -7,6 +7,7 @@
 #include <QOpenGLFunctions>
 #include <QOpenGLBuffer>
 #include <QOpenGLVertexArrayObject>
+#include <QOpenGLFramebufferObject>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -44,6 +45,16 @@ public:
 
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
+	virtual QList<QUuid> pinAddTypesInput() const Q_DECL_OVERRIDE
+	{
+		return( QList<QUuid>() );
+	}
+
+	virtual bool canAcceptPin( fugio::PinInterface *pPin ) const Q_DECL_OVERRIDE
+	{
+		return( pPin->direction() == PIN_OUTPUT );
+	}
+
 	// RenderInterface interface
 public:
 	virtual void render( qint64 pTimeStamp, QUuid pSourcePinId ) Q_DECL_OVERRIDE;
@@ -55,7 +66,11 @@ private:
 
 	void createInputPins( void );
 
+	void createOutputPins( void );
+
 	void updateInputPins( void );
+
+	void updateOutputPins( void );
 
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputTrigger;
@@ -69,13 +84,14 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinOutputRender;
 	fugio::RenderInterface						*mValOutputRender;
 
-	QSharedPointer<fugio::PinInterface>			 mPinOutputTexture;
-
 	QOpenGLVertexArrayObject					 mVAO;
 
 	ShaderCompilerData							 mShaderCompilerData;
 
 	QOpenGLBuffer								 mQuadGeometry;
+
+	GLuint										 mFramebufferObject;
+	QSize										 mFramebufferSize;
 };
 
 #endif // EASYSHADER2DNODE_H

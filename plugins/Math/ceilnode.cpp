@@ -6,6 +6,8 @@
 
 #include <fugio/context_interface.h>
 
+#include <fugio/pin_variant_iterator.h>
+
 CeilNode::CeilNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
@@ -21,14 +23,21 @@ CeilNode::CeilNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void CeilNode::inputsUpdated( qint64 pTimeStamp )
 {
-	Q_UNUSED( pTimeStamp )
+	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	float		NewVal = std::ceil( variant( mPinInput ).toFloat() );
+	bool		UpdateOutput = mPinOutput->alwaysUpdate();
 
-	if( NewVal != mValOutput->variant().toFloat() )
+	fugio::PinVariantIterator	Input( mPinInput );
+
+	variantSetCount( mValOutput, Input.count(), UpdateOutput );
+
+	for( int i = 0 ; i < Input.count() ; i++ )
 	{
-		mValOutput->setVariant( NewVal );
+		variantSetValue( mValOutput, i, std::ceil( Input.index( i ).toFloat() ), UpdateOutput );
+	}
 
+	if( UpdateOutput )
+	{
 		pinUpdated( mPinOutput );
 	}
 }

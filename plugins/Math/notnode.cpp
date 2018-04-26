@@ -4,6 +4,8 @@
 
 #include <fugio/context_interface.h>
 
+#include <fugio/pin_variant_iterator.h>
+
 NotNode::NotNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
@@ -16,16 +18,23 @@ NotNode::NotNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 void NotNode::inputsUpdated( qint64 pTimeStamp )
 {
-	Q_UNUSED( pTimeStamp )
+	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	bool		OutVal = variant( mPinInput ).toBool();
+	bool		Update = mPinOutput->alwaysUpdate();
 
-	OutVal = OutVal ? false : true;
+	fugio::VariantInterface		*SrcVar = input<fugio::VariantInterface *>( mPinInput );
 
-	if( OutVal != mValOutput->variant().toBool() )
+	if( !SrcVar )
 	{
-		mValOutput->setVariant( OutVal );
-
-		pinUpdated( mPinOutput );
+		return;
 	}
+
+	variantSetCount( mValOutput, SrcVar->variantCount(), Update );
+
+	for( int i = 0 ; i < SrcVar->variantCount() ; i++ )
+	{
+		variantSetValue( mValOutput, i, !SrcVar->variant( i ).toBool(), Update );
+	}
+
+	pinUpdated( mPinOutput, Update );
 }

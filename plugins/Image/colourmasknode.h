@@ -33,7 +33,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinHueMatch;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputImage;
-	fugio::ImageInterface						*mValOutputImage;
+	fugio::VariantInterface						*mValOutputImage;
 };
 
 

@@ -6,6 +6,8 @@
 
 #include <fugio/performance.h>
 
+#include <fugio/pin_variant_iterator.h>
+
 BundlerNode::BundlerNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
@@ -21,7 +23,7 @@ QList<QUuid> BundlerNode::pinAddTypesInput() const
 {
 	static QList<QUuid> PinLst =
 	{
-		PID_BYTEARRAY_LIST
+		PID_BYTEARRAY
 	};
 
 	return( PinLst );
@@ -71,25 +73,15 @@ void BundlerNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( !variant( P ).canConvert( QVariant::List ) )
-		{
-			if( variant( P ).canConvert( QVariant::ByteArray ) )
-			{
-				addData( Bundle, variant( P ).toByteArray() );
-			}
-		}
-		else
-		{
-			const QVariantList		VarLst = variant( P ).toList();
+		fugio::PinVariantIterator	Input( P );
 
-			for( const QVariant &V : VarLst )
-			{
-				if( !V.canConvert( QVariant::ByteArray ) )
-				{
-					continue;
-				}
+		for( int i = 0 ; i < Input.count() ; i++ )
+		{
+			const QVariant	Variant = Input.index( i );
 
-				addData( Bundle, V.toByteArray() );
+			if( Variant.canConvert( QVariant::ByteArray ) )
+			{
+				addData( Bundle, Variant.toByteArray() );
 			}
 		}
 	}

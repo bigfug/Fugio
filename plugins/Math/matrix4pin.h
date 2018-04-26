@@ -8,11 +8,11 @@
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>
 
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/variant_helper.h>
 
 #include <fugio/pincontrolbase.h>
 
-class Matrix4Pin : public fugio::PinControlBase, public fugio::VariantInterface
+class Matrix4Pin : public fugio::PinControlBase, public fugio::VariantHelper<QMatrix4x4>
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface )
@@ -20,7 +20,7 @@ class Matrix4Pin : public fugio::PinControlBase, public fugio::VariantInterface
 public:
 	Q_INVOKABLE explicit Matrix4Pin( QSharedPointer<fugio::PinInterface> pPin );
 
-	virtual ~Matrix4Pin( void );
+	virtual ~Matrix4Pin( void ) {}
 
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
@@ -35,32 +35,6 @@ public:
 	virtual void loadSettings( QSettings &pSettings ) Q_DECL_OVERRIDE;
 
 	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
-
-	//-------------------------------------------------------------------------
-	// fugio::VariantInterface
-
-	virtual void setVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		mValue = pValue.value<QMatrix4x4>();
-	}
-
-	virtual QVariant variant( void ) const Q_DECL_OVERRIDE
-	{
-		return( mValue );
-	}
-
-	virtual void setFromBaseVariant( const QVariant &pValue ) Q_DECL_OVERRIDE
-	{
-		setVariant( pValue );
-	}
-
-	virtual QVariant baseVariant( void ) const Q_DECL_OVERRIDE
-	{
-		return( variant() );
-	}
-
-private:
-	QMatrix4x4			mValue;
 };
 
 #endif // MATRIX4PIN_H

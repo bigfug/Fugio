@@ -4,9 +4,9 @@
 #include <QColor>
 
 #include <fugio/core/uuid.h>
-#include <fugio/core/list_interface.h>
 #include <fugio/osc/split_interface.h>
 #include <fugio/colour/colour_interface.h>
+#include <fugio/pin_variant_iterator.h>
 
 DecoderNode::DecoderNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -16,30 +16,25 @@ DecoderNode::DecoderNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInput = pinInput( "Input", PIN_INPUT_DATA );
 
-	mPinInput->registerPinInputTypes( QList<QUuid>{ PID_BYTEARRAY_LIST } );
+	mPinInput->registerPinInputTypes( QList<QUuid>{ PID_BYTEARRAY } );
 
 	mValOutputNamespace = pinOutput<NamespacePin *>( "Namespace", mPinOutputNamespace, PID_OSC_NAMESPACE, PIN_OUTPUT_NAMESPACE );
 }
 
 void DecoderNode::inputsUpdated( qint64 pTimeStamp )
 {
-	Q_UNUSED( pTimeStamp )
+	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	fugio::ListInterface	*LI = input<fugio::ListInterface *>( mPinInput );
+	fugio::PinVariantIterator	Input( mPinInput );
 
-	if( !LI )
+	for( int i = 0 ; i < Input.count() ; i++ )
 	{
-		return;
-	}
+		const QVariant	Variant = Input.index( i );
 
-	for( int i = 0 ; i < LI->listSize() ; i++ )
-	{
-		if( !LI->listIndex( i ).canConvert( QVariant::ByteArray ) )
+		if( Variant.canConvert( QVariant::ByteArray ) )
 		{
-			continue;
+			processByteArray( Variant.toByteArray() );
 		}
-
-		processByteArray( LI->listIndex( i ).toByteArray() );
 	}
 
 	for( QString OscNam : mDataInput.keys() )

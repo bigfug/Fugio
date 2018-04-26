@@ -26,10 +26,10 @@ extern "C"
 
 using namespace fugio;
 
-QMap<ImageInterface::Format,QString>	 ImageConvertNode::mImageFormatMap;
+QMap<ImageFormat,QString>	 ImageConvertNode::mImageFormatMap;
 
 ImageConvertNode::ImageConvertNode( QSharedPointer<NodeInterface> pNode )
-	: NodeControlBase( pNode ), mCurrImageFormat( ImageInterface::FORMAT_BGRA8 ), mLastImageFormat( ImageInterface::FORMAT_UNKNOWN )
+	: NodeControlBase( pNode ), mCurrImageFormat( ImageFormat::BGRA8 ), mLastImageFormat( ImageFormat::UNKNOWN )
 {
 	FUGID( PIN_INPUT_IMAGE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 	FUGID( PIN_INPUT_WIDTH, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
@@ -47,19 +47,19 @@ ImageConvertNode::ImageConvertNode( QSharedPointer<NodeInterface> pNode )
 
 	mPinInputHeight = pinInput( "Height", PIN_INPUT_HEIGHT );
 
-	mValOutputImage = pinOutput<ImageInterface *>( "Image", mPinOutput, PID_IMAGE, PIN_OUTPUT_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutput, PID_IMAGE, PIN_OUTPUT_IMAGE );
 
 	if( mImageFormatMap.isEmpty() )
 	{
-		mImageFormatMap.insert( ImageInterface::FORMAT_RGB8, "RGB8" );
-		mImageFormatMap.insert( ImageInterface::FORMAT_RGBA8, "RGBA8" );
-		mImageFormatMap.insert( ImageInterface::FORMAT_BGR8, "BGR8" );
-		mImageFormatMap.insert( ImageInterface::FORMAT_BGRA8, "BGRA8" );
-		mImageFormatMap.insert( ImageInterface::FORMAT_YUYV422, "YUYV422" );
-		mImageFormatMap.insert( ImageInterface::FORMAT_UYVY422, "UYVY422" );
-		mImageFormatMap.insert( ImageInterface::FORMAT_YUV420P, "YUV420P" );
-		mImageFormatMap.insert( ImageInterface::FORMAT_GRAY16, "GRAY16" );
-		mImageFormatMap.insert( ImageInterface::FORMAT_GRAY8, "GRAY8" );
+		mImageFormatMap.insert( ImageFormat::RGB8, "RGB8" );
+		mImageFormatMap.insert( ImageFormat::RGBA8, "RGBA8" );
+		mImageFormatMap.insert( ImageFormat::BGR8, "BGR8" );
+		mImageFormatMap.insert( ImageFormat::BGRA8, "BGRA8" );
+		mImageFormatMap.insert( ImageFormat::YUYV422, "YUYV422" );
+		mImageFormatMap.insert( ImageFormat::UYVY422, "UYVY422" );
+		mImageFormatMap.insert( ImageFormat::YUV420P, "YUV420P" );
+		mImageFormatMap.insert( ImageFormat::GRAY16, "GRAY16" );
+		mImageFormatMap.insert( ImageFormat::GRAY8, "GRAY8" );
 	}
 
 #if defined( FFMPEG_SUPPORTED )
@@ -79,7 +79,7 @@ void ImageConvertNode::clearImage()
 		mDstLen[ i ] = 0;
 	}
 
-	mValOutputImage->setBuffers( mDstDat );
+	mValOutputImage->variant().value<fugio::Image>().setBuffers( mDstDat );
 #endif
 }
 
@@ -88,9 +88,9 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 	Performance( mNode, "inputsUpdated", pTimeStamp );
 
 #if defined( FFMPEG_SUPPORTED )
-	ImageInterface		*SrcImg = input<ImageInterface *>( mPinInputImage );
+	const fugio::Image		SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || !SrcImg->isValid() )
+	if( !SrcImg.isValid() )
 	{
 		if( mScaleContext )
 		{
@@ -102,7 +102,7 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	if( mCurrImageFormat != mLastImageFormat || SrcImg->size() != mLastImageSize )
+	if( mCurrImageFormat != mLastImageFormat || SrcImg.size() != mLastImageSize )
 	{
 		if( mScaleContext )
 		{
@@ -112,15 +112,17 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 		}
 
 		mLastImageFormat = mCurrImageFormat;
-		mLastImageSize   = SrcImg->size();
+		mLastImageSize   = SrcImg.size();
+
+		clearImage();
 	}
 
 	AVPixelFormat		SrcFmt = AV_PIX_FMT_NONE;
 	AVPixelFormat		DstFmt = AV_PIX_FMT_NONE;
 
-	if( SrcImg->format() == ImageInterface::FORMAT_INTERNAL )
+	if( SrcImg.format() == ImageFormat::INTERNAL )
 	{
-		SrcFmt = AVPixelFormat( SrcImg->internalFormat() );
+		SrcFmt = AVPixelFormat( SrcImg.internalFormat() );
 
 		//		AV_PIX_FMT_YUVJ420P,  ///< planar YUV 4:2:0, 12bpp, full scale (JPEG), deprecated in favor of AV_PIX_FMT_YUV420P and setting color_range
 		//		AV_PIX_FMT_YUVJ422P,  ///< planar YUV 4:2:2, 16bpp, full scale (JPEG), deprecated in favor of AV_PIX_FMT_YUV422P and setting color_range
@@ -143,42 +145,50 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 	}
 	else
 	{
-		switch( SrcImg->format() )
+		switch( SrcImg.format() )
 		{
-			case ImageInterface::FORMAT_BGR8:
+			case ImageFormat::BGR8:
 				SrcFmt = AV_PIX_FMT_BGR24;
 				break;
 
-			case ImageInterface::FORMAT_BGRA8:
+			case ImageFormat::BGRA8:
 				SrcFmt = AV_PIX_FMT_BGRA;
 				break;
 
-			case ImageInterface::FORMAT_GRAY8:
+			case ImageFormat::GRAY8:
 				SrcFmt = AV_PIX_FMT_GRAY8;
 				break;
 
-			case ImageInterface::FORMAT_GRAY16:
+			case ImageFormat::GRAY16:
 				SrcFmt = AV_PIX_FMT_GRAY16;
 				break;
 
-			case ImageInterface::FORMAT_RGB8:
+			case ImageFormat::RGB8:
 				SrcFmt = AV_PIX_FMT_RGB24;
 				break;
 
-			case ImageInterface::FORMAT_RGBA8:
+			case ImageFormat::RGBA8:
 				SrcFmt = AV_PIX_FMT_RGBA;
 				break;
 
-			case ImageInterface::FORMAT_YUYV422:
+			case ImageFormat::YUYV422:
 				SrcFmt = AV_PIX_FMT_YUYV422;
 				break;
 
-			case ImageInterface::FORMAT_UYVY422:
+			case ImageFormat::UYVY422:
 				SrcFmt = AV_PIX_FMT_UYVY422;
 				break;
 
-			case ImageInterface::FORMAT_YUV420P:
+			case ImageFormat::YUV420P:
 				SrcFmt = AV_PIX_FMT_YUV420P;
+				break;
+
+			case ImageFormat::YUVJ422P:
+				SrcFmt = AV_PIX_FMT_YUVJ422P;
+				break;
+
+			case ImageFormat::NV12:
+				SrcFmt = AV_PIX_FMT_NV12;
 				break;
 
 			default:
@@ -188,39 +198,39 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 
 	switch( mCurrImageFormat )
 	{
-		case ImageInterface::FORMAT_BGR8:
+		case ImageFormat::BGR8:
 			DstFmt = AV_PIX_FMT_BGR24;
 			break;
 
-		case ImageInterface::FORMAT_BGRA8:
+		case ImageFormat::BGRA8:
 			DstFmt = AV_PIX_FMT_BGRA;
 			break;
 
-		case ImageInterface::FORMAT_GRAY8:
+		case ImageFormat::GRAY8:
 			DstFmt = AV_PIX_FMT_GRAY8;
 			break;
 
-		case ImageInterface::FORMAT_GRAY16:
+		case ImageFormat::GRAY16:
 			DstFmt = AV_PIX_FMT_GRAY16;
 			break;
 
-		case ImageInterface::FORMAT_RGB8:
+		case ImageFormat::RGB8:
 			DstFmt = AV_PIX_FMT_RGB24;
 			break;
 
-		case ImageInterface::FORMAT_RGBA8:
+		case ImageFormat::RGBA8:
 			DstFmt = AV_PIX_FMT_RGBA;
 			break;
 
-		case ImageInterface::FORMAT_YUYV422:
+		case ImageFormat::YUYV422:
 			DstFmt = AV_PIX_FMT_YUYV422;
 			break;
 
-		case ImageInterface::FORMAT_UYVY422:
+		case ImageFormat::UYVY422:
 			DstFmt = AV_PIX_FMT_UYVY422;
 			break;
 
-		case ImageInterface::FORMAT_YUV420P:
+		case ImageFormat::YUV420P:
 			DstFmt = AV_PIX_FMT_YUV420P;
 			break;
 
@@ -228,44 +238,44 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			break;
 	}
 
-	QSize			NewSze = mValOutputImage->size();
+	QSize			NewSze = SrcImg.size();
 
-	if( !pTimeStamp || !mScaleContext || mPinInputWidth->isUpdated( pTimeStamp ) || mPinInputHeight->isUpdated( pTimeStamp ) )
+	if( true )
 	{
 		qreal			 Xscl = variant( mPinInputWidth  ).toReal();
 		qreal			 Yscl = variant( mPinInputHeight ).toReal();
 
 		if( Xscl <= 1.0 )
 		{
-			Xscl *= qreal( SrcImg->width() );
+			Xscl *= qreal( SrcImg.width() );
 		}
 
 		if( Yscl <= 1.0 )
 		{
-			Yscl *= qreal( SrcImg->height() );
+			Yscl *= qreal( SrcImg.height() );
 		}
 
 		NewSze = QSize( Xscl, Yscl );
 
 		if( !NewSze.width() && !NewSze.height() )
 		{
-			NewSze = SrcImg->size();
+			NewSze = SrcImg.size();
 		}
 		else if( !NewSze.width() || !NewSze.height() )
 		{
 			// Adapted from QImage::scaledToWidth()/scaledToHeight()
 
-			int	ws = SrcImg->width();
-			int hs = SrcImg->height();
+			int	ws = SrcImg.width();
+			int hs = SrcImg.height();
 			qreal factor;
 
 			if( NewSze.width() > 0 && NewSze.height() == 0 )
 			{
-				factor = (qreal) NewSze.width() / SrcImg->width();
+				factor = (qreal) NewSze.width() / SrcImg.width();
 			}
 			else
 			{
-				factor = (qreal) NewSze.height() / SrcImg->height();
+				factor = (qreal) NewSze.height() / SrcImg.height();
 			}
 
 			QTransform wm = QTransform::fromScale(factor, factor);
@@ -283,10 +293,12 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
 	if( mScaleContext && (
 				SrcFmt != mSrcPixFmt ||
-				NewSze != mValOutputImage->size() ||
-				mCurrImageFormat != mValOutputImage->format() ) )
+				NewSze != DstImg.size() ||
+				mCurrImageFormat != DstImg.format() ) )
 	{
 		sws_freeContext( mScaleContext );
 
@@ -315,12 +327,12 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			return;
 		}
 
-		mValOutputImage->setFormat( mCurrImageFormat );
-		mValOutputImage->setSize( NewSze.width(), NewSze.height() );
-		mValOutputImage->setLineSizes( mDstLen );
-		mValOutputImage->setBuffers( mDstDat );
+		DstImg.setFormat( mCurrImageFormat );
+		DstImg.setSize( NewSze.width(), NewSze.height() );
+		DstImg.setLineSizes( mDstLen );
+		DstImg.setBuffers( mDstDat );
 
-		if( ( mScaleContext = sws_getContext( SrcImg->width(), SrcImg->height(), SrcFmt, NewSze.width(), NewSze.height(), DstFmt, 0, NULL, NULL, NULL ) ) == 0 )
+		if( ( mScaleContext = sws_getContext( SrcImg.width(), SrcImg.height(), SrcFmt, NewSze.width(), NewSze.height(), DstFmt, 0, NULL, NULL, NULL ) ) == 0 )
 		{
 			clearImage();
 
@@ -335,7 +347,7 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	sws_scale( mScaleContext, SrcImg->buffers(), SrcImg->lineSizes(), 0, SrcImg->height(), mDstDat, mDstLen );
+	sws_scale( mScaleContext, SrcImg.buffers(), SrcImg.lineSizes(), 0, SrcImg.height(), mDstDat, mDstLen );
 
 	pinUpdated( mPinOutput );
 #endif

@@ -4,10 +4,10 @@
 
 #include <fugio/image/uuid.h>
 
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
+#include <fugio/performance.h>
 
 #include "opencvplugin.h"
-
 
 BackgroundSubtractionNode::BackgroundSubtractionNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -23,7 +23,7 @@ BackgroundSubtractionNode::BackgroundSubtractionNode( QSharedPointer<fugio::Node
 
 	mPinInputReset = pinInput( "Reset", PIN_INPUT_RESET );
 
-	if( ( mOutputImage = pinOutput<fugio::ImageInterface *>( "Output", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE ) ) == 0 )
+	if( ( mValOutputImage = pinOutput<fugio::VariantInterface *>( "Output", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE ) ) == 0 )
 	{
 		return;
 	}
@@ -38,9 +38,9 @@ void BackgroundSubtractionNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	fugio::ImageInterface			*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image	SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || SrcImg->size().isEmpty() )
+	if( !SrcImg.isValid() )
 	{
 		return;
 	}
@@ -66,10 +66,12 @@ void BackgroundSubtractionNode::process( BackgroundSubtractionNode *pNode )
 
 void BackgroundSubtractionNode::process( void )
 {
-#if defined( OPENCV_SUPPORTED )
-	fugio::ImageInterface		*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Performance	P( mNode, __FUNCTION__, mNode->context()->global()->timestamp() );
 
-	cv::Mat						 MatSrc = OpenCVPlugin::image2mat( SrcImg );
+#if defined( OPENCV_SUPPORTED )
+	fugio::Image	SrcImg = variantStatic<fugio::Image>( mPinInputImage );
+
+	cv::Mat			MatSrc = OpenCVPlugin::image2mat( SrcImg );
 
 	if( !mBckSub )
 	{
@@ -86,7 +88,9 @@ void BackgroundSubtractionNode::process( void )
 	mBckSub->operator()( MatSrc, mMatDst, mLearningRate );
 #endif
 
-	OpenCVPlugin::mat2image( mMatDst, mOutputImage );
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( mMatDst, DstImg );
 
 	pinUpdated( mPinOutputImage );
 #endif

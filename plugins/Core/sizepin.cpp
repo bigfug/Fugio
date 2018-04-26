@@ -1,7 +1,8 @@
 #include "sizepin.h"
 
-SizePin::SizePin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin )
-{
+#include <fugio/core/uuid.h>
 
+SizePin::SizePin( QSharedPointer<fugio::PinInterface> pPin )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::QSizeF, PID_SIZE )
+{
 }

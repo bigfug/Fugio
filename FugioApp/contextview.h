@@ -535,6 +535,8 @@ private:
 	QList<QUuid>							 mGlobalPins;
 
 	QColor									 m_NodeColour;
+
+	LinkItem								*mLinkDragTarget;
 };
 
 #endif // CONTEXTVIEW_H

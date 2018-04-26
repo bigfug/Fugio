@@ -28,11 +28,7 @@ StyleSheetForm::StyleSheetForm(QWidget *parent) :
 
 	QSettings		Settings;
 
-#if defined( Q_OS_LINUX )
-	mFileName = Settings.value( "stylesheet-path", "/usr/share/fugio/stylesheets/default.css" ).toString();
-#else
-	mFileName = Settings.value( "stylesheet-path", QCoreApplication::applicationDirPath().append( "/stylesheets/default.css" ) ).toString();
-#endif
+	mFileName = Settings.value( "stylesheet-path", gApp->global().sharedDataPath() + "/stylesheets/default.css" ).toString();
 
 	stylesLoad( mFileName );
 

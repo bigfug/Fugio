@@ -12,7 +12,7 @@
 #include "global.h"
 
 class QWidget;
-class QCommandLineParser;
+class QDir;
 
 FUGIO_NAMESPACE_BEGIN
 class GlobalSignals;
@@ -95,12 +95,31 @@ public:
 
 	virtual void clear( void ) = 0;
 
+	virtual void loadPlugins( QDir pDir ) = 0;
+	virtual void initialisePlugins( void ) = 0;
+	virtual void unloadPlugins( void ) = 0;
+
 	virtual qint64 timestamp( void ) const = 0;				// arbitrary global timestamp that always increases (only valid on local machine)
 
-	virtual void start( void ) = 0;
-	virtual void stop( void ) = 0;
+	//-------------------------------------------------------------------------
+	// Patch Execution
+
+	virtual void start( void ) = 0;			// start global execution timer
+	virtual void stop( void ) = 0;			// stop global execution timer
 
 	virtual QThread *thread( void ) = 0;
+
+	virtual void executeFrame( void ) = 0;	// only call for single step execution
+
+	virtual void scheduleFrame( void ) = 0; // schedule a frame execution
+
+	//-------------------------------------------------------------------------
+	// Command line values
+
+	virtual bool commandLineDefined( const QString &pKey ) const = 0;
+	virtual QString commandLineValue( const QString &pKey ) const = 0;
+
+	virtual void setCommandLineValues( const QMap<QString,QString> &pValueMap ) = 0;
 
 	//-------------------------------------------------------------------------
 	// Paths
@@ -150,11 +169,6 @@ public:
 	virtual void pause( void ) = 0;
 
 	virtual void unpause( void ) = 0;
-
-	//-------------------------------------------------------------------------
-	// Access to the command line parser - respect other plugins!
-
-	virtual QCommandLineParser &commandLineParser( void ) = 0;
 
 	//-------------------------------------------------------------------------
 	// Interfaces
@@ -225,6 +239,12 @@ public:
 
 	virtual QList<QUuid> pinSplitters( const QUuid &pPinId ) const = 0;
 	virtual QList<QUuid> pinJoiners( const QUuid &pPinId ) const = 0;
+
+	//-------------------------------------------------------------------------
+	// QMetaType
+
+	virtual QUuid findPinForMetaType( QMetaType::Type pType ) const = 0;
+	virtual void registerPinForMetaType( const QUuid &pUuid, QMetaType::Type pType ) = 0;
 };
 
 FUGIO_NAMESPACE_END

@@ -11,16 +11,26 @@ StringSplitNode::StringSplitNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputSplit = pinInput( "Split", PIN_INPUT_SPLIT );
 
-	mValOutputList = pinOutput<fugio::VariantInterface *>( "Strings", mPinOutputList, PID_STRING_LIST, PIN_OUTPUT_LIST );
+	mValOutputList = pinOutput<fugio::VariantInterface *>( "Strings", mPinOutputList, PID_STRING, PIN_OUTPUT_LIST );
 }
 
 void StringSplitNode::inputsUpdated( qint64 pTimeStamp )
 {
+	NodeControlBase::inputsUpdated( pTimeStamp );
+
 	QString		String = variant( mPinInputString ).toString();
 	QString		Split  = variant( mPinInputSplit ).toString();
 	QStringList	List = String.split( Split );
 
-	mValOutputList->setVariant( List );
+	if( mValOutputList->variantCount() != List.size() )
+	{
+		mValOutputList->setVariantCount( List.size() );
+	}
+
+	for( int i = 0 ; i < List.size() ; i++ )
+	{
+		mValOutputList->setVariant( i, List.at( i ) );
+	}
 
 	pinUpdated( mPinOutputList );
 }

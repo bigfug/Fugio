@@ -8,9 +8,9 @@
 #include <fugio/pincontrolbase.h>
 
 #include <fugio/file/filename_interface.h>
-#include <fugio/core/variant_interface.h>
+#include <fugio/core/variant_helper.h>
 
-class FilenamePin : public fugio::PinControlBase, public fugio::FilenameInterface, public fugio::VariantInterface
+class FilenamePin : public fugio::PinControlBase, public fugio::FilenameInterface, public fugio::VariantHelper<QString>
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::VariantInterface fugio::FilenameInterface )
@@ -23,41 +23,31 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
-	virtual QString toString( void ) const
+	virtual QString toString( void ) const Q_DECL_OVERRIDE
 	{
-		return( mFilename );
+		return( mValues.first() );
 	}
 
-	virtual QString description( void ) const
+	virtual QString description( void ) const Q_DECL_OVERRIDE
 	{
 		return( "Filename" );
 	}
 
-	virtual void loadSettings(QSettings &pSettings);
-	virtual void saveSettings(QSettings &pSettings) const;
+	virtual void loadSettings(QSettings &pSettings) Q_DECL_OVERRIDE;
+	virtual void saveSettings(QSettings &pSettings) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// InterfaceFilename
 
-	virtual QString filename( void ) const
+	virtual QString filename( void ) const Q_DECL_OVERRIDE
 	{
-		return( mFilename );
+		return( mValues.first() );
 	}
 
-	virtual void setFilename( const QString &pFilename )
+	virtual void setFilename( const QString &pFilename ) Q_DECL_OVERRIDE
 	{
-		mFilename = pFilename;
+		mValues[ 0 ] = pFilename;
 	}
-
-	// VariantInterface interface
-public:
-	virtual void setVariant(const QVariant &pValue);
-	virtual QVariant variant() const;
-	virtual void setFromBaseVariant(const QVariant &pValue);
-	virtual QVariant baseVariant() const;
-
-private:
-	QString		mFilename;
 };
 
 #endif // FILENAMEPIN_H

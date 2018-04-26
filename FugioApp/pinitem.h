@@ -3,6 +3,9 @@
 
 #include <QGraphicsObject>
 #include <QMouseEvent>
+#include <QTimer>
+
+#include <memory>
 
 #include <fugio/pin_interface.h>
 
@@ -65,6 +68,13 @@ public:
 		return( mPin->setting( "global", false ).toBool() );
 	}
 
+	static QTimer &longPressTimer( void )
+	{
+		static QTimer	LongPressTimer;
+
+		return( LongPressTimer );
+	}
+
 public slots:
 	void setColour( const QColor &pColur );
 
@@ -73,12 +83,16 @@ public slots:
 		mPinName = pName;
 	}
 
+	void longPressTimeout( void );
+
 protected:
 	virtual void mousePressEvent( QGraphicsSceneMouseEvent *pEvent );
 
 	virtual void mouseMoveEvent( QGraphicsSceneMouseEvent *pEvent );
 
 	virtual void mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent );
+
+	virtual void mouseDoubleClickEvent( QGraphicsSceneMouseEvent *event );
 
 	virtual void contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent );
 
@@ -94,6 +108,7 @@ private:
 	PinItem *findDest( const QPointF &pPoint );
 
 	QString helpUrl( void );
+
 signals:
 	void colourUpdated( const QColor &pColor );
 
@@ -105,6 +120,7 @@ protected slots:
 	void menuRemove( void );
 	void menuHide( void );
 	void menuUpdatable( void );
+	void menuAlwaysUpdate( void );
 	void menuImport( void );
 	void menuExport( void );
 	void menuJoin( const QString &pUuid );
@@ -124,10 +140,11 @@ private:
 	ContextView								*mContextView;
 	QSharedPointer<fugio::PinInterface>		 mPin;
 	QList<LinkItem *>						 mLinks;
-	LinkItem								*mLink;
+	std::unique_ptr<LinkItem>				 mLink;
 	QUuid									 mPinId;
 	QString									 mPinName;
 	QColor									 mPinColour;
+	QPointF									 mDragStartPoint;
 };
 
 #endif // PINWIDGET_H

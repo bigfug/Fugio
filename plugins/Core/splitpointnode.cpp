@@ -5,36 +5,63 @@
 
 #include <QPointF>
 
+#include <fugio/pin_variant_iterator.h>
+
 SplitPointNode::SplitPointNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
-	mPinInput = pinInput( tr( "Point" ) );
+	FUGID( PIN_INPUT_POINT, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_OUTPUT_X, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+	FUGID( PIN_OUTPUT_Y, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
 
-	mPinInput->registerPinInputType( PID_POINT );
+	mPinInputPoint = pinInput( tr( "Point" ), PIN_INPUT_POINT );
 
-	mX  = pinOutput<fugio::VariantInterface *>( tr( "X" ), mPinX, PID_FLOAT );
+	mPinInputPoint->registerPinInputType( PID_POINT );
 
-	mY = pinOutput<fugio::VariantInterface *>( tr( "Y" ), mPinY, PID_FLOAT );
+	mValOutputX  = pinOutput<fugio::VariantInterface *>( tr( "X" ), mPinOutputX, PID_FLOAT, PIN_OUTPUT_X );
+
+	mValOutputY = pinOutput<fugio::VariantInterface *>( tr( "Y" ), mPinOutputY, PID_FLOAT, PIN_OUTPUT_Y );
 }
 
 void SplitPointNode::inputsUpdated( qint64 pTimeStamp )
 {
-	if( mPinInput->isUpdated( pTimeStamp ) )
+	NodeControlBase::inputsUpdated( pTimeStamp );
+
+	if( !mPinInputPoint->isUpdated( pTimeStamp ) )
 	{
-		QPointF				 CurPnt = variant( mPinInput ).toPointF();
+		return;
+	}
 
-		if( mX->variant().toFloat() != CurPnt.x() )
-		{
-			mX->setVariant( CurPnt.x() );
+	fugio::PinVariantIterator	P( mPinInputPoint );
 
-			pinUpdated( mPinX );
-		}
+	if( !P.count() )
+	{
+		return;
+	}
 
-		if( mY->variant().toFloat() != CurPnt.y() )
-		{
-			mY->setVariant( CurPnt.y() );
+	const int		OutCnt = P.count();
 
-			pinUpdated( mPinY );
-		}
+	bool	UpdateOutputX = false;
+	bool	UpdateOutputY = false;
+
+	variantSetCount( mValOutputX, OutCnt, UpdateOutputX );
+	variantSetCount( mValOutputY, OutCnt, UpdateOutputY );
+
+	for( int i = 0 ; i < OutCnt ; i++ )
+	{
+		QPointF		p = P.index( i ).toPointF();
+
+		variantSetValue( mValOutputX, i, p.x(), UpdateOutputX );
+		variantSetValue( mValOutputY, i, p.y(), UpdateOutputY );
+	}
+
+	if( UpdateOutputX )
+	{
+		pinUpdated( mPinOutputX );
+	}
+
+	if( UpdateOutputX )
+	{
+		pinUpdated( mPinOutputY );
 	}
 }

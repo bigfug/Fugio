@@ -2,12 +2,22 @@
 
 #include <fugio/context_interface.h>
 
+#include <fugio/pin_variant_iterator.h>
+
 StringJoinNode::StringJoinNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
-	mPinInputJoinChar = pinInput( "Seperator" );
+	FUGID( PIN_INPUT_SEPERATOR, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_OUTPUT_STRING, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+	FUGID( PIN_INPUT_STRING1, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
+	FUGID( PIN_INPUT_STRING2, "249f2932-f483-422f-b811-ab679f006381" );
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "String", mPinOutput, PID_STRING );
+	mPinInputJoinChar = pinInput( "Seperator", PIN_INPUT_SEPERATOR );
+
+	mValOutput = pinOutput<fugio::VariantInterface *>( "String", mPinOutput, PID_STRING, PIN_OUTPUT_STRING );
+
+	pinInput( "Input", PIN_INPUT_STRING1 );
+	pinInput( "Input", PIN_INPUT_STRING2 );
 }
 
 void StringJoinNode::inputsUpdated( qint64 pTimeStamp )
@@ -29,13 +39,11 @@ void StringJoinNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( P->controlUuid() == PID_STRING_LIST )
+		fugio::PinVariantIterator	String( P );
+
+		for( int i = 0 ; i < String.count() ; i++ )
 		{
-			StrLst << variant( P ).toStringList();
-		}
-		else
-		{
-			StrLst << variant( P ).toString();
+			StrLst << String.index( i ).toString();
 		}
 	}
 
@@ -57,7 +65,6 @@ QList<QUuid> StringJoinNode::pinAddTypesInput() const
 		PID_FLOAT,
 		PID_INTEGER,
 		PID_STRING,
-		PID_STRING_LIST,
 		PID_VARIANT
 	};
 

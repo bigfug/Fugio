@@ -45,7 +45,7 @@ ConvertToNode::ConvertToNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mValInputType->setChoices( mTypeMap.keys() );
 
-	mValOutputImage = pinOutput<fugio::ImageInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
+	mValOutputImage = pinOutput<fugio::VariantInterface *>( "Image", mPinOutputImage, PID_IMAGE, PIN_OUTPUT_IMAGE );
 }
 
 void ConvertToNode::inputsUpdated( qint64 pTimeStamp )
@@ -57,9 +57,9 @@ void ConvertToNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	fugio::ImageInterface			*SrcImg = input<fugio::ImageInterface *>( mPinInputImage );
+	fugio::Image	SrcImg = variant<fugio::Image>( mPinInputImage );
 
-	if( !SrcImg || SrcImg->size().isEmpty() )
+	if( !SrcImg.isValid() )
 	{
 		return;
 	}
@@ -82,7 +82,9 @@ void ConvertToNode::inputsUpdated( qint64 pTimeStamp )
 
 	mNode->setStatus( fugio::NodeInterface::Initialised );
 
-	OpenCVPlugin::mat2image( mMatImg, mValOutputImage );
+	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
+
+	OpenCVPlugin::mat2image( mMatImg, DstImg );
 
 	pinUpdated( mPinOutputImage );
 #endif

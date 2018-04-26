@@ -339,6 +339,8 @@ void MidiTimelineNode::stateChanged( fugio::ContextInterface::TimeState pState )
 
 void MidiTimelineNode::playheadMove( qreal pTimeStamp )
 {
+	NodeControlBase::inputsUpdated( pTimeStamp );
+
 //	mTimeOffset   = pTimeStamp;
 //	mTimeLast     = pTimeStamp;
 

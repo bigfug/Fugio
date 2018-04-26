@@ -36,7 +36,7 @@ public:
 
 	inline GlobalPrivate &global( void )
 	{
-		return( *mGlobal );
+		return( *qobject_cast<GlobalPrivate *>( fugio::fugio()->qobject() ) );
 	}
 
 	inline QUndoGroup &undoGroup( void )
@@ -57,7 +57,6 @@ signals:
 
 private:
 	MainWindow				*mMainWindow;
-	GlobalPrivate			*mGlobal;
 	QUndoGroup				 mUndoGroup;
 	QNetworkAccessManager	 mNetworkAccessManager;
 	QString					 mUserSnippetsDirectory;

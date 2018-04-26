@@ -12,7 +12,7 @@
 #include <fugio/pin_control_interface.h>
 
 #include <fugio/opengl/texture_interface.h>
-#include <fugio/image/image_interface.h>
+#include <fugio/image/image.h>
 #include <fugio/nodecontrolbase.h>
 
 #include <fugio/opengl/uuid.h>

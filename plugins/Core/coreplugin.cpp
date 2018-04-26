@@ -46,6 +46,12 @@
 #include "bitstoboolnode.h"
 #include "booltobitsnode.h"
 #include "joinpointnode.h"
+#include "joinrectnode.h"
+#include "splitrectnode.h"
+#include "integertofloatnode.h"
+#include "blockupdatesnode.h"
+#include "processclicknode.h"
+#include "decimatenode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -60,17 +66,16 @@
 #include "listpin.h"
 #include "choicepin.h"
 #include "variantpin.h"
-#include "stringlistpin.h"
-#include "bytearraylistpin.h"
-#include "variantlistpin.h"
-#include "arraylistpin.h"
 #include "rectpin.h"
 #include "bitarraypin.h"
 #include "linepin.h"
+#include "transformpin.h"
+#include "polygonpin.h"
 
 #include "loggernode.h"
 
-QList<QUuid>				NodeControlBase::PID_UUID;
+QList<QUuid>				 NodeControlBase::PID_UUID;
+CorePlugin					*CorePlugin::mInstance = Q_NULLPTR;
 
 ClassEntry		CorePlugin::mNodeClasses[] =
 {
@@ -81,6 +86,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Bool Range", NID_BOOL_RANGE, &BoolRangeNode::staticMetaObject ),
 	ClassEntry( "Bool To Trigger", NID_BOOL_TO_TRIGGER, &BoolToTriggerNode::staticMetaObject ),
 	ClassEntry( "Counter", NID_COUNTER, &CounterNode::staticMetaObject ),
+	ClassEntry( "Decimate", NID_DECIMATE, &DecimateNode::staticMetaObject ),
 	ClassEntry( "Duplicate Pins", "Fugio", NID_DUPLICATE_PINS, &DuplicatePinsNode::staticMetaObject ),
 	ClassEntry( "Envelope", "Number", NID_ENVELOPE, &EnvelopeNode::staticMetaObject ),
 	ClassEntry( "Float Threshold", NID_FLOAT_THRESHOLD, &FloatThresholdNode::staticMetaObject ),
@@ -90,8 +96,10 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Smooth", "Number", ClassEntry::None, NID_FADE, &SmoothNode::staticMetaObject ),
 	ClassEntry( "Join Point", "Point", NID_JOIN_POINT, &JoinPointNode::staticMetaObject ),
 	ClassEntry( "Join Size", "Size", NID_JOIN_SIZE, &JoinSizeNode::staticMetaObject ),
+	ClassEntry( "Join Rect", "Rect", NID_JOIN_RECT, &JoinRectNode::staticMetaObject ),
 	ClassEntry( "Last Updated Input", NID_LAST_UPDATED_INPUT, &LastUpdatedInputNode::staticMetaObject ),
 	ClassEntry( "Index", NID_INDEX, &IndexNode::staticMetaObject ),
+	ClassEntry( "Integer To Float", NID_INTEGER_TO_FLOAT, &IntegerToFloatNode::staticMetaObject ),
 	ClassEntry( "List Size", NID_LIST_SIZE, &ListSizeNode::staticMetaObject ),
 	ClassEntry( "List Index", NID_LIST_INDEX, &ListIndexNode::staticMetaObject ),
 	ClassEntry( "Logger", NID_LOGGER, &LoggerNode::staticMetaObject ),
@@ -100,6 +108,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Number Range Map", NID_NUMBER_RANGE, &NumberRangeNode::staticMetaObject ),
 	ClassEntry( "Number Spread", NID_NUMBER_SPREAD, &NumberSpreadNode::staticMetaObject ),
 	ClassEntry( "Output Range", NID_OUTPUT_RANGE, &OutputRangeNode::staticMetaObject ),
+	ClassEntry( "Process Click", NID_PROCESS_CLICK, &ProcessClickNode::staticMetaObject ),
 	ClassEntry( "Random", "Number", NID_RANDOM_NUMBER, &RandomNumberNode::staticMetaObject ),
 	ClassEntry( "Rate Control", NID_RATE_CONTROL, &RateControlNode::staticMetaObject ),
 	ClassEntry( "Signal", "Number", NID_SIGNAL_NUMBER, &SignalNumberNode::staticMetaObject ),
@@ -110,33 +119,33 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Type Size", NID_TYPE_SIZE, &TypeSizeNode::staticMetaObject ),
 	ClassEntry( "Split List", NID_SPLIT_LIST, &SplitListNode::staticMetaObject ),
 	ClassEntry( "Split Point", NID_SPLIT_POINT, &SplitPointNode::staticMetaObject ),
+	ClassEntry( "Split Rect", NID_SPLIT_RECT, &SplitRectNode::staticMetaObject ),
 	ClassEntry( "Split Size", NID_SPLIT_SIZE, &SplitSizeNode::staticMetaObject ),
 	ClassEntry( "Switch", NID_SWITCH, &SwitchNode::staticMetaObject ),
+	ClassEntry( "Block Updates", NID_BLOCK_UPDATES, &BlockUpdatesNode::staticMetaObject ),
 	ClassEntry()
 };
 
 ClassEntry		CorePlugin::mPinClasses[] =
 {
 	ClassEntry( "Array", PID_ARRAY, &ArrayPin::staticMetaObject ),
-	ClassEntry( "Array List", PID_ARRAY_LIST, &ArrayListPin::staticMetaObject ),
 	ClassEntry( "Bit Array", PID_BITARRAY, &BitArrayPin::staticMetaObject ),
 	ClassEntry( "Bool", PID_BOOL, &BoolPin::staticMetaObject ),
 	ClassEntry( "Byte Array", PID_BYTEARRAY, &ByteArrayPin::staticMetaObject ),
-	ClassEntry( "Byte Array List", PID_BYTEARRAY_LIST, &ByteArrayListPin::staticMetaObject ),
 	ClassEntry( "Choice", PID_CHOICE, &ChoicePin::staticMetaObject ),
 	ClassEntry( "Float", PID_FLOAT, &FloatPin::staticMetaObject ),
 	ClassEntry( "Integer", PID_INTEGER, &IntegerPin::staticMetaObject ),
 	ClassEntry( "Line", PID_LINE, &LinePin::staticMetaObject ),
-	ClassEntry( "List", PID_LIST, &ListPin::staticMetaObject ),
+//	ClassEntry( "List", PID_LIST, &ListPin::staticMetaObject ),
 	ClassEntry( "Point", PID_POINT, &PointPin::staticMetaObject ),
+	ClassEntry( "Polygon", PID_POLYGON, &PolygonPin::staticMetaObject ),
 	ClassEntry( "Rect", PID_RECT, &RectPin::staticMetaObject ),
 	ClassEntry( "Size", PID_SIZE, &SizePin::staticMetaObject ),
 	ClassEntry( "Size3d", PID_SIZE_3D, &Size3dPin::staticMetaObject ),
 	ClassEntry( "String", PID_STRING, &StringPin::staticMetaObject ),
-	ClassEntry( "String List", PID_STRING_LIST, &StringListPin::staticMetaObject ),
 	ClassEntry( "Trigger", PID_TRIGGER, &TriggerPin::staticMetaObject ),
+	ClassEntry( "Transform", PID_TRANSFORM, &TransformPin::staticMetaObject ),
 	ClassEntry( "Variant", PID_VARIANT, &VariantPin::staticMetaObject ),
-	ClassEntry( "Variant List", PID_VARIANT_LIST, &VariantListPin::staticMetaObject ),
 	ClassEntry()
 };
 
@@ -148,7 +157,7 @@ CorePlugin::CorePlugin( void )
 
 	static QTranslator		Translator;
 
-	if( Translator.load( QLocale(), QLatin1String( "fugio_core" ), QLatin1String( "_" ), ":/translations" ) )
+	if( Translator.load( QLocale(), QLatin1String( "translations" ), QLatin1String( "_" ), ":/" ) )
 	{
 		qApp->installTranslator( &Translator );
 	}
@@ -162,6 +171,8 @@ PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp
 {
 	Q_UNUSED( pLastChance )
 
+	mInstance = this;
+
 	mApp = pApp;
 
 	mApp->registerNodeClasses( mNodeClasses );
@@ -172,9 +183,36 @@ PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp
 	//mApp->registerPinSplitter( PID_SIZE_3D, NID_SPLIT_SIZE );
 	mApp->registerPinSplitter( PID_LIST, NID_SPLIT_LIST );
 	mApp->registerPinSplitter( PID_POINT, NID_SPLIT_POINT );
+	mApp->registerPinSplitter( PID_RECT, NID_SPLIT_RECT );
 
 	mApp->registerPinJoiner( PID_SIZE, NID_JOIN_SIZE );
 	mApp->registerPinJoiner( PID_POINT, NID_JOIN_POINT );
+	mApp->registerPinJoiner( PID_RECT, NID_JOIN_RECT );
+
+	mApp->registerPinForMetaType( PID_BOOL, QMetaType::Bool );
+	mApp->registerPinForMetaType( PID_STRING, QMetaType::Char );
+	mApp->registerPinForMetaType( PID_FLOAT, QMetaType::Double );
+	mApp->registerPinForMetaType( PID_FLOAT, QMetaType::Float );
+	mApp->registerPinForMetaType( PID_INTEGER, QMetaType::Int );
+	mApp->registerPinForMetaType( PID_INTEGER, QMetaType::Long );
+	mApp->registerPinForMetaType( PID_INTEGER, QMetaType::LongLong );
+	mApp->registerPinForMetaType( PID_INTEGER, QMetaType::Short );
+	mApp->registerPinForMetaType( PID_BITARRAY, QMetaType::QBitArray );
+	mApp->registerPinForMetaType( PID_BYTEARRAY, QMetaType::QByteArray );
+	mApp->registerPinForMetaType( PID_STRING, QMetaType::QChar );
+	mApp->registerPinForMetaType( PID_STRING, QMetaType::QString );
+	mApp->registerPinForMetaType( PID_POLYGON, QMetaType::QPolygon );
+	mApp->registerPinForMetaType( PID_POLYGON, QMetaType::QPolygonF );
+
+	mApp->registerPinForMetaType( PID_POINT, QMetaType::QPoint );
+	mApp->registerPinForMetaType( PID_POINT, QMetaType::QPointF );
+	mApp->registerPinForMetaType( PID_FLOAT, QMetaType::QReal );
+	mApp->registerPinForMetaType( PID_RECT, QMetaType::QRect );
+	mApp->registerPinForMetaType( PID_RECT, QMetaType::QRectF );
+	mApp->registerPinForMetaType( PID_SIZE, QMetaType::QSize );
+	mApp->registerPinForMetaType( PID_SIZE, QMetaType::QSizeF );
+	mApp->registerPinForMetaType( PID_TRANSFORM, QMetaType::QTransform );
+	mApp->registerPinForMetaType( PID_VARIANT, QMetaType::QVariant );
 
 	return( INIT_OK );
 }

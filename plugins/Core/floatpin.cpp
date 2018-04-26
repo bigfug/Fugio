@@ -1,11 +1,19 @@
 #include "floatpin.h"
-#include <QSettings>
+#include <fugio/core/uuid.h>
 
 FloatPin::FloatPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mValue( 0.0 )
+	: PinControlBase( pPin ), VariantHelper( QMetaType::Double, PID_FLOAT )
 {
 }
 
-FloatPin::~FloatPin( void )
+QString FloatPin::toString() const
 {
+	QStringList		L;
+
+	for( double v : mValues )
+	{
+		L << QString::number( v );
+	}
+
+	return( L.join( ',' ) );
 }

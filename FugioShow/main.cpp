@@ -1,28 +1,73 @@
 #include <QApplication>
 #include <QSurfaceFormat>
+#include <QLibraryInfo>
 
-#include "show.h"
+#include <fugio/app_helper.h>
+#include <fugio/global_interface.h>
+#include <fugio/context_interface.h>
+
+#if defined( Q_OS_RASPBERRY_PI )
+#include <bcm_host.h>
+#endif
+
+class ShowApp : public QApplication
+{
+public:
+	ShowApp( int &argc, char **argv )
+		: QApplication( argc, argv )
+	{
+
+	}
+};
 
 int main( int argc, char *argv[] )
 {
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
-	QCoreApplication::setAttribute( Qt::AA_ShareOpenGLContexts );
+#if defined( Q_OS_RASPBERRY_PI )
+	bcm_host_init();
 #endif
 
-	QApplication::setAttribute( Qt::AA_UseDesktopOpenGL );
+	fugio::AppHelper	H;
 
-	QSurfaceFormat	SurfaceFormat;
+	H.processCommandLine( argc, argv );
 
-	SurfaceFormat.setDepthBufferSize( 24 );
-	SurfaceFormat.setProfile( QSurfaceFormat::CoreProfile );
-	SurfaceFormat.setSamples( 4 );
-	SurfaceFormat.setVersion( 4, 5 );
+	ShowApp		 A( argc, argv );
 
-	QSurfaceFormat::setDefaultFormat( SurfaceFormat );
+	H.checkForHelpOption();
 
-	QApplication	 A( argc, argv );
+	H.initialiseTranslator();
 
-	fugio::Show		 S;
+	H.setCommandLineVariables();
 
-	return( S.exec( A ) );
+	H.registerAndLoadPlugins();
+
+	fugio::GlobalInterface	*G = fugio::fugio();
+
+	for( QString PatchName : H.CLP.positionalArguments() )
+	{
+		QSharedPointer<fugio::ContextInterface>	C;
+
+		C = G->newContext();
+
+		if( C )
+		{
+			if( !C->load( PatchName ) )
+			{
+				qWarning() << QCoreApplication::tr( "Couldn't load patch %1" ).arg( PatchName );
+			}
+		}
+	}
+
+	G->start();
+
+	int R = A.exec();
+
+	G->stop();
+
+	G->clear();
+
+	G->unloadPlugins();
+
+	H.cleanup();
+
+	return( R );
 }

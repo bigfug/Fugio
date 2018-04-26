@@ -4,29 +4,53 @@
 
 #include <QSizeF>
 
+#include <fugio/pin_variant_iterator.h>
+
 JoinSizeNode::JoinSizeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
-	mPinWidth  = pinInput( tr( "Width" ) );
-	mPinHeight = pinInput( tr( "Height" ) );
+	FUGID( PIN_INPUT_WIDTH, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
+	FUGID( PIN_INPUT_HEIGHT, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
+	FUGID( PIN_OUTPUT_SIZE, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
 
-	mSize = pinOutput<fugio::VariantInterface *>( tr( "Size" ), mPinSize, PID_SIZE );
+	mPinInputWidth  = pinInput( tr( "Width" ), PIN_INPUT_WIDTH );
+	mPinInputHeight = pinInput( tr( "Height" ), PIN_INPUT_HEIGHT );
+
+	mValOutputSize = pinOutput<fugio::VariantInterface *>( tr( "Size" ), mPinOutputSize, PID_SIZE, PIN_OUTPUT_SIZE );
 }
 
 void JoinSizeNode::inputsUpdated( qint64 pTimeStamp )
 {
-	Q_UNUSED( pTimeStamp )
+	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	qreal			NewW = variant( mPinWidth ).toReal();
-	qreal			NewH = variant( mPinHeight ).toReal();
+	bool	UpdateOutput = false;
 
-	QSizeF			CurSze = mSize->variant().toSizeF();
-	QSizeF			NewSze = QSizeF( NewW, NewH );
+	fugio::PinVariantIterator	W( mPinInputWidth );
+	fugio::PinVariantIterator	H( mPinInputHeight );
 
-	if( CurSze != NewSze )
+	QVector<int>	PinCnt = {  W.count(), H.count() };
+
+	auto			MinMax = std::minmax_element( PinCnt.begin(), PinCnt.end() );
+
+	if( !*MinMax.first )
 	{
-		mSize->setVariant( NewSze );
+		return;
+	}
 
-		pinUpdated( mPinSize );
+	const int		OutCnt = *MinMax.second;
+
+	variantSetCount( mValOutputSize, OutCnt, UpdateOutput );
+
+	for( int i = 0 ; i < OutCnt ; i++ )
+	{
+		qreal		w = W.index( i ).toReal();
+		qreal		h = H.index( i ).toReal();
+
+		variantSetValue( mValOutputSize, i, QSizeF( w, h ), UpdateOutput );
+	}
+
+	if( UpdateOutput )
+	{
+		pinUpdated( mPinOutputSize );
 	}
 }

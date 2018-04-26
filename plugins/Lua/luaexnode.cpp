@@ -30,7 +30,7 @@ int LuaExNode::luaGetName(lua_State *L)
 	LuaInterface					*LUA = qobject_cast<LuaInterface *>( LuaPlugin::instance()->app()->findInterface( IID_LUA ) );
 	NodeInterface					*N = LUA->node( L );
 
-	lua_pushfstring( L, "%s", N->name().toLatin1().data() );
+	lua_pushfstring( L, "%s", N->name().toUtf8().data() );
 
 	return( 1 );
 }

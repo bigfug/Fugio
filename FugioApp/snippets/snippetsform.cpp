@@ -43,37 +43,9 @@ SnippetsForm::SnippetsForm(QWidget *parent) :
 
 	ui->mUser->header()->hide();
 
-#if defined( Q_OS_LINUX )
-	QDir	SysDir = QDir( "/usr/share/fugio/snippets" );
+	QDir	SysDir( gApp->global().sharedDataPath() + "/snippets" );
 
-#else
-	QDir	SysDir = QDir( qApp->applicationDirPath() );
-
-#if defined( Q_OS_MACX )
-	SysDir.cdUp();
-	SysDir.cdUp();
-	SysDir.cdUp();
-
-#if defined( QT_DEBUG )
-	SysDir.cdUp();
-
-	SysDir.cd( "Fugio" );
-#endif
-
-#else
-
-#if defined( QT_DEBUG )
-	SysDir.cdUp();
-
-	SysDir.cd( "Fugio" );
-#endif
-
-#endif // defined( Q_OS_MACX )
-#endif // defined( Q_OS_LINUX )
-
-	SysDir.cd( "snippets" );
-
-	qDebug() << "Fugio Snippets:" << SysDir.absolutePath();
+	qInfo() << "Loading snippets:" << SysDir.absolutePath();
 
 	mFileSystem.setRootPath( SysDir.absolutePath() );
 	mFileSystem.setReadOnly( true );

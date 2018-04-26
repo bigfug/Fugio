@@ -1,6 +1,9 @@
 #include "bufferentrypin.h"
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
 #include <QOpenGLExtraFunctions>
+#endif
+
 #include <QOpenGLFunctions_4_1_Core>
 
 BufferEntryPin::BufferEntryPin( QSharedPointer<fugio::PinInterface> pPin )
@@ -70,6 +73,7 @@ const GLvoid *BufferEntryPin::bind( GLuint pIndex, GLsizei pStride, const GLvoid
 	}
 #endif
 
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
 	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
 	if( GLEX )
@@ -86,6 +90,7 @@ const GLvoid *BufferEntryPin::bind( GLuint pIndex, GLsizei pStride, const GLvoid
 				return( NextBuff );
 		}
 	}
+#endif
 
 	glVertexAttribPointer( pIndex, mSize, mType, mNormalised, pStride, pPointer );
 

@@ -2,15 +2,20 @@
 
 #include <QOpenGLContext>
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 6, 0 )
+#include <QOpenGLExtraFunctions>
+#endif
+
 #include <fugio/core/uuid.h>
 #include <fugio/text/uuid.h>
 #include <fugio/opengl/uuid.h>
 #include <fugio/performance.h>
+#include <fugio/opengl/texture_interface.h>
 
 #include "openglplugin.h"
 
 EasyShader2DNode::EasyShader2DNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mQuadGeometry( QOpenGLBuffer::VertexBuffer )
+	: NodeControlBase( pNode ), mQuadGeometry( QOpenGLBuffer::VertexBuffer ), mFramebufferObject( 0 )
 {
 	FUGID( PIN_INPUT_VERTEX_SHADER, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 	FUGID( PIN_INPUT_FRAGMENT_SHADER, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
@@ -36,7 +41,7 @@ EasyShader2DNode::EasyShader2DNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mValOutputRender = pinOutput<fugio::RenderInterface *>( "Render", mPinOutputRender, PID_RENDER, PIN_OUTPUT_RENDER );
 
-	mPinOutputTexture = pinOutput( "Texture", PIN_OUTPUT_TEXTURE );
+	pinOutput( "Texture0", PIN_OUTPUT_TEXTURE );
 }
 
 bool EasyShader2DNode::initialise( void )
@@ -106,11 +111,6 @@ bool EasyShader2DNode::initialise( void )
 		}
 	}
 
-	if( !mVAO.isCreated() )
-	{
-		mVAO.create();
-	}
-
 	return( true );
 }
 
@@ -128,6 +128,8 @@ void EasyShader2DNode::inputsUpdated( qint64 pTimeStamp )
 		compileShader();
 
 		createInputPins();
+
+		createOutputPins();
 	}
 
 	if( !mShaderCompilerData.mProgram )
@@ -137,13 +139,28 @@ void EasyShader2DNode::inputsUpdated( qint64 pTimeStamp )
 
 	updateInputPins();
 
+	updateOutputPins();
+
 	pinUpdated( mPinOutputRender );
 
-	if( mPinOutputTexture->isConnected() && QOpenGLContext::currentContext() )
+	if( QOpenGLContext::currentContext() )
 	{
-		renderToTexture( pTimeStamp );
+		bool	Rendered = false;
 
-		pinUpdated( mPinOutputTexture );
+		for( QSharedPointer<fugio::PinInterface> P : mNode->enumOutputPins() )
+		{
+			if( !Rendered && P != mPinOutputRender && P->isConnected() )
+			{
+				renderToTexture( pTimeStamp );
+
+				Rendered = true;
+			}
+
+			if( Rendered )
+			{
+				pinUpdated( P );
+			}
+		}
 	}
 }
 
@@ -204,44 +221,17 @@ void EasyShader2DNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		 1,  1
 	};
 
-	if( !mVAO.isCreated() )
-	{
-		glVertexAttribPointer( VertexLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
+	QOpenGLVertexArrayObject::Binder VAOBinder( &mVAO );
 
-		glEnableVertexAttribArray( VertexLocation );
-	}
-	else
-	{
-		mVAO.bind();
+	mQuadGeometry.create();
+	mQuadGeometry.bind();
+	mQuadGeometry.allocate( Verticies, sizeof( Verticies ) );
 
-		if( !mQuadGeometry.isCreated() )
-		{
-			if( mQuadGeometry.create() )
-			{
-				if( mQuadGeometry.bind() )
-				{
-					mQuadGeometry.allocate( Verticies, sizeof( Verticies ) );
-				}
-			}
+	glVertexAttribPointer( VertexLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
 
-			glVertexAttribPointer( VertexLocation, 2, GL_FLOAT, GL_FALSE, 0, 0 );
-
-			glEnableVertexAttribArray( VertexLocation );
-
-			mQuadGeometry.release();
-		}
-	}
+	glEnableVertexAttribArray( VertexLocation );
 
 	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-
-	if( mVAO.isCreated() )
-	{
-		mVAO.release();
-	}
-	else
-	{
-		glDisableVertexAttribArray( VertexLocation );
-	}
 
 	mShaderCompilerData.mProgram->release();
 
@@ -279,20 +269,53 @@ void EasyShader2DNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 void EasyShader2DNode::renderToTexture( qint64 pTimeStamp )
 {
-	fugio::OpenGLTextureInterface	*DstTex = output<fugio::OpenGLTextureInterface *>( mPinOutputTexture );
+	QSize					 DstSze;
 
-	if( !DstTex || !DstTex->dstTexId() )
+	if( mShaderCompilerData.mFragmentOutputs.isEmpty() )
+	{
+		fugio::OpenGLTextureInterface	*DstTex = Q_NULLPTR;
+
+		for( QSharedPointer<fugio::PinInterface> P : mNode->enumOutputPins() )
+		{
+			if( P == mPinOutputRender )
+			{
+				continue;
+			}
+
+			DstTex = output<fugio::OpenGLTextureInterface *>( P );
+
+			if( DstTex )
+			{
+				break;
+			}
+		}
+
+		if( !DstTex || !DstTex->dstTexId() )
+		{
+			return;
+		}
+
+		DstSze = QSize( DstTex->size().x(), DstTex->size().y() );
+
+		glBindFramebuffer( GL_FRAMEBUFFER, DstTex->fbo() );
+	}
+	else if( mFramebufferObject )
+	{
+		DstSze = mFramebufferSize;
+
+		glBindFramebuffer( GL_FRAMEBUFFER, mFramebufferObject );
+	}
+
+	if( DstSze.isEmpty() )
 	{
 		return;
 	}
-
-	glBindFramebuffer( GL_FRAMEBUFFER, DstTex->fbo() );
 
 	GLint		VP[ 4 ];
 
 	glGetIntegerv( GL_VIEWPORT, VP );
 
-	glViewport( 0, 0, DstTex->size().x(), DstTex->size().y() );
+	glViewport( 0, 0, DstSze.width(), DstSze.height() );
 
 	render( pTimeStamp, QUuid() );
 
@@ -397,6 +420,37 @@ void EasyShader2DNode::createInputPins()
 	}
 }
 
+void EasyShader2DNode::createOutputPins()
+{
+	if( mShaderCompilerData.mFragmentOutputs.isEmpty() )
+	{
+		return;
+	}
+
+	QVector<GLenum>		FragmentOutputs = mShaderCompilerData.mFragmentOutputs;
+
+	for( int i = 0 ; i < FragmentOutputs.size() ; i++ )
+	{
+		QString			OutputName = QString( "Texture%1" ).arg( i );
+
+		QSharedPointer<fugio::PinInterface> P = mNode->findOutputPinByName( OutputName );
+
+		if( FragmentOutputs[ i ] == GL_NONE )
+		{
+			if( P && !P->isConnected() )
+			{
+				mNode->removePin( P );
+
+				P.clear();
+			}
+		}
+		else if( !P )
+		{
+			P = pinOutput( OutputName, QUuid::createUuid() );
+		}
+	}
+}
+
 void EasyShader2DNode::updateInputPins()
 {
 	initializeOpenGLFunctions();
@@ -425,6 +479,109 @@ void EasyShader2DNode::updateInputPins()
 		if( UniDat.mSampler )
 		{
 			mShaderCompilerData.mProgram->setUniformValue( UniDat.mLocation, UniDat.mTextureBinding );
+
+			continue;
+		}
+
+		if( UniDat.mSize > 1 )
+		{
+			fugio::VariantInterface			*ArrInt = input<fugio::VariantInterface *>( P );
+
+			if( ArrInt )
+			{
+				int			CpyCnt = qMin( ArrInt->variantCount(), UniDat.mSize );
+
+				if( !CpyCnt )
+				{
+					continue;
+				}
+
+				void		*ArrDat = ArrInt->variantArray();
+
+				if( !ArrDat )
+				{
+					continue;
+				}
+
+				switch( UniDat.mType )
+				{
+					case GL_FLOAT:
+						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == sizeof( float ) )
+						{
+							mShaderCompilerData.mProgram->setUniformValueArray( UniDat.mLocation, static_cast<GLfloat *>( ArrDat ), CpyCnt, 1 );
+						}
+						break;
+
+					case GL_FLOAT_VEC2:
+						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 2 && ArrInt->variantStride() == 2 * sizeof( float ) )
+						{
+							mShaderCompilerData.mProgram->setUniformValueArray( UniDat.mLocation, static_cast<GLfloat *>( ArrDat ), CpyCnt, 2 );
+						}
+						else if( ArrInt->variantType() == QMetaType::QVector2D && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 2 * sizeof( float ) )
+						{
+							mShaderCompilerData.mProgram->setUniformValueArray( UniDat.mLocation, static_cast<const QVector2D *>( ArrDat ), CpyCnt );
+						}
+						else if( ArrInt->variantType() == QMetaType::QPointF && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 2 * sizeof( float ) )
+						{
+							glUniform2fv( UniDat.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
+						}
+						break;
+
+					case GL_FLOAT_VEC3:
+						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 3 && ArrInt->variantStride() == 3 * sizeof( float ) )
+						{
+							mShaderCompilerData.mProgram->setUniformValueArray( UniDat.mLocation, static_cast<GLfloat *>( ArrDat ), CpyCnt, 3 );
+						}
+						else if( ArrInt->variantType() == QMetaType::QVector3D && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 3 * sizeof( float ) )
+						{
+							glUniform3fv( UniDat.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
+						}
+						break;
+
+					case GL_FLOAT_VEC4:
+						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 4 && ArrInt->variantStride() == 4 * sizeof( float ) )
+						{
+							mShaderCompilerData.mProgram->setUniformValueArray( UniDat.mLocation, static_cast<GLfloat *>( ArrDat ), CpyCnt, 4 );
+						}
+						else if( ArrInt->variantType() == QMetaType::QVector4D && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 4 * sizeof( float ) )
+						{
+							glUniform4fv( UniDat.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
+						}
+						break;
+
+					case GL_INT_VEC2:
+						if( ArrInt->variantType() == QMetaType::Int && ArrInt->variantElementCount() == 2 && ArrInt->variantStride() == 2 * sizeof( int ) )
+						{
+							glUniform2iv( UniDat.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
+						}
+						else if( ArrInt->variantType() == QMetaType::QPoint && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 2 * sizeof( int ) )
+						{
+							glUniform2iv( UniDat.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
+						}
+						break;
+
+					case GL_INT_VEC3:
+						if( ArrInt->variantType() == QMetaType::Int && ArrInt->variantElementCount() == 3 && ArrInt->variantStride() == 3 * sizeof( int ) )
+						{
+							glUniform3iv( UniDat.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
+						}
+						break;
+
+					case GL_INT_VEC4:
+						if( ArrInt->variantType() == QMetaType::Int && ArrInt->variantElementCount() == 4 && ArrInt->variantStride() == 4 * sizeof( int ) )
+						{
+							glUniform4iv( UniDat.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
+						}
+						break;
+
+					case GL_FLOAT_MAT4:
+						if( ArrInt->variantType() == QMetaType::QMatrix4x4 && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == sizeof( QMatrix4x4 ) )
+						{
+							mShaderCompilerData.mProgram->setUniformValueArray( UniDat.mLocation, static_cast<QMatrix4x4 *>( ArrDat ), CpyCnt );
+						}
+						break;
+				}
+			}
 
 			continue;
 		}
@@ -460,7 +617,9 @@ void EasyShader2DNode::updateInputPins()
 				}
 				else if( UniTyp == QMetaType::QColor )
 				{
-					mShaderCompilerData.mProgram->setUniformValue( UniDat.mLocation, UniVar.value<QColor>() );
+					QColor		C = UniVar.value<QColor>();
+
+					mShaderCompilerData.mProgram->setUniformValue( UniDat.mLocation, C.redF(), C.greenF(), C.blueF() );
 				}
 				break;
 
@@ -508,5 +667,91 @@ void EasyShader2DNode::updateInputPins()
 	}
 
 	mShaderCompilerData.mProgram->release();
+}
+
+void EasyShader2DNode::updateOutputPins()
+{
+	if( mFramebufferObject )
+	{
+		glDeleteFramebuffers( 1, &mFramebufferObject );
+
+		mFramebufferObject = 0;
+
+		mFramebufferSize = QSize();
+	}
+
+	QSize		DstSze;
+
+	for( QSharedPointer<fugio::PinInterface> P : mNode->enumOutputPins() )
+	{
+		if( P == mPinOutputRender )
+		{
+			continue;
+		}
+
+		fugio::OpenGLTextureInterface	*TexInf = output<fugio::OpenGLTextureInterface *>( P );
+
+		if( !TexInf )
+		{
+			continue;
+		}
+
+		QSize		TexSze( TexInf->size().x(), TexInf->size().y() );
+
+		if( DstSze.isEmpty() || ( !TexSze.isEmpty() && DstSze != TexSze ) )
+		{
+			DstSze = TexSze;
+		}
+	}
+
+	if( DstSze.isEmpty() )
+	{
+		return;
+	}
+
+	glGenFramebuffers( 1, &mFramebufferObject );
+
+	if( !mFramebufferObject )
+	{
+		return;
+	}
+
+	mFramebufferSize = DstSze;
+
+	glBindFramebuffer( GL_FRAMEBUFFER, mFramebufferObject );
+
+	QVector<GLenum>		FragmentOutputs = mShaderCompilerData.mFragmentOutputs;
+
+	for( int i = 0 ; i < FragmentOutputs.size() ; i++ )
+	{
+		if( FragmentOutputs[ i ] == GL_NONE )
+		{
+			continue;
+		}
+
+		QString			OutputName = QString( "Texture%1" ).arg( i );
+
+		QSharedPointer<fugio::PinInterface> P = mNode->findOutputPinByName( OutputName );
+
+		fugio::OpenGLTextureInterface	*TexInf = output<fugio::OpenGLTextureInterface *>( P );
+
+		if( !TexInf || !TexInf->dstTexId() )
+		{
+			continue;
+		}
+
+		glFramebufferTexture2D( GL_FRAMEBUFFER, FragmentOutputs[ i ], TexInf->target(), TexInf->dstTexId(), 0 );
+	}
+
+#if defined( QOPENGLEXTRAFUNCTIONS_H )
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+
+	if( GLEX )
+	{
+		GLEX->glDrawBuffers( mShaderCompilerData.mFragmentOutputs.size(), mShaderCompilerData.mFragmentOutputs.constData() );
+	}
+#endif
+
+	glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 }
 

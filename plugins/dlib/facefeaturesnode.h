@@ -14,8 +14,6 @@ using namespace dlib;
 
 #include <fugio/nodecontrolbase.h>
 #include <fugio/core/variant_interface.h>
-#include <fugio/core/array_interface.h>
-#include <fugio/core/array_list_interface.h>
 
 class FaceFeaturesNode : public fugio::NodeControlBase
 {
@@ -45,13 +43,13 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputImage;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputRects;
-	fugio::ArrayInterface						*mValOutputRects;
+	fugio::VariantInterface						*mValOutputRects;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputShapes;
-	fugio::ArrayListInterface					*mValOutputShapes;
+	fugio::VariantInterface						*mValOutputShapes;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputChips;
-	fugio::ArrayListInterface					*mValOutputChips;
+	fugio::VariantInterface						*mValOutputChips;
 
 	volatile bool								 mLoading;
 	volatile bool								 mLoaded;

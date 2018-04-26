@@ -20,7 +20,7 @@ SLIPDecodeNode::SLIPDecodeNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputReset = pinInput( "Reset", PIN_INPUT_RESET );
 
-	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_BYTEARRAY_LIST, PIN_OUTPUT_ARRAY );
+	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_BYTEARRAY, PIN_OUTPUT_ARRAY );
 }
 
 void SLIPDecodeNode::inputsUpdated( qint64 pTimeStamp )
@@ -41,7 +41,7 @@ void SLIPDecodeNode::inputsUpdated( qint64 pTimeStamp )
 			return;
 		}
 
-		QVariantList		VarLst;
+		mValOutput->variantClear();
 
 		for( unsigned char c : InpDat )
 		{
@@ -69,7 +69,7 @@ void SLIPDecodeNode::inputsUpdated( qint64 pTimeStamp )
 					case END:
 						if( !mCurPkt.isEmpty() )
 						{
-							VarLst.append( mCurPkt );
+							mValOutput->variantAppend( mCurPkt );
 
 							mCurPkt.clear();
 						}
@@ -86,9 +86,7 @@ void SLIPDecodeNode::inputsUpdated( qint64 pTimeStamp )
 			}
 		}
 
-		mValOutput->setVariant( VarLst );
-
-		if( !VarLst.isEmpty() )
+		if( mValOutput->variantCount() )
 		{
 			pinUpdated( mPinOutput );
 		}
