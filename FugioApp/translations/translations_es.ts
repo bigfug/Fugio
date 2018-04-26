@@ -4,17 +4,17 @@
 <context>
     <name>ContextView</name>
     <message>
-        <location filename="../contextview.cpp" line="2598"/>
+        <location filename="../contextview.cpp" line="2597"/>
         <source>New Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextview.cpp" line="2600"/>
+        <location filename="../contextview.cpp" line="2599"/>
         <source>Group Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextview.cpp" line="2600"/>
+        <location filename="../contextview.cpp" line="2599"/>
         <source>Enter a name for this group</source>
         <translation type="unfinished"></translation>
     </message>
@@ -558,12 +558,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../nodeitem.cpp" line="1214"/>
+        <location filename="../nodeitem.cpp" line="1206"/>
         <source>Pin Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../nodeitem.cpp" line="1214"/>
+        <location filename="../nodeitem.cpp" line="1206"/>
         <source>Choose Pin Type</source>
         <translation type="unfinished"></translation>
     </message>

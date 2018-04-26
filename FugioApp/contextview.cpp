@@ -778,7 +778,7 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 		GSE.load( pSettings );
 
-		m_GroupId = fugio::utils::string2uuid( pSettings.value( "group", fugio::utils::uuid2string( m_GroupId ) ).toString() );
+		m_GroupId = fugio::utils::string2uuid( pSettings.value( "group", fugio::utils::uuid2string( groupId() ) ).toString() );
 
 		pSettings.endGroup();
 
@@ -1073,7 +1073,7 @@ void ContextView::saveContext( QSettings &pSettings ) const
 
 		GSE.save( pSettings );
 
-		pSettings.setValue( "group", fugio::utils::uuid2string( m_GroupId ) );
+		pSettings.setValue( "group", fugio::utils::uuid2string( groupId() ) );
 
 		pSettings.endGroup();
 
@@ -1414,19 +1414,19 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 		RealLink->setSelected( true );
 	}
 
-	if( NodeItem1->groupId() != m_GroupId || NodeItem2->groupId() != m_GroupId || NodeItem1->groupId() != NodeItem2->groupId() )
+	if( NodeItem1->groupId() != groupId() || NodeItem2->groupId() != groupId() || NodeItem1->groupId() != NodeItem2->groupId() )
 	{
 		RealLink->setVisible( false );
 		RealLink->setSelected( false );
 
-		if( NodeItem1->groupId() != m_GroupId )
+		if( NodeItem1->groupId() != groupId() )
 		{
 			NodeItem1 = mNodeList.value( NodeItem1->groupId() );
 
 			PinItem1 = NodeItem1->findPinInput( Pin1 );
 		}
 
-		if( NodeItem2->groupId() != m_GroupId )
+		if( NodeItem2->groupId() != groupId() )
 		{
 			NodeItem2 = mNodeList.value( NodeItem2->groupId() );
 
@@ -1514,7 +1514,7 @@ void ContextView::updateItemVisibility()
 
 		if( NI )
 		{
-			NI->setVisible( NI->groupId() == m_GroupId );
+			NI->setVisible( NI->groupId() == groupId() );
 
 			continue;
 		}
@@ -1531,7 +1531,7 @@ void ContextView::updateItemVisibility()
 				NodeItem		*SrcNod = qgraphicsitem_cast<NodeItem *>( SrcPin->parentItem() );
 				NodeItem		*DstNod = qgraphicsitem_cast<NodeItem *>( DstPin->parentItem() );
 
-				if( SrcNod->groupId() != m_GroupId || DstNod->groupId() != m_GroupId )
+				if( SrcNod->groupId() != groupId() || DstNod->groupId() != groupId() )
 				{
 					LI->setVisible( false );
 				}
@@ -1548,7 +1548,7 @@ void ContextView::updateItemVisibility()
 
 		if( TI )
 		{
-			TI->setVisible( TI->groupId() == m_GroupId );
+			TI->setVisible( TI->groupId() == groupId() );
 
 			continue;
 		}
