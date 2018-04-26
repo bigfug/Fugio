@@ -10,8 +10,8 @@
 
   icon: FugioApp/fugio.png
 
-  grade: devel # must be 'stable' to release into candidate/stable channels
-  confinement: devmode # use 'strict' once you have the right plugs and slots
+  grade: stable # must be 'stable' to release into candidate/stable channels
+  confinement: strict # use 'strict' once you have the right plugs and slots
 
   parts:
     cmake-build:
@@ -44,6 +44,7 @@
         - libqt5network5
         - libqt5widgets5
         - libicu55
+        - libdlib
         - libavcodec-ffmpeg56
         - libavdevice-ffmpeg56
         - libavformat-ffmpeg56
