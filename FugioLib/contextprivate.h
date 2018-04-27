@@ -74,6 +74,10 @@ public:
 
 	virtual bool save( const QString &pFileName, const QList<QUuid> *pNodeList = 0 ) const Q_DECL_OVERRIDE;
 
+	virtual bool loadData( const QString &pFileName ) Q_DECL_OVERRIDE;
+
+	virtual bool saveData( const QString &pFileName ) const Q_DECL_OVERRIDE;
+
 	virtual void registerInterface( const QUuid &pUuid, QObject *pInterface ) Q_DECL_OVERRIDE;
 
 	virtual void unregisterInterface( const QUuid &pUuid ) Q_DECL_OVERRIDE;

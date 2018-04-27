@@ -9,7 +9,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextprivate.cpp" line="1521"/>
+        <location filename="../contextprivate.cpp" line="1701"/>
         <source>Node has no control class: missing plugin or error loading plugin?</source>
         <translation type="unfinished"></translation>
     </message>

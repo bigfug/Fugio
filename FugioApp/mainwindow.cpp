@@ -1487,3 +1487,54 @@ void MainWindow::on_actionSave_Patch_Image_triggered()
 
 	CV->userSaveImage();
 }
+
+void MainWindow::on_actionSave_Data_As_triggered()
+{
+	if( !ui->mWorkArea->currentSubWindow() )
+	{
+		return;
+	}
+
+	ContextWidgetPrivate		*CV = qobject_cast<ContextWidgetPrivate *>( ui->mWorkArea->currentSubWindow()->widget() );
+
+	if( !CV )
+	{
+		return;
+	}
+
+	CV->userSaveDataAs();
+}
+
+void MainWindow::on_actionSave_Data_triggered()
+{
+	if( !ui->mWorkArea->currentSubWindow() )
+	{
+		return;
+	}
+
+	ContextWidgetPrivate		*CV = qobject_cast<ContextWidgetPrivate *>( ui->mWorkArea->currentSubWindow()->widget() );
+
+	if( !CV )
+	{
+		return;
+	}
+
+	CV->userSaveData();
+}
+
+void MainWindow::on_actionLoad_Data_triggered()
+{
+	if( !ui->mWorkArea->currentSubWindow() )
+	{
+		return;
+	}
+
+	ContextWidgetPrivate		*CV = qobject_cast<ContextWidgetPrivate *>( ui->mWorkArea->currentSubWindow()->widget() );
+
+	if( !CV )
+	{
+		return;
+	}
+
+	CV->userLoadData();
+}
