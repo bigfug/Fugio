@@ -191,6 +191,8 @@ private slots:
 
 	void on_actionLoad_Data_triggered();
 
+	void on_actionSave_Revision_triggered();
+
 private:
 	Ui::MainWindow								*ui;
 

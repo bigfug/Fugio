@@ -91,6 +91,8 @@ public slots:
 
 	void userLoadData( void );
 
+	void userSaveRevision( void );
+
 	void load( const QString &pFileName );
 
     void cut( void );

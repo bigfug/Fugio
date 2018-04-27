@@ -116,304 +116,314 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="122"/>
+        <location filename="../mainwindow.ui" line="123"/>
         <source>&amp;Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="133"/>
+        <location filename="../mainwindow.ui" line="134"/>
         <source>&amp;Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="158"/>
+        <location filename="../mainwindow.ui" line="159"/>
         <source>&amp;Devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="163"/>
+        <location filename="../mainwindow.ui" line="164"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="188"/>
-        <location filename="../mainwindow.ui" line="365"/>
+        <location filename="../mainwindow.ui" line="189"/>
+        <location filename="../mainwindow.ui" line="366"/>
         <source>Browser</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="225"/>
-        <location filename="../mainwindow.ui" line="373"/>
+        <location filename="../mainwindow.ui" line="226"/>
+        <location filename="../mainwindow.ui" line="374"/>
         <source>Nodes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="252"/>
-        <location filename="../mainwindow.ui" line="354"/>
+        <location filename="../mainwindow.ui" line="253"/>
+        <location filename="../mainwindow.ui" line="355"/>
         <source>Logger</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="289"/>
-        <location filename="../mainwindow.ui" line="423"/>
+        <location filename="../mainwindow.ui" line="290"/>
+        <location filename="../mainwindow.ui" line="424"/>
         <source>Stylesheet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="298"/>
-        <location filename="../mainwindow.ui" line="615"/>
+        <location filename="../mainwindow.ui" line="299"/>
+        <location filename="../mainwindow.ui" line="616"/>
         <source>Performance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="307"/>
-        <location filename="../mainwindow.ui" line="647"/>
+        <location filename="../mainwindow.ui" line="308"/>
+        <location filename="../mainwindow.ui" line="648"/>
         <source>Snippets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="316"/>
+        <location filename="../mainwindow.ui" line="317"/>
         <source>&amp;Open...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="319"/>
+        <location filename="../mainwindow.ui" line="320"/>
         <source>Ctrl+O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="327"/>
+        <location filename="../mainwindow.ui" line="328"/>
         <source>&amp;Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="330"/>
+        <location filename="../mainwindow.ui" line="331"/>
         <source>Ctrl+S</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="338"/>
+        <location filename="../mainwindow.ui" line="339"/>
         <source>Save As...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="343"/>
+        <location filename="../mainwindow.ui" line="344"/>
         <source>&amp;New</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="346"/>
+        <location filename="../mainwindow.ui" line="347"/>
         <source>Ctrl+N</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="378"/>
+        <location filename="../mainwindow.ui" line="379"/>
         <source>E&amp;xit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="386"/>
+        <location filename="../mainwindow.ui" line="387"/>
         <source>Cursor to Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="389"/>
+        <location filename="../mainwindow.ui" line="390"/>
         <source>Home</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="394"/>
+        <location filename="../mainwindow.ui" line="395"/>
         <source>Cursor to End</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="397"/>
+        <location filename="../mainwindow.ui" line="398"/>
         <source>End</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="402"/>
+        <location filename="../mainwindow.ui" line="403"/>
         <source>Play Toggle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="405"/>
+        <location filename="../mainwindow.ui" line="406"/>
         <source>Space</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="410"/>
+        <location filename="../mainwindow.ui" line="411"/>
         <source>Output #1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="415"/>
+        <location filename="../mainwindow.ui" line="416"/>
         <source>Set duration...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="428"/>
+        <location filename="../mainwindow.ui" line="429"/>
         <source>Add Note</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="433"/>
+        <location filename="../mainwindow.ui" line="434"/>
         <source>About Fugio...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="441"/>
+        <location filename="../mainwindow.ui" line="442"/>
         <source>About Qt...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="449"/>
+        <location filename="../mainwindow.ui" line="450"/>
         <source>Online Documentation...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="457"/>
+        <location filename="../mainwindow.ui" line="458"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="465"/>
+        <location filename="../mainwindow.ui" line="466"/>
         <source>Paste</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="470"/>
+        <location filename="../mainwindow.ui" line="471"/>
         <source>Set Colour...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="475"/>
+        <location filename="../mainwindow.ui" line="476"/>
         <source>Recent1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="579"/>
+        <location filename="../mainwindow.ui" line="580"/>
         <source>Tile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="584"/>
+        <location filename="../mainwindow.ui" line="585"/>
         <source>Cascade</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="589"/>
+        <location filename="../mainwindow.ui" line="590"/>
         <source>Rescan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="597"/>
+        <location filename="../mainwindow.ui" line="598"/>
         <source>Cut</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="602"/>
+        <location filename="../mainwindow.ui" line="603"/>
         <source>Contact Developers...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="607"/>
+        <location filename="../mainwindow.ui" line="608"/>
         <source>Facebook Page...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="620"/>
+        <location filename="../mainwindow.ui" line="621"/>
         <source>Append...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="625"/>
+        <location filename="../mainwindow.ui" line="626"/>
         <source>Group...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="628"/>
+        <location filename="../mainwindow.ui" line="629"/>
         <source>Ctrl+G</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="633"/>
+        <location filename="../mainwindow.ui" line="634"/>
         <source>Group Parent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="636"/>
+        <location filename="../mainwindow.ui" line="637"/>
         <source>Ctrl+P</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="652"/>
+        <location filename="../mainwindow.ui" line="653"/>
         <source>Selection to snippit...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="657"/>
+        <location filename="../mainwindow.ui" line="658"/>
         <source>Ungroup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="660"/>
+        <location filename="../mainwindow.ui" line="661"/>
         <source>Ctrl+U</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="665"/>
+        <location filename="../mainwindow.ui" line="666"/>
         <source>Data Directory...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="670"/>
+        <location filename="../mainwindow.ui" line="671"/>
         <source>GitHub Page...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="675"/>
+        <location filename="../mainwindow.ui" line="676"/>
         <source>Check for updates...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="680"/>
+        <location filename="../mainwindow.ui" line="681"/>
         <source>Facebook Users Group...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="685"/>
+        <location filename="../mainwindow.ui" line="686"/>
         <source>Save All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="690"/>
+        <location filename="../mainwindow.ui" line="691"/>
         <source>Options...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="698"/>
+        <location filename="../mainwindow.ui" line="699"/>
         <source>Import...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="703"/>
+        <location filename="../mainwindow.ui" line="704"/>
         <source>Save Patch Image...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="708"/>
+        <location filename="../mainwindow.ui" line="709"/>
         <source>Save Data As...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="713"/>
+        <location filename="../mainwindow.ui" line="714"/>
         <source>Save Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="718"/>
+        <location filename="../mainwindow.ui" line="719"/>
         <source>Load Data...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="724"/>
+        <source>Save Revision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="727"/>
+        <source>Ctrl+Shift+S</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

@@ -1538,3 +1538,20 @@ void MainWindow::on_actionLoad_Data_triggered()
 
 	CV->userLoadData();
 }
+
+void MainWindow::on_actionSave_Revision_triggered()
+{
+	if( !ui->mWorkArea->currentSubWindow() )
+	{
+		return;
+	}
+
+	ContextWidgetPrivate		*CV = qobject_cast<ContextWidgetPrivate *>( ui->mWorkArea->currentSubWindow()->widget() );
+
+	if( !CV )
+	{
+		return;
+	}
+
+	CV->userSaveRevision();
+}

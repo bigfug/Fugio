@@ -377,6 +377,33 @@ void ContextWidgetPrivate::userLoadData()
 	}
 }
 
+void ContextWidgetPrivate::userSaveRevision()
+{
+	if( filename().isEmpty() )
+	{
+		userSaveAs();
+	}
+	else
+	{
+		QFileInfo			FI( filename() );
+		QString				RN;
+
+		for( int i = 1 ; RN.isEmpty() ; i++ )
+		{
+			QString			TN = FI.dir().filePath( QString( "%1.%2.%3" ).arg( FI.completeBaseName() ).arg( i ).arg( FI.suffix() ) );
+
+			if( QFile::exists( TN ) )
+			{
+				continue;
+			}
+
+			RN = TN;
+		}
+
+		context()->save( RN );
+	}
+}
+
 void ContextWidgetPrivate::load(const QString &pFileName)
 {
 	mFileName = pFileName;
