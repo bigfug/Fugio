@@ -56,3 +56,4 @@ include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
