@@ -20,6 +20,6 @@ void TestGlobal::newContext()
 	fugio::fugio()->clear();
 }
 
-QTEST_MAIN( TestGlobal )
+QTEST_GUILESS_MAIN( TestGlobal )
 
 #include "testglobal.moc"
