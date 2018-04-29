@@ -65,3 +65,5 @@ endif()
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 #target_compile_definitions( ${PROJECT_NAME} PRIVATE PIGPIO_SUPPORTED )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )

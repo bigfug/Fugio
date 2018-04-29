@@ -94,6 +94,4 @@ if( ( WIN32 ) AND ( LUA_FOUND ) )
 	install( FILES ${LUA_DLL} DESTINATION ${PATH_APP} )
 endif()
 
-if( APPLE )
-	include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundleWithLua.cmake )
-endif( APPLE )
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundleWithLua.cmake )
