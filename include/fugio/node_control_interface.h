@@ -84,6 +84,15 @@ public:
 
 	virtual bool wasInitialiseCalled( void ) const = 0;
 	virtual bool wasDeinitialiseCalled( void ) const = 0;
+
+	enum Option {
+        NoOptions	= 0,
+        CanShow		= 1 << 0,
+    };
+
+	Q_DECLARE_FLAGS( Options, Option )
+
+	virtual bool hasOption( Option pOption ) const = 0;
 };
 
 FUGIO_NAMESPACE_END

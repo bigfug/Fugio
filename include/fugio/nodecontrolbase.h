@@ -208,6 +208,11 @@ public:
 		return( false );
 	}
 
+	virtual bool hasOption( Option pOption ) const Q_DECL_OVERRIDE
+	{
+		return( mOptions.testFlag( pOption ) );
+	}
+
 	//-------------------------------------------------------------------------
 
 	void pinUpdated( QSharedPointer<fugio::PinInterface> &pPin, bool pUpdated = true, qint64 pGlobalTimestamp = -1 )
@@ -571,6 +576,8 @@ protected:
 	int										 mPidIdx;
 	static QList<QUuid>						 PID_UUID;
 
+	Options									 mOptions;
+
 private:
 	bool									 mInitialisedCalled;
 	bool									 mDeinitialisedCalled;
@@ -580,5 +587,7 @@ private:
 };
 
 FUGIO_NAMESPACE_END
+
+Q_DECLARE_OPERATORS_FOR_FLAGS( fugio::NodeControlBase::Options )
 
 #endif // NODECONTROLBASE_H
