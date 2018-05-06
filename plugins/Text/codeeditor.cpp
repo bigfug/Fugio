@@ -61,23 +61,23 @@ void CodeEditor::resizeEvent(QResizeEvent *e)
 
 void CodeEditor::highlightCurrentLine()
 {
-//	QList<QTextEdit::ExtraSelection> extraSelections;
+	//	QList<QTextEdit::ExtraSelection> extraSelections;
 
-//	if( !isReadOnly() )
-//	{
-//		QTextEdit::ExtraSelection selection;
+	//	if( !isReadOnly() )
+	//	{
+	//		QTextEdit::ExtraSelection selection;
 
-//		//QColor lineColor = QColor( Qt::yellow ).lighter(160);
+	//		//QColor lineColor = QColor( Qt::yellow ).lighter(160);
 
-//		selection.format.setBackground( palette().highlight() );
-//		selection.format.setForeground( palette().highlightedText() );
-//		selection.format.setProperty( QTextFormat::FullWidthSelection, true );
-//		selection.cursor = textCursor();
-//		selection.cursor.clearSelection();
-//		extraSelections.append(selection);
-//	}
+	//		selection.format.setBackground( palette().highlight() );
+	//		selection.format.setForeground( palette().highlightedText() );
+	//		selection.format.setProperty( QTextFormat::FullWidthSelection, true );
+	//		selection.cursor = textCursor();
+	//		selection.cursor.clearSelection();
+	//		extraSelections.append(selection);
+	//	}
 
-//	setExtraSelections(extraSelections);
+	//	setExtraSelections(extraSelections);
 }
 
 void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
@@ -114,7 +114,7 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
 			}
 
 			painter.drawText( 0, top, lineNumberArea->width(), fontMetrics().height(),
-							 Qt::AlignRight, number );
+							  Qt::AlignRight, number );
 		}
 
 		block = block.next();
@@ -122,4 +122,121 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
 		bottom = top + (int) blockBoundingRect(block).height();
 		++blockNumber;
 	}
+}
+
+
+void CodeEditor::keyPressEvent(QKeyEvent *event)
+{
+	if( event->key() == Qt::Key_Tab )
+	{
+		QTextCursor		TxtCur = textCursor();
+
+		if( TxtCur.hasSelection() )
+		{
+			int		spos = TxtCur.anchor();
+			int		epos   = TxtCur.position();
+
+			if( spos > epos )
+			{
+				std::swap( spos, epos );
+			}
+
+			TxtCur.setPosition( spos, QTextCursor::MoveAnchor);
+			int sblock = TxtCur.block().blockNumber();
+
+			TxtCur.setPosition(epos, QTextCursor::MoveAnchor);
+			int eblock = TxtCur.block().blockNumber();
+
+			TxtCur.setPosition(spos, QTextCursor::MoveAnchor);
+
+			TxtCur.beginEditBlock();
+
+			const int blockDifference = eblock - sblock;
+
+			for( int i = 0; i < blockDifference; ++i)
+			{
+				TxtCur.movePosition( QTextCursor::StartOfBlock, QTextCursor::MoveAnchor );
+
+				TxtCur.insertText( "\t" );
+
+				TxtCur.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor);
+			}
+
+			TxtCur.endEditBlock();
+
+			// Set our cursor's selection to span all of the involved lines.
+
+			TxtCur.setPosition(spos, QTextCursor::MoveAnchor);
+			TxtCur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+
+			while(TxtCur.block().blockNumber() < eblock)
+			{
+				TxtCur.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
+			}
+
+			setTextCursor(TxtCur);
+
+			return;
+		}
+	}
+
+	if( event->key() == Qt::Key_Backtab )
+	{
+		QTextCursor		TxtCur = textCursor();
+
+		if( TxtCur.hasSelection() )
+		{
+			int		spos = TxtCur.anchor();
+			int		epos = TxtCur.position();
+
+			if( spos > epos )
+			{
+				std::swap( spos, epos );
+			}
+
+			TxtCur.setPosition( spos, QTextCursor::MoveAnchor);
+			int sblock = TxtCur.block().blockNumber();
+
+			TxtCur.setPosition(epos, QTextCursor::MoveAnchor);
+			int eblock = TxtCur.block().blockNumber();
+
+			TxtCur.setPosition(spos, QTextCursor::MoveAnchor);
+
+			TxtCur.beginEditBlock();
+
+			const int blockDifference = eblock - sblock;
+
+			for( int i = 0; i < blockDifference; ++i)
+			{
+				TxtCur.movePosition( QTextCursor::StartOfBlock, QTextCursor::MoveAnchor );
+
+				TxtCur.movePosition( QTextCursor::NextCharacter, QTextCursor::KeepAnchor );
+
+				if( TxtCur.selectedText() == "\t" || TxtCur.selectedText() == " " )
+				{
+					TxtCur.removeSelectedText();
+				}
+
+				TxtCur.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor);
+			}
+
+			TxtCur.endEditBlock();
+
+			// Set our cursor's selection to span all of the involved lines.
+
+			TxtCur.setPosition(spos, QTextCursor::MoveAnchor);
+			TxtCur.movePosition(QTextCursor::StartOfBlock, QTextCursor::MoveAnchor);
+
+			while(TxtCur.block().blockNumber() < eblock)
+			{
+				TxtCur.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
+			}
+
+			setTextCursor(TxtCur);
+
+			return;
+		}
+	}
+
+	QPlainTextEdit::keyPressEvent( event );
 }
