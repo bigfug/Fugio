@@ -224,8 +224,8 @@ public:
 	Q_DECLARE_FLAGS( Options, Option )
 
 signals:
-	void nameChanged( const QString &pName );
-	void valueChanged( const QVariant &pValue );
+	void nameChanged( void );
+	void valueChanged( void );
 
 private:
 	fugio::ContextInterface						*mContext;

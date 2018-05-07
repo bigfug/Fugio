@@ -274,7 +274,9 @@ void PinPrivate::setValue( const QVariant &pVariant )
 
 		mGlobalUpdated = fugio::fugio()->timestamp();
 
-		emit valueChanged( mDefaultValue );
+		emit PinSignals::valueChanged( mDefaultValue );
+
+		emit valueChanged();
 	}
 }
 
@@ -483,7 +485,9 @@ void PinPrivate::setName( const QString &pName )
 	{
 		mName = pName;
 
-		emit nameChanged( mName );
+		emit PinSignals::nameChanged( mName );
+
+		emit nameChanged();
 
 		if( mContext )
 		{
