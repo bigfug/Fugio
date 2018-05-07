@@ -98,7 +98,7 @@ public:
 	virtual QImage image( void ) Q_DECL_OVERRIDE;
 
 	virtual void srcBind( void ) Q_DECL_OVERRIDE;
-	virtual void dstBind( void ) Q_DECL_OVERRIDE {};
+	virtual void dstBind( void ) Q_DECL_OVERRIDE {}
 
 	virtual void release( void ) Q_DECL_OVERRIDE;
 
@@ -165,6 +165,13 @@ public:
 	{
 		return( nullptr );
 	}
+
+	virtual OpenGLTextureOrigin origin() const Q_DECL_OVERRIDE
+	{
+		return( OpenGLTextureOrigin::Unknown );
+	}
+
+	virtual void setOrigin(OpenGLTextureOrigin pOrigin) Q_DECL_OVERRIDE {}
 
 	//-------------------------------------------------------------------------
 

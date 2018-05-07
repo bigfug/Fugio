@@ -167,6 +167,13 @@ public:
 		return( nullptr );
 	}
 
+	virtual OpenGLTextureOrigin origin() const Q_DECL_OVERRIDE
+	{
+		return( OpenGLTextureOrigin::Unknown );
+	}
+
+	virtual void setOrigin( OpenGLTextureOrigin pOrigin ) Q_DECL_OVERRIDE {}
+
 	//-------------------------------------------------------------------------
 
 private:

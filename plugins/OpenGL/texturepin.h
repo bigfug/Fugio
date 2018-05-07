@@ -163,6 +163,16 @@ public:
 		return( mDstTex );
 	}
 
+	virtual OpenGLTextureOrigin origin() const Q_DECL_OVERRIDE
+	{
+		return( mTexDsc.mOrigin );
+	}
+
+	virtual void setOrigin( OpenGLTextureOrigin pOrigin ) Q_DECL_OVERRIDE
+	{
+		mTexDsc.mOrigin = pOrigin;
+	}
+
 	//-------------------------------------------------------------------------
 
 	// SizeInterface interface

@@ -140,4 +140,3 @@ void SpoutPin::release()
 	mReceiver.UnBindSharedTexture();
 #endif
 }
-

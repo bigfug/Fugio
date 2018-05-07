@@ -14,6 +14,13 @@ class QImage;
 
 FUGIO_NAMESPACE_BEGIN
 
+typedef enum OpenGLTextureOrigin
+{
+	Unknown,
+	TopLeft,
+	BottomLeft
+} OpenGLTextureOrigin;
+
 typedef struct OpenGLTextureDescription
 {
 	QOpenGLTexture::PixelFormat			mFormat;
@@ -42,6 +49,8 @@ typedef struct OpenGLTextureDescription
 	bool			mDoubleBuffered;
 
 	QOpenGLTexture::ComparisonFunction	mCompare;
+
+	OpenGLTextureOrigin					mOrigin;
 } OpenGLTextureDescription;
 
 class OpenGLTextureInterface
@@ -128,6 +137,10 @@ public:
 
 	virtual QOpenGLTexture *srcTex( void ) = 0;
 	virtual QOpenGLTexture *dstTex( void ) = 0;
+
+	virtual OpenGLTextureOrigin origin( void ) const = 0;
+
+	virtual void setOrigin( OpenGLTextureOrigin pOrigin ) = 0;
 };
 
 FUGIO_NAMESPACE_END

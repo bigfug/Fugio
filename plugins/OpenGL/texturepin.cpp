@@ -38,6 +38,8 @@ TexturePin::TexturePin( QSharedPointer<fugio::PinInterface> pPin )
 
 	mTexDsc.mCompare = QOpenGLTexture::CompareNever;
 
+	mTexDsc.mOrigin = fugio::OpenGLTextureOrigin::Unknown;
+
 	mDefinitionChanged = true;
 
 	mFBOId = 0;
