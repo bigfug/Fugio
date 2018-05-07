@@ -50,15 +50,15 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
-	virtual QString toString( void ) const Q_DECL_OVERRIDE
-	{
-		return( mValues.first() );
-	}
+	virtual QString toString( void ) const Q_DECL_OVERRIDE;
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
 	{
 		return( "String" );
 	}
+
+	virtual void loadSettings( QSettings &pSettings ) Q_DECL_OVERRIDE;
+	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// fugio::VariantInterface

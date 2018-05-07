@@ -6,6 +6,55 @@ ColourPin::ColourPin( QSharedPointer<fugio::PinInterface> pPin )
 {
 }
 
+QString ColourPin::toString() const
+{
+	QStringList		L;
+
+	for( QColor v : mValues )
+	{
+		L << v.name();
+	}
+
+	return( L.join( ',' ) );
+}
+
+void ColourPin::loadSettings( QSettings &pSettings )
+{
+	fugio::PinControlBase::loadSettings( pSettings );
+
+	if( pSettings.childGroups().contains( "values" ) )
+	{
+		int	Count = pSettings.beginReadArray( "values" );
+
+		mValues.resize( Count );
+
+		for( int i = 0 ; i < mValues.size() ; i++ )
+		{
+			pSettings.setArrayIndex( i );
+
+			mValues[ i ] = pSettings.value( "i", mValues[ i ] ).value<QColor>();
+		}
+
+		pSettings.endArray();
+	}
+}
+
+void ColourPin::saveSettings( QSettings &pSettings ) const
+{
+	fugio::PinControlBase::saveSettings( pSettings );
+
+	pSettings.beginWriteArray( "values", mValues.size() );
+
+	for( int i = 0 ; i < mValues.size() ; i++ )
+	{
+		pSettings.setArrayIndex( i );
+
+		pSettings.setValue( "i", mValues.at( i ) );
+	}
+
+	pSettings.endArray();
+}
+
 void ColourPin::setFromBaseVariant( int pIndex, int pOffset, const QVariant &pValue )
 {
 	const int			i = variantIndex( pIndex, pOffset );
