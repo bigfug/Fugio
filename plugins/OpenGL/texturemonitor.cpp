@@ -55,5 +55,5 @@ void TextureMonitor::paintGL()
 
 void TextureMonitor::handleLoggedMessage( const QOpenGLDebugMessage &debugMessage )
 {
-	qDebug() << mNode->node()->name() << debugMessage;
+	OpenGLPlugin::instance()->handleError( debugMessage, mNode->node().data() );
 }

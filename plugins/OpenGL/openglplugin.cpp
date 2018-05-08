@@ -427,6 +427,18 @@ QString OpenGLPlugin::framebufferError( GLenum pErrorCode )
 	return( QString::number( pErrorCode, 16 ) );
 }
 
+void OpenGLPlugin::handleError( const QOpenGLDebugMessage &pDebugMessage, NodeInterface *pNode )
+{
+	if( pNode )
+	{
+		qDebug() << pNode->name() << pDebugMessage;
+	}
+	else
+	{
+		qDebug() << pDebugMessage;
+	}
+}
+
 void OpenGLPlugin::deviceConfigGui( QWidget *pParent )
 {
 	Q_UNUSED( pParent )

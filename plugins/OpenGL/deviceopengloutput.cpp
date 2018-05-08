@@ -201,11 +201,11 @@ void DeviceOpenGLOutput::handleLoggedMessage( const QOpenGLDebugMessage &pDebugM
 
 	if( CurNod )
 	{
-		qDebug() << CurNod->name() << pDebugMessage;
+		OpenGLPlugin::instance()->handleError( pDebugMessage, CurNod.data() );
 	}
 	else
 	{
-		qDebug() << pDebugMessage;
+		OpenGLPlugin::instance()->handleError( pDebugMessage );
 	}
 }
 

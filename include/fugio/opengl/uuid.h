@@ -50,6 +50,14 @@
 
 #define SYNTAX_HIGHLIGHTER_GLSL			(QUuid("{69630335-9F83-4E45-BF88-1C28CBC2530B}"))
 
+#include <fugio/global.h>
+
+class QOpenGLDebugMessage;
+
+FUGIO_NAMESPACE_BEGIN
+
+class NodeInterface;
+
 class InterfaceOpenGL
 {
 public:
@@ -72,9 +80,13 @@ public:
 	virtual void incrementTriangleCount( int pTriangleCount ) = 0;
 
 	virtual bool hasContext( void ) = 0;
+
+	virtual void handleError( const QOpenGLDebugMessage &pDebugMessage, fugio::NodeInterface *pNode = Q_NULLPTR ) = 0;
 };
 
-Q_DECLARE_INTERFACE( InterfaceOpenGL, "com.bigfug.fugio.opengl/1.0" )
+FUGIO_NAMESPACE_END
+
+Q_DECLARE_INTERFACE( fugio::InterfaceOpenGL, "com.bigfug.fugio.opengl/1.0" )
 
 #if !defined( BUFFER_OFFSET )
 #define BUFFER_OFFSET(offset) ((void*)(offset))

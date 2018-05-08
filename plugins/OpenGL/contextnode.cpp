@@ -89,3 +89,8 @@ bool ContextNode::deinitialise()
 
 	return( NodeControlBase::deinitialise() );
 }
+
+void ContextNode::handleLoggedMessage( const QOpenGLDebugMessage &pDebugMessage )
+{
+	OpenGLPlugin::instance()->handleError( pDebugMessage, mNode.data() );
+}

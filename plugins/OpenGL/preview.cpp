@@ -67,10 +67,10 @@ void Preview::handleLoggedMessage(const QOpenGLDebugMessage &debugMessage)
 
 	if( NI )
 	{
-		qDebug() << NI->name() << debugMessage;
+		OpenGLPlugin::instance()->handleError( debugMessage, NI.data() );
 	}
 	else
 	{
-		qDebug() << debugMessage;
+		OpenGLPlugin::instance()->handleError( debugMessage );
 	}
 }

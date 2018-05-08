@@ -25,7 +25,7 @@ class QWindow;
 class OpenGLPlugin : public QObject, public PluginInterface, public InterfaceOpenGL, public DeviceFactoryInterface, public fugio::SyntaxHighlighterFactoryInterface, protected QOpenGLFunctions
 {
 	Q_OBJECT
-	Q_INTERFACES( fugio::PluginInterface InterfaceOpenGL fugio::DeviceFactoryInterface fugio::SyntaxHighlighterFactoryInterface )
+	Q_INTERFACES( fugio::PluginInterface fugio::InterfaceOpenGL fugio::DeviceFactoryInterface fugio::SyntaxHighlighterFactoryInterface )
 	Q_PLUGIN_METADATA( IID "com.bigfug.fugio.opengl.plugin" )
 
 public:
@@ -75,6 +75,8 @@ public:
 	virtual bool hasContext( void ) Q_DECL_OVERRIDE;
 
 	static QString framebufferError( GLenum pErrorCode );
+
+	virtual void handleError( const QOpenGLDebugMessage &pDebugMessage, fugio::NodeInterface *pNode = Q_NULLPTR ) Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// fugio::DeviceFactoryInterface

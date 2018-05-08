@@ -31,10 +31,7 @@ public:
 	virtual bool deinitialise( void ) Q_DECL_OVERRIDE;
 
 private slots:
-	void handleLoggedMessage( const QOpenGLDebugMessage &debugMessage )
-	{
-		qDebug() << mNode->name() << debugMessage;
-	}
+	void handleLoggedMessage( const QOpenGLDebugMessage &debugMessage );
 
 private:
 	QOffscreenSurface					 mSurface;
