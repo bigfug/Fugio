@@ -13,7 +13,6 @@ typedef struct ShaderCompilerData
 
 	QStringList								 mUniformNames;
 	QStringList								 mAttributeNames;
-	QVector<GLenum>							 mFragmentOutputs;
 
 	QOpenGLShaderProgram					*mProgram;
 
@@ -36,7 +35,7 @@ typedef struct ShaderCompilerData
 private:
 	Q_DISABLE_COPY( ShaderCompilerData )
 
-  } ShaderCompilerData;
+} ShaderCompilerData;
 
 
 #endif // SHADERCOMPILERDATA_H

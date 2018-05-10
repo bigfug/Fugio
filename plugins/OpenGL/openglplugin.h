@@ -78,6 +78,8 @@ public:
 
 	virtual void handleError( const QOpenGLDebugMessage &pDebugMessage, fugio::NodeInterface *pNode = Q_NULLPTR ) Q_DECL_OVERRIDE;
 
+	virtual QOpenGLContext *context( void ) Q_DECL_OVERRIDE;
+
 	//-------------------------------------------------------------------------
 	// fugio::DeviceFactoryInterface
 
@@ -131,6 +133,11 @@ private slots:
 	void globalFrameEnd( void );
 
 	void appAboutToQuit( void );
+
+	void contextAdded( QSharedPointer<fugio::ContextInterface> pContext );
+	void contextRemoved( QSharedPointer<fugio::ContextInterface> pContext );
+
+	void contextFrameInitialise( void );
 
 private:
 	void initStaticData();

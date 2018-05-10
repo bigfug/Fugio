@@ -7,6 +7,8 @@
 
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
+#include <fugio/context_interface.h>
+#include <fugio/context_signals.h>
 
 #include <fugio/text/syntax_error_interface.h>
 
@@ -261,6 +263,9 @@ PluginInterface::InitResult OpenGLPlugin::initialise( fugio::GlobalInterface *pA
 
 	connect( mApp->qobject(), SIGNAL(frameEnd()), this, SLOT(globalFrameEnd()) );
 
+	connect( mApp->qobject(), SIGNAL(contextAdded(QSharedPointer<fugio::ContextInterface>)), this, SLOT(contextAdded(QSharedPointer<fugio::ContextInterface>)) );
+	connect( mApp->qobject(), SIGNAL(contextRemoved(QSharedPointer<fugio::ContextInterface>)), this, SLOT(contextRemoved(QSharedPointer<fugio::ContextInterface>)) );
+
 	DeviceOpenGLOutput::deviceInitialise();
 
 	return( INIT_OK );
@@ -439,6 +444,68 @@ void OpenGLPlugin::handleError( const QOpenGLDebugMessage &pDebugMessage, NodeIn
 	}
 }
 
+QOpenGLContext *OpenGLPlugin::context()
+{
+	QThread		*Thread = QThread::currentThread();
+
+	typedef struct ThreadContext
+	{
+		QOpenGLContext		*mContext;
+		QOffscreenSurface	*mSurface;
+	} ThreadContext;
+
+	static QMap<QThread *, ThreadContext>		mThreadContexts;
+	static QMutex								mThreadContextsMutex;
+
+	QMutexLocker		L( &mThreadContextsMutex );
+
+	QMap<QThread *, ThreadContext>::iterator it = mThreadContexts.find( Thread );
+
+	if( it != mThreadContexts.end() && !it.value().mContext->isValid() )
+	{
+		delete it.value().mContext;
+		delete it.value().mSurface;
+
+		mThreadContexts.remove( Thread );
+
+		it = mThreadContexts.end();
+	}
+
+	if( it == mThreadContexts.end() )
+	{
+		QOpenGLContext	*ShareContext = QOpenGLContext::globalShareContext();
+
+		ThreadContext	 TC;
+
+		TC.mSurface = new QOffscreenSurface();
+		TC.mContext = new QOpenGLContext( Thread );
+
+		TC.mSurface->create();
+
+		TC.mContext->setShareContext( ShareContext );
+
+		if( TC.mContext->create() )
+		{
+			TC.mContext->makeCurrent( TC.mSurface );
+
+			OpenGLPlugin::instance()->initGLEW();
+
+			mThreadContexts.insert( Thread, TC );
+
+			return( TC.mContext );
+		}
+
+		delete TC.mContext;
+		delete TC.mSurface;
+
+		return( Q_NULLPTR );
+	}
+
+	it.value().mContext->makeCurrent( it.value().mSurface );
+
+	return( it.value().mContext );
+}
+
 void OpenGLPlugin::deviceConfigGui( QWidget *pParent )
 {
 	Q_UNUSED( pParent )
@@ -481,6 +548,28 @@ void OpenGLPlugin::globalFrameEnd()
 void OpenGLPlugin::appAboutToQuit()
 {
 	DeviceOpenGLOutput::deviceDeinitialise();
+}
+
+void OpenGLPlugin::contextAdded(QSharedPointer<ContextInterface> pContext)
+{
+	connect( pContext->qobject(), SIGNAL(frameInitialise()), this, SLOT(contextFrameInitialise()) );
+}
+
+void OpenGLPlugin::contextRemoved(QSharedPointer<ContextInterface> pContext)
+{
+	disconnect( pContext->qobject(), SIGNAL(frameInitialise()), this, SLOT(contextFrameInitialise()) );
+}
+
+void OpenGLPlugin::contextFrameInitialise()
+{
+	QOpenGLContext		*CurCtx = QOpenGLContext::currentContext();
+
+	if( CurCtx )
+	{
+		CurCtx->doneCurrent();
+	}
+
+	context();
 }
 
 void OpenGLPlugin::initStaticData( void )

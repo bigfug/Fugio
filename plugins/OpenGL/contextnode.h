@@ -34,9 +34,9 @@ private slots:
 	void handleLoggedMessage( const QOpenGLDebugMessage &debugMessage );
 
 private:
-	QOffscreenSurface					 mSurface;
-	QOpenGLContext						 mContext;
-	QOpenGLDebugLogger					 mDebugLogger;
+//	QOffscreenSurface					 mSurface;
+//	QOpenGLContext						 mContext;
+//	QOpenGLDebugLogger					 mDebugLogger;
 };
 
 

@@ -53,6 +53,7 @@
 #include <fugio/global.h>
 
 class QOpenGLDebugMessage;
+class QOpenGLContext;
 
 FUGIO_NAMESPACE_BEGIN
 
@@ -82,6 +83,8 @@ public:
 	virtual bool hasContext( void ) = 0;
 
 	virtual void handleError( const QOpenGLDebugMessage &pDebugMessage, fugio::NodeInterface *pNode = Q_NULLPTR ) = 0;
+
+	virtual QOpenGLContext *context( void ) = 0;
 };
 
 FUGIO_NAMESPACE_END

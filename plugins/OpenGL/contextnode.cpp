@@ -9,7 +9,7 @@
 ContextNode::ContextNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 {
-	connect( &mDebugLogger, &QOpenGLDebugLogger::messageLogged, this, &ContextNode::handleLoggedMessage );
+//	connect( &mDebugLogger, &QOpenGLDebugLogger::messageLogged, this, &ContextNode::handleLoggedMessage );
 }
 
 bool ContextNode::initialise()
@@ -28,48 +28,48 @@ bool ContextNode::initialise()
 		return( false );
 	}
 
-	if( !mSurface.isValid() )
-	{
-		mSurface.create();
-	}
+//	if( !mSurface.isValid() )
+//	{
+//		mSurface.create();
+//	}
 
-	if( !mSurface.isValid() )
-	{
-		qWarning() << "!mSurface.isValid()";
+//	if( !mSurface.isValid() )
+//	{
+//		qWarning() << "!mSurface.isValid()";
 
-		return( false );
-	}
+//		return( false );
+//	}
 
-	if( !mContext.create() )
-	{
-		qWarning() << "!mContext.create()";
+//	if( !mContext.create() )
+//	{
+//		qWarning() << "!mContext.create()";
 
-		return( false );
-	}
+//		return( false );
+//	}
 
-	if( !mContext.makeCurrent( &mSurface ) )
-	{
-		qWarning() << "!mContext.makeCurrent()";
+//	if( !mContext.makeCurrent( &mSurface ) )
+//	{
+//		qWarning() << "!mContext.makeCurrent()";
 
-		return( false );
-	}
+//		return( false );
+//	}
 
-	QOpenGLContext	*Context = QOpenGLContext::currentContext();
+//	QOpenGLContext	*Context = QOpenGLContext::currentContext();
 
-	if( !Context )
-	{
-		qWarning() << "!Context";
+//	if( !Context )
+//	{
+//		qWarning() << "!Context";
 
-		return( false );
-	}
+//		return( false );
+//	}
 
-	OpenGLPlugin::instance()->initGLEW();
+//	OpenGLPlugin::instance()->initGLEW();
 
 #if defined( OPENGL_DEBUG_ENABLE )
-	if( mDebugLogger.initialize() )
-	{
-		mDebugLogger.startLogging( QOpenGLDebugLogger::SynchronousLogging );
-	}
+//	if( mDebugLogger.initialize() )
+//	{
+//		mDebugLogger.startLogging( QOpenGLDebugLogger::SynchronousLogging );
+//	}
 #endif
 
 	if( !OpenGLPlugin::hasContextStatic() )
@@ -82,15 +82,15 @@ bool ContextNode::initialise()
 
 bool ContextNode::deinitialise()
 {
-	if( !mSurface.isValid() )
-	{
-		mSurface.destroy();
-	}
+//	if( !mSurface.isValid() )
+//	{
+//		mSurface.destroy();
+//	}
 
 	return( NodeControlBase::deinitialise() );
 }
 
 void ContextNode::handleLoggedMessage( const QOpenGLDebugMessage &pDebugMessage )
 {
-	OpenGLPlugin::instance()->handleError( pDebugMessage, mNode.data() );
+//	OpenGLPlugin::instance()->handleError( pDebugMessage, mNode.data() );
 }

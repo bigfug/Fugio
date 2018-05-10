@@ -35,7 +35,6 @@ ShaderCompilerData &ShaderCompilerData::operator =( ShaderCompilerData &&other )
 	mShaderAttributeTypes = std::move( other.mShaderAttributeTypes );
 	mUniformNames         = std::move( other.mUniformNames );
 	mAttributeNames       = std::move( other.mAttributeNames );
-	mFragmentOutputs      = std::move( other.mFragmentOutputs );
 
 	return( *this );
 }
@@ -54,7 +53,6 @@ void ShaderCompilerData::process()
 
 	mUniformNames.clear();
 	mAttributeNames.clear();
-	mFragmentOutputs.clear();
 
 	GLint		TextureBinding = 0;
 
@@ -207,33 +205,6 @@ void ShaderCompilerData::process()
 		}
 	}
 
-#if !defined( QT_OPENGL_ES_2 )
-	QOpenGLFunctions_3_2_Core		*GL32 = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_2_Core>();
-
-	if( GL32 && GL32->initializeOpenGLFunctions() )
-	{
-		GLint		MaxDrawBuffers = 0;
-
-		GL32->glGetIntegerv( GL_MAX_DRAW_BUFFERS, &MaxDrawBuffers );
-
-		mFragmentOutputs.resize( MaxDrawBuffers );
-
-		for( int i = 0 ; i < MaxDrawBuffers ; i++ )
-		{
-			const QString	FragName = QString( "fug_Fragment%1" ).arg( i );
-
-			GLint	FragData = GL32->glGetFragDataLocation( mProgram->programId(), FragName.toLatin1().constData() );
-
-			mFragmentOutputs[ i ] = ( FragData == -1 ? GL_NONE : GL_COLOR_ATTACHMENT0 + i );
-		}
-
-		while( !mFragmentOutputs.isEmpty() && mFragmentOutputs.last() == GL_NONE )
-		{
-			mFragmentOutputs.removeLast();
-		}
-	}
-#endif
-
 	//emit updateUniformList( mUniformNames );
 }
 
@@ -249,5 +220,4 @@ void ShaderCompilerData::clear()
 
 	mUniformNames.clear();
 	mAttributeNames.clear();
-	mFragmentOutputs.clear();
 }

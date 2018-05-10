@@ -60,8 +60,6 @@ public:
 	virtual void render( qint64 pTimeStamp, QUuid pSourcePinId ) Q_DECL_OVERRIDE;
 
 private:
-	void renderToTexture( qint64 pTimeStamp );
-
 	void compileShader( void );
 
 	void createInputPins( void );
@@ -90,8 +88,8 @@ protected:
 
 	QOpenGLBuffer								 mQuadGeometry;
 
-	GLuint										 mFramebufferObject;
-	QSize										 mFramebufferSize;
+	GLuint										 mFBO;
+	QSize										 mFBOSize;
 };
 
 #endif // EASYSHADER2DNODE_H

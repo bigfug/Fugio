@@ -116,12 +116,6 @@ public:
 
 	virtual void setGenMipMaps( bool pGenMipMaps ) = 0;
 
-	virtual quint32 fbo( bool pUseDepth = false ) = 0;
-
-	virtual void freeFbo( void ) = 0;
-
-	virtual quint32 fboMultiSample( int pSamples, bool pUseDepth = false ) = 0;
-
 	virtual void free( void ) = 0;
 
 	virtual QImage image( void ) = 0;

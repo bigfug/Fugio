@@ -4,6 +4,7 @@
 #include "opengl_includes.h"
 
 #include <QObject>
+#include <QOpenGLFramebufferObject>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -36,7 +37,9 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputRender;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputTexture;
-};
 
+	GLuint										 mFBO;
+	QSize										 mFBOSize;
+};
 
 #endif // RENDERTOTEXTURENODE_H

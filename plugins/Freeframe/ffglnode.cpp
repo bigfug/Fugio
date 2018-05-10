@@ -11,7 +11,7 @@
 #include <fugio/opengl/uuid.h>
 
 FFGLNode::FFGLNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mInstanceId( 0 )
+	: NodeControlBase( pNode ), mInstanceId( 0 ), mFBO( 0 )
 {
 	FUGID( PIN_INPUT_RENDER, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
 	FUGID( PIN_OUTPUT_RENDER, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
@@ -171,15 +171,30 @@ void FFGLNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( DstTex )
 	{
-		GLint		FBOCur;
-
-		glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
-
-		quint32	FBO = DstTex->fbo();
-
-		if( FBO )
+		if( mFBO && mFBOSize != DstSze )
 		{
-			glBindFramebuffer( GL_FRAMEBUFFER, FBO );
+			glDeleteFramebuffers( 1, &mFBO );
+
+			mFBO = 0;
+			mFBOSize = QSize();
+		}
+
+		if( !mFBO )
+		{
+			glGenFramebuffers( 1, &mFBO );
+
+			mFBOSize = DstSze;
+		}
+
+		if( mFBO )
+		{
+			GLint		FBOCur;
+
+			glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
+
+			glBindFramebuffer( GL_FRAMEBUFFER, mFBO );
+
+			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, DstTex->target(), DstTex->dstTexId(), 0 );
 
 			GLint		Viewport[ 4 ];
 
@@ -190,6 +205,8 @@ void FFGLNode::inputsUpdated( qint64 pTimeStamp )
 			render();
 
 			glViewport( Viewport[ 0 ], Viewport[ 1 ], Viewport[ 2 ], Viewport[ 3 ] );
+
+			glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
 		}
 	}
 

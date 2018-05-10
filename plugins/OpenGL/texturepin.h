@@ -127,12 +127,6 @@ public:
 
 	virtual void release( void ) Q_DECL_OVERRIDE;
 
-	virtual quint32 fbo( bool pUseDepth = false ) Q_DECL_OVERRIDE;
-
-	virtual void freeFbo( void ) Q_DECL_OVERRIDE;
-
-	virtual quint32 fboMultiSample( int pSamples, bool pUseDepth = false ) Q_DECL_OVERRIDE;
-
 	virtual void swapTexture( void ) Q_DECL_OVERRIDE;
 
 	virtual QOpenGLTexture::ComparisonFunction compare() const Q_DECL_OVERRIDE;
@@ -193,18 +187,10 @@ protected:
 private:
 	OpenGLTextureDescription		mTexDsc;
 
-	bool			mDefinitionChanged;
+	bool							mDefinitionChanged;
 
-	QOpenGLTexture	*mSrcTex;
-	QOpenGLTexture	*mDstTex;
-
-	GLuint			mFBOId;
-	GLuint			mFBODepthRBId;
-	GLuint			mFBOBoundTexId;
-
-	GLuint			mFBOMSId;
-	GLuint			mFBOMSColourRBId;
-	GLuint			mFBOMSDepthRBId;
+	QOpenGLTexture					*mSrcTex;
+	QOpenGLTexture					*mDstTex;
 };
 
 #endif // TEXTURE_H

@@ -2,6 +2,7 @@
 #define FFGLNODE_H
 
 #include <QOpenGLFunctions>
+#include <QOpenGLFramebufferObject>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -60,6 +61,9 @@ protected:
 
 	QPoint											 mPoint;
 	QSize											 mSize;
+
+	GLuint											 mFBO;
+	QSize											 mFBOSize;
 };
 
 #endif // FFGLNODE_H

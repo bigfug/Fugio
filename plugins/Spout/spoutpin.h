@@ -102,21 +102,6 @@ public:
 
 	virtual void release( void ) Q_DECL_OVERRIDE;
 
-	virtual quint32 fbo( bool ) Q_DECL_OVERRIDE
-	{
-		return( 0 );
-	}
-
-	virtual void freeFbo( void ) Q_DECL_OVERRIDE
-	{
-
-	}
-
-	virtual quint32 fboMultiSample( int, bool ) Q_DECL_OVERRIDE
-	{
-		return( 0 );
-	}
-
 	virtual void swapTexture( void ) Q_DECL_OVERRIDE
 	{
 

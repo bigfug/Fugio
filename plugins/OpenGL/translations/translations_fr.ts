@@ -35,12 +35,12 @@
 <context>
     <name>EasyShader2DNode</name>
     <message>
-        <location filename="../easyshader2dnode.cpp" line="346"/>
+        <location filename="../easyshader2dnode.cpp" line="312"/>
         <source>No shaders compiled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../easyshader2dnode.cpp" line="352"/>
+        <location filename="../easyshader2dnode.cpp" line="318"/>
         <source>Shader compilation failed</source>
         <translation type="unfinished"></translation>
     </message>
