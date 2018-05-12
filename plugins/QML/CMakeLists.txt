@@ -31,13 +31,11 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 #------------------------------------------------------------------------------
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Qml Quick QuickControls2 QuickWidgets Gui Widgets LinguistTools REQUIRED )
+find_package( Qt5 COMPONENTS Core Qml Quick QuickWidgets Gui Widgets LinguistTools OPTIONAL_COMPONENTS QuickControls2 REQUIRED )
 
 target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Qml Qt5::Quick Qt5::QuickControls2 Qt5::QuickWidgets Qt5::Gui Qt5::Widgets )
 
-if( FUGIO_CMAKE_DIR )
-	include( ${FUGIO_CMAKE_DIR}/AddTranslations.cmake )
-endif( FUGIO_CMAKE_DIR )
+include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 
 #------------------------------------------------------------------------------
 # Install

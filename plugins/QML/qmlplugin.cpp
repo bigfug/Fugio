@@ -11,6 +11,7 @@
 #include "syntaxhighlighterqml.h"
 
 #include <QtQml>
+#include <QQuickStyle>
 
 #include "qmlnode.h"
 
@@ -43,6 +44,10 @@ QMLPlugin::QMLPlugin()
 	{
 		qApp->installTranslator( &Translator );
 	}
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
+	QQuickStyle::setStyle( "Material" );
+#endif
 }
 
 PluginInterface::InitResult QMLPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
