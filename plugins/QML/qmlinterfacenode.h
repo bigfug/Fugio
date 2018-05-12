@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QQuickView>
 #include <QQuickWidget>
+#include <QQuickImageProvider>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -13,6 +14,21 @@
 
 class QMLWidget;
 class QDockWidget;
+class QMLInterfaceNode;
+
+class ImageProvider : public QQuickImageProvider
+{
+public:
+	ImageProvider( QMLInterfaceNode *pNode ) : QQuickImageProvider( QQmlImageProviderBase::Image ), mNode( pNode )
+	{
+
+	}
+
+	virtual QImage requestImage( const QString &id, QSize *size, const QSize &requestedSize ) Q_DECL_OVERRIDE;
+
+private:
+	QMLInterfaceNode		*mNode;
+};
 
 class QMLInterfaceNode : public fugio::NodeControlBase
 {
@@ -45,6 +61,8 @@ public:
 	virtual bool canAcceptPin( fugio::PinInterface *pPin ) const Q_DECL_OVERRIDE;
 
 	void registerOwnership( QObject *O );
+
+	QImage imageRequest( const QString &pId, QSize *pSize, const QSize &pRequestedSize );
 
 signals:
 	void signalInputsUpdated( qint64 pTimeStamp );

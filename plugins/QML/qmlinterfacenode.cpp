@@ -21,6 +21,8 @@
 #include <fugio/node_signals.h>
 #include <fugio/editor_interface.h>
 
+#include <fugio/image/image.h>
+
 #include <fugio/text/uuid.h>
 
 #include <fugio/qml/uuid.h>
@@ -32,6 +34,11 @@
 
 #include "qmlwidget.h"
 #include "qmlplugin.h"
+
+QImage ImageProvider::requestImage( const QString &id, QSize *size, const QSize &requestedSize )
+{
+	return( mNode->imageRequest( id, size, requestedSize ) );
+}
 
 QMLInterfaceNode::QMLInterfaceNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mDockWidget( nullptr ), mWidget( nullptr ), mQuickView( Q_NULLPTR ), mQML( pNode ), mDockArea( Qt::BottomDockWidgetArea )
@@ -132,6 +139,8 @@ bool QMLInterfaceNode::initialise( void )
 
 		qDebug() << Engine->importPathList();
 		qDebug() << Engine->pluginPathList();
+
+		Engine->addImageProvider( "fugio", new ImageProvider( this ) );
 	}
 
 	connect( this, &QMLInterfaceNode::signalInputsUpdated, &mQML, &QMLNode::signalInputsUpdated );
@@ -236,6 +245,44 @@ bool QMLInterfaceNode::canAcceptPin( fugio::PinInterface *pPin ) const
 void QMLInterfaceNode::registerOwnership( QObject *O )
 {
 	QQmlEngine::setObjectOwnership( O, QQmlEngine::CppOwnership );
+}
+
+QImage QMLInterfaceNode::imageRequest( const QString &pId, QSize *pSize, const QSize &pRequestedSize )
+{
+	QSharedPointer<fugio::PinInterface>		P = mNode->findInputPinByName( pId );
+
+	if( !P )
+	{
+		return( QImage() );
+	}
+
+	fugio::Image	SrcDat = variant<fugio::Image>( P );
+
+	if( !SrcDat.isValid() )
+	{
+		return( QImage() );
+	}
+
+	QImage			SrcImg = SrcDat.image();
+
+	if( SrcImg.isNull() )
+	{
+		return( QImage() );
+	}
+
+	if( pSize )
+	{
+		*pSize = SrcImg.size();
+	}
+
+	QSize		NewSze( pRequestedSize.width() > 0 ? pRequestedSize.width() : SrcImg.width(), pRequestedSize.height() > 0 ? pRequestedSize.height() : SrcImg.height() );
+
+	if( NewSze != SrcImg.size() )
+	{
+		return( SrcImg.scaled( NewSze ) );
+	}
+
+	return( SrcImg );
 }
 
 void QMLInterfaceNode::nodeNameUpdated(const QString &pName)
@@ -356,3 +403,4 @@ void QMLInterfaceNode::dockWidgetLocationUpdated( Qt::DockWidgetArea pArea )
 {
 	mDockArea = pArea;
 }
+
