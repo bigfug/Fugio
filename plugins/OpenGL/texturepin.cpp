@@ -247,7 +247,12 @@ void TexturePin::update()
 
 	if( mDstTex )
 	{
-		return;
+		if( mDstTex->isCreated() && mDstTex->isStorageAllocated() )
+		{
+			return;
+		}
+
+		free();
 	}
 
 	if( !( mDstTex = new QOpenGLTexture( QOpenGLTexture::Target( mTexDsc.mTarget ) ) ) )

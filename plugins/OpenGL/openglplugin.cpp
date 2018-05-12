@@ -478,21 +478,25 @@ QOpenGLContext *OpenGLPlugin::context()
 		ThreadContext	 TC;
 
 		TC.mSurface = new QOffscreenSurface();
-		TC.mContext = new QOpenGLContext( Thread );
+		TC.mContext = new QOpenGLContext();
 
 		TC.mSurface->create();
 
-		TC.mContext->setShareContext( ShareContext );
-
-		if( TC.mContext->create() )
+		if( TC.mSurface->isValid() )
 		{
-			TC.mContext->makeCurrent( TC.mSurface );
+			TC.mContext->setShareContext( ShareContext );
 
-			OpenGLPlugin::instance()->initGLEW();
+			if( TC.mContext->create() )
+			{
+				if( TC.mContext->makeCurrent( TC.mSurface ) )
+				{
+					OpenGLPlugin::instance()->initGLEW();
 
-			mThreadContexts.insert( Thread, TC );
+					mThreadContexts.insert( Thread, TC );
 
-			return( TC.mContext );
+					return( TC.mContext );
+				}
+			}
 		}
 
 		delete TC.mContext;
@@ -501,9 +505,48 @@ QOpenGLContext *OpenGLPlugin::context()
 		return( Q_NULLPTR );
 	}
 
-	it.value().mContext->makeCurrent( it.value().mSurface );
+	if( !it.value().mContext->makeCurrent( it.value().mSurface ) )
+	{
+		return( Q_NULLPTR );
+	}
 
 	return( it.value().mContext );
+}
+
+void OpenGLPlugin::contextAdded(QSharedPointer<ContextInterface> pContext)
+{
+	connect( pContext->qobject(), SIGNAL(frameInitialise()), this, SLOT(contextFrameInitialise()) );
+	connect( pContext->qobject(), SIGNAL(frameEnd()), this, SLOT(contextFrameEnd()) );
+}
+
+void OpenGLPlugin::contextRemoved(QSharedPointer<ContextInterface> pContext)
+{
+	disconnect( pContext->qobject(), SIGNAL(frameInitialise()), this, SLOT(contextFrameInitialise()) );
+	disconnect( pContext->qobject(), SIGNAL(frameEnd()), this, SLOT(contextFrameEnd()) );
+}
+
+void OpenGLPlugin::contextFrameInitialise()
+{
+	QOpenGLContext		*CurCtx = QOpenGLContext::currentContext();
+
+	if( CurCtx )
+	{
+		CurCtx->doneCurrent();
+	}
+
+	context();
+}
+
+void OpenGLPlugin::contextFrameEnd()
+{
+	QOpenGLContext		*CurCtx = QOpenGLContext::currentContext();
+
+	if( CurCtx )
+	{
+		glFlush();
+
+		CurCtx->doneCurrent();
+	}
 }
 
 void OpenGLPlugin::deviceConfigGui( QWidget *pParent )
@@ -548,28 +591,6 @@ void OpenGLPlugin::globalFrameEnd()
 void OpenGLPlugin::appAboutToQuit()
 {
 	DeviceOpenGLOutput::deviceDeinitialise();
-}
-
-void OpenGLPlugin::contextAdded(QSharedPointer<ContextInterface> pContext)
-{
-	connect( pContext->qobject(), SIGNAL(frameInitialise()), this, SLOT(contextFrameInitialise()) );
-}
-
-void OpenGLPlugin::contextRemoved(QSharedPointer<ContextInterface> pContext)
-{
-	disconnect( pContext->qobject(), SIGNAL(frameInitialise()), this, SLOT(contextFrameInitialise()) );
-}
-
-void OpenGLPlugin::contextFrameInitialise()
-{
-	QOpenGLContext		*CurCtx = QOpenGLContext::currentContext();
-
-	if( CurCtx )
-	{
-		CurCtx->doneCurrent();
-	}
-
-	context();
 }
 
 void OpenGLPlugin::initStaticData( void )

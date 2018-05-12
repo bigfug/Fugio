@@ -21,11 +21,6 @@ EasyShader2DNode::EasyShader2DNode( QSharedPointer<fugio::NodeInterface> pNode )
 	FUGID( PIN_INPUT_FRAGMENT_SHADER, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
 	FUGID( PIN_OUTPUT_RENDER, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
 	FUGID( PIN_OUTPUT_TEXTURE, "249f2932-f483-422f-b811-ab679f006381" );
-//	FUGID( PIN_XXX_XXX, "ce8d578e-c5a4-422f-b3c4-a1bdf40facdb" );
-	//FUGID( PIN_XXX_XXX, "e6bf944e-5f46-4994-bd51-13c2aa6415b7" );
-	//FUGID( PIN_XXX_XXX, "a2bbf374-0dc8-42cb-b85a-6a43b58a348f" );
-	//FUGID( PIN_XXX_XXX, "51297977-7b4b-4e08-9dea-89a8add4abe0" );
-	//FUGID( PIN_XXX_XXX, "c997473a-2016-466b-9128-beacb99870a2" );
 
 	mPinInputTrigger = pinInput( "Trigger", PID_FUGIO_NODE_TRIGGER );
 
@@ -686,14 +681,16 @@ void EasyShader2DNode::updateOutputPins()
 	Q_ASSERT( glCheckFramebufferStatus( GL_FRAMEBUFFER ) == GL_FRAMEBUFFER_COMPLETE );
 
 #if defined( QOPENGLEXTRAFUNCTIONS_H )
-//	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
+	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
 
-//	if( GLEX )
-//	{
-//		GLEX->glDrawBuffers( FrgOut.size(), FrgOut.constData() );
-//	}
+	if( GLEX )
+	{
+		GLEX->glDrawBuffers( FrgOut.size(), FrgOut.constData() );
+	}
 #endif
 
 	glViewport( 0, 0, mFBOSize.width(), mFBOSize.height() );
+
+	OPENGL_PLUGIN_DEBUG
 }
 

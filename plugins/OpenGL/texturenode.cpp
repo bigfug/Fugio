@@ -35,9 +35,9 @@ TextureNode::TextureNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInputSize = pinInput( "Size", PIN_INPUT_SIZE );
 
-	mTexture = pinOutput<OpenGLTextureInterface *>( "Texture", mPinOutput, PID_OPENGL_TEXTURE, PIN_OUTPUT_TEXTURE );
+	mValOutputTexture = pinOutput<OpenGLTextureInterface *>( "Texture", mPinOutput, PID_OPENGL_TEXTURE, PIN_OUTPUT_TEXTURE );
 
-	mTexture->setTarget( QOpenGLTexture::Target2D );
+	mValOutputTexture->setTarget( QOpenGLTexture::Target2D );
 
 	mPinInputTexture->setControl( mPinOutput->control() );
 
@@ -82,32 +82,32 @@ void TextureNode::loadSettings( QSettings &pSettings )
 	QString		CurVal;
 	int			CurInt;
 
-	CurVal = OpenGLPlugin::mMapTargets.key( mTexture->target() );
+	CurVal = OpenGLPlugin::mMapTargets.key( mValOutputTexture->target() );
 	CurVal = pSettings.value( "Target", CurVal ).toString();
-	CurInt = OpenGLPlugin::mMapTargets.value( CurVal, mTexture->target() );
+	CurInt = OpenGLPlugin::mMapTargets.value( CurVal, mValOutputTexture->target() );
 
-	mTexture->setTarget( QOpenGLTexture::Target( CurInt ) );
+	mValOutputTexture->setTarget( QOpenGLTexture::Target( CurInt ) );
 
-	CurVal = OpenGLPlugin::mMapFormat.key( mTexture->format() );
+	CurVal = OpenGLPlugin::mMapFormat.key( mValOutputTexture->format() );
 	CurVal = pSettings.value( "Format", CurVal ).toString();
-	CurInt = OpenGLPlugin::mMapFormat.value( CurVal, mTexture->format() );
+	CurInt = OpenGLPlugin::mMapFormat.value( CurVal, mValOutputTexture->format() );
 
-	mTexture->setFormat( QOpenGLTexture::PixelFormat( CurInt ) );
+	mValOutputTexture->setFormat( QOpenGLTexture::PixelFormat( CurInt ) );
 
-	CurVal = OpenGLPlugin::mMapInternal.key( mTexture->internalFormat() );
+	CurVal = OpenGLPlugin::mMapInternal.key( mValOutputTexture->internalFormat() );
 	CurVal = pSettings.value( "Internal", CurVal ).toString();
-	CurInt = OpenGLPlugin::mMapInternal.value( CurVal, mTexture->internalFormat() );
+	CurInt = OpenGLPlugin::mMapInternal.value( CurVal, mValOutputTexture->internalFormat() );
 
-	mTexture->setInternalFormat( QOpenGLTexture::TextureFormat( CurInt ) );
+	mValOutputTexture->setInternalFormat( QOpenGLTexture::TextureFormat( CurInt ) );
 
-	CurVal = OpenGLPlugin::mMapType.key( mTexture->type() );
+	CurVal = OpenGLPlugin::mMapType.key( mValOutputTexture->type() );
 	CurVal = pSettings.value( "Type", CurVal ).toString();
-	CurInt = OpenGLPlugin::mMapType.value( CurVal, mTexture->type() );
+	CurInt = OpenGLPlugin::mMapType.value( CurVal, mValOutputTexture->type() );
 
-	mTexture->setType( QOpenGLTexture::PixelType( CurInt ) );
+	mValOutputTexture->setType( QOpenGLTexture::PixelType( CurInt ) );
 
-	int		CurMin = mTexture->filterMin();
-	int		CurMag = mTexture->filterMag();
+	int		CurMin = mValOutputTexture->filterMin();
+	int		CurMag = mValOutputTexture->filterMag();
 
 	CurVal = OpenGLPlugin::mMapFilterMin.key( CurMin );
 	CurVal = pSettings.value( "FilterMin", CurVal ).toString();
@@ -117,11 +117,11 @@ void TextureNode::loadSettings( QSettings &pSettings )
 	CurVal = pSettings.value( "FilterMag", CurVal ).toString();
 	CurMag = OpenGLPlugin::mMapFilterMin.value( CurVal, CurMag );
 
-	mTexture->setFilter( QOpenGLTexture::Filter( CurMin ), QOpenGLTexture::Filter( CurMag ) );
+	mValOutputTexture->setFilter( QOpenGLTexture::Filter( CurMin ), QOpenGLTexture::Filter( CurMag ) );
 
-	int		CurWPS = mTexture->wrapS();
-	int		CurWPT = mTexture->wrapT();
-	int		CurWPR = mTexture->wrapR();
+	int		CurWPS = mValOutputTexture->wrapS();
+	int		CurWPT = mValOutputTexture->wrapT();
+	int		CurWPR = mValOutputTexture->wrapR();
 
 	CurVal = OpenGLPlugin::mMapWrap.key( CurWPS );
 	CurVal = pSettings.value( "WrapS", CurVal ).toString();
@@ -135,31 +135,31 @@ void TextureNode::loadSettings( QSettings &pSettings )
 	CurVal = pSettings.value( "WrapR", CurVal ).toString();
 	CurWPR = OpenGLPlugin::mMapWrap.value( CurVal, CurWPR );
 
-	mTexture->setWrap( QOpenGLTexture::WrapMode( CurWPS ), QOpenGLTexture::WrapMode( CurWPT ), QOpenGLTexture::WrapMode( CurWPR ) );
+	mValOutputTexture->setWrap( QOpenGLTexture::WrapMode( CurWPS ), QOpenGLTexture::WrapMode( CurWPT ), QOpenGLTexture::WrapMode( CurWPR ) );
 
-	CurVal = OpenGLPlugin::mMapCompare.key( mTexture->compare() );
+	CurVal = OpenGLPlugin::mMapCompare.key( mValOutputTexture->compare() );
 	CurVal = pSettings.value( "Compare", CurVal ).toString();
-	CurInt = OpenGLPlugin::mMapCompare.value( CurVal, mTexture->compare() );
+	CurInt = OpenGLPlugin::mMapCompare.value( CurVal, mValOutputTexture->compare() );
 
-	mTexture->setGenMipMaps( pSettings.value( "MipMaps", mTexture->genMipMaps() ).toBool() );
+	mValOutputTexture->setGenMipMaps( pSettings.value( "MipMaps", mValOutputTexture->genMipMaps() ).toBool() );
 
-	mTexture->setDoubleBuffered( pSettings.value( "DoubleBuffer", mTexture->isDoubleBuffered() ).toBool() );
+	mValOutputTexture->setDoubleBuffered( pSettings.value( "DoubleBuffer", mValOutputTexture->isDoubleBuffered() ).toBool() );
 }
 
 void TextureNode::saveSettings( QSettings &pSettings ) const
 {
-	pSettings.setValue( "Target", OpenGLPlugin::mMapTargets.key( mTexture->target() ) );
-	pSettings.setValue( "Format", OpenGLPlugin::mMapFormat.key( mTexture->format() ) );
-	pSettings.setValue( "Internal", OpenGLPlugin::mMapInternal.key( mTexture->internalFormat() ) );
-	pSettings.setValue( "Type", OpenGLPlugin::mMapType.key( mTexture->type() ) );
-	pSettings.setValue( "FilterMin", OpenGLPlugin::mMapFilterMin.key( mTexture->filterMin() ) );
-	pSettings.setValue( "FilterMag", OpenGLPlugin::mMapFilterMag.key( mTexture->filterMag() ) );
-	pSettings.setValue( "WrapS", OpenGLPlugin::mMapWrap.key( mTexture->wrapS() ) );
-	pSettings.setValue( "WrapT", OpenGLPlugin::mMapWrap.key( mTexture->wrapT() ) );
-	pSettings.setValue( "WrapR", OpenGLPlugin::mMapWrap.key( mTexture->wrapR() ) );
-	pSettings.setValue( "MipMaps", mTexture->genMipMaps() );
-	pSettings.setValue( "DoubleBuffer", mTexture->isDoubleBuffered() );
-	pSettings.setValue( "Compare", OpenGLPlugin::mMapCompare.key( mTexture->compare() ) );
+	pSettings.setValue( "Target", OpenGLPlugin::mMapTargets.key( mValOutputTexture->target() ) );
+	pSettings.setValue( "Format", OpenGLPlugin::mMapFormat.key( mValOutputTexture->format() ) );
+	pSettings.setValue( "Internal", OpenGLPlugin::mMapInternal.key( mValOutputTexture->internalFormat() ) );
+	pSettings.setValue( "Type", OpenGLPlugin::mMapType.key( mValOutputTexture->type() ) );
+	pSettings.setValue( "FilterMin", OpenGLPlugin::mMapFilterMin.key( mValOutputTexture->filterMin() ) );
+	pSettings.setValue( "FilterMag", OpenGLPlugin::mMapFilterMag.key( mValOutputTexture->filterMag() ) );
+	pSettings.setValue( "WrapS", OpenGLPlugin::mMapWrap.key( mValOutputTexture->wrapS() ) );
+	pSettings.setValue( "WrapT", OpenGLPlugin::mMapWrap.key( mValOutputTexture->wrapT() ) );
+	pSettings.setValue( "WrapR", OpenGLPlugin::mMapWrap.key( mValOutputTexture->wrapR() ) );
+	pSettings.setValue( "MipMaps", mValOutputTexture->genMipMaps() );
+	pSettings.setValue( "DoubleBuffer", mValOutputTexture->isDoubleBuffered() );
+	pSettings.setValue( "Compare", OpenGLPlugin::mMapCompare.key( mValOutputTexture->compare() ) );
 }
 
 void TextureNode::onEditClicked()
@@ -173,25 +173,25 @@ void TextureNode::onEditClicked()
 
 	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
 
-	QScopedPointer<TextureNodeForm>		Form( new TextureNodeForm( mTexture, false, EI->mainWindow() ) );
+	QScopedPointer<TextureNodeForm>		Form( new TextureNodeForm( mValOutputTexture, false, EI->mainWindow() ) );
 
-	if( Form != 0 )
+	if( Form )
 	{
 		Form->setModal( true );
 
 		if( Form->exec() == QDialog::Accepted )
 		{
-			mTexture->free();
+			mValOutputTexture->free();
 
-			mTexture->setTarget( QOpenGLTexture::Target( Form->target() ) );
-			mTexture->setFormat( Form->format() );
-			mTexture->setInternalFormat( Form->internal() );
-			mTexture->setType( Form->type() );
-			mTexture->setFilter( Form->filterMin(), Form->filterMag() );
-			mTexture->setGenMipMaps( Form->genMipMaps() );
-			mTexture->setDoubleBuffered( Form->doubleBuffer() );
-			mTexture->setWrap( Form->wrapS(), Form->wrapT(), Form->wrapR() );
-			mTexture->setCompare( Form->compare() );
+			mValOutputTexture->setTarget( QOpenGLTexture::Target( Form->target() ) );
+			mValOutputTexture->setFormat( Form->format() );
+			mValOutputTexture->setInternalFormat( Form->internal() );
+			mValOutputTexture->setType( Form->type() );
+			mValOutputTexture->setFilter( Form->filterMin(), Form->filterMag() );
+			mValOutputTexture->setGenMipMaps( Form->genMipMaps() );
+			mValOutputTexture->setDoubleBuffered( Form->doubleBuffer() );
+			mValOutputTexture->setWrap( Form->wrapS(), Form->wrapT(), Form->wrapR() );
+			mValOutputTexture->setCompare( Form->compare() );
 
 			mNode->context()->updateNode( mNode );
 		}
@@ -249,18 +249,18 @@ void TextureNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	mTexture->setSize( NewSze );
+	mValOutputTexture->setSize( NewSze );
 
-	mTexture->update();
+	mValOutputTexture->update();
 
-	if( mTexture->dstTexId() )
+	if( mValOutputTexture->dstTexId() )
 	{
 		pinUpdated( mPinOutput );
 	}
 
-	if( mTexture->size() != mOutputTextureSize->variant().value<QVector3D>() )
+	if( mValOutputTexture->size() != mOutputTextureSize->variant().value<QVector3D>() )
 	{
-		mOutputTextureSize->setVariant( mTexture->size() );
+		mOutputTextureSize->setVariant( mValOutputTexture->size() );
 
 		pinUpdated( mPinOutputTextureSize );
 	}

@@ -132,6 +132,8 @@ void ImageToTextureNode::loadSettings( QSettings &pSettings )
 	mTexture->setWrap( QOpenGLTexture::WrapMode( CurWPS ), QOpenGLTexture::WrapMode( CurWPT ), QOpenGLTexture::WrapMode( CurWPR ) );
 
 	mTexture->setGenMipMaps( pSettings.value( "MipMaps", mTexture->genMipMaps() ).toBool() );
+
+	mTexture->setOrigin( OpenGLTextureOrigin::TopLeft );
 }
 
 void ImageToTextureNode::saveSettings( QSettings &pSettings ) const

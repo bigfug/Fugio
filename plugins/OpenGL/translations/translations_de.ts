@@ -35,12 +35,12 @@
 <context>
     <name>EasyShader2DNode</name>
     <message>
-        <location filename="../easyshader2dnode.cpp" line="312"/>
+        <location filename="../easyshader2dnode.cpp" line="307"/>
         <source>No shaders compiled</source>
         <translation type="unfinished">Kein Shader kompiliert</translation>
     </message>
     <message>
-        <location filename="../easyshader2dnode.cpp" line="318"/>
+        <location filename="../easyshader2dnode.cpp" line="313"/>
         <source>Shader compilation failed</source>
         <translation type="unfinished">Shader Kompilation fehlgeschlagen</translation>
     </message>
@@ -58,12 +58,12 @@
         <translation>Zugeweisene OpenGL Textur</translation>
     </message>
     <message>
-        <location filename="../imagetotexturenode.cpp" line="155"/>
+        <location filename="../imagetotexturenode.cpp" line="157"/>
         <source>No OpenGL Context</source>
         <translation>OpenGLContext</translation>
     </message>
     <message>
-        <location filename="../imagetotexturenode.cpp" line="155"/>
+        <location filename="../imagetotexturenode.cpp" line="157"/>
         <source>Can&apos;t edit texture without OpenGL context</source>
         <translation>Textur kann nicht ohne OpenGL Context bearbeitet werden</translation>
     </message>

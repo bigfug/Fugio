@@ -131,6 +131,10 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
   BUNDLE TRUE
 )
 
+if( APPLE AND CMAKE_BUILD_TYPE STREQUAL Debug )
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE Q_ENABLE_OPENGL_FUNCTIONS_DEBUG )
+endif()
+
 #------------------------------------------------------------------------------
 # Install
 

@@ -138,6 +138,7 @@ private slots:
 	void contextRemoved( QSharedPointer<fugio::ContextInterface> pContext );
 
 	void contextFrameInitialise( void );
+	void contextFrameEnd( void );
 
 private:
 	void initStaticData();
