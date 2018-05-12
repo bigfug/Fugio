@@ -11,6 +11,7 @@
 #include <QDir>
 #include <QQuickItem>
 #include <QStandardPaths>
+#include <QQmlError>
 
 #include <fugio/context_interface.h>
 #include <fugio/context_widget_signals.h>
@@ -286,6 +287,7 @@ void QMLInterfaceNode::processErrors( const QList<QQmlError> &pErrLst ) const
 		SE.mColumnStart = SE.mColumnEnd = QmlErr.column();
 		SE.mLineStart = SE.mLineEnd = QmlErr.line();
 
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 9, 0 )
 		switch( QmlErr.messageType() )
 		{
 			case QtDebugMsg:
@@ -308,6 +310,7 @@ void QMLInterfaceNode::processErrors( const QList<QQmlError> &pErrLst ) const
 				SE.mError = "FATL: ";
 				break;
 		}
+#endif
 
 		SE.mError.append( QmlErr.description() );
 
