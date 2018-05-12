@@ -11,7 +11,10 @@
 #include "syntaxhighlighterqml.h"
 
 #include <QtQml>
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
 #include <QQuickStyle>
+#endif
 
 #include "qmlnode.h"
 
