@@ -35,6 +35,46 @@ typedef struct KeyboardEvent
 	Modifiers		mModifiers;
 	int				mCode;
 	QString			mText;
+
+	KeyboardEvent( void )
+		: mModifiers( NONE )
+	{
+
+	}
+
+	void translateModifiers( Qt::KeyboardModifiers pModifiers )
+	{
+		if( pModifiers.testFlag( Qt::ShiftModifier ) )
+		{
+			mModifiers |= SHIFT;
+		}
+
+		if( pModifiers.testFlag( Qt::ControlModifier ) )
+		{
+			mModifiers |= CTRL;
+		}
+
+		if( pModifiers.testFlag( Qt::AltModifier ) )
+		{
+			mModifiers |= ALT;
+		}
+
+		if( pModifiers.testFlag( Qt::MetaModifier ) )
+		{
+			mModifiers |= META;
+		}
+
+		if( pModifiers.testFlag( Qt::KeypadModifier ) )
+		{
+			mModifiers |= KEYPAD;
+		}
+
+		if( pModifiers.testFlag( Qt::GroupSwitchModifier ) )
+		{
+			mModifiers |= GROUPSWITCH;
+		}
+	}
+
 } KeyboardEvent;
 
 Q_DECLARE_OPERATORS_FOR_FLAGS( KeyboardEvent::Modifiers )

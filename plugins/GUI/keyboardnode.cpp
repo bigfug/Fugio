@@ -130,7 +130,9 @@ void KeyboardNode::inputsUpdated( qint64 pTimeStamp )
 		}
 		else if( mListening )
 		{
-			pinOutput( K, PID_BOOL, QUuid::createUuid() );
+			P = pinOutput( K, PID_BOOL, QUuid::createUuid() );
+
+			P->setRemovable( true );
 
 			mListening = false;
 

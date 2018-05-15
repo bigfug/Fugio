@@ -370,17 +370,17 @@
 <context>
     <name>WindowNode</name>
     <message>
-        <location filename="../windownode.cpp" line="50"/>
+        <location filename="../windownode.cpp" line="53"/>
         <source>The mouse cursor will be visible in the OpenGL window if this is true, hidden if it is false</source>
         <translation>Der Mouse Cursor wird im OpenGL Fenster angezeigt wenn dieser Pin auf True ist</translation>
     </message>
     <message>
-        <location filename="../windownode.cpp" line="52"/>
+        <location filename="../windownode.cpp" line="55"/>
         <source>The OpenGL rendering state to apply</source>
         <translation>OpenGL Render Status der angewendet werden soll</translation>
     </message>
     <message>
-        <location filename="../windownode.cpp" line="54"/>
+        <location filename="../windownode.cpp" line="57"/>
         <source>The input 3D Geometry to render</source>
         <translation>Input 3D Geometrie die gerendert werden soll</translation>
     </message>
