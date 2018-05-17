@@ -116,13 +116,6 @@ order=0
 uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
 version=2
 
-[84a192f7-3984-41e1-a5be-b996d3ec0308]
-inputs\1\d0af68e3-3401-4e80-9be1-1445cf36f937=00000000-0000-0000-0000-000000000000
-inputs\size=1
-name=Logger
-outputs\size=0
-version=2
-
 [854d0dde-0be0-444f-8b0b-aa1e4d070e29]
 direction=1
 name=Input
@@ -147,7 +140,7 @@ version=2
 
 [9f2e233f-1b50-47de-90e1-dadf208b0f02]
 control\dockarea=8
-control\value="\nfugio = require \"fugio\"\nqt    = require \"qt\"\n\nPinSrcImg = fugio.input( \"SrcImg\" )\nPinDstImg = fugio.output( \"DstImg\" )\nPinInputCorners = fugio.input( \"Corners\" )\n\nDstImg = PinDstImg:get()\n\nfunction main()\n\tlocal SrcImg = PinSrcImg:get()\n\n\tif SrcImg:isValid() == false then return end\n\n\tlocal\tSrcImgSze = SrcImg:size()\n\n\tDstImg:setSize( SrcImgSze )\n\n\tlocal\tP = qt.painter( DstImg )\n\n\tP:drawImage( 0, 0, SrcImg )\n\n\tP:setPen( qt.color( '#ff0000' ) )\n\n\tif #PinInputCorners > 0 then\n\t\tlocal Corners = PinInputCorners[ 1 ]:array()[ 1 ]\n\n\t\tfugio.log( tostring( Corners ) )\n\t\tfugio.log( #Corners )\n\n\t\tfor i = 1, #Corners do\n\t\t\tlocal C = Corners[ i ]\n\n\t\t\tfugio.log( type( C[ 1 ] ) )\n\t\t\tfugio.log( C )\n\t\t\tfugio.log( C[ 1 ].x )\n\t\n\t\t\tP:drawPoint( C[ 1 ].x, C[ 1 ].y )\n\t\tend\n\tend\n\n\tP:finish()\n\n\tPinDstImg:update()\nend\n"
+control\value="\nfugio = require \"fugio\"\nqt    = require \"qt\"\n\nPinSrcImg = fugio.input( \"SrcImg\" )\nPinDstImg = fugio.output( \"DstImg\" )\nPinInputCorners = fugio.input( \"Corners\" )\n\nDstImg = PinDstImg:get()\n\nfunction main()\n\tlocal SrcImg = PinSrcImg:get()\n\n\tif SrcImg:isValid() == false then return end\n\n\tlocal\tSrcImgSze = SrcImg:size()\n\n\tDstImg:setSize( SrcImgSze )\n\n\tlocal\tP = qt.painter( DstImg )\n\n\tP:drawImage( 0, 0, SrcImg )\n\n\tP:setPen( qt.color( 255, 0, 0 ) )\n\n\tif #PinInputCorners > 0 then\n\t\tlocal Corners = PinInputCorners[ 1 ]:array()[ 1 ]\n\t\n\t\tlocal C1 = Corners[ 1 ]\n\t\tlocal C2 = Corners[ 2 ]\n\t\tlocal C3 = Corners[ 3 ]\n\t\tlocal C4 = Corners[ 4 ]\n\t\n\t\tP:drawLine( C1.x, C1.y, C2.x, C2.y )\n\t\tP:drawLine( C2.x, C2.y, C3.x, C3.y )\n\t\tP:drawLine( C3.x, C3.y, C4.x, C4.y )\n\t\tP:drawLine( C4.x, C4.y, C1.x, C1.y )\n\tend\n\n\tP:finish()\n\n\tPinDstImg:update()\nend\n"
 inputs\1\ceb4cc18-7fa7-410d-b40a-ffcea8895ae3=00000000-0000-0000-0000-000000000000
 inputs\2\f79f96ce-c7d9-4b80-9d43-b96a7a696be5=00000000-0000-0000-0000-000000000000
 inputs\size=2
@@ -238,7 +231,6 @@ version=2
 39bf8a56-7648-42d3-bfd5-1af0b11d64cb\f83da75f-80ec-4fa4-9051-b45bb2fdedfd=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 6ff40100-6c53-4d4e-819d-041c74482150=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 6ff40100-6c53-4d4e-819d-041c74482150\1d1194e9-440a-4d1d-a878-6c4154cfd055=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
-84a192f7-3984-41e1-a5be-b996d3ec0308=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 9f2e233f-1b50-47de-90e1-dadf208b0f02=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 9f2e233f-1b50-47de-90e1-dadf208b0f02\f93227ae-da33-40ce-b0b0-968ba6e2fd8d=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 a0d9e487-94a2-4109-b5b4-8d10ae1f6b1f=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
@@ -263,17 +255,9 @@ version=2
 854d0dde-0be0-444f-8b0b-aa1e4d070e29=7befa7fe-40ef-44cd-964b-d65755e2a803
 86900eb3-f524-4378-9222-f05df5d676eb=64599254-217d-47a4-9391-f91d03698eea
 b5de4d8c-83a2-41e7-bb26-ce464c769316=4e112d50-64a0-4bc1-83fc-c4f282d2cf9d
-d0af68e3-3401-4e80-9be1-1445cf36f937=64599254-217d-47a4-9391-f91d03698eea
 f644f0cb-116a-42cd-aa85-d42d1fba1328=1dd3e1f1-a6dc-4264-b9cc-313771b70aac
 f9b0359e-c334-4f6e-8136-9231e9a87cb0=f83da75f-80ec-4fa4-9051-b45bb2fdedfd
 ff891825-1a7f-4977-aa2f-88aa92da1d91=f93227ae-da33-40ce-b0b0-968ba6e2fd8d
-
-[d0af68e3-3401-4e80-9be1-1445cf36f937]
-direction=1
-name=String
-order=0
-uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
-version=2
 
 [dee50967-b089-4493-a5af-ade331c64aed]
 direction=2
@@ -326,7 +310,7 @@ uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
 version=2
 
 [f93227ae-da33-40ce-b0b0-968ba6e2fd8d]
-control\values\1\i="\nfugio = require \"fugio\"\nqt    = require \"qt\"\n\nPinSrcImg = fugio.input( \"SrcImg\" )\nPinDstImg = fugio.output( \"DstImg\" )\nPinInputCorners = fugio.input( \"Corners\" )\n\nDstImg = PinDstImg:get()\n\nfunction main()\n\tlocal SrcImg = PinSrcImg:get()\n\n\tif SrcImg:isValid() == false then return end\n\n\tlocal\tSrcImgSze = SrcImg:size()\n\n\tDstImg:setSize( SrcImgSze )\n\n\tlocal\tP = qt.painter( DstImg )\n\n\tP:drawImage( 0, 0, SrcImg )\n\n\tP:setPen( qt.color( '#ff0000' ) )\n\n\tif #PinInputCorners > 0 then\n\t\tlocal Corners = PinInputCorners[ 1 ]:array()[ 1 ]\n\n\t\tfugio.log( tostring( Corners ) )\n\t\tfugio.log( #Corners )\n\n\t\tfor i = 1, #Corners do\n\t\t\tlocal C = Corners[ i ]\n\n\t\t\tfugio.log( type( C[ 1 ] ) )\n\t\t\tfugio.log( C )\n\t\t\tfugio.log( C[ 1 ].x )\n\t\n\t\t\tP:drawPoint( C[ 1 ].x, C[ 1 ].y )\n\t\tend\n\tend\n\n\tP:finish()\n\n\tPinDstImg:update()\nend\n"
+control\values\1\i="\nfugio = require \"fugio\"\nqt    = require \"qt\"\n\nPinSrcImg = fugio.input( \"SrcImg\" )\nPinDstImg = fugio.output( \"DstImg\" )\nPinInputCorners = fugio.input( \"Corners\" )\n\nDstImg = PinDstImg:get()\n\nfunction main()\n\tlocal SrcImg = PinSrcImg:get()\n\n\tif SrcImg:isValid() == false then return end\n\n\tlocal\tSrcImgSze = SrcImg:size()\n\n\tDstImg:setSize( SrcImgSze )\n\n\tlocal\tP = qt.painter( DstImg )\n\n\tP:drawImage( 0, 0, SrcImg )\n\n\tP:setPen( qt.color( 255, 0, 0 ) )\n\n\tif #PinInputCorners > 0 then\n\t\tlocal Corners = PinInputCorners[ 1 ]:array()[ 1 ]\n\t\n\t\tlocal C1 = Corners[ 1 ]\n\t\tlocal C2 = Corners[ 2 ]\n\t\tlocal C3 = Corners[ 3 ]\n\t\tlocal C4 = Corners[ 4 ]\n\t\n\t\tP:drawLine( C1.x, C1.y, C2.x, C2.y )\n\t\tP:drawLine( C2.x, C2.y, C3.x, C3.y )\n\t\tP:drawLine( C3.x, C3.y, C4.x, C4.y )\n\t\tP:drawLine( C4.x, C4.y, C1.x, C1.y )\n\tend\n\n\tP:finish()\n\n\tPinDstImg:update()\nend\n"
 control\values\size=1
 direction=2
 name=Text
@@ -370,7 +354,6 @@ version=2
 [nodes]
 39bf8a56-7648-42d3-bfd5-1af0b11d64cb=4f7ce443-6e45-4632-8c79-e2d466cf5b27
 6ff40100-6c53-4d4e-819d-041c74482150=9fc66d43-97ab-4409-a0ef-f7e30dad5f42
-84a192f7-3984-41e1-a5be-b996d3ec0308=0e4281bc-53a9-45c4-b7e6-2b59a574ef00
 9f2e233f-1b50-47de-90e1-dadf208b0f02=327cfef0-537c-42d8-a8b6-29fa4416f1b4
 a0d9e487-94a2-4109-b5b4-8d10ae1f6b1f=d4682e12-f23b-447d-9515-072e1ffc5158
 a5e054a2-f090-42c7-8d73-67bd44c79dfb=4e63de59-f257-4b15-a599-a19f8d122d67
@@ -386,7 +369,6 @@ version=2
 [positions]
 39bf8a56-7648-42d3-bfd5-1af0b11d64cb="700,-60"
 6ff40100-6c53-4d4e-819d-041c74482150="480,-240"
-84a192f7-3984-41e1-a5be-b996d3ec0308="1040,-40"
 9f2e233f-1b50-47de-90e1-dadf208b0f02="760,-140"
 a0d9e487-94a2-4109-b5b4-8d10ae1f6b1f="280,-240"
 a5e054a2-f090-42c7-8d73-67bd44c79dfb="480,-120"
@@ -398,5 +380,5 @@ version=2
 
 [view]
 group=00000000-0000-0000-0000-000000000000
-state\center=@Variant(\0\0\0\x1a@\x8ax\0\0\0\0\0\xc0Z\0\0\0\0\0\0)
+state\center=@Variant(\0\0\0\x1a@\x8c \0\0\0\0\0\xc0Z\0\0\0\0\0\0)
 state\scale=1
