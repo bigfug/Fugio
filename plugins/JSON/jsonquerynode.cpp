@@ -49,11 +49,19 @@ void JsonQueryNode::inputsUpdated( qint64 pTimeStamp )
 
 	}
 
-	if( JsonVariant.isValid() )
+	if( Json.isEmpty() )
+	{
+		mValOutputResults->setVariantType( QMetaType::QJsonDocument );
+
+		mValOutputResults->setVariant( QJsonDocument() );
+
+		UpdateOutput = true;
+	}
+	else if( JsonVariant.isValid() )
 	{
 		// Quick and dirty query
 
-		QStringList		SL = variant<QString>( mPinInputQuery ).split( QRegExp( "[\\[\\.]" ) );
+		QStringList		SL = variant<QString>( mPinInputQuery ).split( QRegExp( "[\\[\\.]" ), QString::SkipEmptyParts );
 
 		JsonQuery			JQ( Json, SL );
 		QJsonValue::Type	ValueType = QJsonValue::Undefined;
