@@ -79,9 +79,12 @@ private:
 	static int luaIsArray( lua_State *L );
 	static int luaIsObject( lua_State *L );
 
+	static int luaGet( lua_State *L );
+
 private:
 	static const luaL_Reg					mLuaInstance[];
 	static const luaL_Reg					mLuaMethods[];
+	static const luaL_Reg					mLuaFunctions[];
 #endif
 };
 
