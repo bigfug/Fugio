@@ -11,6 +11,7 @@
 #include <fugio/nodecontrolbase.h>
 
 #include "jsonquerynode.h"
+#include "parsejsonnode.h"
 
 #include "jsonpin.h"
 
@@ -21,6 +22,7 @@ QList<QUuid>	NodeControlBase::PID_UUID;
 ClassEntry	NodeClasses[] =
 {
 	ClassEntry( "Query", "JSON", NID_JSON_QUERY, &JsonQueryNode::staticMetaObject ),
+	ClassEntry( "Parse", "JSON", NID_PARSE_JSON, &ParseJsonNode::staticMetaObject ),
 	ClassEntry()
 };
 
