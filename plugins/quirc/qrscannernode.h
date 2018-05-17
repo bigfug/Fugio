@@ -34,9 +34,8 @@ public:
 protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInputImage;
 
-//	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-
-//	fugio::VariantInterface						*mOutput;
+	QSharedPointer<fugio::PinInterface>			 mPinOutputCodes;
+	fugio::VariantInterface						*mValOutputCodes;
 
 	struct quirc								*mQR;
 	int											 mW, mH;
