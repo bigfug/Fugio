@@ -14,6 +14,7 @@
 #include <fugio/colour/uuid.h>
 #include <fugio/math/uuid.h>
 #include <fugio/core/uuid.h>
+#include <fugio/json/uuid.h>
 
 #include <fugio/image/image.h>
 
@@ -147,6 +148,7 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 
 	LUA->luaAddPinGet( PID_COLOUR, LuaColor::luaPinGet );
 	LUA->luaAddPinGet( PID_IMAGE, LuaImage::luaPinGet );
+	LUA->luaAddPinGet( PID_JSON, LuaJsonDocument::luaPinGet );
 	LUA->luaAddPinGet( PID_MATRIX4, LuaMatrix4x4::luaPinGet );
 	LUA->luaAddPinGet( PID_POINT, LuaPointF::luaPinGet );
 	LUA->luaAddPinGet( PID_QUATERNION, LuaQuaternion::luaPinGet );
@@ -163,6 +165,7 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaAddPushVariantFunction( QMetaType::QLineF, LuaLine::pushVariant );
 	LUA->luaAddPushVariantFunction( QMetaType::QPointF, LuaPointF::pushVariant );
 	LUA->luaAddPushVariantFunction( QMetaType::QVector3D, LuaVector3D::pushVariant );
+	LUA->luaAddPushVariantFunction( QMetaType::QJsonDocument, LuaJsonDocument::pushVariant );
 
 	LUA->luaAddPopVariantFunction( LuaLine::mTypeName, LuaLine::popVariant );
 	LUA->luaAddPopVariantFunction( LuaPointF::mTypeName, LuaPointF::popVariant );

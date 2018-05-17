@@ -6,6 +6,8 @@
 #endif
 
 #include <QJsonDocument>
+#include <QVariant>
+#include <QUuid>
 
 class LuaJsonDocument
 {
@@ -49,6 +51,11 @@ public:
 		return( luaL_testudata( L, i, JsonDocumentUserData::TypeName ) != nullptr );
 	}
 
+	static int pushVariant( lua_State *L, const QVariant &V )
+	{
+		return( pushjsondocument( L, V.value<QJsonDocument>() ) );
+	}
+
 	static JsonDocumentUserData *checkjsondocumentdata( lua_State *L, int i = 1 )
 	{
 		void *ud = luaL_checkudata( L, i, JsonDocumentUserData::TypeName );
@@ -65,6 +72,8 @@ public:
 		return( FUD ? FUD->mJsonDocument : nullptr );
 	}
 
+	static int luaPinGet( const QUuid &pPinLocalId, lua_State *L );
+
 private:
 	static int luaDelete( lua_State *L );
 
@@ -76,6 +85,8 @@ private:
 
 	static int luaArray( lua_State *L );
 	static int luaObject( lua_State *L );
+
+	static int luaToString( lua_State *L );
 
 private:
 	static const luaL_Reg					mLuaInstance[];
