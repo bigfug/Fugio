@@ -541,11 +541,11 @@ void OpenGLPlugin::contextFrameEnd()
 {
 	QOpenGLContext		*CurCtx = QOpenGLContext::currentContext();
 
+	// this is required on macOS
+
 	if( CurCtx )
 	{
 		glFlush();
-
-		CurCtx->doneCurrent();
 	}
 }
 
