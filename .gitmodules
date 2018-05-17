@@ -7,3 +7,6 @@
 [submodule "libs/FugioTime"]
 	path = libs/FugioTime
 	url = https://github.com/bigfug/FugioTime.git
+[submodule "plugins/quirc/quirc"]
+	path = plugins/quirc/quirc
+	url = https://github.com/dlbeer/quirc.git
