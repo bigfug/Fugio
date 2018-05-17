@@ -63,104 +63,107 @@ void JsonQueryNode::inputsUpdated( qint64 pTimeStamp )
 
 		QStringList		SL = variant<QString>( mPinInputQuery ).split( QRegExp( "[\\[\\.]" ), QString::SkipEmptyParts );
 
-		JsonQuery			JQ( Json, SL );
-		QJsonValue::Type	ValueType = QJsonValue::Undefined;
-		bool				AllSame   = true;
-
-		for( const QJsonValue V : JQ.mRV )
+		if( !SL.isEmpty() )
 		{
-			if( ValueType == QJsonValue::Undefined )
+			JsonQuery			JQ( Json, SL );
+			QJsonValue::Type	ValueType = QJsonValue::Undefined;
+			bool				AllSame   = true;
+
+			for( const QJsonValue V : JQ.mRV )
 			{
-				ValueType = V.type();
-				AllSame   = true;
+				if( ValueType == QJsonValue::Undefined )
+				{
+					ValueType = V.type();
+					AllSame   = true;
+				}
+				else if( ValueType != V.type() )
+				{
+					AllSame = false;
+				}
 			}
-			else if( ValueType != V.type() )
+
+			if( AllSame )
 			{
-				AllSame = false;
-			}
-		}
+				mValOutputResults->setVariantType( QMetaType::UnknownType );
+				mValOutputResults->setVariantCount( 0 );
 
-		if( AllSame )
-		{
-			mValOutputResults->setVariantType( QMetaType::UnknownType );
-			mValOutputResults->setVariantCount( 0 );
-
-			switch( ValueType )
-			{
-				case QJsonValue::Bool:
-					mValOutputResults->setVariantType( QMetaType::Bool );
-					mValOutputResults->setVariantCount( JQ.mRV.count() );
-
-					for( int i = 0 ; i < JQ.mRV.count() ; i++ )
-					{
-						mValOutputResults->setVariant( i, JQ.mRV.at( i ).toBool() );
-					}
-					break;
-
-				case QJsonValue::Double:
-					mValOutputResults->setVariantType( QMetaType::Double );
-					mValOutputResults->setVariantCount( JQ.mRV.count() );
-
-					for( int i = 0 ; i < JQ.mRV.count() ; i++ )
-					{
-						mValOutputResults->setVariant( i, JQ.mRV.at( i ).toDouble() );
-					}
-					break;
-
-				case QJsonValue::String:
-					mValOutputResults->setVariantType( QMetaType::QString );
-					mValOutputResults->setVariantCount( JQ.mRV.count() );
-
-					for( int i = 0 ; i < JQ.mRV.count() ; i++ )
-					{
-						mValOutputResults->setVariant( i, JQ.mRV.at( i ).toString() );
-					}
-					break;
-
-				case QJsonValue::Array:
-					{
-						QJsonArray			OD;
-
-						mValOutputResults->setVariantType( QMetaType::QJsonDocument );
-						mValOutputResults->setVariantCount( 1 );
+				switch( ValueType )
+				{
+					case QJsonValue::Bool:
+						mValOutputResults->setVariantType( QMetaType::Bool );
+						mValOutputResults->setVariantCount( JQ.mRV.count() );
 
 						for( int i = 0 ; i < JQ.mRV.count() ; i++ )
 						{
-							OD << JQ.mRV.at( i ).toArray();
+							mValOutputResults->setVariant( i, JQ.mRV.at( i ).toBool() );
 						}
+						break;
 
-						mValOutputResults->setVariant( QJsonDocument( OD ) );
-					}
-					break;
-
-				case QJsonValue::Object:
-					{
-						QJsonArray			OD;
-
-						mValOutputResults->setVariantType( QMetaType::QJsonDocument );
-						mValOutputResults->setVariantCount( 1 );
+					case QJsonValue::Double:
+						mValOutputResults->setVariantType( QMetaType::Double );
+						mValOutputResults->setVariantCount( JQ.mRV.count() );
 
 						for( int i = 0 ; i < JQ.mRV.count() ; i++ )
 						{
-							OD << JQ.mRV.at( i ).toObject();
+							mValOutputResults->setVariant( i, JQ.mRV.at( i ).toDouble() );
 						}
+						break;
 
-						mValOutputResults->setVariant( QJsonDocument( OD ) );
-					}
-					break;
+					case QJsonValue::String:
+						mValOutputResults->setVariantType( QMetaType::QString );
+						mValOutputResults->setVariantCount( JQ.mRV.count() );
 
-				default:
-					break;
+						for( int i = 0 ; i < JQ.mRV.count() ; i++ )
+						{
+							mValOutputResults->setVariant( i, JQ.mRV.at( i ).toString() );
+						}
+						break;
+
+					case QJsonValue::Array:
+						{
+							QJsonArray			OD;
+
+							mValOutputResults->setVariantType( QMetaType::QJsonDocument );
+							mValOutputResults->setVariantCount( 1 );
+
+							for( int i = 0 ; i < JQ.mRV.count() ; i++ )
+							{
+								OD << JQ.mRV.at( i ).toArray();
+							}
+
+							mValOutputResults->setVariant( QJsonDocument( OD ) );
+						}
+						break;
+
+					case QJsonValue::Object:
+						{
+							QJsonArray			OD;
+
+							mValOutputResults->setVariantType( QMetaType::QJsonDocument );
+							mValOutputResults->setVariantCount( 1 );
+
+							for( int i = 0 ; i < JQ.mRV.count() ; i++ )
+							{
+								OD << JQ.mRV.at( i ).toObject();
+							}
+
+							mValOutputResults->setVariant( QJsonDocument( OD ) );
+						}
+						break;
+
+					default:
+						break;
+				}
 			}
-		}
-		else
-		{
-			mValOutputResults->setVariantType( QMetaType::QJsonDocument );
+			else
+			{
+				mValOutputResults->setVariantType( QMetaType::QJsonDocument );
 
-			mValOutputResults->setVariant( QJsonDocument( JQ.mRV ) );
-		}
+				mValOutputResults->setVariant( QJsonDocument( JQ.mRV ) );
+			}
 
-		UpdateOutput = true;
+			UpdateOutput = true;
+		}
 	}
 
 	pinUpdated( mPinOutputResults, UpdateOutput );
