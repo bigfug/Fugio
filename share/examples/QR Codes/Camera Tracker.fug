@@ -39,6 +39,14 @@ order=0
 uuid=94fbd706-66d8-462b-bbde-b46cb15b059d
 version=2
 
+[335f3c5e-e18b-45bf-8019-f37926d4294d]
+default=255
+direction=1
+name=Input
+order=1
+uuid=608ac771-490b-4ae6-9c81-12b9af526d09
+version=2
+
 [39bf8a56-7648-42d3-bfd5-1af0b11d64cb]
 inputs\1\2257bc07-2b88-4f9c-9f47-f13fa17b0443=00000000-0000-0000-0000-000000000000
 inputs\size=1
@@ -50,6 +58,15 @@ version=2
 [42378e36-8839-4bd2-8f9c-0c0036338400]
 direction=1
 name=Image
+order=0
+uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
+version=2
+
+[449f93e9-0ab3-4aeb-98cd-f83fac42d499]
+control\values\1\i=0.2
+control\values\size=1
+direction=2
+name=
 order=0
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
 version=2
@@ -109,6 +126,20 @@ order=0
 uuid=1b5e9ce8-acb9-478d-b84b-9288ab3c42f5
 version=2
 
+[78fcaf2b-6093-4fb9-b5b1-150edd76e5cd]
+direction=1
+name=Input
+order=0
+uuid=c13a41c6-544b-46bb-a9f2-19dd156d236c
+version=2
+
+[7a226f4b-f7a9-45fa-ac33-1ddb41a1b4d0]
+direction=2
+name=Output
+order=0
+uuid=293bcd15-f3f5-4ed1-8814-7a845ab00f6b
+version=2
+
 [7befa7fe-40ef-44cd-964b-d65755e2a803]
 direction=2
 name=Image
@@ -136,6 +167,14 @@ direction=1
 name=Type
 order=3
 uuid=249f2932-f483-422f-b811-ab679f006381
+version=2
+
+[9d0131d5-6c99-478f-bf5d-abe83f804d47]
+control\value=@Variant(\0\0\0\x87>L\xcc\xcd)
+inputs\size=0
+name=Dial
+outputs\1\449f93e9-0ab3-4aeb-98cd-f83fac42d499=7de7061f-c1fa-4cd8-b5ed-612618df3d3f
+outputs\size=1
 version=2
 
 [9f2e233f-1b50-47de-90e1-dadf208b0f02]
@@ -210,6 +249,15 @@ order=2
 uuid=261cc653-d7fa-4c34-a08b-3603e8ae71d5
 version=2
 
+[ce2e75b1-7473-4195-972d-9f2f3966c2b2]
+inputs\1\78fcaf2b-6093-4fb9-b5b1-150edd76e5cd=00000000-0000-0000-0000-000000000000
+inputs\2\335f3c5e-e18b-45bf-8019-f37926d4294d=00000000-0000-0000-0000-000000000000
+inputs\size=2
+name=Multiply
+outputs\1\7a226f4b-f7a9-45fa-ac33-1ddb41a1b4d0=7cc9d0da-9667-4a17-a230-b56eb3ede8b2
+outputs\size=1
+version=2
+
 [ceab496d-34bc-46e7-b539-d5023aae640c]
 inputs\1\f9b0359e-c334-4f6e-8136-9231e9a87cb0=00000000-0000-0000-0000-000000000000
 inputs\2\eddb91b6-e632-4487-95d5-14dc4b5d3a13=00000000-0000-0000-0000-000000000000
@@ -231,6 +279,8 @@ version=2
 39bf8a56-7648-42d3-bfd5-1af0b11d64cb\f83da75f-80ec-4fa4-9051-b45bb2fdedfd=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 6ff40100-6c53-4d4e-819d-041c74482150=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 6ff40100-6c53-4d4e-819d-041c74482150\1d1194e9-440a-4d1d-a878-6c4154cfd055=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
+9d0131d5-6c99-478f-bf5d-abe83f804d47=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
+9d0131d5-6c99-478f-bf5d-abe83f804d47\449f93e9-0ab3-4aeb-98cd-f83fac42d499=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 9f2e233f-1b50-47de-90e1-dadf208b0f02=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 9f2e233f-1b50-47de-90e1-dadf208b0f02\f93227ae-da33-40ce-b0b0-968ba6e2fd8d=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 a0d9e487-94a2-4109-b5b4-8d10ae1f6b1f=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
@@ -241,6 +291,8 @@ b18fbe96-452e-48a8-817a-c57ef48f3393=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\
 b18fbe96-452e-48a8-817a-c57ef48f3393\7befa7fe-40ef-44cd-964b-d65755e2a803=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 ba489a37-bc08-4739-bf09-14377239b786=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 ba489a37-bc08-4739-bf09-14377239b786\4e112d50-64a0-4bc1-83fc-c4f282d2cf9d=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
+ce2e75b1-7473-4195-972d-9f2f3966c2b2=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
+ce2e75b1-7473-4195-972d-9f2f3966c2b2\7a226f4b-f7a9-45fa-ac33-1ddb41a1b4d0=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 ceab496d-34bc-46e7-b539-d5023aae640c=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
 ceab496d-34bc-46e7-b539-d5023aae640c\64599254-217d-47a4-9391-f91d03698eea=@Variant(\0\0\0\x43\x1\xff\xff\xc0\xc0\xc0\xc0\xc0\xc0\0\0)
 f5f222d2-706f-44d1-8c8a-2e2bddd8503b=@Variant(\0\0\0\x43\x1\xff\xff\xcc\xcc\xff\xff\xff\xff\0\0)
@@ -251,7 +303,9 @@ version=2
 [connections]
 2257bc07-2b88-4f9c-9f47-f13fa17b0443=1dd3e1f1-a6dc-4264-b9cc-313771b70aac
 42378e36-8839-4bd2-8f9c-0c0036338400=1d1194e9-440a-4d1d-a878-6c4154cfd055
+5c8ef804-9564-49a5-9e2c-f9b48a3e54cc=7a226f4b-f7a9-45fa-ac33-1ddb41a1b4d0
 61f32447-45da-4894-9f5a-ade0ae7a8556=dee50967-b089-4493-a5af-ade331c64aed
+78fcaf2b-6093-4fb9-b5b1-150edd76e5cd=449f93e9-0ab3-4aeb-98cd-f83fac42d499
 854d0dde-0be0-444f-8b0b-aa1e4d070e29=7befa7fe-40ef-44cd-964b-d65755e2a803
 86900eb3-f524-4378-9222-f05df5d676eb=64599254-217d-47a4-9391-f91d03698eea
 b5de4d8c-83a2-41e7-bb26-ce464c769316=4e112d50-64a0-4bc1-83fc-c4f282d2cf9d
@@ -342,7 +396,7 @@ version=3
 
 [mainwindow]
 geometry=@ByteArray(\x1\xd9\xd0\xcb\0\x2\0\0\0\0\0\0\0\0\0\x17\0\0\x5\x9f\0\0\x3\x83\0\0\0\0\0\0\0+\0\0\x4\xc6\0\0\x3\n\0\0\0\0\x2\0\0\0\x5\xa0)
-state="@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x3\0\0\0\0\0\0\x1I\0\0\x1\xa5\xfc\x2\0\0\0\x3\xfb\0\0\0\x1e\0m\0N\0o\0\x64\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\x15\0\0\x1\xa0\0\0\0\xf3\0\xff\xff\xff\xfc\0\0\0\0\0\0\x1\xa5\0\0\0`\0\xff\xff\xff\xfa\0\0\0\x1\x1\0\0\0\x3\xfb\0\0\0\x14\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0 \0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0t\0h\0L\0o\0g\0g\0\x65\0r\x1\0\0\0\0\xff\xff\xff\xff\0\0\0J\0\xff\xff\xff\xfb\0\0\0\x18\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0_\0\x33\x1\0\0\0\0\0\0\x1\x16\0\0\0\0\0\0\0\0\xfb\0\0\0\"\0M\0u\0l\0t\0i\0m\0\x65\0\x64\0i\0\x61\0 \0P\0l\0\x61\0y\0\x65\0r\x1\0\0\x3\xa7\0\0\0\xb6\0\0\0\0\0\0\0\0\0\0\0\x1\0\0\x1\x97\0\0\x1\xa5\xfc\x2\0\0\0\x5\xfb\0\0\0*\0m\0S\0t\0y\0l\0\x65\0S\0h\0\x65\0\x65\0t\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x8e\0\xff\xff\xff\xfb\0\0\0$\0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\x42\0r\0o\0w\0s\0\x65\0r\0\0\0\0\0\xff\xff\xff\xff\0\0\0`\0\xff\xff\xff\xfb\0\0\0,\0m\0P\0\x65\0r\0\x66\0o\0r\0m\0\x61\0n\0\x63\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\0\0\x1\xa5\0\0\0`\0\xff\xff\xff\xfb\0\0\0&\0m\0S\0n\0i\0p\0p\0i\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0&\0m\0S\0n\0i\0p\0p\0\x65\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x80\0\xff\xff\xff\0\0\0\x3\0\0\x5\xa0\0\0\x1\x96\xfc\x1\0\0\0\v\xfb\0\0\0\x1a\0V\0\x65\0r\0t\0\x65\0x\0 \0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\0\0\0\0\x2\xbe\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0 \0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\x2\xc2\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x10\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\x1\0\0\0\0\0\0\x2\xbe\0\0\0\0\0\0\0\0\xfb\0\0\0\f\0V\0\x65\0r\0t\0\x65\0x\x1\0\0\x2\xc2\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0m\0P\0l\0\x61\0y\0L\0i\0s\0t\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0\x16\0T\0\x65\0x\0t\0 \0\x45\0\x64\0i\0t\0o\0r\x1\0\0\0\0\0\0\x5|\0\0\0\0\0\0\0\0\xfb\0\0\0\x1a\0I\0m\0\x61\0g\0\x65\0 \0P\0r\0\x65\0v\0i\0\x65\0w\x1\0\0\x5\x80\0\0\x2\0\0\0\0\0\0\0\0\0\xfb\0\0\0L\0{\0\x32\0\x64\0\x61\0\x33\0\x39\0\x63\0\x35\0\x37\0-\0\x65\0\x65\0\x61\0\x64\0-\0\x34\0\x62\0\x65\0\x37\0-\0\x61\0\x38\0\x36\0\x31\0-\0\x39\0\x64\0\x65\0\x31\0\x39\0\x31\0\x33\0\x31\0\x65\0\x64\0\x37\0\x61\0}\x1\0\0\0\0\0\0\x1\xe0\0\0\0\0\0\0\0\0\xfb\0\0\0L\0{\0\x62\0\x33\0\x65\0\x31\0\x62\0\x64\0\x38\0\x63\0-\0\x38\0\x32\0\x64\0\x62\0-\0\x34\0\x65\0\x62\0\x39\0-\0\x38\0\x64\0\x64\0\x64\0-\0\x33\0\x39\0\x32\0\x39\0\x33\0\x64\0\x63\0\x32\0\x63\0\x63\0\x32\0\x66\0}\x1\0\0\x1\xe1\0\0\x1g\0\0\0\0\0\0\0\0\xfb\0\0\0L\0{\0\x66\0\x35\0\x66\0\x32\0\x32\0\x32\0\x64\0\x32\0-\0\x37\0\x30\0\x36\0\x66\0-\0\x34\0\x34\0\x64\0\x31\0-\0\x38\0\x63\0\x38\0\x61\0-\0\x32\0\x65\0\x32\0\x62\0\x64\0\x64\0\x64\0\x38\0\x35\0\x30\0\x33\0\x62\0}\x1\0\0\0\0\0\0\x2%\0\0\x1\xe0\0\xff\xff\xff\xfb\0\0\0L\0{\0\x39\0\x66\0\x32\0\x65\0\x32\0\x33\0\x33\0\x66\0-\0\x31\0\x62\0\x35\0\x30\0-\0\x34\0\x37\0\x64\0\x65\0-\0\x39\0\x30\0\x65\0\x31\0-\0\x64\0\x61\0\x64\0\x66\0\x32\0\x30\0\x38\0\x62\0\x30\0\x66\0\x30\0\x32\0}\x1\0\0\x2&\0\0\x3z\0\0\0J\0\xff\xff\xff\0\0\x2\xbe\0\0\x1\xa5\0\0\0\x4\0\0\0\x4\0\0\0\b\0\0\0\b\xfc\0\0\0\0)"
+state="@ByteArray(\0\0\0\xff\0\0\0\0\xfd\0\0\0\x3\0\0\0\0\0\0\x1I\0\0\x1\xbd\xfc\x2\0\0\0\x3\xfb\0\0\0\x1e\0m\0N\0o\0\x64\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\x15\0\0\x1\xa0\0\0\0\xf3\0\xff\xff\xff\xfc\0\0\0\0\0\0\x1\xbd\0\0\0\0\0\xff\xff\xff\xfa\0\0\0\0\x1\0\0\0\x3\xfb\0\0\0\x14\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0 \0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0t\0h\0L\0o\0g\0g\0\x65\0r\0\0\0\0\0\xff\xff\xff\xff\0\0\0J\0\xff\xff\xff\xfb\0\0\0\x18\0\x64\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0_\0\x33\x1\0\0\0\0\0\0\x1\x16\0\0\0\0\0\0\0\0\xfb\0\0\0\"\0M\0u\0l\0t\0i\0m\0\x65\0\x64\0i\0\x61\0 \0P\0l\0\x61\0y\0\x65\0r\x1\0\0\x3\xa7\0\0\0\xb6\0\0\0\0\0\0\0\0\0\0\0\x1\0\0\x1\x2\0\0\x1\xbd\xfc\x2\0\0\0\x5\xfb\0\0\0*\0m\0S\0t\0y\0l\0\x65\0S\0h\0\x65\0\x65\0t\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x8e\0\xff\xff\xff\xfb\0\0\0$\0m\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\x42\0r\0o\0w\0s\0\x65\0r\0\0\0\0\0\xff\xff\xff\xff\0\0\0`\0\xff\xff\xff\xfb\0\0\0,\0m\0P\0\x65\0r\0\x66\0o\0r\0m\0\x61\0n\0\x63\0\x65\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\x1\0\0\0\0\0\0\x1\xbd\0\0\0`\0\xff\xff\xff\xfb\0\0\0&\0m\0S\0n\0i\0p\0p\0i\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0&\0m\0S\0n\0i\0p\0p\0\x65\0t\0s\0\x44\0o\0\x63\0k\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\x80\0\xff\xff\xff\0\0\0\x3\0\0\x5\xa0\0\0\x1~\xfc\x1\0\0\0\v\xfb\0\0\0\x1a\0V\0\x65\0r\0t\0\x65\0x\0 \0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\0\0\0\0\x2\xbe\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\0 \0S\0h\0\x61\0\x64\0\x65\0r\x1\0\0\x2\xc2\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x10\0\x46\0r\0\x61\0g\0m\0\x65\0n\0t\x1\0\0\0\0\0\0\x2\xbe\0\0\0\0\0\0\0\0\xfb\0\0\0\f\0V\0\x65\0r\0t\0\x65\0x\x1\0\0\x2\xc2\0\0\x1>\0\0\0\0\0\0\0\0\xfb\0\0\0\x1e\0m\0P\0l\0\x61\0y\0L\0i\0s\0t\0W\0i\0\x64\0g\0\x65\0t\0\0\0\0\0\xff\xff\xff\xff\0\0\0\0\0\0\0\0\xfb\0\0\0\x16\0T\0\x65\0x\0t\0 \0\x45\0\x64\0i\0t\0o\0r\x1\0\0\0\0\0\0\x5|\0\0\0\0\0\0\0\0\xfb\0\0\0\x1a\0I\0m\0\x61\0g\0\x65\0 \0P\0r\0\x65\0v\0i\0\x65\0w\x1\0\0\x5\x80\0\0\x2\0\0\0\0\0\0\0\0\0\xfb\0\0\0L\0{\0\x32\0\x64\0\x61\0\x33\0\x39\0\x63\0\x35\0\x37\0-\0\x65\0\x65\0\x61\0\x64\0-\0\x34\0\x62\0\x65\0\x37\0-\0\x61\0\x38\0\x36\0\x31\0-\0\x39\0\x64\0\x65\0\x31\0\x39\0\x31\0\x33\0\x31\0\x65\0\x64\0\x37\0\x61\0}\x1\0\0\0\0\0\0\x1\xe0\0\0\0\0\0\0\0\0\xfb\0\0\0L\0{\0\x62\0\x33\0\x65\0\x31\0\x62\0\x64\0\x38\0\x63\0-\0\x38\0\x32\0\x64\0\x62\0-\0\x34\0\x65\0\x62\0\x39\0-\0\x38\0\x64\0\x64\0\x64\0-\0\x33\0\x39\0\x32\0\x39\0\x33\0\x64\0\x63\0\x32\0\x63\0\x63\0\x32\0\x66\0}\x1\0\0\x1\xe1\0\0\x1g\0\0\0\0\0\0\0\0\xfb\0\0\0L\0{\0\x66\0\x35\0\x66\0\x32\0\x32\0\x32\0\x64\0\x32\0-\0\x37\0\x30\0\x36\0\x66\0-\0\x34\0\x34\0\x64\0\x31\0-\0\x38\0\x63\0\x38\0\x61\0-\0\x32\0\x65\0\x32\0\x62\0\x64\0\x64\0\x64\0\x38\0\x35\0\x30\0\x33\0\x62\0}\x1\0\0\0\0\0\0\x2%\0\0\x1\xe0\0\xff\xff\xff\xfb\0\0\0L\0{\0\x39\0\x66\0\x32\0\x65\0\x32\0\x33\0\x33\0\x66\0-\0\x31\0\x62\0\x35\0\x30\0-\0\x34\0\x37\0\x64\0\x65\0-\0\x39\0\x30\0\x65\0\x31\0-\0\x64\0\x61\0\x64\0\x66\0\x32\0\x30\0\x38\0\x62\0\x30\0\x66\0\x30\0\x32\0}\x1\0\0\x2&\0\0\x3z\0\0\0J\0\xff\xff\xff\0\0\x4\x9d\0\0\x1\xbd\0\0\0\x4\0\0\0\x4\0\0\0\b\0\0\0\b\xfc\0\0\0\0)"
 
 [meta]
 created=17 May 2018 12:42:06 +0100
@@ -354,11 +408,13 @@ version=2
 [nodes]
 39bf8a56-7648-42d3-bfd5-1af0b11d64cb=4f7ce443-6e45-4632-8c79-e2d466cf5b27
 6ff40100-6c53-4d4e-819d-041c74482150=9fc66d43-97ab-4409-a0ef-f7e30dad5f42
+9d0131d5-6c99-478f-bf5d-abe83f804d47=02afabae-a99b-43d7-9fcd-252b45f4f989
 9f2e233f-1b50-47de-90e1-dadf208b0f02=327cfef0-537c-42d8-a8b6-29fa4416f1b4
 a0d9e487-94a2-4109-b5b4-8d10ae1f6b1f=d4682e12-f23b-447d-9515-072e1ffc5158
 a5e054a2-f090-42c7-8d73-67bd44c79dfb=4e63de59-f257-4b15-a599-a19f8d122d67
 b18fbe96-452e-48a8-817a-c57ef48f3393=4b184f76-6270-4368-aa82-d6646a977361
 ba489a37-bc08-4739-bf09-14377239b786=f22866c1-58c7-4c5f-8fb5-28465d93afc5
+ce2e75b1-7473-4195-972d-9f2f3966c2b2=1e2d099e-b10d-46af-be56-88eefeeec931
 ceab496d-34bc-46e7-b539-d5023aae640c=26797978-5fd8-4f91-9a5d-2b5729006716
 f5f222d2-706f-44d1-8c8a-2e2bddd8503b=16914a4d-abd6-4be9-87bf-13b1c9152675
 
@@ -369,16 +425,18 @@ version=2
 [positions]
 39bf8a56-7648-42d3-bfd5-1af0b11d64cb="700,-60"
 6ff40100-6c53-4d4e-819d-041c74482150="480,-240"
+9d0131d5-6c99-478f-bf5d-abe83f804d47="360,0"
 9f2e233f-1b50-47de-90e1-dadf208b0f02="760,-140"
 a0d9e487-94a2-4109-b5b4-8d10ae1f6b1f="280,-240"
 a5e054a2-f090-42c7-8d73-67bd44c79dfb="480,-120"
 b18fbe96-452e-48a8-817a-c57ef48f3393="320,-100"
 ba489a37-bc08-4739-bf09-14377239b786="1020,-140"
+ce2e75b1-7473-4195-972d-9f2f3966c2b2="480,0"
 ceab496d-34bc-46e7-b539-d5023aae640c="860,-60"
 f5f222d2-706f-44d1-8c8a-2e2bddd8503b="1180,-140"
 version=2
 
 [view]
 group=00000000-0000-0000-0000-000000000000
-state\center=@Variant(\0\0\0\x1a@\x8c \0\0\0\0\0\xc0Z\0\0\0\0\0\0)
-state\scale=1
+state\center=@Variant(\0\0\0\x1a@\x8a]\x89\xea\xe0\xac\x44\xc0M\x93x\x82\xfc\xab\xf8)
+state\scale=0.6572287620513119
