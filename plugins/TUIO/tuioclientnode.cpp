@@ -161,11 +161,6 @@ void TuioClientNode::reportBlob(TUIO::TuioBlob *tblb, const QString &pType)
 
 void TuioClientNode::reportCursor(TUIO::TuioCursor *tcur, const QString &pType)
 {
-	if( tcur->getCursorID() == 0 )
-	{
-		qDebug() << tcur->getX() << tcur->getY();
-	}
-
 	QJsonObject		Object;
 
 	Object.insert( "cursor_id", tcur->getCursorID() );
