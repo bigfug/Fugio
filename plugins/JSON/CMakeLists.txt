@@ -15,6 +15,8 @@ set( SOURCE_FILES
 	jsonquerynode.h
 	parsejsonnode.cpp
 	parsejsonnode.h
+	stringtojsonnode.cpp
+	stringtojsonnode.h
 
 	jsonpin.cpp
 	jsonpin.h
