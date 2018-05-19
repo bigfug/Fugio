@@ -2,6 +2,7 @@
 
 #include <QPointF>
 #include <QSizeF>
+#include <QJsonDocument>
 
 #include <fugio/core/uuid.h>
 
@@ -48,6 +49,12 @@ QString VariantPin::toString() const
 					QSize		V = v.value<QSize>();
 
 					L << QString( "%1,%2 (%3)" ).arg( V.width() ).arg( V.height() ).arg( QString( v.typeName() ) );
+				}
+				break;
+
+			case QMetaType::QJsonDocument:
+				{
+					L << v.value<QJsonDocument>().toJson( QJsonDocument::Compact );
 				}
 				break;
 
