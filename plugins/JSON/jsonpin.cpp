@@ -36,7 +36,7 @@ void JsonPin::loadSettings( QSettings &pSettings )
 		{
 			pSettings.setArrayIndex( i );
 
-			mValues[ i ] = pSettings.value( "i", mValues[ i ] ).toJsonDocument();
+			mValues[ i ] = QJsonDocument::fromJson( pSettings.value( "i", mValues[ i ] ).toString().toLatin1() );
 		}
 
 		pSettings.endArray();
@@ -53,7 +53,7 @@ void JsonPin::saveSettings( QSettings &pSettings ) const
 	{
 		pSettings.setArrayIndex( i );
 
-		pSettings.setValue( "i", mValues.at( i ) );
+		pSettings.setValue( "i", mValues.at( i ).toJson( QJsonDocument::Compact ) );
 	}
 
 	pSettings.endArray();
