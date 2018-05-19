@@ -3,7 +3,7 @@
 
 #include <fugio/nodecontrolbase.h>
 #include <fugio/core/variant_interface.h>
-
+#include <fugio/choice_interface.h>
 #include <QJsonDocument>
 #include <QJsonArray>
 
@@ -46,6 +46,8 @@ protected:
 
 	QSharedPointer<fugio::PinInterface>			 mPinInputJson;
 	QSharedPointer<fugio::PinInterface>			 mPinInputQuery;
+	QSharedPointer<fugio::PinInterface>			 mPinInputFormat;
+	fugio::ChoiceInterface						*mValInputFormat;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputResults;
 	fugio::VariantInterface						*mValOutputResults;

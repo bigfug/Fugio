@@ -11,6 +11,14 @@ order=0
 uuid=9e154e12-bcd8-4ead-95b1-5a59833bcf4e
 version=2
 
+[08e8f6c7-c26f-4ec8-913c-3851034c8a42]
+default=Variant
+direction=1
+name=Format
+order=2
+uuid=3d995a98-0f56-4371-a1fa-67ecaefeba1c
+version=2
+
 [255713aa-cae8-4716-a118-063726b273d6]
 control\values\1\i="@ByteArray({\"Address\":{\"City\":\"Winchester\",\"Postcode\":\"SO21 2JN\",\"Street\":\"Hursley Park\"},\"Age\":28,\"Email\":[{\"address\":[\"fred.smith@my-work.com\",\"fsmith@my-work.com\"],\"type\":\"work\"},{\"address\":[\"freddy@my-social.com\",\"frederic.smith@very-serious.com\"],\"type\":\"home\"}],\"FirstName\":\"Fred\",\"Other\":{\"Alternative.Address\":{\"City\":\"London\",\"Postcode\":\"E1 6RF\",\"Street\":\"Brick Lane\"},\"Misc\":null,\"Over 18 ?\":true},\"Phone\":[{\"number\":\"0203 544 1234\",\"type\":\"home\"},{\"number\":\"01962 001234\",\"type\":\"office\"},{\"number\":\"01962 001235\",\"type\":\"office\"},{\"number\":\"077 7700 1234\",\"type\":\"mobile\"}],\"Surname\":\"Smith\"})"
 control\values\size=1
@@ -133,7 +141,8 @@ f7cfbd2a-a3a5-4058-bf1a-0957641661cc=255713aa-cae8-4716-a118-063726b273d6
 [d2a1e0bd-8201-47ae-be20-6958f3cc3a9c]
 inputs\1\cde6717d-5a2b-4f46-8bcc-ea2d77336d62=00000000-0000-0000-0000-000000000000
 inputs\2\c33e5831-57ae-445b-9b63-97fda4e23295=00000000-0000-0000-0000-000000000000
-inputs\size=2
+inputs\3\08e8f6c7-c26f-4ec8-913c-3851034c8a42=c90a7f2b-7a6d-4919-8710-9bfb4ce5cd26
+inputs\size=3
 name=Query
 outputs\1\c88ba147-62ee-4707-90fa-493ec6cfccce=7cc9d0da-9667-4a17-a230-b56eb3ede8b2
 outputs\size=1
