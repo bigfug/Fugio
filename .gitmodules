@@ -10,3 +10,6 @@
 [submodule "plugins/quirc/quirc"]
 	path = plugins/quirc/quirc
 	url = https://github.com/dlbeer/quirc.git
+[submodule "plugins/TUIO/TUIO11_CPP"]
+	path = plugins/TUIO/TUIO11_CPP
+	url = https://github.com/mkalten/TUIO11_CPP.git
