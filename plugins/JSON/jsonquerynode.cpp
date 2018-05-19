@@ -66,101 +66,10 @@ void JsonQueryNode::inputsUpdated( qint64 pTimeStamp )
 		if( !SL.isEmpty() )
 		{
 			JsonQuery			JQ( Json, SL );
-			QJsonValue::Type	ValueType = QJsonValue::Undefined;
-			bool				AllSame   = true;
 
-			for( const QJsonValue V : JQ.mRV )
-			{
-				if( ValueType == QJsonValue::Undefined )
-				{
-					ValueType = V.type();
-					AllSame   = true;
-				}
-				else if( ValueType != V.type() )
-				{
-					AllSame = false;
-				}
-			}
+			mValOutputResults->setVariantType( QMetaType::QJsonDocument );
 
-			if( AllSame )
-			{
-				mValOutputResults->setVariantType( QMetaType::UnknownType );
-				mValOutputResults->setVariantCount( 0 );
-
-				switch( ValueType )
-				{
-					case QJsonValue::Bool:
-						mValOutputResults->setVariantType( QMetaType::Bool );
-						mValOutputResults->setVariantCount( JQ.mRV.count() );
-
-						for( int i = 0 ; i < JQ.mRV.count() ; i++ )
-						{
-							mValOutputResults->setVariant( i, JQ.mRV.at( i ).toBool() );
-						}
-						break;
-
-					case QJsonValue::Double:
-						mValOutputResults->setVariantType( QMetaType::Double );
-						mValOutputResults->setVariantCount( JQ.mRV.count() );
-
-						for( int i = 0 ; i < JQ.mRV.count() ; i++ )
-						{
-							mValOutputResults->setVariant( i, JQ.mRV.at( i ).toDouble() );
-						}
-						break;
-
-					case QJsonValue::String:
-						mValOutputResults->setVariantType( QMetaType::QString );
-						mValOutputResults->setVariantCount( JQ.mRV.count() );
-
-						for( int i = 0 ; i < JQ.mRV.count() ; i++ )
-						{
-							mValOutputResults->setVariant( i, JQ.mRV.at( i ).toString() );
-						}
-						break;
-
-					case QJsonValue::Array:
-						{
-							QJsonArray			OD;
-
-							mValOutputResults->setVariantType( QMetaType::QJsonDocument );
-							mValOutputResults->setVariantCount( 1 );
-
-							for( int i = 0 ; i < JQ.mRV.count() ; i++ )
-							{
-								OD << JQ.mRV.at( i ).toArray();
-							}
-
-							mValOutputResults->setVariant( QJsonDocument( OD ) );
-						}
-						break;
-
-					case QJsonValue::Object:
-						{
-							QJsonArray			OD;
-
-							mValOutputResults->setVariantType( QMetaType::QJsonDocument );
-							mValOutputResults->setVariantCount( 1 );
-
-							for( int i = 0 ; i < JQ.mRV.count() ; i++ )
-							{
-								OD << JQ.mRV.at( i ).toObject();
-							}
-
-							mValOutputResults->setVariant( QJsonDocument( OD ) );
-						}
-						break;
-
-					default:
-						break;
-				}
-			}
-			else
-			{
-				mValOutputResults->setVariantType( QMetaType::QJsonDocument );
-
-				mValOutputResults->setVariant( QJsonDocument( JQ.mRV ) );
-			}
+			mValOutputResults->setVariant( QJsonDocument( JQ.mRV ) );
 
 			UpdateOutput = true;
 		}
@@ -243,18 +152,85 @@ void JsonQueryNode::JsonQuery::parseArray(const QJsonArray &JA, QStringList SL)
 	{
 		K = K.mid( 0, K.length() - 1 ).trimmed();
 
-		bool	OK;
-		int		i = K.toInt( &OK );
-
-		if( OK && i >= 0 && JA.count() > i )
+		if( K.contains( '=' ) )
 		{
-			if( SL.isEmpty() )
+			QStringList		Parts = K.split( '=' );
+
+			if( Parts.size() == 2 )
 			{
-				mRV << JA.at( i );
+				for( int i = 0 ; i < Parts.size() ; i++ )
+				{
+					Parts[ i ] = Parts[ i ].trimmed();
+				}
+
+				QJsonValue	CmpVal;
+
+				if( Parts[ 1 ] == "true" )
+				{
+					CmpVal = true;
+				}
+				else if( Parts[ 1 ] == "false" )
+				{
+					CmpVal = false;
+				}
+				else if( Parts[ 1 ].startsWith( '\'' ) && Parts[ 1 ].endsWith( '\'' ) )
+				{
+					CmpVal = Parts[ 1 ].mid( 1, Parts[ 1 ].size() - 2 );
+				}
+				else if( Parts[ 1 ].contains( '.' ) )
+				{
+					CmpVal = Parts[ 1 ].toDouble();
+				}
+				else
+				{
+					CmpVal = Parts[ 1 ].toInt();
+				}
+
+				if( !Parts[ 0 ].isEmpty() && !Parts[ 1 ].isEmpty() )
+				{
+					for( int i = 0 ; i < JA.count() ; i++ )
+					{
+						QJsonValue	V = JA.at( i );
+
+						if( V.isObject() )
+						{
+							QJsonObject	O = V.toObject();
+							QJsonObject::const_iterator	it = O.constFind( Parts[ 0 ] );
+
+							if( it != O.constEnd() )
+							{
+								if( it.value() == CmpVal )
+								{
+									if( SL.isEmpty() )
+									{
+										mRV << V;
+									}
+									else
+									{
+										parseValue( V, SL );
+									}
+								}
+							}
+						}
+					}
+				}
 			}
-			else
+		}
+		else
+		{
+			bool	OK;
+			int		i = K.toInt( &OK );
+
+			if( OK && i >= 0 && JA.count() > i )
 			{
-				parseValue( JA.at( i ), SL );
+				if( SL.isEmpty() )
+				{
+					mRV << JA.at( i );
+				}
+				else
+				{
+					parseValue( JA.at( i ), SL );
+				}
 			}
 		}
 	}
