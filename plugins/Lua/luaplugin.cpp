@@ -240,7 +240,7 @@ int LuaPlugin::luaLog( lua_State *L )
 {
 	for( int i = 1 ; i <= lua_gettop( L ) ; i++ )
 	{
-		qDebug() << QString( lua_tostring( L, i ) );
+		qDebug().noquote() << QString( lua_tostring( L, i ) );
 	}
 
 	return( 0 );

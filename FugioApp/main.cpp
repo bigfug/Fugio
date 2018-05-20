@@ -81,7 +81,7 @@ int main( int argc, char *argv[] )
 
 	HLP.checkForHelpOption();
 
-	qDebug() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName() ).arg( QApplication::applicationVersion() ).arg( "started" );
+	qDebug().noquote() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName() ).arg( QApplication::applicationVersion() ).arg( "started" );
 
 	HLP.initialiseTranslator();
 
@@ -235,7 +235,7 @@ int main( int argc, char *argv[] )
 
 	delete APP;
 
-	qDebug() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName() ).arg( QApplication::applicationVersion() ).arg( "finished" );
+	qDebug().noquote() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName() ).arg( QApplication::applicationVersion() ).arg( "finished" );
 
 	App::log_file( "" );
 

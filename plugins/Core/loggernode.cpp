@@ -25,11 +25,11 @@ void LoggerNode::inputsUpdated( qint64 pTimeStamp )
 			switch( QMetaType::Type( V.type() ) )
 			{
 				case QMetaType::QString:
-					qInfo() << V.toString();
+					qInfo().noquote() << V.toString();
 					break;
 
 				case QMetaType::QJsonDocument:
-					qInfo() << V.toJsonDocument().toJson( QJsonDocument::Compact );
+					qInfo().noquote() << QString::fromLatin1( V.toJsonDocument().toJson() );
 					break;
 
 				default:
@@ -38,7 +38,7 @@ void LoggerNode::inputsUpdated( qint64 pTimeStamp )
 
 						if( !S.isEmpty() )
 						{
-							qInfo() << S;
+							qInfo().noquote() << S;
 						}
 					}
 					break;
