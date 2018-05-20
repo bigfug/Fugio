@@ -83,7 +83,7 @@ private:
 
 	static void logger_static( QtMsgType type, const QMessageLogContext &context, const QString &msg );
 
-	void logger( QtMsgType type, const QMessageLogContext &context, const QString &msg );
+	void logger( QtMsgType type, const QMessageLogContext &context, const QString &msg, bool pLogToFile = true );
 
 	void updateRecentFileList( void );
 
