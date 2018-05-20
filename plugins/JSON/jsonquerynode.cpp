@@ -223,6 +223,66 @@ void JsonQueryNode::JsonQuery::parseObject(const QJsonObject &JO, QStringList SL
 			}
 		}
 	}
+	else if( K.endsWith( ']' ) )
+	{
+		K = K.mid( 0, K.length() - 1 ).trimmed();
+
+		if( K.contains( '=' ) )
+		{
+			QStringList		Parts = K.split( '=' );
+
+			if( Parts.size() == 2 )
+			{
+				for( int i = 0 ; i < Parts.size() ; i++ )
+				{
+					Parts[ i ] = Parts[ i ].trimmed();
+				}
+
+				QJsonValue	CmpVal;
+
+				if( Parts[ 1 ] == "true" )
+				{
+					CmpVal = true;
+				}
+				else if( Parts[ 1 ] == "false" )
+				{
+					CmpVal = false;
+				}
+				else if( Parts[ 1 ].startsWith( '\'' ) && Parts[ 1 ].endsWith( '\'' ) )
+				{
+					CmpVal = Parts[ 1 ].mid( 1, Parts[ 1 ].size() - 2 );
+				}
+				else if( Parts[ 1 ].contains( '.' ) )
+				{
+					CmpVal = Parts[ 1 ].toDouble();
+				}
+				else
+				{
+					CmpVal = Parts[ 1 ].toInt();
+				}
+
+				if( !Parts[ 0 ].isEmpty() && !Parts[ 1 ].isEmpty() )
+				{
+					QJsonObject::const_iterator	it = JO.constFind( Parts[ 0 ] );
+
+					if( it != JO.constEnd() )
+					{
+						if( it.value() == CmpVal )
+						{
+							if( SL.isEmpty() )
+							{
+								mRV << JO;
+							}
+							else
+							{
+								parseValue( JO, SL );
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 	else
 	{
 		for( QJsonObject::const_iterator it = JO.constBegin() ; it != JO.constEnd() ; it++ )
