@@ -211,9 +211,13 @@ public:
 #else
 
 #if defined( Q_OS_MAC )
+		qDebug() << "App Binary Directory:" << PluginsDir.absolutePath();
+
 		PluginsDir.cdUp();
 		PluginsDir.cdUp();
 		PluginsDir.cdUp();
+
+		qDebug() << "App Directory:" << PluginsDir.absolutePath();
 #endif
 
 		while( !PluginsDir.isRoot() && PluginsDir.isReadable() && !PluginsDir.cd( "plugins" ) )
@@ -225,6 +229,10 @@ public:
 		if( !PluginsDir.isRoot() && PluginsDir.isReadable() )
 		{
 			qInfo() << "Plugin Directory:" << PluginsDir.absolutePath();
+		}
+		else
+		{
+			qWarning() << "Plugin Directory (Not Readable):" << PluginsDir.absolutePath();
 		}
 
 		GlobalInterface	*PBG = fugio();
