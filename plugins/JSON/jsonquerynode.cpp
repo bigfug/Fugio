@@ -162,6 +162,8 @@ void JsonQueryNode::inputsUpdated( qint64 pTimeStamp )
 						default:
 							break;
 					}
+
+					UpdateOutput = true;
 				}
 				else
 				{
