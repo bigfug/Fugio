@@ -54,8 +54,6 @@
 #define qInfo qDebug
 #endif
 
-extern void log_file( const QString &pLogDat );
-
 void MainWindow::logger_static( QtMsgType type, const QMessageLogContext &context, const QString &msg )
 {
 	qobject_cast<MainWindow *>( qobject_cast<App *>( qApp )->mainWindow() )->logger( type, context, msg );
@@ -98,7 +96,7 @@ void MainWindow::logger( QtMsgType type, const QMessageLogContext &context, cons
 
 	fflush( stderr );
 
-	log_file( LogDat );
+	App::log_file( LogDat );
 
 	if( isGuiThread )
 	{
@@ -242,6 +240,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	timeout();
 
 	mMessageHandler = qInstallMessageHandler( MainWindow::logger_static );
+
+	for( App::LogMessage LM : App::logMessages() )
+	{
+		logger( LM.type, QMessageLogContext(), LM.msg );
+	}
 
 	connect( this, SIGNAL(log(QString)), ui->mLogger, SLOT(appendHtml(QString)) );
 

@@ -26,67 +26,6 @@
 #include <bcm_host.h>
 #endif
 
-QSplashScreen	*SplashScreen = Q_NULLPTR;
-
-QString			LogNam;
-
-void log_file( const QString &pLogDat )
-{
-	QFile		FH( LogNam );
-
-	if( FH.open( QFile::Append ) )
-	{
-		QTextStream	TS( &FH );
-
-		TS << pLogDat << "\n";
-
-		FH.close();
-	}
-}
-
-void logger_static( QtMsgType type, const QMessageLogContext &context, const QString &msg )
-{
-	Q_UNUSED( context )
-
-	QByteArray localMsg = msg.toLocal8Bit();
-
-	QString		LogDat;
-
-	LogDat.append( QDateTime::currentDateTime().toString( Qt::ISODate ) );
-	LogDat.append( ": " );
-	LogDat.append( localMsg );
-
-	switch (type)
-	{
-		case QtDebugMsg:
-			fprintf(stderr, "DBUG: %s\n", localMsg.constData() );
-			break;
-#if ( QT_VERSION >= QT_VERSION_CHECK( 5, 5, 0 ) )
-		case QtInfoMsg:
-			fprintf(stderr, "INFO: %s\n", localMsg.constData() );
-			break;
-#endif
-		case QtWarningMsg:
-			fprintf(stderr, "WARN: %s\n", localMsg.constData() );
-			break;
-		case QtCriticalMsg:
-			fprintf(stderr, "CRIT: %s\n", localMsg.constData() );
-			break;
-		case QtFatalMsg:
-			fprintf(stderr, "FATL: %s\n", localMsg.constData() );
-			break;
-	}
-
-	fflush( stderr );
-
-	log_file( LogDat );
-
-	if( type == QtFatalMsg )
-	{
-		abort();
-	}
-}
-
 #if QT_VERSION < QT_VERSION_CHECK( 5, 5, 0 )
 #define qInfo qDebug
 #endif
@@ -100,11 +39,13 @@ void logger_static( QtMsgType type, const QMessageLogContext &context, const QSt
 
 int main( int argc, char *argv[] )
 {
+	QSplashScreen	*SplashScreen = Q_NULLPTR;
+
 #if defined( Q_OS_RASPBERRY_PI )
 	bcm_host_init();
 #endif
 
-	qInstallMessageHandler( logger_static );
+	qInstallMessageHandler( App::logger_static );
 
 	QApplication::setApplicationName( "Fugio" );
 	QApplication::setOrganizationDomain( "Fugio" );
@@ -117,7 +58,7 @@ int main( int argc, char *argv[] )
 
 	const QString	CfgDir = QStandardPaths::writableLocation( QStandardPaths::DataLocation );
 
-	LogNam = QDir( CfgDir ).absoluteFilePath( "fugio.log" );
+	App::setLogFileName( QDir( CfgDir ).absoluteFilePath( "fugio.log" ) );
 
 	if( QDir( CfgDir ).mkpath( "dummy" ) )
 	{
@@ -296,7 +237,7 @@ int main( int argc, char *argv[] )
 
 	qDebug() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName() ).arg( QApplication::applicationVersion() ).arg( "finished" );
 
-	log_file( "" );
+	App::log_file( "" );
 
 	return( RET );
 }
