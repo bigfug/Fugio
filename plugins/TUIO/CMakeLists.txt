@@ -106,6 +106,9 @@ if( WIN32 )
 		TUIO11_CPP/oscpack/ip/win32/NetworkingUtils.cpp
 		TUIO11_CPP/oscpack/ip/win32/UdpSocket.cpp
 		)
+
+	target_link_libraries( ${PROJECT_NAME} Ws2_32 Winmm )
+
 else()
 	target_sources( ${PROJECT_NAME} PRIVATE
 		TUIO11_CPP/oscpack/ip/posix/NetworkingUtils.cpp
