@@ -54,27 +54,27 @@
     <message>
         <location filename="../contextwidgetprivate.cpp" line="50"/>
         <source>Node Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Modificatore nodi</translation>
     </message>
     <message>
         <location filename="../contextwidgetprivate.cpp" line="232"/>
         <source>Save Patch</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva patch</translation>
     </message>
     <message>
         <location filename="../contextwidgetprivate.cpp" line="232"/>
         <source>Fugio Patches (*.fug)</source>
-        <translation type="unfinished"></translation>
+        <translation>Patch di Fugio (*.fug)</translation>
     </message>
     <message>
         <location filename="../contextwidgetprivate.cpp" line="300"/>
         <source>Save Patch Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva immagine della patch</translation>
     </message>
     <message>
         <location filename="../contextwidgetprivate.cpp" line="300"/>
         <source>Image (*.jpg *.png)</source>
-        <translation type="unfinished"></translation>
+        <translation>Immagine (*.jpg *.png)</translation>
     </message>
     <message>
         <location filename="../contextwidgetprivate.cpp" line="337"/>
@@ -157,7 +157,7 @@
         <location filename="../mainwindow.ui" line="290"/>
         <location filename="../mainwindow.ui" line="424"/>
         <source>Stylesheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Foglio di stile</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="299"/>
@@ -304,7 +304,7 @@
     <message>
         <location filename="../mainwindow.ui" line="590"/>
         <source>Rescan</source>
-        <translation type="unfinished"></translation>
+        <translation>Riscansiona</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="598"/>
@@ -379,7 +379,7 @@
     <message>
         <location filename="../mainwindow.ui" line="681"/>
         <source>Facebook Users Group...</source>
-        <translation>Gruppo degli Facebook degli utenti...</translation>
+        <translation>Gruppo Facebook degli utenti...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="686"/>
@@ -399,7 +399,7 @@
     <message>
         <location filename="../mainwindow.ui" line="704"/>
         <source>Save Patch Image...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva immagine della patch</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="709"/>
@@ -429,13 +429,13 @@
     <message>
         <location filename="../mainwindow.cpp" line="400"/>
         <source>Open Patch</source>
-        <translation type="unfinished"></translation>
+        <translation>Apri patch</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="400"/>
         <location filename="../mainwindow.cpp" line="1102"/>
         <source>Fugio Patches (*.fug)</source>
-        <translation type="unfinished"></translation>
+        <translation>Patch di Fugio (*.fug)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="604"/>
@@ -455,7 +455,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="618"/>
         <source>Duration (Hours:Minutes:Seconds:Milliseconds):</source>
-        <translation>Durata (ore:minuti:secondi:millisecondi)</translation>
+        <translation>Durata (ore:minuti:secondi:millisecondi):</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="953"/>
@@ -470,7 +470,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1102"/>
         <source>Append Patch</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi patch</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1130"/>
@@ -523,37 +523,37 @@
     <message>
         <location filename="../wizards/nodeeditorwizard.cpp" line="11"/>
         <source>Node Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Modificatore dei nodi</translation>
     </message>
     <message>
         <location filename="../wizards/nodeeditorwizard.cpp" line="17"/>
         <source>&lt;h1&gt;This is the Fugio Node Editor&lt;/h1&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h1&gt;Questo è il modificatore nodi di Fugio&lt;\h1&gt;</translation>
     </message>
     <message>
         <location filename="../wizards/nodeeditorwizard.cpp" line="19"/>
         <source>&lt;h2&gt;To add a new node&lt;/h2&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;h2&gt;Per aggiungere un nuovo nodo&lt;/h2&gt;</translation>
     </message>
     <message>
         <location filename="../wizards/nodeeditorwizard.cpp" line="21"/>
         <source>&lt;ol&gt;&lt;li&gt;Double click on the name in the Node Window&lt;/li&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;ol&gt;&lt;li&gt;Fa&apos; doppio clic sul nome nella finestra dei nodi&lt;/li&gt;</translation>
     </message>
     <message>
         <location filename="../wizards/nodeeditorwizard.cpp" line="22"/>
         <source>&lt;li&gt;Drag and drop a name from the Node Window to the Node Editor&lt;/li&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;li&gt;Trascina un nome dalla finestra dei nodi al modificatore dei nodi&lt;/li&gt;</translation>
     </message>
     <message>
         <location filename="../wizards/nodeeditorwizard.cpp" line="23"/>
         <source>&lt;li&gt;Double-click in the Node Editor&lt;/li&gt;&lt;/ol&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;li&gt;Fa&apos; doppio clic nel modificatore dei nodi&lt;/li&gt;&lt;/ol&gt;</translation>
     </message>
     <message>
         <location filename="../wizards/nodeeditorwizard.cpp" line="25"/>
         <source>&lt;p&gt;See &lt;a href=&quot;http://wiki.bigfug.com/Node_Editor?utm_source=fugio&amp;utm_medium=node-editor-wizard&quot;&gt;http://wiki.bigfug.com/Node_Editor&lt;/a&gt; for more information.&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Va&apos; su &lt;a href=&quot;http://wiki.bigfug.com/Node_Editor?utm_source=fugio&amp;utm_medium=node-editor-wizard&quot;&gt;http://wiki.bigfug.com/Node_Editor&lt;/a&gt; per ottenere maggiori informazioni.&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -640,7 +640,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../nodenamedialog.ui" line="14"/>
         <source>Insert Node</source>
-        <translation>Inserisci nodo</translation>
+        <translation>Inserimento nodo</translation>
     </message>
     <message>
         <location filename="../nodenamedialog.ui" line="20"/>
@@ -653,37 +653,37 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../patchpromptdialog.ui" line="14"/>
         <source>Patch Wizard</source>
-        <translation type="unfinished"></translation>
+        <translation>Assistente delle patch</translation>
     </message>
     <message>
         <location filename="../patchpromptdialog.ui" line="22"/>
         <source>Recent Patches (double-click to open)</source>
-        <translation type="unfinished"></translation>
+        <translation>Patch recenti (doppio clic per aprirle)</translation>
     </message>
     <message>
         <location filename="../patchpromptdialog.ui" line="33"/>
         <source>No Recent Patches</source>
-        <translation type="unfinished"></translation>
+        <translation>Nessuna patch recente</translation>
     </message>
     <message>
         <location filename="../patchpromptdialog.ui" line="45"/>
         <source>New Patch</source>
-        <translation type="unfinished"></translation>
+        <translation>Nuova patch</translation>
     </message>
     <message>
         <location filename="../patchpromptdialog.ui" line="52"/>
         <source>Open Patch...</source>
-        <translation type="unfinished"></translation>
+        <translation>Apri patch</translation>
     </message>
     <message>
         <location filename="../patchpromptdialog.ui" line="59"/>
         <source>Examples...</source>
-        <translation type="unfinished"></translation>
+        <translation>Esempi...</translation>
     </message>
     <message>
         <location filename="../patchpromptdialog.ui" line="66"/>
         <source>The Fugio Zone...</source>
-        <translation type="unfinished"></translation>
+        <translation>La &quot;Fugio zone&quot;...</translation>
     </message>
     <message>
         <location filename="../patchpromptdialog.ui" line="73"/>
@@ -907,12 +907,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdcontextviewcut.h" line="21"/>
         <source>Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>Taglia</translation>
     </message>
     <message>
         <location filename="../undo/cmdcontextviewpaste.h" line="19"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Incolla</translation>
     </message>
     <message>
         <location filename="../undo/cmdgroup.h" line="22"/>
@@ -967,7 +967,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdmove.h" line="23"/>
         <source>Move</source>
-        <translation type="unfinished"></translation>
+        <translation>Sposta</translation>
     </message>
     <message>
         <location filename="../undo/cmdnewcontext.h" line="17"/>
@@ -977,12 +977,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdnodeadd.h" line="22"/>
         <source>Add Node</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi nodo</translation>
     </message>
     <message>
         <location filename="../undo/cmdnodemove.h" line="19"/>
         <source>Set Node Position</source>
-        <translation type="unfinished"></translation>
+        <translation>Imposta posizione nodo</translation>
     </message>
     <message>
         <location filename="../undo/cmdnodepinadd.h" line="17"/>
@@ -992,37 +992,37 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdnoderemove.h" line="17"/>
         <source>Remove Node</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi nodo</translation>
     </message>
     <message>
         <location filename="../undo/cmdnoderename.h" line="17"/>
         <source>Rename Node</source>
-        <translation type="unfinished"></translation>
+        <translation>Rinomina nodo</translation>
     </message>
     <message>
         <location filename="../undo/cmdnodesetactive.h" line="17"/>
         <source>Activate Node</source>
-        <translation type="unfinished"></translation>
+        <translation>Attiva nodo</translation>
     </message>
     <message>
         <location filename="../undo/cmdnodesetactive.h" line="17"/>
         <source>Deactivate Node</source>
-        <translation type="unfinished"></translation>
+        <translation>Disattiva nodo</translation>
     </message>
     <message>
         <location filename="../undo/cmdnodesetcolour.h" line="19"/>
         <source>Set Node Colour</source>
-        <translation type="unfinished"></translation>
+        <translation>Imposta il colore del nodo</translation>
     </message>
     <message>
         <location filename="../undo/cmdnoteadd.h" line="18"/>
         <source>Add Note</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi nota</translation>
     </message>
     <message>
         <location filename="../undo/cmdnoteadd.h" line="46"/>
         <source>New Note</source>
-        <translation type="unfinished"></translation>
+        <translation>Nuova nota</translation>
     </message>
     <message>
         <location filename="../undo/cmdpinconnectglobal.h" line="18"/>
@@ -1097,7 +1097,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdsetduration.h" line="18"/>
         <source>Set duration</source>
-        <translation type="unfinished"></translation>
+        <translation>Imposta durata</translation>
     </message>
     <message>
         <location filename="../undo/cmdsetpinname.h" line="17"/>
@@ -1107,12 +1107,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdsetupdatable.h" line="17"/>
         <source>Set updatable</source>
-        <translation type="unfinished"></translation>
+        <translation>Imposta come aggiornabile</translation>
     </message>
     <message>
         <location filename="../undo/cmdungroup.h" line="21"/>
         <source>Ungroup</source>
-        <translation type="unfinished"></translation>
+        <translation>Scogli gruppo</translation>
     </message>
 </context>
 <context>
@@ -1120,27 +1120,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../settings/settingsdialog.ui" line="14"/>
         <source>Dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Dialogo</translation>
     </message>
     <message>
         <location filename="../settings/settingsdialog.ui" line="26"/>
         <source>Snippets</source>
-        <translation type="unfinished"></translation>
+        <translation>Frammenti</translation>
     </message>
     <message>
         <location filename="../settings/settingsdialog.ui" line="55"/>
         <source>Snippets Directory:</source>
-        <translation type="unfinished"></translation>
+        <translation>Cartella dei frammenti:</translation>
     </message>
     <message>
         <location filename="../settings/settingsdialog.ui" line="65"/>
         <source>Select...</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona...</translation>
     </message>
     <message>
         <location filename="../settings/settingsdialog.cpp" line="37"/>
         <source>Choose directory for Snippets</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli una cartella per i frammenti</translation>
     </message>
 </context>
 <context>
@@ -1148,67 +1148,67 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../snippets/snippetsform.ui" line="14"/>
         <source>Snippets</source>
-        <translation type="unfinished"></translation>
+        <translation>Frammenti</translation>
     </message>
     <message>
         <location filename="../snippets/snippetsform.ui" line="33"/>
         <source>Fugio Snippets</source>
-        <translation type="unfinished"></translation>
+        <translation>Frammenti di Fugio</translation>
     </message>
     <message>
         <location filename="../snippets/snippetsform.ui" line="38"/>
         <source>My Snippets</source>
-        <translation type="unfinished"></translation>
+        <translation>I miei frammenti</translation>
     </message>
     <message>
         <location filename="../snippets/snippetsform.cpp" line="85"/>
         <source>New folder...</source>
-        <translation type="unfinished"></translation>
+        <translation>Nuova cartella...</translation>
     </message>
     <message>
         <location filename="../snippets/snippetsform.cpp" line="93"/>
         <source>Delete...</source>
-        <translation type="unfinished"></translation>
+        <translation>Elimina...</translation>
     </message>
     <message>
         <location filename="../snippets/snippetsform.cpp" line="115"/>
         <source>Couldn&apos;t delete directory %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile eliminare la cartella %1</translation>
     </message>
     <message>
         <location filename="../snippets/snippetsform.cpp" line="127"/>
         <source>Couldn&apos;t delete file %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile eliminare il file %1</translation>
     </message>
     <message>
         <location filename="../snippets/snippetsform.cpp" line="137"/>
         <source>New Folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Nuova cartella</translation>
     </message>
     <message>
         <location filename="../snippets/snippetsform.cpp" line="137"/>
         <source>Enter a name for the new folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Inserisci il nome della nuova cartella</translation>
     </message>
     <message>
         <location filename="../snippets/snippetsform.cpp" line="162"/>
         <source>Folder Exists</source>
-        <translation type="unfinished"></translation>
+        <translation>La cartella esiste già</translation>
     </message>
     <message>
         <location filename="../snippets/snippetsform.cpp" line="162"/>
         <source>Can&apos;t make the folder - it already exists</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile creare la cartella, esiste già</translation>
     </message>
     <message>
         <location filename="../snippets/snippetsform.cpp" line="169"/>
         <source>Folder Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Errore della cartella</translation>
     </message>
     <message>
         <location filename="../snippets/snippetsform.cpp" line="169"/>
         <source>Can&apos;t create the folder</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile creare la cartella</translation>
     </message>
 </context>
 <context>
@@ -1216,38 +1216,38 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../stylesheetform.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Modulo</translation>
     </message>
     <message>
         <location filename="../stylesheetform.ui" line="37"/>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiorna</translation>
     </message>
     <message>
         <location filename="../stylesheetform.ui" line="44"/>
         <source>Load...</source>
-        <translation type="unfinished"></translation>
+        <translation>Carica...</translation>
     </message>
     <message>
         <location filename="../stylesheetform.ui" line="51"/>
         <source>Save...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva...</translation>
     </message>
     <message>
         <location filename="../stylesheetform.cpp" line="57"/>
         <source>Open Stylesheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Apri foglio di stile</translation>
     </message>
     <message>
         <location filename="../stylesheetform.cpp" line="57"/>
         <location filename="../stylesheetform.cpp" line="79"/>
         <source>Stylesheets (*.css)</source>
-        <translation type="unfinished"></translation>
+        <translation>Apri foglio di stile (*.css)</translation>
     </message>
     <message>
         <location filename="../stylesheetform.cpp" line="79"/>
         <source>Save Stylesheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva foglio di stile</translation>
     </message>
 </context>
 </TS>
