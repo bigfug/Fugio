@@ -6,17 +6,17 @@
     <message>
         <location filename="../contextview.cpp" line="2595"/>
         <source>New Group</source>
-        <translation type="unfinished"></translation>
+        <translation>Nuovo gruppo</translation>
     </message>
     <message>
         <location filename="../contextview.cpp" line="2597"/>
         <source>Group Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome del gruppo</translation>
     </message>
     <message>
         <location filename="../contextview.cpp" line="2597"/>
         <source>Enter a name for this group</source>
-        <translation type="unfinished"></translation>
+        <translation>Inserisci il nome del gruppo</translation>
     </message>
 </context>
 <context>
@@ -24,32 +24,32 @@
     <message>
         <location filename="../contextwidgetprivate.ui" line="14"/>
         <source>NEW</source>
-        <translation type="unfinished"></translation>
+        <translation>NUOVO</translation>
     </message>
     <message>
         <location filename="../contextwidgetprivate.ui" line="26"/>
         <source>Play</source>
-        <translation type="unfinished"></translation>
+        <translation>Avvia</translation>
     </message>
     <message>
         <location filename="../contextwidgetprivate.ui" line="33"/>
         <source>Stop</source>
-        <translation type="unfinished"></translation>
+        <translation>Ferma</translation>
     </message>
     <message>
         <location filename="../contextwidgetprivate.ui" line="92"/>
         <source>999:99:99:999</source>
-        <translation type="unfinished"></translation>
+        <translation>999:99:99:999</translation>
     </message>
     <message>
         <location filename="../contextwidgetprivate.ui" line="95"/>
         <source>000:00:00:000</source>
-        <translation type="unfinished"></translation>
+        <translation>000:00:00:000</translation>
     </message>
     <message>
         <location filename="../contextwidgetprivate.ui" line="110"/>
         <source>Root</source>
-        <translation type="unfinished"></translation>
+        <translation>Radice</translation>
     </message>
     <message>
         <location filename="../contextwidgetprivate.cpp" line="50"/>
@@ -79,18 +79,18 @@
     <message>
         <location filename="../contextwidgetprivate.cpp" line="337"/>
         <source>Save Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva dati</translation>
     </message>
     <message>
         <location filename="../contextwidgetprivate.cpp" line="337"/>
         <location filename="../contextwidgetprivate.cpp" line="361"/>
         <source>Fugio Data (*.fugdata)</source>
-        <translation type="unfinished"></translation>
+        <translation>Dati di Fugio (*.fugdata)</translation>
     </message>
     <message>
         <location filename="../contextwidgetprivate.cpp" line="361"/>
         <source>Open Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Apri dati</translation>
     </message>
 </context>
 <context>
@@ -269,27 +269,27 @@
     <message>
         <location filename="../mainwindow.ui" line="450"/>
         <source>Online Documentation...</source>
-        <translation type="unfinished"></translation>
+        <translation>Documentazione in linea...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="458"/>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Copia</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="466"/>
         <source>Paste</source>
-        <translation type="unfinished"></translation>
+        <translation>Incolla</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="471"/>
         <source>Set Colour...</source>
-        <translation type="unfinished"></translation>
+        <translation>Imposta colore...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="476"/>
         <source>Recent1</source>
-        <translation type="unfinished"></translation>
+        <translation>Recente1</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="580"/>
@@ -309,32 +309,32 @@
     <message>
         <location filename="../mainwindow.ui" line="598"/>
         <source>Cut</source>
-        <translation type="unfinished"></translation>
+        <translation>Taglia</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="603"/>
         <source>Contact Developers...</source>
-        <translation type="unfinished"></translation>
+        <translation>Contatta gli sviluppatori...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="608"/>
         <source>Facebook Page...</source>
-        <translation type="unfinished"></translation>
+        <translation>Pagina Facebook...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="621"/>
         <source>Append...</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="626"/>
         <source>Group...</source>
-        <translation type="unfinished"></translation>
+        <translation>Raggruppa...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="629"/>
         <source>Ctrl+G</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+G</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="634"/>
@@ -344,7 +344,7 @@
     <message>
         <location filename="../mainwindow.ui" line="637"/>
         <source>Ctrl+P</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+P</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="653"/>
@@ -354,47 +354,47 @@
     <message>
         <location filename="../mainwindow.ui" line="658"/>
         <source>Ungroup</source>
-        <translation type="unfinished"></translation>
+        <translation>Scogli gruppo</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="661"/>
         <source>Ctrl+U</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+U</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="666"/>
         <source>Data Directory...</source>
-        <translation type="unfinished"></translation>
+        <translation>Cartella dei dati...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="671"/>
         <source>GitHub Page...</source>
-        <translation type="unfinished"></translation>
+        <translation>Pagina GitHub...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="676"/>
         <source>Check for updates...</source>
-        <translation type="unfinished"></translation>
+        <translation>Verifica aggiornamenti...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="681"/>
         <source>Facebook Users Group...</source>
-        <translation type="unfinished"></translation>
+        <translation>Gruppo degli Facebook degli utenti...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="686"/>
         <source>Save All</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva tutto</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="691"/>
         <source>Options...</source>
-        <translation type="unfinished"></translation>
+        <translation>Opzioni...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="699"/>
         <source>Import...</source>
-        <translation type="unfinished"></translation>
+        <translation>Importa...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="704"/>
@@ -404,27 +404,27 @@
     <message>
         <location filename="../mainwindow.ui" line="709"/>
         <source>Save Data As...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva dati come...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="714"/>
         <source>Save Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva dati</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="719"/>
         <source>Load Data...</source>
-        <translation type="unfinished"></translation>
+        <translation>Carica dati...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="724"/>
         <source>Save Revision</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva revisione</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="727"/>
         <source>Ctrl+Shift+S</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+Maiusc+S</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="400"/>
@@ -440,32 +440,32 @@
     <message>
         <location filename="../mainwindow.cpp" line="604"/>
         <source>%1 v%2 by Alex May - DEBUG VERSION (not for distribution)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 v%2 di Alex May - VERSIONE SPERIMENTALE (non per la distribuzione)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="606"/>
         <source>%1 v%2 by Alex May</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 v%2 di Alex May</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="618"/>
         <source>Set duration</source>
-        <translation type="unfinished"></translation>
+        <translation>Imposta durata</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="618"/>
         <source>Duration (Hours:Minutes:Seconds:Milliseconds):</source>
-        <translation type="unfinished"></translation>
+        <translation>Durata (ore:minuti:secondi:millisecondi)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="953"/>
         <source>&amp;%1 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;%1 %2</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="958"/>
         <source>%1 %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 %2</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1102"/>
@@ -475,47 +475,47 @@
     <message>
         <location filename="../mainwindow.cpp" line="1130"/>
         <source>Name Snippet</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome frammento</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1130"/>
         <source>Enter the name for the new Snippet</source>
-        <translation type="unfinished"></translation>
+        <translation>Inserisci un nome per il frammento</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1146"/>
         <source>Snippet Exists</source>
-        <translation type="unfinished"></translation>
+        <translation>Frammento esistente</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1146"/>
         <source>A snippit already exists with that name, do you want to overwrite it?</source>
-        <translation type="unfinished"></translation>
+        <translation>Esiste già un frammento con questo nome, voi sovrascriverlo?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1233"/>
         <source>Load Recovery Files?</source>
-        <translation type="unfinished"></translation>
+        <translation>Caricare la copia di recupero?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1233"/>
         <source>Recovery files found - reload them?</source>
-        <translation type="unfinished"></translation>
+        <translation>Copia di recupero trovata, ricaricarla?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1235"/>
         <source>Delete Recovery Files?</source>
-        <translation type="unfinished"></translation>
+        <translation>Eliminare la copia di recupero?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1235"/>
         <source>Recovery files found - delete them?</source>
-        <translation type="unfinished"></translation>
+        <translation>Copia di recupero trovata, eliminarla?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1437"/>
         <source>Import file(s)</source>
-        <translation type="unfinished"></translation>
+        <translation>Importa file</translation>
     </message>
 </context>
 <context>
@@ -561,52 +561,52 @@
     <message>
         <location filename="../nodeitem.cpp" line="355"/>
         <source>Rename...</source>
-        <translation type="unfinished"></translation>
+        <translation>Rinomina...</translation>
     </message>
     <message>
         <location filename="../nodeitem.cpp" line="366"/>
         <source>Set Colour...</source>
-        <translation type="unfinished"></translation>
+        <translation>Imposta colore...</translation>
     </message>
     <message>
         <location filename="../nodeitem.cpp" line="368"/>
         <source>Add Input Pin...</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi piedino d&apos;entrata...</translation>
     </message>
     <message>
         <location filename="../nodeitem.cpp" line="373"/>
         <source>Add Output Pin...</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi piedino d&apos;uscita...</translation>
     </message>
     <message>
         <location filename="../nodeitem.cpp" line="378"/>
         <source>Active</source>
-        <translation type="unfinished"></translation>
+        <translation>Attiva</translation>
     </message>
     <message>
         <location filename="../nodeitem.cpp" line="386"/>
         <source>Delete</source>
-        <translation type="unfinished"></translation>
+        <translation>Elimina</translation>
     </message>
     <message>
         <location filename="../nodeitem.cpp" line="395"/>
         <source>Help...</source>
-        <translation type="unfinished"></translation>
+        <translation>Aiuto...</translation>
     </message>
     <message>
         <location filename="../nodeitem.cpp" line="403"/>
         <source>Ungroup</source>
-        <translation type="unfinished"></translation>
+        <translation>Scogli gruppo</translation>
     </message>
     <message>
         <location filename="../nodeitem.cpp" line="1206"/>
         <source>Pin Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo piedino</translation>
     </message>
     <message>
         <location filename="../nodeitem.cpp" line="1206"/>
         <source>Choose Pin Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli il tipo del piedino</translation>
     </message>
 </context>
 <context>
@@ -614,12 +614,12 @@
     <message>
         <location filename="../nodelistform.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Modulo</translation>
     </message>
     <message>
         <location filename="../nodelistform.ui" line="39"/>
         <source>Search</source>
-        <translation type="unfinished"></translation>
+        <translation>Cerca</translation>
     </message>
     <message>
         <location filename="../nodelistform.ui" line="59"/>
@@ -628,7 +628,11 @@
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Click on a node above to get quick reference information.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Clicca su un nodo qui sopra per ottenerne rapidamente informazioni.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
@@ -636,12 +640,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../nodenamedialog.ui" line="14"/>
         <source>Insert Node</source>
-        <translation type="unfinished"></translation>
+        <translation>Inserisci nodo</translation>
     </message>
     <message>
         <location filename="../nodenamedialog.ui" line="20"/>
         <source>Type Node Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Scrivi il nome del nodo</translation>
     </message>
 </context>
 <context>
@@ -684,22 +688,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../patchpromptdialog.ui" line="73"/>
         <source>Tutorial Videos...</source>
-        <translation type="unfinished"></translation>
+        <translation>Guide video...</translation>
     </message>
     <message>
         <location filename="../patchpromptdialog.ui" line="80"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Annulla</translation>
     </message>
     <message>
         <location filename="../patchpromptdialog.cpp" line="119"/>
         <source>Fugio Examples</source>
-        <translation type="unfinished"></translation>
+        <translation>Esempi di Fugio</translation>
     </message>
     <message>
         <location filename="../patchpromptdialog.cpp" line="119"/>
         <source>A wide range of examples can be found under the File menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Si possono trovare molti esempi sotto la voce File del menu</translation>
     </message>
 </context>
 <context>
@@ -707,27 +711,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../performanceform.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Modulo</translation>
     </message>
     <message>
         <location filename="../performanceform.ui" line="36"/>
         <source>Node</source>
-        <translation type="unfinished"></translation>
+        <translation>Nodo</translation>
     </message>
     <message>
         <location filename="../performanceform.ui" line="41"/>
         <source>Method</source>
-        <translation type="unfinished"></translation>
+        <translation>Funzione</translation>
     </message>
     <message>
         <location filename="../performanceform.ui" line="46"/>
         <source>Calls</source>
-        <translation type="unfinished"></translation>
+        <translation>Chiama</translation>
     </message>
     <message>
         <location filename="../performanceform.ui" line="51"/>
         <source>Time</source>
-        <translation type="unfinished"></translation>
+        <translation>Istante di tempo</translation>
     </message>
 </context>
 <context>
@@ -735,7 +739,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../pinitem.cpp" line="246"/>
         <source>Rename</source>
-        <translation type="unfinished"></translation>
+        <translation>Rinomina</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="248"/>
@@ -745,27 +749,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../pinitem.cpp" line="250"/>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="255"/>
         <source>Hide</source>
-        <translation type="unfinished"></translation>
+        <translation>Nascondi</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="260"/>
         <source>Updatable</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiornabile</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="266"/>
         <source>Import</source>
-        <translation type="unfinished"></translation>
+        <translation>Importa</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="267"/>
         <source>Export</source>
-        <translation type="unfinished"></translation>
+        <translation>Esporta</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="273"/>
@@ -795,12 +799,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../pinitem.cpp" line="334"/>
         <source>Always Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiorna sempre</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="340"/>
         <source>Set Colour...</source>
-        <translation type="unfinished"></translation>
+        <translation>Imposta colore...</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="344"/>
@@ -825,57 +829,57 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../pinitem.cpp" line="388"/>
         <source>Splitters</source>
-        <translation type="unfinished"></translation>
+        <translation>Separatori</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="410"/>
         <source>Help...</source>
-        <translation type="unfinished"></translation>
+        <translation>Aiuto...</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="450"/>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Valore</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="457"/>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Descrizione</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="884"/>
         <source>Choose Default Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli il valore predefinito</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="903"/>
         <source>Select file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli file...</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="924"/>
         <source>Choose Colour</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli il colore</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="943"/>
         <source>Choose Font</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli carattere</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="961"/>
         <source>Edit Default Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli il valore predefinito</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="1012"/>
         <source>Import Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Importa dati</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="1027"/>
         <source>Export Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Esporta dati</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="1138"/>
