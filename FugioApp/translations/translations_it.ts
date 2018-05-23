@@ -98,54 +98,54 @@
     <message>
         <location filename="../mainwindow.ui" line="14"/>
         <source>Fugio</source>
-        <translation type="unfinished"></translation>
+        <translation>Fugio</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="74"/>
         <source>File</source>
-        <translation type="unfinished"></translation>
+        <translation>File</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="78"/>
         <source>Recent</source>
-        <translation type="unfinished"></translation>
+        <translation>Recenti</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="93"/>
         <source>Examples</source>
-        <translation type="unfinished"></translation>
+        <translation>Esempi</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="123"/>
         <source>&amp;Window</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Finestra</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="134"/>
         <source>&amp;Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Modifica</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="159"/>
         <source>&amp;Devices</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Dispositivi</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="164"/>
         <source>Help</source>
-        <translation type="unfinished"></translation>
+        <translation>Aiuto</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="189"/>
         <location filename="../mainwindow.ui" line="366"/>
         <source>Browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Navigatore</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="226"/>
         <location filename="../mainwindow.ui" line="374"/>
         <source>Nodes</source>
-        <translation type="unfinished"></translation>
+        <translation>Nodi</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="253"/>
@@ -163,58 +163,58 @@
         <location filename="../mainwindow.ui" line="299"/>
         <location filename="../mainwindow.ui" line="616"/>
         <source>Performance</source>
-        <translation type="unfinished"></translation>
+        <translation>Prestazioni</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="308"/>
         <location filename="../mainwindow.ui" line="648"/>
         <source>Snippets</source>
-        <translation type="unfinished"></translation>
+        <translation>Frammenti</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="317"/>
         <source>&amp;Open...</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Apri...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="320"/>
         <source>Ctrl+O</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+O</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="328"/>
         <source>&amp;Save</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Salva</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="331"/>
         <source>Ctrl+S</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+S</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="339"/>
         <source>Save As...</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva come...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="344"/>
         <source>&amp;New</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Nuovo</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="347"/>
         <source>Ctrl+N</source>
-        <translation type="unfinished"></translation>
+        <translation>Ctrl+N</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="379"/>
         <source>E&amp;xit</source>
-        <translation type="unfinished"></translation>
+        <translation>E&amp;sci</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="387"/>
         <source>Cursor to Start</source>
-        <translation type="unfinished"></translation>
+        <translation>Cursore all&apos;inizio</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="390"/>
@@ -224,12 +224,12 @@
     <message>
         <location filename="../mainwindow.ui" line="395"/>
         <source>Cursor to End</source>
-        <translation type="unfinished"></translation>
+        <translation>Cursore alla fine</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="398"/>
         <source>End</source>
-        <translation type="unfinished"></translation>
+        <translation>Fine</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="403"/>
@@ -239,32 +239,32 @@
     <message>
         <location filename="../mainwindow.ui" line="406"/>
         <source>Space</source>
-        <translation type="unfinished"></translation>
+        <translation>Spazio</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="411"/>
         <source>Output #1</source>
-        <translation type="unfinished"></translation>
+        <translation>Uscita #1</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="416"/>
         <source>Set duration...</source>
-        <translation type="unfinished"></translation>
+        <translation>Imposta durata...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="429"/>
         <source>Add Note</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi nota</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="434"/>
         <source>About Fugio...</source>
-        <translation type="unfinished"></translation>
+        <translation>A proposito di Fugio...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="442"/>
         <source>About Qt...</source>
-        <translation type="unfinished"></translation>
+        <translation>A proposito di Qt...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="450"/>
