@@ -151,7 +151,7 @@
         <location filename="../mainwindow.ui" line="253"/>
         <location filename="../mainwindow.ui" line="355"/>
         <source>Logger</source>
-        <translation type="unfinished"></translation>
+        <translation>Stato del programma</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="290"/>
@@ -219,7 +219,7 @@
     <message>
         <location filename="../mainwindow.ui" line="390"/>
         <source>Home</source>
-        <translation type="unfinished"></translation>
+        <translation>Home</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="395"/>
@@ -229,12 +229,12 @@
     <message>
         <location filename="../mainwindow.ui" line="398"/>
         <source>End</source>
-        <translation>Fine</translation>
+        <translation>End</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="403"/>
         <source>Play Toggle</source>
-        <translation type="unfinished"></translation>
+        <translation>Commuta riproduzione</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="406"/>
@@ -339,7 +339,7 @@
     <message>
         <location filename="../mainwindow.ui" line="634"/>
         <source>Group Parent</source>
-        <translation type="unfinished"></translation>
+        <translation>Raggrupa al genitore</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="637"/>
@@ -399,7 +399,7 @@
     <message>
         <location filename="../mainwindow.ui" line="704"/>
         <source>Save Patch Image...</source>
-        <translation>Salva immagine della patch</translation>
+        <translation>Salva immagine della patch...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="709"/>
@@ -673,7 +673,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../patchpromptdialog.ui" line="52"/>
         <source>Open Patch...</source>
-        <translation>Apri patch</translation>
+        <translation>Apri patch...</translation>
     </message>
     <message>
         <location filename="../patchpromptdialog.ui" line="59"/>
@@ -744,7 +744,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../pinitem.cpp" line="248"/>
         <source>Edit Default</source>
-        <translation type="unfinished"></translation>
+        <translation>Modifica predefinito</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="250"/>
@@ -774,22 +774,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../pinitem.cpp" line="273"/>
         <source>Disconnect Global</source>
-        <translation type="unfinished"></translation>
+        <translation>Disconnetti globale</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="279"/>
         <source>Connect Global...</source>
-        <translation type="unfinished"></translation>
+        <translation>Connetti globale...</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="288"/>
         <source>Remove Group Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi input gruppo</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="298"/>
         <source>Add Group Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi input gruppo</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="315"/>
@@ -809,22 +809,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../pinitem.cpp" line="344"/>
         <source>Remove Global</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi globale</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="350"/>
         <source>Make Global</source>
-        <translation type="unfinished"></translation>
+        <translation>Rendi globale</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="359"/>
         <source>Remove Group Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi gruppo in uscita</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="376"/>
         <source>Add Group Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi gruppo di uscita</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="388"/>
@@ -884,17 +884,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../pinitem.cpp" line="1138"/>
         <source>No Global Pins</source>
-        <translation type="unfinished"></translation>
+        <translation>Nessun piedino globale</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="1138"/>
         <source>There are no global pins defined</source>
-        <translation type="unfinished"></translation>
+        <translation>Non è stato definito alcun piedino globale</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="1155"/>
         <source>Choose Global</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli un globale</translation>
     </message>
 </context>
 <context>
@@ -902,7 +902,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdaddpinlink.h" line="19"/>
         <source>Add link to new pin</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi collegamento a un nuovo piedino</translation>
     </message>
     <message>
         <location filename="../undo/cmdcontextviewcut.h" line="21"/>
@@ -917,7 +917,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdgroup.h" line="22"/>
         <source>Group</source>
-        <translation type="unfinished"></translation>
+        <translation>Raggruppa</translation>
     </message>
     <message>
         <location filename="../undo/cmdgroupaddinput.h" line="20"/>
@@ -952,17 +952,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdgrouprename.h" line="20"/>
         <source>Rename Group</source>
-        <translation type="unfinished"></translation>
+        <translation>Rinomina gruppo</translation>
     </message>
     <message>
         <location filename="../undo/cmdlinkadd.h" line="19"/>
         <source>Add Link</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi collegamento</translation>
     </message>
     <message>
         <location filename="../undo/cmdlinkremove.h" line="16"/>
         <source>Remove Link</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi collegamento</translation>
     </message>
     <message>
         <location filename="../undo/cmdmove.h" line="23"/>
@@ -972,7 +972,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdnewcontext.h" line="17"/>
         <source>New Context</source>
-        <translation type="unfinished"></translation>
+        <translation>Nuovo contesto</translation>
     </message>
     <message>
         <location filename="../undo/cmdnodeadd.h" line="22"/>
@@ -987,7 +987,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdnodepinadd.h" line="17"/>
         <source>Add pin</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi piedino</translation>
     </message>
     <message>
         <location filename="../undo/cmdnoderemove.h" line="17"/>
@@ -1027,72 +1027,72 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdpinconnectglobal.h" line="18"/>
         <source>Connect global pin</source>
-        <translation type="unfinished"></translation>
+        <translation>Connetti piedino globale</translation>
     </message>
     <message>
         <location filename="../undo/cmdpindisconnectglobal.h" line="18"/>
         <source>Disonnect global pin</source>
-        <translation type="unfinished"></translation>
+        <translation>Disconnetti piedino globale</translation>
     </message>
     <message>
         <location filename="../undo/cmdpinimport.h" line="19"/>
         <source>Pin Import</source>
-        <translation type="unfinished"></translation>
+        <translation>Importa piedinatura</translation>
     </message>
     <message>
         <location filename="../undo/cmdpinjoin.h" line="14"/>
         <source>Pin Join</source>
-        <translation type="unfinished"></translation>
+        <translation>Unisci piedini</translation>
     </message>
     <message>
         <location filename="../undo/cmdpinjoin.h" line="39"/>
         <source>Join</source>
-        <translation type="unfinished"></translation>
+        <translation>Unisci</translation>
     </message>
     <message>
         <location filename="../undo/cmdpinmakeglobal.h" line="18"/>
         <source>Make pin global</source>
-        <translation type="unfinished"></translation>
+        <translation>Rendi il piedino globale</translation>
     </message>
     <message>
         <location filename="../undo/cmdpinremove.h" line="17"/>
         <source>Pin Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi piedino</translation>
     </message>
     <message>
         <location filename="../undo/cmdpinremoveglobal.h" line="16"/>
         <source>Remove global pin</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi piedino globale</translation>
     </message>
     <message>
         <location filename="../undo/cmdpinsplit.h" line="14"/>
         <source>Pin Split</source>
-        <translation type="unfinished"></translation>
+        <translation>Separa piedino</translation>
     </message>
     <message>
         <location filename="../undo/cmdpinsplit.h" line="39"/>
         <source>Split</source>
-        <translation type="unfinished"></translation>
+        <translation>Separa</translation>
     </message>
     <message>
         <location filename="../undo/cmdremove.h" line="22"/>
         <source>Remove Nodes/Links</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi nodi/collegamenti</translation>
     </message>
     <message>
         <location filename="../undo/cmdsetalwaysupdate.h" line="17"/>
         <source>Set always update</source>
-        <translation type="unfinished"></translation>
+        <translation>Imposta aggiorna sempre</translation>
     </message>
     <message>
         <location filename="../undo/cmdsetcolour.h" line="21"/>
         <source>Change colour of Nodes/Links</source>
-        <translation type="unfinished"></translation>
+        <translation>Cambia il colore dei nodi/collegamenti</translation>
     </message>
     <message>
         <location filename="../undo/cmdsetdefaultvalue.h" line="17"/>
         <source>Set pin default value</source>
-        <translation type="unfinished"></translation>
+        <translation>Imposta il valore predefinito del piedino</translation>
     </message>
     <message>
         <location filename="../undo/cmdsetduration.h" line="18"/>
@@ -1102,7 +1102,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdsetpinname.h" line="17"/>
         <source>Rename Pin</source>
-        <translation type="unfinished"></translation>
+        <translation>Rinomina piedino</translation>
     </message>
     <message>
         <location filename="../undo/cmdsetupdatable.h" line="17"/>
