@@ -107,6 +107,8 @@ install( DIRECTORY share/ DESTINATION ${PATH_SHARE} )
 #------------------------------------------------------------------------------
 # CPack
 
+include( InstallRequiredSystemLibraries )
+
 set( CPACK_PACKAGE_NAME "Fugio" )
 set( CPACK_PACKAGE_VENDOR "bigfug.com" )
 set( CPACK_PACKAGE_CONTACT "fugio@bigfug.com" )
