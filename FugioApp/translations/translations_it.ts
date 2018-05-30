@@ -294,12 +294,12 @@
     <message>
         <location filename="../mainwindow.ui" line="580"/>
         <source>Tile</source>
-        <translation type="unfinished"></translation>
+        <translation>Piastrella</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="585"/>
         <source>Cascade</source>
-        <translation type="unfinished"></translation>
+        <translation>A cascata</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="590"/>
@@ -349,7 +349,7 @@
     <message>
         <location filename="../mainwindow.ui" line="653"/>
         <source>Selection to snippit...</source>
-        <translation type="unfinished"></translation>
+        <translation>Selezione al frammento...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="658"/>
@@ -794,7 +794,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../pinitem.cpp" line="315"/>
         <source>Joiners</source>
-        <translation type="unfinished"></translation>
+        <translation>Unitori</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="334"/>
