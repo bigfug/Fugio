@@ -5,6 +5,7 @@ if( APPLE AND CMAKE_BUILD_TYPE STREQUAL Release )
 
 	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND install_name_tool -change "${LUA_LIBRARY}" "${LUA_LIB}" "${BUNDLE_PATH}/Contents/MacOS/${PROJECT_NAME}"
+		COMMAND install_name_tool -change "/usr/local/opt/lua/lib/${LUA_LIB}" "${LUA_LIB}" "${BUNDLE_PATH}/Contents/MacOS/${PROJECT_NAME}"
 		VERBATIM
 		)
 
