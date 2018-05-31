@@ -47,3 +47,17 @@ include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 
 include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
+
+if( APPLE )
+	set( QTQUICK_PLUGINS "${Qt5Quick_DIR}/../../../qml" )
+
+	if( EXISTS ${QTQUICK_PLUGINS} )
+		if( EXISTS ${QTQUICK_PLUGINS}/QtQuick )
+			install( DIRECTORY ${QTQUICK_PLUGINS}/QtQuick DESTINATION share/qmlplugins )
+		endif()
+
+		if( EXISTS ${QTQUICK_PLUGINS}/QtQuick.2 )
+			install( DIRECTORY ${QTQUICK_PLUGINS}/QtQuick.2 DESTINATION share/qmlplugins )
+		endif()
+	endif()
+endif()
