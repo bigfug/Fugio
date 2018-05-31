@@ -141,7 +141,7 @@ bool QMLInterfaceNode::initialise( void )
 
 		if( QmlPluginDir.exists() )
 		{
-			Engine->addPluginPath( QmlPluginDir.path() );
+			Engine->addImportPath( QmlPluginDir.path() );
 		}
 
 		qDebug() << Engine->importPathList();
