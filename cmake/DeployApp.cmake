@@ -46,17 +46,12 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 
 	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND "${WINDEPLOYQT_EXECUTABLE}"
-			"$<TARGET_FILE_DIR:${PROJECT_NAME}>/../.."
 			--compiler-runtime
-			-always-overwrite
-			-qmldir=${CMAKE_SOURCE_DIR}/qml
-		COMMENT "Running windeployqt..."
+			--concurrent --opengl --serialport --websockets --no-angle --no-opengl-sw --force --verbose 2
+			--qmldir "${CMAKE_SOURCE_DIR}/qml"
+			"${CMAKE_INSTALL_PREFIX}/${PATH_APP}/${PROJECT_NAME}.exe"
+		COMMENT "Running windeployqt on $<TARGET_FILE_DIR:${PROJECT_NAME}>/../.."
 	)
-
-#	install( CODE "execute_process( COMMAND \"${WINDEPLOYQT_EXECUTABLE}\" --no-compiler-runtime --concurrent --opengl --serialport --websockets --no-angle --no-opengl-sw --force --verbose 2 --qmldir \"${CMAKE_SOURCE_DIR}/qml\" \"${CMAKE_INSTALL_PREFIX}/${PATH_APP}/${PROJECT_NAME}.exe\" )"
-#		COMMENT "Running windeployqt..."
-#	)
-
 endif()
 
 if( APPLE AND CMAKE_BUILD_TYPE STREQUAL Release )
