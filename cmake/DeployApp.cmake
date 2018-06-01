@@ -49,13 +49,14 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND "${WINDEPLOYQT_EXECUTABLE}"
 			--compiler-runtime
-			--concurrent --opengl --serialport --websockets --no-angle --no-opengl-sw --force --verbose 2
+			--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets
+			--no-angle --no-opengl-sw --force --verbose 2
 			--qmldir "${CMAKE_SOURCE_DIR}/qml"
 			--dir "${ABS_BINARY_DIR}/${PATH_APP}"
 			--libdir "${ABS_BINARY_DIR}/${PATH_APP}"
 			--plugindir "${ABS_BINARY_DIR}/${PATH_APP}"
 			$<TARGET_FILE:${PROJECT_NAME}>
-		COMMENT "Running windeployqt on $<TARGET_FILE:${PROJECT_NAME}>"
+		COMMENT "Running windeployqt..."
 	)
 endif()
 
