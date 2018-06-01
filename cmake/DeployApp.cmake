@@ -46,17 +46,58 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 
 	get_filename_component( ABS_BINARY_DIR "${CMAKE_INSTALL_PREFIX}" REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
 
-	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND "${WINDEPLOYQT_EXECUTABLE}"
-			--compiler-runtime
-			--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets
-			--no-angle --no-opengl-sw --force --verbose 2
-			--qmldir "${CMAKE_SOURCE_DIR}/qml"
-			--dir "${ABS_BINARY_DIR}/${PATH_APP}"
-			--libdir "${ABS_BINARY_DIR}/${PATH_APP}"
-			--plugindir "${ABS_BINARY_DIR}/${PATH_APP}"
-			$<TARGET_FILE:${PROJECT_NAME}>
-		COMMENT "Running windeployqt..."
+	# Run windeployqt immediately after build
+    add_custom_command(TARGET ${target} POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E
+            env PATH="${_qt_bin_dir}" "${WINDEPLOYQT_EXECUTABLE}"
+                --verbose 0
+                --no-compiler-runtime
+                --no-angle
+                --no-opengl-sw
+				--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets
+				--qmldir "${CMAKE_SOURCE_DIR}/qml"
+				--dir "${ABS_BINARY_DIR}/${PATH_APP}"
+				--libdir "${ABS_BINARY_DIR}/${PATH_APP}"
+				--plugindir "${ABS_BINARY_DIR}/${PATH_APP}"
+				\"$<TARGET_FILE:${target}>\"
+    )
+
+	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${target}_path"
+		CONTENT "$<TARGET_FILE:${target}>"
+	)
+
+	# Before installation, run a series of commands that copy each of the Qt
+	# runtime files to the appropriate directory for installation
+	install(CODE
+		"
+		file(READ \"${CMAKE_CURRENT_BINARY_DIR}/${target}_path\" _file)
+		execute_process(
+			COMMAND \"${CMAKE_COMMAND}\" -E
+				env PATH=\"${_qt_bin_dir}\" \"${WINDEPLOYQT_EXECUTABLE}\"
+					--dry-run
+					--no-compiler-runtime
+					--no-angle
+					--no-opengl-sw
+					--list mapping
+					--qmldir \"${CMAKE_SOURCE_DIR}/qml\"
+					--dir \"${ABS_BINARY_DIR}/${PATH_APP}\"
+					--libdir \"${ABS_BINARY_DIR}/${PATH_APP}\"
+					--plugindir \"${ABS_BINARY_DIR}/${PATH_APP}\"
+					\${_file}
+			OUTPUT_VARIABLE _output
+			OUTPUT_STRIP_TRAILING_WHITESPACE
+		)
+		separate_arguments(_files WINDOWS_COMMAND \${_output})
+		while(_files)
+			list(GET _files 0 _src)
+			list(GET _files 1 _dest)
+			execute_process(
+				COMMAND \"${CMAKE_COMMAND}\" -E
+					copy \${_src} \"\${CMAKE_INSTALL_PREFIX}/${directory}/\${_dest}\"
+			)
+			list(REMOVE_AT _files 0 1)
+		endwhile()
+		"
 	)
 endif()
 

@@ -107,6 +107,8 @@ install( DIRECTORY share/ DESTINATION ${PATH_SHARE} )
 #------------------------------------------------------------------------------
 # CPack
 
+set( CMAKE_INSTALL_UCRT_LIBRARIES TRUE )
+
 include( InstallRequiredSystemLibraries )
 
 set( CPACK_PACKAGE_NAME "Fugio" )
@@ -120,8 +122,13 @@ set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE" )
 
 if( WIN32 AND NOT UNIX )
 	set( CPACK_NSIS_EXECUTABLES_DIRECTORY "${PATH_APP}" )
+	set( CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON )
 	#set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "ExecWait '\\\"$INSTDIR\\\\vcredist_x86.exe\\\" /q:a'" )
 	#set( CPACK_NSIS_HELP_LINK "http:\\\\\\\\wiki.bigfug.com" )
+endif()
+
+if( APPLE )
+	set( CPACK_INCLUDE_TOPLEVEL_DIRECTORY ON )
 endif()
 
 # Set the output package filename
@@ -202,9 +209,7 @@ elseif( UNIX )
 	endif()
 endif()
 
-if( APPLE )
-	set( CPACK_INCLUDE_TOPLEVEL_DIRECTORY ON )
-endif()
+# Extract the version for CPACK
 
 string( REPLACE "." ";" FUGIO_VERSION_LIST ${FUGIO_VERSION} )
 
