@@ -44,13 +44,18 @@ get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 	find_program( WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}" )
 
+	get_filename_component( ABS_BINARY_DIR "${CMAKE_INSTALL_PREFIX}" REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
+
 	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND "${WINDEPLOYQT_EXECUTABLE}"
 			--compiler-runtime
 			--concurrent --opengl --serialport --websockets --no-angle --no-opengl-sw --force --verbose 2
 			--qmldir "${CMAKE_SOURCE_DIR}/qml"
-			"${CMAKE_INSTALL_PREFIX}/${PATH_APP}/${PROJECT_NAME}.exe"
-		COMMENT "Running windeployqt on $<TARGET_FILE_DIR:${PROJECT_NAME}>/../.."
+			--dir "${ABS_BINARY_DIR}/${PATH_APP}"
+			--libdir "${ABS_BINARY_DIR}/${PATH_APP}"
+			--plugindir "${ABS_BINARY_DIR}/${PATH_APP}"
+			$<TARGET_FILE:${PROJECT_NAME}>
+		COMMENT "Running windeployqt on $<TARGET_FILE:${PROJECT_NAME}>"
 	)
 endif()
 

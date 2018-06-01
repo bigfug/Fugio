@@ -170,7 +170,11 @@ QString GlobalPrivate::sharedDataPath() const
 #endif
 
 #if defined( Q_OS_WIN ) && !defined( QT_DEBUG )
-	return( QDir( QApplication::applicationDirPath() ).absoluteFilePath( "share" ) );
+	QDir		TmpDir = QDir( QApplication::applicationDirPath() );
+
+	TmpDir.cdUp();
+
+	return( TmpDir.absoluteFilePath( "share" ) );
 #endif
 
 #if defined( Q_OS_MAC ) && !defined( QT_DEBUG )

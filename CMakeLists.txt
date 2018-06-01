@@ -53,18 +53,18 @@ message( "FUGIO VERSION ${FUGIO_VERSION}" )
 
 #------------------------------------------------------------------------------
 
-if( WIN32 )
-	set( CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1 )
-endif( WIN32 )
-
 set( PATH_APP . )
 set( PATH_INCLUDE include )
 set( PATH_SHARE share )
 set( PATH_PLUGIN plugins )
 
+if( WIN32 )
+	set( PATH_APP bin )
+	set( CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1 )
+endif( WIN32 )
+
 if( UNIX AND NOT APPLE )
 	set( PATH_APP		bin )
-	set( PATH_INCLUDE	include )
 	set( PATH_SHARE		share/fugio )
 	set( PATH_PLUGIN	lib/fugio )
 	
