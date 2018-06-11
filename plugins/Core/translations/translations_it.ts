@@ -27,12 +27,12 @@
     <message>
         <location filename="../blockupdatesnode.cpp" line="14"/>
         <source>Block</source>
-        <translation type="unfinished"></translation>
+        <translation>Blocca</translation>
     </message>
     <message>
         <location filename="../blockupdatesnode.cpp" line="16"/>
         <source>Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Entrata</translation>
     </message>
 </context>
 <context>
@@ -133,7 +133,7 @@
     <message>
         <location filename="../processclicknode.cpp" line="21"/>
         <source>Double</source>
-        <translation type="unfinished"></translation>
+        <translation>Doppia precisione</translation>
     </message>
 </context>
 <context>
@@ -233,12 +233,12 @@
     <message>
         <location filename="../splitrectnode.cpp" line="21"/>
         <source>Position</source>
-        <translation type="unfinished"></translation>
+        <translation>Posizione</translation>
     </message>
     <message>
         <location filename="../splitrectnode.cpp" line="23"/>
         <source>Size</source>
-        <translation type="unfinished"></translation>
+        <translation>Grandezza</translation>
     </message>
 </context>
 <context>
