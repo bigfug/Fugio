@@ -80,6 +80,14 @@ QSize DeviceOpenGLOutput::framebufferSize() const
 
 void DeviceOpenGLOutput::initializeGL()
 {
+	OpenGLPlugin::instance()->initGLEW();
+
+#if defined( OPENGL_DEBUG_ENABLE )
+	if( mDebugLogger.initialize() )
+	{
+		mDebugLogger.startLogging( QOpenGLDebugLogger::SynchronousLogging );
+	}
+#endif
 }
 
 void DeviceOpenGLOutput::resizeGL( int w, int h )
@@ -336,15 +344,6 @@ void DeviceOpenGLOutput::exposeEvent( QExposeEvent * )
 	if( isExposed() && isValid() )
 	{
 		makeCurrent();
-
-		OpenGLPlugin::instance()->initGLEW();
-
-#if defined( OPENGL_DEBUG_ENABLE )
-		if( mDebugLogger.initialize() )
-		{
-			mDebugLogger.startLogging( QOpenGLDebugLogger::SynchronousLogging );
-		}
-#endif
 
 		if( OpenGLPlugin::instance()->openWindowFullScreen() )
 		{
