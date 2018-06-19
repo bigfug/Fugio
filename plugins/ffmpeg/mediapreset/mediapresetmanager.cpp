@@ -10,6 +10,7 @@
 #include "mediaYouTube1080pWide.h"
 
 #include "media360_2048.h"
+#include "media360_4096.h"
 
 #include "mediaWav44.h"
 
@@ -33,6 +34,7 @@ MediaPresetManager::MediaPresetManager(QObject *parent) :
 	MediaYouTube1080pWide::registerPreset( *this );
 
 	Media360_2048::registerPreset( *this );
+	Media360_4096::registerPreset( *this );
 #endif
 }
 
