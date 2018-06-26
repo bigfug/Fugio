@@ -19,6 +19,7 @@ set( SOURCE_FILES
 	medianode.cpp
 	medianode.h
 	mediapreset/media360_2048.h
+	mediapreset/media360_4096.h
 	mediapreset/mediaProxy.h
 	mediapreset/mediaWav44.h
 	mediapreset/mediaYouTube1080pWide.h

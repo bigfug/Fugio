@@ -185,12 +185,6 @@ target_sources( ${PROJECT_NAME} PRIVATE ${QRC_FILES} )
 
 set_property( SOURCE ${CMAKE_CURRENT_BINARY_DIR}/qrc_fugio.cpp PROPERTY SKIP_AUTOGEN ON )
 
-if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
-	include( Windeployqt )
-
-	windeployqt( ${PROJECT_NAME} ${PATH_APP} )
-endif()
-
 #------------------------------------------------------------------------------
 # Raspberry Pi
 

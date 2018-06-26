@@ -137,6 +137,13 @@ bool QMLInterfaceNode::initialise( void )
 		Engine->addImportPath( QDir( QMLPlugin::app()->sharedDataPath() ).filePath( "qml" ) );
 		Engine->addImportPath( UsrDir.path() );
 
+		QDir	QmlPluginDir = QDir( QMLPlugin::app()->sharedDataPath() ).filePath( "qmlplugins" );
+
+		if( QmlPluginDir.exists() )
+		{
+			Engine->addImportPath( QmlPluginDir.path() );
+		}
+
 		qDebug() << Engine->importPathList();
 		qDebug() << Engine->pluginPathList();
 

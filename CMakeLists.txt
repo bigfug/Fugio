@@ -53,18 +53,18 @@ message( "FUGIO VERSION ${FUGIO_VERSION}" )
 
 #------------------------------------------------------------------------------
 
-if( WIN32 )
-	set( CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1 )
-endif( WIN32 )
-
 set( PATH_APP . )
 set( PATH_INCLUDE include )
 set( PATH_SHARE share )
 set( PATH_PLUGIN plugins )
 
+if( WIN32 )
+	set( PATH_APP bin )
+	set( CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1 )
+endif( WIN32 )
+
 if( UNIX AND NOT APPLE )
 	set( PATH_APP		bin )
-	set( PATH_INCLUDE	include )
 	set( PATH_SHARE		share/fugio )
 	set( PATH_PLUGIN	lib/fugio )
 	
@@ -118,8 +118,13 @@ set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE" )
 
 if( WIN32 AND NOT UNIX )
 	set( CPACK_NSIS_EXECUTABLES_DIRECTORY "${PATH_APP}" )
+	set( CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON )
 	#set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "ExecWait '\\\"$INSTDIR\\\\vcredist_x86.exe\\\" /q:a'" )
 	#set( CPACK_NSIS_HELP_LINK "http:\\\\\\\\wiki.bigfug.com" )
+endif()
+
+if( APPLE )
+	set( CPACK_INCLUDE_TOPLEVEL_DIRECTORY ON )
 endif()
 
 # Set the output package filename
@@ -200,9 +205,7 @@ elseif( UNIX )
 	endif()
 endif()
 
-if( APPLE )
-	set( CPACK_INCLUDE_TOPLEVEL_DIRECTORY ON )
-endif()
+# Extract the version for CPACK
 
 string( REPLACE "." ";" FUGIO_VERSION_LIST ${FUGIO_VERSION} )
 
