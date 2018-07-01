@@ -222,10 +222,11 @@ void EasyShader2DNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	GLint	VertexLocation = mShaderCompilerData.mProgram->attributeLocation( "vertex" );
 
-	if( !mVAO.isCreated() )
+	QOpenGLVertexArrayObject	*VAO = mVAO.vao();
+
+	if( VAO && !VAO->isCreated() )
 	{
-		mVAO.create();
-		mVAO.bind();
+		QOpenGLVertexArrayObject::Binder B( VAO );
 
 		static const GLfloat Verticies[] =
 		{
@@ -243,11 +244,9 @@ void EasyShader2DNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		mShaderCompilerData.mProgram->enableAttributeArray( VertexLocation );
 
 		mQuadGeometry.release();
-
-		mVAO.release();
 	}
 
-	QOpenGLVertexArrayObject::Binder VAOBinder( &mVAO );
+	QOpenGLVertexArrayObject::Binder VAOBinder( VAO );
 
 	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 

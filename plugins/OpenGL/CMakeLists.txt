@@ -17,7 +17,8 @@ set( SOURCE_FILES
 	../../include/fugio/opengl/vertex_array_object_interface.h
 	../../include/fugio/output_interface.h
 	../../include/fugio/render_interface.h
-	
+	../../include/fugio/opengl/context_container_object.h
+
 	arraytobuffernode.cpp
 	arraytobuffernode.h
 	arraytoindexnode.cpp

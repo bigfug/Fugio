@@ -16,6 +16,8 @@
 #include <fugio/opengl/texture_interface.h>
 #include <fugio/text/syntax_error_interface.h>
 
+#include <fugio/opengl/context_container_object.h>
+
 #include "shadercompilerdata.h"
 
 FUGIO_NAMESPACE_BEGIN
@@ -82,7 +84,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinOutputRender;
 	fugio::RenderInterface						*mValOutputRender;
 
-	QOpenGLVertexArrayObject					 mVAO;
+	fugio::ContextVertexArrayObject				 mVAO;
 
 	ShaderCompilerData							 mShaderCompilerData;
 
