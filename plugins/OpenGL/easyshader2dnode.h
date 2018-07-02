@@ -6,8 +6,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLFunctions>
 #include <QOpenGLBuffer>
-#include <QOpenGLVertexArrayObject>
-#include <QOpenGLFramebufferObject>
+//#include <QOpenGLFramebufferObject>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -90,8 +89,7 @@ protected:
 
 	QOpenGLBuffer								 mQuadGeometry;
 
-	GLuint										 mFBO;
-	QSize										 mFBOSize;
+	fugio::ContextFramebufferObject				 mFBO;
 };
 
 #endif // EASYSHADER2DNODE_H

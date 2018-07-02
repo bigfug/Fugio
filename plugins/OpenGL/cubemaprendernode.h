@@ -2,7 +2,6 @@
 #define CUBEMAPRENDERNODE_H
 
 #include <QObject>
-#include <QOpenGLFramebufferObject>
 
 #include <fugio/nodecontrolbase.h>
 
@@ -41,6 +40,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinOutputTexture;
 
 	static QList<QMatrix4x4>					 mMatCam;
+
 	quint32										 mFBO;
 	quint32										 mRBO;
 };
