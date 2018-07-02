@@ -4,7 +4,7 @@
 <context>
     <name>ISFNode</name>
     <message>
-        <location filename="../isfnode.h" line="42"/>
+        <location filename="../isfnode.h" line="44"/>
         <source>Interactive Shader Format</source>
         <translation type="unfinished"></translation>
     </message>

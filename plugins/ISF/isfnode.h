@@ -32,6 +32,8 @@
 
 #include <fugio/file/filename_interface.h>
 
+#include <fugio/opengl/context_container_object.h>
+
 class ISFNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface, private QOpenGLFunctions
 {
 	Q_OBJECT
@@ -168,7 +170,7 @@ private:
 	QMap<QString,ISFImport>						 mISFImports;
 	QList<ISFPass>								 mISFPasses;
 
-	QOpenGLVertexArrayObject					 mVAO;
+	fugio::ContextVertexArrayObject				 mVAO;
 	QOpenGLBuffer								 mBuffer;
 	GLuint										 mProgram;
 	GLuint										 mFrameCounter;

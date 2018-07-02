@@ -79,7 +79,7 @@ void checkErrors( const char *file, int line )
 #endif
 
 ISFNode::ISFNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mVAO( 0 ),mProgram( 0 ), mFrameCounter( 0 ), mUniformTime( -1 ),
+	: NodeControlBase( pNode ), mProgram( 0 ), mFrameCounter( 0 ), mUniformTime( -1 ),
 	  mTextureIndexCount( 0 ), mStartTime( -1 ), mLastRenderTime( 0 )
 {
 	FUGID( PIN_INPUT_SOURCE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
@@ -125,7 +125,12 @@ bool ISFNode::deinitialise()
 
 	if( ISFPlugin::hasContextStatic() )
 	{
-		mVAO.destroy();
+		QOpenGLVertexArrayObject	*VAO = mVAO.vao();
+
+		if( VAO )
+		{
+			VAO->destroy();
+		}
 
 		mBuffer.destroy();
 
@@ -1514,7 +1519,7 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		mStartTime = pTimeStamp;
 	}
 
-	QOpenGLVertexArrayObject::Binder VAOBinder( &mVAO );
+	QOpenGLVertexArrayObject::Binder VAOBinder( mVAO.vao() );
 
 	GLfloat		Verticies[][ 2 ] =
 	{

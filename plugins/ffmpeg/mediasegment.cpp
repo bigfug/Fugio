@@ -1263,6 +1263,11 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 			}
 #endif
 		}
+
+		if( mVidDat.size() >= 10 )
+		{
+			break;
+		}
 	}
 
 #if defined( QT_DEBUG ) && defined( DEBUG_HAVE_FRAMES )
@@ -1700,6 +1705,11 @@ void MediaSegment::readNext()
 		else if( mPacket.stream_index == mSubtitle.mStreamId )
 		{
 
+		}
+
+		if( mVidDat.size() >= 10 )
+		{
+			break;
 		}
 	}
 

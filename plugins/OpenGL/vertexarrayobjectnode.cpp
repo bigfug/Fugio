@@ -40,7 +40,12 @@ bool VertexArrayObjectNode::initialise()
 
 void VertexArrayObjectNode::freeVAO()
 {
-	mVAO.destroy();
+	QOpenGLVertexArrayObject	*VAO = mVAO.vao();
+
+	if( VAO )
+	{
+		VAO->destroy();
+	}
 
 	mBindInfo.clear();
 }
@@ -66,10 +71,12 @@ void VertexArrayObjectNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	if( !mVAO.isCreated() )
+	QOpenGLVertexArrayObject	*VAO = mVAO.vao();
+
+	if( !VAO->isCreated() )
 	{
 #if !defined( QT_OPENGL_ES_2 )
-		mVAO.create();
+		VAO->create();
 #endif
 
 		UpdateAll = true;
@@ -80,7 +87,7 @@ void VertexArrayObjectNode::inputsUpdated( qint64 pTimeStamp )
 		UpdateAll = true;
 	}
 
-	if( !mVAO.isCreated() )
+	if( !VAO->isCreated() )
 	{
 		return;
 	}
@@ -92,6 +99,15 @@ void VertexArrayObjectNode::inputsUpdated( qint64 pTimeStamp )
 	if( !Shader )
 	{
 		return;
+	}
+
+	ContextBindInfoMap::const_iterator		ContextBindInfo = mBindInfo.find( QOpenGLContext::currentContext() );
+
+	if( ContextBindInfo == mBindInfo.end() )
+	{
+		mBindInfo.insert( QOpenGLContext::currentContext(), BindInfoMap() );
+
+		ContextBindInfo = mBindInfo.find( QOpenGLContext::currentContext() );
 	}
 
 	for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
@@ -128,9 +144,9 @@ void VertexArrayObjectNode::inputsUpdated( qint64 pTimeStamp )
 
 		if( !UpdateBind )
 		{
-			BindInfoMap::const_iterator		bi = mBindInfo.find( P->name() );
+			BindInfoMap::const_iterator		bi = ContextBindInfo.value().find( P->name() );
 
-			if( bi == mBindInfo.end() )
+			if( bi == ContextBindInfo.value().end() )
 			{
 				UpdateBind = true;
 			}
@@ -155,12 +171,12 @@ void VertexArrayObjectNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		mVAO.bind();
+		VAO->bind();
 
 		bindPin( P.data(), PinControl, Buffer, UniformData );
 	}
 
-	mVAO.release();
+	VAO->release();
 
 	pinUpdated( mPinOutputVAO );
 }
@@ -214,18 +230,20 @@ void VertexArrayObjectNode::vaoBind()
 		return;
 	}
 
-	if( !mVAO.isCreated() )
+	QOpenGLVertexArrayObject	*VAO = mVAO.vao();
+
+	if( !VAO->isCreated() )
 	{
 #if !defined( QT_OPENGL_ES_2 )
-		mVAO.create();
+		VAO->create();
 #endif
 
 		UpdateAll = true;
 	}
 
-	if( mVAO.isCreated() )
+	if( VAO->isCreated() )
 	{
-		mVAO.bind();
+		VAO->bind();
 	}
 
 	if( UpdateAll )
@@ -264,7 +282,12 @@ void VertexArrayObjectNode::vaoBind()
 
 void VertexArrayObjectNode::vaoRelease()
 {
-	mVAO.release();
+	QOpenGLVertexArrayObject	*VAO = mVAO.vao();
+
+	if( VAO )
+	{
+		VAO->release();
+	}
 }
 
 void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlInterface *PinControl , fugio::OpenGLBufferInterface *Buffer , const ShaderUniformData &UniformData)
@@ -285,7 +308,16 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 		NewBI.mLocation = UniformData.mLocation;
 		NewBI.mMetaType     = ( Buffer ? Buffer->type() : QMetaType::UnknownType );
 
-		mBindInfo.insert( P->name(), NewBI );
+		ContextBindInfoMap::iterator		ContextBindInfo = mBindInfo.find( QOpenGLContext::currentContext() );
+
+		if( ContextBindInfo == mBindInfo.end() )
+		{
+			mBindInfo.insert( QOpenGLContext::currentContext(), BindInfoMap() );
+
+			ContextBindInfo = mBindInfo.find( QOpenGLContext::currentContext() );
+		}
+
+		ContextBindInfo.value().insert( P->name(), NewBI );
 	}
 
 	fugio::OpenGLBufferEntryInterface	*BufEnt = qobject_cast<fugio::OpenGLBufferEntryInterface *>( PinControl->qobject() );
@@ -464,8 +496,9 @@ void VertexArrayObjectNode::bindPin( fugio::PinInterface *P, fugio::PinControlIn
 	}
 }
 
-
 GLuint VertexArrayObjectNode::vaoId() const
 {
-	return( mVAO.objectId() );
+	QOpenGLVertexArrayObject	*VAO = mVAO.vao();
+
+	return( VAO ? VAO->objectId() : 0 );
 }

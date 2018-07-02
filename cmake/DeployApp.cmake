@@ -97,9 +97,17 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 				COMMAND \"${CMAKE_COMMAND}\" -E
 				copy \${_src} \"\${CMAKE_INSTALL_PREFIX}/${PATH_APP}/\${_dest}\"
 			)
-			list(REMOVE_AT _files 0 1)
-		endwhile()
-		"
+			separate_arguments(_files WINDOWS_COMMAND \${_output})
+			while(_files)
+					list(GET _files 0 _src)
+					list(GET _files 1 _dest)
+					execute_process(
+							COMMAND \"${CMAKE_COMMAND}\" -E
+							copy \${_src} \"\${CMAKE_INSTALL_PREFIX}/${PATH_APP}/\${_dest}\"
+					)
+					list(REMOVE_AT _files 0 1)
+			endwhile()
+			"
 	)
 
 	# windeployqt doesn't work correctly with the system runtime libraries,
