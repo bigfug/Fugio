@@ -149,6 +149,11 @@ void EasyShader2DNode::inputsUpdated( qint64 pTimeStamp )
 
 		for( QSharedPointer<fugio::PinInterface> P : mNode->enumOutputPins() )
 		{
+			if( P == mPinOutputRender )
+			{
+				continue;
+			}
+
 			if( !Rendered && P != mPinOutputRender && P->isConnected() )
 			{
 				updateOutputPins();
@@ -163,6 +168,13 @@ void EasyShader2DNode::inputsUpdated( qint64 pTimeStamp )
 
 			if( Rendered )
 			{
+				fugio::OpenGLTextureInterface	*TexInf = output<fugio::OpenGLTextureInterface *>( P );
+
+				if( TexInf )
+				{
+					TexInf->swapTexture();
+				}
+
 				pinUpdated( P );
 			}
 		}
