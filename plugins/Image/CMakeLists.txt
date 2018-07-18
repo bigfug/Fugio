@@ -46,6 +46,8 @@ set( SOURCE_FILES
 	copynode.h
 	replacealphanode.cpp
 	replacealphanode.h
+	setalphanode.cpp
+	setalphanode.h
 )
 
 set( QRC_FILES
