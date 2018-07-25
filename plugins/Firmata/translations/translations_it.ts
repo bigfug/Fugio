@@ -6,7 +6,7 @@
     <message>
         <location filename="../firmatanode.cpp" line="916"/>
         <source>Edit Pins</source>
-        <translation type="unfinished"></translation>
+        <translation>Modifica piedini</translation>
     </message>
 </context>
 </TS>

@@ -6,17 +6,17 @@
     <message>
         <location filename="../polygonnode.cpp" line="15"/>
         <source>Sides</source>
-        <translation type="unfinished"></translation>
+        <translation>Lati</translation>
     </message>
     <message>
         <location filename="../polygonnode.cpp" line="17"/>
         <source>Radius</source>
-        <translation type="unfinished"></translation>
+        <translation>Raggio</translation>
     </message>
     <message>
         <location filename="../polygonnode.cpp" line="19"/>
         <source>Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Punti</translation>
     </message>
 </context>
 <context>
@@ -24,17 +24,17 @@
     <message>
         <location filename="../trianglestripnode.cpp" line="15"/>
         <source>Count</source>
-        <translation type="unfinished"></translation>
+        <translation>Conteggio</translation>
     </message>
     <message>
         <location filename="../trianglestripnode.cpp" line="17"/>
         <source>Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Punti</translation>
     </message>
     <message>
         <location filename="../trianglestripnode.cpp" line="19"/>
         <source>UV</source>
-        <translation type="unfinished"></translation>
+        <translation>UV</translation>
     </message>
 </context>
 </TS>

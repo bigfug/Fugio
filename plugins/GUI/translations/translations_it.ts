@@ -6,22 +6,22 @@
     <message>
         <location filename="../buttonnode.cpp" line="27"/>
         <source>When the button is pressed (not released) this trigger will fire</source>
-        <translation type="unfinished"></translation>
+        <translation>Viene innescata l&apos;uscita quando il pulsante viene premuto (non quando rilasciato)</translation>
     </message>
     <message>
         <location filename="../buttonnode.cpp" line="29"/>
         <source>This pin is true when the button is pressed, false when it isn&apos;t</source>
-        <translation type="unfinished"></translation>
+        <translation>Questo piedino viene impostato a vero se il pulsante è premuto, falso altrimenti</translation>
     </message>
     <message>
         <location filename="../buttonnode.cpp" line="31"/>
         <source>This boolean will switch between true and false every time the button is pressed</source>
-        <translation type="unfinished"></translation>
+        <translation>Questo booleano cambierà stato ogni volta che il pulsante verrà premuto</translation>
     </message>
     <message>
         <location filename="../buttonnode.cpp" line="42"/>
         <source>Button</source>
-        <translation type="unfinished"></translation>
+        <translation>Pulsante</translation>
     </message>
 </context>
 <context>
@@ -29,7 +29,7 @@
     <message>
         <location filename="../choicenode.cpp" line="182"/>
         <source>Select</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli</translation>
     </message>
 </context>
 <context>
@@ -37,7 +37,7 @@
     <message>
         <location filename="../floatnode.cpp" line="20"/>
         <source>The output Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Il numero in uscita</translation>
     </message>
 </context>
 <context>
@@ -45,7 +45,7 @@
     <message>
         <location filename="../integernode.cpp" line="17"/>
         <source>The output Number</source>
-        <translation type="unfinished"></translation>
+        <translation>Il numero in uscita</translation>
     </message>
 </context>
 <context>
@@ -53,7 +53,7 @@
     <message>
         <location filename="../keyboarddialog.ui" line="14"/>
         <source>Enter keyboard shortcut</source>
-        <translation type="unfinished"></translation>
+        <translation>Inserisci tasto di scelta rapida</translation>
     </message>
 </context>
 <context>
@@ -61,7 +61,7 @@
     <message>
         <location filename="../keyboardnode.cpp" line="20"/>
         <source>Keyboard</source>
-        <translation type="unfinished"></translation>
+        <translation>Tastiera</translation>
     </message>
 </context>
 <context>
@@ -69,22 +69,22 @@
     <message>
         <location filename="../numbermonitorform.ui" line="16"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Da</translation>
     </message>
     <message>
         <location filename="../numbermonitorform.cpp" line="100"/>
         <source>Monitor: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Schermo: %1</translation>
     </message>
     <message>
         <location filename="../numbermonitorform.cpp" line="128"/>
         <source>Save Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Salva immagine</translation>
     </message>
     <message>
         <location filename="../numbermonitorform.cpp" line="128"/>
         <source>PNG Images (*.png);;JPG Images (*jpg)</source>
-        <translation type="unfinished"></translation>
+        <translation>Immagini PNG (*.png);;Immagini JPG (*.jpg)</translation>
     </message>
 </context>
 </TS>
