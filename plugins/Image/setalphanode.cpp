@@ -36,7 +36,7 @@ void SetAlphaNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	quint8			Alpha = variant<int>( mPinInputAlpha );
+	const quint8	Alpha = variant<int>( mPinInputAlpha );
 
 	fugio::Image	DstImg = mValOutputImage->variant().value<fugio::Image>();
 
