@@ -6,7 +6,7 @@
     <message>
         <location filename="../ndireceivenode.cpp" line="433"/>
         <source>Refresh</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiorna</translation>
     </message>
 </context>
 </TS>

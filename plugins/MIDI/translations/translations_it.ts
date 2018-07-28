@@ -6,7 +6,7 @@
     <message>
         <location filename="../mididecodernode.cpp" line="162"/>
         <source>Channel %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Canale %1</translation>
     </message>
 </context>
 <context>
@@ -14,7 +14,7 @@
     <message>
         <location filename="../midiplugin.cpp" line="182"/>
         <source>Track %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Traccia %1</translation>
     </message>
 </context>
 </TS>

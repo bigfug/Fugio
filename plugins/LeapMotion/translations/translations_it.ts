@@ -6,12 +6,12 @@
     <message>
         <location filename="../leapnode.cpp" line="17"/>
         <source>Left Hand</source>
-        <translation type="unfinished"></translation>
+        <translation>Mano sinistra</translation>
     </message>
     <message>
         <location filename="../leapnode.cpp" line="19"/>
         <source>Right Hand</source>
-        <translation type="unfinished"></translation>
+        <translation>Mano destra</translation>
     </message>
 </context>
 </TS>

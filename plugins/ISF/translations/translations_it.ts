@@ -6,7 +6,7 @@
     <message>
         <location filename="../isfnode.h" line="44"/>
         <source>Interactive Shader Format</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato di shader interattivo</translation>
     </message>
 </context>
 <context>
@@ -14,17 +14,17 @@
     <message>
         <location filename="../settingsform.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Modulo</translation>
     </message>
     <message>
         <location filename="../settingsform.ui" line="22"/>
         <source>Directory...</source>
-        <translation type="unfinished"></translation>
+        <translation>Cartella...</translation>
     </message>
     <message>
         <location filename="../settingsform.cpp" line="22"/>
         <source>Choose ISF directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli la cartella ISF</translation>
     </message>
 </context>
 </TS>

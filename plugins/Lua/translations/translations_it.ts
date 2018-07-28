@@ -6,7 +6,7 @@
     <message>
         <location filename="../luanode.cpp" line="108"/>
         <source>Lua source code</source>
-        <translation type="unfinished"></translation>
+        <translation>Codice sorgente Lua</translation>
     </message>
 </context>
 </TS>

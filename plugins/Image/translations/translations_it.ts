@@ -6,7 +6,7 @@
     <message>
         <location filename="../copynode.cpp" line="27"/>
         <source>The copied image</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;immagine copiata</translation>
     </message>
 </context>
 <context>
@@ -14,7 +14,7 @@
     <message>
         <location filename="../grabscreennode.cpp" line="19"/>
         <source>The screenshot image</source>
-        <translation type="unfinished"></translation>
+        <translation>La schermata</translation>
     </message>
 </context>
 <context>
@@ -22,7 +22,7 @@
     <message>
         <location filename="../imagepin.cpp" line="31"/>
         <source>Format</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato</translation>
     </message>
 </context>
 <context>
@@ -30,7 +30,7 @@
     <message>
         <location filename="../imagesavenode.cpp" line="99"/>
         <source>Can&apos;t create path %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile creare il percorso %1</translation>
     </message>
 </context>
 <context>
@@ -38,12 +38,12 @@
     <message>
         <location filename="../scaleimagenode.cpp" line="25"/>
         <source>The scaled image</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;immagine riscalata</translation>
     </message>
     <message>
         <location filename="../scaleimagenode.cpp" line="36"/>
         <source>Input image is not valid</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;immagine in entrata non è valida</translation>
     </message>
 </context>
 </TS>

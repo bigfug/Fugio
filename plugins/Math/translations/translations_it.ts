@@ -6,17 +6,17 @@
     <message>
         <location filename="../addnode.cpp" line="29"/>
         <source>The first number to add together</source>
-        <translation type="unfinished"></translation>
+        <translation>Il primo numero da aggiungere</translation>
     </message>
     <message>
         <location filename="../addnode.cpp" line="31"/>
         <source>The second number to add together</source>
-        <translation type="unfinished"></translation>
+        <translation>Il secondo numero da aggiungere</translation>
     </message>
     <message>
         <location filename="../addnode.cpp" line="33"/>
         <source>The sum of the input pins added together</source>
-        <translation type="unfinished"></translation>
+        <translation>La somma dei piedini d&apos;ingresso</translation>
     </message>
 </context>
 <context>
@@ -24,12 +24,12 @@
     <message>
         <location filename="../bitstointnode.cpp" line="29"/>
         <source>Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Ingresso</translation>
     </message>
     <message>
         <location filename="../bitstointnode.cpp" line="31"/>
         <source>Integer</source>
-        <translation type="unfinished"></translation>
+        <translation>Intero</translation>
     </message>
 </context>
 <context>
@@ -37,12 +37,12 @@
     <message>
         <location filename="../booleanlatchnode.cpp" line="14"/>
         <source>Reset</source>
-        <translation type="unfinished"></translation>
+        <translation>Riazzera</translation>
     </message>
     <message>
         <location filename="../booleanlatchnode.cpp" line="15"/>
         <source>Trigger</source>
-        <translation type="unfinished"></translation>
+        <translation>Innesca</translation>
     </message>
 </context>
 <context>
@@ -50,22 +50,22 @@
     <message>
         <location filename="../matrixlookatnode.cpp" line="13"/>
         <source>Matrix</source>
-        <translation type="unfinished"></translation>
+        <translation>Matrice</translation>
     </message>
     <message>
         <location filename="../matrixlookatnode.cpp" line="17"/>
         <source>Position</source>
-        <translation type="unfinished"></translation>
+        <translation>Posizione</translation>
     </message>
     <message>
         <location filename="../matrixlookatnode.cpp" line="21"/>
         <source>Center</source>
-        <translation type="unfinished"></translation>
+        <translation>Centro</translation>
     </message>
     <message>
         <location filename="../matrixlookatnode.cpp" line="25"/>
         <source>Up</source>
-        <translation type="unfinished"></translation>
+        <translation>Su</translation>
     </message>
 </context>
 <context>
@@ -73,32 +73,32 @@
     <message>
         <location filename="../matrixorthographicnode.cpp" line="14"/>
         <source>Left</source>
-        <translation type="unfinished"></translation>
+        <translation>Sinistra</translation>
     </message>
     <message>
         <location filename="../matrixorthographicnode.cpp" line="15"/>
         <source>Right</source>
-        <translation type="unfinished"></translation>
+        <translation>Destra</translation>
     </message>
     <message>
         <location filename="../matrixorthographicnode.cpp" line="16"/>
         <source>Bottom</source>
-        <translation type="unfinished"></translation>
+        <translation>Giù</translation>
     </message>
     <message>
         <location filename="../matrixorthographicnode.cpp" line="17"/>
         <source>Top</source>
-        <translation type="unfinished"></translation>
+        <translation>Su</translation>
     </message>
     <message>
         <location filename="../matrixorthographicnode.cpp" line="18"/>
         <source>Near</source>
-        <translation type="unfinished"></translation>
+        <translation>Vicino</translation>
     </message>
     <message>
         <location filename="../matrixorthographicnode.cpp" line="19"/>
         <source>Far</source>
-        <translation type="unfinished"></translation>
+        <translation>Lontano</translation>
     </message>
 </context>
 <context>
@@ -106,22 +106,22 @@
     <message>
         <location filename="../matrixperspectivenode.cpp" line="14"/>
         <source>Vertical Angle</source>
-        <translation type="unfinished"></translation>
+        <translation>Angolo verticale</translation>
     </message>
     <message>
         <location filename="../matrixperspectivenode.cpp" line="15"/>
         <source>Aspect Ratio</source>
-        <translation type="unfinished"></translation>
+        <translation>Rapporto dimensioni</translation>
     </message>
     <message>
         <location filename="../matrixperspectivenode.cpp" line="16"/>
         <source>Near Plane</source>
-        <translation type="unfinished"></translation>
+        <translation>Piano vicino</translation>
     </message>
     <message>
         <location filename="../matrixperspectivenode.cpp" line="17"/>
         <source>Far Plane</source>
-        <translation type="unfinished"></translation>
+        <translation>Piano lontano</translation>
     </message>
 </context>
 <context>
@@ -129,12 +129,12 @@
     <message>
         <location filename="../sumnode.cpp" line="28"/>
         <source>The first number to add together</source>
-        <translation type="unfinished"></translation>
+        <translation>Il primo numero da aggiungere</translation>
     </message>
     <message>
         <location filename="../sumnode.cpp" line="30"/>
         <source>The sum of the input pins added together</source>
-        <translation type="unfinished"></translation>
+        <translation>La somma dei piedini d&apos;ingresso</translation>
     </message>
 </context>
 </TS>
