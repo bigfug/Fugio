@@ -4,12 +4,13 @@
 #include "opengl_includes.h"
 
 #include <QObject>
-#include <QOpenGLFramebufferObject>
+#include <QSize>
 
 #include <fugio/nodecontrolbase.h>
 
 #include <fugio/render_interface.h>
 #include <fugio/opengl/node_render_interface.h>
+#include <fugio/opengl/context_container_object.h>
 
 class RenderToTextureNode : public fugio::NodeControlBase, protected QOpenGLFunctions
 {
@@ -38,8 +39,7 @@ protected:
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutputTexture;
 
-	GLuint										 mFBO;
-	QSize										 mFBOSize;
+	fugio::ContextFramebufferObject				 mFBO;
 };
 
 #endif // RENDERTOTEXTURENODE_H

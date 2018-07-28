@@ -9,6 +9,7 @@
 #include <fugio/pin_interface.h>
 
 #include <fugio/opengl/texture_interface.h>
+#include <fugio/opengl/context_container_object.h>
 
 #include <fugio/opengl/uuid.h>
 
@@ -47,7 +48,7 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinTexDst;
 	fugio::OpenGLTextureInterface				*mTexDst;
 
-	GLuint										 mFBO;
+	fugio::ContextFramebufferObject				 mFBO;
 };
 
 #endif // TEXTURECOPYNODE_H

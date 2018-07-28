@@ -15,7 +15,7 @@
 #include "openglplugin.h"
 
 EasyShader2DNode::EasyShader2DNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mQuadGeometry( QOpenGLBuffer::VertexBuffer ), mFBO( 0 )
+	: NodeControlBase( pNode ), mQuadGeometry( QOpenGLBuffer::VertexBuffer )
 {
 	FUGID( PIN_INPUT_VERTEX_SHADER, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
 	FUGID( PIN_INPUT_FRAGMENT_SHADER, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
@@ -149,11 +149,16 @@ void EasyShader2DNode::inputsUpdated( qint64 pTimeStamp )
 
 		for( QSharedPointer<fugio::PinInterface> P : mNode->enumOutputPins() )
 		{
+			if( P == mPinOutputRender )
+			{
+				continue;
+			}
+
 			if( !Rendered && P != mPinOutputRender && P->isConnected() )
 			{
 				updateOutputPins();
 
-				if( mFBO )
+				if( mFBO.fboConst() )
 				{
 					render( pTimeStamp, QUuid() );
 
@@ -163,6 +168,13 @@ void EasyShader2DNode::inputsUpdated( qint64 pTimeStamp )
 
 			if( Rendered )
 			{
+				fugio::OpenGLTextureInterface	*TexInf = output<fugio::OpenGLTextureInterface *>( P );
+
+				if( TexInf )
+				{
+					TexInf->swapTexture();
+				}
+
 				pinUpdated( P );
 			}
 		}
@@ -226,7 +238,8 @@ void EasyShader2DNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	if( VAO && !VAO->isCreated() )
 	{
-		QOpenGLVertexArrayObject::Binder B( VAO );
+		VAO->create();
+		VAO->bind();
 
 		static const GLfloat Verticies[] =
 		{
@@ -244,6 +257,8 @@ void EasyShader2DNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		mShaderCompilerData.mProgram->enableAttributeArray( VertexLocation );
 
 		mQuadGeometry.release();
+
+		VAO->release();
 	}
 
 	QOpenGLVertexArrayObject::Binder VAOBinder( VAO );
@@ -628,33 +643,21 @@ void EasyShader2DNode::updateOutputPins()
 		}
 	}
 
-	if( mFBO && ( DstSze.isEmpty() || mFBOSize != DstSze ) )
-	{
-		glDeleteFramebuffers( 1, &mFBO );
-
-		mFBO = 0;
-
-		mFBOSize = QSize();
-	}
+	mFBO.setSize( DstSze );
 
 	if( DstSze.isEmpty() )
 	{
 		return;
 	}
 
-	if( !mFBO )
+	GLuint	FBO = mFBO.fbo();
+
+	if( !FBO )
 	{
-		glGenFramebuffers( 1, &mFBO );
-
-		if( !mFBO )
-		{
-			return;
-		}
-
-		mFBOSize = DstSze;
+		return;
 	}
 
-	glBindFramebuffer( GL_FRAMEBUFFER, mFBO );
+	glBindFramebuffer( GL_FRAMEBUFFER, FBO );
 
 	QVector<GLenum>		FrgOut;
 
@@ -688,7 +691,7 @@ void EasyShader2DNode::updateOutputPins()
 	}
 #endif
 
-	glViewport( 0, 0, mFBOSize.width(), mFBOSize.height() );
+	glViewport( 0, 0, mFBO.size().width(), mFBO.size().height() );
 
 	OPENGL_PLUGIN_DEBUG
 }

@@ -12,7 +12,6 @@
 #include <QDir>
 #include <QSize>
 
-#include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 
 #include <fugio/node_interface.h>
@@ -120,7 +119,7 @@ protected:
 
 	typedef struct ISFPass
 	{
-		ISFPass( void ) : mPersistent( false ), mFloat( false ), mFBO( 0 ), mTextureId( 0 ), mUniform( -1 ), mTextureIndex( -1 ) {}
+		ISFPass( void ) : mPersistent( false ), mFloat( false ), mTextureId( 0 ), mUniform( -1 ), mTextureIndex( -1 ) {}
 
 		QString				mTarget;
 		bool				mPersistent;
@@ -128,7 +127,8 @@ protected:
 		QString				mWidth;
 		QString				mHeight;
 
-		GLuint				mFBO;
+		fugio::ContextFramebufferObject	mFBO;
+
 		GLuint				mTextureId;
 		QSize				mSize;
 		GLint				mUniform;

@@ -170,6 +170,15 @@ private:
 				)
 			return 1;
 
+#if LIBAVFORMAT_VERSION_MAJOR >= 58
+		if(s->pb && (   !strncmp(s->url, "rtp:", 4)
+						|| !strncmp(s->url, "udp:", 4)
+						|| !strncmp(s->url, "http:", 5)
+						|| !strncmp(s->url, "https:", 6)
+						)
+				)
+			return 1;
+#else
 		if(s->pb && (   !strncmp(s->filename, "rtp:", 4)
 						|| !strncmp(s->filename, "udp:", 4)
 						|| !strncmp(s->filename, "http:", 5)
@@ -177,6 +186,7 @@ private:
 						)
 				)
 			return 1;
+#endif
 		return 0;
 	}
 #endif
@@ -320,7 +330,11 @@ private:
 
 			avcodec_parameters_to_context( mCodecContext, pStream->codecpar );
 
+#if LIBAVFORMAT_VERSION_MAJOR >= 58
+			mCodecContext->pkt_timebase = pStream->time_base;
+#else
 			av_codec_set_pkt_timebase( mCodecContext, pStream->time_base );
+#endif
 
 			mCodecContext->framerate = pStream->avg_frame_rate;
 

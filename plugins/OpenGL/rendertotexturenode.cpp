@@ -8,7 +8,7 @@
 #include "openglplugin.h"
 
 RenderToTextureNode::RenderToTextureNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mFBO( 0 )
+	: NodeControlBase( pNode )
 {
 	FUGID( PIN_INPUT_RENDER, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
 	FUGID( PIN_OUTPUT_TEXTURE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
@@ -64,27 +64,13 @@ void RenderToTextureNode::inputsUpdated( qint64 pTimeStamp )
 
 		QSize		TexSze = QSize( Texture->size().x(), Texture->size().y() );
 
-		if( mFBO && mFBOSize != TexSze )
+		mFBO.setSize( TexSze );
+
+		GLuint		FBO = mFBO.fbo();
+
+		if( FBO )
 		{
-			glDeleteFramebuffers( 1, &mFBO );
-
-			mFBO = 0;
-			mFBOSize = QSize();
-		}
-
-		if( !mFBO )
-		{
-			glGenFramebuffers( 1, &mFBO );
-
-			if( mFBO )
-			{
-				mFBOSize = TexSze;
-			}
-		}
-
-		if( mFBO )
-		{
-			glBindFramebuffer( GL_FRAMEBUFFER, mFBO );
+			glBindFramebuffer( GL_FRAMEBUFFER, FBO );
 
 			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Texture->target(), Texture->dstTexId(), 0 );
 
