@@ -922,12 +922,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdgroupaddinput.h" line="20"/>
         <source>Group Add Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi input gruppo</translation>
     </message>
     <message>
         <location filename="../undo/cmdgroupaddoutput.h" line="20"/>
         <source>Group Add Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Aggiungi gruppo di uscita</translation>
     </message>
     <message>
         <location filename="../undo/cmdgrouppop.h" line="20"/>
@@ -942,12 +942,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdgroupreminput.h" line="20"/>
         <source>Group Remove Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi ingresso gruppo</translation>
     </message>
     <message>
         <location filename="../undo/cmdgroupremoutput.h" line="20"/>
         <source>Group Remove Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Rimuovi uscita gruppo</translation>
     </message>
     <message>
         <location filename="../undo/cmdgrouprename.h" line="20"/>
@@ -1112,7 +1112,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdungroup.h" line="21"/>
         <source>Ungroup</source>
-        <translation>Scogli gruppo</translation>
+        <translation>Sciogli gruppo</translation>
     </message>
 </context>
 <context>
