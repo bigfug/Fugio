@@ -6,17 +6,17 @@
     <message>
         <location filename="../qrscannernode.cpp" line="60"/>
         <source>Empty/invalid input image</source>
-        <translation type="unfinished"></translation>
+        <translation>Immagine in ingresso vuota oppure non valida</translation>
     </message>
     <message>
         <location filename="../qrscannernode.cpp" line="69"/>
         <source>QR Scanner needs a grayscale image</source>
-        <translation type="unfinished"></translation>
+        <translation>Lo scansionatore QR necessita di una immagine in scala di grigi</translation>
     </message>
     <message>
         <location filename="../qrscannernode.cpp" line="84"/>
         <source>Couldn&apos;t resize image to %1,%2</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile scalare l&apos;immagine a %1,%2</translation>
     </message>
 </context>
 </TS>

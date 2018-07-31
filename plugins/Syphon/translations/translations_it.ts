@@ -6,22 +6,22 @@
     <message>
         <location filename="../syphonreceivernode.cpp" line="40"/>
         <source>Syphon not supported on this platform</source>
-        <translation type="unfinished"></translation>
+        <translation>Syphon non supportato su questa piattaforma</translation>
     </message>
     <message>
         <location filename="../syphonreceivernode.cpp" line="48"/>
         <source>No active OpenGL context</source>
-        <translation type="unfinished"></translation>
+        <translation>Nessun contesto attivo OpenGL</translation>
     </message>
     <message>
         <location filename="../syphonreceivernode.cpp" line="123"/>
         <source>Syphon Server</source>
-        <translation type="unfinished"></translation>
+        <translation>Server Syphon</translation>
     </message>
     <message>
         <location filename="../syphonreceivernode.cpp" line="123"/>
         <source>Choose a Syphon server</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli un server Syphon</translation>
     </message>
 </context>
 <context>
@@ -29,7 +29,7 @@
     <message>
         <location filename="../syphonrendernode.cpp" line="50"/>
         <source>Syphon not supported on this platform</source>
-        <translation type="unfinished"></translation>
+        <translation>Syphon non supportato su questa piattaforma</translation>
     </message>
 </context>
 <context>
@@ -37,7 +37,7 @@
     <message>
         <location filename="../syphonsendernode.cpp" line="45"/>
         <source>Syphon not supported on this platform</source>
-        <translation type="unfinished"></translation>
+        <translation>Syphon non supportato su questa piattaforma</translation>
     </message>
 </context>
 </TS>

@@ -6,7 +6,7 @@
     <message>
         <location filename="../gpionode.h" line="19"/>
         <source>Raspberry Pi GPIO access</source>
-        <translation type="unfinished"></translation>
+        <translation>Accesso alle GPIO della RaspberryPi</translation>
     </message>
 </context>
 <context>
@@ -14,7 +14,7 @@
     <message>
         <location filename="../pwmnode.h" line="19"/>
         <source>Raspberry Pi PWM access</source>
-        <translation type="unfinished"></translation>
+        <translation>Accesso al PWM della RaspberryPi</translation>
     </message>
 </context>
 <context>

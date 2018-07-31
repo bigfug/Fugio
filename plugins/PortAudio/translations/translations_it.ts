@@ -6,22 +6,22 @@
     <message>
         <location filename="../portaudioinputnode.cpp" line="68"/>
         <source>Select Audio Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli il dispositivo audio</translation>
     </message>
     <message>
         <location filename="../portaudioinputnode.cpp" line="81"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Nessuno</translation>
     </message>
     <message>
         <location filename="../portaudioinputnode.cpp" line="82"/>
         <source>Default Audio Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Ingresso audio predefinito</translation>
     </message>
     <message>
         <location filename="../portaudioinputnode.cpp" line="142"/>
         <source>Choose Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Sceglie il dispositivo</translation>
     </message>
 </context>
 <context>
@@ -29,22 +29,22 @@
     <message>
         <location filename="../portaudiooutputnode.cpp" line="207"/>
         <source>Select Audio Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli il dispositivo audio</translation>
     </message>
     <message>
         <location filename="../portaudiooutputnode.cpp" line="220"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Nessuno</translation>
     </message>
     <message>
         <location filename="../portaudiooutputnode.cpp" line="221"/>
         <source>Default Audio Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Uscita audio predefinito</translation>
     </message>
     <message>
         <location filename="../portaudiooutputnode.cpp" line="262"/>
         <source>Choose Device</source>
-        <translation type="unfinished"></translation>
+        <translation>Sceglie il dispositivo</translation>
     </message>
 </context>
 <context>
@@ -52,12 +52,12 @@
     <message>
         <location filename="../portaudioplugin.cpp" line="25"/>
         <source>Audio Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Ingresso audio</translation>
     </message>
     <message>
         <location filename="../portaudioplugin.cpp" line="26"/>
         <source>Audio Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Uscita audio</translation>
     </message>
 </context>
 </TS>
