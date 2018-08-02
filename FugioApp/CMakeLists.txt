@@ -209,8 +209,9 @@ if( APPLE AND LUA_FOUND )
 	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E make_directory "${BUNDLE_PATH}/Contents/Frameworks"
 		COMMAND ${CMAKE_COMMAND} -E copy "${LUA_LIBRARY}" "${BUNDLE_PATH}/Contents/Frameworks/"
+		COMMAND chmod +w "${BUNDLE_PATH}/Contents/Frameworks/${LUA_LIB}"
 		COMMAND install_name_tool -id ${LUA_LIB} "${BUNDLE_PATH}/Contents/Frameworks/${LUA_LIB}"
-		COMMENT "Copying ${LUA_LIBRARY}..."
+		COMMENT "Copying ${LUA_LIBRARY} to ${BUNDLE_PATH}/Contents/Frameworks..."
 		VERBATIM
 	)
 endif( APPLE AND LUA_FOUND )
