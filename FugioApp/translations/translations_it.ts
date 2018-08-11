@@ -927,12 +927,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdgroupaddoutput.h" line="20"/>
         <source>Group Add Output</source>
-        <translation>Aggiungi gruppo di uscita</translation>
+        <translation>Aggiungi uscita gruppo</translation>
     </message>
     <message>
         <location filename="../undo/cmdgrouppop.h" line="20"/>
         <source>Group Parent</source>
-        <translation type="unfinished"></translation>
+        <translation>Imparenta gruppo</translation>
     </message>
     <message>
         <location filename="../undo/cmdgrouppush.h" line="20"/>

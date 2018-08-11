@@ -228,7 +228,7 @@
     <message>
         <location filename="../splitrectnode.cpp" line="17"/>
         <source>Rect</source>
-        <translation type="unfinished"></translation>
+        <translation>Rettangolo</translation>
     </message>
     <message>
         <location filename="../splitrectnode.cpp" line="21"/>
