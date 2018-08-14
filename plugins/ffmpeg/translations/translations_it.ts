@@ -21,12 +21,12 @@
     <message>
         <location filename="../medianode.cpp" line="99"/>
         <source>Trigger this pin to pause the media playback (trigger Play to start again)</source>
-        <translation>Innesca questo piedino per mettere in pausa la riproduzione (mandalo a Riproduci per riiniziare)</translation>
+        <translation>Innesca questo piedino per mettere in pausa la riproduzione (innesca Riproduci per riavviarla)</translation>
     </message>
     <message>
         <location filename="../medianode.cpp" line="100"/>
         <source>Trigger this pin to stop playback and rewind to the beginning of the media</source>
-        <translation>Innesca questo piedino per interrompere la riproduzione e ritornare all&apos;inizio del contenuto</translation>
+        <translation>Innesca questo piedino per interrompere la riproduzione e riavvolgere il contenuto</translation>
     </message>
     <message>
         <location filename="../medianode.cpp" line="101"/>
@@ -102,7 +102,7 @@
     <message>
         <location filename="../mediaprocessornode.cpp" line="67"/>
         <source>The audio output from the media file - link to a PortAudio node to hear it</source>
-        <translation>L&apos;uscita audio del contenuto, collegarlo a un nodo di uscita audio per sentirlo</translation>
+        <translation>L&apos;uscita audio del contenuto, collegarlo a un nodo di uscita PortAudio per sentirlo</translation>
     </message>
 </context>
 <context>

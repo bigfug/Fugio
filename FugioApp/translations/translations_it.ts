@@ -721,17 +721,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../performanceform.ui" line="41"/>
         <source>Method</source>
-        <translation type="unfinished">Metodo</translation>
+        <translation>Metodo</translation>
     </message>
     <message>
         <location filename="../performanceform.ui" line="46"/>
         <source>Calls</source>
-        <translation>Chiama</translation>
+        <translation>Chiamate</translation>
     </message>
     <message>
         <location filename="../performanceform.ui" line="51"/>
         <source>Time</source>
-        <translation type="unfinished">Tempo</translation>
+        <translation>Tempo</translation>
     </message>
 </context>
 <context>
@@ -784,12 +784,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../pinitem.cpp" line="288"/>
         <source>Remove Group Input</source>
-        <translation type="unfinished">Rimuovi l&apos;ingresso dal gruppo</translation>
+        <translation>Rimuovi l&apos;ingresso dal gruppo</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="298"/>
         <source>Add Group Input</source>
-        <translation type="unfinished">Aggiungi l&apos;ingresso al gruppo</translation>
+        <translation>Aggiungi l&apos;ingresso al gruppo</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="315"/>
@@ -819,12 +819,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../pinitem.cpp" line="359"/>
         <source>Remove Group Output</source>
-        <translation type="unfinished">Rimuovi l&apos;uscita dal gruppo</translation>
+        <translation>Rimuovi l&apos;uscita dal gruppo</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="376"/>
         <source>Add Group Output</source>
-        <translation type="unfinished">Aggiungi l&apos;uscita al gruppo</translation>
+        <translation>Aggiungi l&apos;uscita al gruppo</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="388"/>
@@ -982,7 +982,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdnodemove.h" line="19"/>
         <source>Set Node Position</source>
-        <translation type="unfinished">Imposta posizione del nodo</translation>
+        <translation>Imposta posizione del nodo</translation>
     </message>
     <message>
         <location filename="../undo/cmdnodepinadd.h" line="17"/>
@@ -1082,7 +1082,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdsetalwaysupdate.h" line="17"/>
         <source>Set always update</source>
-        <translation type="unfinished">Imposta da aggiornare sempre</translation>
+        <translation>Imposta da aggiornare sempre</translation>
     </message>
     <message>
         <location filename="../undo/cmdsetcolour.h" line="21"/>
