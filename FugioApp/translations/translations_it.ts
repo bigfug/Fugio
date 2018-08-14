@@ -339,7 +339,7 @@
     <message>
         <location filename="../mainwindow.ui" line="634"/>
         <source>Group Parent</source>
-        <translation>Raggrupa al genitore</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="637"/>
@@ -349,12 +349,12 @@
     <message>
         <location filename="../mainwindow.ui" line="653"/>
         <source>Selection to snippit...</source>
-        <translation>Selezione al frammento...</translation>
+        <translation>Converti la selezione in un frammento...</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="658"/>
         <source>Ungroup</source>
-        <translation>Scogli gruppo</translation>
+        <translation type="unfinished">Sciogli gruppo</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="661"/>
@@ -440,7 +440,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="604"/>
         <source>%1 v%2 by Alex May - DEBUG VERSION (not for distribution)</source>
-        <translation>%1 v%2 di Alex May - VERSIONE SPERIMENTALE (non per la distribuzione)</translation>
+        <translation type="unfinished">%1 v%2 di Alex May - VERSIONE SPERIMENTALE (non per la distribuzione)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="606"/>
@@ -485,17 +485,17 @@
     <message>
         <location filename="../mainwindow.cpp" line="1146"/>
         <source>Snippet Exists</source>
-        <translation>Frammento esistente</translation>
+        <translation type="unfinished">Frammento già esistente</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1146"/>
         <source>A snippit already exists with that name, do you want to overwrite it?</source>
-        <translation>Esiste già un frammento con questo nome, voi sovrascriverlo?</translation>
+        <translation>Esiste già un frammento con questo nome, vuoi sovrascriverlo?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1233"/>
         <source>Load Recovery Files?</source>
-        <translation>Caricare la copia di recupero?</translation>
+        <translation type="unfinished">Caricare la copia di recupero?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1233"/>
@@ -596,7 +596,7 @@
     <message>
         <location filename="../nodeitem.cpp" line="403"/>
         <source>Ungroup</source>
-        <translation>Scogli gruppo</translation>
+        <translation type="unfinished">Sciogli gruppo</translation>
     </message>
     <message>
         <location filename="../nodeitem.cpp" line="1206"/>
@@ -721,7 +721,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../performanceform.ui" line="41"/>
         <source>Method</source>
-        <translation>Funzione</translation>
+        <translation type="unfinished">Metodo</translation>
     </message>
     <message>
         <location filename="../performanceform.ui" line="46"/>
@@ -731,7 +731,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../performanceform.ui" line="51"/>
         <source>Time</source>
-        <translation>Istante di tempo</translation>
+        <translation type="unfinished">Tempo</translation>
     </message>
 </context>
 <context>
@@ -784,17 +784,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../pinitem.cpp" line="288"/>
         <source>Remove Group Input</source>
-        <translation>Rimuovi input gruppo</translation>
+        <translation type="unfinished">Rimuovi l&apos;ingresso dal gruppo</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="298"/>
         <source>Add Group Input</source>
-        <translation>Aggiungi input gruppo</translation>
+        <translation type="unfinished">Aggiungi l&apos;ingresso al gruppo</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="315"/>
         <source>Joiners</source>
-        <translation>Unitori</translation>
+        <translation type="unfinished">Collegamenti</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="334"/>
@@ -819,12 +819,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../pinitem.cpp" line="359"/>
         <source>Remove Group Output</source>
-        <translation>Rimuovi gruppo in uscita</translation>
+        <translation type="unfinished">Rimuovi l&apos;uscita dal gruppo</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="376"/>
         <source>Add Group Output</source>
-        <translation>Aggiungi gruppo di uscita</translation>
+        <translation type="unfinished">Aggiungi l&apos;uscita al gruppo</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="388"/>
@@ -922,17 +922,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdgroupaddinput.h" line="20"/>
         <source>Group Add Input</source>
-        <translation>Aggiungi input gruppo</translation>
+        <translation>Aggiungi l&apos;ingresso al gruppo</translation>
     </message>
     <message>
         <location filename="../undo/cmdgroupaddoutput.h" line="20"/>
         <source>Group Add Output</source>
-        <translation>Aggiungi uscita gruppo</translation>
+        <translation>Aggiungi l&apos;uscita al gruppo</translation>
     </message>
     <message>
         <location filename="../undo/cmdgrouppop.h" line="20"/>
         <source>Group Parent</source>
-        <translation>Imparenta gruppo</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../undo/cmdgrouppush.h" line="20"/>
@@ -942,12 +942,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdgroupreminput.h" line="20"/>
         <source>Group Remove Input</source>
-        <translation>Rimuovi ingresso gruppo</translation>
+        <translation>Rimuovi l&apos;ingresso dal gruppo</translation>
     </message>
     <message>
         <location filename="../undo/cmdgroupremoutput.h" line="20"/>
         <source>Group Remove Output</source>
-        <translation>Rimuovi uscita gruppo</translation>
+        <translation>Rimuovi l&apos;uscita dal gruppo</translation>
     </message>
     <message>
         <location filename="../undo/cmdgrouprename.h" line="20"/>
@@ -982,7 +982,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdnodemove.h" line="19"/>
         <source>Set Node Position</source>
-        <translation>Imposta posizione nodo</translation>
+        <translation type="unfinished">Imposta posizione del nodo</translation>
     </message>
     <message>
         <location filename="../undo/cmdnodepinadd.h" line="17"/>
@@ -1082,7 +1082,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdsetalwaysupdate.h" line="17"/>
         <source>Set always update</source>
-        <translation>Imposta aggiorna sempre</translation>
+        <translation type="unfinished">Imposta da aggiornare sempre</translation>
     </message>
     <message>
         <location filename="../undo/cmdsetcolour.h" line="21"/>
