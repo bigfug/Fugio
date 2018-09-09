@@ -13,7 +13,7 @@ class PinModel : public BaseModel
 public:
 	PinModel( const QUuid &pPinId, PinDirection pDirection, QString pName, PinListModel *pParent = nullptr );
 
-	virtual ~PinModel( void ) {}
+	virtual ~PinModel( void ) Q_DECL_OVERRIDE {}
 
 	inline PinDirection direction( void ) const
 	{

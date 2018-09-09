@@ -17,9 +17,9 @@ class NodeModel : public BaseModel
 public:
 	NodeModel( const QUuid &pNodeId, BaseListModel *pParent = nullptr );
 
-	virtual ~NodeModel( void ) {}
+	virtual ~NodeModel( void ) Q_DECL_OVERRIDE {}
 
-	BaseModel *parent( void ) Q_DECL_OVERRIDE;
+	virtual BaseModel *parent( void ) Q_DECL_OVERRIDE;
 
 	BaseListModel *parentList( void )
 	{
