@@ -83,7 +83,7 @@
     <message>
         <location filename="../openglstateform.ui" line="29"/>
         <source>Blend Source:</source>
-        <translation type="unfinished">Origine blend:</translation>
+        <translation>Origine blend:</translation>
     </message>
     <message>
         <location filename="../openglstateform.ui" line="36"/>
@@ -98,7 +98,7 @@
     <message>
         <location filename="../openglstateform.ui" line="62"/>
         <source>Depth Function:</source>
-        <translation>Funzione di profondità:</translation>
+        <translation>Funzione profondità:</translation>
     </message>
     <message>
         <location filename="../openglstateform.ui" line="72"/>
