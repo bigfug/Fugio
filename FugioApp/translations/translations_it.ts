@@ -339,7 +339,7 @@
     <message>
         <location filename="../mainwindow.ui" line="634"/>
         <source>Group Parent</source>
-        <translation type="unfinished"></translation>
+        <translation>Torna al genitore del gruppo</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="637"/>
@@ -354,7 +354,7 @@
     <message>
         <location filename="../mainwindow.ui" line="658"/>
         <source>Ungroup</source>
-        <translation type="unfinished">Sciogli gruppo</translation>
+        <translation>Sciogli gruppo</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="661"/>
@@ -440,7 +440,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="604"/>
         <source>%1 v%2 by Alex May - DEBUG VERSION (not for distribution)</source>
-        <translation type="unfinished">%1 v%2 di Alex May - VERSIONE SPERIMENTALE (non per la distribuzione)</translation>
+        <translation>%1 v%2 di Alex May - VERSIONE SPERIMENTALE (da non usare in distribuzione)</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="606"/>
@@ -485,7 +485,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1146"/>
         <source>Snippet Exists</source>
-        <translation type="unfinished">Frammento già esistente</translation>
+        <translation>Frammento già esistente</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1146"/>
@@ -495,7 +495,7 @@
     <message>
         <location filename="../mainwindow.cpp" line="1233"/>
         <source>Load Recovery Files?</source>
-        <translation type="unfinished">Caricare la copia di recupero?</translation>
+        <translation>Caricare la copia di recupero?</translation>
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="1233"/>
@@ -596,7 +596,7 @@
     <message>
         <location filename="../nodeitem.cpp" line="403"/>
         <source>Ungroup</source>
-        <translation type="unfinished">Sciogli gruppo</translation>
+        <translation>Sciogli gruppo</translation>
     </message>
     <message>
         <location filename="../nodeitem.cpp" line="1206"/>
@@ -794,7 +794,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../pinitem.cpp" line="315"/>
         <source>Joiners</source>
-        <translation type="unfinished">Collegamenti</translation>
+        <translation>Collegamenti</translation>
     </message>
     <message>
         <location filename="../pinitem.cpp" line="334"/>
@@ -932,12 +932,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../undo/cmdgrouppop.h" line="20"/>
         <source>Group Parent</source>
-        <translation type="unfinished"></translation>
+        <translation>Torna al genitore del gruppo</translation>
     </message>
     <message>
         <location filename="../undo/cmdgrouppush.h" line="20"/>
         <source>Group Push</source>
-        <translation type="unfinished"></translation>
+        <translation>Entra nel gruppo</translation>
     </message>
     <message>
         <location filename="../undo/cmdgroupreminput.h" line="20"/>
