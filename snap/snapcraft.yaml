@@ -1,6 +1,6 @@
 
   name: fugio
-  version: '3.0.0'
+  version: '3.1.0'
   summary: Fugio is an open visual programming system for creating digital art
   description: |
     Fugio is an open visual programming system for creating digital art,
@@ -64,6 +64,7 @@
         - libopencv-objdetect2.4v5
         - libopencv-photo2.4v5
         - libopencv-video2.4v5
+		- libasound2-data
       after: [desktop-qt5]
 
   apps:

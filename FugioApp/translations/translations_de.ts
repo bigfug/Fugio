@@ -348,7 +348,7 @@
     </message>
     <message>
         <location filename="../mainwindow.ui" line="653"/>
-        <source>Selection to snippit...</source>
+        <source>Selection to snippet...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

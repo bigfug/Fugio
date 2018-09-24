@@ -11,7 +11,7 @@ class NoteModel : public BaseModel
 public:
 	NoteModel( BaseListModel *pParent = nullptr );
 
-	virtual ~NoteModel( void ) {}
+	virtual ~NoteModel( void ) Q_DECL_OVERRIDE {}
 
 	BaseModel *parent( void ) Q_DECL_OVERRIDE;
 

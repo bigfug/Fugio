@@ -174,8 +174,6 @@ int LuaJsonDocument::luaToString(lua_State *L)
 	return( 1 );
 }
 
-#endif
-
 int LuaJsonDocument::luaPinGet(const QUuid &pPinLocalId, lua_State *L)
 {
 	fugio::LuaInterface						*Lua  = LuaQtPlugin::lua();
@@ -211,3 +209,5 @@ int LuaJsonDocument::luaPinGet(const QUuid &pPinLocalId, lua_State *L)
 
 	return( pushjsondocument( L, SrcVar->variant().value<QJsonDocument>() ) );
 }
+
+#endif
