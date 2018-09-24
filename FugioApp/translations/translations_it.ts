@@ -294,7 +294,7 @@
     <message>
         <location filename="../mainwindow.ui" line="580"/>
         <source>Tile</source>
-        <translation>Piastrella</translation>
+        <translation>A mattonelle</translation>
     </message>
     <message>
         <location filename="../mainwindow.ui" line="585"/>

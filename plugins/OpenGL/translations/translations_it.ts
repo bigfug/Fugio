@@ -83,27 +83,27 @@
     <message>
         <location filename="../openglstateform.ui" line="29"/>
         <source>Blend Source:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Origine blend:</translation>
     </message>
     <message>
         <location filename="../openglstateform.ui" line="36"/>
         <source>Blend Destination:</source>
-        <translation type="unfinished"></translation>
+        <translation>Destinazione di blend:</translation>
     </message>
     <message>
         <location filename="../openglstateform.ui" line="52"/>
         <source>Blend Equation:</source>
-        <translation type="unfinished"></translation>
+        <translation>Equazione di blend:</translation>
     </message>
     <message>
         <location filename="../openglstateform.ui" line="62"/>
         <source>Depth Function:</source>
-        <translation type="unfinished"></translation>
+        <translation>Funzione di profondità:</translation>
     </message>
     <message>
         <location filename="../openglstateform.ui" line="72"/>
         <source>Polygon Mode:</source>
-        <translation type="unfinished"></translation>
+        <translation>Modalità poligoni:</translation>
     </message>
 </context>
 <context>
