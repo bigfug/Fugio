@@ -52,43 +52,43 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="50"/>
+        <location filename="../contextwidgetprivate.cpp" line="51"/>
         <source>Node Editor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="232"/>
+        <location filename="../contextwidgetprivate.cpp" line="233"/>
         <source>Save Patch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="232"/>
+        <location filename="../contextwidgetprivate.cpp" line="233"/>
         <source>Fugio Patches (*.fug)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="300"/>
+        <location filename="../contextwidgetprivate.cpp" line="301"/>
         <source>Save Patch Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="300"/>
+        <location filename="../contextwidgetprivate.cpp" line="301"/>
         <source>Image (*.jpg *.png)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="337"/>
+        <location filename="../contextwidgetprivate.cpp" line="338"/>
         <source>Save Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="337"/>
-        <location filename="../contextwidgetprivate.cpp" line="361"/>
+        <location filename="../contextwidgetprivate.cpp" line="338"/>
+        <location filename="../contextwidgetprivate.cpp" line="362"/>
         <source>Fugio Data (*.fugdata)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="361"/>
+        <location filename="../contextwidgetprivate.cpp" line="362"/>
         <source>Open Data</source>
         <translation type="unfinished"></translation>
     </message>
