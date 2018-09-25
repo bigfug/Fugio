@@ -107,7 +107,8 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 					)
 					list(REMOVE_AT _files 0 1)
 			endwhile()
-			"
+		endwhile()
+		"
 	)
 
 	# windeployqt doesn't work correctly with the system runtime libraries,
