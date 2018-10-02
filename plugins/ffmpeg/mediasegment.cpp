@@ -1618,7 +1618,7 @@ void MediaSegment::readNext()
 				break;
 			}
 
-			if( OldPlayHead == mPlayHead )
+			if( qFuzzyCompare( OldPlayHead, mPlayHead ) )
 			{
 				mPlayHead += CurDuration;
 			}
