@@ -20,7 +20,7 @@ public:
 		mTimer.start();
 	}
 
-	virtual ~Performance( void )
+	~Performance( void )
 	{
 		if( !mIgnore )
 		{
