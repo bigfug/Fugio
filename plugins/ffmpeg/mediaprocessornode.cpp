@@ -137,15 +137,17 @@ void MediaProcessorNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		const fugio::SegmentInterface::VidDat	*VD = mSegment->viddat();
 
-		if( !VD || mLstPts == VD->mPTS )
+		if( !VD || qFuzzyCompare( mLstPts, VD->mPTS ) )
 		{
 			mSegment->readNext();
 		}
 
 		VD = mSegment->viddat();
 
-		if( !VD || VD->mPTS == mLstPts )
+		if( !VD || qFuzzyCompare( mLstPts, VD->mPTS ) )
 		{
+			Perf.ignore();
+
 			return;
 		}
 

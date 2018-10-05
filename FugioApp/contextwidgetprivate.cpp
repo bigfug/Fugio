@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QStylePainter>
 #include <QStandardPaths>
+#include <QStyleOption>
 
 #include "app.h"
 #include "contextview.h"

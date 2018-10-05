@@ -52,43 +52,43 @@
         <translation>Radice</translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="50"/>
+        <location filename="../contextwidgetprivate.cpp" line="51"/>
         <source>Node Editor</source>
         <translation>Modificatore nodi</translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="232"/>
+        <location filename="../contextwidgetprivate.cpp" line="233"/>
         <source>Save Patch</source>
         <translation>Salva patch</translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="232"/>
+        <location filename="../contextwidgetprivate.cpp" line="233"/>
         <source>Fugio Patches (*.fug)</source>
         <translation>Patch di Fugio (*.fug)</translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="300"/>
+        <location filename="../contextwidgetprivate.cpp" line="301"/>
         <source>Save Patch Image</source>
         <translation>Salva immagine della patch</translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="300"/>
+        <location filename="../contextwidgetprivate.cpp" line="301"/>
         <source>Image (*.jpg *.png)</source>
         <translation>Immagine (*.jpg *.png)</translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="337"/>
+        <location filename="../contextwidgetprivate.cpp" line="338"/>
         <source>Save Data</source>
         <translation>Salva dati</translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="337"/>
-        <location filename="../contextwidgetprivate.cpp" line="361"/>
+        <location filename="../contextwidgetprivate.cpp" line="338"/>
+        <location filename="../contextwidgetprivate.cpp" line="362"/>
         <source>Fugio Data (*.fugdata)</source>
         <translation>Dati di Fugio (*.fugdata)</translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="361"/>
+        <location filename="../contextwidgetprivate.cpp" line="362"/>
         <source>Open Data</source>
         <translation>Apri dati</translation>
     </message>
