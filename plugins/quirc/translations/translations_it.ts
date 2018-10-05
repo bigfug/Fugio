@@ -11,7 +11,7 @@
     <message>
         <location filename="../qrscannernode.cpp" line="69"/>
         <source>QR Scanner needs a grayscale image</source>
-        <translation>Lo scansionatore QR necessita di una immagine in scala di grigi</translation>
+        <translation>Lo strumento di scansione QR necessita di una immagine in scala di grigi</translation>
     </message>
     <message>
         <location filename="../qrscannernode.cpp" line="84"/>

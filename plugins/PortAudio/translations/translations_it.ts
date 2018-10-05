@@ -21,7 +21,7 @@
     <message>
         <location filename="../portaudioinputnode.cpp" line="142"/>
         <source>Choose Device</source>
-        <translation>Sceglie il dispositivo</translation>
+        <translation>Scegli il dispositivo</translation>
     </message>
 </context>
 <context>
@@ -44,7 +44,7 @@
     <message>
         <location filename="../portaudiooutputnode.cpp" line="262"/>
         <source>Choose Device</source>
-        <translation>Sceglie il dispositivo</translation>
+        <translation>Scegli il dispositivo</translation>
     </message>
 </context>
 <context>

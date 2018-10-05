@@ -11,7 +11,7 @@
     <message>
         <location filename="../syphonreceivernode.cpp" line="48"/>
         <source>No active OpenGL context</source>
-        <translation>Nessun contesto attivo OpenGL</translation>
+        <translation>Nessun contesto OpenGL attivo</translation>
     </message>
     <message>
         <location filename="../syphonreceivernode.cpp" line="123"/>

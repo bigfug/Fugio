@@ -19,7 +19,7 @@
     <message>
         <location filename="../imageconvertnode.cpp" line="252"/>
         <source>Unknown source format: %1</source>
-        <translation>Formato origine sconosciuto: %1</translation>
+        <translation>Formato di origine sconosciuto: %1</translation>
     </message>
     <message>
         <location filename="../imageconvertnode.cpp" line="259"/>

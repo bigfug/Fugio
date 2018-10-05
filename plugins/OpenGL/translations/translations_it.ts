@@ -11,7 +11,7 @@
     <message>
         <location filename="../bindtexturenode.cpp" line="27"/>
         <source>The OpenGL rendering state to apply</source>
-        <translation>Lo stato di rappresentazione OpenGL da applicare</translation>
+        <translation>Lo stato del rendering OpenGL da applicare</translation>
     </message>
     <message>
         <location filename="../bindtexturenode.cpp" line="29"/>
@@ -111,7 +111,7 @@
     <message>
         <location filename="../previewnode.cpp" line="30"/>
         <source>The OpenGL rendering state to apply</source>
-        <translation>Lo stato di rappresentazione OpenGL da applicare</translation>
+        <translation>Lo stato del rendering OpenGL da applicare</translation>
     </message>
     <message>
         <location filename="../previewnode.cpp" line="32"/>
@@ -198,7 +198,7 @@
     <message>
         <location filename="../statenode.cpp" line="20"/>
         <source>The output OpenGL state that controls rendering</source>
-        <translation>Lo stato di rendering OpenGL in uscita che controlla la rappresentazione</translation>
+        <translation>Lo stato di rendering OpenGL in uscita che controlla il rendering</translation>
     </message>
 </context>
 <context>
@@ -377,7 +377,7 @@
     <message>
         <location filename="../windownode.cpp" line="55"/>
         <source>The OpenGL rendering state to apply</source>
-        <translation>Lo stato di rappresentazione OpenGL da applicare</translation>
+        <translation>Lo stato di rendering OpenGL da applicare</translation>
     </message>
     <message>
         <location filename="../windownode.cpp" line="57"/>

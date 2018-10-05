@@ -14,7 +14,7 @@
     <message>
         <location filename="../drawimagenode.cpp" line="23"/>
         <source>Painter</source>
-        <translation>Disegnatore</translation>
+        <translation>Painter</translation>
     </message>
     <message>
         <location filename="../drawimagenode.cpp" line="29"/>

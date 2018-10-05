@@ -58,7 +58,7 @@
     <message>
         <location filename="../kinectconfigdialog.ui" line="130"/>
         <source>Seated Mode</source>
-        <translation>Modalità seduta</translation>
+        <translation>Modalità da seduti</translation>
     </message>
     <message>
         <location filename="../kinectconfigdialog.ui" line="139"/>
@@ -81,7 +81,7 @@
     <message>
         <location filename="../kinectnode.cpp" line="811"/>
         <source>Setup...</source>
-        <translation>Impostazioni</translation>
+        <translation>Impostazioni...</translation>
     </message>
 </context>
 </TS>
