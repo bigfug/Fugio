@@ -86,7 +86,7 @@ typedef QList<ClassEntry>	ClassEntryList;
 class GlobalInterface
 {
 public:
-	virtual ~GlobalInterface( void ) {}
+	virtual ~GlobalInterface( void );
 
 	virtual fugio::GlobalSignals *qobject( void ) = 0;
 

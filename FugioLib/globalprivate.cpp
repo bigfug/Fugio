@@ -29,6 +29,11 @@
 
 #include <QLibraryInfo>
 
+fugio::GlobalInterface::~GlobalInterface( void )
+{
+
+}
+
 GlobalPrivate *GlobalPrivate::mInstance = 0;
 
 GlobalPrivate::GlobalPrivate( QObject * ) :

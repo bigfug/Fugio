@@ -28,6 +28,9 @@ public:
 	virtual void deinitialise( void );
 
 private:
+	static ClassEntry		 mNodeClasses[];
+	static ClassEntry		 mPinClasses[];
+
 	GlobalInterface			*mApp;
 };
 
