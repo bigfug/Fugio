@@ -6,12 +6,12 @@
     <message>
         <location filename="../portmidiinputnode.cpp" line="125"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Nessuno</translation>
     </message>
     <message>
         <location filename="../portmidiinputnode.cpp" line="126"/>
         <source>Default Midi Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Ingresso midi predefinito</translation>
     </message>
 </context>
 <context>
@@ -19,12 +19,12 @@
     <message>
         <location filename="../portmidioutputnode.cpp" line="259"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Nessuna</translation>
     </message>
     <message>
         <location filename="../portmidioutputnode.cpp" line="260"/>
         <source>Default Midi Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Uscita midi predefinita</translation>
     </message>
 </context>
 </TS>

@@ -6,7 +6,7 @@
     <message>
         <location filename="../clearnode.cpp" line="19"/>
         <source>Colour</source>
-        <translation type="unfinished"></translation>
+        <translation>Colore</translation>
     </message>
 </context>
 <context>
@@ -14,17 +14,17 @@
     <message>
         <location filename="../drawimagenode.cpp" line="23"/>
         <source>Painter</source>
-        <translation type="unfinished"></translation>
+        <translation>Painter</translation>
     </message>
     <message>
         <location filename="../drawimagenode.cpp" line="29"/>
         <source>Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Immagine</translation>
     </message>
     <message>
         <location filename="../drawimagenode.cpp" line="33"/>
         <source>Position</source>
-        <translation type="unfinished"></translation>
+        <translation>Posizione</translation>
     </message>
 </context>
 <context>
@@ -32,7 +32,7 @@
     <message>
         <location filename="../fontnode.cpp" line="31"/>
         <source>Choose font...</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli tipo di carattere...</translation>
     </message>
 </context>
 </TS>

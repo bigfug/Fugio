@@ -6,42 +6,42 @@
     <message>
         <location filename="../fftnode.cpp" line="51"/>
         <source>Samples</source>
-        <translation type="unfinished"></translation>
+        <translation>Campioni</translation>
     </message>
     <message>
         <location filename="../fftnode.cpp" line="55"/>
         <source>Shift</source>
-        <translation type="unfinished"></translation>
+        <translation>Traslazione</translation>
     </message>
     <message>
         <location filename="../fftnode.cpp" line="57"/>
         <source>Window</source>
-        <translation type="unfinished"></translation>
+        <translation>Finestra</translation>
     </message>
     <message>
         <location filename="../fftnode.cpp" line="64"/>
         <source>An audio input</source>
-        <translation type="unfinished"></translation>
+        <translation>Un&apos;entrata audio</translation>
     </message>
     <message>
         <location filename="../fftnode.cpp" line="66"/>
         <source>The number of samples to calculate each FFT from</source>
-        <translation type="unfinished"></translation>
+        <translation>Il numero di campioni da cui calcolare la trasformata di Fourier</translation>
     </message>
     <message>
         <location filename="../fftnode.cpp" line="68"/>
         <source>The output Fast Fourier Transform</source>
-        <translation type="unfinished"></translation>
+        <translation>La trasformata di Fourier in uscita</translation>
     </message>
     <message>
         <location filename="../fftnode.cpp" line="70"/>
         <source>The window function that will be applied to the audio before FFT processing</source>
-        <translation type="unfinished"></translation>
+        <translation>La funzione finestra da applicare prima del calcolo della trasformata</translation>
     </message>
     <message>
         <location filename="../fftnode.cpp" line="238"/>
         <source>Sample count must be power of two</source>
-        <translation type="unfinished"></translation>
+        <translation>Il numero di campionamento deve essere una potenza di due</translation>
     </message>
 </context>
 </TS>

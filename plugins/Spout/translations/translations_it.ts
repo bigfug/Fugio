@@ -6,7 +6,7 @@
     <message>
         <location filename="../spoutreceiverform.ui" line="14"/>
         <source>Form</source>
-        <translation type="unfinished"></translation>
+        <translation>Modulo</translation>
     </message>
 </context>
 <context>
@@ -14,7 +14,7 @@
     <message>
         <location filename="../spoutreceivernode.cpp" line="88"/>
         <source>Spout not supported on this platform</source>
-        <translation type="unfinished"></translation>
+        <translation>Spout non è supportato su questa piattaforma</translation>
     </message>
 </context>
 <context>
@@ -22,7 +22,7 @@
     <message>
         <location filename="../spoutsendernode.cpp" line="118"/>
         <source>Spout not supported on this platform</source>
-        <translation type="unfinished"></translation>
+        <translation>Spout non è supportato su questa piattaforma</translation>
     </message>
 </context>
 </TS>

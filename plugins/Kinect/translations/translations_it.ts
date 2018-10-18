@@ -6,64 +6,64 @@
     <message>
         <location filename="../kinectconfigdialog.ui" line="14"/>
         <source>Kinect Configuration</source>
-        <translation type="unfinished"></translation>
+        <translation>Configurazione del Kinect</translation>
     </message>
     <message>
         <location filename="../kinectconfigdialog.ui" line="25"/>
         <location filename="../kinectconfigdialog.ui" line="60"/>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Nulla</translation>
     </message>
     <message>
         <location filename="../kinectconfigdialog.ui" line="30"/>
         <source>Colour</source>
-        <translation type="unfinished"></translation>
+        <translation>Colore</translation>
     </message>
     <message>
         <location filename="../kinectconfigdialog.ui" line="35"/>
         <source>Infrared</source>
-        <translation type="unfinished"></translation>
+        <translation>Infrarossi</translation>
     </message>
     <message>
         <location filename="../kinectconfigdialog.ui" line="47"/>
         <location filename="../kinectconfigdialog.ui" line="65"/>
         <source>640x480</source>
-        <translation type="unfinished"></translation>
+        <translation>640x480</translation>
     </message>
     <message>
         <location filename="../kinectconfigdialog.ui" line="76"/>
         <source>Detect Users</source>
-        <translation type="unfinished"></translation>
+        <translation>Rileva utenti</translation>
     </message>
     <message>
         <location filename="../kinectconfigdialog.ui" line="85"/>
         <source>Colour camera:</source>
-        <translation type="unfinished"></translation>
+        <translation>Colore camera:</translation>
     </message>
     <message>
         <location filename="../kinectconfigdialog.ui" line="95"/>
         <source>Skeleton:</source>
-        <translation type="unfinished"></translation>
+        <translation>Scheletro:</translation>
     </message>
     <message>
         <location filename="../kinectconfigdialog.ui" line="110"/>
         <source>Enabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Abilitato</translation>
     </message>
     <message>
         <location filename="../kinectconfigdialog.ui" line="120"/>
         <source>Near Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Modalità prossimità</translation>
     </message>
     <message>
         <location filename="../kinectconfigdialog.ui" line="130"/>
         <source>Seated Mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Modalità da seduti</translation>
     </message>
     <message>
         <location filename="../kinectconfigdialog.ui" line="139"/>
         <source>Depth camera:</source>
-        <translation type="unfinished"></translation>
+        <translation>Profondità camera:</translation>
     </message>
 </context>
 <context>
@@ -71,17 +71,17 @@
     <message>
         <location filename="../kinectnode.cpp" line="166"/>
         <source>Kinect not supported</source>
-        <translation type="unfinished"></translation>
+        <translation>Kinect non supportato</translation>
     </message>
     <message>
         <location filename="../kinectnode.cpp" line="348"/>
         <source>No Kinect sensors detected</source>
-        <translation type="unfinished"></translation>
+        <translation>Nessun sensore Kinect rilevato</translation>
     </message>
     <message>
         <location filename="../kinectnode.cpp" line="811"/>
         <source>Setup...</source>
-        <translation type="unfinished"></translation>
+        <translation>Impostazioni...</translation>
     </message>
 </context>
 </TS>

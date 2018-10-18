@@ -5,7 +5,7 @@
     <name>JsonQueryNode</name>
     <message>
         <source>Format</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato</translation>
     </message>
 </context>
 </TS>

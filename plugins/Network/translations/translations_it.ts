@@ -6,7 +6,7 @@
     <message>
         <location filename="../getnode.cpp" line="153"/>
         <source>Received %1 bytes</source>
-        <translation type="unfinished"></translation>
+        <translation>Ricevuti %1 byte</translation>
     </message>
 </context>
 <context>
@@ -14,27 +14,27 @@
     <message>
         <location filename="../networkplugin.cpp" line="107"/>
         <source>Network Information...</source>
-        <translation type="unfinished"></translation>
+        <translation>Informazioni di rete...</translation>
     </message>
     <message>
         <location filename="../networkplugin.cpp" line="137"/>
         <source>Network Address Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informazioni dell&apos;indirizzo di rete</translation>
     </message>
     <message>
         <location filename="../networkplugin.cpp" line="189"/>
         <source>No network interfaces found</source>
-        <translation type="unfinished"></translation>
+        <translation>Non è stata trovata alcuna interfaccia di rete</translation>
     </message>
     <message>
         <location filename="../networkplugin.cpp" line="224"/>
         <source>Local Domain Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome del dominio locale</translation>
     </message>
     <message>
         <location filename="../networkplugin.cpp" line="226"/>
         <source>Local Host Name</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome di questo pc</translation>
     </message>
 </context>
 <context>
@@ -42,7 +42,7 @@
     <message>
         <location filename="../packetdecodenode.h" line="13"/>
         <source>Decodes packets into data</source>
-        <translation type="unfinished"></translation>
+        <translation>Decodifica i pacchetti in dati</translation>
     </message>
 </context>
 <context>
@@ -50,7 +50,7 @@
     <message>
         <location filename="../packetencodenode.h" line="15"/>
         <source>Encodes data into packets</source>
-        <translation type="unfinished"></translation>
+        <translation>Codifica dati in pacchetti</translation>
     </message>
 </context>
 <context>
@@ -58,12 +58,12 @@
     <message>
         <location filename="../udpreceiverawnode.cpp" line="154"/>
         <source>Port number cannot be zero</source>
-        <translation type="unfinished"></translation>
+        <translation>Numero della porta: non può essere 0</translation>
     </message>
     <message>
         <location filename="../udpreceiverawnode.cpp" line="167"/>
         <source>Can&apos;t bind to port %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile assegnare la porta %1</translation>
     </message>
 </context>
 <context>
@@ -71,7 +71,7 @@
     <message>
         <location filename="../websocketservernode.cpp" line="21"/>
         <source>Input</source>
-        <translation type="unfinished"></translation>
+        <translation>Ingresso</translation>
     </message>
 </context>
 </TS>

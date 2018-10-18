@@ -6,12 +6,12 @@
     <message>
         <location filename="../countnonzeronode.cpp" line="25"/>
         <source>Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Immagine</translation>
     </message>
     <message>
         <location filename="../countnonzeronode.cpp" line="31"/>
         <source>Count</source>
-        <translation type="unfinished"></translation>
+        <translation>Conteggio</translation>
     </message>
 </context>
 <context>
@@ -19,12 +19,12 @@
     <message>
         <location filename="../imageconvertnode.cpp" line="252"/>
         <source>Unknown source format: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato di origine sconosciuto: %1</translation>
     </message>
     <message>
         <location filename="../imageconvertnode.cpp" line="259"/>
         <source>Can&apos;t convert input to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile convertire l&apos;ingresso in %1</translation>
     </message>
 </context>
 </TS>

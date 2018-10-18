@@ -6,7 +6,7 @@
     <message>
         <location filename="../trackernode.cpp" line="49"/>
         <source>Width of the marker pattern in mm</source>
-        <translation type="unfinished"></translation>
+        <translation>Larghezza del motivo del tracciatore in mm</translation>
     </message>
 </context>
 </TS>
