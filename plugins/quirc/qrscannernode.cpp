@@ -71,7 +71,7 @@ void QRScannerNode::inputsUpdated( qint64 pTimeStamp )
 			mNode->setStatus( fugio::NodeInterface::Error );
 		}
 
-		mNode->setStatusMessage( QStringLiteral() );
+		mNode->setStatusMessage( QString() );
 
 		mNode->setStatus( fugio::NodeInterface::Initialised );
 
