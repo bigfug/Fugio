@@ -123,7 +123,7 @@ void NDISendNode::inputsUpdated( qint64 pTimeStamp )
 #if defined( NDI_SUPPORTED )
 			// Synchronise sending
 
-			NDIlib_send_send_video( mNDIInstance, NULL );
+			NDIlib_send_send_video( mNDIInstance, Q_NULLPTR );
 
 			NDIlib_video_frame_t		VideoFrame;
 

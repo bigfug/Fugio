@@ -8,7 +8,7 @@
 #if defined( NDI_SUPPORTED )
 
 #if defined( Q_OS_WIN )
-#include <windows.h>
+#include <Windows.h>
 #else
 #include <Processing.NDI.compat.h>
 #endif
@@ -34,7 +34,7 @@ class NDISendNode : public fugio::NodeControlBase
 public:
 	Q_INVOKABLE NDISendNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~NDISendNode( void ) {}
+	virtual ~NDISendNode( void ) Q_DECL_OVERRIDE {}
 
 	// NodeControlInterface interface
 public:
