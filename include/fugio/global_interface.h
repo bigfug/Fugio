@@ -42,7 +42,7 @@ typedef struct ClassEntry
 	ClassEntry::Flags	 mFlags;
 
 	ClassEntry( void )
-		: mMetaObject( 0 )
+		: mMetaObject( Q_NULLPTR )
 	{
 
 	}

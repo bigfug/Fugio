@@ -33,9 +33,9 @@ class FUGIOLIBSHARED_EXPORT ContextPrivate : public fugio::ContextSignals, publi
 	Q_INTERFACES( fugio::ContextInterface )
 
 public:
-	explicit ContextPrivate( fugio::GlobalInterface *pApp, QObject *parent = 0 );
+	explicit ContextPrivate( fugio::GlobalInterface *pApp, QObject *parent = Q_NULLPTR );
 
-	virtual ~ContextPrivate( void );
+	virtual ~ContextPrivate( void ) Q_DECL_OVERRIDE;
 
 	void clear( void );
 
@@ -72,7 +72,7 @@ public:
 
 	virtual bool unload( const QString &pFileName ) Q_DECL_OVERRIDE;
 
-	virtual bool save( const QString &pFileName, const QList<QUuid> *pNodeList = 0 ) const Q_DECL_OVERRIDE;
+	virtual bool save( const QString &pFileName, const QList<QUuid> *pNodeList = Q_NULLPTR ) const Q_DECL_OVERRIDE;
 
 	virtual bool loadData( const QString &pFileName ) Q_DECL_OVERRIDE;
 

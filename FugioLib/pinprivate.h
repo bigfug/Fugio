@@ -26,7 +26,7 @@ class PinPrivate : public fugio::PinSignals, public fugio::PinInterface
 public:
 	explicit PinPrivate( void );
 
-	virtual ~PinPrivate( void );
+	virtual ~PinPrivate( void ) Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// fugio::PinInterface

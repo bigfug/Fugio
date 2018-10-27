@@ -76,7 +76,7 @@ signals:
 	void linkRemoved( QUuid pPinId1, QUuid pPinId2 );
 
 protected:
-	ContextSignals( QObject *pParent = 0 );
+	ContextSignals( QObject *pParent = Q_NULLPTR );
 
 	virtual ~ContextSignals( void );
 };

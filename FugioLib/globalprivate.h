@@ -30,12 +30,12 @@ class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public 
 	Q_OBJECT
 	Q_INTERFACES( fugio::GlobalInterface )
 
-	explicit GlobalPrivate( QObject *pParent = 0 );
+	explicit GlobalPrivate( QObject *pParent = Q_NULLPTR );
 
 	friend class GlobalThread;
 
 public:
-	virtual ~GlobalPrivate( void );
+	virtual ~GlobalPrivate( void ) Q_DECL_OVERRIDE;
 
     virtual void loadPlugins( QDir pDir ) Q_DECL_OVERRIDE;
 

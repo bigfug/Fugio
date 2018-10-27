@@ -22,7 +22,7 @@ class NodePrivate : public fugio::NodeSignals, public fugio::NodeInterface
 public:
 	explicit NodePrivate( QSharedPointer<fugio::NodeControlInterface> pControl = QSharedPointer<fugio::NodeControlInterface>() );
 
-	virtual ~NodePrivate( void );
+	virtual ~NodePrivate( void ) Q_DECL_OVERRIDE;
 
 	void setSettings( const QVariantHash &pSettings )
 	{

@@ -34,7 +34,7 @@ fugio::GlobalInterface::~GlobalInterface( void )
 
 }
 
-GlobalPrivate *GlobalPrivate::mInstance = 0;
+GlobalPrivate *GlobalPrivate::mInstance = Q_NULLPTR;
 
 GlobalPrivate::GlobalPrivate( QObject * ) :
 	GlobalSignals( this ), mPause( false )
@@ -245,7 +245,7 @@ void GlobalPrivate::loadPlugins( QDir pDir )
 
 			loadPlugins( QDir( NxtDir ) );
 
-			SetDllDirectory( NULL );
+			SetDllDirectory( Q_NULLPTR );
 #else
 			QString		CurDir = QDir::currentPath();
 
@@ -412,7 +412,7 @@ void GlobalPrivate::unregisterNodeClasses( const fugio::ClassEntryList &pNodes )
 
 void GlobalPrivate::registerNodeClasses( const fugio::ClassEntry pNodes[] )
 {
-	for( int i = 0 ; pNodes[ i ].mMetaObject != 0 ; i++ )
+	for( int i = 0 ; pNodes[ i ].mMetaObject ; i++ )
 	{
 		const fugio::ClassEntry &E = pNodes[ i ];
 
@@ -422,7 +422,7 @@ void GlobalPrivate::registerNodeClasses( const fugio::ClassEntry pNodes[] )
 
 void GlobalPrivate::unregisterNodeClasses( const fugio::ClassEntry pNodes[] )
 {
-	for( int i = 0 ; pNodes[ i ].mMetaObject != 0 ; i++ )
+	for( int i = 0 ; pNodes[ i ].mMetaObject ; i++ )
 	{
 		const fugio::ClassEntry &E = pNodes[ i ];
 
@@ -524,7 +524,7 @@ const QMetaObject *GlobalPrivate::findNodeMetaObject( const QString &pClassName 
 
 	if( NodeUuid.isNull() )
 	{
-		return( 0 );
+		return( Q_NULLPTR );
 	}
 
 	return( mNodeMap.value( NodeUuid ).mMetaObject );
