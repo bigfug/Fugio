@@ -19,36 +19,10 @@
 #include <fugio/nodecontrolbase.h>
 
 #include <fugio/text/syntax_highlighter_instance_interface.h>
+#include <fugio/text/syntax_error_interface.h>
 
 class TextEditorForm;
 class TextEditorNode;
-
-class TextEditorGui : public QObject
-{
-	Q_OBJECT
-
-public:
-	TextEditorGui( TextEditorNode *pNode )
-		: mNode( pNode ), mDockWidget( Q_NULLPTR ), mTextEdit( Q_NULLPTR ),
-		mHighlighter( Q_NULLPTR )
-	{
-
-	}
-
-	Q_INVOKABLE void initialise( void );
-
-private:
-	void setupTextEditor( QPlainTextEdit *pTextEdit );
-
-	void checkHighlighter();
-
-private:
-	TextEditorNode		*mNode;
-	QDockWidget										*mDockWidget;
-	TextEditorForm									*mTextEdit;
-	fugio::SyntaxHighlighterInstanceInterface		*mHighlighter;
-
-};
 
 class TextEditorNode : public fugio::NodeControlBase
 {
@@ -63,7 +37,7 @@ class TextEditorNode : public fugio::NodeControlBase
 public:
 	Q_INVOKABLE explicit TextEditorNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~TextEditorNode( void );
+	virtual ~TextEditorNode( void ) Q_DECL_OVERRIDE {}
 
 	typedef enum HighlighterType
 	{
@@ -92,28 +66,29 @@ signals:
 
 	void closeEditor( void );
 
-	void checkHighlighter( void );
+	void bufferedChanged( bool pBuffered );
+
+	void showEditor( void );
+
+	void textChanged( QString pText );
+
+	void syntaxInterfaceChanged( fugio::SyntaxErrorInterface *pSEI );
 
 protected:
 	bool isBuffered( void ) const;
 
 private slots:
-	void onEditClicked( void );
-
-	void onTextModified( bool pModified );
-
-	void onTextUpdate( void );
+	void editClicked( void );
 
 	void onTextPinUpdated( void );
 
-	void dockSetVisible( bool pVisible );
+	void setDockVisible( bool pVisible );
 
-	void textChanged( void );
+	void textModified( QString pText );
+	void textUpdated( QString pText );
 
 	void outputLinked( QSharedPointer<fugio::PinInterface> pPin );
 	void outputUninked( QSharedPointer<fugio::PinInterface> pPin );
-
-	void syntaxErrorsUpdated( QList<fugio::SyntaxError> pSyntaxErrors );
 
 private:
 	QSharedPointer<fugio::PinInterface>				 mPinInputBuffer;

@@ -49,6 +49,8 @@ set( SOURCE_FILES
 	stringtofloatnode.h
 	chopnode.cpp
 	chopnode.h
+	texteditorgui.cpp
+	texteditorgui.h
 
 	texteditorform.ui
 )
