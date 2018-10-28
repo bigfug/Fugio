@@ -174,8 +174,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->actionCopy->setShortcut( QKeySequence::Copy );
 	ui->actionPaste->setShortcut( QKeySequence::Paste );
 
-	connect( gApp->global().qobject(), SIGNAL(contextAdded(QSharedPointer<fugio::ContextInterface>)), this, SLOT(contextAdded(QSharedPointer<fugio::ContextInterface>)) );
-	connect( gApp->global().qobject(), SIGNAL(contextRemoved(QSharedPointer<fugio::ContextInterface>)), this, SLOT(contextRemoved(QSharedPointer<fugio::ContextInterface>)) );
+	connect( gApp->global().qobject(), SIGNAL(contextAdded(fugio::ContextInterface *)), this, SLOT(contextAdded(fugio::ContextInterface *)) );
+	connect( gApp->global().qobject(), SIGNAL(contextRemoved(fugio::ContextInterface *)), this, SLOT(contextRemoved(fugio::ContextInterface *)) );
 
 	connect( &gApp->undoGroup(), SIGNAL(cleanChanged(bool)), this, SLOT(onCleanChanged(bool)) );
 
@@ -333,7 +333,7 @@ void MainWindow::timeout()
 
 void MainWindow::closeEvent( QCloseEvent *pEvent )
 {
-	foreach( QSharedPointer<fugio::ContextInterface> Context, gApp->global().contexts() )
+	for( fugio::ContextInterface *Context : gApp->global().contexts() )
 	{
 		ContextSubWindow	*SW = findContextWindow( Context );
 
@@ -360,7 +360,7 @@ void MainWindow::closeEvent( QCloseEvent *pEvent )
 	QApplication::quit();
 }
 
-ContextSubWindow *MainWindow::findContextWindow( QSharedPointer<fugio::ContextInterface> pContext )
+ContextSubWindow *MainWindow::findContextWindow( fugio::ContextInterface *pContext )
 {
 	for( QMdiSubWindow *SubWin : ui->mWorkArea->subWindowList() )
 	{
@@ -373,7 +373,7 @@ ContextSubWindow *MainWindow::findContextWindow( QSharedPointer<fugio::ContextIn
 
 		ContextWidgetPrivate	*CW = SW->contextWidget();
 
-		if( CW == 0 )
+		if( !CW )
 		{
 			continue;
 		}
@@ -386,7 +386,7 @@ ContextSubWindow *MainWindow::findContextWindow( QSharedPointer<fugio::ContextIn
 		return( SW );
 	}
 
-	return( 0 );
+	return( Q_NULLPTR );
 }
 
 QStringList MainWindow::patchOpenDialog()
@@ -446,7 +446,7 @@ void MainWindow::on_actionSave_triggered()
 	}
 }
 
-void MainWindow::contextAdded( QSharedPointer<fugio::ContextInterface> pContext )
+void MainWindow::contextAdded( fugio::ContextInterface *pContext )
 {
 	ContextWidgetPrivate	*CV = new ContextWidgetPrivate();
 
@@ -472,7 +472,7 @@ void MainWindow::contextAdded( QSharedPointer<fugio::ContextInterface> pContext 
 	QTimer::singleShot( 500, ui->mStyleSheet, SLOT(stylesApply()) );
 }
 
-void MainWindow::contextRemoved( QSharedPointer<fugio::ContextInterface> pContext )
+void MainWindow::contextRemoved( fugio::ContextInterface *pContext )
 {
 	Q_UNUSED( pContext )
 }
@@ -501,7 +501,7 @@ void MainWindow::on_actionNew_triggered()
 	mUndoStack.push( Cmd );
 }
 
-QSharedPointer<fugio::ContextInterface> MainWindow::currentContext( void )
+fugio::ContextInterface *MainWindow::currentContext( void )
 {
 	ContextSubWindow	*SubWin = qobject_cast<ContextSubWindow *>( ui->mWorkArea->currentSubWindow() );
 
@@ -513,7 +513,7 @@ QSharedPointer<fugio::ContextInterface> MainWindow::currentContext( void )
 		}
 	}
 
-	return( QSharedPointer<fugio::ContextInterface>() );
+	return( Q_NULLPTR );
 }
 
 void MainWindow::on_mWorkArea_subWindowActivated( QMdiSubWindow *pSubWin )
@@ -781,7 +781,7 @@ void MainWindow::recentFileActivated( void )
 
 	if( A )
 	{
-		QSharedPointer<fugio::ContextInterface>	 C = gApp->global().newContext();
+		fugio::ContextInterface *C = gApp->global().newContext();
 
 		if( C == 0 )
 		{
@@ -1018,7 +1018,7 @@ void MainWindow::onExample()
 		return;
 	}
 
-	QSharedPointer<fugio::ContextInterface>	 C = gApp->global().newContext();
+	fugio::ContextInterface *C = gApp->global().newContext();
 
 	if( !C )
 	{
@@ -1249,7 +1249,7 @@ void MainWindow::checkRecoveryFiles( void )
 		}
 		else
 		{
-			QSharedPointer<fugio::ContextInterface>	 C = gApp->global().newContext();
+			fugio::ContextInterface *C = gApp->global().newContext();
 
 			if( !C )
 			{
@@ -1292,7 +1292,7 @@ void MainWindow::promptUserForPatch()
 
 void MainWindow::loadPatch( const QString &pFileName )
 {
-	QSharedPointer<fugio::ContextInterface>	 C = gApp->global().newContext();
+	fugio::ContextInterface *C = gApp->global().newContext();
 
 	if( !C )
 	{
@@ -1348,7 +1348,7 @@ void MainWindow::menuAddEntry( fugio::MenuId pMenuId, QString pEntry, QObject *p
 
 void MainWindow::on_actionSave_all_triggered()
 {
-	for( QSharedPointer<fugio::ContextInterface> Context : gApp->global().contexts() )
+	for( fugio::ContextInterface *Context : gApp->global().contexts() )
 	{
 		ContextSubWindow	*SW = findContextWindow( Context );
 
@@ -1420,7 +1420,7 @@ void MainWindow::menuAddFileImporter( QString pFilter, fugio::FileImportFunction
 
 void MainWindow::on_actionImport_triggered()
 {
-	QSharedPointer<fugio::ContextInterface>	CI = currentContext();
+	fugio::ContextInterface *CI = currentContext();
 
 	if( !CI )
 	{
@@ -1442,7 +1442,7 @@ void MainWindow::on_actionImport_triggered()
 
 		if( ImportFunction )
 		{
-			if( !ImportFunction( SelectedFile, CI.data() ) )
+			if( !ImportFunction( SelectedFile, CI ) )
 			{
 
 			}

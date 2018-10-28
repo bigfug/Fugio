@@ -241,7 +241,7 @@ void GlobalPrivate::loadPlugins( QDir pDir )
 			QString		NxtDir = pDir.absoluteFilePath( fileName );
 
 #if defined( Q_OS_WIN )
-			SetDllDirectory( (LPCTSTR)NxtDir.utf16() );
+			SetDllDirectory( reinterpret_cast<LPCTSTR>( NxtDir.utf16() ) );
 
 			loadPlugins( QDir( NxtDir ) );
 
@@ -566,54 +566,61 @@ void GlobalPrivate::executeFrame( void )
 
 	if( !mPause )
 	{
-		emit frameInitialise();
-		emit frameInitialise( TimeStamp );
-
-		emit frameStart();
-		emit frameStart( TimeStamp );
-
-		for( QSharedPointer<fugio::ContextInterface> CP : mContexts )
+		for( fugio::ContextInterface *C : mContexts )
 		{
-			QSharedPointer<ContextPrivate>	C = qSharedPointerCast<ContextPrivate>( CP );
+			ContextPrivate	*CP = qobject_cast<ContextWorker *>( C->qobject() )->context();
 
-			if( C && C->active() )
-			{
-				C->doFrameInitialise( TimeStamp );
-			}
+			CP->processFrame( TimeStamp );
 		}
 
-		for( QSharedPointer<fugio::ContextInterface> CP : mContexts )
-		{
-			QSharedPointer<ContextPrivate>	C = qSharedPointerCast<ContextPrivate>( CP );
+//		emit frameInitialise();
+//		emit frameInitialise( TimeStamp );
 
-			if( C && C->active() )
-			{
-				C->doFrameStart( TimeStamp );
-			}
-		}
+//		emit frameStart();
+//		emit frameStart( TimeStamp );
 
-		for( QSharedPointer<fugio::ContextInterface> CP : mContexts )
-		{
-			QSharedPointer<ContextPrivate>	C = qSharedPointerCast<ContextPrivate>( CP );
+//		for( fugio::ContextInterface *CP : mContexts )
+//		{
+//			QSharedPointer<ContextPrivate>	C = qSharedPointerCast<ContextPrivate>( CP );
 
-			if( C && C->active() )
-			{
-				C->doFrameProcess( TimeStamp );
-			}
-		}
+//			if( C && C->active() )
+//			{
+//				C->doFrameInitialise( TimeStamp );
+//			}
+//		}
 
-		for( QSharedPointer<fugio::ContextInterface> CP : mContexts )
-		{
-			QSharedPointer<ContextPrivate>	C = qSharedPointerCast<ContextPrivate>( CP );
+//		for( fugio::ContextInterface *CP : mContexts )
+//		{
+//			QSharedPointer<ContextPrivate>	C = qSharedPointerCast<ContextPrivate>( CP );
 
-			if( C && C->active() )
-			{
-				C->doFrameEnd( TimeStamp );
-			}
-		}
+//			if( C && C->active() )
+//			{
+//				C->doFrameStart( TimeStamp );
+//			}
+//		}
 
-		emit frameEnd();
-		emit frameEnd( TimeStamp );
+//		for( fugio::ContextInterface *CP : mContexts )
+//		{
+//			QSharedPointer<ContextPrivate>	C = qSharedPointerCast<ContextPrivate>( CP );
+
+//			if( C && C->active() )
+//			{
+//				C->doFrameProcess( TimeStamp );
+//			}
+//		}
+
+//		for( fugio::ContextInterface *CP : mContexts )
+//		{
+//			QSharedPointer<ContextPrivate>	C = qSharedPointerCast<ContextPrivate>( CP );
+
+//			if( C && C->active() )
+//			{
+//				C->doFrameEnd( TimeStamp );
+//			}
+//		}
+
+//		emit frameEnd();
+//		emit frameEnd( TimeStamp );
 
 		mUniverse.clearData( universalTimestamp() );
 
@@ -622,7 +629,7 @@ void GlobalPrivate::executeFrame( void )
 
 	if( TimeStamp - mLastTime >= 1000 )
 	{
-		emit fps( qreal( mFrameCount ) );
+//		emit fps( qreal( mFrameCount ) );
 
 		while( mLastTime + 1000 <= TimeStamp )
 		{
@@ -660,25 +667,15 @@ void GlobalPrivate::clear()
 {
 	QMutexLocker	Lock( &mContextMutex );
 
-	for( QList< QSharedPointer<fugio::ContextInterface> >::iterator it = mContexts.begin() ; it != mContexts.end() ; it++ )
+	for( fugio::ContextInterface *C : mContexts )
 	{
-		QSharedPointer<fugio::ContextInterface>	CP = *it;
+		ContextPrivate	*CP = qobject_cast<ContextWorker *>( C->qobject() )->context();
 
-		if( CP == 0 )
-		{
-			continue;
-		}
-
-		QSharedPointer<ContextPrivate>	C = qSharedPointerCast<ContextPrivate>( CP );
-
-		if( C != 0 )
-		{
-			C->clear();
-		}
+		CP->clear();
 	}
 }
 
-QSharedPointer<fugio::ContextInterface> GlobalPrivate::newContext( void )
+fugio::ContextInterface *GlobalPrivate::newContext( void )
 {
 	QMutexLocker	Lock( &mContextMutex );
 
@@ -686,23 +683,19 @@ QSharedPointer<fugio::ContextInterface> GlobalPrivate::newContext( void )
 
 	if( !CP )
 	{
-		return( QSharedPointer<fugio::ContextInterface>() );
+		return( Q_NULLPTR );
 	}
 
-	CP->moveToThread( thread() );
-
-	QSharedPointer<fugio::ContextInterface>	C = QSharedPointer<fugio::ContextInterface>( CP );
-
-	mContexts.append( C );
+	mContexts.append( CP );
 
 	Lock.unlock();
 
-	emit contextAdded( C );
+	emit contextAdded( CP );
 
-	return( C );
+	return( CP );
 }
 
-void GlobalPrivate::delContext( QSharedPointer<fugio::ContextInterface> pContext )
+void GlobalPrivate::delContext( fugio::ContextInterface *pContext )
 {
 	QMutexLocker	Lock( &mContextMutex );
 
@@ -711,7 +704,7 @@ void GlobalPrivate::delContext( QSharedPointer<fugio::ContextInterface> pContext
 	emit contextRemoved( pContext );
 }
 
-QList<QSharedPointer<fugio::ContextInterface> > GlobalPrivate::contexts()
+QList<fugio::ContextInterface *> GlobalPrivate::contexts()
 {
 	return( mContexts );
 }

@@ -10,7 +10,7 @@
 class CmdLinkRemove : public QUndoCommand
 {
 public:
-	explicit CmdLinkRemove( QSharedPointer<fugio::ContextInterface> pContext, QSharedPointer<fugio::PinInterface> pPinSrc, QSharedPointer<fugio::PinInterface> pPinDst )
+	explicit CmdLinkRemove( fugio::ContextInterface *pContext, QSharedPointer<fugio::PinInterface> pPinSrc, QSharedPointer<fugio::PinInterface> pPinDst )
 		: mContext( pContext ), mPinSrc( pPinSrc ), mPinDst( pPinDst )
 	{
 		setText( QObject::tr( "Remove Link" ) );
@@ -42,7 +42,7 @@ public:
 	}
 
 private:
-	QSharedPointer<fugio::ContextInterface>	 mContext;
+	fugio::ContextInterface					*mContext;
 	QSharedPointer<fugio::PinInterface>		 mPinSrc;
 	QSharedPointer<fugio::PinInterface>		 mPinDst;
 };

@@ -50,14 +50,14 @@ public:
 
 	virtual ~ContextView( void );
 
-	void setContext( QSharedPointer<fugio::ContextInterface> pContext );
+	void setContext( fugio::ContextInterface *pContext );
 
 	static inline int gridSize( void )
 	{
 		return( 20 );
 	}
 
-	inline QSharedPointer<fugio::ContextInterface> context( void )
+	inline fugio::ContextInterface *context( void )
 	{
 		return( mContext );
 	}
@@ -482,7 +482,7 @@ private:
 	ContextModel							 mContextModel;
 #endif
 
-	QSharedPointer<fugio::ContextInterface>	 mContext;
+	fugio::ContextInterface					*mContext;
 	QMap<QUuid,QPointF>						 mPositions;
 
 	QMap<QUuid, QSharedPointer<NodeItem>>	 mNodeList;

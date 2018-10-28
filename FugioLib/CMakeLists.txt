@@ -54,6 +54,7 @@ add_library( ${PROJECT_NAME} STATIC ${SOURCE_FILES} )
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	FUGIOLIB_STATIC
 #	GLOBAL_THREADED
+	CONTEXT_THREADED
 	)
 
 #------------------------------------------------------------------------------

@@ -15,7 +15,7 @@
 class CmdContextViewCut : public QUndoCommand
 {
 public:
-	explicit CmdContextViewCut( QSharedPointer<fugio::ContextInterface> pContext, QList< QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid,QUuid> &pLinkList, QList<QWeakPointer<NoteItem>> &pNoteList )
+	explicit CmdContextViewCut( fugio::ContextInterface *pContext, QList< QSharedPointer<fugio::NodeInterface> > &pNodeList, QMultiMap<QUuid,QUuid> &pLinkList, QList<QWeakPointer<NoteItem>> &pNoteList )
 		: mContext( pContext ), mNodeList( pNodeList ), mLinkList( pLinkList ), mNoteList( pNoteList )
 	{
 		setText( QObject::tr( "Cut" ) );
@@ -104,7 +104,7 @@ public:
 	}
 
 private:
-	QSharedPointer<fugio::ContextInterface>			 mContext;
+	fugio::ContextInterface							*mContext;
 	QList< QSharedPointer<fugio::NodeInterface> >	 mNodeList;
 	QMultiMap<QUuid,QUuid>							 mLinkList;
 	QList<QWeakPointer<NoteItem>>					 mNoteList;

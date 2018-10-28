@@ -26,7 +26,7 @@ public:
 
 	virtual void undo( void )
 	{
-		QSharedPointer<fugio::ContextInterface>	Context = mContext->context();
+		fugio::ContextInterface *Context = mContext->context();
 
 		QList<QUuid>	UniqNode;
 

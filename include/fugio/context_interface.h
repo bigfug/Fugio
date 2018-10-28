@@ -36,15 +36,15 @@ public:
 
 	virtual fugio::GlobalInterface *global( void ) = 0;
 
-	virtual bool load( const QString &pFileName, bool pPartial = false ) = 0;
+	virtual bool load( QString pFileName, bool pPartial = false ) = 0;
 
-	virtual bool unload( const QString &pFileName ) = 0;
+	virtual bool unload( QString pFileName ) = 0;
 
-	virtual bool save( const QString &pFileName, const QList<QUuid> *pNodeList = Q_NULLPTR ) const = 0;
+	virtual bool save( QString pFileName, QList<QUuid> pNodeList = QList<QUuid>() ) const = 0;
 
-	virtual bool loadData( const QString &pFileName ) = 0;
+	virtual bool loadData( QString pFileName ) = 0;
 
-	virtual bool saveData( const QString &pFileName ) const = 0;
+	virtual bool saveData( QString pFileName ) const = 0;
 
 	virtual void setActive( bool pActive ) = 0;
 
@@ -76,9 +76,9 @@ public:
 
 	//-------------------------------------------------------------------------
 
-	virtual void doFrameStart( qint64 pTimeStamp ) = 0;
-	virtual void doFrameProcess( qint64 pTimeStamp ) = 0;
-	virtual void doFrameEnd( qint64 pTimeStamp ) = 0;
+//	virtual void doFrameStart( qint64 pTimeStamp ) = 0;
+//	virtual void doFrameProcess( qint64 pTimeStamp ) = 0;
+//	virtual void doFrameEnd( qint64 pTimeStamp ) = 0;
 
 	//-------------------------------------------------------------------------
 	// Nodes

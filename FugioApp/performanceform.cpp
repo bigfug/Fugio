@@ -27,7 +27,7 @@ void PerformanceForm::onTimer()
 
 	QList<QTreeWidgetItem *> items;
 
-	for( QSharedPointer<fugio::ContextInterface> C : gApp->global().contexts() )
+	for( fugio::ContextInterface *C : gApp->global().contexts() )
 	{
 		QList<fugio::PerfData>		PerfList = C->perfdata();
 

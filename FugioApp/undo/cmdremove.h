@@ -21,7 +21,7 @@ public:
 	{
 		setText( QObject::tr( "Remove Nodes/Links" ) );
 
-		QSharedPointer<fugio::ContextInterface>		Context = mContextView->context();
+		fugio::ContextInterface *Context = mContextView->context();
 
 		// Check for links that are not connected to nodes within the selection
 
@@ -97,7 +97,7 @@ public:
 
 	virtual void undo( void )
 	{
-		QSharedPointer<fugio::ContextInterface>		Context = mContextView->context();
+		fugio::ContextInterface *Context = mContextView->context();
 
 		QTemporaryFile		TempFile;
 
@@ -144,7 +144,7 @@ public:
 
 	virtual void redo( void )
 	{
-		QSharedPointer<fugio::ContextInterface>		Context = mContextView->context();
+		fugio::ContextInterface *Context = mContextView->context();
 
 		for( QUuid Src : mExternalLinkList.keys().toSet() )
 		{

@@ -263,8 +263,8 @@ PluginInterface::InitResult OpenGLPlugin::initialise( fugio::GlobalInterface *pA
 
 	connect( mApp->qobject(), SIGNAL(frameEnd()), this, SLOT(globalFrameEnd()) );
 
-	connect( mApp->qobject(), SIGNAL(contextAdded(QSharedPointer<fugio::ContextInterface>)), this, SLOT(contextAdded(QSharedPointer<fugio::ContextInterface>)) );
-	connect( mApp->qobject(), SIGNAL(contextRemoved(QSharedPointer<fugio::ContextInterface>)), this, SLOT(contextRemoved(QSharedPointer<fugio::ContextInterface>)) );
+	connect( mApp->qobject(), SIGNAL(contextAdded(fugio::ContextInterface *)), this, SLOT(contextAdded(fugio::ContextInterface *)) );
+	connect( mApp->qobject(), SIGNAL(contextRemoved(fugio::ContextInterface *)), this, SLOT(contextRemoved(fugio::ContextInterface *)) );
 
 	DeviceOpenGLOutput::deviceInitialise();
 
@@ -513,13 +513,13 @@ QOpenGLContext *OpenGLPlugin::context()
 	return( it.value().mContext );
 }
 
-void OpenGLPlugin::contextAdded(QSharedPointer<ContextInterface> pContext)
+void OpenGLPlugin::contextAdded( fugio::ContextInterface *pContext )
 {
 	connect( pContext->qobject(), SIGNAL(frameInitialise()), this, SLOT(contextFrameInitialise()) );
 	connect( pContext->qobject(), SIGNAL(frameEnd()), this, SLOT(contextFrameEnd()) );
 }
 
-void OpenGLPlugin::contextRemoved(QSharedPointer<ContextInterface> pContext)
+void OpenGLPlugin::contextRemoved( fugio::ContextInterface *pContext)
 {
 	disconnect( pContext->qobject(), SIGNAL(frameInitialise()), this, SLOT(contextFrameInitialise()) );
 	disconnect( pContext->qobject(), SIGNAL(frameEnd()), this, SLOT(contextFrameEnd()) );

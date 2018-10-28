@@ -12,7 +12,7 @@
 class CmdSetDuration : public QUndoCommand
 {
 public:
-	explicit CmdSetDuration( QSharedPointer<fugio::ContextInterface> pContext, qreal pDuration )
+	explicit CmdSetDuration( fugio::ContextInterface *pContext, qreal pDuration )
 		: mContext( pContext ), mDurNew( pDuration ), mDurPrv( mContext->duration() )
 	{
 		setText( QObject::tr( "Set duration" ) );
@@ -34,7 +34,7 @@ public:
 	}
 
 private:
-	QSharedPointer<fugio::ContextInterface>		 mContext;
+	fugio::ContextInterface					*mContext;
 	qreal									 mDurNew, mDurPrv;
 };
 

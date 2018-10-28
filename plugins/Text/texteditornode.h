@@ -21,6 +21,34 @@
 #include <fugio/text/syntax_highlighter_instance_interface.h>
 
 class TextEditorForm;
+class TextEditorNode;
+
+class TextEditorGui : public QObject
+{
+	Q_OBJECT
+
+public:
+	TextEditorGui( TextEditorNode *pNode )
+		: mNode( pNode ), mDockWidget( Q_NULLPTR ), mTextEdit( Q_NULLPTR ),
+		mHighlighter( Q_NULLPTR )
+	{
+
+	}
+
+	Q_INVOKABLE void initialise( void );
+
+private:
+	void setupTextEditor( QPlainTextEdit *pTextEdit );
+
+	void checkHighlighter();
+
+private:
+	TextEditorNode		*mNode;
+	QDockWidget										*mDockWidget;
+	TextEditorForm									*mTextEdit;
+	fugio::SyntaxHighlighterInstanceInterface		*mHighlighter;
+
+};
 
 class TextEditorNode : public fugio::NodeControlBase
 {
@@ -59,15 +87,14 @@ public:
 
 	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
 
-private:
-	void setupTextEditor( QPlainTextEdit *pTextEdit );
-
 signals:
 	void modified( bool pModified );
 
-protected:
-	void checkHighlighter();
+	void closeEditor( void );
 
+	void checkHighlighter( void );
+
+protected:
 	bool isBuffered( void ) const;
 
 private slots:
@@ -94,13 +121,8 @@ private:
 	QSharedPointer<fugio::PinInterface>				 mPinOutputString;
 	fugio::VariantInterface							*mValOutputString;
 
-	QDockWidget										*mDockWidget;
-	TextEditorForm									*mTextEdit;
-
 	Qt::DockWidgetArea								 mDockArea;
 	bool											 mDockVisible;
-
-	fugio::SyntaxHighlighterInstanceInterface		*mHighlighter;
 
 	HighlighterType									 mHighlighterType;
 	QUuid											 mHighlighterUuid;

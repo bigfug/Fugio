@@ -44,9 +44,7 @@ int main( int argc, char *argv[] )
 
 	for( QString PatchName : H.CLP.positionalArguments() )
 	{
-		QSharedPointer<fugio::ContextInterface>	C;
-
-		C = G->newContext();
+		fugio::ContextInterface *C = G->newContext();
 
 		if( C )
 		{

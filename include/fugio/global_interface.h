@@ -216,11 +216,11 @@ public:
 	//-------------------------------------------------------------------------
 	// Contexts
 
-	virtual QSharedPointer<fugio::ContextInterface> newContext( void ) = 0;
+	virtual fugio::ContextInterface *newContext( void ) = 0;
 
-	virtual void delContext( QSharedPointer<fugio::ContextInterface> pContext ) = 0;
+	virtual void delContext( fugio::ContextInterface *pContext ) = 0;
 
-	virtual QList< QSharedPointer<fugio::ContextInterface> > contexts( void ) = 0;
+	virtual QList<fugio::ContextInterface *> contexts( void ) = 0;
 
 	//-------------------------------------------------------------------------
 	// Device Factory

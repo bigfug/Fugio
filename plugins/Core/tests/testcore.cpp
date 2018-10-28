@@ -13,16 +13,14 @@ TestCore::TestCore()
 
 void TestCore::newContext()
 {
-	QSharedPointer<fugio::ContextInterface>	C;
-
-	C = fugio::fugio()->newContext();
+	fugio::ContextInterface *C = fugio::fugio()->newContext();
 
 	QVERIFY( C );
 }
 
 void TestCore::createNode()
 {
-	QSharedPointer<fugio::ContextInterface>	C = fugio::fugio()->newContext();
+	fugio::ContextInterface *C = fugio::fugio()->newContext();
 
 	QVERIFY( C );
 

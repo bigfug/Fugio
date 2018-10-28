@@ -41,7 +41,7 @@
 bool ContextView::mShownWizard = false;
 
 ContextView::ContextView( QWidget *pParent ) :
-	QGraphicsView( pParent ), mContext( 0 ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 ),
+	QGraphicsView( pParent ), mContext( Q_NULLPTR ), mChanged( false ), mNodePositionFlag( false ), mSaveOnlySelected( false ), mUndoNodeUpdates( true ), mNodeMoveUndoId( 0 ),
 	mLinkDragTarget( nullptr )
 {
 	setScene( &mContextScene );
@@ -73,10 +73,12 @@ ContextView::ContextView( QWidget *pParent ) :
 
 ContextView::~ContextView( void )
 {
-	if( QSharedPointer<ContextPrivate> C = qSharedPointerCast<ContextPrivate>( mContext ) )
-	{
-		disconnect( C.data(), 0, this, 0 );
+	disconnect( mContext->qobject(), Q_NULLPTR, this, Q_NULLPTR );
 
+	ContextPrivate	*C = qobject_cast<ContextWorker *>( mContext->qobject() )->context();
+
+	if( C )
+	{
 		C->clear();
 	}
 
@@ -85,36 +87,38 @@ ContextView::~ContextView( void )
 	clearContext();
 }
 
-void ContextView::setContext( QSharedPointer<fugio::ContextInterface> pContext )
+void ContextView::setContext( fugio::ContextInterface *pContext )
 {
 	clearContext();
 
 	mContext = pContext;
 
-	if( QSharedPointer<ContextPrivate> C = qSharedPointerCast<ContextPrivate>( mContext ) )
+	fugio::ContextSignals *CS = mContext->qobject();
+
+	if( CS )
 	{
-		connect( C.data(), SIGNAL(loadStart(QSettings&,bool)), this, SLOT(loadStarted(QSettings&,bool)) );
-		connect( C.data(), SIGNAL(loading(QSettings&,bool)), this, SLOT(loadContext(QSettings&,bool)) );
-		connect( C.data(), SIGNAL(loadEnd(QSettings&,bool)), this, SLOT(loadEnded(QSettings&,bool)) );
+		connect( CS, SIGNAL(loadStart(QSettings&,bool)), this, SLOT(loadStarted(QSettings&,bool)) );
+		connect( CS, SIGNAL(loading(QSettings&,bool)), this, SLOT(loadContext(QSettings&,bool)) );
+		connect( CS, SIGNAL(loadEnd(QSettings&,bool)), this, SLOT(loadEnded(QSettings&,bool)) );
 
-		connect( C.data(), SIGNAL(saving(QSettings&)), this, SLOT(saveContext(QSettings&)) );
+		connect( CS, SIGNAL(saving(QSettings&)), this, SLOT(saveContext(QSettings&)) );
 
-		connect( C.data(), SIGNAL(clearContext()), this, SLOT(clearContext()) );
+		connect( CS, SIGNAL(clearContext()), this, SLOT(clearContext()) );
 
-		connect( C.data(), SIGNAL(nodeAdded(QUuid)), this, SLOT(nodeAdded(QUuid)) );
-		connect( C.data(), SIGNAL(nodeRemoved(QUuid)), this, SLOT(nodeRemoved(QUuid)) );
-		connect( C.data(), SIGNAL(nodeRenamed(QUuid,QUuid)), this, SLOT(nodeRenamed(QUuid,QUuid)) );
-		connect( C.data(), SIGNAL(nodeRelabled(QUuid,QUuid)), this, SLOT(nodeRelabled(QUuid,QUuid)) );
-		connect( C.data(), SIGNAL(nodeUpdated(QUuid)), this, SLOT(nodeChanged(QUuid)) );
-		connect( C.data(), SIGNAL(nodeActivated(QUuid)), this, SLOT(nodeActivated(QUuid)) );
+		connect( CS, SIGNAL(nodeAdded(QUuid)), this, SLOT(nodeAdded(QUuid)) );
+		connect( CS, SIGNAL(nodeRemoved(QUuid)), this, SLOT(nodeRemoved(QUuid)) );
+		connect( CS, SIGNAL(nodeRenamed(QUuid,QUuid)), this, SLOT(nodeRenamed(QUuid,QUuid)) );
+		connect( CS, SIGNAL(nodeRelabled(QUuid,QUuid)), this, SLOT(nodeRelabled(QUuid,QUuid)) );
+		connect( CS, SIGNAL(nodeUpdated(QUuid)), this, SLOT(nodeChanged(QUuid)) );
+		connect( CS, SIGNAL(nodeActivated(QUuid)), this, SLOT(nodeActivated(QUuid)) );
 
-		connect( C.data(), SIGNAL(pinAdded(QUuid,QUuid)), this, SLOT(pinAdded(QUuid,QUuid)) );
-		connect( C.data(), SIGNAL(pinRenamed(QUuid,QUuid,QUuid)), this, SLOT(pinRenamed(QUuid,QUuid,QUuid)) );
-		connect( C.data(), SIGNAL(pinRelabled(QUuid,QUuid,QUuid)), this, SLOT(pinRelabled(QUuid,QUuid,QUuid)) );
-		connect( C.data(), SIGNAL(pinRemoved(QUuid,QUuid)), this, SLOT(pinRemoved(QUuid,QUuid)) );
+		connect( CS, SIGNAL(pinAdded(QUuid,QUuid)), this, SLOT(pinAdded(QUuid,QUuid)) );
+		connect( CS, SIGNAL(pinRenamed(QUuid,QUuid,QUuid)), this, SLOT(pinRenamed(QUuid,QUuid,QUuid)) );
+		connect( CS, SIGNAL(pinRelabled(QUuid,QUuid,QUuid)), this, SLOT(pinRelabled(QUuid,QUuid,QUuid)) );
+		connect( CS, SIGNAL(pinRemoved(QUuid,QUuid)), this, SLOT(pinRemoved(QUuid,QUuid)) );
 
-		connect( C.data(), SIGNAL(linkAdded(QUuid,QUuid)), this, SLOT(linkAdded(QUuid,QUuid)) );
-		connect( C.data(), SIGNAL(linkRemoved(QUuid,QUuid)), this, SLOT(linkRemoved(QUuid,QUuid)) );
+		connect( CS, SIGNAL(linkAdded(QUuid,QUuid)), this, SLOT(linkAdded(QUuid,QUuid)) );
+		connect( CS, SIGNAL(linkRemoved(QUuid,QUuid)), this, SLOT(linkRemoved(QUuid,QUuid)) );
 	}
 
 	ContextWidgetPrivate	*CWP = widget();
@@ -134,9 +138,9 @@ void ContextView::setContext( QSharedPointer<fugio::ContextInterface> pContext )
 ContextWidgetPrivate *ContextView::widget( void )
 {
 	QObject						*O = this;
-	ContextWidgetPrivate		*C = 0;
+	ContextWidgetPrivate		*C = Q_NULLPTR;
 
-	while( O && ( C = qobject_cast<ContextWidgetPrivate *>( O ) ) == 0 )
+	while( O && ( C = qobject_cast<ContextWidgetPrivate *>( O ) ) == Q_NULLPTR )
 	{
 		O = O->parent();
 	}
@@ -1241,7 +1245,7 @@ void ContextView::nodeChanged( QUuid pNodeId )
 
 	QSharedPointer<NodeItem>	Node = ItemIterator.value();
 
-	if( Node == 0 )
+	if( !Node )
 	{
 		return;
 	}
@@ -1260,7 +1264,7 @@ void ContextView::nodeActivated( QUuid pNodeId )
 
 	QSharedPointer<NodeItem>	Node = ItemIterator.value();
 
-	if( Node == 0 )
+	if( !Node )
 	{
 		return;
 	}
@@ -1330,14 +1334,14 @@ void ContextView::pinRemoved( QUuid pNodeId, QUuid pPinId )
 
 	QSharedPointer<NodeItem>	Node = ItemIterator.value();
 
-	if( Node == 0 )
+	if( !Node )
 	{
 		return;
 	}
 
 	QSharedPointer<fugio::PinInterface>	IntPin = mContext->findPin( pPinId );
 
-	if( IntPin == 0 )
+	if( !IntPin )
 	{
 		return;
 	}
@@ -1682,7 +1686,7 @@ void ContextView::saveSelectedTo( const QString &pFileName )
 
 	mSaveOnlySelected = true;
 
-	if( mContext->save( pFileName, &NodeList ) )
+	if( mContext->save( pFileName, NodeList ) )
 	{
 	}
 
@@ -2543,7 +2547,7 @@ void ContextView::processSelection( bool pSaveToClipboard, bool pDeleteData )
 
 	const QString		TempFile = QDir( QDir::tempPath() ).absoluteFilePath( "fugio-copy.tmp" );
 
-	if( mContext->save( TempFile, &SaveNodeList ) )
+	if( mContext->save( TempFile, SaveNodeList ) )
 	{
 		QFile		FH( TempFile );
 
@@ -2671,7 +2675,7 @@ void ContextView::updateGroupWidgetText()
 
 	GSL << groupRichText( nullptr );
 
-	for( const QUuid GID : mGroupStack )
+	for( QUuid GID : mGroupStack )
 	{
 		QSharedPointer<NodeItem>	GI = mNodeList.value( GID );
 

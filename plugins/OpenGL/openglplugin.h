@@ -134,8 +134,8 @@ private slots:
 
 	void appAboutToQuit( void );
 
-	void contextAdded( QSharedPointer<fugio::ContextInterface> pContext );
-	void contextRemoved( QSharedPointer<fugio::ContextInterface> pContext );
+	void contextAdded( fugio::ContextInterface *pContext );
+	void contextRemoved( fugio::ContextInterface *pContext );
 
 	void contextFrameInitialise( void );
 	void contextFrameEnd( void );

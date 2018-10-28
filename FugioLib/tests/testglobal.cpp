@@ -11,7 +11,7 @@ void TestGlobal::fugioGlobal()
 
 void TestGlobal::newContext()
 {
-	QSharedPointer<fugio::ContextInterface>	C = fugio::fugio()->newContext();
+	fugio::ContextInterface *C = fugio::fugio()->newContext();
 
 	QVERIFY( C );
 

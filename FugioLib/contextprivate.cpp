@@ -16,6 +16,7 @@
 #include <QTemporaryDir>
 #include <QDateTime>
 #include <QCoreApplication>
+#include <QThread>
 
 #include "nodeprivate.h"
 #include "pinprivate.h"
@@ -27,165 +28,469 @@
 //#define LOG_NODE_UPDATES
 //#define DEBUG_CONNECTIONS
 
-QMap<fugio::ContextInterface::MetaInfo,QString>	 ContextPrivate::mMetaNameMap;
+QMap<fugio::ContextInterface::MetaInfo,QString>	 ContextWorker::mMetaNameMap;
 
-ContextPrivate::ContextPrivate( fugio::GlobalInterface *pApp, QObject *pParent ) :
-	fugio::ContextSignals( pParent ), mActive( true ), mNodeDeferProcess( false ), mApp( pApp ), mState( fugio::ContextInterface::Stopped ),
-	mPlayheadTimerEnabled( true ), mPlayheadLocalLast( 0 ), mDuration( 30.0 ), mLastTimeStamp( 0 )
+ContextPrivate::ContextPrivate( fugio::GlobalInterface *pApp, QObject *pParent )
+	: QThread( pParent ), mApp( pApp ), mContextWorker( Q_NULLPTR )
 {
-	if( mMetaNameMap.isEmpty() )
-	{
-		mMetaNameMap.insert( fugio::ContextInterface::Author, "author" );
-		mMetaNameMap.insert( fugio::ContextInterface::Description, "description" );
-		mMetaNameMap.insert( fugio::ContextInterface::Name, "name" );
-		mMetaNameMap.insert( fugio::ContextInterface::Url, "url" );
-		mMetaNameMap.insert( fugio::ContextInterface::Version, "version" );
-		mMetaNameMap.insert( fugio::ContextInterface::Created, "created" );
-	}
+#if defined( CONTEXT_THREADED )
+	mContextWorker = new ContextWorker( this );
 
-	mMetaInfoMap.insert( fugio::ContextInterface::Name, tr( "Untitled" ) );
+	mContextWorker->moveToThread( this );
 
-	mMetaInfoMap.insert( fugio::ContextInterface::Created, QDateTime::currentDateTime().toString( Qt::RFC2822Date ) );
+	connect( this, &QThread::finished, mContextWorker, &ContextWorker::deleteLater );
+
+	start();
+#endif
 }
 
 ContextPrivate::~ContextPrivate( void )
 {
-	clear();
-
-	//qDebug() << "~ContextPrivate";
+#if defined( CONTEXT_THREADED )
+	quit();
+	wait();
+#endif
 }
 
-bool ContextPrivate::load( const QString &pFileName, bool pPartial )
+bool ContextPrivate::isContextThread( void ) const
 {
-	if( !QFile( pFileName ).exists() )
-	{
-		qWarning() << pFileName << "doesn't exist";
+	return( QThread::currentThread() == this );
+}
 
-		return( false );
-	}
+bool ContextPrivate::unload( QString pFileName )
+{
+	return( false );
+}
 
-	QSettings										 CFG( pFileName, QSettings::IniFormat );
-	int												 VER = 1;
-	bool											 RET = false;
+bool ContextPrivate::loadData( QString pFileName )
+{
+	return( mContextWorker->loadData( pFileName ) );
+}
 
-	if( CFG.status() != QSettings::NoError )
-	{
-		qWarning() << pFileName << "can't load";
+bool ContextPrivate::saveData( QString pFileName ) const
+{
+	return( mContextWorker->saveData( pFileName ) );
+}
 
-		return( false );
-	}
+void ContextPrivate::setActive( bool pActive )
+{
+	mContextWorker->setActive( pActive );
+}
 
-	if( CFG.format() != QSettings::IniFormat )
-	{
-		qWarning() << pFileName << "bad format";
+bool ContextPrivate::active( void ) const
+{
+	return( mContextWorker->active() );
+}
 
-		return( false );
-	}
+void ContextPrivate::futureSync( const QFuture<void> &pFuture )
+{
+	mContextWorker->futureSync( pFuture );
+}
 
-	mActive = false;
+QString ContextPrivate::metaInfo( MetaInfo pType ) const
+{
+	return( mContextWorker->metaInfo( pType ) );
+}
 
-	emit loadStart( CFG, pPartial );
+void ContextPrivate::setMetaInfo( MetaInfo pType, const QString & pMetaData )
+{
+	mContextWorker->setMetaInfo( pType, pMetaData );
+}
 
-//	if( !CFG.childGroups().contains( "fugio" ) )
+void ContextPrivate::registerInterface( const QUuid & pUuid, QObject * pInterface )
+{
+	mContextWorker->registerInterface( pUuid, pInterface );
+}
+
+void ContextPrivate::unregisterInterface( const QUuid & pUuid )
+{
+	mContextWorker->unregisterInterface( pUuid );
+}
+
+QObject *ContextPrivate::findInterface( const QUuid & pUuid )
+{
+	return( mContextWorker->findInterface( pUuid ) );
+}
+
+QSharedPointer<fugio::NodeInterface> ContextPrivate::createNode( const QString & pName, const QUuid & pGlobalId, const QUuid & pControlId, const QVariantHash & pSettings )
+{
+	QSharedPointer<fugio::NodeInterface>	RetVal;
+
+	QMetaObject::invokeMethod( mContextWorker, "createNode", Qt::BlockingQueuedConnection,
+		Q_RETURN_ARG( QSharedPointer<fugio::NodeInterface>, RetVal ),
+		Q_ARG( QString, pName ),
+		Q_ARG( QUuid, pGlobalId ),
+		Q_ARG( QUuid, pControlId ),
+		Q_ARG( QVariantHash, pSettings )
+		);
+
+	return( RetVal );
+}
+
+QSharedPointer<fugio::PinInterface> ContextPrivate::createPin( const QString & pName, const QUuid & pGlobalId, const QUuid & pLocalId, PinDirection pDirection, const QUuid & pControlId, const QVariantHash & pSettings )
+{
+	QSharedPointer<fugio::PinInterface>	RetVal;
+
+	QMetaObject::invokeMethod( mContextWorker, "createPin", Qt::BlockingQueuedConnection,
+		Q_RETURN_ARG( QSharedPointer<fugio::PinInterface>, RetVal ),
+		Q_ARG( QString, pName ),
+		Q_ARG( QUuid, pGlobalId ),
+		Q_ARG( QUuid, pLocalId ),
+		Q_ARG( PinDirection, pDirection ),
+		Q_ARG( QUuid, pControlId ),
+		Q_ARG( QVariantHash, pSettings )
+	);
+
+	return( RetVal );
+}
+
+QSharedPointer<fugio::PinControlInterface> ContextPrivate::createPinControl( const QUuid & pUUID, QSharedPointer<fugio::PinInterface> pPin )
+{
+	QSharedPointer<fugio::PinControlInterface>	RetVal;
+
+	QMetaObject::invokeMethod( mContextWorker, "createPinControl", Qt::BlockingQueuedConnection,
+		Q_RETURN_ARG( QSharedPointer<fugio::PinControlInterface>, RetVal ),
+		Q_ARG( QUuid, pUUID ),
+		Q_ARG( QSharedPointer<fugio::PinInterface>, pPin )
+	);
+
+	return( RetVal );
+}
+
+bool ContextPrivate::updatePinControl( QSharedPointer<fugio::PinInterface> pPin, const QUuid & pPinControlUuid )
+{
+	bool	RetVal;
+
+	QMetaObject::invokeMethod( mContextWorker, "updatePinControl", Qt::BlockingQueuedConnection,
+		Q_RETURN_ARG( bool, RetVal ),
+		Q_ARG( QSharedPointer<fugio::PinInterface>, pPin ),
+		Q_ARG( QUuid, pPinControlUuid )
+	);
+
+	return( RetVal );
+}
+
+void ContextPrivate::registerNode( QSharedPointer<fugio::NodeInterface> pNode )
+{
+	QMetaObject::invokeMethod( mContextWorker, "registerNode", Qt::BlockingQueuedConnection,
+		Q_ARG( QSharedPointer<fugio::NodeInterface>, pNode )
+	);
+}
+
+void ContextPrivate::unregisterNode( const QUuid & pUUID )
+{
+	QMetaObject::invokeMethod( mContextWorker, "unregisterNode", Qt::BlockingQueuedConnection,
+		Q_ARG( QUuid, pUUID )
+	);
+}
+
+void ContextPrivate::renameNode( const QUuid & pUUID1, const QUuid & pUUID2 )
+{
+	QMetaObject::invokeMethod( mContextWorker, "renameNode", Qt::BlockingQueuedConnection,
+		Q_ARG( QUuid, pUUID1 ),
+		Q_ARG( QUuid, pUUID2 )
+	);
+}
+
+QSharedPointer<fugio::NodeInterface> ContextPrivate::findNode( const QUuid & pUUID ) const
+{
+	return( mContextWorker->findNode( pUUID ) );
+}
+
+QSharedPointer<fugio::NodeInterface> ContextPrivate::findNode( const QString & pName ) const
+{
+	return( mContextWorker->findNode( pName ) );
+}
+
+QList<QUuid> ContextPrivate::nodeList( void ) const
+{
+	return( mContextWorker->nodeList() );
+}
+
+void ContextPrivate::nodeInitialised( void )
+{
+	mContextWorker->nodeInitialised();
+}
+
+void ContextPrivate::updateNode( QSharedPointer<fugio::NodeInterface> pNode )
+{
+	QMetaObject::invokeMethod( mContextWorker, "updateNode", Qt::BlockingQueuedConnection,
+		Q_ARG( QSharedPointer<fugio::NodeInterface>, pNode )
+	);
+}
+
+void ContextPrivate::registerPin( QSharedPointer<fugio::PinInterface> pPin )
+{
+	QMetaObject::invokeMethod( mContextWorker, "registerPin", Qt::BlockingQueuedConnection,
+		Q_ARG( QSharedPointer<fugio::PinInterface>, pPin )
+	);
+}
+
+void ContextPrivate::unregisterPin( const QUuid & pUUID )
+{
+	QMetaObject::invokeMethod( mContextWorker, "unregisterPin", Qt::BlockingQueuedConnection,
+		Q_ARG( QUuid, pUUID )
+	);
+}
+
+void ContextPrivate::renamePin( const QUuid & pUUID1, const QUuid & pUUID2 )
+{
+	QMetaObject::invokeMethod( mContextWorker, "renamePin", Qt::BlockingQueuedConnection,
+		Q_ARG( QUuid, pUUID1 ),
+		Q_ARG( QUuid, pUUID2 )
+	);
+}
+
+QSharedPointer<fugio::PinInterface> ContextPrivate::findPin( const QUuid & pUUID )
+{
+	return( mContextWorker->findPin( pUUID ) );
+}
+
+void ContextPrivate::pinUpdated( QSharedPointer<fugio::PinInterface> pPin, qint64 pGlobalTimestamp, bool pUpdatedConnectedNode )
+{
+	QMetaObject::invokeMethod( mContextWorker, "pinUpdated", Qt::BlockingQueuedConnection,
+		Q_ARG( QSharedPointer<fugio::PinInterface>, pPin ),
+		Q_ARG( qint64, pGlobalTimestamp ),
+		Q_ARG( bool, pUpdatedConnectedNode )
+	);
+}
+
+QList<QSharedPointer<fugio::PinInterface>> ContextPrivate::connections( const QUuid & pUUID )
+{
+	return( mContextWorker->connections( pUUID ) );
+}
+
+bool ContextPrivate::isConnected( const QUuid & pUUID )
+{
+	return( mContextWorker->isConnected( pUUID ) );
+}
+
+bool ContextPrivate::isConnectedTo( const QUuid & pUUID1, const QUuid & pUUID2 )
+{
+	return( mContextWorker->isConnectedTo( pUUID1, pUUID2 ) );
+}
+
+void ContextPrivate::connectPins( const QUuid & pUUID1, const QUuid & pUUID2 )
+{
+	QMetaObject::invokeMethod( mContextWorker, "connectPins", Qt::BlockingQueuedConnection,
+		Q_ARG( QUuid, pUUID1 ),
+		Q_ARG( QUuid, pUUID2 )
+	);
+}
+
+void ContextPrivate::disconnectPins( const QUuid & pUUID1, const QUuid & pUUID2 )
+{
+	QMetaObject::invokeMethod( mContextWorker, "disconnectPins", Qt::BlockingQueuedConnection,
+		Q_ARG( QUuid, pUUID1 ),
+		Q_ARG( QUuid, pUUID2 )
+	);
+}
+
+void ContextPrivate::disconnectPin( const QUuid & pUUID )
+{
+	QMetaObject::invokeMethod( mContextWorker, "disconnectPin", Qt::BlockingQueuedConnection,
+		Q_ARG( QUuid, pUUID )
+	);
+}
+
+void ContextPrivate::performance( QSharedPointer<fugio::NodeInterface> pNode, const QString & pName, qint64 pTimeStart, qint64 pTimeEnd )
+{
+	mContextWorker->performance( pNode, pName, pTimeStart, pTimeEnd );
+}
+
+QList<fugio::PerfData> ContextPrivate::perfdata( void )
+{
+	return( mContextWorker->perfdata() );
+}
+
+void ContextPrivate::registerPlayhead( fugio::PlayheadInterface * pPlayHead )
+{
+	mContextWorker->registerPlayhead( pPlayHead );
+}
+
+void ContextPrivate::unregisterPlayhead( fugio::PlayheadInterface * pPlayHead )
+{
+	mContextWorker->unregisterPlayhead( pPlayHead );
+}
+
+bool ContextPrivate::isPlaying( void ) const
+{
+	return( mContextWorker->isPlaying() );
+}
+
+void ContextPrivate::setPlayheadTimerEnabled( bool pEnabled )
+{
+	mContextWorker->setPlayheadTimerEnabled( pEnabled );
+}
+
+void ContextPrivate::playheadMove( qreal pTimeStamp )
+{
+	mContextWorker->playheadMove( pTimeStamp );
+}
+
+void ContextPrivate::playheadPlay( qreal pTimePrev, qreal pTimeCurr )
+{
+	mContextWorker->playheadPlay( pTimePrev, pTimeCurr );
+}
+
+void ContextPrivate::play( void )
+{
+	mContextWorker->play();
+}
+
+void ContextPrivate::stop( void )
+{
+	mContextWorker->stop();
+}
+
+void ContextPrivate::pause( void )
+{
+	mContextWorker->pause();
+}
+
+void ContextPrivate::resume( void )
+{
+	mContextWorker->resume();
+}
+
+void ContextPrivate::setPlayheadPosition( qreal pTimeStamp, bool pRefresh )
+{
+	mContextWorker->setPlayheadPosition( pTimeStamp, pRefresh );
+}
+
+fugio::ContextInterface::TimeState ContextPrivate::state( void ) const
+{
+	return( mContextWorker->state() );
+}
+
+qreal ContextPrivate::position( void ) const
+{
+	return( mContextWorker->position() );
+}
+
+qreal ContextPrivate::duration( void ) const
+{
+	return( mContextWorker->duration() );
+}
+
+void ContextPrivate::setDuration( qreal pDuration )
+{
+	mContextWorker->setDuration( pDuration );
+}
+
+void ContextPrivate::notifyAboutToPlay( void )
+{
+	mContextWorker->notifyAboutToPlay();
+}
+
+QUuid ContextPrivate::registerExternalAsset( const QString & pFileName )
+{
+	return( mContextWorker->registerExternalAsset( pFileName ) );
+}
+
+void ContextPrivate::unregisterExternalAsset( const QString & pFileName )
+{
+	mContextWorker->unregisterExternalAsset( pFileName );
+}
+
+void ContextPrivate::unregisterExternalAsset( const QUuid & pUuid )
+{
+	mContextWorker->unregisterExternalAsset( pUuid );
+}
+
+QString ContextPrivate::externalAsset( const QUuid & pUuid ) const
+{
+	return( mContextWorker->externalAsset( pUuid ) );
+}
+
+void ContextPrivate::clear()
+{
+	QMetaObject::invokeMethod( mContextWorker, "clear", Qt::BlockingQueuedConnection );
+}
+
+bool ContextPrivate::load( QString pFileName, bool pPartial )
+{
+	bool	RetVal;
+
+	QMetaObject::invokeMethod( mContextWorker, "load", Qt::BlockingQueuedConnection,
+		Q_RETURN_ARG( bool, RetVal ),
+		Q_ARG( QString, pFileName ),
+		Q_ARG( bool, pPartial )
+	);
+
+	return( RetVal );
+}
+
+bool ContextPrivate::save( QString pFileName, QList<QUuid> pNodeList ) const
+{
+	bool	RetVal;
+
+	QMetaObject::invokeMethod( mContextWorker, "save", Qt::BlockingQueuedConnection,
+		Q_RETURN_ARG( bool, RetVal ),
+		Q_ARG( QString, pFileName ),
+		Q_ARG( QList<QUuid>, pNodeList )
+	);
+
+	return( RetVal );
+}
+
+//bool ContextPrivate::load( const QString &pFileName, bool pPartial )
+//{
+//	if( isContextThread() )
 //	{
-//		qWarning() << pFileName << "invalid file";
+//		return( mContextWorker->load( pFileName, pPartial ) );
+//	}
+
+//	bool	Loaded;
+
+//	QMetaObject::invokeMethod( mContextWorker, "load", Qt::BlockingQueuedConnection,
+//							   Q_RETURN_ARG( bool, Loaded ),
+//							   Q_ARG( QString, pFileName ),
+//							   Q_ARG( bool, pPartial ) );
+
+//	return( Loaded );
+//}
+
+bool ContextWorker::unload( QString pFileName )
+{
+	Q_UNUSED( pFileName )
+
+//	if( !QFile( pFileName ).exists() )
+//	{
+//		qWarning() << pFileName << "doesn't exist";
 
 //		return( false );
 //	}
 
-	CFG.beginGroup( "fugio" );
+//	QSettings										 CFG( pFileName, QSettings::IniFormat );
+////	int												 VER = 1;
+////	bool											 RET = false;
 
-	VER = CFG.value( "version", VER ).toInt();
+//	if( CFG.status() != QSettings::NoError )
+//	{
+//		qWarning() << pFileName << "can't load";
 
-	if( !pPartial )
-	{
-		qreal	NewDur = CFG.value( "duration", double( mDuration ) ).toDouble();
+//		return( false );
+//	}
 
-		setDuration( NewDur );
-	}
+//	if( CFG.format() != QSettings::IniFormat )
+//	{
+//		qWarning() << pFileName << "bad format";
 
-	CFG.endGroup();
+//		return( false );
+//	}
 
-	if( !pPartial )
-	{
-		CFG.beginGroup( "meta" );
+//	mActive = false;
 
-		for( auto it = mMetaNameMap.begin() ; it != mMetaNameMap.end() ; it++ )
-		{
-			const QString		V = CFG.value( it.value() ).toString();
-
-			if( !V.isEmpty() )
-			{
-				mMetaInfoMap.insert( it.key(), V );
-			}
-		}
-
-		CFG.endGroup();
-	}
-
-	if( VER == 2 )
-	{
-		RET = loadSettings( CFG, pPartial );
-	}
-
-	//-------------------------------------------------------------------------
-
-	processDeferredNodes();
-
-	//-------------------------------------------------------------------------
-
-	if( !pPartial && mInitDeferNodeList.isEmpty() )
-	{
-		emit contextStart();
-	}
-
-	//-------------------------------------------------------------------------
-
-	emit loading( CFG, pPartial );
-
-	emit loadEnd( CFG, pPartial );
-
-	mActive = true;
-
-	return( RET );
-}
-
-bool ContextPrivate::unload( const QString &pFileName )
-{
-	if( !QFile( pFileName ).exists() )
-	{
-		qWarning() << pFileName << "doesn't exist";
-
-		return( false );
-	}
-
-	QSettings										 CFG( pFileName, QSettings::IniFormat );
-//	int												 VER = 1;
-//	bool											 RET = false;
-
-	if( CFG.status() != QSettings::NoError )
-	{
-		qWarning() << pFileName << "can't load";
-
-		return( false );
-	}
-
-	if( CFG.format() != QSettings::IniFormat )
-	{
-		qWarning() << pFileName << "bad format";
-
-		return( false );
-	}
-
-	mActive = false;
-
-	mActive = true;
+//	mActive = true;
 
 	return( true );
 }
 
-void ContextPrivate::loadNodeSettings( QSettings &pSettings, QVariantHash &pVarHsh, QStringList &pVarBse ) const
+void ContextWorker::loadNodeSettings( QSettings &pSettings, QVariantHash &pVarHsh, QStringList &pVarBse ) const
 {
+	Q_ASSERT( isContextThread() );
+
 	for( const QString &K : pSettings.childGroups() )
 	{
 		pSettings.beginGroup( K );
@@ -209,8 +514,10 @@ void ContextPrivate::loadNodeSettings( QSettings &pSettings, QVariantHash &pVarH
 	}
 }
 
-bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
+bool ContextWorker::loadSettings( QSettings &pSettings, bool pPartial )
 {
+	Q_ASSERT( isContextThread() );
+
 	QSettings		CFG( pSettings.fileName(), pSettings.format() );
 
 	QList<QSharedPointer<fugio::NodeInterface>>		NodeLst;
@@ -332,7 +639,7 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 
 		QSharedPointer<fugio::PinInterface>	SrcP = SrcIt.value();
 
-		if( SrcP == 0 )
+		if( !SrcP )
 		{
 			continue;
 		}
@@ -350,7 +657,7 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 
 		QSharedPointer<fugio::PinInterface>	DstP = DstIt.value();
 
-		if( DstP == 0 )
+		if( !DstP )
 		{
 			continue;
 		}
@@ -363,8 +670,10 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 	return( true );
 }
 
-bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeList ) const
+bool ContextWorker::save( QString pFileName, QList<QUuid> pNodeList ) const
 {
+	Q_ASSERT( isContextThread() );
+
 	QFileInfo				 FileInfo( pFileName );
 	QString					 TmpFileName = FileInfo.absoluteFilePath().append( ".out" );
 
@@ -412,7 +721,7 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 
 		for( QSharedPointer<fugio::NodeInterface> N : mNodeHash.values() )
 		{
-			if( !pNodeList || pNodeList->contains( N->uuid() ) )
+			if( pNodeList.isEmpty() || pNodeList.contains( N->uuid() ) )
 			{
 				CFG.setValue( fugio::utils::uuid2string( N->uuid() ), fugio::utils::uuid2string( N->controlUuid() ) );
 			}
@@ -426,7 +735,7 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 
 		for( QSharedPointer<fugio::NodeInterface> N : mNodeHash.values() )
 		{
-			if( !pNodeList || pNodeList->contains( N->uuid() ) )
+			if( pNodeList.isEmpty() || pNodeList.contains( N->uuid() ) )
 			{
 				for( QSharedPointer<fugio::PinInterface> P : N->enumInputPins() )
 				{
@@ -442,7 +751,7 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 						continue;
 					}
 
-					if( !pNodeList || pNodeList->contains( ConPin->node()->uuid() ) )
+					if( pNodeList.isEmpty() || pNodeList.contains( ConPin->node()->uuid() ) )
 					{
 						CFG.setValue( fugio::utils::uuid2string( P->globalId() ), fugio::utils::uuid2string( ConPin->globalId() ) );
 					}
@@ -456,7 +765,7 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 
 		for( QSharedPointer<fugio::NodeInterface> N : mNodeHash.values() )
 		{
-			if( !pNodeList || pNodeList->contains( N->uuid() ) )
+			if( pNodeList.isEmpty() || pNodeList.contains( N->uuid() ) )
 			{
 				CFG.beginGroup( fugio::utils::uuid2string( N->uuid() ) );
 
@@ -585,8 +894,10 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 	return( true );
 }
 
-bool ContextPrivate::loadData( const QString &pFileName )
+bool ContextWorker::loadData( QString pFileName )
 {
+	Q_ASSERT( isContextThread() );
+
 	if( !QFile( pFileName ).exists() )
 	{
 		qWarning() << pFileName << "doesn't exist";
@@ -596,7 +907,7 @@ bool ContextPrivate::loadData( const QString &pFileName )
 
 	QSettings										 CFG( pFileName, QSettings::IniFormat );
 	int												 VER = 1;
-	bool											 RET = false;
+//	bool											 RET = false;
 
 	if( CFG.status() != QSettings::NoError )
 	{
@@ -671,8 +982,10 @@ bool ContextPrivate::loadData( const QString &pFileName )
 	return( true );
 }
 
-bool ContextPrivate::saveData( const QString &pFileName ) const
+bool ContextWorker::saveData( QString pFileName ) const
 {
+	Q_ASSERT( isContextThread() );
+
 	QFileInfo				 FileInfo( pFileName );
 	QString					 TmpFileName = FileInfo.absoluteFilePath().append( ".out" );
 
@@ -765,8 +1078,10 @@ bool ContextPrivate::saveData( const QString &pFileName ) const
 	return( true );
 }
 
-void ContextPrivate::clear( void )
+void ContextWorker::clear( void )
 {
+	Q_ASSERT( isContextThread() );
+
 	for( QUuid ID : mNodeHash.keys() )
 	{
 		unregisterNode( ID );
@@ -806,24 +1121,32 @@ void ContextPrivate::clear( void )
 	mMetaInfoMap.clear();
 }
 
-void ContextPrivate::setActive(bool pActive)
+fugio::ContextSignals *ContextWorker::qobject()
 {
-	if( mActive == pActive )
-	{
-		return;
-	}
-
-	mActive = pActive;
-
-	emit activeStateChanged( mActive );
+	return( this );
 }
 
-QString ContextPrivate::metaInfo( fugio::ContextInterface::MetaInfo pType) const
+fugio::GlobalInterface *ContextWorker::global( void )
+{
+	return( mContextPrivate->global() );
+}
+
+//void ContextPrivate::setActive( bool pActive )
+//{
+//	QMetaObject::invokeMethod( mContextWorker, "setActive", Q_ARG( bool, pActive ) );
+//}
+
+//bool ContextPrivate::active( void ) const
+//{
+//	return( mContextWorker->active() );
+//}
+
+QString ContextWorker::metaInfo( fugio::ContextInterface::MetaInfo pType) const
 {
 	return( mMetaInfoMap.value( pType ) );
 }
 
-void ContextPrivate::setMetaInfo(fugio::ContextInterface::MetaInfo pType, const QString &pMetaData)
+void ContextWorker::setMetaInfo(fugio::ContextInterface::MetaInfo pType, const QString &pMetaData)
 {
 	if( mMetaInfoMap.value( pType ) == pMetaData )
 	{
@@ -835,25 +1158,27 @@ void ContextPrivate::setMetaInfo(fugio::ContextInterface::MetaInfo pType, const 
 	emit metaInfoChanged( pType, pMetaData );
 }
 
-void ContextPrivate::registerPlayhead( fugio::PlayheadInterface *pPlayHead )
+void ContextWorker::registerPlayhead( fugio::PlayheadInterface *pPlayHead )
 {
 	mPlayheadList.removeAll( pPlayHead );
 
 	mPlayheadList.append( pPlayHead );
 }
 
-void ContextPrivate::unregisterPlayhead( fugio::PlayheadInterface *pPlayHead )
+void ContextWorker::unregisterPlayhead( fugio::PlayheadInterface *pPlayHead )
 {
 	mPlayheadList.removeAll( pPlayHead );
 }
 
-bool ContextPrivate::isPlaying( void ) const
+bool ContextWorker::isPlaying( void ) const
 {
 	return( mState == fugio::ContextInterface::Playing );
 }
 
-void ContextPrivate::registerNode( QSharedPointer<fugio::NodeInterface> pNode )
+void ContextWorker::registerNode( QSharedPointer<fugio::NodeInterface> pNode )
 {
+	Q_ASSERT( isContextThread() );
+
 	if( mNodeHash.contains( pNode->uuid() ) )
 	{
 		if( NodePrivate *NP = qobject_cast<NodePrivate *>( pNode->qobject() ) )
@@ -868,9 +1193,9 @@ void ContextPrivate::registerNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	fugio::NodeSignals		*N = pNode->qobject();
 
-	connect( N, SIGNAL(controlChanged(QSharedPointer<fugio::NodeInterface>)), this, SLOT(nodeControlChanged(QSharedPointer<fugio::NodeInterface>)) );
-	connect( N, SIGNAL(nameChanged(QSharedPointer<fugio::NodeInterface>)), this, SLOT(nodeNameChanged(QSharedPointer<fugio::NodeInterface>)) );
-	connect( N, SIGNAL(activationChanged(QSharedPointer<fugio::NodeInterface>)), this, SLOT(onNodeActivationChanged(QSharedPointer<fugio::NodeInterface>)) );
+	connect( N, SIGNAL(controlChanged(QSharedPointer<fugio::NodeInterface>)), this, SLOT(nodeControUpdated(QSharedPointer<fugio::NodeInterface>)) );
+	connect( N, SIGNAL(nameChanged(QSharedPointer<fugio::NodeInterface>)), this, SLOT(nodeNameUpdated(QSharedPointer<fugio::NodeInterface>)) );
+	connect( N, SIGNAL(activationChanged(QSharedPointer<fugio::NodeInterface>)), this, SLOT(nodeActivationUpdated(QSharedPointer<fugio::NodeInterface>)) );
 
 	connect( N, SIGNAL(pinAdded(QSharedPointer<fugio::NodeInterface>,QSharedPointer<fugio::PinInterface>)), this, SLOT(onPinAdded(QSharedPointer<fugio::NodeInterface>,QSharedPointer<fugio::PinInterface>)) );
 	connect( N, SIGNAL(pinRemoved(QSharedPointer<fugio::NodeInterface>,QSharedPointer<fugio::PinInterface>)), this, SLOT(onPinRemoved(QSharedPointer<fugio::NodeInterface>,QSharedPointer<fugio::PinInterface>)) );
@@ -882,8 +1207,10 @@ void ContextPrivate::registerNode( QSharedPointer<fugio::NodeInterface> pNode )
 	emit nodeAdded( pNode->uuid() );
 }
 
-void ContextPrivate::unregisterNode( const QUuid &pUUID )
+void ContextWorker::unregisterNode( const QUuid &pUUID )
 {
+	Q_ASSERT( isContextThread() );
+
 	for( int i = 0 ; i < mInitDeferNodeList.size() ; )
 	{
 		if( mInitDeferNodeList.at( i )->uuid() == pUUID )
@@ -921,8 +1248,10 @@ void ContextPrivate::unregisterNode( const QUuid &pUUID )
 	}
 }
 
-void ContextPrivate::renameNode( const QUuid &pUUID1, const QUuid &pUUID2 )
+void ContextWorker::renameNode( const QUuid &pUUID1, const QUuid &pUUID2 )
 {
+	Q_ASSERT( isContextThread() );
+
 	if( pUUID1 == pUUID2 )
 	{
 		return;
@@ -976,7 +1305,7 @@ void ContextPrivate::renameNode( const QUuid &pUUID1, const QUuid &pUUID2 )
 	emit nodeRenamed( pUUID1, pUUID2 );
 }
 
-QSharedPointer<fugio::NodeInterface> ContextPrivate::findNode( const QUuid &pUUID ) const
+QSharedPointer<fugio::NodeInterface> ContextWorker::findNode( const QUuid &pUUID ) const
 {
 	NodeHash::const_iterator it = mNodeHash.find( pUUID );
 
@@ -988,7 +1317,7 @@ QSharedPointer<fugio::NodeInterface> ContextPrivate::findNode( const QUuid &pUUI
 	return( it.value() );
 }
 
-QSharedPointer<fugio::NodeInterface> ContextPrivate::findNode( const QString &pName ) const
+QSharedPointer<fugio::NodeInterface> ContextWorker::findNode( const QString &pName ) const
 {
 	for( NodeHash::const_iterator it = mNodeHash.begin() ; it != mNodeHash.end() ; it++ )
 	{
@@ -1003,16 +1332,20 @@ QSharedPointer<fugio::NodeInterface> ContextPrivate::findNode( const QString &pN
 	return( QSharedPointer<fugio::NodeInterface>() );
 }
 
-void ContextPrivate::registerPin( QSharedPointer<fugio::PinInterface> pPin )
+void ContextWorker::registerPin( QSharedPointer<fugio::PinInterface> pPin )
 {
+	Q_ASSERT( isContextThread() );
+
 	if( !mPinHash.contains( pPin->globalId() ) )
 	{
 		mPinHash.insert( pPin->globalId(), pPin );
 	}
 }
 
-void ContextPrivate::unregisterPin( const QUuid &pUUID )
+void ContextWorker::unregisterPin( const QUuid &pUUID )
 {
+	Q_ASSERT( isContextThread() );
+
 	QSharedPointer<fugio::PinInterface>		PinInt = findPin( pUUID );
 
 	if( PinInt )
@@ -1044,8 +1377,10 @@ void ContextPrivate::unregisterPin( const QUuid &pUUID )
 	disconnectPin( pUUID );
 }
 
-void ContextPrivate::renamePin( const QUuid &pUUID1, const QUuid &pUUID2 )
+void ContextWorker::renamePin( const QUuid &pUUID1, const QUuid &pUUID2 )
 {
+	Q_ASSERT( isContextThread() );
+
 	if( pUUID1 == pUUID2 )
 	{
 		return;
@@ -1095,7 +1430,7 @@ void ContextPrivate::renamePin( const QUuid &pUUID1, const QUuid &pUUID2 )
 	emit pinRenamed( PIN->node()->uuid(), pUUID1, pUUID2 );
 }
 
-QSharedPointer<fugio::PinInterface> ContextPrivate::findPin( const QUuid &pUUID )
+QSharedPointer<fugio::PinInterface> ContextWorker::findPin( const QUuid &pUUID )
 {
 	PinHash::iterator it = mPinHash.find( pUUID );
 
@@ -1107,7 +1442,7 @@ QSharedPointer<fugio::PinInterface> ContextPrivate::findPin( const QUuid &pUUID 
 	return( it.value() );
 }
 
-QList< QSharedPointer<fugio::PinInterface> > ContextPrivate::connections( const QUuid &pUUID )
+QList< QSharedPointer<fugio::PinInterface> > ContextWorker::connections( const QUuid &pUUID )
 {
 	QList< QSharedPointer<fugio::PinInterface> >	PinLst;
 
@@ -1129,18 +1464,20 @@ QList< QSharedPointer<fugio::PinInterface> > ContextPrivate::connections( const 
 	return( PinLst );
 }
 
-bool ContextPrivate::isConnected( const QUuid &pUUID )
+bool ContextWorker::isConnected( const QUuid &pUUID )
 {
 	return( mConnectIO.contains( pUUID ) || mConnectOI.contains( pUUID ) );
 }
 
-bool ContextPrivate::isConnectedTo( const QUuid &pUUID1, const QUuid &pUUID2 )
+bool ContextWorker::isConnectedTo( const QUuid &pUUID1, const QUuid &pUUID2 )
 {
 	return( mConnectIO.value( pUUID1 ) == pUUID2 || mConnectIO.value( pUUID2 ) == pUUID1 || mConnectOI.contains( pUUID1, pUUID2 ) || mConnectOI.contains( pUUID2, pUUID1 ) );
 }
 
-void ContextPrivate::connectPins( const QUuid &pUUID1, const QUuid &pUUID2 )
+void ContextWorker::connectPins( const QUuid &pUUID1, const QUuid &pUUID2 )
 {
+	Q_ASSERT( isContextThread() );
+
 #if defined( QT_DEBUG ) && defined( DEBUG_CONNECTIONS )
 	qDebug() << "connect" << pUUID1 << "->" << pUUID2;
 #endif
@@ -1179,8 +1516,10 @@ void ContextPrivate::connectPins( const QUuid &pUUID1, const QUuid &pUUID2 )
 	emit P2->qobject()->linked( P1 );
 }
 
-void ContextPrivate::disconnectPins( const QUuid &pUUID1, const QUuid &pUUID2 )
+void ContextWorker::disconnectPins( const QUuid &pUUID1, const QUuid &pUUID2 )
 {
+	Q_ASSERT( isContextThread() );
+
 #if defined( QT_DEBUG ) && defined( DEBUG_CONNECTIONS )
 	qDebug() << "disconnect" << pUUID1 << "->" << pUUID2;
 #endif
@@ -1214,8 +1553,10 @@ void ContextPrivate::disconnectPins( const QUuid &pUUID1, const QUuid &pUUID2 )
 	emit P2->qobject()->unlinked( P1 );
 }
 
-void ContextPrivate::disconnectPin( const QUuid &pUUID )
+void ContextWorker::disconnectPin( const QUuid &pUUID )
 {
+	Q_ASSERT( isContextThread() );
+
 	QSharedPointer<fugio::PinInterface>	P1 = mPinHash.value( pUUID );
 
 	for( QHash<QUuid,QUuid>::iterator it = mConnectIO.begin() ; it != mConnectIO.end() ; it++ )
@@ -1259,13 +1600,15 @@ void ContextPrivate::disconnectPin( const QUuid &pUUID )
 	mConnectOI.remove( pUUID );
 }
 
-QList<QUuid> ContextPrivate::nodeList() const
+QList<QUuid> ContextWorker::nodeList() const
 {
 	return( mNodeHash.keys() );
 }
 
-void ContextPrivate::onPinAdded( QSharedPointer<fugio::NodeInterface> pNode, QSharedPointer<fugio::PinInterface> pPin )
+void ContextWorker::onPinAdded( QSharedPointer<fugio::NodeInterface> pNode, QSharedPointer<fugio::PinInterface> pPin )
 {
+	Q_ASSERT( isContextThread() );
+
 	registerPin( pPin );
 
 	ConnectionPair				MapKey( pNode->name(), pPin->name() );
@@ -1292,7 +1635,7 @@ void ContextPrivate::onPinAdded( QSharedPointer<fugio::NodeInterface> pNode, QSh
 
 				QSharedPointer<fugio::PinInterface>	Pin = Node->findPinByName( it.value().second );
 
-				if( Pin == 0 || Pin->direction() != PIN_INPUT )
+				if( !Pin || Pin->direction() != PIN_INPUT )
 				{
 					continue;
 				}
@@ -1315,7 +1658,7 @@ void ContextPrivate::onPinAdded( QSharedPointer<fugio::NodeInterface> pNode, QSh
 
 				QSharedPointer<fugio::PinInterface>	Pin = Node->findPinByName( it.key().second );
 
-				if( Pin == 0 || Pin->direction() != PIN_OUTPUT )
+				if( !Pin || Pin->direction() != PIN_OUTPUT )
 				{
 					continue;
 				}
@@ -1330,32 +1673,31 @@ void ContextPrivate::onPinAdded( QSharedPointer<fugio::NodeInterface> pNode, QSh
 	emit pinAdded( pNode->uuid(), pPin->globalId() );
 }
 
-void ContextPrivate::onPinRemoved( QSharedPointer<fugio::NodeInterface> pNode, QSharedPointer<fugio::PinInterface> pPin )
+void ContextWorker::onPinRemoved( QSharedPointer<fugio::NodeInterface> pNode, QSharedPointer<fugio::PinInterface> pPin )
 {
-	Q_UNUSED( pNode )
-	Q_UNUSED( pPin )
+	Q_ASSERT( isContextThread() );
 
 	unregisterPin( pPin->globalId() );
 
 	emit pinRemoved( pNode->uuid(), pPin->globalId() );
 }
 
-void ContextPrivate::nodeControlChanged( QSharedPointer<fugio::NodeInterface> pNode )
+void ContextWorker::nodeControUpdated( QSharedPointer<fugio::NodeInterface> pNode )
 {
 	emit nodeUpdated( pNode->uuid() );
 }
 
-void ContextPrivate::nodeNameChanged( QSharedPointer<fugio::NodeInterface> pNode )
+void ContextWorker::nodeNameUpdated( QSharedPointer<fugio::NodeInterface> pNode )
 {
 	emit nodeUpdated( pNode->uuid() );
 }
 
-void ContextPrivate::onNodeActivationChanged( QSharedPointer<fugio::NodeInterface> pNode )
+void ContextWorker::nodeActivationUpdated( QSharedPointer<fugio::NodeInterface> pNode )
 {
 	emit nodeActivated( pNode->uuid() );
 }
 
-void ContextPrivate::processPlayhead( qint64 pTimeStamp )
+void ContextWorker::processPlayhead( qint64 pTimeStamp )
 {
 	if( !isPlaying() )
 	{
@@ -1416,8 +1758,10 @@ void ContextPrivate::processPlayhead( qint64 pTimeStamp )
 	mPlayheadLocalLast = CurrTime;
 }
 
-void ContextPrivate::notifyAboutToPlay()
+void ContextWorker::notifyAboutToPlay()
 {
+	Q_ASSERT( isContextThread() );
+
 	for( fugio::PlayheadInterface *PH : mPlayheadList )
 	{
 		PH->playStart( mPlayheadLocalLast );
@@ -1426,7 +1770,7 @@ void ContextPrivate::notifyAboutToPlay()
 	emit aboutToPlay();
 }
 
-void ContextPrivate::setDuration(qreal pDuration)
+void ContextWorker::setDuration(qreal pDuration)
 {
 	if( pDuration == mDuration )
 	{
@@ -1438,8 +1782,10 @@ void ContextPrivate::setDuration(qreal pDuration)
 	emit durationChanged( mDuration );
 }
 
-void ContextPrivate::play( void )
+void ContextWorker::play( void )
 {
+	Q_ASSERT( isContextThread() );
+
 	if( mState == fugio::ContextInterface::Playing )
 	{
 		return;
@@ -1468,8 +1814,10 @@ void ContextPrivate::play( void )
 	emit stateChanged( mState );
 }
 
-void ContextPrivate::playFrom( qreal pTimeStamp )
+void ContextWorker::playFrom( qreal pTimeStamp )
 {
+	Q_ASSERT( isContextThread() );
+
 	playheadMove( pTimeStamp );
 
 	mPlayheadLatencyOffset = 0;//audio().latency();
@@ -1500,7 +1848,7 @@ void ContextPrivate::playFrom( qreal pTimeStamp )
 	emit stateChanged( mState );
 }
 
-void ContextPrivate::stop()
+void ContextWorker::stop()
 {
 	if( mState == fugio::ContextInterface::Stopped )
 	{
@@ -1512,7 +1860,7 @@ void ContextPrivate::stop()
 	emit stateChanged( mState );
 }
 
-void ContextPrivate::pause()
+void ContextWorker::pause()
 {
 	if( mState == fugio::ContextInterface::Paused )
 	{
@@ -1526,7 +1874,7 @@ void ContextPrivate::pause()
 	//mComposition->trackdata()->pause();
 }
 
-void ContextPrivate::resume()
+void ContextWorker::resume()
 {
 	if( mState != fugio::ContextInterface::Paused )
 	{
@@ -1540,8 +1888,10 @@ void ContextPrivate::resume()
 	//mComposition->trackdata()->resume();
 }
 
-void ContextPrivate::setPlayheadPosition( qreal pTimeStamp, bool pRefresh )
+void ContextWorker::setPlayheadPosition( qreal pTimeStamp, bool pRefresh )
 {
+	Q_ASSERT( isContextThread() );
+
 	if( isPlaying() )
 	{
 		return;
@@ -1563,7 +1913,7 @@ void ContextPrivate::setPlayheadPosition( qreal pTimeStamp, bool pRefresh )
 	mPlayheadLocalLast = pTimeStamp;
 }
 
-void ContextPrivate::playheadMove( qreal pTimeStamp )
+void ContextWorker::playheadMove( qreal pTimeStamp )
 {
 	for( fugio::PlayheadInterface *PH : mPlayheadList )
 	{
@@ -1571,8 +1921,10 @@ void ContextPrivate::playheadMove( qreal pTimeStamp )
 	}
 }
 
-void ContextPrivate::playheadPlay( qreal pTimePrev, qreal pTimeCurr )
+void ContextWorker::playheadPlay( qreal pTimePrev, qreal pTimeCurr )
 {
+	Q_ASSERT( isContextThread() );
+
 	if( mPlayheadList.isEmpty() )
 	{
 		return;
@@ -1596,13 +1948,15 @@ void ContextPrivate::playheadPlay( qreal pTimePrev, qreal pTimeCurr )
 
 //#define LOG_NODE_UPDATES
 
-void ContextPrivate::nodeInitialised( void )
+void ContextWorker::nodeInitialised( void )
 {
 	mNodeDeferProcess = true;
 }
 
-void ContextPrivate::pinUpdated( QSharedPointer<fugio::PinInterface> pPin, qint64 pGlobalTimestamp, bool pUpdatedConnectedNode )
+void ContextWorker::pinUpdated( QSharedPointer<fugio::PinInterface> pPin, qint64 pGlobalTimestamp, bool pUpdatedConnectedNode )
 {
+	Q_ASSERT( isContextThread() );
+
 	PinPrivate	*PP = qobject_cast<PinPrivate *>( pPin->qobject() );
 
 	if( PP )
@@ -1647,7 +2001,7 @@ void ContextPrivate::pinUpdated( QSharedPointer<fugio::PinInterface> pPin, qint6
 	mUpdatePinMap << PE;
 }
 
-void ContextPrivate::performance( QSharedPointer<fugio::NodeInterface> pNode, const QString &pName, qint64 pTimeStart, qint64 pTimeEnd )
+void ContextWorker::performance( QSharedPointer<fugio::NodeInterface> pNode, const QString &pName, qint64 pTimeStart, qint64 pTimeEnd )
 {
 	PerfEntry		PE;
 
@@ -1660,7 +2014,7 @@ void ContextPrivate::performance( QSharedPointer<fugio::NodeInterface> pNode, co
 	mPerfList << PE;
 }
 
-QList<fugio::PerfData> ContextPrivate::perfdata()
+QList<fugio::PerfData> ContextWorker::perfdata()
 {
 	QMap<QUuid,fugio::PerfData>		PDL;
 
@@ -1688,8 +2042,10 @@ QList<fugio::PerfData> ContextPrivate::perfdata()
 	return( PDL.values() );
 }
 
-void ContextPrivate::processDeferredNodes( QList< QSharedPointer<fugio::NodeInterface> > WaitingNodes, QList< QSharedPointer<fugio::NodeInterface> > &InitialisedNodes )
+void ContextWorker::processDeferredNodes( QList< QSharedPointer<fugio::NodeInterface> > WaitingNodes, QList< QSharedPointer<fugio::NodeInterface> > &InitialisedNodes )
 {
+	Q_ASSERT( isContextThread() );
+
 	QStringList			DeferredNodeNames;
 
 	for( QSharedPointer<fugio::NodeInterface> N : WaitingNodes )
@@ -1739,8 +2095,15 @@ void ContextPrivate::processDeferredNodes( QList< QSharedPointer<fugio::NodeInte
 	}
 }
 
-void ContextPrivate::processDeferredNodes()
+bool ContextWorker::isContextThread() const
 {
+	return( mContextPrivate->isContextThread() );
+}
+
+void ContextWorker::processDeferredNodes()
+{
+	Q_ASSERT( isContextThread() );
+
 	mUpdatedNodeMutex.lock();
 
 #if defined( LOG_NODE_UPDATES )
@@ -1768,8 +2131,10 @@ void ContextPrivate::processDeferredNodes()
 #endif
 }
 
-void ContextPrivate::updateNode( QSharedPointer<fugio::NodeInterface> pNode )
+void ContextWorker::updateNode( QSharedPointer<fugio::NodeInterface> pNode )
 {
+	Q_ASSERT( isContextThread() );
+
 	if( !pNode )
 	{
 		return;
@@ -1823,7 +2188,7 @@ void ContextPrivate::updateNode( QSharedPointer<fugio::NodeInterface> pNode )
 	}
 }
 
-void ContextPrivate::processNode( QSharedPointer<fugio::NodeInterface> pNode, qint64 pTimeStamp )
+void ContextWorker::processNode( QSharedPointer<fugio::NodeInterface> pNode, qint64 pTimeStamp )
 {
 	QSharedPointer<NodePrivate>	NP = qSharedPointerCast<NodePrivate>( pNode );
 
@@ -1848,13 +2213,15 @@ void ContextPrivate::processNode( QSharedPointer<fugio::NodeInterface> pNode, qi
 	}
 }
 
-//void ContextPrivate::processContext( QSharedPointer<fugio::ContextInterface> pContext )
+//void ContextPrivate::processContext( fugio::ContextInterface *pContext )
 //{
 //	Q_UNUSED( pContext )
 //}
 
-void ContextPrivate::processUpdatedNodes( qint64 pTimeStamp )
+void ContextWorker::processUpdatedNodes( qint64 pTimeStamp )
 {
+	Q_ASSERT( isContextThread() );
+
 	QList< QSharedPointer<fugio::NodeInterface> >		Nodes;
 
 	mUpdatedNodeMutex.lock();
@@ -1898,8 +2265,10 @@ void ContextPrivate::processUpdatedNodes( qint64 pTimeStamp )
 	}
 }
 
-void ContextPrivate::processUpdatedPins( qint64 pTimeStamp )
+void ContextWorker::processUpdatedPins( qint64 pTimeStamp )
 {
+	Q_ASSERT( isContextThread() );
+
 	mUpdatePinMapMutex.lock();
 
 	QList<UpdatePinEntry>		PinMap = mUpdatePinMap;
@@ -1916,13 +2285,13 @@ void ContextPrivate::processUpdatedPins( qint64 pTimeStamp )
 	}
 }
 
-void ContextPrivate::doFrameInitialise( qint64 pTimeStamp )
+void ContextWorker::doFrameInitialise( qint64 pTimeStamp )
 {
 	emit frameInitialise();
 	emit frameInitialise( pTimeStamp );
 }
 
-void ContextPrivate::doFrameStart( qint64 pTimeStamp )
+void ContextWorker::doFrameStart( qint64 pTimeStamp )
 {
 	mUpdatedNodeMutex.lock();
 
@@ -1955,7 +2324,7 @@ void ContextPrivate::doFrameStart( qint64 pTimeStamp )
 	mFutureSync.waitForFinished();
 }
 
-void ContextPrivate::doFrameProcess( qint64 pTimeStamp )
+void ContextWorker::doFrameProcess( qint64 pTimeStamp )
 {
 	if( mPlayheadTimerEnabled )
 	{
@@ -1997,7 +2366,7 @@ void ContextPrivate::doFrameProcess( qint64 pTimeStamp )
 	}
 }
 
-void ContextPrivate::doFrameEnd( qint64 pTimeStamp )
+void ContextWorker::doFrameEnd( qint64 pTimeStamp )
 {
 	mFinishedNodeList.clear();
 
@@ -2022,19 +2391,19 @@ void ContextPrivate::doFrameEnd( qint64 pTimeStamp )
 #endif
 }
 
-void ContextPrivate::registerInterface( const QUuid &pUuid, QObject *pInterface )
+void ContextWorker::registerInterface( const QUuid &pUuid, QObject *pInterface )
 {
 	mInterfaceMap.remove( pUuid );
 
 	mInterfaceMap.insert( pUuid, pInterface );
 }
 
-void ContextPrivate::unregisterInterface( const QUuid &pUuid )
+void ContextWorker::unregisterInterface( const QUuid &pUuid )
 {
 	mInterfaceMap.remove( pUuid );
 }
 
-QObject *ContextPrivate::findInterface( const QUuid &pUuid )
+QObject *ContextWorker::findInterface( const QUuid &pUuid )
 {
 	return( mInterfaceMap.value( pUuid, nullptr ) );
 }
@@ -2042,7 +2411,7 @@ QObject *ContextPrivate::findInterface( const QUuid &pUuid )
 //-------------------------------------------------------------------------
 // External assets
 
-QUuid ContextPrivate::registerExternalAsset( const QString &pFileName )
+QUuid ContextWorker::registerExternalAsset( const QString &pFileName )
 {
 	QUuid		AssIdx = mAssetMap.key( pFileName );
 
@@ -2058,7 +2427,7 @@ QUuid ContextPrivate::registerExternalAsset( const QString &pFileName )
 	return( AssIdx );
 }
 
-void ContextPrivate::unregisterExternalAsset(const QString &pFileName)
+void ContextWorker::unregisterExternalAsset(const QString &pFileName)
 {
 	QUuid		AssIdx = mAssetMap.key( pFileName );
 
@@ -2068,26 +2437,26 @@ void ContextPrivate::unregisterExternalAsset(const QString &pFileName)
 	}
 }
 
-void ContextPrivate::unregisterExternalAsset(const QUuid &pUuid)
+void ContextWorker::unregisterExternalAsset(const QUuid &pUuid)
 {
 	mAssetMap.remove( pUuid );
 }
 
-QString ContextPrivate::externalAsset(const QUuid &pUuid) const
+QString ContextWorker::externalAsset(const QUuid &pUuid) const
 {
 	return( mAssetMap.value( pUuid ) );
 }
 
-QSharedPointer<fugio::NodeInterface> ContextPrivate::createNode( const QString &pName, const QUuid &pGlobalId, const QUuid &pControlId, const QVariantHash &pSettings )
+QSharedPointer<fugio::NodeInterface> ContextWorker::createNode( const QString &pName, const QUuid &pGlobalId, const QUuid &pControlId, const QVariantHash &pSettings )
 {
+	Q_ASSERT( isContextThread() );
+
 	NodePrivate	*NODE = new NodePrivate();
 
 	if( !NODE )
 	{
 		return( QSharedPointer<fugio::NodeInterface>() );
 	}
-
-	NODE->moveToThread( thread() );
 
 	NODE->setName( pName );
 	NODE->setUuid( pGlobalId );
@@ -2097,7 +2466,7 @@ QSharedPointer<fugio::NodeInterface> ContextPrivate::createNode( const QString &
 
 	QSharedPointer<fugio::NodeInterface>		NODE_PTR = QSharedPointer<fugio::NodeInterface>( NODE );
 
-	fugio::ClassEntry	CE = mApp->findNodeClassEntry( pControlId );
+	fugio::ClassEntry	CE = global()->findNodeClassEntry( pControlId );
 
 	if( CE.mMetaObject )
 	{
@@ -2105,8 +2474,6 @@ QSharedPointer<fugio::NodeInterface> ContextPrivate::createNode( const QString &
 
 		if( ClassInstance )
 		{
-			ClassInstance->moveToThread( thread() );
-
 			fugio::NodeControlInterface	*NodeControl = qobject_cast<fugio::NodeControlInterface *>( ClassInstance );
 
 			if( NodeControl )
@@ -2123,8 +2490,10 @@ QSharedPointer<fugio::NodeInterface> ContextPrivate::createNode( const QString &
 	return( NODE_PTR );
 }
 
-QSharedPointer<fugio::PinInterface> ContextPrivate::createPin( const QString &pName, const QUuid &pGlobalId, const QUuid &pLocalId, PinDirection pDirection, const QUuid &pControlUUID, const QVariantHash &pSettings )
+QSharedPointer<fugio::PinInterface> ContextWorker::createPin( const QString &pName, const QUuid &pGlobalId, const QUuid &pLocalId, PinDirection pDirection, const QUuid &pControlUUID, const QVariantHash &pSettings )
 {
+	Q_ASSERT( isContextThread() );
+
 	Q_ASSERT( !pLocalId.isNull() );
 
 	PinPrivate						*P = new PinPrivate();
@@ -2135,8 +2504,6 @@ QSharedPointer<fugio::PinInterface> ContextPrivate::createPin( const QString &pN
 	}
 
 	QSharedPointer<fugio::PinInterface>	PinPtr = QSharedPointer<fugio::PinInterface>( P );
-
-	P->moveToThread( thread() );
 
 	P->setGlobalId( pGlobalId );
 	P->setLocalId( pLocalId );
@@ -2158,9 +2525,11 @@ QSharedPointer<fugio::PinInterface> ContextPrivate::createPin( const QString &pN
 	return( PinPtr );
 }
 
-QSharedPointer<fugio::PinControlInterface> ContextPrivate::createPinControl( const QUuid &pUUID, QSharedPointer<fugio::PinInterface> pPin )
+QSharedPointer<fugio::PinControlInterface> ContextWorker::createPinControl( const QUuid &pUUID, QSharedPointer<fugio::PinInterface> pPin )
 {
-	const QMetaObject	*SMO = mApp->findPinMetaObject( pUUID );
+	Q_ASSERT( isContextThread() );
+
+	const QMetaObject	*SMO = global()->findPinMetaObject( pUUID );
 
 	if( !SMO )
 	{
@@ -2173,8 +2542,6 @@ QSharedPointer<fugio::PinControlInterface> ContextPrivate::createPinControl( con
 
 	if( ClassInstance )
 	{
-		ClassInstance->moveToThread( thread() );
-
 		fugio::PinControlInterface		*PinControl = qobject_cast<fugio::PinControlInterface *>( ClassInstance );
 
 		if( PinControl )
@@ -2186,14 +2553,16 @@ QSharedPointer<fugio::PinControlInterface> ContextPrivate::createPinControl( con
 	}
 	else
 	{
-		qWarning() << "Can't create Pin ClassInstance of" << mApp->findPinMetaObject( pUUID )->className();
+		qWarning() << "Can't create Pin ClassInstance of" << global()->findPinMetaObject( pUUID )->className();
 	}
 
 	return( QSharedPointer<fugio::PinControlInterface>() );
 }
 
-bool ContextPrivate::updatePinControl( QSharedPointer<fugio::PinInterface> pPin, const QUuid &pPinControlUuid )
+bool ContextWorker::updatePinControl( QSharedPointer<fugio::PinInterface> pPin, const QUuid &pPinControlUuid )
 {
+	Q_ASSERT( isContextThread() );
+
 	QSharedPointer<fugio::PinControlInterface>		PinControl = createPinControl( pPinControlUuid, pPin );
 
 	if( PinControl )
@@ -2206,3 +2575,159 @@ bool ContextPrivate::updatePinControl( QSharedPointer<fugio::PinInterface> pPin,
 	return( false );
 }
 
+ContextWorker::ContextWorker(ContextPrivate *pContextPrivate)
+	: mContextPrivate( pContextPrivate ),
+	  mActive( true ), mNodeDeferProcess( false ), mState( fugio::ContextInterface::Stopped ),
+	  mPlayheadTimerEnabled( true ), mPlayheadLocalLast( 0 ), mDuration( 30.0 ), mLastTimeStamp( 0 ),
+	mFramePending( false ), mMutex( QMutex::Recursive )
+{
+	if( mMetaNameMap.isEmpty() )
+	{
+		mMetaNameMap.insert( fugio::ContextInterface::Author, "author" );
+		mMetaNameMap.insert( fugio::ContextInterface::Description, "description" );
+		mMetaNameMap.insert( fugio::ContextInterface::Name, "name" );
+		mMetaNameMap.insert( fugio::ContextInterface::Url, "url" );
+		mMetaNameMap.insert( fugio::ContextInterface::Version, "version" );
+		mMetaNameMap.insert( fugio::ContextInterface::Created, "created" );
+	}
+
+	mMetaInfoMap.insert( fugio::ContextInterface::Name, tr( "Untitled" ) );
+
+	mMetaInfoMap.insert( fugio::ContextInterface::Created, QDateTime::currentDateTime().toString( Qt::RFC2822Date ) );
+
+}
+
+ContextWorker::~ContextWorker()
+{
+	clear();
+}
+
+bool ContextWorker::load( QString pFileName, bool pPartial )
+{
+	Q_ASSERT( isContextThread() );
+
+	if( !QFile( pFileName ).exists() )
+	{
+		qWarning() << pFileName << "doesn't exist";
+
+		return( false );
+	}
+
+	QSettings										 CFG( pFileName, QSettings::IniFormat );
+	int												 VER = 1;
+	bool											 RET = false;
+
+	if( CFG.status() != QSettings::NoError )
+	{
+		qWarning() << pFileName << "can't load";
+
+		return( false );
+	}
+
+	if( CFG.format() != QSettings::IniFormat )
+	{
+		qWarning() << pFileName << "bad format";
+
+		return( false );
+	}
+
+	QMutexLocker	L( &mMutex );
+
+	setActive( false );
+
+	emit loadStart( CFG, pPartial );
+
+	//	if( !CFG.childGroups().contains( "fugio" ) )
+	//	{
+	//		qWarning() << pFileName << "invalid file";
+
+	//		return( false );
+	//	}
+
+	CFG.beginGroup( "fugio" );
+
+	VER = CFG.value( "version", VER ).toInt();
+
+	if( !pPartial )
+	{
+		qreal	NewDur = CFG.value( "duration", double( mDuration ) ).toDouble();
+
+		setDuration( NewDur );
+	}
+
+	CFG.endGroup();
+
+	if( !pPartial )
+	{
+		CFG.beginGroup( "meta" );
+
+		for( auto it = mMetaNameMap.begin() ; it != mMetaNameMap.end() ; it++ )
+		{
+			const QString		V = CFG.value( it.value() ).toString();
+
+			if( !V.isEmpty() )
+			{
+				mMetaInfoMap.insert( it.key(), V );
+			}
+		}
+
+		CFG.endGroup();
+	}
+
+	if( VER == 2 )
+	{
+		RET = loadSettings( CFG, pPartial );
+	}
+
+	//-------------------------------------------------------------------------
+
+	processDeferredNodes();
+
+	//-------------------------------------------------------------------------
+
+	if( !pPartial && mInitDeferNodeList.isEmpty() )
+	{
+		emit contextStart();
+	}
+
+	//-------------------------------------------------------------------------
+
+	emit loading( CFG, pPartial );
+
+	emit loadEnd( CFG, pPartial );
+
+	setActive( true );
+
+	return( RET );
+}
+
+void ContextWorker::processFrame( qint64 pTimeStamp )
+{
+	Q_ASSERT( isContextThread() );
+
+	if( !active() )
+	{
+		return;
+	}
+
+	QMutexLocker	L( &mMutex );
+
+	if( mFramePending )
+	{
+		return;
+	}
+
+	mFramePending = true;
+
+	doFrameInitialise( pTimeStamp );
+	doFrameStart( pTimeStamp );
+	doFrameProcess( pTimeStamp );
+	doFrameEnd( pTimeStamp );
+
+	mFramePending = false;
+}
+
+void ContextPrivate::processFrame( qint64 pTimeStamp )
+{
+	QMetaObject::invokeMethod( mContextWorker, "processFrame", Qt::QueuedConnection, Q_ARG( qint64, pTimeStamp ) );
+}

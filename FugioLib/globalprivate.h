@@ -25,6 +25,8 @@
 #include "../libs/FugioTime/lib/timesync.h"
 #include "universe.h"
 
+class ContextPrivate;
+
 class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public fugio::GlobalInterface
 {
 	Q_OBJECT
@@ -211,11 +213,11 @@ public:
 
 	virtual void clear( void ) Q_DECL_OVERRIDE;
 
-	virtual QSharedPointer<fugio::ContextInterface> newContext( void ) Q_DECL_OVERRIDE;
+	virtual fugio::ContextInterface *newContext( void ) Q_DECL_OVERRIDE;
 
-	virtual void delContext( QSharedPointer<fugio::ContextInterface> pContext ) Q_DECL_OVERRIDE;
+	virtual void delContext( fugio::ContextInterface *pContext ) Q_DECL_OVERRIDE;
 
-	virtual QList< QSharedPointer<fugio::ContextInterface> > contexts( void ) Q_DECL_OVERRIDE;
+	virtual QList<fugio::ContextInterface *> contexts( void ) Q_DECL_OVERRIDE;
 
 	virtual void registerDeviceFactory( fugio::DeviceFactoryInterface *pFactory ) Q_DECL_OVERRIDE;
 	virtual void unregisterDeviceFactory( fugio::DeviceFactoryInterface *pFactory ) Q_DECL_OVERRIDE;
@@ -314,7 +316,7 @@ private:
 	QMutex							 mContextMutex;
 
 	QList<QObject *>									 mPluginInstances;
-	QList<QSharedPointer<fugio::ContextInterface> >		 mContexts;
+	QList<fugio::ContextInterface *>					 mContexts;
 	QList<fugio::DeviceFactoryInterface *>				 mDeviceFactories;
 
 	QList<QObject *>				 mPluginInitList;

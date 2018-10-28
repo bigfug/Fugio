@@ -89,7 +89,7 @@ public:
 
 private:
 	ContextWidgetPrivate					*mContextWidget;
-	QSharedPointer<fugio::ContextInterface>	 mContext;
+	fugio::ContextInterface					*mContext;
 	QSharedPointer<fugio::PinInterface>		 mPinSrc;
 	QSharedPointer<fugio::PinInterface>		 mPinDst;
 	QSharedPointer<fugio::PinInterface>		 mPinPaired;

@@ -11,7 +11,7 @@
 class CmdNodeRemove : public QUndoCommand
 {
 public:
-	explicit CmdNodeRemove( QSharedPointer<fugio::ContextInterface> pContext, QSharedPointer<fugio::NodeInterface> pNode )
+	explicit CmdNodeRemove( fugio::ContextInterface *pContext, QSharedPointer<fugio::NodeInterface> pNode )
 		: mContext( pContext ), mNode( pNode )
 	{
 		setText( QObject::tr( "Remove Node" ) );
@@ -58,7 +58,7 @@ public:
 	}
 
 private:
-	QSharedPointer<fugio::ContextInterface>		 mContext;
+	fugio::ContextInterface						*mContext;
 	QSharedPointer<fugio::NodeInterface>		 mNode;
 	QString										 mName;
 	QUuid										 mUuid;

@@ -34,9 +34,9 @@ public:
 
     virtual ~ContextWidgetPrivate();
 
-    void setContext( QSharedPointer<fugio::ContextInterface> pContext );
+	void setContext( fugio::ContextInterface *pContext );
 
-    QSharedPointer<fugio::ContextInterface> context( void );
+	fugio::ContextInterface *context( void );
 
     void timeout( void );
 
@@ -136,7 +136,7 @@ private:
     QSplitter								*mSplitter;
     ContextView								*mContextView;
     QButtonGroup							*mButtonGroup;
-	QSharedPointer<fugio::ContextInterface>	 mContext;
+	fugio::ContextInterface					*mContext;
     QUndoStack								 mUndoStack;
 	fugio::ContextWidgetSignals				 mContextWidget;
 	QString									 mFileName;

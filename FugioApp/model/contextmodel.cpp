@@ -30,7 +30,7 @@ ContextModel::~ContextModel()
 	clearContext();
 }
 
-void ContextModel::setContext( QSharedPointer<fugio::ContextInterface> pContext )
+void ContextModel::setContext( fugio::ContextInterface *pContext )
 {
 	clearContext();
 

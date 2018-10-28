@@ -37,7 +37,7 @@ public:
 
 	void createDeviceMenu( void );
 
-	ContextSubWindow *findContextWindow( QSharedPointer<fugio::ContextInterface> pContext );
+	ContextSubWindow *findContextWindow( fugio::ContextInterface *pContext );
 
 	QMap<fugio::SettingsInterface *, QWidget *> createSettings( void );
 
@@ -93,7 +93,7 @@ private:
 
 	bool addExamplesPath( const QString &pPath );
 
-	QSharedPointer<fugio::ContextInterface> currentContext( void );
+	fugio::ContextInterface *currentContext( void );
 
 private slots:
 	void on_actionOpen_triggered();
@@ -104,8 +104,8 @@ private slots:
 
 	void on_actionSave_triggered();
 
-	void contextAdded( QSharedPointer<fugio::ContextInterface> pContext );
-	void contextRemoved( QSharedPointer<fugio::ContextInterface> pContext );
+	void contextAdded( fugio::ContextInterface *pContext );
+	void contextRemoved( fugio::ContextInterface *pContext );
 
 	void on_mWorkArea_subWindowActivated( QMdiSubWindow *arg1 );
 

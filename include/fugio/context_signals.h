@@ -43,7 +43,7 @@ signals:
 
 	void metaInfoChanged( ContextInterface::MetaInfo pMetaType, const QString &pMetaInfo );
 
-	void activeStateChanged( bool pActive );
+	void activeChanged( void );
 
 	void contextStart( void );
 

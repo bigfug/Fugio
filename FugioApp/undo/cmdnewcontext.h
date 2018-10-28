@@ -35,7 +35,7 @@ public:
 	}
 
 private:
-	QSharedPointer<fugio::ContextInterface>		 mContext;
+	fugio::ContextInterface			*mContext;
 };
 
 #endif // CMDNEWCONTEXT_H

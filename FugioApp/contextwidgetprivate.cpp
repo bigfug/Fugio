@@ -103,7 +103,7 @@ void ContextWidgetPrivate::generateRecoveryFilename()
 	mRecoveryFilename = QDir( QStandardPaths::writableLocation( QStandardPaths::DataLocation ) ).absoluteFilePath( mRecoveryFilename );
 }
 
-void ContextWidgetPrivate::setContext( QSharedPointer<fugio::ContextInterface> pContext )
+void ContextWidgetPrivate::setContext( fugio::ContextInterface *pContext )
 {
 	mContext = pContext;
 
@@ -116,7 +116,7 @@ void ContextWidgetPrivate::setContext( QSharedPointer<fugio::ContextInterface> p
 	connect( mContext->qobject(), SIGNAL(durationChanged(qreal)), this, SLOT(onContextDurationChanged(qreal)) );
 }
 
-QSharedPointer<fugio::ContextInterface> ContextWidgetPrivate::context()
+fugio::ContextInterface *ContextWidgetPrivate::context()
 {
 	return( mContextView->context() );
 }

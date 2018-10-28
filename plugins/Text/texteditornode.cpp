@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QSettings>
+#include <QCoreApplication>
 
 #include "fugio/global_interface.h"
 #include "fugio/context_interface.h"
@@ -24,7 +25,7 @@
 #include <fugio/utils.h>
 
 TextEditorNode::TextEditorNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mDockWidget( 0 ), mTextEdit( 0 ), mDockArea( Qt::BottomDockWidgetArea ), mDockVisible( true ), mHighlighter( 0 ),
+	: NodeControlBase( pNode ), mDockArea( Qt::BottomDockWidgetArea ), mDockVisible( true ),
 	  mHighlighterType( HIGHLIGHT_DEFAULT )
 {
 	FUGID( PIN_INPUT_BUFFER, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
@@ -44,16 +45,6 @@ TextEditorNode::TextEditorNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 TextEditorNode::~TextEditorNode( void )
 {
-	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
-
-	if( mDockWidget )
-	{
-		EI->mainWindow()->removeDockWidget( mDockWidget );
-
-		delete mDockWidget;
-
-		mDockWidget = 0;
-	}
 }
 
 QWidget *TextEditorNode::gui()
@@ -65,7 +56,7 @@ QWidget *TextEditorNode::gui()
 	return( GUI );
 }
 
-void TextEditorNode::checkHighlighter()
+void TextEditorGui::checkHighlighter()
 {
 	fugio::SyntaxErrorInterface				*SEI = output<fugio::SyntaxErrorInterface *>( mPinOutputString );
 	QUuid									 DefaultHighlighterUuid = ( SEI ? SEI->highlighterUuid() : QUuid() );
@@ -127,45 +118,47 @@ void TextEditorNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
-	checkHighlighter();
+	emit checkHighlighter();
 
 	pinUpdated( mPinOutputString );
 }
 
-bool TextEditorNode::initialise( void )
+void TextEditorGui::initialise( void )
 {
-	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( mNode->context()->global()->findInterface( IID_EDITOR ) );
+	QSharedPointer<fugio::NodeInterface>		Node = mNode->node();
+
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( Node->context()->global()->findInterface( IID_EDITOR ) );
 
 	if( !EI )
 	{
-		return( false );
+		return;
 	}
 
 	if( ( mDockWidget = new QDockWidget( "TextEditor", EI->mainWindow() ) ) == 0 )
 	{
-		return( false );
+		return;
 	}
 
-	mDockWidget->setObjectName( mNode->uuid().toString() );
+	mDockWidget->setObjectName( Node->uuid().toString() );
 
-	connect( mDockWidget, SIGNAL(visibilityChanged(bool)), this, SLOT(dockSetVisible(bool)) );
+	connect( mDockWidget, SIGNAL( visibilityChanged( bool ) ), this, SLOT( dockSetVisible( bool ) ) );
 
 	if( ( mTextEdit = new TextEditorForm( mDockWidget ) ) == 0 )
 	{
-		return( false );
+		return;
 	}
 
 	setupTextEditor( mTextEdit->textEdit() );
 
-	connect( mTextEdit, SIGNAL(updateText()), this, SLOT(onTextUpdate()) );
+	connect( mTextEdit, SIGNAL( updateText() ), this, SLOT( onTextUpdate() ) );
 
-	connect( mNode->qobject(), SIGNAL(nameChanged(QString)), mTextEdit, SLOT(updateNodeName(QString)) );
+	connect( mNode->qobject(), SIGNAL( nameChanged( QString ) ), mTextEdit, SLOT( updateNodeName( QString ) ) );
 
 	mDockWidget->setWidget( mTextEdit );
 
 	EI->mainWindow()->addDockWidget( mDockArea, mDockWidget );
 
-	mTextEdit->updateNodeName( mNode->name() );
+	mTextEdit->updateNodeName( Node->name() );
 
 	checkHighlighter();
 
@@ -173,20 +166,24 @@ bool TextEditorNode::initialise( void )
 	{
 		mDockWidget->hide();
 	}
+}
+
+bool TextEditorNode::initialise( void )
+{
+	TextEditorGui	*GUI = new TextEditorGui( this );
+
+	GUI->moveToThread( QCoreApplication::instance()->thread() );
+
+	connect( this, &TextEditorNode::closeEditor, GUI, &TextEditorGui::deleteLater );
+
+	QMetaObject::invokeMethod( GUI, "initialise", Qt::QueuedConnection );
 
 	return( true );
 }
 
 bool TextEditorNode::deinitialise( void )
 {
-	if( mDockWidget )
-	{
-		mDockWidget->deleteLater();
-
-		mDockWidget = 0;
-
-		mTextEdit = 0;
-	}
+	emit closeEditor();
 
 	return( true );
 }
@@ -226,7 +223,7 @@ void TextEditorNode::saveSettings( QSettings &pSettings ) const
 	}
 }
 
-void TextEditorNode::setupTextEditor( QPlainTextEdit *pTextEdit )
+void TextEditorGui::setupTextEditor( QPlainTextEdit *pTextEdit )
 {
 	QFont font;
 	font.setFamily("Courier");
@@ -310,7 +307,7 @@ void TextEditorNode::onTextPinUpdated()
 		return;
 	}
 
-	checkHighlighter();
+	emit checkHighlighter();
 
 	const QString	NewTxt = mValOutputString->variant().toString();
 
@@ -358,7 +355,7 @@ void TextEditorNode::outputLinked( QSharedPointer<PinInterface> pPin )
 		connect( SEI->syntaxErrorSignals(), SIGNAL(syntaxErrorsUpdated(QList<fugio::SyntaxError>)), this, SLOT(syntaxErrorsUpdated(QList<fugio::SyntaxError>)) );
 	}
 
-	checkHighlighter();
+	emit checkHighlighter();
 
 	if( mTextEdit && mTextEdit->textEdit()->document()->isEmpty() )
 	{
@@ -379,7 +376,7 @@ void TextEditorNode::outputUninked( QSharedPointer<PinInterface> pPin )
 		disconnect( SEI->syntaxErrorSignals(), SIGNAL(syntaxErrorsUpdated(QList<fugio::SyntaxError>)), this, SLOT(syntaxErrorsUpdated(QList<fugio::SyntaxError>)) );
 	}
 
-	checkHighlighter();
+	emit checkHighlighter();
 }
 
 void TextEditorNode::syntaxErrorsUpdated( QList<fugio::SyntaxError> pSyntaxErrors )

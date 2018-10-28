@@ -17,7 +17,7 @@ public:
 
 	virtual ~ContextModel( void ) Q_DECL_OVERRIDE;
 
-	void setContext( QSharedPointer<fugio::ContextInterface> pContext );
+	void setContext( fugio::ContextInterface *pContext );
 
 	void setCurrentGroup( const QUuid &pGroupId );
 
@@ -66,7 +66,7 @@ public:
 	virtual QVariant data(const QModelIndex &index, int role) const Q_DECL_OVERRIDE;
 
 private:
-	QSharedPointer<fugio::ContextInterface>		 mContext;
+	fugio::ContextInterface						*mContext;
 	BaseListModel								*mRootItem;
 	QUuid										 mCurrentGroup;
 	QMap<QUuid,NodeModel *>						 mNodeMap;

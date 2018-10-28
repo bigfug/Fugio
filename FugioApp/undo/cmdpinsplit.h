@@ -8,7 +8,7 @@
 class CmdPinSplit : public QUndoCommand
 {
 public:
-	explicit CmdPinSplit( QSharedPointer<fugio::ContextInterface> pContext, QSharedPointer<fugio::PinInterface> pPin, const QUuid &pControlId )
+	explicit CmdPinSplit( fugio::ContextInterface *pContext, QSharedPointer<fugio::PinInterface> pPin, const QUuid &pControlId )
 		: mContext( pContext ), mPin( pPin ), mControlUuid( pControlId )
 	{
 		setText( QObject::tr( "Pin Split" ) );
@@ -72,7 +72,7 @@ public:
 	}
 
 private:
-	QSharedPointer<fugio::ContextInterface>		 mContext;
+	fugio::ContextInterface						*mContext;
 	QSharedPointer<fugio::NodeInterface>		 mNode;
 	QSharedPointer<fugio::PinInterface>			 mPin;
 	QUuid										 mControlUuid;

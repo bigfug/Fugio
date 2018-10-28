@@ -119,7 +119,7 @@ public:
 
 private:
 	ContextWidgetPrivate					*mContextWidget;
-	QSharedPointer<fugio::ContextInterface>	 mContext;
+	fugio::ContextInterface					*mContext;
 	QString									 mName;
 	QUuid									 mNodeId;
 	QUuid									 mControlId;
