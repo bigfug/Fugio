@@ -72,15 +72,17 @@ signals:
 
 	void textChanged( QString pText );
 
-	void syntaxInterfaceChanged( fugio::SyntaxErrorInterface *pSEI );
+	void syntaxHighlighterChanged( fugio::SyntaxHighlighterInstanceInterface *pSHEI );
+
+	void syntaxErrorsChanged( QList<fugio::SyntaxError> pSyntaxErrors );
 
 protected:
 	bool isBuffered( void ) const;
 
+	void checkHighlighter( void );
+
 private slots:
 	void editClicked( void );
-
-	void onTextPinUpdated( void );
 
 	void setDockVisible( bool pVisible );
 
@@ -89,6 +91,8 @@ private slots:
 
 	void outputLinked( QSharedPointer<fugio::PinInterface> pPin );
 	void outputUninked( QSharedPointer<fugio::PinInterface> pPin );
+
+	void syntaxErrorsUpdated( QList<fugio::SyntaxError> pSyntaxErrors );
 
 private:
 	QSharedPointer<fugio::PinInterface>				 mPinInputBuffer;
@@ -101,6 +105,9 @@ private:
 
 	HighlighterType									 mHighlighterType;
 	QUuid											 mHighlighterUuid;
+
+	fugio::SyntaxErrorInterface						*mSyntaxInterface;
+	fugio::SyntaxHighlighterInstanceInterface		*mHighlighter;
 };
 
 #endif // TEXTEDITORNODE_H

@@ -28,12 +28,9 @@ public:
 		}
 	}
 
-	virtual ~CmdTextEditorUpdate( void )
-	{
+	virtual ~CmdTextEditorUpdate( void ) Q_DECL_OVERRIDE {}
 
-	}
-
-	virtual void undo( void )
+	virtual void undo( void ) Q_DECL_OVERRIDE
 	{
 		fugio::VariantInterface	*V = qobject_cast<fugio::VariantInterface *>( mPin->control()->qobject() );
 
@@ -45,7 +42,7 @@ public:
 		}
 	}
 
-	virtual void redo( void )
+	virtual void redo( void ) Q_DECL_OVERRIDE
 	{
 		fugio::VariantInterface	*V = qobject_cast<fugio::VariantInterface *>( mPin->control()->qobject() );
 
@@ -59,8 +56,8 @@ public:
 
 private:
 	QSharedPointer<fugio::PinInterface>		 mPin;
-	QString								 mOldTxt;
-	QString								 mNewTxt;
+	QString									 mOldTxt;
+	QString									 mNewTxt;
 };
 
 #endif // CMDTEXTEDITORUPDATE_H

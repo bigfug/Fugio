@@ -26,7 +26,7 @@
 
 TextEditorNode::TextEditorNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mDockArea( Qt::BottomDockWidgetArea ), mDockVisible( true ),
-	  mHighlighterType( HIGHLIGHT_DEFAULT )
+	  mHighlighterType( HIGHLIGHT_DEFAULT ), mSyntaxInterface( Q_NULLPTR ), mHighlighter( Q_NULLPTR )
 {
 	FUGID( PIN_INPUT_BUFFER, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" );
 	FUGID( PIN_OUTPUT_STRING, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
@@ -66,24 +66,33 @@ void TextEditorNode::inputsUpdated( qint64 pTimeStamp )
 
 bool TextEditorNode::initialise( void )
 {
-	TextEditorGui	*GUI = new TextEditorGui( this, mDockArea, mDockVisible );
+	fugio::EditorInterface	*EI = qobject_cast<fugio::EditorInterface *>( node()->context()->global()->findInterface( IID_EDITOR ) );
 
-	GUI->bufferedUpdated( variant( mPinInputBuffer ).toBool() );
+	if( EI )
+	{
+		TextEditorGui	*GUI = new TextEditorGui( this, mDockArea, mDockVisible );
 
-	GUI->moveToThread( QCoreApplication::instance()->thread() );
+		GUI->bufferedUpdated( variant( mPinInputBuffer ).toBool() );
 
-	connect( this, &TextEditorNode::closeEditor, GUI, &TextEditorGui::deleteLater );
+		GUI->moveToThread( QCoreApplication::instance()->thread() );
 
-	connect( this, &TextEditorNode::bufferedChanged, GUI, &TextEditorGui::bufferedUpdated );
+		connect( this, &TextEditorNode::closeEditor, GUI, &TextEditorGui::deleteLater );
 
-	connect( this, &TextEditorNode::showEditor, GUI, &TextEditorGui::show );
+		connect( this, &TextEditorNode::bufferedChanged, GUI, &TextEditorGui::bufferedUpdated );
 
-	connect( this, &TextEditorNode::textChanged, GUI, &TextEditorGui::textUpdated );
+		connect( this, &TextEditorNode::showEditor, GUI, &TextEditorGui::show );
 
-	connect( GUI, &TextEditorGui::textChanged, this, &TextEditorNode::textUpdated );
-	connect( GUI, &TextEditorGui::textModified, this, &TextEditorNode::textModified );
+		connect( this, &TextEditorNode::textChanged, GUI, &TextEditorGui::textUpdated );
 
-	QMetaObject::invokeMethod( GUI, "initialise", Qt::QueuedConnection );
+		connect( this, &TextEditorNode::syntaxHighlighterChanged, GUI, &TextEditorGui::syntaxHighlighterUpdated );
+
+		connect( this, &TextEditorNode::syntaxErrorsChanged, GUI, &TextEditorGui::syntaxErrorsUpdated );
+
+		connect( GUI, &TextEditorGui::textChanged, this, &TextEditorNode::textUpdated );
+		connect( GUI, &TextEditorGui::textModified, this, &TextEditorNode::textModified );
+
+		QMetaObject::invokeMethod( GUI, "initialise", Qt::QueuedConnection );
+	}
 
 	return( true );
 }
@@ -164,17 +173,101 @@ void TextEditorNode::outputLinked( QSharedPointer<PinInterface> pPin )
 {
 	fugio::SyntaxErrorInterface	*SEI = ( pPin->hasControl() ? qobject_cast<fugio::SyntaxErrorInterface *>( pPin->control()->qobject() ) : nullptr );
 
-	emit syntaxInterfaceChanged( SEI );
+	if( SEI )
+	{
+		connect( SEI->syntaxErrorSignals(), SIGNAL(syntaxErrorsUpdated(QList<fugio::SyntaxError>)), this, SLOT(syntaxErrorsUpdated(QList<fugio::SyntaxError>)) );
+	}
+
+	checkHighlighter();
+
+	if( mValOutputString->variant().toString().isEmpty() )
+	{
+		QString		NewTxt = pPin->value().toString();
+
+		mValOutputString->setVariant( NewTxt );
+
+		emit textChanged( NewTxt );
+	}
 }
 
 void TextEditorNode::outputUninked( QSharedPointer<PinInterface> pPin )
 {
 	fugio::SyntaxErrorInterface	*SEI = ( pPin->hasControl() ? qobject_cast<fugio::SyntaxErrorInterface *>( pPin->control()->qobject() ) : nullptr );
 
-	emit syntaxInterfaceChanged( SEI );
+	if( SEI )
+	{
+		disconnect( SEI->syntaxErrorSignals(), SIGNAL(syntaxErrorsUpdated(QList<fugio::SyntaxError>)), this, SLOT(syntaxErrorsUpdated(QList<fugio::SyntaxError>)) );
+	}
+
+	checkHighlighter();
+}
+
+void TextEditorNode::syntaxErrorsUpdated( QList<SyntaxError> pSyntaxErrors )
+{
+	emit syntaxErrorsChanged( pSyntaxErrors );
 }
 
 bool TextEditorNode::isBuffered( void ) const
 {
 	return( variant( mPinInputBuffer ).toBool() );
+}
+
+void TextEditorNode::checkHighlighter( void )
+{
+	QUuid			 DefaultHighlighterUuid = ( mSyntaxInterface ? mSyntaxInterface->highlighterUuid() : QUuid() );
+	bool			 HighlighterUpdate = false;
+
+	if( mHighlighter )
+	{
+		bool		DeleteHighlighter = false;
+
+		if( mHighlighterType == HIGHLIGHT_NONE )
+		{
+			DeleteHighlighter = true;
+		}
+		else if( !mPinOutputString->isConnected() && mHighlighterType == HIGHLIGHT_DEFAULT )
+		{
+			DeleteHighlighter = true;
+		}
+		else if( mPinOutputString->isConnected() && mHighlighterType == HIGHLIGHT_DEFAULT && mHighlighterUuid != DefaultHighlighterUuid )
+		{
+			DeleteHighlighter = true;
+		}
+
+		if( DeleteHighlighter )
+		{
+			delete mHighlighter;
+
+			mHighlighter = nullptr;
+
+			HighlighterUpdate = true;
+		}
+	}
+
+	if( !mHighlighter )
+	{
+		if( mHighlighterType == HIGHLIGHT_DEFAULT && !DefaultHighlighterUuid.isNull() )
+		{
+			mHighlighter = TextPlugin::instance()->syntaxHighlighterInstance( DefaultHighlighterUuid );
+		}
+		else if( mHighlighterType == HIGHLIGHT_CUSTOM && !mHighlighterUuid.isNull() )
+		{
+			mHighlighter = TextPlugin::instance()->syntaxHighlighterInstance( mHighlighterUuid );
+		}
+
+		if( mHighlighter )
+		{
+			HighlighterUpdate = true;
+		}
+
+		if( mHighlighter && mSyntaxInterface )
+		{
+			mHighlighter->updateErrors( mSyntaxInterface->syntaxErrors() );
+		}
+	}
+
+	if( HighlighterUpdate )
+	{
+		emit syntaxHighlighterChanged( mHighlighter );
+	}
 }

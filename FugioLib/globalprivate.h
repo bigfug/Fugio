@@ -36,6 +36,12 @@ class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public 
 
 	friend class GlobalThread;
 
+private:
+	void run( void ) Q_DECL_OVERRIDE
+	{
+		exec();
+	}
+
 public:
 	virtual ~GlobalPrivate( void ) Q_DECL_OVERRIDE;
 
@@ -43,7 +49,7 @@ public:
 
 	virtual void unloadPlugins( void ) Q_DECL_OVERRIDE;
 
-	virtual void initialisePlugins( void ) Q_DECL_OVERRIDE;
+	Q_INVOKABLE virtual void initialisePlugins( void ) Q_DECL_OVERRIDE;
 
 	bool loadPlugin( const QString &pFileName );
 

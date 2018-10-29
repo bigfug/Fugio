@@ -16,9 +16,9 @@ class TextEditorForm : public QWidget
 	Q_OBJECT
 	
 public:
-	explicit TextEditorForm( QWidget *parent = 0 );
+	explicit TextEditorForm( QWidget *pParent = Q_NULLPTR );
 
-	virtual ~TextEditorForm( void );
+	virtual ~TextEditorForm( void ) Q_DECL_OVERRIDE;
 
 	QPlainTextEdit *textEdit( void );
 

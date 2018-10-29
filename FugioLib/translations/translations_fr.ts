@@ -2,27 +2,27 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="fr_FR">
 <context>
-    <name>ContextPrivate</name>
+    <name>ContextWorker</name>
     <message>
-        <location filename="../contextprivate.cpp" line="46"/>
-        <source>Untitled</source>
+        <location filename="../contextprivate.cpp" line="2057"/>
+        <source>Node has no control class: missing plugin or error loading plugin?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextprivate.cpp" line="1701"/>
-        <source>Node has no control class: missing plugin or error loading plugin?</source>
+        <location filename="../contextprivate.cpp" line="2594"/>
+        <source>Untitled</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>GlobalPrivate</name>
     <message>
-        <location filename="../globalprivate.cpp" line="159"/>
+        <location filename="../globalprivate.cpp" line="163"/>
         <source>Plugins loaded: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../globalprivate.cpp" line="161"/>
+        <location filename="../globalprivate.cpp" line="165"/>
         <source>Nodes registered: %1</source>
         <translation type="unfinished"></translation>
     </message>

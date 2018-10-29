@@ -59,11 +59,15 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 	mLastTime   = 0;
 	mFrameCount = 0;
 
-	connect( this, SIGNAL(frameEnd()), &mUniverse, SLOT(cast()) );
+//	connect( this, SIGNAL(frameEnd()), &mUniverse, SLOT(cast()) );
 
 #if !defined( GLOBAL_THREADED )
 	connect( &mGlobalTimer, &QTimer::timeout, this, &GlobalPrivate::executeFrame );
 #endif
+
+	moveToThread( this );
+
+	QThread::start();
 }
 
 GlobalPrivate::~GlobalPrivate( void )
@@ -843,6 +847,9 @@ void GlobalPrivate::start()
 void GlobalPrivate::stop()
 {
 	mGlobalTimer.stop();
+
+	quit();
+	wait();
 
 #if defined( GLOBAL_THREADED )
 	if( mGlobalThread )

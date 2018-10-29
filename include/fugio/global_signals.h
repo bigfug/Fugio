@@ -1,7 +1,7 @@
 #ifndef GLOBAL_SIGNALS_H
 #define GLOBAL_SIGNALS_H
 
-#include <QObject>
+#include <QThread>
 
 #include "global.h"
 #include "context_interface.h"
@@ -10,7 +10,7 @@ class GlobalPrivate;
 
 FUGIO_NAMESPACE_BEGIN
 
-class GlobalSignals : public QObject
+class GlobalSignals : public QThread
 {
 	Q_OBJECT
 

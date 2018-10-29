@@ -4,25 +4,36 @@
 <context>
     <name>ContextPrivate</name>
     <message>
-        <location filename="../contextprivate.cpp" line="46"/>
         <source>Untitled</source>
-        <translation>Senza titolo</translation>
+        <translation type="vanished">Senza titolo</translation>
     </message>
     <message>
-        <location filename="../contextprivate.cpp" line="1701"/>
         <source>Node has no control class: missing plugin or error loading plugin?</source>
-        <translation>Il nodo non ha alcuna classe di controllo; potrebbe mancare un componente aggiuntivo o esserci stato un errore nel caricarlo?</translation>
+        <translation type="vanished">Il nodo non ha alcuna classe di controllo; potrebbe mancare un componente aggiuntivo o esserci stato un errore nel caricarlo?</translation>
+    </message>
+</context>
+<context>
+    <name>ContextWorker</name>
+    <message>
+        <location filename="../contextprivate.cpp" line="2057"/>
+        <source>Node has no control class: missing plugin or error loading plugin?</source>
+        <translation type="unfinished">Il nodo non ha alcuna classe di controllo; potrebbe mancare un componente aggiuntivo o esserci stato un errore nel caricarlo?</translation>
+    </message>
+    <message>
+        <location filename="../contextprivate.cpp" line="2594"/>
+        <source>Untitled</source>
+        <translation type="unfinished">Senza titolo</translation>
     </message>
 </context>
 <context>
     <name>GlobalPrivate</name>
     <message>
-        <location filename="../globalprivate.cpp" line="159"/>
+        <location filename="../globalprivate.cpp" line="163"/>
         <source>Plugins loaded: %1</source>
         <translation>Componenti aggiuntivi caricati: %1</translation>
     </message>
     <message>
-        <location filename="../globalprivate.cpp" line="161"/>
+        <location filename="../globalprivate.cpp" line="165"/>
         <source>Nodes registered: %1</source>
         <translation>Nodi registrati: %1</translation>
     </message>

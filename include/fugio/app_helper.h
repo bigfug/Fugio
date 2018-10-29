@@ -11,8 +11,10 @@
 #include <QLibraryInfo>
 #include <QDir>
 #include <QSurfaceFormat>
+#include <QSettings>
 
 #include "global_interface.h"
+#include "global_signals.h"
 
 FUGIO_NAMESPACE_BEGIN
 
@@ -61,6 +63,8 @@ public:
 		CLP.addOption( OptionLocale );
 
 		CLP.addOption( OptionDefine );
+
+		qRegisterMetaType<fugio::ClassEntry>( "fugio::ClassEntry" );
 	}
 
 	void processCommandLine( int argc, char **argv )
@@ -284,7 +288,9 @@ public:
 			}
 		}
 
-		PBG->initialisePlugins();
+		QMetaObject::invokeMethod( PBG->qobject(), "initialisePlugins", Qt::QueuedConnection );
+
+//		PBG->initialisePlugins();
 	}
 
 	void cleanup( void )

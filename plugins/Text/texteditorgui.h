@@ -31,7 +31,7 @@ class TextEditorGui : public QObject
 public:
 	TextEditorGui( TextEditorNode *pNode, Qt::DockWidgetArea pDockWidgetArea, bool pDockVisible )
 		: mNode( pNode ), mDockWidget( Q_NULLPTR ), mTextEdit( Q_NULLPTR ),
-		mHighlighter( Q_NULLPTR ), mSyntaxInterface( Q_NULLPTR ), mDockArea( pDockWidgetArea ),
+		mHighlighter( Q_NULLPTR ), mDockArea( pDockWidgetArea ),
 		mDockVisible( pDockVisible )
 	{
 
@@ -51,8 +51,6 @@ signals:
 private:
 	void setupTextEditor( QPlainTextEdit *pTextEdit );
 
-	void checkHighlighter();
-
 	bool isBuffered( void ) const;
 
 private slots:
@@ -60,7 +58,7 @@ private slots:
 
 	void editorUpdated( void );
 
-	void syntaxErrorsUpdated( QList<fugio::SyntaxError> pSyntaxErrors );
+	void editorUpdateClicked( void );
 
 public slots:
 	void bufferedUpdated( bool pBuffered );
@@ -69,14 +67,15 @@ public slots:
 
 	void textUpdated( QString pText );
 
-	void syntaxInterfaceUpdated( fugio::SyntaxErrorInterface *pSEI );
+	void syntaxHighlighterUpdated( fugio::SyntaxHighlighterInstanceInterface *pSHI );
+
+	void syntaxErrorsUpdated( QList<fugio::SyntaxError> pSyntaxErrors );
 
 private:
 	TextEditorNode		*mNode;
 	QDockWidget										*mDockWidget;
 	TextEditorForm									*mTextEdit;
 	fugio::SyntaxHighlighterInstanceInterface		*mHighlighter;
-	fugio::SyntaxErrorInterface						*mSyntaxInterface;
 	bool											 mBuffered;
 	QString											 mCurrentText;
 	Qt::DockWidgetArea								 mDockArea;
