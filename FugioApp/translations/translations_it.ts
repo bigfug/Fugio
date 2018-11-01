@@ -433,87 +433,87 @@
     </message>
     <message>
         <location filename="../mainwindow.cpp" line="400"/>
-        <location filename="../mainwindow.cpp" line="1102"/>
+        <location filename="../mainwindow.cpp" line="1112"/>
         <source>Fugio Patches (*.fug)</source>
         <translation>Patch di Fugio (*.fug)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="604"/>
+        <location filename="../mainwindow.cpp" line="619"/>
         <source>%1 v%2 by Alex May - DEBUG VERSION (not for distribution)</source>
         <translation>%1 v%2 di Alex May - VERSIONE SPERIMENTALE (da non usare in distribuzione)</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="606"/>
+        <location filename="../mainwindow.cpp" line="621"/>
         <source>%1 v%2 by Alex May</source>
         <translation>%1 v%2 di Alex May</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="618"/>
+        <location filename="../mainwindow.cpp" line="633"/>
         <source>Set duration</source>
         <translation>Imposta durata</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="618"/>
+        <location filename="../mainwindow.cpp" line="633"/>
         <source>Duration (Hours:Minutes:Seconds:Milliseconds):</source>
         <translation>Durata (ore:minuti:secondi:millisecondi):</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="953"/>
+        <location filename="../mainwindow.cpp" line="968"/>
         <source>&amp;%1 %2</source>
         <translation>&amp;%1 %2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="958"/>
+        <location filename="../mainwindow.cpp" line="973"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1102"/>
+        <location filename="../mainwindow.cpp" line="1112"/>
         <source>Append Patch</source>
         <translation>Aggiungi patch</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1130"/>
+        <location filename="../mainwindow.cpp" line="1135"/>
         <source>Name Snippet</source>
         <translation>Nome frammento</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1130"/>
+        <location filename="../mainwindow.cpp" line="1135"/>
         <source>Enter the name for the new Snippet</source>
         <translation>Inserisci un nome per il frammento</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1146"/>
+        <location filename="../mainwindow.cpp" line="1151"/>
         <source>Snippet Exists</source>
         <translation>Frammento già esistente</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1146"/>
+        <location filename="../mainwindow.cpp" line="1151"/>
         <source>A snippit already exists with that name, do you want to overwrite it?</source>
         <translation>Esiste già un frammento con questo nome, vuoi sovrascriverlo?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1233"/>
+        <location filename="../mainwindow.cpp" line="1217"/>
         <source>Load Recovery Files?</source>
         <translation>Caricare la copia di recupero?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1233"/>
+        <location filename="../mainwindow.cpp" line="1217"/>
         <source>Recovery files found - reload them?</source>
         <translation>Copia di recupero trovata, ricaricarla?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1235"/>
+        <location filename="../mainwindow.cpp" line="1219"/>
         <source>Delete Recovery Files?</source>
         <translation>Eliminare la copia di recupero?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1235"/>
+        <location filename="../mainwindow.cpp" line="1219"/>
         <source>Recovery files found - delete them?</source>
         <translation>Copia di recupero trovata, eliminarla?</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1437"/>
+        <location filename="../mainwindow.cpp" line="1421"/>
         <source>Import file(s)</source>
         <translation>Importa file</translation>
     </message>

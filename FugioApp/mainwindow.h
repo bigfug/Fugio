@@ -95,6 +95,8 @@ private:
 
 	fugio::ContextInterface *currentContext( void );
 
+	ContextWidgetPrivate *currentContextWidget( void );
+
 private slots:
 	void on_actionOpen_triggered();
 

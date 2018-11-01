@@ -516,6 +516,21 @@ fugio::ContextInterface *MainWindow::currentContext( void )
 	return( Q_NULLPTR );
 }
 
+ContextWidgetPrivate *MainWindow::currentContextWidget( void )
+{
+	ContextSubWindow	*SubWin = qobject_cast<ContextSubWindow *>( ui->mWorkArea->currentSubWindow() );
+
+	if( SubWin )
+	{
+		if( ContextWidgetPrivate *CW = SubWin->contextWidget() )
+		{
+			return( qobject_cast<ContextWidgetPrivate *>( CW->widget() ) );
+		}
+	}
+
+	return( Q_NULLPTR );
+}
+
 void MainWindow::on_mWorkArea_subWindowActivated( QMdiSubWindow *pSubWin )
 {
 	ContextSubWindow	*SubWin = qobject_cast<ContextSubWindow *>( pSubWin );
@@ -783,7 +798,7 @@ void MainWindow::recentFileActivated( void )
 	{
 		fugio::ContextInterface *C = gApp->global().newContext();
 
-		if( C == 0 )
+		if( !C )
 		{
 			return;
 		}
@@ -1081,12 +1096,7 @@ void MainWindow::fugioUrl(const QUrl &pUrl)
 
 void MainWindow::on_actionAppend_triggered()
 {
-	if( !ui->mWorkArea->currentSubWindow() )
-	{
-		return;
-	}
-
-	ContextWidgetPrivate	*CW = qobject_cast<ContextWidgetPrivate *>( ui->mWorkArea->currentSubWindow()->widget() );
+	ContextWidgetPrivate		*CW = currentContextWidget();
 
 	if( !CW )
 	{
@@ -1115,14 +1125,9 @@ void MainWindow::on_actionAppend_triggered()
 
 void MainWindow::on_actionSelect_to_snippit_triggered()
 {
-	if( !ui->mWorkArea->currentSubWindow() )
-	{
-		return;
-	}
+	ContextWidgetPrivate		*CW = currentContextWidget();
 
-	ContextWidgetPrivate		*CV = qobject_cast<ContextWidgetPrivate *>( ui->mWorkArea->currentSubWindow()->widget() );
-
-	if( !CV )
+	if( !CW )
 	{
 		return;
 	}
@@ -1149,58 +1154,37 @@ void MainWindow::on_actionSelect_to_snippit_triggered()
 		}
 	}
 
-	CV->saveSelectedTo( FileInfo.absoluteFilePath() );
+	CW->saveSelectedTo( FileInfo.absoluteFilePath() );
 }
 
 void MainWindow::on_actionGroup_triggered()
 {
-	if( ui->mWorkArea->currentSubWindow() == 0 )
+	ContextWidgetPrivate		*CW = currentContextWidget();
+
+	if( CW )
 	{
-		return;
+		CW->groupSelected();
 	}
-
-	ContextWidgetPrivate		*CV = qobject_cast<ContextWidgetPrivate *>( ui->mWorkArea->currentSubWindow()->widget() );
-
-	if( CV == 0 )
-	{
-		return;
-	}
-
-	CV->groupSelected();
 }
 
 void MainWindow::on_actionGroup_Parent_triggered()
 {
-	if( ui->mWorkArea->currentSubWindow() == 0 )
+	ContextWidgetPrivate		*CW = currentContextWidget();
+
+	if( CW )
 	{
-		return;
+		CW->groupParent();
 	}
-
-	ContextWidgetPrivate		*CV = qobject_cast<ContextWidgetPrivate *>( ui->mWorkArea->currentSubWindow()->widget() );
-
-	if( CV == 0 )
-	{
-		return;
-	}
-
-	CV->groupParent();
 }
 
 void MainWindow::on_actionUngroup_triggered()
 {
-	if( ui->mWorkArea->currentSubWindow() == 0 )
+	ContextWidgetPrivate		*CW = currentContextWidget();
+
+	if( CW )
 	{
-		return;
+		CW->ungroupSelected();
 	}
-
-	ContextWidgetPrivate		*CV = qobject_cast<ContextWidgetPrivate *>( ui->mWorkArea->currentSubWindow()->widget() );
-
-	if( CV == 0 )
-	{
-		return;
-	}
-
-	CV->ungroupSelected();
 }
 
 void MainWindow::on_actionData_Directory_triggered()
