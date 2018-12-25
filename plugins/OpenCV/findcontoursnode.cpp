@@ -98,7 +98,15 @@ void FindContoursNode::conversion( FindContoursNode *pNode, qint64 pTimeStamp )
 
 	if( Hierarchy.size() )
 	{
-		memcpy( pNode->mValOutputHierarchy->variantArray(), Hierarchy.data(), sizeof( int ) * 4 * Hierarchy.size() );
+		for( int i = 0 ; i < Hierarchy.size() ; i++ )
+		{
+			cv::Vec4i	HD = Hierarchy.at( i );
+
+			for( int j = 0 ; j < 4 ; j++ )
+			{
+				pNode->mValOutputHierarchy->setVariant( i, j, HD[ j ] );
+			}
+		}
 	}
 
 	pNode->pinUpdated( pNode->mPinOutputContours );

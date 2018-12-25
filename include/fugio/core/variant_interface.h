@@ -61,13 +61,6 @@ public:
 	virtual void variantClear( void ) = 0;
 
 	virtual void variantAppend( const QVariant &pValue ) = 0;
-
-
-	virtual void *variantArray( void ) = 0;
-
-	virtual const void *variantArray( void ) const = 0;
-
-	virtual void variantSetArray( void *pArray ) = 0;
 };
 
 FUGIO_NAMESPACE_END

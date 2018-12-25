@@ -350,6 +350,6 @@ void DeviceOpenGLOutput::exposeEvent( QExposeEvent * )
 			showFullScreen();
 		}
 
-		raise();
+		//raise();
 	}
 }

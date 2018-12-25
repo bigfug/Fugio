@@ -100,7 +100,27 @@ void ArrayToIndexNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		BufO->buffer()->write( 0, A->variantArray(), A->variantArraySize() );
+		//			BufO->buffer()->write( 0, A->variantArray(), A->variantArraySize() );
+
+		void	*BufDat = BufO->buffer()->map( QOpenGLBuffer::WriteOnly );
+
+		if( BufDat )
+		{
+			if( A->variantType() == QMetaType::Int )
+			{
+				int		*BufOut = reinterpret_cast<int *>( BufDat );
+
+				for( int i = 0 ; i < A->variantCount() ; i++ )
+				{
+					for( int j = 0 ; j < A->variantElementCount() ; j++ )
+					{
+						*BufOut++ = A->variant( i, j ).toInt();
+					}
+				}
+			}
+
+			BufO->buffer()->unmap();
+		}
 
 		BufO->release();
 

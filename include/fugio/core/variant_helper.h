@@ -169,17 +169,17 @@ public:
 		return( mStride ? mStride : ( mBaseType == QMetaType::UnknownType ? QMetaType::sizeOf( QMetaType::QVariant ) : QMetaType::sizeOf( mType ) ) * variantElementCount() );
 	}
 
-	virtual void *variantArray() Q_DECL_OVERRIDE
+	virtual T *variantArray()
 	{
 		return( mArray ? mArray : mValues.data() );
 	}
 
-	virtual const void *variantArray() const Q_DECL_OVERRIDE
+	virtual const T *variantArray() const
 	{
 		return( mArray ? mArray : mValues.constData() );
 	}
 
-	virtual void variantSetArray( void *pArray ) Q_DECL_OVERRIDE
+	virtual void variantSetArray( T *pArray )
 	{
 		mArray = pArray;
 	}
@@ -209,7 +209,7 @@ protected:
 	QUuid						 mUuid;
 	int							 mElementCount;
 	int							 mStride;
-	void						*mArray;
+	T							*mArray;
 	int							 mCount;
 };
 

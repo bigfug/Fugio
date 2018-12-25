@@ -9,8 +9,7 @@
 #include <fugio/performance.h>
 
 #include <fugio/context_interface.h>
-#include <fugio/core/variant_interface.h>
-//#include <fugio/core/array_interface.h>
+#include <fugio/core/array_interface.h>
 #include <fugio/node_signals.h>
 
 #include "openglplugin.h"
@@ -93,16 +92,16 @@ void ArrayToTextureBufferNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		fugio::VariantInterface			*A;
+		fugio::ArrayInterface			*A;
 
-		if( ( A = input<fugio::VariantInterface *>( PinI ) ) == nullptr )
+		if( ( A = input<fugio::ArrayInterface *>( PinI ) ) == nullptr )
 		{
 			continue;
 		}
 
 		GLenum	InternalFormat = 0;
 
-		switch( A->variantType() )
+		switch( QMetaType::Type( A->type() ) )
 		{
 			case QMetaType::UChar:
 				InternalFormat = GL_R8UI;
@@ -160,12 +159,12 @@ void ArrayToTextureBufferNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		if( BufO->size().x() != A->variantCount() )
+		if( static_cast<int>( BufO->size().x() ) != A->count() )
 		{
 			BufO->free();
 		}
 
-		if( A->variantCount() <= 0 )
+		if( A->count() <= 0 )
 		{
 			continue;
 		}
@@ -183,7 +182,7 @@ void ArrayToTextureBufferNode::inputsUpdated( qint64 pTimeStamp )
 		}
 
 		glBindBuffer( GL_TEXTURE_BUFFER, TBO );
-		glBufferData( GL_TEXTURE_BUFFER, A->variantCount() * A->variantStride(), A->variantArray(), GL_STATIC_DRAW );
+		glBufferData( GL_TEXTURE_BUFFER, A->byteCount(), A->array(), GL_STATIC_DRAW );
 		glBindBuffer( GL_TEXTURE_BUFFER, 0 );
 
 		BufO->dstTex()->create();

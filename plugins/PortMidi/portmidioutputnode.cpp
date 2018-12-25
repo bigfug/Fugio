@@ -6,6 +6,7 @@
 
 #include <fugio/node_interface.h>
 #include <fugio/context_interface.h>
+#include <fugio/core/array_interface.h>
 #include <fugio/core/variant_interface.h>
 #include <fugio/midi/uuid.h>
 #include <fugio/midi/midi_interface.h>
@@ -19,7 +20,7 @@
 #include <fugio/node_signals.h>
 
 PortMidiOutputNode::PortMidiOutputNode( QSharedPointer<fugio::NodeInterface> pNode ) :
-	NodeControlBase( pNode ), mDevice( 0 ), mClockValue( 0 ), mClockLast( 0 ), mPlayState( false )
+	NodeControlBase( pNode ), mDevice( Q_NULLPTR ), mClockValue( 0 ), mClockLast( 0 ), mPlayState( false )
 {
 	mPinClock = pinInput( "Beat Position" );
 
@@ -175,17 +176,17 @@ void PortMidiOutputNode::onFrameEnd( qint64 pTimeStamp )
 			continue;
 		}
 
-//		fugio::ArrayInterface		*A = input<fugio::ArrayInterface *>( P );
+		fugio::ArrayInterface		*A = input<fugio::ArrayInterface *>( P );
 
-//		if( A )
-//		{
-//			if( A->type() == QMetaType::Int && A->size() == 1 && A->stride() == sizeof( int ) )
-//			{
-//				mDevice->output( (const int32_t *)A->array(), A->count() );
-//			}
+		if( A )
+		{
+			if( A->type() == QMetaType::Int && A->elementCount() == 1 && A->stride() == sizeof( int ) )
+			{
+				mDevice->output( (const int32_t *)A->array(), A->count() );
+			}
 
-//			continue;
-//		}
+			continue;
+		}
 
 		fugio::VariantInterface		*V = input<fugio::VariantInterface *>( P );
 
@@ -200,7 +201,8 @@ void PortMidiOutputNode::onFrameEnd( qint64 pTimeStamp )
 			}
 			else if( P->controlUuid() == PID_INTEGER )
 			{
-				mDevice->output( (const int32_t *)V->variantArray(), V->variantCount() * V->variantElementCount() );
+				// TODO: Fix Me
+//				mDevice->output( (const int32_t *)V->variantArray(), V->variantCount() * V->variantElementCount() );
 			}
 		}
 	}

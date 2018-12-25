@@ -37,7 +37,7 @@ private:
 public:
 	LuaRectF( void ) {}
 
-	virtual ~LuaRectF( void ) {}
+	~LuaRectF( void ) {}
 
 #if defined( LUA_SUPPORTED )
 	static int luaOpen( lua_State *L );
