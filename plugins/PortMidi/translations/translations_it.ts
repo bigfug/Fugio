@@ -17,12 +17,12 @@
 <context>
     <name>PortMidiOutputNode</name>
     <message>
-        <location filename="../portmidioutputnode.cpp" line="259"/>
+        <location filename="../portmidioutputnode.cpp" line="261"/>
         <source>None</source>
         <translation>Nessuna</translation>
     </message>
     <message>
-        <location filename="../portmidioutputnode.cpp" line="260"/>
+        <location filename="../portmidioutputnode.cpp" line="262"/>
         <source>Default Midi Output</source>
         <translation>Uscita midi predefinita</translation>
     </message>

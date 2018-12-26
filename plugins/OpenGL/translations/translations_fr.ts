@@ -35,12 +35,12 @@
 <context>
     <name>EasyShader2DNode</name>
     <message>
-        <location filename="../easyshader2dnode.cpp" line="321"/>
+        <location filename="../easyshader2dnode.cpp" line="322"/>
         <source>No shaders compiled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../easyshader2dnode.cpp" line="327"/>
+        <location filename="../easyshader2dnode.cpp" line="328"/>
         <source>Shader compilation failed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -173,22 +173,22 @@
 <context>
     <name>ShaderInstanceNode</name>
     <message>
-        <location filename="../shaderinstancenode.cpp" line="72"/>
+        <location filename="../shaderinstancenode.cpp" line="73"/>
         <source>The OpenGL rendering state to apply</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../shaderinstancenode.cpp" line="74"/>
+        <location filename="../shaderinstancenode.cpp" line="75"/>
         <source>The input 3D Geometry to render with this shader</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../shaderinstancenode.cpp" line="76"/>
+        <location filename="../shaderinstancenode.cpp" line="77"/>
         <source>The output geometry that can be connected to an OpenGL Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../shaderinstancenode.cpp" line="103"/>
+        <location filename="../shaderinstancenode.cpp" line="104"/>
         <source>No shader or not linked</source>
         <translation type="unfinished"></translation>
     </message>
