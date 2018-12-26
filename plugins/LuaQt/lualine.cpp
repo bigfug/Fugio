@@ -16,12 +16,6 @@ const char *LuaLine::mTypeName = "qt.line";
 
 #if defined( LUA_SUPPORTED )
 
-const luaL_Reg LuaLine::mLuaFunctions[] =
-{
-	{ "new",				LuaLine::luaNew },
-	{ 0, 0 }
-};
-
 const luaL_Reg LuaLine::mLuaMetaMethods[] =
 {
 	{ "__index",			LuaLine::luaIndex },
@@ -47,12 +41,12 @@ const luaL_Reg LuaLine::mLuaMethods[] =
 
 int LuaLine::luaOpen (lua_State *L )
 {
-	if( luaL_newmetatable( L, mTypeName ) == 1 )
-	{
-		luaL_setfuncs( L, mLuaMetaMethods, 0 );
+	luaL_newmetatable( L, mTypeName );
 
-		luaL_newlib( L, mLuaFunctions );
-	}
+	lua_pushvalue( L, -1 );
+	lua_setfield( L, -2, "__index" );
+
+	luaL_setfuncs( L, mLuaMethods, 0 );
 
 	return( 1 );
 }

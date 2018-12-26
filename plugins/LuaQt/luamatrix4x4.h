@@ -12,11 +12,11 @@ class LuaMatrix4x4
 private:
 	typedef struct UserData
 	{
-		static const char *TypeName;
-
 		QMatrix4x4			mMatrix;
 
 	} UserData;
+
+	static const char *mTypeName;
 
 public:
 	LuaMatrix4x4( void ) {}
@@ -38,7 +38,7 @@ public:
 			return( 0 );
 		}
 
-		luaL_getmetatable( L, UserData::TypeName );
+		luaL_getmetatable( L, mTypeName );
 		lua_setmetatable( L, -2 );
 
 		new( &UD->mMatrix ) QMatrix4x4( pMatrix );
@@ -48,7 +48,7 @@ public:
 
 	static bool isMatrix4x4( lua_State *L, int i = 1 )
 	{
-		return( luaL_testudata( L, i, UserData::TypeName ) != nullptr );
+		return( luaL_testudata( L, i, mTypeName ) != nullptr );
 	}
 
 	static QMatrix4x4 checkMatrix4x4( lua_State *L, int i = 1 )
@@ -64,9 +64,9 @@ public:
 private:
 	static UserData *checkuserdata( lua_State *L, int i = 1 )
 	{
-		UserData *UD = (UserData *)luaL_checkudata( L, i, UserData::TypeName );
+		UserData *UD = (UserData *)luaL_checkudata( L, i, mTypeName );
 
-		luaL_argcheck( L, UD != NULL, i, "Point expected" );
+		luaL_argcheck( L, UD != Q_NULLPTR, i, "Point expected" );
 
 		return( UD );
 	}

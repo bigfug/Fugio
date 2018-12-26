@@ -26,6 +26,8 @@ public:
 	virtual ~LuaColor( void ) {}
 
 #if defined( LUA_SUPPORTED )
+	static void registerExtension( fugio::LuaInterface *LUA );
+
 	static int luaOpen( lua_State *L );
 
 	static int luaNew( lua_State *L );

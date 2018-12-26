@@ -40,49 +40,41 @@
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
-fugio::GlobalInterface		*LuaQtPlugin::mApp = 0;
-LuaQtPlugin					*LuaQtPlugin::mInstance = 0;
+fugio::GlobalInterface		*LuaQtPlugin::mApp = Q_NULLPTR;
+LuaQtPlugin					*LuaQtPlugin::mInstance = Q_NULLPTR;
 
-ClassEntry	NodeClasses[] =
-{
-	ClassEntry()
-};
+QVector<luaL_Reg>			 LuaQtPlugin::mLuaFunctions;
+QVector<luaL_Reg>			 LuaQtPlugin::mLuaMethods;
 
-ClassEntry PinClasses[] =
-{
-	ClassEntry()
-};
+//const luaL_Reg LuaQtPlugin::mLuaFunctions[] =
+//{
+//#if defined( LUA_SUPPORTED )
+//	{ "painter", LuaPainter::luaNew },
+//	{ "color", LuaColor::luaNew },
+//	{ "font", LuaFont::luaNew },
+//	{ "fontmetrics", LuaFontMetrics::luaNew },
+//	{ "gradient", LuaGradient::luaNew },
+//	{ "image", LuaImage::luaNew },
+//	{ "jsonarray", LuaJsonArray::luaNew },
+//	{ "jsondocument", LuaJsonDocument::luaNew },
+//	{ "jsonobject", LuaJsonObject::luaNew },
+//	{ "line", LuaLine::luaNew },
+//	{ "matrix4x4", LuaMatrix4x4::luaNewQt },
+//	{ "pen", LuaPen::luaNew },
+//	{ "point", LuaPointF::luaNew },
+////	{ "quaternion", LuaQuaternion::luaNew },
+//	{ "rect", LuaRectF::luaNew },
+//	{ "size", LuaSizeF::luaNew },
+//	{ "transform", LuaTransform::luaNew },
+//	{ "vector3d", LuaVector3D::luaNewQt },
+//#endif
+//	{ Q_NULLPTR, Q_NULLPTR }
+//};
 
-const luaL_Reg LuaQtPlugin::mLuaFunctions[] =
-{
-#if defined( LUA_SUPPORTED )
-	{ "painter", LuaPainter::luaNew },
-	{ "brush", LuaBrush::luaNew },
-	{ "color", LuaColor::luaNew },
-	{ "font", LuaFont::luaNew },
-	{ "fontmetrics", LuaFontMetrics::luaNew },
-	{ "gradient", LuaGradient::luaNew },
-	{ "image", LuaImage::luaNew },
-	{ "jsonarray", LuaJsonArray::luaNew },
-	{ "jsondocument", LuaJsonDocument::luaNew },
-	{ "jsonobject", LuaJsonObject::luaNew },
-	{ "line", LuaLine::luaNew },
-	{ "matrix4x4", LuaMatrix4x4::luaNewQt },
-	{ "pen", LuaPen::luaNew },
-	{ "point", LuaPointF::luaNew },
-//	{ "quaternion", LuaQuaternion::luaNew },
-	{ "rect", LuaRectF::luaNew },
-	{ "size", LuaSizeF::luaNew },
-	{ "transform", LuaTransform::luaNew },
-	{ "vector3d", LuaVector3D::luaNewQt },
-#endif
-	{ 0, 0 }
-};
-
-const luaL_Reg LuaQtPlugin::mLuaMethods[] =
-{
-	{ 0, 0 }
-};
+//const luaL_Reg LuaQtPlugin::mLuaMethods[] =
+//{
+//	{ Q_NULLPTR, Q_NULLPTR }
+//};
 
 LuaQtPlugin::LuaQtPlugin()
 {
@@ -104,6 +96,18 @@ LuaInterface *LuaQtPlugin::lua()
 	return( qobject_cast<LuaInterface *>( mApp->findInterface( IID_LUA ) ) );
 }
 
+void LuaQtPlugin::addLuaFunction( const char *pName, lua_CFunction pFunction )
+{
+	luaL_Reg	LR{ pName, pFunction };
+
+	mLuaFunctions << LR;
+}
+
+void LuaQtPlugin::addLuaFunction( luaL_Reg R )
+{
+	mLuaFunctions << R;
+}
+
 PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {
 	mApp = pApp;
@@ -115,21 +119,13 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 		return( pLastChance ? INIT_FAILED : INIT_DEFER );
 	}
 
-	mApp->registerNodeClasses( NodeClasses );
-
-	mApp->registerPinClasses( PinClasses );
-
 #if defined( LUA_SUPPORTED )
 	LUA->luaRegisterLibrary( "qt", LuaQtPlugin::luaOpen );
 
-	LUA->luaRegisterLibrary( "line", LuaLine::luaOpen );
-	LUA->luaRegisterLibrary( "matrix4x4", LuaMatrix4x4::luaOpen );
-	LUA->luaRegisterLibrary( "vector3d", LuaVector3D::luaOpen );
-	LUA->luaRegisterLibrary( "quaternion", LuaQuaternion::luaOpen );
+	LuaBrush::registerExtension( LUA );
+	LuaColor::registerExtension( LUA );
+	LuaFont::registerExtension( LUA );
 
-	LUA->luaRegisterExtension( LuaBrush::luaOpen );
-	LUA->luaRegisterExtension( LuaColor::luaOpen );
-	LUA->luaRegisterExtension( LuaFont::luaOpen );
 	LUA->luaRegisterExtension( LuaFontMetrics::luaOpen );
 	LUA->luaRegisterExtension( LuaGradient::luaOpen );
 	LUA->luaRegisterExtension( LuaImage::luaOpen );
@@ -139,14 +135,14 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaRegisterExtension( LuaPainter::luaOpen );
 	LUA->luaRegisterExtension( LuaPen::luaOpen );
 	LUA->luaRegisterExtension( LuaPointF::luaOpen );
-//	LUA->luaRegisterExtension( LuaQuaternion::luaOpen );
+	LUA->luaRegisterExtension( LuaQuaternion::luaOpen );
 	LUA->luaRegisterExtension( LuaSizeF::luaOpen );
 	LUA->luaRegisterExtension( LuaTransform::luaOpen );
 	LUA->luaRegisterExtension( LuaRectF::luaOpen );
-//	LUA->luaRegisterExtension( LuaMatrix4x4::luaOpen );
-//	LUA->luaRegisterExtension( LuaVector3D::luaOpen );
+	LUA->luaRegisterExtension( LuaLine::luaOpen );
+	LUA->luaRegisterExtension( LuaMatrix4x4::luaOpen );
+	LUA->luaRegisterExtension( LuaVector3D::luaOpen );
 
-	LUA->luaAddPinGet( PID_COLOUR, LuaColor::luaPinGet );
 	LUA->luaAddPinGet( PID_IMAGE, LuaImage::luaPinGet );
 	LUA->luaAddPinGet( PID_JSON, LuaJsonDocument::luaPinGet );
 	LUA->luaAddPinGet( PID_MATRIX4, LuaMatrix4x4::luaPinGet );
@@ -170,6 +166,11 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LUA->luaAddPopVariantFunction( LuaLine::mTypeName, LuaLine::popVariant );
 	LUA->luaAddPopVariantFunction( LuaPointF::mTypeName, LuaPointF::popVariant );
 	LUA->luaAddPopVariantFunction( LuaVector3D::mTypeName, LuaVector3D::popVariant );
+
+	luaL_Reg	LR{ Q_NULLPTR, Q_NULLPTR };
+
+	mLuaFunctions << LR;
+	mLuaMethods   << LR;
 #endif
 
 	return( INIT_OK );
@@ -177,11 +178,7 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 
 void LuaQtPlugin::deinitialise( void )
 {
-	mApp->unregisterPinClasses( PinClasses );
-
-	mApp->unregisterNodeClasses( NodeClasses );
-
-	mApp = 0;
+	mApp = Q_NULLPTR;
 }
 
 #if defined( LUA_SUPPORTED )
@@ -193,9 +190,9 @@ int LuaQtPlugin::luaOpen( lua_State *L )
 //	lua_pushvalue(L, -1);  /* duplicates the metatable */
 //	lua_setfield(L, -2, "__index");
 
-	luaL_setfuncs( L, mLuaMethods, 0 );
+	luaL_setfuncs( L, mLuaMethods.constData(), 0 );
 
-	luaL_newlib( L, mLuaFunctions );
+	luaL_newlib( L, mLuaFunctions.constData() );
 
 	return( 1 );
 }

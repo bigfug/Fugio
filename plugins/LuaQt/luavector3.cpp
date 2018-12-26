@@ -17,12 +17,6 @@ const char *LuaVector3D::mTypeName = "qt.vector3d";
 
 #if defined( LUA_SUPPORTED )
 
-const luaL_Reg LuaVector3D::mLuaFunctions[] =
-{
-	{ "new",				LuaVector3D::luaNew },
-	{ 0, 0 }
-};
-
 const luaL_Reg LuaVector3D::mLuaMetaMethods[] =
 {
 //	{ "__add",				LuaVector3D::luaAdd },
@@ -51,22 +45,12 @@ const luaL_Reg LuaVector3D::mLuaMethods[] =
 
 int LuaVector3D::luaOpen (lua_State *L )
 {
-//	if( luaL_newmetatable( L, UserData::TypeName ) == 1 )
-//	{
-//		lua_pushvalue( L, -1 );
-//		lua_setfield( L, -2, "__index" );
+	luaL_newmetatable( L, mTypeName );
 
-//		luaL_setfuncs( L, mLuaMethods, 0 );
+	lua_pushvalue( L, -1 );
+	lua_setfield( L, -2, "__index" );
 
-//		luaL_newlib( L, mLuaInstance );
-//	}
-
-	if( luaL_newmetatable( L, mTypeName ) == 1 )
-	{
-		luaL_setfuncs( L, mLuaMetaMethods, 0 );
-
-		luaL_newlib( L, mLuaFunctions );
-	}
+	luaL_setfuncs( L, mLuaMethods, 0 );
 
 	return( 1 );
 }

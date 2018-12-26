@@ -13,13 +13,12 @@
 #include "luamatrix4x4.h"
 #include "luavector3.h"
 
-const char *LuaQuaternion::UserData::TypeName = "qt.quaternion";
+const char *LuaQuaternion::mTypeName = "qt.quaternion";
 
 #if defined( LUA_SUPPORTED )
 
 const luaL_Reg LuaQuaternion::mLuaFunctions[] =
 {
-	{ "new",				LuaQuaternion::luaNew },
 	{ "fromEulerAngles",	LuaQuaternion::luaFromEulerAngles },
 	{ "fromRotationMatrix",	LuaQuaternion::luaFromRotationMatrix },
 	{ 0, 0 }
@@ -58,12 +57,14 @@ const luaL_Reg LuaQuaternion::mLuaMethods[] =
 
 int LuaQuaternion::luaOpen( lua_State *L )
 {
-	if( luaL_newmetatable( L, UserData::TypeName ) == 1 )
-	{
-		luaL_setfuncs( L, mLuaMetaMethods, 0 );
+	luaL_newmetatable( L, mTypeName );
 
-		luaL_newlib( L, mLuaFunctions );
-	}
+	lua_pushvalue( L, -1 );
+	lua_setfield( L, -2, "__index" );
+
+	luaL_setfuncs( L, mLuaMethods, 0 );
+
+	luaL_newlib( L, mLuaFunctions );
 
 	return( 1 );
 }
@@ -92,7 +93,7 @@ int LuaQuaternion::luaNew( lua_State *L )
 //		return( pushquaternion( L, QQuaternion( vector ) ) );
 //	}
 
-	luaL_getmetatable( L, UserData::TypeName );
+	luaL_getmetatable( L, mTypeName );
 
 	return( 1 );
 
