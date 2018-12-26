@@ -43,10 +43,6 @@ ImageToTextureNode::ImageToTextureNode( QSharedPointer<fugio::NodeInterface> pNo
 	mPinOutput->setDescription( tr( "The allocated OpenGL texture" ) );
 }
 
-ImageToTextureNode::~ImageToTextureNode( void )
-{
-}
-
 QWidget *ImageToTextureNode::gui()
 {
 	QPushButton		*GUI = new QPushButton( "Edit..." );

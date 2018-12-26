@@ -58,12 +58,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../imagetotexturenode.cpp" line="157"/>
+        <location filename="../imagetotexturenode.cpp" line="153"/>
         <source>No OpenGL Context</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../imagetotexturenode.cpp" line="157"/>
+        <location filename="../imagetotexturenode.cpp" line="153"/>
         <source>Can&apos;t edit texture without OpenGL context</source>
         <translation type="unfinished"></translation>
     </message>

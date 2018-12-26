@@ -30,7 +30,7 @@ class ImageToTextureNode : public fugio::NodeControlBase
 public:
 	Q_INVOKABLE explicit ImageToTextureNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~ImageToTextureNode( void );
+	virtual ~ImageToTextureNode( void ) Q_DECL_OVERRIDE {}
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
