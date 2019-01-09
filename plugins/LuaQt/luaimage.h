@@ -10,11 +10,12 @@
 
 #include <fugio/image/image.h>
 #include <fugio/core/variant_interface.h>
+#include <fugio/lua/lua_interface.h>
 
 class LuaImage
 {
 private:
-	typedef struct ImageUserData
+	typedef struct UserData
 	{
 		static const char *TypeName;
 
@@ -62,7 +63,7 @@ private:
 				}
 			}
 		}
-	} ImageUserData;
+	} UserData;
 
 public:
 	LuaImage( void ) {}
@@ -70,6 +71,8 @@ public:
 	virtual ~LuaImage( void ) {}
 
 #if defined( LUA_SUPPORTED )
+	static void registerExtension( fugio::LuaInterface *LUA );
+
 	static int luaOpen( lua_State *L );
 
 	static int luaNew( lua_State *L );
@@ -78,14 +81,14 @@ public:
 
 	static int pushimage( lua_State *L, fugio::VariantInterface *pImgInf, QUuid pPinId )
 	{
-		ImageUserData	*UD = (ImageUserData *)lua_newuserdata( L, sizeof( ImageUserData ) );
+		UserData	*UD = (UserData *)lua_newuserdata( L, sizeof( UserData ) );
 
 		if( !UD )
 		{
 			return( 0 );
 		}
 
-		luaL_getmetatable( L, ImageUserData::TypeName );
+		luaL_getmetatable( L, UserData::TypeName );
 		lua_setmetatable( L, -2 );
 
 		UD->mImgInf = pImgInf;
@@ -99,14 +102,14 @@ public:
 
 	static int pushimage( lua_State *L, const QImage &pImage, QUuid pPinId )
 	{
-		ImageUserData	*UD = (ImageUserData *)lua_newuserdata( L, sizeof( ImageUserData ) );
+		UserData	*UD = (UserData *)lua_newuserdata( L, sizeof( UserData ) );
 
 		if( !UD )
 		{
 			return( 0 );
 		}
 
-		luaL_getmetatable( L, ImageUserData::TypeName );
+		luaL_getmetatable( L, UserData::TypeName );
 		lua_setmetatable( L, -2 );
 
 		UD->mImgInf = nullptr;
@@ -118,14 +121,14 @@ public:
 
 	static QImage *checkimage( lua_State *L, int i = 1 )
 	{
-		ImageUserData		*ud = checkimagedata( L, i );
+		UserData		*ud = checkimagedata( L, i );
 
 		return( ud->mImage );
 	}
 
 	static QImage *checkwritableimage( lua_State *L, int i = 1 )
 	{
-		ImageUserData		*ud = checkimagedata( L, i );
+		UserData		*ud = checkimagedata( L, i );
 
 		luaL_argcheck( L, !ud->isReadOnly(), i, "image is read-only" );
 
@@ -134,13 +137,13 @@ public:
 
 	static bool isImage( lua_State *L, int i = 1 )
 	{
-		return( luaL_testudata( L, i, ImageUserData::TypeName ) != nullptr );
+		return( luaL_testudata( L, i, UserData::TypeName ) != nullptr );
 	}
 
 private:
-	static ImageUserData *checkimagedata( lua_State *L, int i = 1 )
+	static UserData *checkimagedata( lua_State *L, int i = 1 )
 	{
-		ImageUserData *IUD = static_cast<ImageUserData *>( luaL_checkudata( L, i, ImageUserData::TypeName ) );
+		UserData *IUD = static_cast<UserData *>( luaL_checkudata( L, i, UserData::TypeName ) );
 
 		luaL_argcheck( L, IUD != NULL, i, "image expected" );
 

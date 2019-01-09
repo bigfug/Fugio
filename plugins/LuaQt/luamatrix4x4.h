@@ -7,6 +7,8 @@
 
 #include <QMatrix4x4>
 
+#include <fugio/lua/lua_interface.h>
+
 class LuaMatrix4x4
 {
 private:
@@ -24,6 +26,8 @@ public:
 	virtual ~LuaMatrix4x4( void ) {}
 
 #if defined( LUA_SUPPORTED )
+	static void registerExtension( fugio::LuaInterface *LUA );
+
 	static int luaOpen( lua_State *L );
 
 	static int luaNew( lua_State *L );

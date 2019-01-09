@@ -2,6 +2,7 @@
 
 #include <QJsonValueRef>
 
+#include "luaqtplugin.h"
 #include "luajsonarray.h"
 
 const char *LuaJsonObject::JsonObjectUserData::TypeName = "qt.jsonobject";
@@ -27,6 +28,13 @@ const luaL_Reg LuaJsonObject::mLuaMethods[] =
 	{ "pairs",				LuaJsonObject::luaBegin },
 	{ 0, 0 }
 };
+
+void LuaJsonObject::registerExtension(fugio::LuaInterface *LUA)
+{
+	LuaQtPlugin::addLuaFunction( "jsonobject", LuaJsonObject::luaNew );
+
+	LUA->luaRegisterExtension( LuaJsonObject::luaOpen );
+}
 
 int LuaJsonObject::luaOpen( lua_State *L )
 {

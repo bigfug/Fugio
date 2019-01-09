@@ -7,6 +7,7 @@
 #include <fugio/context_interface.h>
 #include <fugio/lua/lua_interface.h>
 #include <fugio/core/variant_interface.h>
+#include <fugio/math/uuid.h>
 
 #include "luaqtplugin.h"
 
@@ -42,6 +43,21 @@ const luaL_Reg LuaVector3D::mLuaMethods[] =
 	{ "z",					LuaVector3D::luaZ },
 	{ 0, 0 }
 };
+
+void LuaVector3D::registerExtension(LuaInterface *LUA)
+{
+	LuaQtPlugin::addLuaFunction( "vector3d", LuaVector3D::luaNew );
+
+	LUA->luaRegisterExtension( LuaVector3D::luaOpen );
+
+	LUA->luaAddPinGet( PID_VECTOR3, LuaVector3D::luaPinGet );
+
+	LUA->luaAddPinSet( PID_VECTOR3, LuaVector3D::luaPinSet );
+
+	LUA->luaAddPushVariantFunction( QMetaType::QVector3D, LuaVector3D::pushVariant );
+
+	LUA->luaAddPopVariantFunction( LuaVector3D::mTypeName, LuaVector3D::popVariant );
+}
 
 int LuaVector3D::luaOpen (lua_State *L )
 {

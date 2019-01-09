@@ -2,6 +2,7 @@
 
 #include <fugio/lua/lua_interface.h>
 
+#include <fugio/core/uuid.h>
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
 #include <fugio/pin_interface.h>
@@ -23,6 +24,7 @@ const luaL_Reg LuaPointF::mLuaInstance[] =
 
 const luaL_Reg LuaPointF::mLuaMethods[] =
 {
+	{ "__gc",				LuaPointF::luaDelete },
 	{ "__add",				LuaPointF::luaAdd },
 	{ "__div",				LuaPointF::luaDiv },
 	{ "__eq",				LuaPointF::luaEq },
@@ -37,6 +39,21 @@ const luaL_Reg LuaPointF::mLuaMethods[] =
 	{ "y",					LuaPointF::luaY },
 	{ 0, 0 }
 };
+
+void LuaPointF::registerExtension( LuaInterface *LUA )
+{
+	LuaQtPlugin::addLuaFunction( "point", LuaPointF::luaNew );
+
+	LUA->luaRegisterExtension( LuaPointF::luaOpen );
+
+	LUA->luaAddPinGet( PID_POINT, LuaPointF::luaPinGet );
+
+	LUA->luaAddPinSet( PID_POINT, LuaPointF::luaPinSet );
+
+	LUA->luaAddPushVariantFunction( QMetaType::QPointF, LuaPointF::pushVariant );
+
+	LUA->luaAddPopVariantFunction( LuaPointF::mTypeName, LuaPointF::popVariant );
+}
 
 int LuaPointF::luaOpen(lua_State *L)
 {
@@ -125,6 +142,54 @@ int LuaPointF::luaPinGet( const QUuid &pPinLocalId, lua_State *L )
 	return( pushpointf( L, SrcVar->variant().toPointF()) );
 }
 
+int LuaPointF::luaPinSet(const QUuid &pPinLocalId, lua_State *L, int pIndex)
+{
+	fugio::LuaInterface						*Lua  = LuaQtPlugin::lua();
+	NodeInterface							*Node = Lua->node( L );
+	QSharedPointer<fugio::PinInterface>		 Pin = Node->findPinByLocalId( pPinLocalId );
+	UserData								*UD = checkuserdata( L, pIndex );
+
+	if( !Pin )
+	{
+		return( luaL_error( L, "No destination pin" ) );
+	}
+
+	if( Pin->direction() != PIN_OUTPUT )
+	{
+		return( luaL_error( L, "No destination pin" ) );
+	}
+
+	if( !Pin->hasControl() )
+	{
+		return( luaL_error( L, "No quaternion pin" ) );
+	}
+
+	fugio::VariantInterface			*DstVar = qobject_cast<fugio::VariantInterface *>( Pin->control()->qobject() );
+
+	if( !DstVar )
+	{
+		return( luaL_error( L, "Can't access quaternion" ) );
+	}
+
+	if( UD->mPoint != DstVar->variant().toPointF() )
+	{
+		DstVar->setVariant( UD->mPoint );
+
+		Pin->node()->context()->pinUpdated( Pin );
+	}
+
+	return( 0 );
+}
+
+int LuaPointF::luaDelete(lua_State *L)
+{
+	UserData	*UD = checkuserdata( L );
+
+	static_cast<UserData *>( UD )->mPoint.~QPointF();
+
+	return( 0 );
+}
+
 int LuaPointF::luaDotProduct( lua_State *L )
 {
 	QPointF		p1 = checkpointf( L, 1 );
@@ -205,50 +270,50 @@ int LuaPointF::luaManhattanLength(lua_State *L)
 
 int LuaPointF::luaSetX( lua_State *L )
 {
-	PointFUserData		*PUD = checkpointfuserdata( L );
+	UserData		*PUD = checkuserdata( L );
 	qreal				 i = luaL_checknumber( L, 2 );
 
-	PUD->x = i;
+	PUD->mPoint.setX( i );
 
 	return( 0 );
 }
 
 int LuaPointF::luaSetY( lua_State *L )
 {
-	PointFUserData		*PUD = checkpointfuserdata( L );
+	UserData		*PUD = checkuserdata( L );
 	qreal				 i = luaL_checknumber( L, 2 );
 
-	PUD->y = i;
+	PUD->mPoint.setY( i );
 
 	return( 0 );
 }
 
 int LuaPointF::luaToArray( lua_State *L )
 {
-	PointFUserData		*PUD = checkpointfuserdata( L );
+	UserData		*PUD = checkuserdata( L );
 
 	lua_newtable( L );
 
-	lua_pushnumber( L, PUD->x );	lua_rawseti( L, -2, 1 );
-	lua_pushnumber( L, PUD->y );	lua_rawseti( L, -2, 2 );
+	lua_pushnumber( L, PUD->mPoint.x() );	lua_rawseti( L, -2, 1 );
+	lua_pushnumber( L, PUD->mPoint.y() );	lua_rawseti( L, -2, 2 );
 
 	return( 1 );
 }
 
 int LuaPointF::luaX( lua_State *L )
 {
-	PointFUserData		*PUD = checkpointfuserdata( L );
+	UserData		*PUD = checkuserdata( L );
 
-	lua_pushnumber( L, PUD->x );
+	lua_pushnumber( L, PUD->mPoint.x() );
 
 	return( 1 );
 }
 
 int LuaPointF::luaY( lua_State *L )
 {
-	PointFUserData		*PUD = checkpointfuserdata( L );
+	UserData		*PUD = checkuserdata( L );
 
-	lua_pushnumber( L, PUD->y );
+	lua_pushnumber( L, PUD->mPoint.y() );
 
 	return( 1 );
 }

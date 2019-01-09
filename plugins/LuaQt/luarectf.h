@@ -8,6 +8,8 @@
 #include <QRectF>
 #include <QUuid>
 
+#include <fugio/lua/lua_interface.h>
+
 class LuaRectF
 {
 private:
@@ -40,6 +42,8 @@ public:
 	~LuaRectF( void ) {}
 
 #if defined( LUA_SUPPORTED )
+	static void registerExtension( fugio::LuaInterface *LUA );
+
 	static int luaOpen( lua_State *L );
 
 	static QRectF parseRectF( lua_State *L, int &pNewTop, bool *pRectOk = nullptr );

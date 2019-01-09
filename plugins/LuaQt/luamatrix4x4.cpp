@@ -7,6 +7,7 @@
 #include <fugio/context_interface.h>
 #include <fugio/lua/lua_interface.h>
 #include <fugio/core/variant_interface.h>
+#include <fugio/math/uuid.h>
 
 #include "luaqtplugin.h"
 
@@ -47,6 +48,17 @@ const luaL_Reg LuaMatrix4x4::mLuaMethods[] =
 	{ Q_NULLPTR, Q_NULLPTR }
 };
 
+void LuaMatrix4x4::registerExtension(LuaInterface *LUA)
+{
+	LuaQtPlugin::addLuaFunction( "matrix4x4", LuaMatrix4x4::luaNew );
+
+	LUA->luaRegisterExtension( LuaMatrix4x4::luaOpen );
+
+	LUA->luaAddPinGet( PID_MATRIX4, LuaMatrix4x4::luaPinGet );
+
+	LUA->luaAddPinSet( PID_MATRIX4, LuaMatrix4x4::luaPinSet );
+}
+
 int LuaMatrix4x4::luaOpen (lua_State *L )
 {
 	luaL_newmetatable( L, mTypeName );
@@ -61,9 +73,9 @@ int LuaMatrix4x4::luaOpen (lua_State *L )
 
 int LuaMatrix4x4::luaNew( lua_State *L )
 {
-//	if( lua_gettop( L ) == 2 )
-//	{
-//		float		x = luaL_checknumber( L, 1 );
+	//	if( lua_gettop( L ) == 2 )
+	//	{
+	//		float		x = luaL_checknumber( L, 1 );
 //		float		y = luaL_checknumber( L, 2 );
 
 //		pushMatrix4x4( L, QMatrix4x4( x, y ) );

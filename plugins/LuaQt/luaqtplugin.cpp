@@ -37,6 +37,7 @@
 #include "luavector3.h"
 #include "luaquaternion.h"
 #include "lualine.h"
+#include "luapolygon.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
@@ -45,36 +46,6 @@ LuaQtPlugin					*LuaQtPlugin::mInstance = Q_NULLPTR;
 
 QVector<luaL_Reg>			 LuaQtPlugin::mLuaFunctions;
 QVector<luaL_Reg>			 LuaQtPlugin::mLuaMethods;
-
-//const luaL_Reg LuaQtPlugin::mLuaFunctions[] =
-//{
-//#if defined( LUA_SUPPORTED )
-//	{ "painter", LuaPainter::luaNew },
-//	{ "color", LuaColor::luaNew },
-//	{ "font", LuaFont::luaNew },
-//	{ "fontmetrics", LuaFontMetrics::luaNew },
-//	{ "gradient", LuaGradient::luaNew },
-//	{ "image", LuaImage::luaNew },
-//	{ "jsonarray", LuaJsonArray::luaNew },
-//	{ "jsondocument", LuaJsonDocument::luaNew },
-//	{ "jsonobject", LuaJsonObject::luaNew },
-//	{ "line", LuaLine::luaNew },
-//	{ "matrix4x4", LuaMatrix4x4::luaNewQt },
-//	{ "pen", LuaPen::luaNew },
-//	{ "point", LuaPointF::luaNew },
-////	{ "quaternion", LuaQuaternion::luaNew },
-//	{ "rect", LuaRectF::luaNew },
-//	{ "size", LuaSizeF::luaNew },
-//	{ "transform", LuaTransform::luaNew },
-//	{ "vector3d", LuaVector3D::luaNewQt },
-//#endif
-//	{ Q_NULLPTR, Q_NULLPTR }
-//};
-
-//const luaL_Reg LuaQtPlugin::mLuaMethods[] =
-//{
-//	{ Q_NULLPTR, Q_NULLPTR }
-//};
 
 LuaQtPlugin::LuaQtPlugin()
 {
@@ -122,50 +93,29 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 #if defined( LUA_SUPPORTED )
 	LUA->luaRegisterLibrary( "qt", LuaQtPlugin::luaOpen );
 
+	//--------------------------------------------------------------------------
+
 	LuaBrush::registerExtension( LUA );
 	LuaColor::registerExtension( LUA );
 	LuaFont::registerExtension( LUA );
+	LuaFontMetrics::registerExtension( LUA );
+	LuaImage::registerExtension( LUA );
+	LuaJsonArray::registerExtension( LUA );
+	LuaJsonDocument::registerExtension( LUA );
+	LuaJsonObject::registerExtension( LUA );
+	LuaLine::registerExtension( LUA );
+	LuaMatrix4x4::registerExtension( LUA );
+	LuaPainter::registerExtension( LUA );
+	LuaPen::registerExtension( LUA );
+	LuaPointF::registerExtension( LUA );
+	LuaPolygon::registerExtension( LUA );
+	LuaQuaternion::registerExtension( LUA );
+	LuaRectF::registerExtension( LUA );
+	LuaSizeF::registerExtension( LUA );
+	LuaTransform::registerExtension( LUA );
+	LuaVector3D::registerExtension( LUA );
 
-	LUA->luaRegisterExtension( LuaFontMetrics::luaOpen );
-	LUA->luaRegisterExtension( LuaGradient::luaOpen );
-	LUA->luaRegisterExtension( LuaImage::luaOpen );
-	LUA->luaRegisterExtension( LuaJsonArray::luaOpen );
-	LUA->luaRegisterExtension( LuaJsonDocument::luaOpen );
-	LUA->luaRegisterExtension( LuaJsonObject::luaOpen );
-	LUA->luaRegisterExtension( LuaPainter::luaOpen );
-	LUA->luaRegisterExtension( LuaPen::luaOpen );
-	LUA->luaRegisterExtension( LuaPointF::luaOpen );
-	LUA->luaRegisterExtension( LuaQuaternion::luaOpen );
-	LUA->luaRegisterExtension( LuaSizeF::luaOpen );
-	LUA->luaRegisterExtension( LuaTransform::luaOpen );
-	LUA->luaRegisterExtension( LuaRectF::luaOpen );
-	LUA->luaRegisterExtension( LuaLine::luaOpen );
-	LUA->luaRegisterExtension( LuaMatrix4x4::luaOpen );
-	LUA->luaRegisterExtension( LuaVector3D::luaOpen );
-
-	LUA->luaAddPinGet( PID_IMAGE, LuaImage::luaPinGet );
-	LUA->luaAddPinGet( PID_JSON, LuaJsonDocument::luaPinGet );
-	LUA->luaAddPinGet( PID_MATRIX4, LuaMatrix4x4::luaPinGet );
-	LUA->luaAddPinGet( PID_POINT, LuaPointF::luaPinGet );
-	LUA->luaAddPinGet( PID_QUATERNION, LuaQuaternion::luaPinGet );
-	LUA->luaAddPinGet( PID_RECT, LuaRectF::luaPinGet );
-	LUA->luaAddPinGet( PID_SIZE, LuaSizeF::luaPinGet );
-	LUA->luaAddPinGet( PID_VECTOR3, LuaVector3D::luaPinGet );
-	LUA->luaAddPinGet( PID_LINE, LuaLine::luaPinGet );
-
-	LUA->luaAddPinSet( PID_MATRIX4, LuaMatrix4x4::luaPinSet );
-	LUA->luaAddPinSet( PID_QUATERNION, LuaQuaternion::luaPinSet );
-	LUA->luaAddPinSet( PID_VECTOR3, LuaVector3D::luaPinSet );
-	LUA->luaAddPinSet( PID_LINE, LuaLine::luaPinSet );
-
-	LUA->luaAddPushVariantFunction( QMetaType::QLineF, LuaLine::pushVariant );
-	LUA->luaAddPushVariantFunction( QMetaType::QPointF, LuaPointF::pushVariant );
-	LUA->luaAddPushVariantFunction( QMetaType::QVector3D, LuaVector3D::pushVariant );
-	LUA->luaAddPushVariantFunction( QMetaType::QJsonDocument, LuaJsonDocument::pushVariant );
-
-	LUA->luaAddPopVariantFunction( LuaLine::mTypeName, LuaLine::popVariant );
-	LUA->luaAddPopVariantFunction( LuaPointF::mTypeName, LuaPointF::popVariant );
-	LUA->luaAddPopVariantFunction( LuaVector3D::mTypeName, LuaVector3D::popVariant );
+	//--------------------------------------------------------------------------
 
 	luaL_Reg	LR{ Q_NULLPTR, Q_NULLPTR };
 

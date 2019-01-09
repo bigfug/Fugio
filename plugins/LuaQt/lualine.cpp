@@ -1,5 +1,6 @@
 #include "lualine.h"
 
+#include <fugio/core/uuid.h>
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
 #include <fugio/pin_interface.h>
@@ -38,6 +39,21 @@ const luaL_Reg LuaLine::mLuaMethods[] =
 	{ "translated",		LuaLine::luaTranslated },
 	{ 0, 0 }
 };
+
+void LuaLine::registerExtension( fugio::LuaInterface *LUA )
+{
+	LuaQtPlugin::addLuaFunction( "line", LuaLine::luaNew );
+
+	LUA->luaRegisterExtension( LuaLine::luaOpen );
+
+	LUA->luaAddPinGet( PID_LINE, LuaLine::luaPinGet );
+
+	LUA->luaAddPinSet( PID_LINE, LuaLine::luaPinSet );
+
+	LUA->luaAddPushVariantFunction( QMetaType::QLineF, LuaLine::pushVariant );
+
+	LUA->luaAddPopVariantFunction( LuaLine::mTypeName, LuaLine::popVariant );
+}
 
 int LuaLine::luaOpen (lua_State *L )
 {

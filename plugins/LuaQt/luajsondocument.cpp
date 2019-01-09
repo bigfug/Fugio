@@ -5,6 +5,8 @@
 #include <fugio/lua/lua_interface.h>
 #include <fugio/core/variant_interface.h>
 #include <fugio/performance.h>
+#include <fugio/json/uuid.h>
+
 #include "luaqtplugin.h"
 #include "luajsonarray.h"
 #include "luajsonobject.h"
@@ -30,6 +32,17 @@ const luaL_Reg LuaJsonDocument::mLuaMethods[] =
 	{ "__tostring",			LuaJsonDocument::luaToString },
 	{ 0, 0 }
 };
+
+void LuaJsonDocument::registerExtension(LuaInterface *LUA)
+{
+	LuaQtPlugin::addLuaFunction( "jsondocument", LuaJsonDocument::luaNew );
+
+	LUA->luaRegisterExtension( LuaJsonDocument::luaOpen );
+
+	LUA->luaAddPinGet( PID_JSON, LuaJsonDocument::luaPinGet );
+
+	LUA->luaAddPushVariantFunction( QMetaType::QJsonDocument, LuaJsonDocument::pushVariant );
+}
 
 int LuaJsonDocument::luaOpen( lua_State *L )
 {

@@ -8,6 +8,7 @@
 #include <fugio/pin_control_interface.h>
 #include <fugio/core/variant_interface.h>
 #include <fugio/context_interface.h>
+#include <fugio/core/uuid.h>
 
 #include "luaqtplugin.h"
 
@@ -31,6 +32,15 @@ const luaL_Reg LuaSizeF::mLuaMethods[] =
 	{ "height",				LuaSizeF::luaHeight },
 	{ 0, 0 }
 };
+
+void LuaSizeF::registerExtension(LuaInterface *LUA)
+{
+	LuaQtPlugin::addLuaFunction( "size", LuaSizeF::luaNew );
+
+	LUA->luaRegisterExtension( LuaSizeF::luaOpen );
+
+	LUA->luaAddPinGet( PID_SIZE, LuaSizeF::luaPinGet );
+}
 
 int LuaSizeF::luaOpen(lua_State *L)
 {

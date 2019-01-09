@@ -66,6 +66,13 @@ const luaL_Reg LuaPainter::mLuaMethods[] =
 	{ 0, 0 }
 };
 
+void LuaPainter::registerExtension(LuaInterface *LUA)
+{
+	LuaQtPlugin::addLuaFunction( "painter", LuaPainter::luaNew );
+
+	LUA->luaRegisterExtension( LuaPainter::luaOpen );
+}
+
 int LuaPainter::luaOpen( lua_State *L )
 {
 	luaL_newmetatable( L, LuaPainterData::TypeName );

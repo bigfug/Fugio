@@ -7,6 +7,7 @@
 #include <fugio/context_interface.h>
 #include <fugio/lua/lua_interface.h>
 #include <fugio/core/variant_interface.h>
+#include <fugio/math/uuid.h>
 
 #include "luaqtplugin.h"
 
@@ -54,6 +55,17 @@ const luaL_Reg LuaQuaternion::mLuaMethods[] =
 #endif
 	{ 0, 0 }
 };
+
+void LuaQuaternion::registerExtension(LuaInterface *LUA)
+{
+	LuaQtPlugin::addLuaFunction( "quaternion", LuaQuaternion::luaNew );
+
+	LUA->luaRegisterExtension( LuaQuaternion::luaOpen );
+
+	LUA->luaAddPinGet( PID_QUATERNION, LuaQuaternion::luaPinGet );
+
+	LUA->luaAddPinSet( PID_QUATERNION, LuaQuaternion::luaPinSet );
+}
 
 int LuaQuaternion::luaOpen( lua_State *L )
 {

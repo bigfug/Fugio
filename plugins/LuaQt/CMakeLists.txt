@@ -36,6 +36,8 @@ set( SOURCE_FILES
 	luapen.h
 	luapointf.cpp
 	luapointf.h
+	luapolygon.cpp
+	luapolygon.h
 	luaqtplugin.cpp
 	luaqtplugin.h
 	luaquaternion.cpp
