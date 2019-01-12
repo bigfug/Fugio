@@ -10,6 +10,7 @@
 
 #include <fugio/math/uuid.h>
 
+#include "matrixpin.h"
 #include "matrix4pin.h"
 #include "vector3pin.h"
 #include "vector4pin.h"
@@ -168,6 +169,7 @@ ClassEntry	NodeClasses[] =
 
 ClassEntry PinClasses[] =
 {
+	ClassEntry( "Matrix", PID_MATRIX, &MatrixPin::staticMetaObject ),
 	ClassEntry( "Matrix4", PID_MATRIX4, &Matrix4Pin::staticMetaObject ),
 	ClassEntry( "Quaternion", PID_QUATERNION, &QuaternionPin::staticMetaObject ),
 	ClassEntry( "Vector3", PID_VECTOR3, &Vector3Pin::staticMetaObject ),

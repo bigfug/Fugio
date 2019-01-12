@@ -45,6 +45,7 @@
 
 #define NID_COMPARE_NUMBERS		(QUuid("{aaf42ad1-6336-4455-ad30-f65f69729ca3}"))
 
+#define PID_MATRIX				(QUuid("{fa40f90b-b790-484f-9519-7b3e030ae17c}"))
 #define PID_MATRIX4				(QUuid("{a7e74342-b94c-4def-b563-b689c451bb33}"))
 #define PID_VECTOR3				(QUuid("{5C790F59-3619-476c-8EB7-BD85087A7D10}"))
 #define PID_VECTOR4				(QUuid("{bd8daab6-e467-43bb-8828-31967de9f0ff}"))

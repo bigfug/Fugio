@@ -37,6 +37,8 @@ set( SOURCE_FILES
 	joinvector4node.h
 	mathplugin.cpp
 	mathplugin.h
+	matrixpin.cpp
+	matrixpin.h
 	matrix4node.cpp
 	matrix4node.h
 	matrix4pin.cpp
@@ -157,6 +159,19 @@ add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} ${QRC_FILES} )
 set_target_properties( ${PROJECT_NAME} PROPERTIES
   BUNDLE TRUE
 )
+
+#------------------------------------------------------------------------------
+# Eigen
+
+find_package( Eigen3 QUIET )
+
+if( EIGEN3_FOUND )
+	message( "eigen: YES" )
+
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIR} )
+else()
+	message( "eigen: NO" )
+endif()
 
 #------------------------------------------------------------------------------
 # Install
