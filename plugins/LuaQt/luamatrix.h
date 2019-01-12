@@ -1,29 +1,31 @@
-#ifndef LUAMATRIX4X4_H
-#define LUAMATRIX4X4_H
+#ifndef LUAMATRIX_H
+#define LUAMATRIX_H
 
 #if defined( LUA_SUPPORTED )
 #include <lua.hpp>
 #endif
 
-#include <QMatrix4x4>
+#include <QVariant>
+
+#include <Eigen/Dense>
 
 #include <fugio/lua/lua_interface.h>
 
-class LuaMatrix4x4
+class LuaMatrix
 {
 private:
 	typedef struct UserData
 	{
-		QMatrix4x4			mMatrix;
+		Eigen::MatrixXd		mMatrix;
 
 	} UserData;
 
 	static const char *mTypeName;
 
 public:
-	LuaMatrix4x4( void ) {}
+	LuaMatrix( void ) {}
 
-	virtual ~LuaMatrix4x4( void ) {}
+	virtual ~LuaMatrix( void ) {}
 
 #if defined( LUA_SUPPORTED )
 	static void registerExtension( fugio::LuaInterface *LUA );
@@ -31,9 +33,8 @@ public:
 	static int luaOpen( lua_State *L );
 
 	static int luaNew( lua_State *L );
-	static int luaNewQt( lua_State *L );
 
-	static int pushmatrix4x4( lua_State *L, const QMatrix4x4 &pMatrix )
+	static int pushmatrix( lua_State *L, const Eigen::MatrixXd &pMatrix )
 	{
 		UserData	*UD = (UserData *)lua_newuserdata( L, sizeof( UserData ) );
 
@@ -45,17 +46,17 @@ public:
 		luaL_getmetatable( L, mTypeName );
 		lua_setmetatable( L, -2 );
 
-		new( &UD->mMatrix ) QMatrix4x4( pMatrix );
+		new( &UD->mMatrix ) Eigen::MatrixXd( pMatrix );
 
 		return( 1 );
 	}
 
-	static bool isMatrix4x4( lua_State *L, int i = 1 )
+	static bool isMatrix( lua_State *L, int i = 1 )
 	{
 		return( luaL_testudata( L, i, mTypeName ) != nullptr );
 	}
 
-	static QMatrix4x4 checkMatrix4x4( lua_State *L, int i = 1 )
+	static Eigen::MatrixXd checkMatrix( lua_State *L, int i = 1 )
 	{
 		UserData *UD = checkuserdata( L, i );
 
@@ -70,19 +71,29 @@ private:
 	{
 		UserData *UD = (UserData *)luaL_checkudata( L, i, mTypeName );
 
-		luaL_argcheck( L, UD != Q_NULLPTR, i, "Point expected" );
+		luaL_argcheck( L, UD != Q_NULLPTR, i, "Matrix expected" );
 
 		return( UD );
 	}
+
+	static int pushVariant( lua_State *L, const QVariant &V );
+
+	static QVariant popVariant( lua_State *L, int pIndex );
 
 //	static int luaAdd( lua_State *L );
 //	static int luaDiv( lua_State *L );
 //	static int luaEq( lua_State *L );
 	static int luaMul( lua_State *L );
 //	static int luaSub( lua_State *L );
+	static int luaDelete( lua_State *L );
 
 	static int luaIndex( lua_State *L );
 	static int luaNewIndex( lua_State *L );
+
+	static int luaAt( lua_State *L );
+	static int luaSet( lua_State *L );
+	static int luaRows( lua_State *L );
+	static int luaCols( lua_State *L );
 
 	static int luaFrustum( lua_State *L );
 	static int luaOrtho( lua_State *L );
@@ -109,4 +120,4 @@ private:
 #endif
 };
 
-#endif // LUAMATRIX4X4_H
+#endif // LUAMATRIX_H

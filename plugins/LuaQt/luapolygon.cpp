@@ -23,6 +23,7 @@ const luaL_Reg LuaPolygon::mLuaFunctions[] =
 
 const luaL_Reg LuaPolygon::mLuaMetaMethods[] =
 {
+	{ "append",				LuaPolygon::luaAppend },
 	{ "__gc",				LuaPolygon::luaDelete },
 	{ "__len",				LuaPolygon::luaLen },
 	{ "__index",			LuaPolygon::luaIndex },

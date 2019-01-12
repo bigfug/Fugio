@@ -38,6 +38,7 @@
 #include "luaquaternion.h"
 #include "lualine.h"
 #include "luapolygon.h"
+#include "luamatrix.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
@@ -104,6 +105,7 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LuaJsonDocument::registerExtension( LUA );
 	LuaJsonObject::registerExtension( LUA );
 	LuaLine::registerExtension( LUA );
+	LuaMatrix::registerExtension( LUA );
 	LuaMatrix4x4::registerExtension( LUA );
 	LuaPainter::registerExtension( LUA );
 	LuaPen::registerExtension( LUA );

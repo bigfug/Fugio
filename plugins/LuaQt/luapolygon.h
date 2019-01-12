@@ -100,6 +100,7 @@ private:
 	static int luaIndex( lua_State *L );
 
 	static int luaNewIndex( lua_State *L );
+
 private:
 	static const luaL_Reg					mLuaFunctions[];
 	static const luaL_Reg					mLuaMetaMethods[];

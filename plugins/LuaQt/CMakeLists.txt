@@ -26,6 +26,8 @@ set( SOURCE_FILES
 	luajsondocument.h
 	luajsonobject.cpp
 	luajsonobject.h
+	luamatrix.cpp
+	luamatrix.h
 	luamatrix4x4.cpp
 	luamatrix4x4.h
 	lualine.cpp
@@ -84,6 +86,15 @@ if( LUA_FOUND )
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE LUA_SUPPORTED )
 else()
 	message( "LuaQt: NO" )
+endif()
+
+#------------------------------------------------------------------------------
+# Eigen
+
+find_package( Eigen3 QUIET )
+
+if( EIGEN3_FOUND )
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIR} )
 endif()
 
 #------------------------------------------------------------------------------
