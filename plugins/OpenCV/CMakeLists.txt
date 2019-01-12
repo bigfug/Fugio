@@ -59,6 +59,12 @@ set( SOURCE_FILES
 	absdiffnode.h
 	countnonzeronode.cpp
 	countnonzeronode.h
+	solvepnpnode.cpp
+	solvepnpnode.h
+	rodriguesnode.cpp
+	rodriguesnode.h
+	projectpointsnode.cpp
+	projectpointsnode.h
 )
 
 set( QRC_FILES
@@ -90,7 +96,7 @@ include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 #------------------------------------------------------------------------------
 # OpenCV
 
-find_package( OpenCV COMPONENTS core OPTIONAL_COMPONENTS imgproc features2d objdetect photo video )
+find_package( OpenCV COMPONENTS core OPTIONAL_COMPONENTS imgproc features2d objdetect photo video calib3d )
 
 if( OpenCV_FOUND )
 	message( "OpenCV: YES" )
@@ -108,3 +114,11 @@ else()
 	message( "OpenCV: NO" )
 endif()
 
+#------------------------------------------------------------------------------
+# Eigen
+
+find_package( Eigen3 QUIET )
+
+if( EIGEN3_FOUND )
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIR} )
+endif()
