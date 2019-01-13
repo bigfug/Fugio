@@ -6,6 +6,9 @@
 #include <QRectF>
 #include <QLineF>
 #include <QColor>
+#include <QVector2D>
+#include <QVector3D>
+#include <QVector4D>
 
 #include "coreplugin.h"
 
@@ -89,7 +92,16 @@ void ArrayPin::setVariantType( QMetaType::Type pType )
 	switch( mType )
 	{
 		case QMetaType::QPointF:
+		case QMetaType::QVector2D:
 			mTypeSize = sizeof( float ) * 2;
+			break;
+
+		case QMetaType::QVector3D:
+			mTypeSize = sizeof( float ) * 3;
+			break;
+
+		case QMetaType::QVector4D:
+			mTypeSize = sizeof( float ) * 4;
 			break;
 
 		default:
@@ -145,7 +157,7 @@ void ArrayPin::setVariant( int pIndex, int pOffset, const QVariant &pValue )
 			break;
 
 		case QMetaType::Int:
-			reinterpret_cast<float *>( A )[ 0 ] = pValue.toInt();
+			reinterpret_cast<int *>( A )[ 0 ] = pValue.toInt();
 			break;
 
 		case QMetaType::QPointF:
@@ -156,6 +168,15 @@ void ArrayPin::setVariant( int pIndex, int pOffset, const QVariant &pValue )
 				{
 					case QVariant::PointF:
 						V = pValue.toPointF();
+						break;
+
+					case QVariant::Vector2D:
+						{
+							QVector2D		V = pValue.value<QVector2D>();
+
+							V.setX( V.x() );
+							V.setY( V.y() );
+						}
 						break;
 
 					case QVariant::List:
@@ -178,6 +199,41 @@ void ArrayPin::setVariant( int pIndex, int pOffset, const QVariant &pValue )
 
 				B[ 0 ] = static_cast<float>( V.x() );
 				B[ 1 ] = static_cast<float>( V.y() );
+			}
+			break;
+
+		case QMetaType::QVector3D:
+			{
+				QVector3D	V;
+
+				switch( pValue.type() )
+				{
+					case QVariant::Vector3D:
+						V = pValue.value<QVector3D>();
+						break;
+
+					case QVariant::List:
+						{
+							QVariantList	L = pValue.toList();
+
+							if( L.size() == 3 )
+							{
+								V.setX( L[ 0 ].toReal() );
+								V.setY( L[ 1 ].toReal() );
+								V.setZ( L[ 2 ].toReal() );
+							}
+						}
+						break;
+
+					default:
+						break;
+				}
+
+				float	*B = reinterpret_cast<float *>( A );
+
+				B[ 0 ] = static_cast<float>( V.x() );
+				B[ 1 ] = static_cast<float>( V.y() );
+				B[ 2 ] = static_cast<float>( V.z() );
 			}
 			break;
 
@@ -228,6 +284,30 @@ QVariant ArrayPin::variant( int pIndex, int pOffset ) const
 				const float	*B = reinterpret_cast<const float *>( A );
 
 				V = QPointF( static_cast<qreal>( B[ 0 ] ), static_cast<qreal>( B[ 1 ] ) );
+			}
+			break;
+
+		case QMetaType::QVector2D:
+			{
+				const float	*B = reinterpret_cast<const float *>( A );
+
+				V = QVector2D( B[ 0 ], B[ 1 ] );
+			}
+			break;
+
+		case QMetaType::QVector3D:
+			{
+				const float	*B = reinterpret_cast<const float *>( A );
+
+				V = QVector3D( B[ 0 ], B[ 1 ], B[ 2 ] );
+			}
+			break;
+
+		case QMetaType::QVector4D:
+			{
+				const float	*B = reinterpret_cast<const float *>( A );
+
+				V = QVector4D( B[ 0 ], B[ 1 ], B[ 2 ], B[ 3 ] );
 			}
 			break;
 
