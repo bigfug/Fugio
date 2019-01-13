@@ -31,6 +31,7 @@ const luaL_Reg LuaExPin::mLuaInstance[] =
 
 const luaL_Reg LuaExPin::mLuaPinMethods[] =
 {
+	{ "append",		LuaExPin::luaAppend },
 	{ "name",		LuaExPin::luaPinGetName },
 	{ "isUpdated",	LuaExPin::luaIsUpdated },
 	{ "set",		LuaExPin::luaPinSetValue },
@@ -304,6 +305,46 @@ int LuaExPin::luaUpdate( lua_State *L )
 	}
 
 	P->node()->context()->pinUpdated( P );
+
+	return( 0 );
+}
+
+int LuaExPin::luaAppend( lua_State *L )
+{
+	QSharedPointer<fugio::PinInterface>	 P = LuaPlugin::getpin( L );
+
+	if( !P )
+	{
+		return( 0 );
+	}
+
+	if( P->direction() == PIN_OUTPUT && P->hasControl() )
+	{
+		QVariant	v;
+
+		if( lua_gettop( L ) == 3 )
+		{
+			v = LuaPlugin::popVariant( L, 2 );
+
+			fugio::VariantInterface				*V = qobject_cast<VariantInterface *>( P->control()->qobject() );
+
+			if( V )
+			{
+				int		i = V->variantCount();
+
+				V->setVariantCount( i + 1 );
+
+				if( lua_type( L, 2 ) == LUA_TUSERDATA )
+				{
+					V->setVariant( i, v );
+				}
+				else
+				{
+					V->setFromBaseVariant( i, v );
+				}
+			}
+		}
+	}
 
 	return( 0 );
 }
