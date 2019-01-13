@@ -23,7 +23,6 @@ const luaL_Reg LuaPolygon::mLuaFunctions[] =
 
 const luaL_Reg LuaPolygon::mLuaMetaMethods[] =
 {
-	{ "append",				LuaPolygon::luaAppend },
 	{ "__gc",				LuaPolygon::luaDelete },
 	{ "__len",				LuaPolygon::luaLen },
 	{ "__index",			LuaPolygon::luaIndex },
@@ -305,7 +304,7 @@ int LuaPolygon::luaIndex( lua_State *L )
 
 	if( lua_type( L, 2 ) == LUA_TNUMBER )
 	{
-		lua_Integer		Index = lua_tointeger( L, 2 );
+		lua_Integer		Index = lua_tointeger( L, 2 ) - 1;
 
 		if( Index < 0 || UD->mPolygon.size() < Index )
 		{
@@ -334,7 +333,7 @@ int LuaPolygon::luaIndex( lua_State *L )
 
 int LuaPolygon::luaNewIndex( lua_State *L )
 {
-	lua_Integer		Index = luaL_checkinteger( L, 2 );
+	lua_Integer		Index = luaL_checkinteger( L, 2 ) - 1;
 	QPointF			Point = LuaPointF::checkpointf( L, 3 );
 	UserData		*UD = checkuserdata( L );
 
