@@ -19,6 +19,11 @@ const char *LuaMatrix4x4::mTypeName = "qt.matrix4x4";
 
 #if defined( LUA_SUPPORTED )
 
+const luaL_Reg LuaMatrix4x4::mLuaFunctions[] =
+{
+	{ Q_NULLPTR, Q_NULLPTR }
+};
+
 const luaL_Reg LuaMatrix4x4::mLuaMetaMethods[] =
 {
 //	{ "__add",				LuaMatrix4x4::luaAdd },
@@ -66,7 +71,9 @@ int LuaMatrix4x4::luaOpen (lua_State *L )
 	lua_pushvalue( L, -1 );
 	lua_setfield( L, -2, "__index" );
 
-	luaL_setfuncs( L, mLuaMethods, 0 );
+	luaL_setfuncs( L, mLuaMetaMethods, 0 );
+
+	luaL_newlib( L, mLuaFunctions );
 
 	return( 1 );
 }
