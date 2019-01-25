@@ -34,8 +34,8 @@ void MatrixPin::saveSettings( QSettings &pSettings ) const
 		const Eigen::Index		rows = mValues.at( i ).rows();
 		const Eigen::Index		cols = mValues.at( i ).cols();
 
-		pSettings.setValue( "rows", rows );
-		pSettings.setValue( "cols", cols );
+		pSettings.setValue( "rows", int( rows ) );
+		pSettings.setValue( "cols", int( cols ) );
 
 		for( int r = 0 ; r < rows ; r++ )
 		{
