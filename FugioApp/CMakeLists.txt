@@ -185,6 +185,8 @@ target_sources( ${PROJECT_NAME} PRIVATE ${QRC_FILES} )
 
 set_property( SOURCE ${CMAKE_CURRENT_BINARY_DIR}/qrc_fugio.cpp PROPERTY SKIP_AUTOGEN ON )
 
+include( ${CMAKE_SOURCE_DIR}/cmake/UnixDepends.cmake )
+
 #------------------------------------------------------------------------------
 # Raspberry Pi
 

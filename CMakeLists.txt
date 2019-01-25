@@ -94,6 +94,8 @@ endif()
 
 #------------------------------------------------------------------------------
 
+set( FUGIO_UNIX_DEPENDENCIES )
+
 add_subdirectory( FugioLib )
 add_subdirectory( FugioApp )
 add_subdirectory( FugioShow )
@@ -182,6 +184,20 @@ else()
 endif()
 
 # The dependencies for various UNIX packages
+
+if( UNIX )
+	install( CODE "
+		file( GLOB FUGIO_DEPENDS_LIST ${CMAKE_BINARY_DIR}/*.depends )
+		execute_process(
+			COMMAND cat ${FUGIO_DEPENDS_LIST}
+			COMMAND sort
+			COMMAND uniq
+			WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+			OUTPUT_VARIABLE FUGIO_GLOBAL_DEPENDS
+			)
+		list( JOIN ${FUGIO_GLOBAL_DEPENDS} ', ' CPACK_DEBIAN_PACKAGE_DEPENDS )
+		message( ${CPACK_DEBIAN_PACKAGE_DEPENDS} )" )
+endif()
 
 if( Q_OS_RASPBERRY_PI )
 	set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
