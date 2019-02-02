@@ -86,6 +86,7 @@ void SolvePNPNode::inputsUpdated( qint64 pTimeStamp )
 
 	try
 	{
+//		if( cv::solvePnPRansac( ObjectPoints, ImagePoints, CameraArray, DistCoeffs, Rotation, Translation ) )
 		if( cv::solvePnP( ObjectPoints, ImagePoints, CameraArray, DistCoeffs, Rotation, Translation ) )
 		{
 			Eigen::MatrixXd		R, T;
@@ -109,6 +110,6 @@ void SolvePNPNode::inputsUpdated( qint64 pTimeStamp )
 	}
 	catch( cv::Exception e )
 	{
-		qDebug() << QString::fromStdString( e.msg );
+		//qDebug() << QString::fromStdString( e.msg );
 	}
 }
