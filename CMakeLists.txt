@@ -185,7 +185,7 @@ endif()
 
 # The dependencies for various UNIX packages
 
-if( UNIX )
+if( UNIX AND NOT APPLE )
 	install( CODE "
 		file( GLOB FUGIO_DEPENDS_LIST ${CMAKE_BINARY_DIR}/*.depends )
 		execute_process(
