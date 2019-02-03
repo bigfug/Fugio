@@ -286,9 +286,9 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 			case fugio::ImageFormat::GRAY8:
 				if( !QOpenGLContext::currentContext()->isOpenGLES() )
 				{
-					mTexture->setFormat( QOpenGLTexture::Red_Integer );
+					mTexture->setFormat( QOpenGLTexture::Red );
 
-					mTexture->setInternalFormat( QOpenGLTexture::R8U );
+					mTexture->setInternalFormat( QOpenGLTexture::R8_UNorm );
 				}
 				else
 				{

@@ -128,11 +128,11 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			switch( mDestinationFormat )
 			{
 				case fugio::ImageFormat::BGR8:
-					CvtCod = CV_HSV2BGR;
+					CvtCod = cv::COLOR_HSV2BGR;
 					break;
 
 				case fugio::ImageFormat::RGB8:
-					CvtCod = CV_HSV2RGB;
+					CvtCod = cv::COLOR_HSV2RGB;
 					break;
 
 				default:
@@ -144,11 +144,11 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			switch( mDestinationFormat )
 			{
 				case fugio::ImageFormat::GRAY8:
-					CvtCod = CV_RGB2GRAY;
+					CvtCod = cv::COLOR_RGB2GRAY;
 					break;
 
 				case fugio::ImageFormat::HSV8:
-					CvtCod = CV_RGB2HSV;
+					CvtCod = cv::COLOR_RGB2HSV;
 					break;
 
 				default:
@@ -160,7 +160,7 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			switch( mDestinationFormat )
 			{
 				case fugio::ImageFormat::RGB8:
-					CvtCod = CV_RGBA2RGB;
+					CvtCod = cv::COLOR_RGBA2RGB;
 					break;
 
 				default:
@@ -172,15 +172,15 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			switch( mDestinationFormat )
 			{
 				case fugio::ImageFormat::GRAY8:
-					CvtCod = CV_BGR2GRAY;
+					CvtCod = cv::COLOR_BGR2GRAY;
 					break;
 
 				case fugio::ImageFormat::RGB8:
-					CvtCod = CV_BGR2RGB;
+					CvtCod = cv::COLOR_BGR2RGB;
 					break;
 
 				case fugio::ImageFormat::HSV8:
-					CvtCod = CV_BGR2HSV;
+					CvtCod = cv::COLOR_BGR2HSV;
 					break;
 
 				default:
@@ -192,11 +192,11 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			switch( mDestinationFormat )
 			{
 				case fugio::ImageFormat::GRAY8:
-					CvtCod = CV_BGRA2GRAY;
+					CvtCod = cv::COLOR_BGRA2GRAY;
 					break;
 
 				case fugio::ImageFormat::RGB8:
-					CvtCod = CV_BGRA2RGB;
+					CvtCod = cv::COLOR_BGRA2RGB;
 					break;
 
 				default:
@@ -208,11 +208,11 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			switch( mDestinationFormat )
 			{
 				case fugio::ImageFormat::RGB8:
-					CvtCod = CV_YUV2RGB_Y422;
+					CvtCod = cv::COLOR_YUV2RGB_Y422;
 					break;
 
 				case fugio::ImageFormat::GRAY8:
-					CvtCod = CV_YUV2GRAY_Y422;
+					CvtCod = cv::COLOR_YUV2GRAY_Y422;
 					break;
 
 				default:
@@ -227,19 +227,19 @@ void ImageConvertNode::inputsUpdated( qint64 pTimeStamp )
 			switch( mDestinationFormat )
 			{
 				case fugio::ImageFormat::RGB8:
-					CvtCod = CV_GRAY2RGB;
+					CvtCod = cv::COLOR_GRAY2RGB;
 					break;
 
 				case fugio::ImageFormat::RGBA8:
-					CvtCod = CV_GRAY2RGBA;
+					CvtCod = cv::COLOR_GRAY2RGBA;
 					break;
 
 				case fugio::ImageFormat::BGR8:
-					CvtCod = CV_GRAY2BGR;
+					CvtCod = cv::COLOR_GRAY2BGR;
 					break;
 
 				case fugio::ImageFormat::BGRA8:
-					CvtCod = CV_GRAY2BGRA;
+					CvtCod = cv::COLOR_GRAY2BGRA;
 					break;
 
 				default:
