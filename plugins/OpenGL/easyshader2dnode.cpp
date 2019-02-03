@@ -697,3 +697,12 @@ void EasyShader2DNode::updateOutputPins()
 	OPENGL_PLUGIN_DEBUG
 }
 
+QList<QUuid> EasyShader2DNode::pinAddTypesOutput() const
+{
+	static QList<QUuid> PinTyp =
+	{
+		PID_OPENGL_TEXTURE
+	};
+
+	return( PinTyp );
+}

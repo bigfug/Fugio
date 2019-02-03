@@ -56,6 +56,8 @@ public:
 		return( pPin->direction() == PIN_OUTPUT );
 	}
 
+	virtual QList<QUuid> pinAddTypesOutput() const Q_DECL_OVERRIDE;
+
 	// RenderInterface interface
 public:
 	virtual void render( qint64 pTimeStamp, QUuid pSourcePinId ) Q_DECL_OVERRIDE;
