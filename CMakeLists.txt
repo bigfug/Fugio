@@ -187,17 +187,23 @@ endif()
 
 if( UNIX AND NOT APPLE )
 	install( CODE "
-		file( GLOB FUGIO_DEPENDS_LIST ${CMAKE_BINARY_DIR}/*.depends )
+		function(JOIN VALUES GLUE OUTPUT)
+		  string (REGEX REPLACE \"([^\\]|^);\" \"\\1\${GLUE}\" _TMP_STR \"\${VALUES}\")
+		  string (REGEX REPLACE \"[\\](.)\" \"\\1\" _TMP_STR \"\${_TMP_STR}\") #fixes escaping
+		  set (\${OUTPUT} \"\${_TMP_STR}\" PARENT_SCOPE)
+		endfunction()
+
+		file( GLOB FUGIO_DEPENDS_LIST \${CMAKE_BINARY_DIR}/*.depends )
 		if( FUGIO_DEPENDS_LIST )
 			execute_process(
-				COMMAND cat ${FUGIO_DEPENDS_LIST}
+				COMMAND cat \${FUGIO_DEPENDS_LIST}
 				COMMAND sort
 				COMMAND uniq
-				WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+				WORKING_DIRECTORY \${CMAKE_BINARY_DIR}
 				OUTPUT_VARIABLE FUGIO_GLOBAL_DEPENDS
 				)
-			list( JOIN ${FUGIO_GLOBAL_DEPENDS} ', ' CPACK_DEBIAN_PACKAGE_DEPENDS )
-			message( ${CPACK_DEBIAN_PACKAGE_DEPENDS} )
+			JOIN( \"\${FUGIO_GLOBAL_DEPENDS}\" \", \" CPACK_DEBIAN_PACKAGE_DEPENDS )
+			message( \${CPACK_DEBIAN_PACKAGE_DEPENDS} )
 		endif()" )
 endif()
 
