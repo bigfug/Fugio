@@ -20,7 +20,7 @@ Q_DECLARE_METATYPE( Eigen::MatrixXd )
 #include <fugio/math/uuid.h>
 
 #if defined( OPENCV_SUPPORTED )
-#include <opencv2/calib3d.hpp>
+#include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/core/eigen.hpp>
 #endif
 
