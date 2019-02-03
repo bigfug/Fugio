@@ -62,19 +62,19 @@ void GrayscaleNode::conversion( GrayscaleNode *pNode )
 	switch( SrcImg.format() )
 	{
 		case fugio::ImageFormat::RGB8:
-			cv::cvtColor( MatSrc, pNode->mMatImg, CV_RGB2GRAY );
+			cv::cvtColor( MatSrc, pNode->mMatImg, cv::COLOR_RGB2GRAY );
 			break;
 
 		case fugio::ImageFormat::BGR8:
-			cv::cvtColor( MatSrc, pNode->mMatImg, CV_BGR2GRAY );
+			cv::cvtColor( MatSrc, pNode->mMatImg, cv::COLOR_BGR2GRAY );
 			break;
 
 		case fugio::ImageFormat::RGBA8:
-			cv::cvtColor( MatSrc, pNode->mMatImg, CV_RGBA2GRAY );
+			cv::cvtColor( MatSrc, pNode->mMatImg, cv::COLOR_RGBA2GRAY );
 			break;
 
 		case fugio::ImageFormat::BGRA8:
-			cv::cvtColor( MatSrc, pNode->mMatImg, CV_BGRA2GRAY );
+			cv::cvtColor( MatSrc, pNode->mMatImg, cv::COLOR_BGRA2GRAY );
 			break;
 
 //		case fugio::ImageFormat::GRAY16:
