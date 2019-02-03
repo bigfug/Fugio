@@ -186,49 +186,11 @@ endif()
 # The dependencies for various UNIX packages
 
 if( UNIX AND NOT APPLE )
-	install( CODE "
-		function(JOIN VALUES GLUE OUTPUT)
-		  string (REGEX REPLACE \"([^\\]|^);\" \"\\1\${GLUE}\" _TMP_STR \"\${VALUES}\")
-		  string (REGEX REPLACE \"[\\](.)\" \"\\1\" _TMP_STR \"\${_TMP_STR}\") #fixes escaping
-		  set (\${OUTPUT} \"\${_TMP_STR}\" PARENT_SCOPE)
-		endfunction()
-
-		file( GLOB FUGIO_DEPENDS_LIST \${CMAKE_BINARY_DIR}/*.depends )
-		if( FUGIO_DEPENDS_LIST )
-			execute_process(
-				COMMAND cat \${FUGIO_DEPENDS_LIST}
-				COMMAND sort
-				COMMAND uniq
-				COMMAND awk \"ORS=\\\", \\\"\"
-				COMMAND head -c -2
-				WORKING_DIRECTORY \${CMAKE_BINARY_DIR}
-				OUTPUT_VARIABLE CPACK_DEBIAN_PACKAGE_DEPENDS
-				)
-			message( \${CPACK_DEBIAN_PACKAGE_DEPENDS} )
-		endif()" )
+	set( CPACK_DEBIAN_PACKAGE_DEBUG ON )
+	set( CPACK_DEB_COMPONENT_INSTALL ON )
+	set( CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON )
+	set( CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON )
 endif()
-
-#if( Q_OS_RASPBERRY_PI )
-#	set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
-#		libgles2-mesa, libicu57, libavcodec57, libavdevice57, libavformat57, libavutil55, libswscale4,
-#		libswresample2, libavfilter6, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2, pigpio,
-#		libqt5serialport5, libqt5quickcontrols2-5, libqt5quickwidgets5, libqt5websockets5,
-#		libopencv-photo2.4v5" )
-#elseif( UNIX )
-#	if( "${UNIX_ID}" STREQUAL "Ubuntu" AND "${UNIX_RELEASE}" STREQUAL "16.04" )
-#		set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
-#			libicu55, libavcodec-ffmpeg56, libavdevice-ffmpeg56, libavformat-ffmpeg56, libavutil-ffmpeg54, libswscale-ffmpeg3,
-#			libswresample-ffmpeg1, libavfilter-ffmpeg5, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2,
-#			libqt5serialport5" )
-#	else()
-#		set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
-#			libicu57, libavcodec57, libavdevice57, libavformat57, libavutil55, libswscale4,
-#			libswresample2, libavfilter6, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2,
-#			libqt5serialport5, libqt5quickcontrols2-5, libqt5quickwidgets5, libqt5websockets5,
-#			libdlib18, libopencv-calib3d3.1, libopencv-core3.1, libopencv-features2d3.1,
-#			libopencv-highgui3.1, libopencv-imgproc3.1, libopencv-objdetect3.1, libopencv-videoio3.1" )
-#	endif()
-#endif()
 
 # Extract the version for CPACK
 
