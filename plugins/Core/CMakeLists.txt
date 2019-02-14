@@ -89,6 +89,8 @@ set( SOURCE_FILES
 	processclicknode.h
 	decimatenode.cpp
 	decimatenode.h
+	updatenode.cpp
+	updatenode.h
 )
 
 set( QRC_FILES

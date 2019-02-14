@@ -52,6 +52,7 @@
 #include "blockupdatesnode.h"
 #include "processclicknode.h"
 #include "decimatenode.h"
+#include "updatenode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -123,6 +124,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Split Size", NID_SPLIT_SIZE, &SplitSizeNode::staticMetaObject ),
 	ClassEntry( "Switch", NID_SWITCH, &SwitchNode::staticMetaObject ),
 	ClassEntry( "Block Updates", NID_BLOCK_UPDATES, &BlockUpdatesNode::staticMetaObject ),
+	ClassEntry( "Update", NID_PIN_UPDATE, &UpdateNode::staticMetaObject ),
 	ClassEntry()
 };
 
