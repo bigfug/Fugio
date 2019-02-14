@@ -152,7 +152,7 @@ ClassEntry		CorePlugin::mPinClasses[] =
 };
 
 CorePlugin::CorePlugin( void )
-	: mApp( 0 )
+	: mApp( Q_NULLPTR )
 {
 	//-------------------------------------------------------------------------
 	// Install translator
@@ -163,10 +163,6 @@ CorePlugin::CorePlugin( void )
 	{
 		qApp->installTranslator( &Translator );
 	}
-}
-
-CorePlugin::~CorePlugin( void )
-{
 }
 
 PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
@@ -225,5 +221,5 @@ void CorePlugin::deinitialise()
 
 	mApp->unregisterNodeClasses( mNodeClasses );
 
-	mApp = 0;
+	mApp = Q_NULLPTR;
 }

@@ -83,7 +83,7 @@ public:
 		}
 	}
 
-	virtual ~NodeControlBase( void ) {}
+	virtual ~NodeControlBase( void ) Q_DECL_OVERRIDE {}
 
 	//-------------------------------------------------------------------------
 	// fugio::NodeInterface
@@ -304,7 +304,7 @@ public:
 	{
 		if( !pPin->isConnected() || !pPin->connectedPin()->hasControl() )
 		{
-			return( 0 );
+			return( Q_NULLPTR );
 		}
 
 		return( qobject_cast<T>( pPin->connectedPin()->control()->qobject() ) );

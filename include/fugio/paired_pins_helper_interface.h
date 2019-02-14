@@ -1,11 +1,15 @@
 #ifndef PAIRED_PINS_HELPER_INTERFACE_H
 #define PAIRED_PINS_HELPER_INTERFACE_H
 
+#include <QSharedPointer>
+
 #include <QUuid>
 
 #include <fugio/global.h>
 
 FUGIO_NAMESPACE_BEGIN
+
+class PinInterface;
 
 class PairedPinsHelperInterface
 {
