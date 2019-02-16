@@ -12,6 +12,8 @@ set( SOURCE_FILES
 	pjlinkplugin.h
 	pjlinkserver.cpp
 	pjlinkserver.h
+	projectornode.cpp
+	projectornode.h
 )
 
 add_library( ${PROJECT_NAME} MODULE ${SOURCE_FILES} )

@@ -10,7 +10,7 @@
 
 #include <fugio/pjlink/uuid.h>
 
-//#include "getnode.h"
+#include "projectornode.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
@@ -18,7 +18,7 @@ PJLinkPlugin *PJLinkPlugin::mInstance = Q_NULLPTR;
 
 ClassEntry	PJLinkPlugin::mNodeClasses[] =
 {
-//	ClassEntry( "COBS Decode", "Network", NID_COBS_DECODE, &COBSDecodeNode::staticMetaObject ),
+	ClassEntry( "Projector", "PJLink", NID_PJLINK_PROJECTOR, &ProjectorNode::staticMetaObject ),
 	ClassEntry()
 };
 

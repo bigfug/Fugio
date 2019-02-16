@@ -32,6 +32,21 @@
     </message>
 </context>
 <context>
+    <name>ProjectorNode</name>
+    <message>
+        <source>Projector</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Power</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>UDPReceiveRawNode</name>
     <message>
         <source>Port number cannot be zero</source>

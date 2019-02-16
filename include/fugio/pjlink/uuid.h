@@ -3,6 +3,6 @@
 
 #include <QUuid>
 
-//#define NID_NETWORK_GET				(QUuid("{4231a257-5fa6-4ef4-8e78-5b3611da415a}"))
+#define NID_PJLINK_PROJECTOR				(QUuid("{b8260c05-38d5-4584-a569-563f855d698e}"))
 
 #endif // PJLINK_UUID_H

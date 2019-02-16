@@ -36,6 +36,11 @@ public:
 		return( mInstance->mNetworkAccessManager );
 	}
 
+	PJLinkServer *server( void )
+	{
+		return( mServer );
+	}
+
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
 
