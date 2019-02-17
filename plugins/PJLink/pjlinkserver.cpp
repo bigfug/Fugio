@@ -5,6 +5,28 @@
 PJLinkServer::PJLinkServer( QObject *pParent )
 	: QObject( pParent )
 {
+	mSocketIP4 = new QUdpSocket( this );
+
+	connect( mSocketIP4, &QUdpSocket::readyRead, this, &PJLinkServer::readReadyIP4 );
+
+	if( !mSocketIP4->bind( QHostAddress( QHostAddress::AnyIPv4 ), 4352, QUdpSocket::ShareAddress ) )
+	{
+		qWarning() << tr( "PJLink: Can't bind to port 4352 on IP4" );
+	}
+	else
+	{
+		QTimer::singleShot( 1000, this, &PJLinkServer::searchTimeout );
+	}
+
+	mSocketIP6 = new QUdpSocket( this );
+
+	connect( mSocketIP6, &QUdpSocket::readyRead, this, &PJLinkServer::readReadyIP6 );
+
+	if( !mSocketIP6->bind( QHostAddress( QHostAddress::AnyIPv6 ), 4352, QUdpSocket::ShareAddress ) )
+	{
+		qWarning() << tr( "PJLink: Can't bind to port 4352 on IP6" );
+	}
+
 	mClientQueryTimer = new QTimer( this );
 
 	connect( mClientQueryTimer, &QTimer::timeout, [=]( void )
@@ -12,20 +34,8 @@ PJLinkServer::PJLinkServer( QObject *pParent )
 		emit clientQueryStatus();
 	} );
 
-	mClientQueryTimer->start( 10000 );
+	mClientQueryTimer->start( 5000 );
 
-	mSocketIP4 = new QUdpSocket( this );
-
-	connect( mSocketIP4, &QUdpSocket::readyRead, this, &PJLinkServer::readReady );
-
-	if( mSocketIP4->bind( QHostAddress( QHostAddress::AnyIPv4 ), 4352, QUdpSocket::ShareAddress ) )
-	{
-		QTimer::singleShot( 1000, this, &PJLinkServer::searchTimeout );
-	}
-	else
-	{
-		qWarning() << "PJLink: Can't bind to port 4352 on IP4";
-	}
 }
 
 PJLinkServer::~PJLinkServer()
@@ -49,20 +59,33 @@ void PJLinkServer::searchTimeout( void )
 {
 	QByteArray		Datagram( "%2SRCH\r" );
 
-	mSocketIP4->writeDatagram( Datagram, QHostAddress::Broadcast, 4352 );
+	if( mSocketIP4->isValid() )
+	{
+		mSocketIP4->writeDatagram( Datagram, QHostAddress::Broadcast, 4352 );
+	}
 
 	QTimer::singleShot( 30000, this, &PJLinkServer::searchTimeout );
 }
 
-void PJLinkServer::readReady()
+void PJLinkServer::readReadyIP6()
+{
+	readSocket( mSocketIP6 );
+}
+
+void PJLinkServer::readReadyIP4()
+{
+	readSocket( mSocketIP4 );
+}
+
+void PJLinkServer::readSocket( QUdpSocket *pSocket )
 {
 	QByteArray		Datagram;
 	QHostAddress	Host;
 	quint16			Port;
 
-	while( mSocketIP4->hasPendingDatagrams() )
+	while( pSocket->hasPendingDatagrams() )
 	{
-		int			DatagramSize = int( mSocketIP4->pendingDatagramSize() );
+		int			DatagramSize = int( pSocket->pendingDatagramSize() );
 
 		Datagram.resize( DatagramSize );
 
@@ -71,12 +94,14 @@ void PJLinkServer::readReady()
 			continue;
 		}
 
-		if( mSocketIP4->readDatagram( Datagram.data(), Datagram.size(), &Host, &Port ) != Datagram.size() )
+		if( pSocket->readDatagram( Datagram.data(), Datagram.size(), &Host, &Port ) != Datagram.size() )
 		{
 			continue;
 		}
 
+#if defined( QT_DEBUG )
 		qDebug() << "PJLINK:" << QString::fromLatin1( Datagram );
+#endif
 
 		PJLinkReponse	Response( Datagram );
 
@@ -133,21 +158,41 @@ PJLinkClient *PJLinkServer::clientAlloc( QHostAddress pAddress )
 
 	if( !C )
 	{
-		C = new PJLinkClient( pAddress );
+		C = new PJLinkClient( pAddress, this );
 
-		connect( this, &PJLinkServer::clientQueryStatus, C, &PJLinkClient::updateStatus );
+		if( C )
+		{
+			connect( this, &PJLinkServer::clientQueryStatus, C, &PJLinkClient::updateStatus );
 
-		mClientList << C;
+			connect( C, &PJLinkClient::clientConnected, [=]( void )
+			{
+				emit clientConnected( C );
+			} );
 
-		emit clientListChanged();
+			connect( C, &PJLinkClient::clientUpdated, [=]( void )
+			{
+				emit clientUpdated( C );
+			} );
+
+			connect( C, &PJLinkClient::authenticationError, [=]( void )
+			{
+				emit clientAuthenticationError( C );
+			} );
+
+			qInfo() << tr( "PJLink added projector at" ) << pAddress.toString();
+
+			mClientList << C;
+
+			emit clientListChanged();
+		}
 	}
 
 	return( C );
 }
 
-PJLinkClient::PJLinkClient( QHostAddress pAddress )
-	: mAddress( pAddress ), mAuthenticated( false ), mReady( false ),
-	  mInputTerminalNameIndex( 0 )
+PJLinkClient::PJLinkClient( QHostAddress pAddress, QObject *pParent )
+	: QObject( pParent ), mAddress( pAddress ), mAuthenticated( false ),
+	  mReady( false ), mPassword( "JBMIAProjectorLink" ), mInputTerminalNameIndex( 0 )
 {
 	connect( &mSocket, &QTcpSocket::readyRead, this, &PJLinkClient::readyRead );
 	connect( &mSocket, QOverload<QAbstractSocket::SocketError>::of( &QAbstractSocket::error ), this, &PJLinkClient::socketError );
@@ -168,58 +213,67 @@ void PJLinkClient::freeze( bool pFreeze )
 	sendCommand( QString( "%%2FREZ %1\r" ).arg( pFreeze ? '1' : '0' ).toLocal8Bit() );
 }
 
-void PJLinkClient::switchInput(PJLinkClient::Input pInput, char pValue)
+void PJLinkClient::switchInput( PJLinkClient::Input pInput, char pValue )
 {
 	sendCommand( QString( "%%2INPT %1%2\r" ).arg( pInput ).arg( pValue ).toLocal8Bit() );
 }
 
 void PJLinkClient::updateStatus()
 {
-	queryStatus();
+	if( mSocket.state() == QAbstractSocket::UnconnectedState )
+	{
+		connectToClient();
+	}
+
+	if( mReady && mCommands.isEmpty() )
+	{
+		queryStatus();
+	}
 }
 
 void PJLinkClient::sendCommand( QByteArray pCommand )
 {
-	mCommands << pCommand;
-
 	if( mSocket.state() == QAbstractSocket::UnconnectedState )
 	{
 		QTimer::singleShot( 1, this, &PJLinkClient::connectToClient );
-
-		return;
 	}
+	else if( mSocket.state() == QAbstractSocket::ConnectedState )
+	{
+		mCommands << pCommand;
 
-	sendCommand();
+		sendCommand();
+	}
 }
 
 void PJLinkClient::sendCommand()
 {
-	if( mAuthenticated && mReady )
+	if( mReady && !mCommands.isEmpty() )
 	{
-		if( !mCommands.isEmpty() )
+		if( mDigest.isEmpty() )
 		{
-			if( mDigest.isEmpty() )
-			{
-				mSocket.write( mCommands.first() );
-			}
-			else
-			{
-				QByteArray	Command = mDigest;
-
-				Command.append( mCommands.first() );
-
-				mSocket.write( Command );
-			}
-
-			//qDebug() << mCommands.first();
-
-			mReady = false;
+			mSocket.write( mCommands.first() );
 		}
+		else
+		{
+			QByteArray	Command = mDigest;
+
+			Command.append( mCommands.first() );
+
+			mSocket.write( Command );
+		}
+
+		//qDebug() << mCommands.first();
+
+		mReady = false;
 	}
 }
 
 void PJLinkClient::socketError( QAbstractSocket::SocketError pSocketError )
 {
+#if defined( QT_DEBUG )
+	qDebug() << pSocketError;
+#endif
+
 	switch( pSocketError )
 	{
 		case QAbstractSocket::RemoteHostClosedError:
@@ -239,45 +293,59 @@ void PJLinkClient::readyRead()
 
 	while( !( Data = mSocket.readLine() ).isEmpty() )
 	{
+#if defined( QT_DEBUG )
 		qDebug() << "PJLINK CLIENT:" << QString::fromLatin1( Data );
+#endif
 
 		if( Data.startsWith( "PJLINK" ) )
 		{
 			QByteArrayList	Command = Data.split( ' ' );
 
-			if( Command.size() > 1 && Command[ 1 ] == "0" )
+			if( Command.size() == 2 )
 			{
-				mAuthenticated = mReady = true;
-			}
-			else if( Command.size() > 2 && Command[ 1 ] == "1" )
-			{
-				QByteArray	RandomSequence = Command[ 2 ].left( Command[ 2 ].size() - 1 );
-				QByteArray	Password( "JBMIAProjectorLink" );
+				if( Command[ 1 ] == "0" )
+				{
+					mReady = true;
+				}
+				else if( Command[ 1 ] == "ERRA\r" )
+				{
+					emit authenticationError();
 
+					mSocket.disconnectFromHost();
+				}
+			}
+			else if( Command.size() == 3 && Command[ 1 ] == "1" )
+			{
 				QByteArray	HashData;
 
-				HashData.append( RandomSequence );
-				HashData.append( Password );
+				HashData.append( Command[ 2 ].chopped( 1 ) );
+				HashData.append( mPassword );
 
 				mDigest = QCryptographicHash::hash( HashData, QCryptographicHash::Md5 ).toHex();
 
-				mAuthenticated = mReady = true;
+				mReady = true;
+			}
+			else
+			{
+				qWarning() << "PJLink unrecognised command" << Command;
 			}
 
-			if( mAuthenticated && mReady )
+			if( mReady )
 			{
-				if( mClass.isUnknown() )
-				{
-					sendCommand( QByteArray( "%1CLSS ?\r" ) );
-				}
-				else
-				{
-					queryStatus();
-				}
+				mCommands.clear();
+
+				sendCommand( QByteArray( "%1CLSS ?\r" ) );
 			}
 		}
-		else if( Data.startsWith( '%' ) && Data.endsWith( '\r' ) )
+		else if( Data.startsWith( '%' ) )
 		{
+			if( !mAuthenticated )
+			{
+				mAuthenticated = true;
+
+				emit clientConnected();
+			}
+
 			parseResponse( Data );
 
 			if( !mCommands.isEmpty() )
@@ -308,7 +376,10 @@ void PJLinkClient::parseResponse( QByteArray pResponse )
 	{
 		if( Response.response().toUpper() == "OK" )
 		{
-			mPower.update();
+			if( mPower.update() )
+			{
+				emit clientUpdated();
+			}
 		}
 		else if( Response.resposeCode() == PJLinkReponse::OK )
 		{
@@ -319,15 +390,22 @@ void PJLinkClient::parseResponse( QByteArray pResponse )
 	{
 		if( Response.resposeCode() == PJLinkReponse::OK )
 		{
-			mName.set( Response.response() );
+			setName( Response.response() );
 		}
 	}
 	else if( Response.command() == "INPT" )
 	{
 		if( Response.response().toUpper() == "OK" )
 		{
-			mInputType.update();
-			mInput.update();
+			if( mInputType.update() )
+			{
+				emit clientUpdated();
+			}
+
+			if( mInput.update() )
+			{
+				emit clientUpdated();
+			}
 		}
 		else
 		{
@@ -338,8 +416,15 @@ void PJLinkClient::parseResponse( QByteArray pResponse )
 	{
 		if( Response.response().toUpper() == "OK" )
 		{
-			mVideoMute.update();
-			mAudioMute.update();
+			if( mVideoMute.update() )
+			{
+				emit clientUpdated();
+			}
+
+			if( mAudioMute.update() )
+			{
+				emit clientUpdated();
+			}
 		}
 		else
 		{
@@ -348,12 +433,18 @@ void PJLinkClient::parseResponse( QByteArray pResponse )
 
 			if( Type == 1 || Type == 3 )
 			{
-				mVideoMute.set( Value == '1' );
+				if( mVideoMute.set( Value == '1' ) )
+				{
+					emit clientUpdated();
+				}
 			}
 
 			if( Type == 2 || Type == 3 )
 			{
-				mAudioMute.set( Value == '1' );
+				if( mAudioMute.set( Value == '1' ) )
+				{
+					emit clientUpdated();
+				}
 			}
 		}
 	}
@@ -361,12 +452,19 @@ void PJLinkClient::parseResponse( QByteArray pResponse )
 	{
 		if( Response.response().toUpper() == "OK" )
 		{
-			mFanStatus.update();
-			mLampStatus.update();
-			mTemperatureStatus.update();
-			mCoverOpenStatus.update();
-			mFilterStatus.update();
-			mOtherStatus.update();
+			bool b1 = false;
+
+			b1 |= mFanStatus.update();
+			b1 |= mLampStatus.update();
+			b1 |= mTemperatureStatus.update();
+			b1 |= mCoverOpenStatus.update();
+			b1 |= mFilterStatus.update();
+			b1 |= mOtherStatus.update();
+
+			if( b1 )
+			{
+				emit clientUpdated();
+			}
 		}
 		else if( Response.resposeCode() == PJLinkReponse::OK )
 		{
@@ -433,30 +531,40 @@ void PJLinkClient::parseResponse( QByteArray pResponse )
 	{
 		if( Response.resposeCode() == PJLinkReponse::OK )
 		{
-			mManufacturer.set( Response.response() );
+			if( mManufacturer.set( Response.response() ) )
+			{
+				emit clientUpdated();
+			}
 		}
 	}
 	else if( Response.command() == "INF2" )
 	{
 		if( Response.resposeCode() == PJLinkReponse::OK )
 		{
-			mProductName.set( Response.response() );
+			if( mProductName.set( Response.response() ) )
+			{
+				emit clientUpdated();
+			}
 		}
 	}
 	else if( Response.command() == "INFO" )
 	{
 		if( Response.resposeCode() == PJLinkReponse::OK )
 		{
-			mOtherInformation.set( Response.response() );
+			if( mOtherInformation.set( Response.response() ) )
+			{
+				emit clientUpdated();
+			}
 		}
 	}
 	else if( Response.command() == "CLSS" )
 	{
 		if( Response.resposeCode() == PJLinkReponse::OK )
 		{
-			mClass.set( Response.response().toInt() );
-
-			queryInfo();
+			if( mClass.set( Response.response().toInt() ) )
+			{
+				emit clientUpdated();
+			}
 
 			queryStatus();
 		}
@@ -465,14 +573,20 @@ void PJLinkClient::parseResponse( QByteArray pResponse )
 	{
 		if( Response.resposeCode() == PJLinkReponse::OK )
 		{
-			mSerialNumber.set( Response.response() );
+			if( mSerialNumber.set( Response.response() ) )
+			{
+				emit clientUpdated();
+			}
 		}
 	}
 	else if( Response.command() == "SVER" )
 	{
 		if( Response.resposeCode() == PJLinkReponse::OK )
 		{
-			mSoftwareVersion.set( Response.response() );
+			if( mSoftwareVersion.set( Response.response() ) )
+			{
+				emit clientUpdated();
+			}
 		}
 	}
 	else if( Response.command() == "INNM" )
@@ -489,35 +603,50 @@ void PJLinkClient::parseResponse( QByteArray pResponse )
 	{
 		if( Response.resposeCode() == PJLinkReponse::OK )
 		{
-			mInputResolution.set( sizeFromResponse( Response.response() ) );
+			if( mInputResolution.set( sizeFromResponse( Response.response() ) ) )
+			{
+				emit clientUpdated();
+			}
 		}
 	}
 	else if( Response.command() == "RRES" )
 	{
 		if( Response.resposeCode() == PJLinkReponse::OK )
 		{
-			mRecommendedResolution.set( sizeFromResponse( Response.response() ) );
+			if( mRecommendedResolution.set( sizeFromResponse( Response.response() ) ) )
+			{
+				emit clientUpdated();
+			}
 		}
 	}
 	else if( Response.command() == "FILT" )
 	{
 		if( Response.resposeCode() == PJLinkReponse::OK )
 		{
-			mFilterUsageTime.set( Response.response().toInt() );
+			if( mFilterUsageTime.set( Response.response().toInt() ) )
+			{
+				emit clientUpdated();
+			}
 		}
 	}
 	else if( Response.command() == "RLMP" )
 	{
 		if( Response.resposeCode() == PJLinkReponse::OK )
 		{
-			mLampModelNumber.set( Response.response().split( ' ' ) );
+			if( mLampModelNumber.set( Response.response().split( ' ' ) ) )
+			{
+				emit clientUpdated();
+			}
 		}
 	}
 	else if( Response.command() == "RFIL" )
 	{
 		if( Response.resposeCode() == PJLinkReponse::OK )
 		{
-			mFilterModelNumber.set( Response.response().split( ' ' ) );
+			if( mFilterModelNumber.set( Response.response().split( ' ' ) ) )
+			{
+				emit clientUpdated();
+			}
 		}
 	}
 	else if( Response.command() == "SVOL" )
@@ -544,28 +673,39 @@ void PJLinkClient::parseResponse( QByteArray pResponse )
 	{
 		if( Response.response().toUpper() == "OK" )
 		{
-			mFreeze.update();
+			if( mFreeze.update() )
+			{
+				emit clientUpdated();
+			}
 		}
 		else
 		{
-			mFreeze.set( Response.response().toInt() );
+			if( mFreeze.set( Response.response().toInt() ) )
+			{
+				emit clientUpdated();
+			}
 		}
 	}
 }
 
-void PJLinkClient::queryInfo()
+void PJLinkClient::queryStatus()
 {
-	if( mClass.current() == 1 )
-	{
-		sendCommand( QByteArray( "%1INST ?\r" ) );
-	}
-
 	if( mClass.current() >= 1 )
 	{
 		sendCommand( QByteArray( "%1NAME ?\r" ) );
 		sendCommand( QByteArray( "%1INF1 ?\r" ) );
 		sendCommand( QByteArray( "%1INF2 ?\r" ) );
 		sendCommand( QByteArray( "%1INFO ?\r" ) );
+		sendCommand( QByteArray( "%1POWR ?\r" ) );
+		sendCommand( QByteArray( "%1AVMT ?\r" ) );
+		sendCommand( QByteArray( "%1ERST ?\r" ) );
+		sendCommand( QByteArray( "%1LAMP ?\r" ) );
+	}
+
+	if( mClass.current() == 1 )
+	{
+		sendCommand( QByteArray( "%1INST ?\r" ) );
+		sendCommand( QByteArray( "%1INPT ?\r" ) );
 	}
 
 	if( mClass.current() >= 2 )
@@ -575,26 +715,6 @@ void PJLinkClient::queryInfo()
 		sendCommand( QByteArray( "%2SVER ?\r" ) );
 		sendCommand( QByteArray( "%2RLMP ?\r" ) );
 		sendCommand( QByteArray( "%2RFIL ?\r" ) );
-	}
-}
-
-void PJLinkClient::queryStatus()
-{
-	if( mClass.current() == 1 )
-	{
-		sendCommand( QByteArray( "%1INPT ?\r" ) );
-	}
-
-	if( mClass.current() >= 1 )
-	{
-		sendCommand( QByteArray( "%1POWR ?\r" ) );
-		sendCommand( QByteArray( "%1AVMT ?\r" ) );
-		sendCommand( QByteArray( "%1ERST ?\r" ) );
-		sendCommand( QByteArray( "%1LAMP ?\r" ) );
-	}
-
-	if( mClass.current() >= 2 )
-	{
 		sendCommand( QByteArray( "%2INPT ?\r" ) );
 		sendCommand( QByteArray( "%2IRES ?\r" ) );
 		sendCommand( QByteArray( "%2RRES ?\r" ) );

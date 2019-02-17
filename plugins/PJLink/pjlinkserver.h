@@ -98,27 +98,38 @@ public:
 template <class T> class PJLinkSetting
 {
 public:
-	bool	mUnknown;
-	T		mCurrentSetting;
-	T		mNextSetting;
-
-	PJLinkSetting( void ) : mUnknown( true )
+	PJLinkSetting( T pDefault = T() )
+		: mCurrentSetting( pDefault ), mNextSetting( pDefault ), mUnknown( true )
 	{
 
 	}
 
-	void update( void )
+	bool update( void )
 	{
-		mCurrentSetting = mNextSetting;
-
 		mUnknown = false;
+
+		if( mCurrentSetting != mNextSetting )
+		{
+			mCurrentSetting = mNextSetting;
+
+			return( true );
+		}
+
+		return( false );
 	}
 
-	void set( T pValue )
+	bool set( T pValue )
 	{
-		mCurrentSetting = mNextSetting = pValue;
+		if( isUnknown() || mCurrentSetting != pValue )
+		{
+			mCurrentSetting = mNextSetting = pValue;
 
-		mUnknown = false;
+			mUnknown = false;
+
+			return( true );
+		}
+
+		return( false );
 	}
 
 	inline bool isUnknown( void ) const
@@ -130,6 +141,11 @@ public:
 	{
 		return( mCurrentSetting );
 	}
+
+private:
+	bool	mUnknown;
+	T		mCurrentSetting;
+	T		mNextSetting;
 };
 
 typedef struct PJLinkLamp
@@ -179,7 +195,7 @@ public:
 	} PJLinkInput;
 
 public:
-	PJLinkClient( QHostAddress pAddress );
+	PJLinkClient( QHostAddress pAddress, QObject *pParent = Q_NULLPTR );
 
 	QHostAddress address( void ) const
 	{
@@ -248,7 +264,26 @@ public:
 		return( mManufacturer.current() );
 	}
 
+signals:
+	void clientConnected( void );
+
+	void clientUpdated( void );
+
+	void authenticationError( void );
+
 public slots:
+	void setPassword( QByteArray pPassword )
+	{
+		if( mPassword != pPassword )
+		{
+			mPassword = pPassword;
+
+			mSocket.disconnectFromHost();
+
+			connectToClient();
+		}
+	}
+
 	void connectToClient( void );
 
 	void powerOn( void );
@@ -259,9 +294,20 @@ public slots:
 
 	void switchInput( Input pInput, char pValue );
 
+	void setName( QString pName )
+	{
+		if( mName.set( pName ) )
+		{
+			emit clientUpdated();
+		}
+	}
+
 	void setPower( Power pPower )
 	{
-		mPower.set( pPower );
+		if( mPower.set( pPower ) )
+		{
+			emit clientUpdated();
+		}
 	}
 
 	void setInput( QByteArray pResponse )
@@ -274,8 +320,15 @@ public slots:
 
 	void setInput( Input pType, char pValue )
 	{
-		mInputType.set( pType );
-		mInput.set( pValue );
+		bool	b1 = false;
+
+		b1 |= mInputType.set( pType );
+		b1 |= mInput.set( pValue );
+
+		if( b1 )
+		{
+			emit clientUpdated();
+		}
 	}
 
 	void setStatus( QByteArray pStatus )
@@ -290,36 +343,53 @@ public slots:
 
 	void setFanStatus( Error pError )
 	{
-		mFanStatus.set( pError );
+		if( mFanStatus.set( pError ) )
+		{
+			emit clientUpdated();
+		}
 	}
 
 	void setLampStatus( Error pError )
 	{
-		mLampStatus.set( pError );
+		if( mLampStatus.set( pError ) )
+		{
+			emit clientUpdated();
+		}
 	}
 
 	void setTemperatureStatus( Error pError )
 	{
-		mTemperatureStatus.set( pError );
+		if( mTemperatureStatus.set( pError ) )
+		{
+			emit clientUpdated();
+		}
 	}
 
 	void setCoverOpenStatus( Error pError )
 	{
-		mCoverOpenStatus.set( pError );
+		if( mCoverOpenStatus.set( pError ) )
+		{
+			emit clientUpdated();
+		}
 	}
 
 	void setFilterStatus( Error pError )
 	{
-		mFilterStatus.set( pError );
+		if( mFilterStatus.set( pError ) )
+		{
+			emit clientUpdated();
+		}
 	}
 
 	void setOtherStatus( Error pError )
 	{
-		mOtherStatus.set( pError );
+		if( mOtherStatus.set( pError ) )
+		{
+			emit clientUpdated();
+		}
 	}
 
 	void updateStatus( void );
-
 
 private slots:
 	void sendCommand( QByteArray pCommand );
@@ -332,20 +402,115 @@ private slots:
 
 	void parseResponse( QByteArray pResponse );
 
-	void queryInfo( void );
-
 	void queryStatus( void );
 
-private:
-	QTcpSocket		mSocket;
-	QHostAddress	mAddress;
-	bool			mAuthenticated;
-	bool			mReady;
-	QByteArrayList	mCommands;
-	QByteArray		mDigest;
+public:
+	inline Power powerStatus( void ) const
+	{
+		return( mPower.current() );
+	}
 
-	QVector<PJLinkLamp>		 mLamps;
-	QVector<PJLinkInput>	 mInputs;
+	inline QString productName( void ) const
+	{
+		return( mProductName.current() );
+	}
+
+	inline QString information( void ) const
+	{
+		return( mOtherInformation.current() );
+	}
+
+	inline QString serialNumber( void ) const
+	{
+		return( mSerialNumber.current() );
+	}
+
+	inline QString softwareVersion( void ) const
+	{
+		return( mSoftwareVersion.current() );
+	}
+
+	inline QSize inputResolution( void ) const
+	{
+		return( mInputResolution.current() );
+	}
+
+	inline QSize recommendedResolution( void ) const
+	{
+		return( mRecommendedResolution.current() );
+	}
+
+	inline int filterUsageTime( void ) const
+	{
+		return( mFilterUsageTime.current() );
+	}
+
+	inline Input inputType( void ) const
+	{
+		return( mInputType.current() );
+	}
+
+	inline char input( void ) const
+	{
+		return( mInput.current() );
+	}
+
+	inline bool videoMuted( void ) const
+	{
+		return( mVideoMute.current() );
+	}
+
+	inline bool audioMuted( void ) const
+	{
+		return( mAudioMute.current() );
+	}
+
+	inline bool frozen( void ) const
+	{
+		return( mFreeze.current() );
+	}
+
+	inline Error fanStatus( void ) const
+	{
+		return( mFanStatus.current() );
+	}
+
+	inline Error lampStatus( void ) const
+	{
+		return( mFanStatus.current() );
+	}
+
+	inline Error temperatureStatus( void ) const
+	{
+		return( mTemperatureStatus.current() );
+	}
+
+	inline Error coverOpenStatus( void ) const
+	{
+		return( mCoverOpenStatus.current() );
+	}
+
+	inline Error filterStatus( void ) const
+	{
+		return( mFilterStatus.current() );
+	}
+
+	inline Error otherStatus( void ) const
+	{
+		return( mOtherStatus.current() );
+	}
+
+private:
+	QTcpSocket						 mSocket;
+	QHostAddress					 mAddress;
+	bool							 mAuthenticated;
+	bool							 mReady;
+	QByteArray						 mPassword;
+	QByteArrayList					 mCommands;
+	QByteArray						 mDigest;
+
+	QVector<PJLinkLamp>				 mLamps;
+	QVector<PJLinkInput>			 mInputs;
 
 	PJLinkSetting<int>				 mClass;
 	PJLinkSetting<Power>			 mPower;
@@ -392,20 +557,31 @@ signals:
 
 	void clientListChanged( void );
 
+	void clientUpdated( PJLinkClient *pClient );
+
+	void clientAuthenticationError( PJLinkClient *pClient );
+
+	void clientConnected( PJLinkClient *pClient );
+
 private slots:
 	void searchTimeout( void );
 
-	void readReady( void );
+	void readReadyIP4( void );
+
+	void readReadyIP6( void );
 
 private:
 	PJLinkClient *clientAlloc( QHostAddress pAddress );
+
+	void readSocket( QUdpSocket *pSocket );
 
 private:
 	QTimer					*mClientQueryTimer;
 
 	QUdpSocket				*mSocketIP4;
+	QUdpSocket				*mSocketIP6;
 
-	QList<PJLinkClient *>	 mClientList;
+	QVector<PJLinkClient *>	 mClientList;
 };
 
 #endif // PJLINKSERVER_H
