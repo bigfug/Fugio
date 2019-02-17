@@ -20,10 +20,6 @@ ChoiceNode::ChoiceNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mValChoice = pinOutput<fugio::VariantInterface *>( "Choice", mPinChoice, PID_STRING );
 }
 
-ChoiceNode::~ChoiceNode( void )
-{
-}
-
 bool ChoiceNode::initialise()
 {
 	if( !NodeControlBase::initialise() )
@@ -44,7 +40,9 @@ QWidget *ChoiceNode::gui()
 
 		connect( GUI, SIGNAL(released()), this, SLOT(clicked()) );
 
-		mGUIs << QPointer<QPushButton>( GUI );
+		connect( this, &ChoiceNode::guiTextUpdated, GUI, &QPushButton::setText );
+
+		connect( this, &ChoiceNode::guiEnabled, GUI, &QPushButton::setEnabled );
 	}
 
 	if( mPinChoice->isConnected() )
@@ -84,16 +82,6 @@ void ChoiceNode::valueChanged( const QString &pValue )
 
 	pinUpdated( mPinChoice );
 
-	for( QPointer<QPushButton> GUI : mGUIs )
-	{
-		if( !GUI )
-		{
-			continue;
-		}
-
-		GUI->setText( pValue );
-	}
-
 	emit valueUpdated( pValue );
 }
 
@@ -111,51 +99,34 @@ void ChoiceNode::pinLinked( QSharedPointer<fugio::PinInterface> P )
 			Choice = Choices.first();
 		}
 
-		for( QPointer<QPushButton> GUI : mGUIs )
-		{
-			if( !GUI )
-			{
-				continue;
-			}
+		emit guiTextUpdated( Choice );
 
-			GUI->setText( Choice );
-
-			GUI->setEnabled( true );
-		}
+		emit guiEnabled( true );
 
 		valueChanged( Choice );
+
+		connect( dynamic_cast<QObject *>( CI ), SIGNAL(choicesChanged()), this, SLOT(choicesChanged()) );
 	}
 	else
 	{
-		for( QPointer<QPushButton> GUI : mGUIs )
-		{
-			if( !GUI )
-			{
-				continue;
-			}
+		emit guiTextUpdated( QString() );
 
-			GUI->setText( QString() );
-
-			GUI->setEnabled( false );
-		}
+		emit guiEnabled( false );
 	}
 }
 
 void ChoiceNode::pinUnlinked( QSharedPointer<fugio::PinInterface> P )
 {
-	Q_UNUSED( P )
+	fugio::ChoiceInterface	*CI = P->hasControl() ? qobject_cast<fugio::ChoiceInterface *>( P->control()->qobject() ) : nullptr;
 
-	for( QPointer<QPushButton> GUI : mGUIs )
+	if( CI )
 	{
-		if( !GUI )
-		{
-			continue;
-		}
-
-		GUI->setText( QString() );
-
-		GUI->setEnabled( false );
+		disconnect( dynamic_cast<QObject *>( CI ), SIGNAL(choicesChanged()), this, SLOT(choicesChanged()) );
 	}
+
+	emit guiTextUpdated( QString() );
+
+	emit guiEnabled( false );
 }
 
 void ChoiceNode::clicked()
@@ -186,4 +157,9 @@ void ChoiceNode::clicked()
 			valueChanged( NewChoice );
 		}
 	}
+}
+
+void ChoiceNode::choicesChanged()
+{
+
 }

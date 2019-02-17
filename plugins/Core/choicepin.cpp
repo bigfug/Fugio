@@ -16,7 +16,12 @@ QStringList ChoicePin::choices() const
 	return( mChoices );
 }
 
-void ChoicePin::setChoices(QStringList pChoices)
+void ChoicePin::setChoices( QStringList pChoices )
 {
-	mChoices = pChoices;
+	if( mChoices != pChoices )
+	{
+		mChoices = pChoices;
+
+		emit choicesChanged();
+	}
 }

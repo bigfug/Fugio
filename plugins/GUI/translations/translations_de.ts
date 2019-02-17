@@ -27,7 +27,7 @@
 <context>
     <name>ChoiceNode</name>
     <message>
-        <location filename="../choicenode.cpp" line="182"/>
+        <location filename="../choicenode.cpp" line="153"/>
         <source>Select</source>
         <translation>Select</translation>
     </message>

@@ -1,9 +1,8 @@
 #ifndef CHOICE_INTERFACE_H
 #define CHOICE_INTERFACE_H
 
-#include <QUuid>
 #include <QStringList>
-#include <QVariant>
+#include <QObject>
 
 #include <fugio/global.h>
 
@@ -19,6 +18,9 @@ public:
 	virtual void setChoices( QStringList pChoices ) = 0;
 
 	virtual QStringList choices( void ) const = 0;
+
+signals:
+	virtual void choicesChanged( void ) = 0;
 };
 
 FUGIO_NAMESPACE_END
