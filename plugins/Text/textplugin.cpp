@@ -19,6 +19,7 @@
 #include "rightnode.h"
 #include "containsnode.h"
 #include "chopnode.h"
+#include "comparestringnode.h"
 
 #include "syntaxerrorpin.h"
 
@@ -34,6 +35,7 @@ using namespace fugio;
 ClassEntry		mNodeClasses[] =
 {
 	ClassEntry( "Chop",					"String", NID_CHOP, &ChopNode::staticMetaObject ),
+	ClassEntry( "Compare",				"String", NID_COMPARE_STRING, &CompareStringNode::staticMetaObject ),
 	ClassEntry( "Contains",				"String", NID_CONTAINS, &ContainsNode::staticMetaObject ),
 	ClassEntry( "Number To String",		"String", NID_NUMBER_TO_STRING, &NumberToStringNode::staticMetaObject ),
 	ClassEntry( "RegExp",				"String", NID_REGEXP, &RegExpNode::staticMetaObject ),

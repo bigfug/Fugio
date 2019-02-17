@@ -15,6 +15,29 @@
     </message>
 </context>
 <context>
+    <name>CompareStringNode</name>
+    <message>
+        <location filename="../comparestringnode.cpp" line="14"/>
+        <source>Compare</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../comparestringnode.cpp" line="18"/>
+        <source>Case Sensitive</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../comparestringnode.cpp" line="24"/>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../comparestringnode.cpp" line="28"/>
+        <source>Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ContainsNode</name>
     <message>
         <location filename="../containsnode.cpp" line="14"/>

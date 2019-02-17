@@ -17,6 +17,7 @@
 #define NID_RIGHT				(QUuid("{78139514-e412-4a64-afdc-9bee4b1e7fb3}"))
 #define NID_CONTAINS			(QUuid("{9094cc75-9eea-455f-a66d-b4f9e8f1bb6d}"))
 #define NID_CHOP				(QUuid("{c44dc9f9-5fde-46f8-9406-6e2afcae52e0}"))
+#define NID_COMPARE_STRING		(QUuid("{52b2565b-881f-4025-a7cd-1cb97b0ab2ef}"))
 
 #define PID_SYNTAX_ERROR		(QUuid("{35992A92-8571-4AC7-AACA-98AE7E0CD3D2}"))
 
