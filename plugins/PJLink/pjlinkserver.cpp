@@ -316,9 +316,12 @@ void PJLinkClient::readyRead()
 			}
 			else if( Command.size() == 3 && Command[ 1 ] == "1" )
 			{
+				QByteArray	Salt = Command[ 2 ];
 				QByteArray	HashData;
 
-				HashData.append( Command[ 2 ].chopped( 1 ) );
+				Salt.chop( 1 );
+
+				HashData.append( Salt );
 				HashData.append( mPassword );
 
 				mDigest = QCryptographicHash::hash( HashData, QCryptographicHash::Md5 ).toHex();
