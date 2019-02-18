@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="fr_FR">
 <context>
+    <name>PJLinkClient</name>
+    <message>
+        <source>PJLink unrecognised command</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PJLinkServer</name>
     <message>
         <source>PJLink: Can&apos;t bind to port 4352 on IP4</source>

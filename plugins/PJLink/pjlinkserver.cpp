@@ -35,7 +35,6 @@ PJLinkServer::PJLinkServer( QObject *pParent )
 	} );
 
 	mClientQueryTimer->start( 5000 );
-
 }
 
 PJLinkServer::~PJLinkServer()
@@ -195,7 +194,12 @@ PJLinkClient::PJLinkClient( QHostAddress pAddress, QObject *pParent )
 	  mReady( false ), mPassword( "JBMIAProjectorLink" ), mInputTerminalNameIndex( 0 )
 {
 	connect( &mSocket, &QTcpSocket::readyRead, this, &PJLinkClient::readyRead );
+
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 )
 	connect( &mSocket, QOverload<QAbstractSocket::SocketError>::of( &QAbstractSocket::error ), this, &PJLinkClient::socketError );
+#else
+	connect( &mSocket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(socketError(QAbstractSocket::SocketError)) );
+#endif
 }
 
 void PJLinkClient::powerOn()
@@ -330,7 +334,7 @@ void PJLinkClient::readyRead()
 			}
 			else
 			{
-				qWarning() << "PJLink unrecognised command" << Command;
+				qWarning() << tr( "PJLink unrecognised command" ) << Command;
 			}
 
 			if( mReady )
