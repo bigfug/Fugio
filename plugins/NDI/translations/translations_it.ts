@@ -9,4 +9,12 @@
         <translation>Aggiorna</translation>
     </message>
 </context>
+<context>
+    <name>NDISendNode</name>
+    <message>
+        <location filename="../ndisendnode.cpp" line="119"/>
+        <source>Image is not BGRA, RGBA, or YUY422</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
 </TS>

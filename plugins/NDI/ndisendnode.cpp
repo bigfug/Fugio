@@ -5,7 +5,7 @@
 #include <fugio/context_signals.h>
 
 NDISendNode::NDISendNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mProducerInstance( 0 )
+	: NodeControlBase( pNode ), mProducerInstance( Q_NULLPTR )
 {
 	FUGID( PIN_INPUT_NAME,		"DF437432-F0A0-4048-9BC5-1C29FF534E14" );
 	FUGID( PIN_INPUT_GROUPS,	"20EE221E-DB44-4A51-ACE8-D535503C23E5" );
@@ -27,7 +27,7 @@ NDISendNode::NDISendNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mPinInputAudio = pinInput( "Audio", PIN_INPUT_AUDIO );
 
 #if defined( NDI_SUPPORTED )
-	mNDIInstance = 0;
+	mNDIInstance = Q_NULLPTR;
 #endif
 }
 
@@ -38,7 +38,7 @@ bool NDISendNode::deinitialise()
 	{
 		NDIlib_send_destroy( mNDIInstance );
 
-		mNDIInstance = 0;
+		mNDIInstance = Q_NULLPTR;
 	}
 #endif
 
@@ -83,7 +83,7 @@ void NDISendNode::inputsUpdated( qint64 pTimeStamp )
 		{
 			NDIlib_send_destroy( mNDIInstance );
 
-			mNDIInstance = 0;
+			mNDIInstance = Q_NULLPTR;
 		}
 
 		mNDIName   = variant( mPinInputName ).toString();
@@ -115,7 +115,15 @@ void NDISendNode::inputsUpdated( qint64 pTimeStamp )
 		{
 			if( SrcImg.format() != fugio::ImageFormat::BGRA8 && SrcImg.format() != fugio::ImageFormat::RGBA8 && SrcImg.format() != fugio::ImageFormat::YUYV422 )
 			{
+				mNode->setStatus( fugio::NodeInterface::Error );
+				mNode->setStatusMessage( tr( "Image is not BGRA, RGBA, or YUY422" ) );
+
 				return;
+			}
+			else
+			{
+				mNode->setStatus( fugio::NodeInterface::Initialised );
+				mNode->setStatusMessage( QString() );
 			}
 
 			fugio::Performance		Perf( mNode, "inputsUpdated", pTimeStamp );
