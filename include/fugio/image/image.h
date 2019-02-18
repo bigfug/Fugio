@@ -231,7 +231,7 @@ public:
 	{
 		for( int i = 0 ; i < ImageData::PLANE_COUNT ; i++ )
 		{
-			mData->mPointer[ i ] = 0;
+			mData->mPointer[ i ] = Q_NULLPTR;
 			mData->mLineWidth[ i ] = 0;
 		}
 	}
@@ -275,7 +275,7 @@ public:
 	{
 		Q_ASSERT( pIndex >= 0 && pIndex < ImageData::PLANE_COUNT );
 
-		const int	BufSiz = bufferSize( pIndex ); // mLineWidth[ pIndex ] * mImageSize.height();
+		const size_t	BufSiz = bufferSize( pIndex );
 
 		if( mData->mBufferSizes[ pIndex ] != BufSiz )
 		{
@@ -286,11 +286,11 @@ public:
 			{
 				free( mData->mBuffer[ pIndex ] );
 
-				mData->mBuffer[ pIndex ] = 0;
+				mData->mBuffer[ pIndex ] = Q_NULLPTR;
 				mData->mBufferSizes[ pIndex ] = 0;
 			}
 
-			if( posix_memalign( (void **)&mData->mBuffer[ pIndex ], 16, BufSiz ) == 0 )
+			if( !posix_memalign( reinterpret_cast<void **>( &mData->mBuffer[ pIndex ] ), 16, BufSiz ) )
 	#endif
 			{
 				setBufferSize( pIndex, BufSiz );
@@ -304,7 +304,7 @@ public:
 	{
 		Q_ASSERT( pIndex >= 0 && pIndex < ImageData::PLANE_COUNT );
 
-		const int	BufSiz = bufferSize( pIndex ); //mLineWidth[ pIndex ] * mImageSize.height();
+		const int	BufSiz = bufferSize( pIndex );
 
 		if( mData->mBufferSizes[ pIndex ] != BufSiz )
 		{
@@ -318,7 +318,7 @@ public:
 					free( mData->mBuffer[ pIndex ] );
 	#endif
 
-					mData->mBuffer[ pIndex ] = 0;
+					mData->mBuffer[ pIndex ] = Q_NULLPTR;
 				}
 			}
 			else if( !mData->mBuffer[ pIndex ] )
@@ -326,7 +326,7 @@ public:
 	#if defined( Q_OS_WIN )
 				mData->mBuffer[ pIndex ] = reinterpret_cast<quint8 *>( _aligned_malloc( BufSiz, 16 ) );
 	#elif defined( Q_OS_UNIX )
-				posix_memalign( (void **)&mData->mBuffer[ pIndex ], 16, BufSiz );
+				posix_memalign( reinterpret_cast<void **>( &mData->mBuffer[ pIndex ] ), 16, BufSiz );
 	#endif
 			}
 	#if defined( Q_OS_WIN )
@@ -340,11 +340,11 @@ public:
 				{
 					free( mData->mBuffer[ pIndex ] );
 
-					mData->mBuffer[ pIndex ] = 0;
+					mData->mBuffer[ pIndex ] = Q_NULLPTR;
 					mData->mBufferSizes[ pIndex ] = 0;
 				}
 
-				if( posix_memalign( (void **)&mData->mBuffer[ pIndex ], 16, BufSiz ) == 0 )
+				if( posix_memalign( reinterpret_cast<void **>( &mData->mBuffer[ pIndex ] ), 16, BufSiz ) == 0 )
 				{
 
 				}
