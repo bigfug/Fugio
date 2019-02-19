@@ -18,7 +18,7 @@ class Preview : public QOpenGLWidget
 public:
 	explicit Preview( QWeakPointer<fugio::NodeInterface> pNode, QWidget *pParent = Q_NULLPTR );
 
-	virtual ~Preview( void );
+	virtual ~Preview( void ) Q_DECL_OVERRIDE;
 
 	// QOpenGLWidget interface
 protected:
