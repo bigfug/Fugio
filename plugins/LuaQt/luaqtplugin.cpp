@@ -100,6 +100,7 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	LuaColor::registerExtension( LUA );
 	LuaFont::registerExtension( LUA );
 	LuaFontMetrics::registerExtension( LUA );
+	LuaGradient::registerExtension( LUA );
 	LuaImage::registerExtension( LUA );
 	LuaJsonArray::registerExtension( LUA );
 	LuaJsonDocument::registerExtension( LUA );
