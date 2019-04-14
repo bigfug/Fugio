@@ -9,6 +9,7 @@
 #include <fugio/global_signals.h>
 #include <fugio/context_interface.h>
 #include <fugio/context_signals.h>
+#include <fugio/file/filename_interface.h>
 
 #include <fugio/text/syntax_error_interface.h>
 
@@ -835,6 +836,34 @@ void OpenGLPlugin::initGLEW()
 
 void OpenGLPlugin::loadShader( QSharedPointer<PinInterface> pPin, QOpenGLShaderProgram &pProgram, QOpenGLShader::ShaderType pShaderType, int &pCompiled, int &pFailed )
 {
+	QSharedPointer<fugio::PinInterface>		ConnectedPin = pPin->connectedPin();
+
+	if( ConnectedPin && ConnectedPin->hasControl() )
+	{
+		fugio::FilenameInterface	*F = qobject_cast<fugio::FilenameInterface *>( ConnectedPin->control()->qobject() );
+
+		if( F )
+		{
+			if( !pProgram.addShaderFromSourceFile( pShaderType, F->filename() ) )
+			{
+				QString		Log = pProgram.log();
+
+				if( !Log.isEmpty() )
+				{
+					qWarning() << Log;
+				}
+
+				pFailed++;
+			}
+			else
+			{
+				pCompiled++;
+			}
+
+			return;
+		}
+	}
+
 	fugio::SyntaxErrorInterface *SyntaxErrors = Q_NULLPTR;
 
 	if( pPin->hasControl() )
@@ -844,13 +873,13 @@ void OpenGLPlugin::loadShader( QSharedPointer<PinInterface> pPin, QOpenGLShaderP
 
 	QString			Source;
 
-	if( !pPin->isConnected() || !pPin->connectedPin()->hasControl() )
+	if( !ConnectedPin || !ConnectedPin->hasControl() )
 	{
 		Source = pPin->value().toString();
 	}
 	else
 	{
-		fugio::VariantInterface	*V = qobject_cast<fugio::VariantInterface *>( pPin->connectedPin()->control()->qobject() );
+		fugio::VariantInterface		*V = qobject_cast<fugio::VariantInterface *>( ConnectedPin->control()->qobject() );
 
 		Source = ( V ? V->variant().toString() : pPin->value().toString() );
 	}
