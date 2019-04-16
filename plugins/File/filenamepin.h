@@ -18,7 +18,7 @@ class FilenamePin : public fugio::PinControlBase, public fugio::FilenameInterfac
 public:
 	Q_INVOKABLE explicit FilenamePin( QSharedPointer<fugio::PinInterface> pPin );
 
-	virtual ~FilenamePin( void ) {}
+	virtual ~FilenamePin( void ) Q_DECL_OVERRIDE {}
 
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
@@ -33,8 +33,8 @@ public:
 		return( "Filename" );
 	}
 
-	virtual void loadSettings(QSettings &pSettings) Q_DECL_OVERRIDE;
-	virtual void saveSettings(QSettings &pSettings) const Q_DECL_OVERRIDE;
+	virtual void loadSettings( QSettings &pSettings ) Q_DECL_OVERRIDE;
+	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// InterfaceFilename

@@ -9,6 +9,7 @@
 #include <fugio/core/uuid.h>
 #include <fugio/text/uuid.h>
 #include <fugio/opengl/uuid.h>
+#include <fugio/file/filename_interface.h>
 #include <fugio/performance.h>
 #include <fugio/opengl/texture_interface.h>
 #include <fugio/core/array_interface.h>
@@ -29,8 +30,8 @@ EasyShader2DNode::EasyShader2DNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mValInputShaderFragment = pinInput<fugio::SyntaxErrorInterface *>( "Fragment", mPinInputShaderFragment, PID_SYNTAX_ERROR, PIN_INPUT_FRAGMENT_SHADER );
 
-	mPinInputShaderVertex->registerPinInputType( PID_STRING );
-	mPinInputShaderFragment->registerPinInputType( PID_STRING );
+	mPinInputShaderVertex->registerPinInputTypes( { PID_STRING, PID_FILENAME } );
+	mPinInputShaderFragment->registerPinInputTypes( { PID_STRING, PID_FILENAME } );
 
 	mValInputShaderVertex->setHighlighterUuid( SYNTAX_HIGHLIGHTER_GLSL );
 	mValInputShaderFragment->setHighlighterUuid( SYNTAX_HIGHLIGHTER_GLSL );
