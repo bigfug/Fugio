@@ -106,5 +106,23 @@ bool PainterWindow::event(QEvent *event)
 		renderNow();
 		return true;
 	}
+    else if (event->type() == QEvent::KeyPress)
+	{
+		//Use F11 as a platform-indipendent shortcut for the PainterWindow
+		QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+		if (keyEvent->key() == Qt::Key_F11)
+		{
+			if (this->visibility()==QWindow::FullScreen)
+			{
+				this->showNormal();
+			}
+			else
+			{
+				//Goes to fullScreen
+				this->showFullScreen();
+			}
+			return true;
+		}
+	}
 	return QWindow::event(event);
 }
