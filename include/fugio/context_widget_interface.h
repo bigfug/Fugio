@@ -6,6 +6,7 @@
 #include "global.h"
 
 class QUndoStack;
+class QWidget;
 
 FUGIO_NAMESPACE_BEGIN
 
