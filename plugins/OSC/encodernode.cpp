@@ -343,7 +343,21 @@ void EncoderNode::inputsUpdated( qint64 pTimeStamp )
 
 		if( V )
 		{
-			output( P->name(), V->variant() );
+			if( V->variantCount() > 1 )
+			{
+				QVariantList		VL;
+
+				for( int i = 0 ; i < V->variantCount() ; i++ )
+				{
+					VL << V->variant( i );
+				}
+
+				output( P->name(), VL );
+			}
+			else
+			{
+				output( P->name(), V->variant() );
+			}
 
 			continue;
 		}
