@@ -329,8 +329,8 @@ void NodePrivate::loadSettings( QSettings &pSettings, QMap<QUuid, QUuid> &pPinMa
 
 	//-------------------------------------------------------------------------
 
-	qSort( mPinInputs.begin(), mPinInputs.end(), pinOrderFunction );
-	qSort( mPinOutputs.begin(), mPinOutputs.end(), pinOrderFunction );
+	std::sort( mPinInputs.begin(), mPinInputs.end(), pinOrderFunction );
+	std::sort( mPinOutputs.begin(), mPinOutputs.end(), pinOrderFunction );
 
 	//-------------------------------------------------------------------------
 
