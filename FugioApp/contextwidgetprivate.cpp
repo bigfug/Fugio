@@ -3,6 +3,7 @@
 
 #include <QFileDialog>
 #include <QStylePainter>
+#include <QStyleOption>
 #include <QStandardPaths>
 #include <QStyleOption>
 
