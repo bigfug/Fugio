@@ -72,7 +72,7 @@ void InPaintNode::inputsUpdated( qint64 pTimeStamp )
 	cv::Mat		MatMsk = OpenCVPlugin::image2mat( MskImg );
 	cv::Mat		MatTmp;
 
-	cv::cvtColor( MatSrc, MatTmp, cv::COLOR_BGRA2RGB );
+	cv::cvtColor( MatSrc, MatTmp, OPENCV_COLOR_CODE( BGRA2RGB ) );
 
 	cv::inpaint( MatTmp, MatMsk, mMatImg, mPinInputRadius->value().toDouble(), cv::INPAINT_NS );
 
