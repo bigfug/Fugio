@@ -1,6 +1,7 @@
 #include "luajsonobject.h"
 
 #include <QJsonValueRef>
+#include <QJsonDocument>
 
 #include "luaqtplugin.h"
 #include "luajsonarray.h"
@@ -18,6 +19,7 @@ const luaL_Reg LuaJsonObject::mLuaInstance[] =
 {
 	{ "__index",		LuaJsonObject::luaGet },
 	{ "__gc",			LuaJsonObject::luaDelete },
+	{ "__tostring",		LuaJsonObject::luaToString },
 	{ 0, 0 }
 };
 
@@ -205,6 +207,18 @@ int LuaJsonObject::luaGet(lua_State *L)
 	}
 
 	return( 0 );
+}
+
+
+int LuaJsonObject::luaToString(lua_State *L)
+{
+	JsonObjectUserData	*UserData = checkjsonobjectdata( L );
+
+	QString				 JsonData = QJsonDocument( UserData->mJsonObject ).toJson( QJsonDocument::Compact );
+
+	lua_pushfstring( L, "%s", JsonData.toLatin1().constData() );
+
+	return( 1 );
 }
 
 #endif
