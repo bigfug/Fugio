@@ -1,5 +1,5 @@
-#ifndef IMAGE_H
-#define IMAGE_H
+#ifndef FUGIO_IMAGE_H
+#define FUGIO_IMAGE_H
 
 #include <fugio/global.h>
 #include <fugio/image/image.h>
@@ -433,4 +433,4 @@ FUGIO_NAMESPACE_END
 
 Q_DECLARE_METATYPE( fugio::Image )
 
-#endif // IMAGE_H
+#endif // FUGIO_IMAGE_H
