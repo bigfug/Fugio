@@ -127,6 +127,10 @@ public:
 
 	virtual QString displayLabel( void ) const = 0;
 
+	virtual bool isProperty( void ) const = 0;
+
+	virtual void markAsProperty( bool pIsProperty = true ) = 0;
+
 	//-------------------------------------------------------------------------
 	// Paired pins - id's are PinInterface::localId()
 

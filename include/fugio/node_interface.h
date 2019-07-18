@@ -103,6 +103,10 @@ public:
 
 	virtual QObject *createPin( const QString &pName, PinDirection pDirection, const QUuid &pGlobalId, const QUuid &pLocalId, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID ) = 0;
 
+	virtual QSharedPointer<fugio::PinInterface> createProperty( const QString &pName, PinDirection pDirection, const QUuid &pGlobalId, const QUuid &pLocalId ) = 0;
+
+	virtual QObject *createProperty( const QString &pName, PinDirection pDirection, const QUuid &pGlobalId, const QUuid &pLocalId, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID ) = 0;
+
 	virtual void addPin( QSharedPointer<fugio::PinInterface> pPin ) = 0;
 
 	virtual void removePin( QSharedPointer<fugio::PinInterface> pPin ) = 0;

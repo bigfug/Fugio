@@ -78,8 +78,33 @@ QObject *NodePrivate::createPin( const QString &pName, PinDirection pDirection, 
 
 	if( !pPinInterface )
 	{
-		return( 0 );
+		return( Q_NULLPTR );
 	}
+
+	addPin( pPinInterface );
+
+	return( pPinInterface->control() ? pPinInterface->control()->qobject() : nullptr );
+}
+
+QSharedPointer<fugio::PinInterface> NodePrivate::createProperty(const QString &pName, PinDirection pDirection, const QUuid &pGlobalId, const QUuid &pLocalId)
+{
+	QSharedPointer<fugio::PinInterface>		Pin;
+
+	createProperty( pName, pDirection, pGlobalId, pLocalId, Pin, QUuid() );
+
+	return( Pin );
+}
+
+QObject *NodePrivate::createProperty(const QString &pName, PinDirection pDirection, const QUuid &pGlobalId, const QUuid &pLocalId, QSharedPointer<fugio::PinInterface> &pPinInterface, const QUuid &pControlUUID)
+{
+	pPinInterface = context()->createPin( pName, pGlobalId, pLocalId, pDirection, pControlUUID );
+
+	if( !pPinInterface )
+	{
+		return( Q_NULLPTR );
+	}
+
+	pPinInterface->markAsProperty();
 
 	addPin( pPinInterface );
 

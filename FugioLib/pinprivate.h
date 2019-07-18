@@ -171,6 +171,16 @@ public:
 		return( mFlags.testFlag( AlwaysUpdate ) );
 	}
 
+	inline virtual bool isProperty( void ) const Q_DECL_OVERRIDE
+	{
+		return( mFlags.testFlag( Property ) );
+	}
+
+	inline virtual void markAsProperty( bool pIsProperty = true ) Q_DECL_OVERRIDE
+	{
+		mFlags.setFlag( Property, pIsProperty );
+	}
+
 	virtual void setDisplayLabel(QString pDisplayLabel) Q_DECL_OVERRIDE;
 	virtual QString displayLabel() const Q_DECL_OVERRIDE;
 
@@ -218,7 +228,8 @@ public:
 		Hidden			= 1 << 1,
 		Updatable		= 1 << 2,
 		AutoRename		= 1 << 3,
-		AlwaysUpdate	= 1 << 4
+		AlwaysUpdate	= 1 << 4,
+		Property		= 1 << 5
 	};
 
 	Q_DECLARE_FLAGS( Options, Option )

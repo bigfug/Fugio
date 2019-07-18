@@ -252,6 +252,18 @@ public:
 		return( qobject_cast<T>( mNode->createPin( pName, PIN_INPUT, QUuid::createUuid(), pLocalId, mPinInterface, pControlUUID ) ) );
 	}
 
+	QSharedPointer<fugio::PinInterface> createProperty( const QString &pName, const QUuid &pLocalId )
+	{
+		return( mNode->createProperty( pName, PIN_INPUT, QUuid::createUuid(), pLocalId ) );
+	}
+
+	template <class T = fugio::PinInterface *> T createProperty( const QString &pName, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID, const QUuid &pLocalId )
+	{
+		Q_ASSERT( mPinInterface.isNull() );
+
+		return( qobject_cast<T>( mNode->createProperty( pName, PIN_INPUT, QUuid::createUuid(), pLocalId, mPinInterface, pControlUUID ) ) );
+	}
+
 	//-------------------------------------------------------------------------
 	// support methods for creating output pins
 
