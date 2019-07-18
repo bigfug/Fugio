@@ -7,23 +7,24 @@ set( UI_RESOURCES resources.qrc )
 set( SOURCE_FILES
 	fugio.cpp
 	contextprivate.cpp
+	contextprivate.h
 	context.cpp
 	globalprivate.cpp
+	globalprivate.h
 	global.cpp
 	pinprivate.cpp
+	pinprivate.h
 	pin.cpp
 	nodeprivate.cpp
+	nodeprivate.h
 	node.cpp
 	interpolation.cpp
-	../include/fugio/global.h
-	contextprivate.h
-	globalprivate.h
-	pinprivate.h
-	nodeprivate.h
-	../libs/FugioTime/lib/timesync.cpp
-	../libs/FugioTime/lib/timesync.h
 	universe.cpp
 	universe.h
+
+	../include/fugio/global.h
+	../libs/FugioTime/lib/timesync.cpp
+	../libs/FugioTime/lib/timesync.h
 	../include/fugio/interpolation.h
 	../include/fugio/performance.h
 	../stable.h
