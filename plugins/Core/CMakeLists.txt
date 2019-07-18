@@ -18,6 +18,7 @@ set( SOURCE_FILES
     triggerpin.cpp
     boolpin.cpp
     bytearraypin.cpp
+	bytearraypin.h
     numberrangenode.cpp
     randomnumbernode.cpp
     anytriggernode.cpp
