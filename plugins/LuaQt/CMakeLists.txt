@@ -10,6 +10,8 @@ set( SOURCE_FILES
 
 	luabrush.cpp
 	luabrush.h
+	luabytearray.cpp
+	luabytearray.h
 	luacolor.cpp
 	luacolor.h
 	luafont.cpp

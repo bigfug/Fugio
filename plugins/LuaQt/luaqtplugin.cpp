@@ -39,6 +39,7 @@
 #include "lualine.h"
 #include "luapolygon.h"
 #include "luamatrix.h"
+#include "luabytearray.h"
 
 QList<QUuid>	NodeControlBase::PID_UUID;
 
@@ -97,6 +98,7 @@ PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pAp
 	//--------------------------------------------------------------------------
 
 	LuaBrush::registerExtension( LUA );
+	LuaByteArray::registerExtension( LUA );
 	LuaColor::registerExtension( LUA );
 	LuaFont::registerExtension( LUA );
 	LuaFontMetrics::registerExtension( LUA );
