@@ -427,93 +427,93 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="400"/>
+        <location filename="../mainwindow.cpp" line="398"/>
         <source>Open Patch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="400"/>
-        <location filename="../mainwindow.cpp" line="1102"/>
+        <location filename="../mainwindow.cpp" line="398"/>
+        <location filename="../mainwindow.cpp" line="1103"/>
         <source>Fugio Patches (*.fug)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="604"/>
+        <location filename="../mainwindow.cpp" line="602"/>
         <source>%1 v%2 by Alex May - DEBUG VERSION (not for distribution)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="606"/>
+        <location filename="../mainwindow.cpp" line="604"/>
         <source>%1 v%2 by Alex May</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="618"/>
+        <location filename="../mainwindow.cpp" line="616"/>
         <source>Set duration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="618"/>
+        <location filename="../mainwindow.cpp" line="616"/>
         <source>Duration (Hours:Minutes:Seconds:Milliseconds):</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="953"/>
+        <location filename="../mainwindow.cpp" line="951"/>
         <source>&amp;%1 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="958"/>
+        <location filename="../mainwindow.cpp" line="956"/>
         <source>%1 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1102"/>
+        <location filename="../mainwindow.cpp" line="1103"/>
         <source>Append Patch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1130"/>
+        <location filename="../mainwindow.cpp" line="1131"/>
         <source>Name Snippet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1130"/>
+        <location filename="../mainwindow.cpp" line="1131"/>
         <source>Enter the name for the new Snippet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1146"/>
+        <location filename="../mainwindow.cpp" line="1147"/>
         <source>Snippet Exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1146"/>
+        <location filename="../mainwindow.cpp" line="1147"/>
         <source>A snippit already exists with that name, do you want to overwrite it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1233"/>
+        <location filename="../mainwindow.cpp" line="1234"/>
         <source>Load Recovery Files?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1233"/>
+        <location filename="../mainwindow.cpp" line="1234"/>
         <source>Recovery files found - reload them?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1235"/>
+        <location filename="../mainwindow.cpp" line="1236"/>
         <source>Delete Recovery Files?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1235"/>
+        <location filename="../mainwindow.cpp" line="1236"/>
         <source>Recovery files found - delete them?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1437"/>
+        <location filename="../mainwindow.cpp" line="1438"/>
         <source>Import file(s)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -733,162 +733,162 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>PinItem</name>
     <message>
-        <location filename="../pinitem.cpp" line="246"/>
+        <location filename="../pinitem.cpp" line="243"/>
         <source>Rename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="248"/>
+        <location filename="../pinitem.cpp" line="245"/>
         <source>Edit Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="250"/>
+        <location filename="../pinitem.cpp" line="247"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="255"/>
+        <location filename="../pinitem.cpp" line="252"/>
         <source>Hide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="260"/>
+        <location filename="../pinitem.cpp" line="257"/>
         <source>Updatable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="266"/>
+        <location filename="../pinitem.cpp" line="263"/>
         <source>Import</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="267"/>
+        <location filename="../pinitem.cpp" line="264"/>
         <source>Export</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="273"/>
+        <location filename="../pinitem.cpp" line="270"/>
         <source>Disconnect Global</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="279"/>
+        <location filename="../pinitem.cpp" line="276"/>
         <source>Connect Global...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="288"/>
+        <location filename="../pinitem.cpp" line="285"/>
         <source>Remove Group Input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="298"/>
+        <location filename="../pinitem.cpp" line="295"/>
         <source>Add Group Input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="315"/>
+        <location filename="../pinitem.cpp" line="312"/>
         <source>Joiners</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="334"/>
+        <location filename="../pinitem.cpp" line="332"/>
         <source>Always Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="340"/>
+        <location filename="../pinitem.cpp" line="338"/>
         <source>Set Colour...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="344"/>
+        <location filename="../pinitem.cpp" line="342"/>
         <source>Remove Global</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="350"/>
+        <location filename="../pinitem.cpp" line="348"/>
         <source>Make Global</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="359"/>
+        <location filename="../pinitem.cpp" line="357"/>
         <source>Remove Group Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="376"/>
+        <location filename="../pinitem.cpp" line="374"/>
         <source>Add Group Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="388"/>
+        <location filename="../pinitem.cpp" line="386"/>
         <source>Splitters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="410"/>
+        <location filename="../pinitem.cpp" line="409"/>
         <source>Help...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="450"/>
+        <location filename="../pinitem.cpp" line="449"/>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="457"/>
+        <location filename="../pinitem.cpp" line="456"/>
         <source>Description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="884"/>
+        <location filename="../pinitem.cpp" line="883"/>
         <source>Choose Default Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="903"/>
+        <location filename="../pinitem.cpp" line="902"/>
         <source>Select file...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="924"/>
+        <location filename="../pinitem.cpp" line="923"/>
         <source>Choose Colour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="943"/>
+        <location filename="../pinitem.cpp" line="942"/>
         <source>Choose Font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="961"/>
+        <location filename="../pinitem.cpp" line="960"/>
         <source>Edit Default Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1012"/>
+        <location filename="../pinitem.cpp" line="1011"/>
         <source>Import Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1027"/>
+        <location filename="../pinitem.cpp" line="1026"/>
         <source>Export Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1138"/>
+        <location filename="../pinitem.cpp" line="1137"/>
         <source>No Global Pins</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1138"/>
+        <location filename="../pinitem.cpp" line="1137"/>
         <source>There are no global pins defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1155"/>
+        <location filename="../pinitem.cpp" line="1154"/>
         <source>Choose Global</source>
         <translation type="unfinished"></translation>
     </message>

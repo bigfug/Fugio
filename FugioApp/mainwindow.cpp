@@ -148,7 +148,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->mTreeView->setRootIndex( mFileSystem.index( "G:\\clips" ) );
 
-	if( ( mActionRedo = gApp->undoGroup().createRedoAction( this ) ) != 0 )
+	if( ( mActionRedo = gApp->undoGroup().createRedoAction( this ) ) != Q_NULLPTR )
 	{
 		mActionRedo->setShortcut( QKeySequence::Redo );
 
@@ -157,7 +157,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		//connect( &gApp->undoGroup(), SIGNAL(canRedoChanged(bool)), mActionRedo, SLOT(setEnabled(bool)) );
 	}
 
-	if( ( mActionUndo = gApp->undoGroup().createUndoAction( this ) ) != 0 )
+	if( ( mActionUndo = gApp->undoGroup().createUndoAction( this ) ) != Q_NULLPTR )
 	{
 		mActionUndo->setShortcut( QKeySequence::Undo );
 
@@ -199,8 +199,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect( ui->menu_Window, SIGNAL(aboutToShow()), this, SLOT(buildWindowMenu()) );
 
 	//-------------------------------------------------------------------------
-
-	connect( &mActiveWindowMapper, SIGNAL(mapped(QWidget*)), this, SLOT(setActiveWindow(QWidget*)) );
 
 	linkWindowVisibilitySignal( ui->actionLogger, ui->mDockWidthLogger );
 	linkWindowVisibilitySignal( ui->actionBrowser, ui->mDockWidgetBrowser );
@@ -450,7 +448,7 @@ void MainWindow::contextAdded( QSharedPointer<fugio::ContextInterface> pContext 
 {
 	ContextWidgetPrivate	*CV = new ContextWidgetPrivate();
 
-	if( CV == 0 )
+	if( !CV )
 	{
 		return;
 	}
@@ -962,8 +960,11 @@ void MainWindow::buildWindowMenu()
 		QAction *action  = ui->menu_Window->addAction( text );
 		action->setCheckable( true );
 		action ->setChecked( SubWin == ui->mWorkArea->activeSubWindow() );
-		connect(action, SIGNAL(triggered()), &mActiveWindowMapper, SLOT(map()));
-		mActiveWindowMapper.setMapping( action, SubWin );
+
+		connect( action, &QAction::triggered, [ this, SubWin ]
+		{
+			this->setActiveWindow( SubWin );
+		} );
 	}
 }
 

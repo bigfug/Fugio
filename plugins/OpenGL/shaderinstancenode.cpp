@@ -435,7 +435,7 @@ QStringList ShaderInstanceNode::availableInputPins() const
 		PinLst.removeAll( P->name() );
 	}
 
-	qSort( PinLst );
+	std::sort( PinLst.begin(), PinLst.end() );
 
 	return( PinLst );
 }

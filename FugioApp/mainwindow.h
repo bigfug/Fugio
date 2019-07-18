@@ -7,7 +7,6 @@
 #include <QFileSystemModel>
 #include <QUndoStack>
 #include <QMdiSubWindow>
-#include <QSignalMapper>
 
 #include <fugio/edit_interface.h>
 
@@ -204,8 +203,6 @@ private:
 	QAction										*mActionRedo;
 
 	QUndoStack									 mUndoStack;
-
-	QSignalMapper								 mActiveWindowMapper;
 
 	fugio::EditInterface						*mEditTarget;
 

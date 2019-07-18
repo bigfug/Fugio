@@ -86,7 +86,7 @@ void NodeListForm::addNodeClass( const fugio::ClassEntry &pClassEntry )
 			{
 				mNodeGroups.append( pClassEntry.mGroup );
 
-				qSort( mNodeGroups );
+				std::sort( mNodeGroups.begin(), mNodeGroups.end() );
 
 				ui->mNodeGroup->clear();
 

@@ -1201,7 +1201,7 @@ void NodeItem::menuAddOutputPin()
 					PinTypes << PinIds.value( id );
 				}
 
-				qSort( PinTypes );
+				std::sort( PinTypes.begin(), PinTypes.end() );
 
 				QString			PinType = QInputDialog::getItem( gApp->mainWindow(), tr( "Pin Type" ), tr( "Choose Pin Type" ), PinTypes, 0, false, &OK );
 
