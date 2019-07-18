@@ -41,7 +41,7 @@ endif()
 get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 
-if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
+if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release AND FUGIO_BUILD_DIST )
 	find_program( WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${_qt_bin_dir}" )
 
 	get_filename_component( ABS_BINARY_DIR "${CMAKE_INSTALL_PREFIX}" REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
@@ -125,7 +125,7 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 
 endif()
 
-if( APPLE AND CMAKE_BUILD_TYPE STREQUAL Release )
+if( APPLE AND CMAKE_BUILD_TYPE STREQUAL Release AND FUGIO_BUILD_DIST )
 
 	find_program( MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}" )
 

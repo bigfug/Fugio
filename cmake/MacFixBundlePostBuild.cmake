@@ -46,10 +46,12 @@ function( fixlibs LIB_PATH )
 	endforeach()
 endfunction()
 
-fixlibs( ${BUNDLE_LIB} )
+if( FUGIO_BUILD_DIST )
+	fixlibs( ${BUNDLE_LIB} )
 
-file( GLOB DYLIB_LIST "${BUNDLE_PATH}/Contents/Frameworks/*.dylib" )
+	file( GLOB DYLIB_LIST "${BUNDLE_PATH}/Contents/Frameworks/*.dylib" )
 
-foreach( DYLIB IN LISTS DYLIB_LIST )
-	fixlibs( ${DYLIB} )
-endforeach()
+	foreach( DYLIB IN LISTS DYLIB_LIST )
+		fixlibs( ${DYLIB} )
+	endforeach()
+endif()

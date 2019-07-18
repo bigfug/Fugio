@@ -26,6 +26,8 @@ else ()
     message(STATUS "*** SIZEOF void * != 8, so not 64-bit")
 endif ()
 
+set( FUGIO_BUILD_DIST FALSE CACHE BOOL "Build Fugio for binary distribution" )
+
 # There must be a better way to do this...
 
 if( EXISTS /opt/vc/include/bcm_host.h )
