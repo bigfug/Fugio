@@ -21,7 +21,7 @@
     <message>
         <location filename="../fftnode.cpp" line="64"/>
         <source>An audio input</source>
-        <translation>Un&apos;entrata audio</translation>
+        <translation>Un ingresso audio</translation>
     </message>
     <message>
         <location filename="../fftnode.cpp" line="66"/>

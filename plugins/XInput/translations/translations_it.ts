@@ -5,7 +5,7 @@
     <name>XInputNode</name>
     <message>
         <source>Left Stick X</source>
-        <translation type="unfinished"></translation>
+        <translation>X dell&apos;analogico sinistro</translation>
     </message>
 </context>
 </TS>

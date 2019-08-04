@@ -32,32 +32,32 @@
     <message>
         <location filename="../projectpointsnode.cpp" line="37"/>
         <source>Object Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Punti dell&apos;oggetto</translation>
     </message>
     <message>
         <location filename="../projectpointsnode.cpp" line="39"/>
         <source>Rotation</source>
-        <translation type="unfinished"></translation>
+        <translation>Rotazione</translation>
     </message>
     <message>
         <location filename="../projectpointsnode.cpp" line="41"/>
         <source>Translation</source>
-        <translation type="unfinished"></translation>
+        <translation>Traslazione</translation>
     </message>
     <message>
         <location filename="../projectpointsnode.cpp" line="43"/>
         <source>Camera Matrix</source>
-        <translation type="unfinished"></translation>
+        <translation>Matrice della camera</translation>
     </message>
     <message>
         <location filename="../projectpointsnode.cpp" line="45"/>
         <source>Dist Coeffs</source>
-        <translation type="unfinished"></translation>
+        <translation>Coefficienti distanza</translation>
     </message>
     <message>
         <location filename="../projectpointsnode.cpp" line="47"/>
         <source>Image Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Punti dell&apos;immagine</translation>
     </message>
 </context>
 <context>
@@ -66,12 +66,12 @@
         <location filename="../rodriguesnode.cpp" line="34"/>
         <location filename="../rodriguesnode.cpp" line="36"/>
         <source>Matrix</source>
-        <translation type="unfinished"></translation>
+        <translation>Matrice</translation>
     </message>
     <message>
         <location filename="../rodriguesnode.cpp" line="38"/>
         <source>Jacobian</source>
-        <translation type="unfinished"></translation>
+        <translation>Jacobiana</translation>
     </message>
 </context>
 <context>
@@ -79,32 +79,32 @@
     <message>
         <location filename="../solvepnpnode.cpp" line="37"/>
         <source>Object Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Punti dell&apos;oggetto</translation>
     </message>
     <message>
         <location filename="../solvepnpnode.cpp" line="39"/>
         <source>Image Points</source>
-        <translation type="unfinished"></translation>
+        <translation>Punti dell&apos;immagine</translation>
     </message>
     <message>
         <location filename="../solvepnpnode.cpp" line="41"/>
         <source>Camera Array</source>
-        <translation type="unfinished"></translation>
+        <translation>Vettore della camera</translation>
     </message>
     <message>
         <location filename="../solvepnpnode.cpp" line="43"/>
         <source>Dist Coeffs</source>
-        <translation type="unfinished"></translation>
+        <translation>Coefficienti distanza</translation>
     </message>
     <message>
         <location filename="../solvepnpnode.cpp" line="45"/>
         <source>Rotation</source>
-        <translation type="unfinished"></translation>
+        <translation>Rotazione</translation>
     </message>
     <message>
         <location filename="../solvepnpnode.cpp" line="47"/>
         <source>Translation</source>
-        <translation type="unfinished"></translation>
+        <translation>Traslazione</translation>
     </message>
 </context>
 </TS>

@@ -14,7 +14,7 @@
     <message>
         <location filename="../ndisendnode.cpp" line="119"/>
         <source>Image is not BGRA, RGBA, or YUY422</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;immagine non è in BGRA, RGBA oppure YUY422</translation>
     </message>
 </context>
 </TS>

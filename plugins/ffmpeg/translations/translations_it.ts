@@ -41,12 +41,12 @@
     <message>
         <location filename="../medianode.cpp" line="105"/>
         <source>The output image from the media file - link to an Image Preview node to see it</source>
-        <translation>L&apos;immagine in uscita dal contenuto - collegarlo a un nodo d&apos;Anteprima immagine per vederlo</translation>
+        <translation>Il fotogramma del contenuto in uscita - collegarlo a un nodo d&apos;Anteprima immagine per vederlo</translation>
     </message>
     <message>
         <location filename="../medianode.cpp" line="107"/>
         <source>The audio output from the media file - link to an audio output node to hear it</source>
-        <translation>L&apos;uscita audio dal contenuto, collegarlo a un nodo di uscita audio per sentirlo</translation>
+        <translation>L&apos;uscita audio del contenuto - collegarla a un nodo di uscita audio per sentirlo</translation>
     </message>
     <message>
         <location filename="../medianode.cpp" line="109"/>
@@ -56,22 +56,22 @@
     <message>
         <location filename="../medianode.cpp" line="110"/>
         <source>This pin is true when the media file is playing, false otherwise</source>
-        <translation>Questo piedino è vero quando si sta riproducendo il contenuto, altrimenti è falso</translation>
+        <translation>Questo piedino viene impostato a vero quando si sta riproducendo il contenuto, altrimenti è falso</translation>
     </message>
     <message>
         <location filename="../medianode.cpp" line="111"/>
         <source>This pin is true when the media file is paused, false otherwise</source>
-        <translation>Questo piedino è vero quando il contenuto è in pausa, altrimenti è falso</translation>
+        <translation>Questo piedino viene impostato a vero quando il contenuto è in pausa, altrimenti è falso</translation>
     </message>
     <message>
         <location filename="../medianode.cpp" line="112"/>
         <source>This pin is true when the media file is stopped, false otherwise</source>
-        <translation>Questo piedino è vero quando il contenuto è stato interrotto, altrimenti è falso</translation>
+        <translation>Questo piedino viene impostato a vero quando il contenuto è stato interrotto, altrimenti è falso</translation>
     </message>
     <message>
         <location filename="../medianode.cpp" line="114"/>
         <source>This pin is triggered everytime the media file is looped</source>
-        <translation>Questo piedino viene innescato ogni volta il ciclo ricomincia da capo</translation>
+        <translation>Questo piedino viene innescato ogni volta che il ciclo ricomincia da capo</translation>
     </message>
     <message>
         <location filename="../medianode.cpp" line="115"/>
@@ -97,7 +97,7 @@
     <message>
         <location filename="../mediaprocessornode.cpp" line="72"/>
         <source>The output image from the media file - link to an Image Preview node to see it</source>
-        <translation>L&apos;immagine in uscita dal contenuto - collegarlo a un nodo d&apos;Anteprima immagine per vederlo</translation>
+        <translation>Il fotogramma in uscita dal contenuto - collegarlo a un nodo d&apos;Anteprima immagine per vederlo</translation>
     </message>
     <message>
         <location filename="../mediaprocessornode.cpp" line="74"/>
@@ -125,7 +125,7 @@
     <message>
         <location filename="../mediarecorderform.ui" line="60"/>
         <source>Video Fit:</source>
-        <translation>Adatta video:</translation>
+        <translation>Adattamento video:</translation>
     </message>
     <message>
         <location filename="../mediarecorderform.ui" line="80"/>
@@ -245,12 +245,12 @@
     <message>
         <location filename="../mediarecordernode.cpp" line="66"/>
         <source>The input image to record</source>
-        <translation>L&apos;immagine in entrata da registrare</translation>
+        <translation>L&apos;immagine in ingresso da registrare</translation>
     </message>
     <message>
         <location filename="../mediarecordernode.cpp" line="68"/>
         <source>The input audio to record</source>
-        <translation>L&apos;audio in entrata da registrare</translation>
+        <translation>L&apos;audio in ingresso da registrare</translation>
     </message>
     <message>
         <location filename="../mediarecordernode.cpp" line="310"/>
@@ -319,12 +319,12 @@
     <message>
         <location filename="../mediapreset/mediapresetmp4.h" line="48"/>
         <source>MP4 Video (*.mp4)</source>
-        <translation>MP4 Video (*.mp4)</translation>
+        <translation>Video mp4 (*.mp4)</translation>
     </message>
     <message>
         <location filename="../mediapreset/mediaWav44.h" line="48"/>
         <source>WAV Audio (*.wav)</source>
-        <translation>WAV Audio (*.wav)</translation>
+        <translation>Audio wav (*.wav)</translation>
     </message>
 </context>
 </TS>

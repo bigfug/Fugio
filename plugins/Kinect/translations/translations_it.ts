@@ -12,7 +12,7 @@
         <location filename="../kinectconfigdialog.ui" line="25"/>
         <location filename="../kinectconfigdialog.ui" line="60"/>
         <source>None</source>
-        <translation>Nulla</translation>
+        <translation>Nessuno</translation>
     </message>
     <message>
         <location filename="../kinectconfigdialog.ui" line="30"/>

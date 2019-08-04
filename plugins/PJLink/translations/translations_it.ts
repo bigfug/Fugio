@@ -35,22 +35,22 @@
     <name>PJLinkClient</name>
     <message>
         <source>PJLink unrecognised command</source>
-        <translation type="unfinished"></translation>
+        <translation>Comando PJLink non riconosciuto</translation>
     </message>
 </context>
 <context>
     <name>PJLinkServer</name>
     <message>
         <source>PJLink: Can&apos;t bind to port 4352 on IP4</source>
-        <translation type="unfinished"></translation>
+        <translation>PJLink: Impossibile assegnare la porta 4352 su IP4</translation>
     </message>
     <message>
         <source>PJLink: Can&apos;t bind to port 4352 on IP6</source>
-        <translation type="unfinished"></translation>
+        <translation>PJLink: Impossibile assegnare la porta 4352 su IP6</translation>
     </message>
     <message>
         <source>PJLink added projector at</source>
-        <translation type="unfinished"></translation>
+        <translation>Proiettore PJLink aggiunto a</translation>
     </message>
 </context>
 <context>
@@ -71,23 +71,23 @@
     <name>ProjectorNode</name>
     <message>
         <source>Projector</source>
-        <translation type="unfinished"></translation>
+        <translation>Proiettore</translation>
     </message>
     <message>
         <source>Data</source>
-        <translation type="unfinished"></translation>
+        <translation>Dati</translation>
     </message>
     <message>
         <source>Power</source>
-        <translation type="unfinished"></translation>
+        <translation>Alimentazione</translation>
     </message>
     <message>
         <source>Connected</source>
-        <translation type="unfinished"></translation>
+        <translation>Connesso</translation>
     </message>
     <message>
         <source>Password Authentication Failed</source>
-        <translation type="unfinished"></translation>
+        <translation>Autenticazione password fallita</translation>
     </message>
 </context>
 <context>

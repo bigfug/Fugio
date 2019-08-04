@@ -6,12 +6,12 @@
     <message>
         <location filename="../anytriggernode.cpp" line="19"/>
         <source>If any of the input pins are triggered, the output will be triggered too</source>
-        <translation>Se un piedino in entrata viene innescato, anche l&apos;uscita sarà innescata</translation>
+        <translation>Se uno dei piedini in ingresso viene innescato, anche l&apos;uscita verrà innescata</translation>
     </message>
     <message>
         <location filename="../anytriggernode.h" line="13"/>
         <source>Takes any number of trigger inputs and fires off a trigger if any of them activate.</source>
-        <translation>Riceve un numero qualsiasi di piedini in entrata e innesca l&apos;uscita se almeno uno viene attivato.</translation>
+        <translation>Riceve un numero qualsiasi di piedini in ingresso e innesca l&apos;uscita se almeno uno viene attivato.</translation>
     </message>
 </context>
 <context>
@@ -32,7 +32,7 @@
     <message>
         <location filename="../blockupdatesnode.cpp" line="16"/>
         <source>Input</source>
-        <translation>Entrata</translation>
+        <translation>Ingresso</translation>
     </message>
 </context>
 <context>
@@ -45,7 +45,7 @@
     <message>
         <location filename="../boolrangenode.cpp" line="26"/>
         <source>Triggering this input moves the current index to the next output pin</source>
-        <translation>Innescare questa entrata sposta l&apos;indice attuale al prossimo piedino di uscita</translation>
+        <translation>Innescare questo ingresso sposterà l&apos;indice attuale al prossimo piedino di uscita</translation>
     </message>
     <message>
         <location filename="../boolrangenode.cpp" line="28"/>
@@ -58,7 +58,7 @@
     <message>
         <location filename="../booltobitsnode.h" line="15"/>
         <source>Reads the input bool when triggered and outputs a bit array</source>
-        <translation>Legge il booleano in entrata, quando innescato, e restituisce un vettore di bit</translation>
+        <translation>Quando innescato, legge il booleano in ingresso e restituisce un vettore di bit</translation>
     </message>
 </context>
 <context>
@@ -84,7 +84,7 @@
     <message>
         <location filename="../decimatenode.cpp" line="19"/>
         <source>Input</source>
-        <translation>Entrata</translation>
+        <translation>Ingresso</translation>
     </message>
 </context>
 <context>
@@ -187,17 +187,17 @@
     <message>
         <location filename="../smoothnode.cpp" line="26"/>
         <source>The input Number that we will aim towards</source>
-        <translation>Il numero di input verso cui tenderemo</translation>
+        <translation>Il numero in ingresso verso cui tenderemo</translation>
     </message>
     <message>
         <location filename="../smoothnode.cpp" line="28"/>
         <source>If input Number is higher than our current output Number, this is how much we will add per second</source>
-        <translation>Se i numero in entrata è più grande dell&apos;uscita attuale, questo è quanto aggiungeremo ogni secondo</translation>
+        <translation>Verrà aggiunta questa quantità ogni secondo se il numero in ingresso è più grande dell&apos;uscita attuale</translation>
     </message>
     <message>
         <location filename="../smoothnode.cpp" line="30"/>
         <source>If input Number is lower than our current output Number, this is how much we will subtract per second</source>
-        <translation>Se i numero in entrata è più basso dell&apos;uscita attuale, questo è quanto sottrarremo ogni secondo</translation>
+        <translation>Verrà sottratta questa quantità ogni secondo se li numero in ingresso è più basso dell&apos;uscita attuale</translation>
     </message>
     <message>
         <location filename="../smoothnode.cpp" line="32"/>
@@ -264,22 +264,22 @@
     <message>
         <location filename="../updatenode.cpp" line="17"/>
         <source>Trigger</source>
-        <translation type="unfinished"></translation>
+        <translation>Innesca</translation>
     </message>
     <message>
         <location filename="../updatenode.cpp" line="19"/>
         <source>Always</source>
-        <translation type="unfinished"></translation>
+        <translation>Sempre</translation>
     </message>
     <message>
         <location filename="../updatenode.cpp" line="23"/>
         <source>Input</source>
-        <translation type="unfinished">Entrata</translation>
+        <translation>Ingresso</translation>
     </message>
     <message>
         <location filename="../updatenode.cpp" line="25"/>
         <source>Output</source>
-        <translation type="unfinished"></translation>
+        <translation>Uscita</translation>
     </message>
 </context>
 </TS>
