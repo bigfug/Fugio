@@ -6,7 +6,7 @@
     <message>
         <location filename="../buttonnode.cpp" line="27"/>
         <source>When the button is pressed (not released) this trigger will fire</source>
-        <translation>Viene innescata l&apos;uscita quando il pulsante viene premuto (non quando rilasciato)</translation>
+        <translation>Viene innescata l&apos;uscita quando il pulsante viene premuto (non quando viene rilasciato)</translation>
     </message>
     <message>
         <location filename="../buttonnode.cpp" line="29"/>
@@ -69,7 +69,7 @@
     <message>
         <location filename="../numbermonitorform.ui" line="16"/>
         <source>Form</source>
-        <translation>Da</translation>
+        <translation>Modulo</translation>
     </message>
     <message>
         <location filename="../numbermonitorform.cpp" line="100"/>

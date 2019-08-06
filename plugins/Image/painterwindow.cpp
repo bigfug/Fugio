@@ -99,6 +99,19 @@ void PainterWindow::renderLater()
 	}
 }
 
+void PainterWindow::toggleFullScreen()
+{
+    if (this->visibility()==QWindow::FullScreen)
+    {
+        this->showNormal();
+    }
+    else
+    {
+        //Goes to fullScreen
+        this->showFullScreen();
+    }
+}
+
 bool PainterWindow::event(QEvent *event)
 {
 	if (event->type() == QEvent::UpdateRequest) {
@@ -112,15 +125,7 @@ bool PainterWindow::event(QEvent *event)
 		QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
 		if (keyEvent->key() == Qt::Key_F11)
 		{
-			if (this->visibility()==QWindow::FullScreen)
-			{
-				this->showNormal();
-			}
-			else
-			{
-				//Goes to fullScreen
-				this->showFullScreen();
-			}
+            toggleFullScreen();
 			return true;
 		}
 	}

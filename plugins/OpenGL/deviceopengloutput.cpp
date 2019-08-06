@@ -287,7 +287,7 @@ void DeviceOpenGLOutput::mouseMoveEvent( QMouseEvent *pEvent )
 
 void DeviceOpenGLOutput::keyReleaseEvent( QKeyEvent *pEvent )
 {
-	if( pEvent->key() == Qt::Key_Return && pEvent->modifiers().testFlag( Qt::AltModifier ) )
+    if(pEvent->key() == Qt::Key_F11)
 	{
 		toggleFullScreen();
 

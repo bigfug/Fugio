@@ -344,7 +344,7 @@
     <message>
         <location filename="../viewportnode.cpp" line="28"/>
         <source>The X position of the Viewport, either as a ratio of the current viewport (0.0 to 1.0), or in pixels</source>
-        <translation>La posizione X della vista, oppure come il rapporto della vista attuale (da 0,0 a 1,0) oppure in pixel</translation>
+        <translation>La posizione X della vista, o come rapporto della vista attuale (da 0,0 a 1,0) oppure in pixel</translation>
     </message>
     <message>
         <location filename="../viewportnode.cpp" line="29"/>

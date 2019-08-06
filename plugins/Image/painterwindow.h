@@ -47,6 +47,7 @@ protected:
 private:
 	QBackingStore *m_backingStore;
 	bool m_update_pending;
+    void toggleFullScreen();
 };
 
 #endif // PAINTERWINDOW_H
