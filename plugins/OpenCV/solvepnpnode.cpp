@@ -51,6 +51,7 @@ void SolvePNPNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
+#if defined( OPENCV_SUPPORTED )
 	std::vector<cv::Point3f>	ObjectPoints;
 	std::vector<cv::Point2f>	ImagePoints;
 
@@ -112,4 +113,5 @@ void SolvePNPNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		//qDebug() << QString::fromStdString( e.msg );
 	}
+#endif // defined( OPENCV_SUPPORTED )
 }
