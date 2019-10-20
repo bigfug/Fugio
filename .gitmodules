@@ -13,3 +13,6 @@
 [submodule "plugins/TUIO/TUIO11_CPP"]
 	path = plugins/TUIO/TUIO11_CPP
 	url = https://github.com/mkalten/TUIO11_CPP.git
+[submodule "include"]
+	path = include
+	url = https://github.com/bigfug/fugio-api
