@@ -16,3 +16,6 @@
 [submodule "include"]
 	path = include
 	url = https://github.com/bigfug/fugio-api
+[submodule "libs/eigen3"]
+	path = libs/eigen3
+	url = https://github.com/eigenteam/eigen-git-mirror
