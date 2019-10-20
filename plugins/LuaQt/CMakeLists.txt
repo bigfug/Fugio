@@ -91,15 +91,6 @@ else()
 endif()
 
 #------------------------------------------------------------------------------
-# Eigen
-
-find_package( Eigen3 QUIET )
-
-if( EIGEN3_FOUND )
-	target_include_directories( ${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIR} )
-endif()
-
-#------------------------------------------------------------------------------
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )

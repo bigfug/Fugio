@@ -7,7 +7,7 @@
 
 #include <QVariant>
 
-#include <Eigen/Dense>
+#include "../../libs/eigen3/Eigen/Dense"
 
 #include <fugio/lua/lua_interface.h>
 

@@ -350,9 +350,11 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 
 void deserialize( FaceFeaturesNode &item, std::istream &in )
 {
+#if defined( DLIB_SUPPORTED )
 	int version = 0;
 	dlib::deserialize(version, in);
 	if (version != 1)
 		throw serialization_error("Unexpected version found while deserializing dlib::shape_predictor.");
 	dlib::deserialize(item.mInitialShape, in);
+#endif
 }

@@ -6,7 +6,7 @@
 
 #include "opencvplugin.h"
 
-#include <Eigen/Dense>
+#include "../../libs/eigen3/Eigen/Dense"
 
 Q_DECLARE_METATYPE( Eigen::MatrixXd )
 

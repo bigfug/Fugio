@@ -6,7 +6,7 @@
 
 #include "opencvplugin.h"
 
-#include <Eigen/Dense>
+#include "../../libs/eigen3/Eigen/Dense"
 
 Q_DECLARE_METATYPE( Eigen::MatrixXd )
 
@@ -51,6 +51,7 @@ void ProjectPointsNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
+#if defined( OPENCV_SUPPORTED )
 	std::vector<cv::Point3f>	ObjectPoints;
 
 	fugio::PinVariantIterator	InputObjectPoints( mPinInputObjectPoints );
@@ -98,4 +99,5 @@ void ProjectPointsNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		qDebug() << QString::fromStdString( e.msg );
 	}
+#endif
 }

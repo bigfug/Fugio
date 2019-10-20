@@ -69,6 +69,7 @@ LuaInterface *LuaQtPlugin::lua()
 	return( qobject_cast<LuaInterface *>( mApp->findInterface( IID_LUA ) ) );
 }
 
+#if defined( LUA_SUPPORTED )
 void LuaQtPlugin::addLuaFunction( const char *pName, lua_CFunction pFunction )
 {
 	luaL_Reg	LR{ pName, pFunction };
@@ -80,6 +81,7 @@ void LuaQtPlugin::addLuaFunction( luaL_Reg R )
 {
 	mLuaFunctions << R;
 }
+#endif
 
 PluginInterface::InitResult LuaQtPlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
 {

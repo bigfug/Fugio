@@ -6,7 +6,7 @@
 
 #include "opencvplugin.h"
 
-#include <Eigen/Dense>
+#include "../../libs/eigen3/Eigen/Dense"
 
 Q_DECLARE_METATYPE( Eigen::MatrixXd )
 
@@ -42,6 +42,7 @@ void RodriguesNode::inputsUpdated( qint64 pTimeStamp )
 {
 	NodeControlBase::inputsUpdated( pTimeStamp );
 
+#if defined( OPENCV_SUPPORTED )
 	Eigen::MatrixXd				SourceInputMatrix = variant<Eigen::MatrixXd>( mPinInputMatrix );
 
 	cv::Mat						InputMatrix;
@@ -77,4 +78,5 @@ void RodriguesNode::inputsUpdated( qint64 pTimeStamp )
 	{
 		qDebug() << QString::fromStdString( e.msg );
 	}
+#endif
 }
