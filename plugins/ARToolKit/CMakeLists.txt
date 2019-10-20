@@ -5,8 +5,8 @@ project( fugio-artoolkit )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/artoolkit/uuid.h
-	../../include/fugio/artoolkit/param_interface.h
+	../../plugins-include/fugio/artoolkit/uuid.h
+	../../plugins-include/fugio/artoolkit/param_interface.h
 	artoolkitplugin.h
 	paramloadnode.h
 	parampin.h

@@ -5,8 +5,8 @@ project( fugio-painter )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/painter/uuid.h
-	../../include/fugio/painter/painter_helper.h
+	../../plugins-include/fugio/painter/uuid.h
+	../../plugins-include/fugio/painter/painter_helper.h
 	painternode.cpp
 	painternode.h
 	painterplugin.cpp

@@ -5,8 +5,8 @@ project( fugio-file )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/file/uuid.h
-	../../include/fugio/file/filename_interface.h
+	../../plugins-include/fugio/file/uuid.h
+	../../plugins-include/fugio/file/filename_interface.h
 	fileplugin.cpp
 	filewatchernode.cpp
 	filenamepin.cpp

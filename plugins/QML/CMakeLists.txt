@@ -5,13 +5,13 @@ project( fugio-qml )
 set( PLUGIN_SRCS
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
+	../../plugins-include/fugio/qml/uuid.h
 	qmlplugin.cpp
 	qmlwidget.cpp
 	qmlinterfacenode.cpp
 	qmlnode.cpp
 	qmlpin.cpp
 	qmlplugin.h
-	../../include/fugio/qml/uuid.h
 	qmlwidget.h
 	qmlinterfacenode.h
 	qmlnode.h

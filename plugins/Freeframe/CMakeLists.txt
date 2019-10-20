@@ -5,7 +5,7 @@ project( fugio-freeframe )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/freeframe/uuid.h
+	../../plugins-include/fugio/freeframe/uuid.h
 
 	freeframelibrary.cpp
 	freeframelibrary.h

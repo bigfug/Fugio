@@ -6,9 +6,9 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 
-	../../include/fugio/image/uuid.h
-	../../include/fugio/image/image.h
-	../../include/fugio/image/painter_interface.h
+	../../plugins-include/fugio/image/uuid.h
+	../../plugins-include/fugio/image/image.h
+	../../plugins-include/fugio/image/painter_interface.h
 
 	colourmasknode.cpp
 	colourmasknode.h

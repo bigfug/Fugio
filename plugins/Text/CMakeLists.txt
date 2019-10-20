@@ -6,10 +6,10 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 	
-	../../include/fugio/text/syntax_highlighter_interface.h
-	../../include/fugio/text/syntax_error_interface.h
-	../../include/fugio/text/syntax_error_signals.h
-	../../include/fugio/text/uuid.h
+	../../plugins-include/fugio/text/syntax_highlighter_interface.h
+	../../plugins-include/fugio/text/syntax_error_interface.h
+	../../plugins-include/fugio/text/syntax_error_signals.h
+	../../plugins-include/fugio/text/uuid.h
 
 	cmdtexteditorupdate.h
 	codeeditor.cpp

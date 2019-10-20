@@ -5,7 +5,7 @@ project( fugio-dlib )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/dlib/uuid.h
+	../../plugins-include/fugio/dlib/uuid.h
 	dlibplugin.cpp
 	dlibplugin.h
 	facefeaturesnode.cpp

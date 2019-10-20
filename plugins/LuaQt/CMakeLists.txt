@@ -6,7 +6,7 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 
-	../../include/fugio/luaqt/uuid.h
+	../../plugins-include/fugio/luaqt/uuid.h
 
 	luabrush.cpp
 	luabrush.h

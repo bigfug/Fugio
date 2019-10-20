@@ -3,10 +3,10 @@ cmake_minimum_required( VERSION 3.1 )
 project( fugio-colour )
 
 set( SOURCE_FILES
-	../../include/fugio/colour/uuid.h
-	../../include/fugio/colour/colour_interface.h
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
+	../../plugins-include/fugio/colour/uuid.h
+	../../plugins-include/fugio/colour/colour_interface.h
 	colourbutton.h
 	colourpin.h
 	colourplugin.h

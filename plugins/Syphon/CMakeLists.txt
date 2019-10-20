@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.1 )
+﻿cmake_minimum_required( VERSION 3.1 )
 
 project( fugio-syphon )
 
@@ -6,7 +6,7 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 	
-	../../include/fugio/syphon/uuid.h
+	../../plugins-include/fugio/syphon/uuid.h
 
 	opengl_includes.h
 	syphonpin.cpp

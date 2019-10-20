@@ -7,7 +7,7 @@ set( SOURCE_FILES
 	../../include/fugio/pincontrolbase.h
 	
 	
-	../../include/fugio/network/uuid.h
+	../../plugins-include/fugio/network/uuid.h
 
 	cobsdecodenode.cpp
 	cobsdecodenode.h

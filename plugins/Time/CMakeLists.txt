@@ -6,7 +6,7 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 	
-	../../include/fugio/time/uuid.h
+	../../plugins-include/fugio/time/uuid.h
 
 	beattapnode.cpp
 	beattapnode.h

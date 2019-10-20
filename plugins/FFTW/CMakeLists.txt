@@ -5,7 +5,7 @@ project( fugio-fftw )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/fftw/uuid.h
+	../../plugins-include/fugio/fftw/uuid.h
 	fftnode.cpp
 	fftnode.h
 	fftwplugin.cpp

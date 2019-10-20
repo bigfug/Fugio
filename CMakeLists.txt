@@ -5,6 +5,7 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 project( Fugio )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/plugins-include )
 
 set( CMAKE_CXX_STANDARD 11 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )

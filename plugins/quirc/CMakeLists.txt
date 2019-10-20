@@ -3,7 +3,7 @@ cmake_minimum_required( VERSION 3.1 )
 project( fugio-quirc )
 
 set( SOURCE_FILES
-	../../include/fugio/quirc/uuid.h
+	../../plugins-include/fugio/quirc/uuid.h
 
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h

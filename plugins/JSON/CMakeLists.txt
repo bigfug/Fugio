@@ -6,7 +6,7 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 
-	../../include/fugio/json/uuid.h
+	../../plugins-include/fugio/json/uuid.h
 
 	jsonplugin.cpp
 	jsonplugin.h

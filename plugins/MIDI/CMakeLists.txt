@@ -6,9 +6,9 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 	
-	../../include/fugio/midi/midi_input_interface.h
-	../../include/fugio/midi/midi_interface.h
-	../../include/fugio/midi/uuid.h
+	../../plugins-include/fugio/midi/midi_input_interface.h
+	../../plugins-include/fugio/midi/midi_interface.h
+	../../plugins-include/fugio/midi/uuid.h
 	
 	channelinputnode.cpp
 	channelinputnode.h

@@ -6,10 +6,10 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 	
-	../../include/fugio/osc/join_interface.h
-	../../include/fugio/osc/namespace_interface.h
-	../../include/fugio/osc/split_interface.h
-	../../include/fugio/osc/uuid.h
+	../../plugins-include/fugio/osc/join_interface.h
+	../../plugins-include/fugio/osc/namespace_interface.h
+	../../plugins-include/fugio/osc/split_interface.h
+	../../plugins-include/fugio/osc/uuid.h
 	
 	bundlernode.cpp
 	bundlernode.h

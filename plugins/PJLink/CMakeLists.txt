@@ -6,7 +6,7 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 	
-	../../include/fugio/pjlink/uuid.h
+	../../plugins-include/fugio/pjlink/uuid.h
 
 	pjlinkplugin.cpp
 	pjlinkplugin.h

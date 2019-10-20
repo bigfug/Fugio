@@ -5,7 +5,7 @@ project( fugio-ffmpeg )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/ffmpeg/uuid.h
+	../../plugins-include/fugio/ffmpeg/uuid.h
 	
 	mediaplayervideopreview.cpp
 	audiobuffer.cpp

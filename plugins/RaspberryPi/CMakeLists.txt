@@ -6,7 +6,7 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 	
-	../../include/fugio/raspberrypi/uuid.h
+	../../plugins-include/fugio/raspberrypi/uuid.h
 	
 	raspberrypiplugin.cpp
 	raspberrypiplugin.h

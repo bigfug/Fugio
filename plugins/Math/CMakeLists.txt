@@ -6,8 +6,8 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 
-	../../include/fugio/math/matrix_interface.h
-	../../include/fugio/math/uuid.h
+	../../plugins-include/fugio/math/matrix_interface.h
+	../../plugins-include/fugio/math/uuid.h
 
 	absnode.cpp
 	absnode.h

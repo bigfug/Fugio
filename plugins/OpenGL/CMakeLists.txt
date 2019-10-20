@@ -6,18 +6,18 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 
-	../../include/fugio/opengl/buffer_entry_interface.h
-	../../include/fugio/opengl/buffer_interface.h
-	../../include/fugio/opengl/node_render_interface.h
-	../../include/fugio/opengl/output_interface.h
-	../../include/fugio/opengl/shader_interface.h
-	../../include/fugio/opengl/state_interface.h
-	../../include/fugio/opengl/texture_interface.h
-	../../include/fugio/opengl/uuid.h
-	../../include/fugio/opengl/vertex_array_object_interface.h
+	../../plugins-include/fugio/opengl/buffer_entry_interface.h
+	../../plugins-include/fugio/opengl/buffer_interface.h
+	../../plugins-include/fugio/opengl/node_render_interface.h
+	../../plugins-include/fugio/opengl/output_interface.h
+	../../plugins-include/fugio/opengl/shader_interface.h
+	../../plugins-include/fugio/opengl/state_interface.h
+	../../plugins-include/fugio/opengl/texture_interface.h
+	../../plugins-include/fugio/opengl/uuid.h
+	../../plugins-include/fugio/opengl/vertex_array_object_interface.h
 	../../include/fugio/output_interface.h
 	../../include/fugio/render_interface.h
-	../../include/fugio/opengl/context_container_object.h
+	../../plugins-include/fugio/opengl/context_container_object.h
 
 	arraytobuffernode.cpp
 	arraytobuffernode.h

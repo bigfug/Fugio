@@ -6,7 +6,7 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 	
-	../../include/fugio/vst/uuid.h
+	../../plugins-include/fugio/vst/uuid.h
 
 	dirlocker.h
 	usediids.cpp

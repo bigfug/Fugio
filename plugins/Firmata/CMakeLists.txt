@@ -5,8 +5,8 @@ project( fugio-firmata )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/firmata/uuid.h
-	../../include/fugio/firmata/firmata_defines.h
+	../../plugins-include/fugio/firmata/uuid.h
+	../../plugins-include/fugio/firmata/firmata_defines.h
 	firmataplugin.cpp
 	firmatanode.cpp
 	firmataplugin.h

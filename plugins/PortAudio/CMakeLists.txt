@@ -6,7 +6,7 @@ add_library( ${PROJECT_NAME} MODULE
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 
-	../../include/fugio/portaudio/uuid.h
+	../../plugins-include/fugio/portaudio/uuid.h
 
 	deviceportaudio.cpp
 	deviceportaudio.h

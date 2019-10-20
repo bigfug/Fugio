@@ -6,7 +6,7 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 	
-	../../include/fugio/portmidi/uuid.h
+	../../plugins-include/fugio/portmidi/uuid.h
 	
 	devicemidi.cpp
 	devicemidi.h
