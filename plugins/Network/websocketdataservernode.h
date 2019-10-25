@@ -32,6 +32,8 @@ public:
 	virtual bool deinitialise() Q_DECL_OVERRIDE;
 
 protected slots:
+	void frameFinalise( void );
+
 #if defined( WEBSOCKET_SUPPORTED )
 //	void socketConnected( void );
 
@@ -48,7 +50,13 @@ protected:
 #endif
 
 protected:
+	QSharedPointer<fugio::PinInterface>		 mPinInputPort;
 	QSharedPointer<fugio::PinInterface>		 mPinInputData;
+	QSharedPointer<fugio::PinInterface>		 mPinOutputData;
+	fugio::VariantInterface					*mValOutputData;
+
+	QList<QVariant>							 mInputDataList;
+	QMutex									 mInputDataMutex;
 
 #if defined( WEBSOCKET_SUPPORTED )
 	QWebSocketServer						 mServer;

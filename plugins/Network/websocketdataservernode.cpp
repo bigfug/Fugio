@@ -1,54 +1,76 @@
 #include "websocketdataservernode.h"
 
+#include <fugio/core/uuid.h>
+
+#include <fugio/pin_variant_iterator.h>
+
+#include <fugio/context_signals.h>
+
 WebSocketDataServerNode::WebSocketDataServerNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
 #if defined( WEBSOCKET_SUPPORTED )
 	, mServer( QStringLiteral( "Fugio Server" ), QWebSocketServer::NonSecureMode, this )
 #endif
 {
-	mPinInputData = pinInput( "Data" );
+	FUGID( PIN_INPUT_PORT, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" )
+	FUGID( PIN_INPUT_DATA, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" )
+	FUGID( PIN_OUTPUT_DATA, "1b5e9ce8-acb9-478d-b84b-9288ab3c42f5" )
+
+	mPinInputPort = pinInput( tr( "Port" ), PIN_INPUT_PORT );
+	mPinInputData = pinInput( tr( "Input" ), PIN_INPUT_DATA );
+
+	mPinInputPort->setValue( 12345 );
+
+	mValOutputData = pinOutput<fugio::VariantInterface *>( tr( "Output" ), mPinOutputData, PID_BYTEARRAY, PIN_OUTPUT_DATA );
+
+	mValOutputData->setVariantCount( 0 );
 }
 
 #if defined( WEBSOCKET_SUPPORTED )
 
 void WebSocketDataServerNode::sendSocketData( QWebSocket *pSocket )
 {
-	fugio::VariantInterface		*V = input<fugio::VariantInterface *>( mPinInputData );
+	fugio::PinVariantIterator	 VI( mPinInputData );
 
-	if( V && V->variant().type() == QVariant::ByteArray )
+	for( int i = 0 ; i < VI.count() ; i++ )
 	{
-		const QByteArray		 A = V->variant().toByteArray();
+		QVariant	V = VI.index( i );
 
-		if( !A.isEmpty() )
+		if( V.type() == QVariant::ByteArray )
 		{
-			if( pSocket )
+			const QByteArray		 A = V.toByteArray();
+
+			if( !A.isEmpty() )
 			{
-				pSocket->sendBinaryMessage( A );
-			}
-			else
-			{
-				for( QWebSocket *Socket : mClients )
+				if( pSocket )
 				{
-					Socket->sendBinaryMessage( A );
+					pSocket->sendBinaryMessage( A );
+				}
+				else
+				{
+					for( QWebSocket *Socket : mClients )
+					{
+						Socket->sendBinaryMessage( A );
+					}
 				}
 			}
 		}
-	}
-	else
-	{
-		const QString			 S = variant( mPinInputData ).toString();
-
-		if( !S.isEmpty() )
+		else
 		{
-			if( pSocket )
+			const QString			 S = V.toString();
+
+			if( !S.isEmpty() )
 			{
-				pSocket->sendTextMessage( S );
-			}
-			else
-			{
-				for( QWebSocket *Socket : mClients )
+				if( pSocket )
 				{
-					Socket->sendTextMessage( S );
+					pSocket->sendTextMessage( S );
+				}
+				else
+				{
+					for( QWebSocket *Socket : mClients )
+					{
+						Socket->sendTextMessage( S );
+					}
 				}
 			}
 		}
@@ -73,8 +95,10 @@ bool WebSocketDataServerNode::initialise()
 		return( false );
 	}
 
+	connect( mNode->context()->qobject(), SIGNAL(frameFinalise()), this, SLOT(frameFinalise()) );
+
 #if defined( WEBSOCKET_SUPPORTED )
-	if( mServer.listen( QHostAddress::Any, 12345 ) )
+	if( mServer.listen( QHostAddress::Any, mPinInputPort->value().toInt() ) )
 	{
 		connect( &mServer, SIGNAL(newConnection()), this, SLOT(serverNewConnection()) );
 
@@ -93,7 +117,28 @@ bool WebSocketDataServerNode::deinitialise()
 	mServer.close();
 #endif
 
+	disconnect( mNode->context()->qobject(), SIGNAL(frameFinalise()), this, SLOT(frameFinalise()) );
+
 	return( NodeControlBase::deinitialise() );
+}
+
+void WebSocketDataServerNode::frameFinalise()
+{
+	QMutexLocker		L( &mInputDataMutex );
+
+	if( !mInputDataList.isEmpty() )
+	{
+		mValOutputData->setVariantCount( mInputDataList.size() );
+
+		for( int i = 0 ; i < mInputDataList.size() ; i++ )
+		{
+			mValOutputData->setVariant( i, mInputDataList.at( i ) );
+		}
+
+		pinUpdated( mPinOutputData );
+
+		mInputDataList.clear();
+	}
 }
 
 #if defined( WEBSOCKET_SUPPORTED )
@@ -128,22 +173,20 @@ void WebSocketDataServerNode::socketDisconnected()
 
 void WebSocketDataServerNode::socketTextMessageReceived(QString pMessage)
 {
-	QWebSocket	*Socket = qobject_cast<QWebSocket *>( sender() );
+	QMutexLocker		L( &mInputDataMutex );
 
-	if( Socket )
-	{
-		qDebug() << Socket << pMessage << "(text)";
-	}
+	mInputDataList << pMessage;
+
+	nodeUpdate();
 }
 
-void WebSocketDataServerNode::socketBinaryMessageReceived(QByteArray pMessage)
+void WebSocketDataServerNode::socketBinaryMessageReceived( QByteArray pMessage )
 {
-	QWebSocket	*Socket = qobject_cast<QWebSocket *>( sender() );
+	QMutexLocker		L( &mInputDataMutex );
 
-	if( Socket )
-	{
-		qDebug() << Socket << pMessage << "(binary)";
-	}
+	mInputDataList << pMessage;
+
+	nodeUpdate();
 }
 
 #endif
