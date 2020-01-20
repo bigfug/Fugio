@@ -90,7 +90,7 @@ include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 #------------------------------------------------------------------------------
 # OpenCV
 
-find_package( OpenCV COMPONENTS core OPTIONAL_COMPONENTS imgproc features2d objdetect photo video )
+find_package( OpenCV COMPONENTS core OPTIONAL_COMPONENTS imgproc features2d objdetect photo video videoio calib3d )
 
 if( OpenCV_FOUND )
 	message( "OpenCV: YES" )
