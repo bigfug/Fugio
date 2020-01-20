@@ -149,6 +149,11 @@ if( UNIX )
 		OUTPUT_STRIP_TRAILING_WHITESPACE
 	)
 
+	execute_process( COMMAND lsb_release -cs
+		OUTPUT_VARIABLE UNIX_CODENAME
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+
 	if( "${UNIX_ID}" STREQUAL "" )
 		set( UNIX_ID "unknown" )
 	else()
@@ -160,6 +165,12 @@ if( UNIX )
 	else()
 		message( "UNIX RELEASE: ${UNIX_RELEASE}" )
 	endif()
+
+	if( "${UNIX_CODENAME}" STREQUAL "" )
+		set( UNIX_CODENAME "unknown" )
+	else()
+		message( "UNIX CODENAME: ${UNIX_CODENAME}" )
+	endif()
 endif( UNIX )
 
 # Set the output package extension
@@ -170,18 +181,10 @@ elseif( WIN32 )
 	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-win32" )
 elseif( APPLE )
 	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-macOS" )
-elseif( Q_OS_RASPBERRY_PI )
-	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-rpi" )
-elseif( "${UNIX_ID}" STREQUAL "Ubuntu" AND "${UNIX_RELEASE}" STREQUAL "16.04" )
-	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-xenial-x64" )
-elseif( "${UNIX_ID}" STREQUAL "Ubuntu" AND "${UNIX_RELEASE}" STREQUAL "18.04" )
-	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-beaver-x64" )
-elseif( "${UNIX_ID}" STREQUAL "Ubuntu" AND "${UNIX_RELEASE}" STREQUAL "18.10" )
-	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-cuttlefish-x64" )
-    elseif( "${UNIX_ID}" STREQUAL "Ubuntu" AND "${UNIX_RELEASE}" STREQUAL "19.04" )
-            set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-dingo-x64" )
 elseif( UNIX AND IS_64_BIT )
-	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-linux64" )
+	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${UNIX_CODENAME}-x64" )
+elseif( UNIX )
+	set( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-${UNIX_CODENAME}-i386" )
 endif()
 
 if( Q_OS_RASPBERRY_PI )
