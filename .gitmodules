@@ -19,3 +19,6 @@
 [submodule "libs/eigen3"]
 	path = libs/eigen3
 	url = https://github.com/eigenteam/eigen-git-mirror
+[submodule "plugins/Rabbit/lib/rcp-cpp"]
+	path = plugins/Rabbit/lib/rcp-cpp
+	url = https://github.com/rabbitControl/rcp-cpp
