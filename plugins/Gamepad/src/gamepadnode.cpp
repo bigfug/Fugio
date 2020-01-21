@@ -35,6 +35,7 @@ GamepadNode::GamepadNode( QSharedPointer<fugio::NodeInterface> pNode )
 	//-------------------------------------------------------------------------
 	// Connect all the signals for the gamepad
 
+#if defined( GAMEPAD_SUPPORTED )
 	connect( &mGamepad, &QGamepad::deviceIdChanged, this, [=]( int )
 	{
 		nodeUpdate();
@@ -85,12 +86,14 @@ GamepadNode::GamepadNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 		nodeUpdate();
 	} );
+#endif
 }
 
 void GamepadNode::inputsUpdated( qint64 pTimeStamp )
 {
 	fugio::NodeControlBase::inputsUpdated( pTimeStamp );
 
+#if defined( GAMEPAD_SUPPORTED )
 	const int		DeviceId = variant( mPinInputDeviceId ).toInt();
 
 	if( DeviceId != mGamepad.deviceId() )
@@ -156,4 +159,5 @@ void GamepadNode::inputsUpdated( qint64 pTimeStamp )
 	}
 
 	mUpdatedControls.clear();
+#endif
 }

@@ -90,9 +90,21 @@ endif()
 #------------------------------------------------------------------------------
 # Qt5
 
-find_package( Qt5 COMPONENTS Core Gamepad Widgets LinguistTools REQUIRED )
+find_package( Qt5
+	REQUIRED COMPONENTS Core Widgets LinguistTools
+	OPTIONAL_COMPONENTS Gamepad )
 
-target_link_libraries( ${PROJECT_NAME} PRIVATE Qt5::Widgets Qt5::Gamepad )
+target_link_libraries( ${PROJECT_NAME} PRIVATE Qt5::Widgets )
+
+if( Qt5Gamepad_FOUND )
+	message( "Qt5::Gamepad: YES" )
+
+	target_link_libraries( ${PROJECT_NAME} PRIVATE Qt5::Gamepad )
+
+	target_compile_definitions( ${PROJECT_NAME} PRIVATE GAMEPAD_SUPPORTED )
+else( Qt5Gamepad_FOUND )
+	message( "Qt5::Gamepad: NO" )
+endif( Qt5Gamepad_FOUND )
 
 #------------------------------------------------------------------------------
 # Translations

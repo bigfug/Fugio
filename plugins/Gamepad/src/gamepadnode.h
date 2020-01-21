@@ -3,7 +3,10 @@
 
 #include <QObject>
 
+#if defined( GAMEPAD_SUPPORTED )
 #include <QGamepad>
+#endif
+
 #include <QMutex>
 
 #include <fugio/nodecontrolbase.h>
@@ -29,7 +32,9 @@ public:
 	virtual void inputsUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
 protected:
+#if defined( GAMEPAD_SUPPORTED )
 	QGamepad									 mGamepad;
+#endif
 
 	QSharedPointer<fugio::PinInterface>			 mPinInputDeviceId;
 
