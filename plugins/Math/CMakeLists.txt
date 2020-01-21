@@ -163,15 +163,7 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 #------------------------------------------------------------------------------
 # Eigen
 
-find_package( Eigen3 QUIET )
-
-if( EIGEN3_FOUND )
-	message( "eigen: YES" )
-
-	target_include_directories( ${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIR} )
-else()
-	message( "eigen: NO" )
-endif()
+target_include_directories( ${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libs/eigen3 )
 
 #------------------------------------------------------------------------------
 # Install

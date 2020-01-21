@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "../../libs/eigen3/Eigen/Dense"
+#include <Eigen/Dense>
 
 #include <fugio/pin_interface.h>
 #include <fugio/pin_control_interface.h>

@@ -91,6 +91,11 @@ else()
 endif()
 
 #------------------------------------------------------------------------------
+# Eigen
+
+target_include_directories( ${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libs/eigen3 )
+
+#------------------------------------------------------------------------------
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
