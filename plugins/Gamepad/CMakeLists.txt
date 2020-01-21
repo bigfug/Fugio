@@ -91,8 +91,9 @@ endif()
 # Qt5
 
 find_package( Qt5
-	REQUIRED COMPONENTS Core Widgets LinguistTools
-	OPTIONAL_COMPONENTS Gamepad )
+	COMPONENTS Core Widgets LinguistTools
+	OPTIONAL_COMPONENTS Gamepad
+	QUIET )
 
 target_link_libraries( ${PROJECT_NAME} PRIVATE Qt5::Widgets )
 

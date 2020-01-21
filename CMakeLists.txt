@@ -75,6 +75,8 @@ if( UNIX AND NOT APPLE )
 	install( FILES FugioApp/fugio.png		DESTINATION share/icons/hicolor/256x256/apps )
 endif()
 
+set( FUGIO_API "${CMAKE_SOURCE_DIR}/include" CACHE PATH "" )
+
 #------------------------------------------------------------------------------
 # Lua (minimum 5.2)
 
