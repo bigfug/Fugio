@@ -114,7 +114,7 @@ set( TS_FILES
 	translations/translations_de.ts
 	)
 
-qt5_create_translation( QM_FILES ${CMAKE_CURRENT_SOURCE_DIR}/SRC ${TS_FILES} OPTIONS "-silent" )
+qt5_create_translation( QM_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src ${TS_FILES} OPTIONS "-silent" )
 
 configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/translations/translations.qrc ${CMAKE_CURRENT_BINARY_DIR} COPYONLY )
 
