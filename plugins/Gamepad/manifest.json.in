@@ -1,0 +1,9 @@
+{
+  "authorName": "@PLUGIN_AUTHOR_NAME@",
+  "authorEmail": "@PLUGIN_AUTHOR_EMAIL@",
+  "pluginName": "@PLUGIN_NAME@",
+  "pluginUuid": "@PLUGIN_UUID@",
+  "pluginDescription": "@PLUGIN_DESCRIPTION@",
+  "pluginVersion": "@PLUGIN_RELEASE_VERSION@",
+  "pluginReleaseDate": "@PLUGIN_RELEASE_DATE@"
+}
