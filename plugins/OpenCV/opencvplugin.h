@@ -17,7 +17,7 @@
 // but we need to support earlier versions using this define
 
 #if ( CV_MAJOR_VERSION <= 2 )
-#define OPENCV_COLOR_CODE(x)		(cv::CV_ ## x)
+#define OPENCV_COLOR_CODE(x)		(CV_ ## x)
 #elif ( CV_MAJOR_VERSION == 3 )
 #define OPENCV_COLOR_CODE(x)		(cv::COLOR_ ## x)
 #else
