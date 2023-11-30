@@ -4,6 +4,7 @@
 <context>
     <name>QCoreApplication</name>
     <message>
+        <location filename="../main.cpp" line="55"/>
         <source>Couldn&apos;t load patch %1</source>
         <translation type="unfinished"></translation>
     </message>

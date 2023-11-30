@@ -1,8 +1,0 @@
-#ifndef FUGIO_OCULUS_RIFT_GLOBAL_H
-#define FUGIO_OCULUS_RIFT_GLOBAL_H
-
-#include <QUuid>
-
-#define NID_OCULUS_RIFT			(QUuid("{64283a63-b41a-43fa-b427-364c7d95e417}"))
-
-#endif // FUGIO_OCULUS_RIFT_GLOBAL_H

@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>translations/fugio_vst_de.qm</file>
-        <file>translations/fugio_vst_es.qm</file>
-        <file>translations/fugio_vst_fr.qm</file>
-    </qresource>
-</RCC>

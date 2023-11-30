@@ -6,7 +6,7 @@
     <message>
         <location filename="../main.cpp" line="55"/>
         <source>Couldn&apos;t load patch %1</source>
-        <translation>Impossibile caricare la patch %1</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

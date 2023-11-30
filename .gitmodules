@@ -1,24 +1,6 @@
-[submodule "plugins/ffmpeg/hap"]
-	path = plugins/ffmpeg/hap
-	url = https://github.com/Vidvox/hap
-[submodule "libs/exprtk"]
-	path = libs/exprtk
-	url = https://github.com/ArashPartow/exprtk
 [submodule "libs/FugioTime"]
 	path = libs/FugioTime
 	url = https://github.com/bigfug/FugioTime.git
-[submodule "plugins/quirc/quirc"]
-	path = plugins/quirc/quirc
-	url = https://github.com/dlbeer/quirc.git
-[submodule "plugins/TUIO/TUIO11_CPP"]
-	path = plugins/TUIO/TUIO11_CPP
-	url = https://github.com/mkalten/TUIO11_CPP.git
 [submodule "include"]
 	path = include
 	url = https://github.com/bigfug/fugio-api
-[submodule "libs/eigen3"]
-	path = libs/eigen3
-	url = https://github.com/eigenteam/eigen-git-mirror
-[submodule "plugins/Rabbit/lib/rcp-cpp"]
-	path = plugins/Rabbit/lib/rcp-cpp
-	url = https://github.com/rabbitControl/rcp-cpp

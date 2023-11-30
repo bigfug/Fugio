@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>translations/fugio_syphon_de.qm</file>
-        <file>translations/fugio_syphon_es.qm</file>
-        <file>translations/fugio_syphon_fr.qm</file>
-    </qresource>
-</RCC>

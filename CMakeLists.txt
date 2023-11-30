@@ -5,7 +5,6 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 project( Fugio )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/plugins-include )
 
 set( CMAKE_CXX_STANDARD 11 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
@@ -76,33 +75,12 @@ if( UNIX AND NOT APPLE )
 endif()
 
 #------------------------------------------------------------------------------
-# Lua (minimum 5.2)
-
-find_package( Lua 5.2 )
-
-if( NOT LUA_FOUND )
-	find_path( LUA_INCLUDE_DIR lua.hpp )
-
-	find_library( LUA_LIBRARY
-	  NAMES lua
-	)
-
-	set( LUA_INCLUDE_DIRS ${LUA_INCLUDE_DIR} )
-	set( LUA_LIBRARIES ${LUA_LIBRARY} )
-
-	if( LUA_INCLUDE_DIR AND LUA_LIBRARY )
-		set( LUA_FOUND ON )
-	endif()
-endif()
-
-#------------------------------------------------------------------------------
 
 set( FUGIO_UNIX_DEPENDENCIES )
 
 add_subdirectory( FugioLib )
 add_subdirectory( FugioApp )
 add_subdirectory( FugioShow )
-add_subdirectory( plugins )
 
 #------------------------------------------------------------------------------
 

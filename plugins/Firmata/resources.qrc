@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>translations/fugio_firmata_de.qm</file>
-        <file>translations/fugio_firmata_es.qm</file>
-        <file>translations/fugio_firmata_fr.qm</file>
-    </qresource>
-</RCC>
