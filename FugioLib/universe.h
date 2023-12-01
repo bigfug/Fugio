@@ -10,8 +10,8 @@
 
 #include <fugio/global_interface.h>
 
-class QUdpSocket;
-class QHostAddress;
+#include <QUdpSocket>
+#include <QHostAddress>
 
 class Universe : public QObject
 {
@@ -53,7 +53,7 @@ private:
 	typedef struct InterfaceCaster
 	{
 		QUdpSocket			*mSocket;
-        QHostAddress		*mAddress;
+        QHostAddress		 mAddress;
 		int					 mPort;
 
         InterfaceCaster( QObject *pParent );
