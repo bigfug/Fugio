@@ -39,6 +39,11 @@ class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public 
 public:
 	virtual ~GlobalPrivate( void ) Q_DECL_OVERRIDE;
 
+    PluginManager &pluginManager( void )
+    {
+        return( mPluginManager );
+    }
+
     virtual void loadPlugins( QDir pDir ) Q_DECL_OVERRIDE
     {
         mPluginManager.loadPlugins( pDir );

@@ -83,6 +83,7 @@ set( FUGIO_UNIX_DEPENDENCIES )
 add_subdirectory( FugioLib )
 add_subdirectory( FugioApp )
 add_subdirectory( FugioShow )
+add_subdirectory( fugio-plugin-manager )
 
 #------------------------------------------------------------------------------
 
