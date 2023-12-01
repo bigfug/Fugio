@@ -4,6 +4,7 @@
 #include <QNetworkInterface>
 #include <QNetworkAddressEntry>
 #include <QDataStream>
+#include <QUdpSocket>
 
 Universe::Universe( QObject *pParent )
 	: QObject( pParent ), mPort( 45455 )
@@ -235,4 +236,10 @@ void Universe::readyRead()
 
 		mMutex.unlock();
 	}
+}
+
+Universe::InterfaceCaster::InterfaceCaster(QObject *pParent)
+    : mPort( 45455 )
+{
+    mSocket = new QUdpSocket( pParent );
 }

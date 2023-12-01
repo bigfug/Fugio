@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Fugio Settings</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -21,6 +21,11 @@
        <property name="sizeAdjustPolicy">
         <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
        </property>
+       <item>
+        <property name="text">
+         <string>Plugins</string>
+        </property>
+       </item>
        <item>
         <property name="text">
          <string>Snippets</string>
@@ -33,6 +38,7 @@
        <property name="currentIndex">
         <number>0</number>
        </property>
+       <widget class="PluginsForm" name="mPlugins"/>
        <widget class="QWidget" name="mSnippets">
         <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0">
          <property name="leftMargin">
@@ -86,6 +92,14 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PluginsForm</class>
+   <extends>QWidget</extends>
+   <header>plugins/pluginsform.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

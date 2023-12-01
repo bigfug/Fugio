@@ -889,6 +889,14 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>PluginsForm</name>
+    <message>
+        <location filename="../plugins/pluginsform.ui" line="14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="../undo/cmdaddpinlink.h" line="19"/>
@@ -1119,12 +1127,17 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings/settingsdialog.ui" line="55"/>
+        <location filename="../settings/settingsdialog.ui" line="31"/>
+        <source>Plugins</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../settings/settingsdialog.ui" line="60"/>
         <source>Snippets Directory:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings/settingsdialog.ui" line="65"/>
+        <location filename="../settings/settingsdialog.ui" line="70"/>
         <source>Select...</source>
         <translation type="unfinished"></translation>
     </message>

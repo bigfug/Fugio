@@ -62,6 +62,8 @@ set( SOURCE_FILES
 	performanceform.h
 	pinitem.cpp
 	pinitem.h
+	plugins/pluginsform.cpp
+	plugins/pluginsform.h
 	settings/settingsdialog.cpp
 	settings/settingsdialog.h
 	snippets/snippetsform.cpp
@@ -123,6 +125,7 @@ set( UIS_HDRS
 	nodenamedialog.ui
 	patchpromptdialog.ui
 	performanceform.ui
+	plugins/pluginsform.ui
 	settings/settingsdialog.ui
 	snippets/snippetsform.ui
 	stylesheetform.ui

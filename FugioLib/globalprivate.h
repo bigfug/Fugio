@@ -5,11 +5,10 @@
 #include <QMap>
 #include <QDir>
 #include <QSharedPointer>
-#include <QNetworkReply>
 #include <QMultiMap>
 #include <QElapsedTimer>
 #include <QThread>
-#include <QApplication>
+//#include <QApplication>
 #include <QTimer>
 
 #include <memory>
@@ -24,6 +23,9 @@
 
 #include "../libs/FugioTime/lib/timesync.h"
 #include "universe.h"
+#include "pluginmanager.h"
+
+class QNetworkAccessManager;
 
 class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public fugio::GlobalInterface
 {
@@ -37,39 +39,51 @@ class FUGIOLIBSHARED_EXPORT GlobalPrivate : public fugio::GlobalSignals, public 
 public:
 	virtual ~GlobalPrivate( void ) Q_DECL_OVERRIDE;
 
-    virtual void loadPlugins( QDir pDir ) Q_DECL_OVERRIDE;
+    virtual void loadPlugins( QDir pDir ) Q_DECL_OVERRIDE
+    {
+        mPluginManager.loadPlugins( pDir );
+    }
 
-	virtual void unloadPlugins( void ) Q_DECL_OVERRIDE;
+    virtual void unloadPlugins( void ) Q_DECL_OVERRIDE
+    {
+        mPluginManager.unloadPlugins();
+    }
 
-	virtual void initialisePlugins( void ) Q_DECL_OVERRIDE;
+    virtual void initialisePlugins( void ) Q_DECL_OVERRIDE;
 
-	bool loadPlugin( const QString &pFileName );
+    bool loadPlugin( const QString &pFileName )
+    {
+        return( mPluginManager.loadPlugin( pFileName ) );
+    }
 
-	void registerPlugin( QObject *pPluginInstance );
+    void registerPlugin( QObject *pPluginInstance )
+    {
+        mPluginManager.registerPlugin( pPluginInstance );
+    }
 
 	virtual QStringList loadedPluginNames( void ) const Q_DECL_OVERRIDE
 	{
-		return( mLoadedPlugins );
+        return( mPluginManager.loadedPluginNames() );
 	}
 
 	virtual void setEnabledPlugins( QStringList pEnabledPlugins ) Q_DECL_OVERRIDE
 	{
-		mEnabledPlugins = pEnabledPlugins;
+        mPluginManager.setEnabledPlugins( pEnabledPlugins );
 	}
 
 	virtual void setDisabledPlugins( QStringList pDisabledPlugins ) Q_DECL_OVERRIDE
 	{
-		mDisabledPlugins = pDisabledPlugins;
+        mPluginManager.setDisabledPlugins( pDisabledPlugins );
 	}
 
 	virtual void enablePlugin( QString pPluginName ) Q_DECL_OVERRIDE
 	{
-		mEnabledPlugins << pPluginName;
+        mPluginManager.enablePlugin( pPluginName );
 	}
 
 	virtual void disablePlugin( QString pPluginName ) Q_DECL_OVERRIDE
 	{
-		mDisabledPlugins << pPluginName;
+        mPluginManager.disablePlugin( pPluginName );
 	}
 
 	//-------------------------------------------------------------------------
@@ -249,12 +263,7 @@ public:
 
 	QList<QObject *> plugInitList( void )
 	{
-		return( mPluginInitList );
-	}
-
-	QList<QObject *> plugInstList( void )
-	{
-		return( mPluginInstances );
+        return( mPluginManager.plugInstList() );
 	}
 
 	typedef QMap<QUuid, const QMetaObject *>		UuidClassMap;
@@ -313,11 +322,8 @@ private:
 
 	QMutex							 mContextMutex;
 
-	QList<QObject *>									 mPluginInstances;
 	QList<QSharedPointer<fugio::ContextInterface> >		 mContexts;
 	QList<fugio::DeviceFactoryInterface *>				 mDeviceFactories;
-
-	QList<QObject *>				 mPluginInitList;
 
 	QMultiMap<QUuid,QUuid>			 mPinSplitters;
 	QMultiMap<QUuid,QUuid>			 mPinJoiners;
@@ -334,13 +340,11 @@ private:
 
 	Universe						 mUniverse;
 
-	QStringList						 mEnabledPlugins;
-	QStringList						 mDisabledPlugins;
-	QStringList						 mLoadedPlugins;
-
 	QMap<QMetaType::Type,QUuid>		 mMetaTypeToPinUuid;
 
 	QMap<QString,QString>			 mCommandLineVariables;
+
+    PluginManager                    mPluginManager;
 };
 
 #if defined( GLOBAL_THREADED )

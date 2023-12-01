@@ -15,6 +15,8 @@ set( SOURCE_FILES
 	pinprivate.cpp
 	pinprivate.h
 	pin.cpp
+	pluginmanager.h
+	pluginmanager.cpp
 	nodeprivate.cpp
 	nodeprivate.h
 	node.cpp
