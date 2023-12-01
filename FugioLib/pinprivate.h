@@ -178,7 +178,18 @@ public:
 
 	inline virtual void markAsProperty( bool pIsProperty = true ) Q_DECL_OVERRIDE
 	{
+#if( QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 ) )
 		mFlags.setFlag( Property, pIsProperty );
+#else
+		if( pIsProperty )
+		{
+			mFlags |= Property;
+		}
+		else
+		{
+			mFlags &= ~Property;
+		}
+#endif
 	}
 
 	virtual void setDisplayLabel(QString pDisplayLabel) Q_DECL_OVERRIDE;
