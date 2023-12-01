@@ -18,6 +18,11 @@ add_definitions( -DFUGIOLIB_STATIC )
 
 add_executable(fugio-plugin-manager
   main.cpp
+
+  ../libs/zip/zip.h
+  ../libs/zip/zip.cpp
+  ../libs/zip/miniz.h
+
   ${TS_FILES}
 )
 
