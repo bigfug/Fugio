@@ -17,7 +17,7 @@
 <context>
     <name>GlobalPrivate</name>
     <message>
-        <location filename="../globalprivate.cpp" line="90"/>
+        <location filename="../globalprivate.cpp" line="92"/>
         <source>Nodes registered: %1</source>
         <translation type="unfinished"></translation>
     </message>
