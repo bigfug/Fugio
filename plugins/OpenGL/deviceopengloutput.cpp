@@ -80,6 +80,14 @@ QSize DeviceOpenGLOutput::framebufferSize() const
 
 void DeviceOpenGLOutput::initializeGL()
 {
+	OpenGLPlugin::instance()->initGLEW();
+
+#if defined( OPENGL_DEBUG_ENABLE )
+	if( mDebugLogger.initialize() )
+	{
+		mDebugLogger.startLogging( QOpenGLDebugLogger::SynchronousLogging );
+	}
+#endif
 }
 
 void DeviceOpenGLOutput::resizeGL( int w, int h )
@@ -201,11 +209,11 @@ void DeviceOpenGLOutput::handleLoggedMessage( const QOpenGLDebugMessage &pDebugM
 
 	if( CurNod )
 	{
-		qDebug() << CurNod->name() << pDebugMessage;
+		OpenGLPlugin::instance()->handleError( pDebugMessage, CurNod.data() );
 	}
 	else
 	{
-		qDebug() << pDebugMessage;
+		OpenGLPlugin::instance()->handleError( pDebugMessage );
 	}
 }
 
@@ -279,7 +287,7 @@ void DeviceOpenGLOutput::mouseMoveEvent( QMouseEvent *pEvent )
 
 void DeviceOpenGLOutput::keyReleaseEvent( QKeyEvent *pEvent )
 {
-	if( pEvent->key() == Qt::Key_Return && pEvent->modifiers().testFlag( Qt::AltModifier ) )
+    if(pEvent->key() == Qt::Key_F11)
 	{
 		toggleFullScreen();
 
@@ -337,20 +345,11 @@ void DeviceOpenGLOutput::exposeEvent( QExposeEvent * )
 	{
 		makeCurrent();
 
-		OpenGLPlugin::instance()->initGLEW();
-
-#if defined( OPENGL_DEBUG_ENABLE )
-		if( mDebugLogger.initialize() )
-		{
-			mDebugLogger.startLogging( QOpenGLDebugLogger::SynchronousLogging );
-		}
-#endif
-
 		if( OpenGLPlugin::instance()->openWindowFullScreen() )
 		{
 			showFullScreen();
 		}
 
-		raise();
+		//raise();
 	}
 }

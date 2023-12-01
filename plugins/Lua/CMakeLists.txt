@@ -5,8 +5,8 @@ project( fugio-lua )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/lua/uuid.h
-	../../include/fugio/lua/lua_interface.h
+	../../plugins-include/fugio/lua/uuid.h
+	../../plugins-include/fugio/lua/lua_interface.h
 	luaplugin.h
 	luanode.h
 	syntaxhighlighterlua.h
@@ -63,7 +63,7 @@ install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
 if( ( WIN32 ) AND ( LUA_FOUND ) )
 	string( REPLACE ".lib" ".dll" LUA_DLL ${LUA_LIBRARIES} )
 
-	install( FILES ${LUA_DLL} DESTINATION . )
+	install( FILES ${LUA_DLL} DESTINATION ${PATH_APP} )
 endif()
 
 if( APPLE )

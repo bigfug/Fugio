@@ -6,7 +6,7 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 	
-	../../include/fugio/spout/uuid.h
+	../../plugins-include/fugio/spout/uuid.h
 
 	opengl_includes.h
 	spoutpin.cpp
@@ -62,6 +62,8 @@ endif()
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
 #------------------------------------------------------------------------------
 # Qt5

@@ -11,6 +11,8 @@
 
 #include <fugio/opengl/node_render_interface.h>
 
+#include <fugio/opengl/context_container_object.h>
+
 #include "freeframelibrary.h"
 
 class FFGLNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface, protected QOpenGLFunctions
@@ -60,6 +62,8 @@ protected:
 
 	QPoint											 mPoint;
 	QSize											 mSize;
+
+	fugio::ContextFramebufferObject					 mFBO;
 };
 
 #endif // FFGLNODE_H

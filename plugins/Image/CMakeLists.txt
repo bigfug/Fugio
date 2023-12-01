@@ -6,9 +6,9 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 
-	../../include/fugio/image/uuid.h
-	../../include/fugio/image/image.h
-	../../include/fugio/image/painter_interface.h
+	../../plugins-include/fugio/image/uuid.h
+	../../plugins-include/fugio/image/image.h
+	../../plugins-include/fugio/image/painter_interface.h
 
 	colourmasknode.cpp
 	colourmasknode.h
@@ -46,6 +46,8 @@ set( SOURCE_FILES
 	copynode.h
 	replacealphanode.cpp
 	replacealphanode.h
+	setalphanode.cpp
+	setalphanode.h
 )
 
 set( QRC_FILES
@@ -62,6 +64,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
 #------------------------------------------------------------------------------
 # Qt5

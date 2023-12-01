@@ -34,6 +34,7 @@ private:
 	static int luaUpdated( lua_State *L );
 	static int luaIsUpdated( lua_State *L );
 	static int luaUpdate( lua_State *L );
+	static int luaAppend( lua_State *L );
 
 private:
 	static const luaL_Reg					mLuaPinFunctions[];

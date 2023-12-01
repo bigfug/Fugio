@@ -28,6 +28,9 @@
 #include "simpleblobdetectornode.h"
 #include "absdiffnode.h"
 #include "countnonzeronode.h"
+#include "solvepnpnode.h"
+#include "rodriguesnode.h"
+#include "projectpointsnode.h"
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
@@ -54,8 +57,11 @@ ClassEntry	OpenCVPlugin::mNodeEntries[] =
 	ClassEntry( "Image Homography", "OpenCV", NID_OPENCV_IMAGE_HOMOGRAPHY, &ImageHomographyNode::staticMetaObject ),
 	ClassEntry( "Background Subtraction", "OpenCV", NID_OPENCV_BACKGROUND_SUBTRACTION, &BackgroundSubtractionNode::staticMetaObject ),
 	ClassEntry( "Resize", "OpenCV", ClassEntry::Deprecated, NID_OPENCV_RESIZE, &ResizeNode::staticMetaObject ),
+	ClassEntry( "Rodrigues", "OpenCV", NID_OPENCV_RODRIGUES, &RodriguesNode::staticMetaObject ),
 	ClassEntry( "Moments", "OpenCV", NID_OPENCV_MOMENTS, &MomentsNode::staticMetaObject ),
+	ClassEntry( "Project Points", "OpenCV", NID_OPENCV_PROJECT_POINTS, &ProjectPointsNode::staticMetaObject ),
 	ClassEntry( "Simple Blob Detector", "OpenCV", NID_OPENCV_SIMPLE_BLOB_DETECTOR, &SimpleBlobDetectorNode::staticMetaObject ),
+	ClassEntry( "SolvePNP", "OpenCV", NID_OPENCV_SOLVEPNP, &SolvePNPNode::staticMetaObject ),
 	ClassEntry()
 };
 

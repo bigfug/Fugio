@@ -12,6 +12,7 @@ public:
 
 private slots:
 	void newContext();
+	void createNode();
 };
 
 #endif // TESTCORE_H

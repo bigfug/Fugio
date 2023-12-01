@@ -9,6 +9,8 @@
 #include <QVector3D>
 #include <QVariant>
 
+#include <fugio/lua/lua_interface.h>
+
 class LuaVector3D
 {
 private:
@@ -25,6 +27,8 @@ public:
 	virtual ~LuaVector3D( void ) {}
 
 #if defined( LUA_SUPPORTED )
+	static void registerExtension( fugio::LuaInterface *LUA );
+
 	static int luaOpen( lua_State *L );
 
 	static int luaNew( lua_State *L );

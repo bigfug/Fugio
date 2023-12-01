@@ -7,20 +7,24 @@
 
 #include <QQuaternion>
 
+#include <fugio/lua/lua_interface.h>
+
 class LuaQuaternion
 {
 private:
 	typedef struct UserData
 	{
-		static const char *TypeName;
-
 		QQuaternion			mQuaternion;
 	} UserData;
+
+	static const char *mTypeName;
 
 public:
 	LuaQuaternion() {}
 
 #if defined( LUA_SUPPORTED )
+	static void registerExtension( fugio::LuaInterface *LUA );
+
 	static int luaOpen( lua_State *L );
 
 	static int luaNew( lua_State *L );
@@ -34,7 +38,7 @@ public:
 			return( 0 );
 		}
 
-		luaL_getmetatable( L, UserData::TypeName );
+		luaL_getmetatable( L,mTypeName );
 		lua_setmetatable( L, -2 );
 
 		new( &UD->mQuaternion ) QQuaternion( pQ );
@@ -44,7 +48,7 @@ public:
 
 	static bool isQuaternion( lua_State *L, int i = 1 )
 	{
-		return( luaL_testudata( L, i, UserData::TypeName ) != nullptr );
+		return( luaL_testudata( L, i, mTypeName ) != nullptr );
 	}
 
 	static QQuaternion checkQuaternion( lua_State *L, int i = 1 )
@@ -60,7 +64,7 @@ public:
 private:
 	static UserData *checkuserdata( lua_State *L, int i = 1 )
 	{
-		UserData *UD = (UserData *)luaL_checkudata( L, i, UserData::TypeName );
+		UserData *UD = (UserData *)luaL_checkudata( L, i, mTypeName );
 
 		luaL_argcheck( L, UD != NULL, i, "Quaternion expected" );
 

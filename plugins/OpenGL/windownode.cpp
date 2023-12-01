@@ -34,6 +34,7 @@ WindowNode::WindowNode( QSharedPointer<fugio::NodeInterface> pNode )
 	FUGID( PIN_INPUT_RENDER, "249f2932-f483-422f-b811-ab679f006381" );
 	FUGID( PIN_OUTPUT_WINDOW_SIZE, "e6bf944e-5f46-4994-bd51-13c2aa6415b7" );
 	FUGID( PIN_OUTPUT_EVENTS, "524e9f30-7094-4f87-b5ab-ead2da04256b" );
+	FUGID( PIN_OUTPUT_KEYBOARD, "6688C8FA-AC7E-4D25-9DEE-6B5EA25BD521" );
 
 	mPinInputTrigger = pinInput( "Trigger", PID_FUGIO_NODE_TRIGGER );
 
@@ -46,6 +47,8 @@ WindowNode::WindowNode( QSharedPointer<fugio::NodeInterface> pNode )
 	mValWindowSize = pinOutput<VariantInterface *>( "Window Size", mPinWindowSize, PID_SIZE, PIN_OUTPUT_WINDOW_SIZE );
 
 	mValOutputEvents = pinOutput<InputEventsInterface *>( "Events", mPinOutputEvents, PID_INPUT_EVENTS, PIN_OUTPUT_EVENTS );
+
+	mValOutputKeyboard = pinOutput<fugio::KeyboardInterface *>( "Keyboard", mPinOutputKeyboard, PID_KEYBOARD, PIN_OUTPUT_KEYBOARD );
 
 	mPinMouseShowCursor->setDescription( tr( "The mouse cursor will be visible in the OpenGL window if this is true, hidden if it is false" ) );
 
@@ -77,6 +80,8 @@ bool WindowNode::initialise()
 
 		mOutput->setInputEventsInterface( mValOutputEvents );
 
+		mOutput->installEventFilter( this );
+
 		outputResized( mOutput->size() );
 
 		connect( mOutput.data(), SIGNAL(resized(QSize)), this, SLOT(outputResized(QSize)) );
@@ -97,6 +102,7 @@ bool WindowNode::initialise()
 	mNode->context()->nodeInitialised();
 
 	connect( mNode->context()->qobject(), SIGNAL(frameInitialise()), this, SLOT(contextFrameInitialise()) );
+	connect( mNode->context()->qobject(), SIGNAL(frameStart()), this, SLOT(contextFrameStart()) );
 	connect( mNode->context()->qobject(), SIGNAL(frameEnd()), this, SLOT(contextFrameEnd()) );
 
 	return( true );
@@ -112,6 +118,8 @@ bool WindowNode::deinitialise()
 	if( mOutput )
 	{
 		mOutput->disconnect( this );
+
+		mOutput->removeEventFilter( this );
 
 		mOutput->unsetCurrentNode( mNode );
 
@@ -288,11 +296,66 @@ void WindowNode::render( qint64 pTimeStamp )
 	OPENGL_DEBUG( mNode->name() );
 }
 
+bool WindowNode::eventFilter( QObject *pObject, QEvent *pEvent )
+{
+	if( pEvent->type() == QEvent::KeyPress )
+	{
+		QKeyEvent *keyEvent = static_cast<QKeyEvent *>( pEvent );
+
+		if( !keyEvent->isAutoRepeat() )
+		{
+			fugio::KeyboardEvent		KeyEvt;
+
+			KeyEvt.mType = fugio::KeyboardEvent::PRESS;
+			KeyEvt.mText = keyEvent->text();
+			KeyEvt.mCode = keyEvent->key();
+
+			KeyEvt.translateModifiers( keyEvent->modifiers() );
+
+			mEvtLst << KeyEvt;
+		}
+	}
+	else if( pEvent->type() == QEvent::KeyRelease )
+	{
+		QKeyEvent *keyEvent = static_cast<QKeyEvent *>( pEvent );
+
+		if( !keyEvent->isAutoRepeat() )
+		{
+			fugio::KeyboardEvent		KeyEvt;
+
+			KeyEvt.mType = fugio::KeyboardEvent::RELEASE;
+			KeyEvt.mText = keyEvent->text();
+			KeyEvt.mCode = keyEvent->key();
+
+			KeyEvt.translateModifiers( keyEvent->modifiers() );
+
+			mEvtLst << KeyEvt;
+		}
+	}
+
+	// standard event processing
+	return( QObject::eventFilter( pObject, pEvent ) );
+}
+
 void WindowNode::contextFrameInitialise()
 {
 	if( mValOutputEvents )
 	{
 		mValOutputEvents->inputFrameInitialise();
+	}
+}
+
+void WindowNode::contextFrameStart()
+{
+	mValOutputKeyboard->keyboardClearEvents();
+
+	if( !mEvtLst.isEmpty() )
+	{
+		mValOutputKeyboard->keyboardAddEvents( mEvtLst );
+
+		pinUpdated( mPinOutputKeyboard );
+
+		mEvtLst.clear();
 	}
 }
 

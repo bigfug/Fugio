@@ -7,6 +7,9 @@
 
 #include <fugio/global_interface.h>
 #include <fugio/global_signals.h>
+#include <fugio/context_interface.h>
+#include <fugio/context_signals.h>
+#include <fugio/file/filename_interface.h>
 
 #include <fugio/text/syntax_error_interface.h>
 
@@ -261,6 +264,9 @@ PluginInterface::InitResult OpenGLPlugin::initialise( fugio::GlobalInterface *pA
 
 	connect( mApp->qobject(), SIGNAL(frameEnd()), this, SLOT(globalFrameEnd()) );
 
+	connect( mApp->qobject(), SIGNAL(contextAdded(QSharedPointer<fugio::ContextInterface>)), this, SLOT(contextAdded(QSharedPointer<fugio::ContextInterface>)) );
+	connect( mApp->qobject(), SIGNAL(contextRemoved(QSharedPointer<fugio::ContextInterface>)), this, SLOT(contextRemoved(QSharedPointer<fugio::ContextInterface>)) );
+
 	DeviceOpenGLOutput::deviceInitialise();
 
 	return( INIT_OK );
@@ -425,6 +431,123 @@ QString OpenGLPlugin::framebufferError( GLenum pErrorCode )
 	}
 
 	return( QString::number( pErrorCode, 16 ) );
+}
+
+void OpenGLPlugin::handleError( const QOpenGLDebugMessage &pDebugMessage, NodeInterface *pNode )
+{
+	if( pNode )
+	{
+		qDebug() << pNode->name() << pDebugMessage;
+	}
+	else
+	{
+		qDebug() << pDebugMessage;
+	}
+}
+
+QOpenGLContext *OpenGLPlugin::context()
+{
+	QThread		*Thread = QThread::currentThread();
+
+	typedef struct ThreadContext
+	{
+		QOpenGLContext		*mContext;
+		QOffscreenSurface	*mSurface;
+	} ThreadContext;
+
+	static QMap<QThread *, ThreadContext>		mThreadContexts;
+	static QMutex								mThreadContextsMutex;
+
+	QMutexLocker		L( &mThreadContextsMutex );
+
+	QMap<QThread *, ThreadContext>::iterator it = mThreadContexts.find( Thread );
+
+	if( it != mThreadContexts.end() && !it.value().mContext->isValid() )
+	{
+		delete it.value().mContext;
+		delete it.value().mSurface;
+
+		mThreadContexts.remove( Thread );
+
+		it = mThreadContexts.end();
+	}
+
+	if( it == mThreadContexts.end() )
+	{
+		QOpenGLContext	*ShareContext = QOpenGLContext::globalShareContext();
+
+		ThreadContext	 TC;
+
+		TC.mSurface = new QOffscreenSurface();
+		TC.mContext = new QOpenGLContext();
+
+		TC.mSurface->create();
+
+		if( TC.mSurface->isValid() )
+		{
+			TC.mContext->setShareContext( ShareContext );
+
+			if( TC.mContext->create() )
+			{
+				if( TC.mContext->makeCurrent( TC.mSurface ) )
+				{
+					OpenGLPlugin::instance()->initGLEW();
+
+					mThreadContexts.insert( Thread, TC );
+
+					return( TC.mContext );
+				}
+			}
+		}
+
+		delete TC.mContext;
+		delete TC.mSurface;
+
+		return( Q_NULLPTR );
+	}
+
+	if( !it.value().mContext->makeCurrent( it.value().mSurface ) )
+	{
+		return( Q_NULLPTR );
+	}
+
+	return( it.value().mContext );
+}
+
+void OpenGLPlugin::contextAdded(QSharedPointer<ContextInterface> pContext)
+{
+	connect( pContext->qobject(), SIGNAL(frameInitialise()), this, SLOT(contextFrameInitialise()) );
+	connect( pContext->qobject(), SIGNAL(frameEnd()), this, SLOT(contextFrameEnd()) );
+}
+
+void OpenGLPlugin::contextRemoved(QSharedPointer<ContextInterface> pContext)
+{
+	disconnect( pContext->qobject(), SIGNAL(frameInitialise()), this, SLOT(contextFrameInitialise()) );
+	disconnect( pContext->qobject(), SIGNAL(frameEnd()), this, SLOT(contextFrameEnd()) );
+}
+
+void OpenGLPlugin::contextFrameInitialise()
+{
+	QOpenGLContext		*CurCtx = QOpenGLContext::currentContext();
+
+	if( CurCtx )
+	{
+		CurCtx->doneCurrent();
+	}
+
+	context();
+}
+
+void OpenGLPlugin::contextFrameEnd()
+{
+	QOpenGLContext		*CurCtx = QOpenGLContext::currentContext();
+
+	// this is required on macOS
+
+	if( CurCtx )
+	{
+		glFlush();
+	}
 }
 
 void OpenGLPlugin::deviceConfigGui( QWidget *pParent )
@@ -713,6 +836,34 @@ void OpenGLPlugin::initGLEW()
 
 void OpenGLPlugin::loadShader( QSharedPointer<PinInterface> pPin, QOpenGLShaderProgram &pProgram, QOpenGLShader::ShaderType pShaderType, int &pCompiled, int &pFailed )
 {
+	QSharedPointer<fugio::PinInterface>		ConnectedPin = pPin->connectedPin();
+
+	if( ConnectedPin && ConnectedPin->hasControl() )
+	{
+		fugio::FilenameInterface	*F = qobject_cast<fugio::FilenameInterface *>( ConnectedPin->control()->qobject() );
+
+		if( F )
+		{
+			if( !pProgram.addShaderFromSourceFile( pShaderType, F->filename() ) )
+			{
+				QString		Log = pProgram.log();
+
+				if( !Log.isEmpty() )
+				{
+					qWarning() << Log;
+				}
+
+				pFailed++;
+			}
+			else
+			{
+				pCompiled++;
+			}
+
+			return;
+		}
+	}
+
 	fugio::SyntaxErrorInterface *SyntaxErrors = Q_NULLPTR;
 
 	if( pPin->hasControl() )
@@ -722,13 +873,13 @@ void OpenGLPlugin::loadShader( QSharedPointer<PinInterface> pPin, QOpenGLShaderP
 
 	QString			Source;
 
-	if( !pPin->isConnected() || !pPin->connectedPin()->hasControl() )
+	if( !ConnectedPin || !ConnectedPin->hasControl() )
 	{
 		Source = pPin->value().toString();
 	}
 	else
 	{
-		fugio::VariantInterface	*V = qobject_cast<fugio::VariantInterface *>( pPin->connectedPin()->control()->qobject() );
+		fugio::VariantInterface		*V = qobject_cast<fugio::VariantInterface *>( ConnectedPin->control()->qobject() );
 
 		Source = ( V ? V->variant().toString() : pPin->value().toString() );
 	}

@@ -18,7 +18,7 @@ class CorePlugin : public QObject, public fugio::PluginInterface
 public:
 	explicit CorePlugin( void );
 
-	virtual ~CorePlugin( void );
+	virtual ~CorePlugin( void ) Q_DECL_OVERRIDE {};
 
 	static CorePlugin *instance( void )
 	{
@@ -33,9 +33,9 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
 
-	virtual InitResult initialise( fugio::GlobalInterface *pApp, bool pLastChance );
+	virtual InitResult initialise( fugio::GlobalInterface *pApp, bool pLastChance ) Q_DECL_OVERRIDE;
 
-	virtual void deinitialise( void );
+	virtual void deinitialise( void ) Q_DECL_OVERRIDE;
 
 private:
 	static ClassEntry				 mNodeClasses[];

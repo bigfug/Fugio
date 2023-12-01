@@ -5,6 +5,8 @@
 #include <fugio/lua/lua_interface.h>
 #include <fugio/core/variant_interface.h>
 #include <fugio/performance.h>
+#include <fugio/json/uuid.h>
+
 #include "luaqtplugin.h"
 #include "luajsonarray.h"
 #include "luajsonobject.h"
@@ -27,8 +29,20 @@ const luaL_Reg LuaJsonDocument::mLuaMethods[] =
 	{ "isArray",			LuaJsonDocument::luaIsArray },
 	{ "isObject",			LuaJsonDocument::luaIsObject },
 	{ "object",				LuaJsonDocument::luaObject },
+	{ "__tostring",			LuaJsonDocument::luaToString },
 	{ 0, 0 }
 };
+
+void LuaJsonDocument::registerExtension(LuaInterface *LUA)
+{
+	LuaQtPlugin::addLuaFunction( "jsondocument", LuaJsonDocument::luaNew );
+
+	LUA->luaRegisterExtension( LuaJsonDocument::luaOpen );
+
+	LUA->luaAddPinGet( PID_JSON, LuaJsonDocument::luaPinGet );
+
+	LUA->luaAddPushVariantFunction( QMetaType::QJsonDocument, LuaJsonDocument::pushVariant );
+}
 
 int LuaJsonDocument::luaOpen( lua_State *L )
 {
@@ -160,6 +174,53 @@ int LuaJsonDocument::luaObject(lua_State *L)
 	LuaJsonObject::pushjsonobject( L, UserData->mJsonDocument->object() );
 
 	return( 1 );
+}
+
+int LuaJsonDocument::luaToString(lua_State *L)
+{
+	JsonDocumentUserData		*UserData = checkjsondocumentdata( L );
+
+	QString						 JsonData = UserData->mJsonDocument->toJson( QJsonDocument::Compact );
+
+	lua_pushfstring( L, "%s", JsonData.toLatin1().constData() );
+
+	return( 1 );
+}
+
+int LuaJsonDocument::luaPinGet(const QUuid &pPinLocalId, lua_State *L)
+{
+	fugio::LuaInterface						*Lua  = LuaQtPlugin::lua();
+	NodeInterface							*Node = Lua->node( L );
+	QSharedPointer<fugio::PinInterface>		 Pin = Node->findPinByLocalId( pPinLocalId );
+	QSharedPointer<fugio::PinInterface>		 PinSrc;
+
+	if( !Pin )
+	{
+		return( luaL_error( L, "No source pin" ) );
+	}
+
+	if( Pin->direction() == PIN_OUTPUT )
+	{
+		PinSrc = Pin;
+	}
+	else
+	{
+		PinSrc = Pin->connectedPin();
+	}
+
+	if( !PinSrc || !PinSrc->hasControl() )
+	{
+		return( luaL_error( L, "No JSON pin" ) );
+	}
+
+	fugio::VariantInterface			*SrcVar = qobject_cast<fugio::VariantInterface *>( PinSrc->control()->qobject() );
+
+	if( !SrcVar )
+	{
+		return( luaL_error( L, "Can't access matrix" ) );
+	}
+
+	return( pushjsondocument( L, SrcVar->variant().value<QJsonDocument>() ) );
 }
 
 #endif

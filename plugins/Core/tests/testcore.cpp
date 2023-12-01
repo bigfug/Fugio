@@ -1,5 +1,7 @@
 #include "testcore.h"
 
+#include <fugio/core/uuid.h>
+
 TestCore::TestCore()
 {
 	fugio::GlobalInterface	*G = fugio::fugio();
@@ -16,19 +18,23 @@ void TestCore::newContext()
 	C = fugio::fugio()->newContext();
 
 	QVERIFY( C );
+}
 
-//		if( C->load( mPatchFileName ) )
-//		{
-//			G->start();
+void TestCore::createNode()
+{
+	QSharedPointer<fugio::ContextInterface>	C = fugio::fugio()->newContext();
 
-//			R = pApp.exec();
+	QVERIFY( C );
 
-//			G->stop();
-//		}
+	QSharedPointer<fugio::NodeInterface>	NI = C->createNode( "Test", QUuid::createUuid(), NID_ANY_TRIGGER );
+
+	QVERIFY( NI );
+	QVERIFY( NI->hasControl() );
+	QVERIFY( NI->controlUuid() == NID_ANY_TRIGGER );
 
 	fugio::fugio()->clear();
 }
 
-QTEST_MAIN( TestCore )
+QTEST_GUILESS_MAIN( TestCore )
 
 #include "testcore.moc"

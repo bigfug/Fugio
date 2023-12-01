@@ -1,6 +1,8 @@
 #ifndef PAINTERPLUGIN_H
 #define PAINTERPLUGIN_H
 
+#include <QVector>
+
 #if defined( LUA_SUPPORTED )
 #include <lua.hpp>
 #endif
@@ -19,7 +21,7 @@ class LuaQtPlugin : public QObject, public PluginInterface
 public:
 	Q_INVOKABLE explicit LuaQtPlugin( void );
 
-	virtual ~LuaQtPlugin( void ) {}
+	virtual ~LuaQtPlugin( void ) Q_DECL_OVERRIDE {}
 
 	static LuaQtPlugin *instance( void )
 	{
@@ -27,6 +29,12 @@ public:
 	}
 
 	static LuaInterface *lua( void );
+
+#if defined( LUA_SUPPORTED )
+	static void addLuaFunction( const char *pName, lua_CFunction pFunction );
+
+	static void addLuaFunction( luaL_Reg R );
+#endif
 
 	//-------------------------------------------------------------------------
 	// fugio::PluginInterface
@@ -43,8 +51,8 @@ private:
 private:
 	static LuaQtPlugin			*mInstance;
 
-	static const luaL_Reg		 mLuaFunctions[];
-	static const luaL_Reg		 mLuaMethods[];
+	static QVector<luaL_Reg>	 mLuaFunctions;
+	static QVector<luaL_Reg>	 mLuaMethods;
 
 	static GlobalInterface		*mApp;
 };

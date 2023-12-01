@@ -38,15 +38,9 @@ TexturePin::TexturePin( QSharedPointer<fugio::PinInterface> pPin )
 
 	mTexDsc.mCompare = QOpenGLTexture::CompareNever;
 
+	mTexDsc.mOrigin = fugio::OpenGLTextureOrigin::Unknown;
+
 	mDefinitionChanged = true;
-
-	mFBOId = 0;
-	mFBODepthRBId = 0;
-	mFBOBoundTexId = 0;
-
-	mFBOMSId = 0;
-	mFBOMSColourRBId = 0;
-	mFBOMSDepthRBId = 0;
 }
 
 TexturePin::~TexturePin( void )
@@ -253,7 +247,12 @@ void TexturePin::update()
 
 	if( mDstTex )
 	{
-		return;
+		if( mDstTex->isCreated() && mDstTex->isStorageAllocated() )
+		{
+			return;
+		}
+
+		free();
 	}
 
 	if( !( mDstTex = new QOpenGLTexture( QOpenGLTexture::Target( mTexDsc.mTarget ) ) ) )
@@ -477,8 +476,6 @@ void TexturePin::setGenMipMaps( bool pGenMipMaps )
 
 void TexturePin::free()
 {
-	freeFbo();
-
 	if( mDstTex )
 	{
 		delete mDstTex;
@@ -560,101 +557,6 @@ void TexturePin::release()
 	glBindTexture( mTexDsc.mTarget, 0 );
 }
 
-quint32 TexturePin::fbo( bool pUseDepth )
-{
-	checkDefinition();
-
-	GLint		FBOCur;
-
-	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
-
-	if( !mFBOId && mDstTex && mTexDsc.mTexWidth )
-	{
-		glGenFramebuffers( 1, &mFBOId );
-		glBindFramebuffer( GL_FRAMEBUFFER, mFBOId );
-
-		if( pUseDepth )
-		{
-			glGenRenderbuffers( 1, &mFBODepthRBId );
-			glBindRenderbuffer( GL_RENDERBUFFER, mFBODepthRBId );
-
-#if defined( GL_ES_VERSION_2_0 )
-			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
-#else
-			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
-#endif
-
-			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mFBODepthRBId );
-		}
-
-		glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
-	}
-
-	if( mFBOId && mDstTex && mDstTex->textureId() != mFBOBoundTexId && mTexDsc.mTexWidth )
-	{
-		glBindFramebuffer( GL_FRAMEBUFFER, mFBOId );
-
-		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mTexDsc.mTarget, mDstTex->textureId(), 0 );
-
-		GLenum	FBOStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
-
-		if( FBOStatus != GL_FRAMEBUFFER_COMPLETE )
-		{
-			qWarning() << "FBO Status" << FBOStatus;
-
-			freeFbo();
-		}
-		else
-		{
-			mFBOBoundTexId = mDstTex->textureId();
-		}
-
-		glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
-	}
-
-	return( mFBOId );
-}
-
-void TexturePin::freeFbo()
-{
-	mFBOBoundTexId = 0;
-
-	if( mFBOId )
-	{
-		glDeleteFramebuffers( 1, &mFBOId );
-
-		mFBOId = 0;
-	}
-
-	if( mFBODepthRBId )
-	{
-		glDeleteRenderbuffers( 1, &mFBODepthRBId );
-
-		mFBODepthRBId = 0;
-	}
-
-	if( mFBOMSId )
-	{
-		glDeleteFramebuffers( 1, &mFBOMSId );
-
-		mFBOMSId = 0;
-	}
-
-	if( mFBOMSColourRBId )
-	{
-		glDeleteRenderbuffers( 1, &mFBOMSColourRBId );
-
-		mFBOMSColourRBId = 0;
-	}
-
-	if( mFBOMSDepthRBId )
-	{
-		glDeleteRenderbuffers( 1, &mFBOMSDepthRBId );
-
-		mFBOMSDepthRBId = 0;
-	}
-}
-
 void TexturePin::checkDefinition()
 {
 	if( mDefinitionChanged )
@@ -663,73 +565,6 @@ void TexturePin::checkDefinition()
 
 		mDefinitionChanged = false;
 	}
-}
-
-quint32 TexturePin::fboMultiSample( int pSamples, bool pUseDepth )
-{
-	checkDefinition();
-
-#if defined( QOPENGLEXTRAFUNCTIONS_H )
-	QOpenGLExtraFunctions	*GLEX = QOpenGLContext::currentContext()->extraFunctions();
-#endif
-
-	GLint		FBOCur;
-
-	glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
-
-	if( !mFBOMSId && mTexDsc.mTexWidth )
-	{
-		GLint		FBOCur, RBCur;
-
-		glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
-		glGetIntegerv( GL_RENDERBUFFER_BINDING, &RBCur );
-
-		glGenFramebuffers( 1, &mFBOMSId );
-		glBindFramebuffer( GL_FRAMEBUFFER, mFBOMSId );
-
-		glGenRenderbuffers( 1, &mFBOMSColourRBId );
-		glBindRenderbuffer( GL_RENDERBUFFER, mFBOMSColourRBId );
-
-#if defined( QOPENGLEXTRAFUNCTIONS_H )
-		if( GLEX )
-		{
-			GLEX->glRenderbufferStorageMultisample( GL_RENDERBUFFER, pSamples, GL_RGBA, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
-		}
-#endif
-
-		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, mFBOMSColourRBId );
-
-		if( pUseDepth )
-		{
-			glGenRenderbuffers( 1, &mFBOMSDepthRBId );
-			glBindRenderbuffer( GL_RENDERBUFFER, mFBOMSDepthRBId );
-
-#if defined( QOPENGLEXTRAFUNCTIONS_H )
-			if( GLEX )
-			{
-				GLEX->glRenderbufferStorageMultisample( GL_RENDERBUFFER, pSamples, GL_DEPTH_COMPONENT24, mTexDsc.mTexWidth, mTexDsc.mTexHeight );
-			}
-#endif
-
-			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mFBOMSDepthRBId );
-		}
-
-		GLenum	FBOStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
-
-		glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
-		glBindRenderbuffer( GL_RENDERBUFFER, RBCur );
-
-		if( FBOStatus != GL_FRAMEBUFFER_COMPLETE )
-		{
-			qWarning() << "FBO MS Status" << FBOStatus;
-
-			freeFbo();
-		}
-
-		glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
-	}
-
-	return( mFBOMSId );
 }
 
 void TexturePin::swapTexture()

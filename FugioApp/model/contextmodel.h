@@ -15,7 +15,7 @@ class ContextModel : public QAbstractItemModel
 public:
 	ContextModel( QObject *pParent = nullptr );
 
-	virtual ~ContextModel( void );
+	virtual ~ContextModel( void ) Q_DECL_OVERRIDE;
 
 	void setContext( QSharedPointer<fugio::ContextInterface> pContext );
 

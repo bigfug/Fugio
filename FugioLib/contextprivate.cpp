@@ -585,6 +585,186 @@ bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeLi
 	return( true );
 }
 
+bool ContextPrivate::loadData( const QString &pFileName )
+{
+	if( !QFile( pFileName ).exists() )
+	{
+		qWarning() << pFileName << "doesn't exist";
+
+		return( false );
+	}
+
+	QSettings										 CFG( pFileName, QSettings::IniFormat );
+	int												 VER = 1;
+	bool											 RET = false;
+
+	if( CFG.status() != QSettings::NoError )
+	{
+		qWarning() << pFileName << "can't load";
+
+		return( false );
+	}
+
+	if( CFG.format() != QSettings::IniFormat )
+	{
+		qWarning() << pFileName << "bad format";
+
+		return( false );
+	}
+
+	mActive = false;
+
+	CFG.beginGroup( "fugio" );
+
+	VER = CFG.value( "version", VER ).toInt();
+
+	CFG.endGroup();
+
+	for( NodeHash::const_iterator it = mNodeHash.begin() ; it != mNodeHash.end() ; it++ )
+	{
+		QSharedPointer<fugio::NodeInterface>	NI = it.value();
+
+		if( NI->hasControl() )
+		{
+			CFG.beginGroup( fugio::utils::uuid2string( NI->uuid() ) );
+
+			NI->control()->loadSettings( CFG );
+
+			CFG.endGroup();
+
+			nodeUpdated( NI->uuid() );
+		}
+	}
+
+	for( PinHash::const_iterator it = mPinHash.begin() ; it != mPinHash.end() ; it++ )
+	{
+		QSharedPointer<fugio::PinInterface>		PI = it.value();
+
+		CFG.beginGroup( fugio::utils::uuid2string( PI->globalId() ) );
+
+		if( PI->hasControl() )
+		{
+			CFG.beginGroup( "control" );
+
+			PI->control()->loadSettings( CFG );
+
+			CFG.endGroup();
+		}
+
+		if( PI->direction() == PIN_INPUT )
+		{
+			QVariant	V = CFG.value( "value" );
+
+			if( V.isValid() && V != PI->value() )
+			{
+				PI->setValue( V );
+
+				pinUpdated( PI );
+			}
+		}
+
+		CFG.endGroup();
+	}
+
+	mActive = true;
+
+	return( true );
+}
+
+bool ContextPrivate::saveData( const QString &pFileName ) const
+{
+	QFileInfo				 FileInfo( pFileName );
+	QString					 TmpFileName = FileInfo.absoluteFilePath().append( ".out" );
+
+	if( true )
+	{
+		QSettings				 CFG( TmpFileName, QSettings::IniFormat );
+
+		if( !CFG.isWritable() )
+		{
+			return( false );
+		}
+
+		CFG.clear();
+
+		emit saveStart( CFG );
+
+		CFG.beginGroup( "fugio" );
+
+		CFG.setValue( "version", int( 2 ) );
+
+		CFG.endGroup();
+
+		for( NodeHash::const_iterator it = mNodeHash.begin() ; it != mNodeHash.end() ; it++ )
+		{
+			QSharedPointer<fugio::NodeInterface>	NI = it.value();
+
+			if( NI->hasControl() )
+			{
+				CFG.beginGroup( fugio::utils::uuid2string( NI->uuid() ) );
+
+				NI->control()->saveSettings( CFG );
+
+				CFG.endGroup();
+			}
+		}
+
+		for( PinHash::const_iterator it = mPinHash.begin() ; it != mPinHash.end() ; it++ )
+		{
+			QSharedPointer<fugio::PinInterface>		PI = it.value();
+
+			CFG.beginGroup( fugio::utils::uuid2string( PI->globalId() ) );
+
+			if( PI->hasControl() )
+			{
+				CFG.beginGroup( "control" );
+
+				PI->control()->saveSettings( CFG );
+
+				CFG.endGroup();
+			}
+
+			if( PI->direction() == PIN_INPUT && PI->value().isValid() )
+			{
+				CFG.setValue( "value", PI->value() );
+			}
+
+			CFG.endGroup();
+		}
+	}
+
+	QString		TmpOld;
+
+	if( FileInfo.exists() )
+	{
+		TmpOld = FileInfo.dir().absoluteFilePath( FileInfo.completeBaseName() ).append( ".old" );
+
+		if( !QFile::rename( pFileName, TmpOld ) )
+		{
+			qWarning() << "Couldn't rename output file";
+
+			return( false );
+		}
+	}
+
+	if( !QFile::copy( TmpFileName, pFileName ) )
+	{
+		qWarning() << "Couldn't copy temporary file";
+	}
+
+	if( !QFile::remove( TmpFileName ) )
+	{
+		qWarning() << "Couldn't remove temporary file";
+	}
+
+	if( !TmpOld.isEmpty() && !QFile::remove( TmpOld ) )
+	{
+		qWarning() << "Couldn't remove old file";
+	}
+
+	return( true );
+}
+
 void ContextPrivate::clear( void )
 {
 	for( QUuid ID : mNodeHash.keys() )

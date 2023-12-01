@@ -90,17 +90,17 @@
 <context>
     <name>MediaProcessorNode</name>
     <message>
-        <location filename="../mediaprocessornode.cpp" line="63"/>
+        <location filename="../mediaprocessornode.cpp" line="70"/>
         <source>The filename of the media file to load</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mediaprocessornode.cpp" line="65"/>
+        <location filename="../mediaprocessornode.cpp" line="72"/>
         <source>The output image from the media file - link to an Image Preview node to see it</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mediaprocessornode.cpp" line="67"/>
+        <location filename="../mediaprocessornode.cpp" line="74"/>
         <source>The audio output from the media file - link to a PortAudio node to hear it</source>
         <translation type="unfinished"></translation>
     </message>

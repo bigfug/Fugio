@@ -27,7 +27,7 @@ class ChoiceNode : public fugio::NodeControlBase
 public:
 	Q_INVOKABLE explicit ChoiceNode( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~ChoiceNode( void );
+	virtual ~ChoiceNode( void ) Q_DECL_OVERRIDE {}
 
 	//-------------------------------------------------------------------------
 	// NodeControlInterface
@@ -45,6 +45,10 @@ signals:
 
 	void choicesUpdated( const QStringList &pChoices );
 
+	void guiTextUpdated( QString pText );
+
+	void guiEnabled( bool pEnabled );
+
 protected slots:
 	void valueChanged( const QString &pValue );
 
@@ -53,11 +57,13 @@ protected slots:
 
 	void clicked( void );
 
+	void choicesChanged( void );
+
 private:
 	QSharedPointer<fugio::PinInterface>		 mPinChoice;
 	fugio::VariantInterface					*mValChoice;
 
-	QList<QPointer<QPushButton>>			 mGUIs;
+	//QList<QPointer<QPushButton>>			 mGUIs;
 };
 
 #endif // CHOICENODE_H

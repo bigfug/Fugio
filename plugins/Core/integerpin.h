@@ -50,22 +50,15 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
-	virtual QString toString( void ) const Q_DECL_OVERRIDE
-	{
-		QStringList		L;
-
-		for( int v : mValues )
-		{
-			L << QString::number( v );
-		}
-
-		return( L.join( ',' ) );
-	}
+	virtual QString toString( void ) const Q_DECL_OVERRIDE;
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
 	{
 		return( "Integer" );
 	}
+
+	virtual void loadSettings( QSettings &pSettings ) Q_DECL_OVERRIDE;
+	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// fugio::VariantInterface

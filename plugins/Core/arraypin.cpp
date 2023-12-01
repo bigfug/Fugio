@@ -6,19 +6,56 @@
 #include <QRectF>
 #include <QLineF>
 #include <QColor>
+#include <QVector2D>
+#include <QVector3D>
+#include <QVector4D>
 
 #include "coreplugin.h"
 
 ArrayPin::ArrayPin( QSharedPointer<fugio::PinInterface> pPin )
-	: PinControlBase( pPin ), mData( nullptr ), mType( QMetaType::UnknownType ), mStride( 0 ),
+	: PinControlBase( pPin ), mData( nullptr ), mArray( Q_NULLPTR ), mArraySize( 0 ),
+	  mType( QMetaType::UnknownType ), mStride( 0 ),
 	  mCount( 0 ), mSize( 0 ), mReserve( 0 )
 {
 
 }
 
+ArrayPin::~ArrayPin()
+{
+	if( mArray )
+	{
+		qFreeAligned( mArray );
+
+		mArray = Q_NULLPTR;
+
+		mArraySize = 0;
+	}
+}
+
 QString ArrayPin::toString() const
 {
 	return( QString( "<p>Type: %1</p><p>Count: %2</p><p>Size: %3</p><p>Total Size: %4</p>" ).arg( QString( QMetaType::typeName( type() ) ) ).arg( count() ).arg( elementCount() ).arg( byteCount() ) );
+}
+
+void ArrayPin::setStride( int pStride )
+{
+	mStride = pStride;
+
+	updateArray();
+}
+
+void ArrayPin::setCount( int pCount )
+{
+	mCount = pCount;
+
+	updateArray();
+}
+
+void ArrayPin::variantSetStride( int pStride )
+{
+	mStride = pStride;
+
+	updateArray();
 }
 
 void *ArrayPin::array()
@@ -28,10 +65,9 @@ void *ArrayPin::array()
 		return( mData );
 	}
 
-	mArray.resize( ( ( mStride * qMax( mCount, mReserve ) ) / sizeof( qlonglong ) ) + 1 );
+	updateArray();
 
-	return( mArray.data() );
-
+	return( mArray );
 }
 
 const void *ArrayPin::array() const
@@ -41,19 +77,59 @@ const void *ArrayPin::array() const
 		return( mData );
 	}
 
-	int		ArrayCount = ( ( mStride * qMax( mCount, mReserve ) ) / sizeof( qlonglong ) ) + 1;
-
-	if( mArray.size() == ArrayCount )
+	if( mArraySize >= variantArraySize() )
 	{
-		return( mArray.constData() );
+		return( mArray );
 	}
 
-	return( nullptr );
+	return( Q_NULLPTR );
 }
 
-void ArrayPin::setVariant(int pIndex, int pOffset, const QVariant &pValue)
+void ArrayPin::setVariantType( QMetaType::Type pType )
 {
-	quint8	*A = (quint8 *)( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
+	mType = pType;
+
+	switch( mType )
+	{
+		case QMetaType::QPointF:
+		case QMetaType::QVector2D:
+			mTypeSize = sizeof( float ) * 2;
+			break;
+
+		case QMetaType::QVector3D:
+			mTypeSize = sizeof( float ) * 3;
+			break;
+
+		case QMetaType::QVector4D:
+			mTypeSize = sizeof( float ) * 4;
+			break;
+
+		default:
+			mTypeSize = QMetaType::sizeOf( mType );
+	}
+
+	mStride = mTypeSize * variantElementCount();
+
+	updateArray();
+}
+
+void ArrayPin::setVariantCount( int pCount )
+{
+	mCount = pCount;
+
+	updateArray();
+}
+
+void ArrayPin::setVariantElementCount( int pElementCount )
+{
+	mSize = pElementCount;
+
+	updateArray();
+}
+
+void ArrayPin::setVariant( int pIndex, int pOffset, const QVariant &pValue )
+{
+	quint8	*A = static_cast<quint8 *>( mData ? mData : mArray );
 
 	if( !A )
 	{
@@ -70,16 +146,107 @@ void ArrayPin::setVariant(int pIndex, int pOffset, const QVariant &pValue)
 		return;
 	}
 
-	int				L = QMetaType::sizeOf( mType );
+	int				O = ( mStride * pIndex ) + ( mTypeSize * pOffset );
 
-	A += ( mStride * pIndex ) + ( L * pOffset );
+	A += O;
 
-	QMetaType::construct( mType, A, pValue.constData() );
+	switch( mType )
+	{
+		case QMetaType::Float:
+			reinterpret_cast<float *>( A )[ 0 ] = pValue.toFloat();
+			break;
+
+		case QMetaType::Int:
+			reinterpret_cast<int *>( A )[ 0 ] = pValue.toInt();
+			break;
+
+		case QMetaType::QPointF:
+			{
+				QPointF	V;
+
+				switch( pValue.type() )
+				{
+					case QVariant::PointF:
+						V = pValue.toPointF();
+						break;
+
+					case QVariant::Vector2D:
+						{
+							QVector2D		V = pValue.value<QVector2D>();
+
+							V.setX( V.x() );
+							V.setY( V.y() );
+						}
+						break;
+
+					case QVariant::List:
+						{
+							QVariantList	L = pValue.toList();
+
+							if( L.size() == 2 )
+							{
+								V.setX( L[ 0 ].toReal() );
+								V.setY( L[ 1 ].toReal() );
+							}
+						}
+						break;
+
+					default:
+						break;
+				}
+
+				float	*B = reinterpret_cast<float *>( A );
+
+				B[ 0 ] = static_cast<float>( V.x() );
+				B[ 1 ] = static_cast<float>( V.y() );
+			}
+			break;
+
+		case QMetaType::QVector3D:
+			{
+				QVector3D	V;
+
+				switch( pValue.type() )
+				{
+					case QVariant::Vector3D:
+						V = pValue.value<QVector3D>();
+						break;
+
+					case QVariant::List:
+						{
+							QVariantList	L = pValue.toList();
+
+							if( L.size() == 3 )
+							{
+								V.setX( L[ 0 ].toReal() );
+								V.setY( L[ 1 ].toReal() );
+								V.setZ( L[ 2 ].toReal() );
+							}
+						}
+						break;
+
+					default:
+						break;
+				}
+
+				float	*B = reinterpret_cast<float *>( A );
+
+				B[ 0 ] = static_cast<float>( V.x() );
+				B[ 1 ] = static_cast<float>( V.y() );
+				B[ 2 ] = static_cast<float>( V.z() );
+			}
+			break;
+
+		default:
+			break;
+	}
+
+	//QMetaType::construct( mType, A, pValue.constData() );
 }
 
-QVariant ArrayPin::variant(int pIndex, int pOffset) const
+QVariant ArrayPin::variant( int pIndex, int pOffset ) const
 {
-	const quint8	*A = (const quint8 *)( mData ? mData : ( !mArray.isEmpty() ? mArray.data() : nullptr ) );
+	const quint8	*A = static_cast<const quint8 *>( mData ? mData : mArray );
 
 	if( !A )
 	{
@@ -96,11 +263,82 @@ QVariant ArrayPin::variant(int pIndex, int pOffset) const
 		return( QVariant() );
 	}
 
-	int				L = QMetaType::sizeOf( mType );
+	int				O = ( mStride * pIndex ) + ( mTypeSize * pOffset );
 
-	A += ( mStride * pIndex ) + ( L * pOffset );
+	A += O;
 
-	QVariant		 V( mType, (const void *)A );
+	QVariant		 V;//( mType, static_cast<const void *>( A ) );
+
+	switch( mType )
+	{
+		case QMetaType::Float:
+			V = QVariant( reinterpret_cast<const float *>( A )[ 0 ] );
+			break;
+
+		case QMetaType::Int:
+			V = QVariant( reinterpret_cast<const int *>( A )[ 0 ] );
+			break;
+
+		case QMetaType::QPointF:
+			{
+				const float	*B = reinterpret_cast<const float *>( A );
+
+				V = QPointF( static_cast<qreal>( B[ 0 ] ), static_cast<qreal>( B[ 1 ] ) );
+			}
+			break;
+
+		case QMetaType::QVector2D:
+			{
+				const float	*B = reinterpret_cast<const float *>( A );
+
+				V = QVector2D( B[ 0 ], B[ 1 ] );
+			}
+			break;
+
+		case QMetaType::QVector3D:
+			{
+				const float	*B = reinterpret_cast<const float *>( A );
+
+				V = QVector3D( B[ 0 ], B[ 1 ], B[ 2 ] );
+			}
+			break;
+
+		case QMetaType::QVector4D:
+			{
+				const float	*B = reinterpret_cast<const float *>( A );
+
+				V = QVector4D( B[ 0 ], B[ 1 ], B[ 2 ], B[ 3 ] );
+			}
+			break;
+
+		default:
+			break;
+	}
 
 	return( V );
+}
+
+void ArrayPin::updateArray()
+{
+	if( !mData )
+	{
+		size_t	NewSze = mStride * std::max<int>( mCount, mReserve );
+
+		if( mArray && mArraySize != NewSze )
+		{
+			qFreeAligned( mArray );
+
+			mArray = Q_NULLPTR;
+		}
+
+		if( !mArray )
+		{
+			mArray = qMallocAligned( NewSze, 16 );
+
+			if( mArray )
+			{
+				mArraySize = NewSze;
+			}
+		}
+	}
 }

@@ -62,13 +62,19 @@ void RenderToTextureNode::inputsUpdated( qint64 pTimeStamp )
 
 		glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
 
-		GLuint		FBO = Texture->fbo();
+		QSize		TexSze = QSize( Texture->size().x(), Texture->size().y() );
+
+		mFBO.setSize( TexSze );
+
+		GLuint		FBO = mFBO.fbo();
 
 		if( FBO )
 		{
 			glBindFramebuffer( GL_FRAMEBUFFER, FBO );
 
-			glViewport( 0, 0, Texture->size().x(), Texture->size().y() );
+			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, Texture->target(), Texture->dstTexId(), 0 );
+
+			glViewport( 0, 0, TexSze.width(), TexSze.height() );
 
 			Render->render( pTimeStamp );
 

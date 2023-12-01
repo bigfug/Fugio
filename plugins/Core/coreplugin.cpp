@@ -52,6 +52,7 @@
 #include "blockupdatesnode.h"
 #include "processclicknode.h"
 #include "decimatenode.h"
+#include "updatenode.h"
 
 #include "floatpin.h"
 #include "integerpin.h"
@@ -123,6 +124,7 @@ ClassEntry		CorePlugin::mNodeClasses[] =
 	ClassEntry( "Split Size", NID_SPLIT_SIZE, &SplitSizeNode::staticMetaObject ),
 	ClassEntry( "Switch", NID_SWITCH, &SwitchNode::staticMetaObject ),
 	ClassEntry( "Block Updates", NID_BLOCK_UPDATES, &BlockUpdatesNode::staticMetaObject ),
+	ClassEntry( "Update", NID_PIN_UPDATE, &UpdateNode::staticMetaObject ),
 	ClassEntry()
 };
 
@@ -150,7 +152,7 @@ ClassEntry		CorePlugin::mPinClasses[] =
 };
 
 CorePlugin::CorePlugin( void )
-	: mApp( 0 )
+	: mApp( Q_NULLPTR )
 {
 	//-------------------------------------------------------------------------
 	// Install translator
@@ -161,10 +163,6 @@ CorePlugin::CorePlugin( void )
 	{
 		qApp->installTranslator( &Translator );
 	}
-}
-
-CorePlugin::~CorePlugin( void )
-{
 }
 
 PluginInterface::InitResult CorePlugin::initialise( fugio::GlobalInterface *pApp, bool pLastChance )
@@ -223,5 +221,5 @@ void CorePlugin::deinitialise()
 
 	mApp->unregisterNodeClasses( mNodeClasses );
 
-	mApp = 0;
+	mApp = Q_NULLPTR;
 }

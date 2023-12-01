@@ -35,12 +35,12 @@
 <context>
     <name>EasyShader2DNode</name>
     <message>
-        <location filename="../easyshader2dnode.cpp" line="346"/>
+        <location filename="../easyshader2dnode.cpp" line="323"/>
         <source>No shaders compiled</source>
         <translation type="unfinished">Kein Shader kompiliert</translation>
     </message>
     <message>
-        <location filename="../easyshader2dnode.cpp" line="352"/>
+        <location filename="../easyshader2dnode.cpp" line="329"/>
         <source>Shader compilation failed</source>
         <translation type="unfinished">Shader Kompilation fehlgeschlagen</translation>
     </message>
@@ -58,12 +58,12 @@
         <translation>Zugeweisene OpenGL Textur</translation>
     </message>
     <message>
-        <location filename="../imagetotexturenode.cpp" line="155"/>
+        <location filename="../imagetotexturenode.cpp" line="153"/>
         <source>No OpenGL Context</source>
         <translation>OpenGLContext</translation>
     </message>
     <message>
-        <location filename="../imagetotexturenode.cpp" line="155"/>
+        <location filename="../imagetotexturenode.cpp" line="153"/>
         <source>Can&apos;t edit texture without OpenGL context</source>
         <translation>Textur kann nicht ohne OpenGL Context bearbeitet werden</translation>
     </message>
@@ -173,22 +173,22 @@
 <context>
     <name>ShaderInstanceNode</name>
     <message>
-        <location filename="../shaderinstancenode.cpp" line="72"/>
+        <location filename="../shaderinstancenode.cpp" line="73"/>
         <source>The OpenGL rendering state to apply</source>
         <translation>OpenGL Render Status der angewendet werden soll</translation>
     </message>
     <message>
-        <location filename="../shaderinstancenode.cpp" line="74"/>
+        <location filename="../shaderinstancenode.cpp" line="75"/>
         <source>The input 3D Geometry to render with this shader</source>
         <translation>Input 3D Geometrie die gerendert werden soll</translation>
     </message>
     <message>
-        <location filename="../shaderinstancenode.cpp" line="76"/>
+        <location filename="../shaderinstancenode.cpp" line="77"/>
         <source>The output geometry that can be connected to an OpenGL Window</source>
         <translation>Output Geometrie die mit einem OpenGL Fenster verbunden werden kann</translation>
     </message>
     <message>
-        <location filename="../shaderinstancenode.cpp" line="103"/>
+        <location filename="../shaderinstancenode.cpp" line="104"/>
         <source>No shader or not linked</source>
         <translation>Kein Shader oder nicht verbunden</translation>
     </message>
@@ -370,17 +370,17 @@
 <context>
     <name>WindowNode</name>
     <message>
-        <location filename="../windownode.cpp" line="50"/>
+        <location filename="../windownode.cpp" line="53"/>
         <source>The mouse cursor will be visible in the OpenGL window if this is true, hidden if it is false</source>
         <translation>Der Mouse Cursor wird im OpenGL Fenster angezeigt wenn dieser Pin auf True ist</translation>
     </message>
     <message>
-        <location filename="../windownode.cpp" line="52"/>
+        <location filename="../windownode.cpp" line="55"/>
         <source>The OpenGL rendering state to apply</source>
         <translation>OpenGL Render Status der angewendet werden soll</translation>
     </message>
     <message>
-        <location filename="../windownode.cpp" line="54"/>
+        <location filename="../windownode.cpp" line="57"/>
         <source>The input 3D Geometry to render</source>
         <translation>Input 3D Geometrie die gerendert werden soll</translation>
     </message>

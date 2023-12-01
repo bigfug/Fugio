@@ -85,6 +85,14 @@ public slots:
 
 	void userSaveImage( void );
 
+	void userSaveData( void );
+
+	void userSaveDataAs( void );
+
+	void userLoadData( void );
+
+	void userSaveRevision( void );
+
 	void load( const QString &pFileName );
 
     void cut( void );
@@ -132,6 +140,7 @@ private:
     QUndoStack								 mUndoStack;
 	fugio::ContextWidgetSignals				 mContextWidget;
 	QString									 mFileName;
+	QString									 mDataFileName;
 	QString									 mRecoveryFilename;
 };
 

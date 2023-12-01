@@ -1,5 +1,7 @@
 #include "luabrush.h"
 
+#include "luaqtplugin.h"
+
 #include "luacolor.h"
 #include "luagradient.h"
 
@@ -44,6 +46,13 @@ const luaL_Reg LuaBrush::mLuaMethods[] =
 	{ "style",				LuaBrush::luaStyle },
 	{ 0, 0 }
 };
+
+void LuaBrush::registerExtension( fugio::LuaInterface *LUA )
+{
+	LuaQtPlugin::addLuaFunction( "brush", LuaBrush::luaNew );
+
+	LUA->luaRegisterExtension( LuaBrush::luaOpen );
+}
 
 int LuaBrush::luaOpen( lua_State *L )
 {

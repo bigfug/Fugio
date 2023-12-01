@@ -9,6 +9,7 @@
 #include <fugio/core/variant_interface.h>
 #include <fugio/node_interface.h>
 #include <fugio/pin_interface.h>
+#include <fugio/core/uuid.h>
 
 const char *LuaRectF::RectFUserData::TypeName = "qt.rectf";
 
@@ -38,6 +39,15 @@ const luaL_Reg LuaRectF::mLuaMethods[] =
 	{ "y",					LuaRectF::luaY },
 	{ 0, 0 }
 };
+
+void LuaRectF::registerExtension(LuaInterface *LUA)
+{
+	LuaQtPlugin::addLuaFunction( "rect", LuaRectF::luaNew );
+
+	LUA->luaRegisterExtension( LuaRectF::luaOpen );
+
+	LUA->luaAddPinGet( PID_RECT, LuaRectF::luaPinGet );
+}
 
 int LuaRectF::luaOpen( lua_State *L )
 {

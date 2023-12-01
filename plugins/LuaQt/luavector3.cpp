@@ -7,6 +7,7 @@
 #include <fugio/context_interface.h>
 #include <fugio/lua/lua_interface.h>
 #include <fugio/core/variant_interface.h>
+#include <fugio/math/uuid.h>
 
 #include "luaqtplugin.h"
 
@@ -16,12 +17,6 @@
 const char *LuaVector3D::mTypeName = "qt.vector3d";
 
 #if defined( LUA_SUPPORTED )
-
-const luaL_Reg LuaVector3D::mLuaFunctions[] =
-{
-	{ "new",				LuaVector3D::luaNew },
-	{ 0, 0 }
-};
 
 const luaL_Reg LuaVector3D::mLuaMetaMethods[] =
 {
@@ -49,24 +44,29 @@ const luaL_Reg LuaVector3D::mLuaMethods[] =
 	{ 0, 0 }
 };
 
+void LuaVector3D::registerExtension(LuaInterface *LUA)
+{
+	LuaQtPlugin::addLuaFunction( "vector3d", LuaVector3D::luaNew );
+
+	LUA->luaRegisterExtension( LuaVector3D::luaOpen );
+
+	LUA->luaAddPinGet( PID_VECTOR3, LuaVector3D::luaPinGet );
+
+	LUA->luaAddPinSet( PID_VECTOR3, LuaVector3D::luaPinSet );
+
+	LUA->luaAddPushVariantFunction( QMetaType::QVector3D, LuaVector3D::pushVariant );
+
+	LUA->luaAddPopVariantFunction( LuaVector3D::mTypeName, LuaVector3D::popVariant );
+}
+
 int LuaVector3D::luaOpen (lua_State *L )
 {
-//	if( luaL_newmetatable( L, UserData::TypeName ) == 1 )
-//	{
-//		lua_pushvalue( L, -1 );
-//		lua_setfield( L, -2, "__index" );
+	luaL_newmetatable( L, mTypeName );
 
-//		luaL_setfuncs( L, mLuaMethods, 0 );
+	lua_pushvalue( L, -1 );
+	lua_setfield( L, -2, "__index" );
 
-//		luaL_newlib( L, mLuaInstance );
-//	}
-
-	if( luaL_newmetatable( L, mTypeName ) == 1 )
-	{
-		luaL_setfuncs( L, mLuaMetaMethods, 0 );
-
-		luaL_newlib( L, mLuaFunctions );
-	}
+	luaL_setfuncs( L, mLuaMethods, 0 );
 
 	return( 1 );
 }

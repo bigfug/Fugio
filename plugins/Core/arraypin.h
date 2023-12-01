@@ -34,7 +34,7 @@ class ArrayPin : public fugio::PinControlBase, public fugio::VariantInterface, p
 public:
 	Q_INVOKABLE explicit ArrayPin( QSharedPointer<fugio::PinInterface> pPin );
 
-	virtual ~ArrayPin( void ) {}
+	virtual ~ArrayPin( void ) Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
@@ -50,9 +50,9 @@ public:
 	// fugio::ArrayInterface
 
 public:
-	virtual void setType(QMetaType::Type pType) Q_DECL_OVERRIDE
+	virtual void setType( QMetaType::Type pType ) Q_DECL_OVERRIDE
 	{
-		mType = pType;
+		setVariantType( pType );
 	}
 
 	virtual QMetaType::Type type() const Q_DECL_OVERRIDE
@@ -60,34 +60,28 @@ public:
 		return( mType );
 	}
 
-	virtual void setStride(int pStride) Q_DECL_OVERRIDE
-	{
-		mStride = pStride;
-	}
+	virtual void setStride( int pStride ) Q_DECL_OVERRIDE;
 
 	virtual int stride() const Q_DECL_OVERRIDE
 	{
 		return( mStride );
 	}
 
-	virtual void setCount(int pCount) Q_DECL_OVERRIDE
-	{
-		mCount = pCount;
-	}
+	virtual void setCount( int pCount ) Q_DECL_OVERRIDE;
 
 	virtual int count() const Q_DECL_OVERRIDE
 	{
 		return( mCount );
 	}
 
-	virtual void reserve(int pCount) Q_DECL_OVERRIDE
+	virtual void reserve( int pCount ) Q_DECL_OVERRIDE
 	{
 		mReserve = pCount;
 	}
 
 	virtual void setElementCount(int pSize) Q_DECL_OVERRIDE
 	{
-		mSize = pSize;
+		setVariantElementCount( pSize );
 	}
 
 	virtual int elementCount() const Q_DECL_OVERRIDE
@@ -99,13 +93,22 @@ public:
 
 	virtual const void *array() const Q_DECL_OVERRIDE;
 
-	virtual void setArray(void *pArray) Q_DECL_OVERRIDE
+	virtual void setArray( void *pArray ) Q_DECL_OVERRIDE
 	{
 		mData = pArray;
 
 		if( mData )
 		{
-			mArray.clear();
+			if( mArray )
+			{
+				qFreeAligned( mArray );
+
+				mArray = Q_NULLPTR;
+			}
+		}
+		else
+		{
+			updateArray();
 		}
 	}
 
@@ -113,10 +116,7 @@ public:
 	// fugio::VariantInterface
 
 public:
-	virtual void setVariantType( QMetaType::Type pType ) Q_DECL_OVERRIDE
-	{
-		mType = pType;
-	}
+	virtual void setVariantType( QMetaType::Type pType ) Q_DECL_OVERRIDE;
 
 	virtual QMetaType::Type variantType() const Q_DECL_OVERRIDE
 	{
@@ -128,35 +128,28 @@ public:
 		return( CorePlugin::instance()->app()->findPinForMetaType( mType ) );
 	}
 
-	virtual void setVariantCount(int pCount) Q_DECL_OVERRIDE
-	{
-		mCount = pCount;
-	}
+	virtual void setVariantCount(int pCount) Q_DECL_OVERRIDE;
 
 	virtual int variantCount() const Q_DECL_OVERRIDE
 	{
 		return( mCount );
 	}
 
-	virtual void setVariantElementCount(int pElementCount) Q_DECL_OVERRIDE
-	{
-		mSize = pElementCount;
-	}
+	virtual void setVariantElementCount( int pElementCount ) Q_DECL_OVERRIDE;
 
 	virtual int variantElementCount() const Q_DECL_OVERRIDE
 	{
 		return( mSize );
 	}
 
-	virtual void variantReserve(int pCount) Q_DECL_OVERRIDE
+	virtual void variantReserve( int pCount ) Q_DECL_OVERRIDE
 	{
 		mReserve = pCount;
+
+		updateArray();
 	}
 
-	virtual void variantSetStride(int pStride) Q_DECL_OVERRIDE
-	{
-		mStride = pStride;
-	}
+	virtual void variantSetStride( int pStride ) Q_DECL_OVERRIDE;
 
 	virtual int variantStride() const Q_DECL_OVERRIDE
 	{
@@ -211,21 +204,6 @@ public:
 		Q_UNUSED( pValue )
 	}
 
-	virtual void *variantArray() Q_DECL_OVERRIDE
-	{
-		return( array() );
-	}
-
-	virtual const void *variantArray() const Q_DECL_OVERRIDE
-	{
-		return( array() );
-	}
-
-	virtual void variantSetArray( void *pArray ) Q_DECL_OVERRIDE
-	{
-		setArray( pArray );
-	}
-
 	virtual QVariant variantSize( int pIndex = 0, int pOffset = 0 ) const Q_DECL_OVERRIDE
 	{
 		Q_UNUSED( pIndex )
@@ -251,11 +229,11 @@ public:
 
 		if( mData )
 		{
-			pDataStream.writeRawData( static_cast<const char *>( mData ), variantArraySize() );
+			pDataStream.writeRawData( reinterpret_cast<const char *>( mData ), variantArraySize() );
 		}
-		else
+		else if( mArray )
 		{
-			pDataStream.writeRawData( (const char *)mArray.data(), mArray.size() );
+			pDataStream.writeRawData( reinterpret_cast<const char *>( mArray ), variantArraySize() );
 		}
 	}
 
@@ -270,15 +248,31 @@ public:
 
 		mType = QMetaType::Type( TmpInt );
 
-		mArray.resize( variantArraySize() );
+		if( mArray )
+		{
+			qFreeAligned( mArray );
 
-		pDataStream.readRawData( (char *)mArray.data(), mArray.size() );
+			mArray = Q_NULLPTR;
+		}
+
+		mArray = qMallocAligned( variantArraySize(), 16 );
+
+		if( mArray )
+		{
+			pDataStream.readRawData( reinterpret_cast<char *>( mArray ), variantArraySize() );
+		}
 	}
 
 private:
+	void updateArray( void );
+
+private:
 	void				*mData;
-	QVector<qlonglong>	 mArray;		// 64-bit aligned
+//	QByteArray			 mArray;
+	void				*mArray;
+	size_t				 mArraySize;
 	QMetaType::Type		 mType;
+	int					 mTypeSize;
 	int					 mStride;
 	int					 mCount;
 	int					 mSize;

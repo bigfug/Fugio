@@ -171,15 +171,19 @@ void FFGLNode::inputsUpdated( qint64 pTimeStamp )
 
 	if( DstTex )
 	{
-		GLint		FBOCur;
+		mFBO.setSize( DstSze );
 
-		glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
-
-		quint32	FBO = DstTex->fbo();
+		GLuint		FBO = mFBO.fbo();
 
 		if( FBO )
 		{
+			GLint		FBOCur;
+
+			glGetIntegerv( GL_FRAMEBUFFER_BINDING, &FBOCur );
+
 			glBindFramebuffer( GL_FRAMEBUFFER, FBO );
+
+			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, DstTex->target(), DstTex->dstTexId(), 0 );
 
 			GLint		Viewport[ 4 ];
 
@@ -190,6 +194,8 @@ void FFGLNode::inputsUpdated( qint64 pTimeStamp )
 			render();
 
 			glViewport( Viewport[ 0 ], Viewport[ 1 ], Viewport[ 2 ], Viewport[ 3 ] );
+
+			glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
 		}
 	}
 

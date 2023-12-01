@@ -5,7 +5,7 @@ project( fugio-ffmpeg )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/ffmpeg/uuid.h
+	../../plugins-include/fugio/ffmpeg/uuid.h
 	
 	mediaplayervideopreview.cpp
 	audiobuffer.cpp
@@ -19,6 +19,7 @@ set( SOURCE_FILES
 	medianode.cpp
 	medianode.h
 	mediapreset/media360_2048.h
+	mediapreset/media360_4096.h
 	mediapreset/mediaProxy.h
 	mediapreset/mediaWav44.h
 	mediapreset/mediaYouTube1080pWide.h

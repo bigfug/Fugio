@@ -110,8 +110,6 @@ public:
 
 	virtual void update( const unsigned char *pData, int pDataSize, int pLineSize, int pCubeFaceIndex = 0 ) Q_DECL_OVERRIDE;
 
-	//virtual QOpenGLFramebufferObject *fbo( const QOpenGLFramebufferObjectFormat &pFormat ) Q_DECL_OVERRIDE;
-
 	virtual void setFilter( QOpenGLTexture::Filter pMin, QOpenGLTexture::Filter pMag ) Q_DECL_OVERRIDE;
 
 	virtual void setWrap( QOpenGLTexture::WrapMode pX, QOpenGLTexture::WrapMode pY, QOpenGLTexture::WrapMode pZ ) Q_DECL_OVERRIDE;
@@ -126,12 +124,6 @@ public:
 	virtual void dstBind( void ) Q_DECL_OVERRIDE;
 
 	virtual void release( void ) Q_DECL_OVERRIDE;
-
-	virtual quint32 fbo( bool pUseDepth = false ) Q_DECL_OVERRIDE;
-
-	virtual void freeFbo( void ) Q_DECL_OVERRIDE;
-
-	virtual quint32 fboMultiSample( int pSamples, bool pUseDepth = false ) Q_DECL_OVERRIDE;
 
 	virtual void swapTexture( void ) Q_DECL_OVERRIDE;
 
@@ -163,6 +155,16 @@ public:
 		return( mDstTex );
 	}
 
+	virtual OpenGLTextureOrigin origin() const Q_DECL_OVERRIDE
+	{
+		return( mTexDsc.mOrigin );
+	}
+
+	virtual void setOrigin( OpenGLTextureOrigin pOrigin ) Q_DECL_OVERRIDE
+	{
+		mTexDsc.mOrigin = pOrigin;
+	}
+
 	//-------------------------------------------------------------------------
 
 	// SizeInterface interface
@@ -183,18 +185,10 @@ protected:
 private:
 	OpenGLTextureDescription		mTexDsc;
 
-	bool			mDefinitionChanged;
+	bool							mDefinitionChanged;
 
-	QOpenGLTexture	*mSrcTex;
-	QOpenGLTexture	*mDstTex;
-
-	GLuint			mFBOId;
-	GLuint			mFBODepthRBId;
-	GLuint			mFBOBoundTexId;
-
-	GLuint			mFBOMSId;
-	GLuint			mFBOMSColourRBId;
-	GLuint			mFBOMSDepthRBId;
+	QOpenGLTexture					*mSrcTex;
+	QOpenGLTexture					*mDstTex;
 };
 
 #endif // TEXTURE_H

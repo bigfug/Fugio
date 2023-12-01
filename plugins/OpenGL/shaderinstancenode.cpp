@@ -23,6 +23,7 @@
 #include <fugio/opengl/texture_interface.h>
 #include <fugio/colour/colour_interface.h>
 #include <fugio/core/variant_interface.h>
+#include <fugio/core/array_interface.h>
 #include <fugio/opengl/state_interface.h>
 #include <fugio/opengl/buffer_interface.h>
 #include <fugio/opengl/buffer_entry_interface.h>
@@ -434,7 +435,7 @@ QStringList ShaderInstanceNode::availableInputPins() const
 		PinLst.removeAll( P->name() );
 	}
 
-	qSort( PinLst );
+	std::sort( PinLst.begin(), PinLst.end() );
 
 	return( PinLst );
 }
@@ -699,7 +700,7 @@ void ShaderInstanceNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 
 	//-------------------------------------------------------------------------
 
-	OpenGLStateInterface		*CurrentState = 0;
+	OpenGLStateInterface		*CurrentState = Q_NULLPTR;
 	OpenGLStateInterface		*NextState;
 	fugio::RenderInterface		*Geometry;
 
@@ -852,18 +853,18 @@ void ShaderInstanceNode::bindUniforms( QList<ShaderBindData> &Bindings )
 				continue;
 			}
 
-			fugio::VariantInterface	*ArrInt = qobject_cast<fugio::VariantInterface *>( PinControl->qobject() );
+			fugio::ArrayInterface	*ArrInt = qobject_cast<fugio::ArrayInterface *>( PinControl->qobject() );
 
 			if( ArrInt )
 			{
-				int			CpyCnt = qMin( ArrInt->variantCount(), UniformData.mSize );
+				int			CpyCnt = qMin( ArrInt->count(), UniformData.mSize );
 
 				if( !CpyCnt )
 				{
 					continue;
 				}
 
-				void		*ArrDat = ArrInt->variantArray();
+				const void		*ArrDat = ArrInt->array();
 
 				if( !ArrDat )
 				{
@@ -873,78 +874,78 @@ void ShaderInstanceNode::bindUniforms( QList<ShaderBindData> &Bindings )
 				switch( UniformData.mType )
 				{
 					case GL_FLOAT:
-						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == sizeof( float ) )
+						if( ArrInt->type() == QMetaType::Float && ArrInt->elementCount() == 1 && ArrInt->stride() == sizeof( float ) )
 						{
-							glUniform1fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
+							glUniform1fv( UniformData.mLocation, CpyCnt, static_cast<const float *>( ArrDat ) );
 						}
 						break;
 
 					case GL_FLOAT_VEC2:
-						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 2 && ArrInt->variantStride() == 2 * sizeof( float ) )
+						if( ArrInt->type() == QMetaType::Float && ArrInt->elementCount() == 2 && ArrInt->stride() == 2 * sizeof( float ) )
 						{
-							glUniform2fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
+							glUniform2fv( UniformData.mLocation, CpyCnt, static_cast<const float *>( ArrDat ) );
 						}
-						else if( ArrInt->variantType() == QMetaType::QVector2D && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 2 * sizeof( float ) )
+						else if( ArrInt->type() == QMetaType::QVector2D && ArrInt->elementCount() == 1 && ArrInt->stride() == 2 * sizeof( float ) )
 						{
-							glUniform2fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
+							glUniform2fv( UniformData.mLocation, CpyCnt, static_cast<const float *>( ArrDat ) );
 						}
-						else if( ArrInt->variantType() == QMetaType::QPointF && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 2 * sizeof( float ) )
+						else if( ArrInt->type() == QMetaType::QPointF && ArrInt->elementCount() == 1 && ArrInt->stride() == 2 * sizeof( float ) )
 						{
-							glUniform2fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
+							glUniform2fv( UniformData.mLocation, CpyCnt, static_cast<const float *>( ArrDat ) );
 						}
 						break;
 
 					case GL_FLOAT_VEC3:
-						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 3 && ArrInt->variantStride() == 3 * sizeof( float ) )
+						if( ArrInt->type() == QMetaType::Float && ArrInt->elementCount() == 3 && ArrInt->stride() == 3 * sizeof( float ) )
 						{
-							glUniform3fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
+							glUniform3fv( UniformData.mLocation, CpyCnt, static_cast<const float *>( ArrDat ) );
 						}
-						else if( ArrInt->variantType() == QMetaType::QVector3D && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 3 * sizeof( float ) )
+						else if( ArrInt->type() == QMetaType::QVector3D && ArrInt->elementCount() == 1 && ArrInt->stride() == 3 * sizeof( float ) )
 						{
-							glUniform3fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
+							glUniform3fv( UniformData.mLocation, CpyCnt, static_cast<const float *>( ArrDat ) );
 						}
 						break;
 
 					case GL_FLOAT_VEC4:
-						if( ArrInt->variantType() == QMetaType::Float && ArrInt->variantElementCount() == 4 && ArrInt->variantStride() == 4 * sizeof( float ) )
+						if( ArrInt->type() == QMetaType::Float && ArrInt->elementCount() == 4 && ArrInt->stride() == 4 * sizeof( float ) )
 						{
-							glUniform4fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
+							glUniform4fv( UniformData.mLocation, CpyCnt, static_cast<const float *>( ArrDat ) );
 						}
-						else if( ArrInt->variantType() == QMetaType::QVector4D && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 4 * sizeof( float ) )
+						else if( ArrInt->type() == QMetaType::QVector4D && ArrInt->elementCount() == 1 && ArrInt->stride() == 4 * sizeof( float ) )
 						{
-							glUniform4fv( UniformData.mLocation, CpyCnt, static_cast<float *>( ArrDat ) );
+							glUniform4fv( UniformData.mLocation, CpyCnt, static_cast<const float *>( ArrDat ) );
 						}
 						break;
 
 					case GL_INT_VEC2:
-						if( ArrInt->variantType() == QMetaType::Int && ArrInt->variantElementCount() == 2 && ArrInt->variantStride() == 2 * sizeof( int ) )
+						if( ArrInt->type() == QMetaType::Int && ArrInt->elementCount() == 2 && ArrInt->stride() == 2 * sizeof( int ) )
 						{
-							glUniform2iv( UniformData.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
+							glUniform2iv( UniformData.mLocation, CpyCnt, static_cast<const int *>( ArrDat ) );
 						}
-						else if( ArrInt->variantType() == QMetaType::QPoint && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 2 * sizeof( int ) )
+						else if( ArrInt->type() == QMetaType::QPoint && ArrInt->elementCount() == 1 && ArrInt->stride() == 2 * sizeof( int ) )
 						{
-							glUniform2iv( UniformData.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
+							glUniform2iv( UniformData.mLocation, CpyCnt, static_cast<const int *>( ArrDat ) );
 						}
 						break;
 
 					case GL_INT_VEC3:
-						if( ArrInt->variantType() == QMetaType::Int && ArrInt->variantElementCount() == 3 && ArrInt->variantStride() == 3 * sizeof( int ) )
+						if( ArrInt->type() == QMetaType::Int && ArrInt->elementCount() == 3 && ArrInt->stride() == 3 * sizeof( int ) )
 						{
-							glUniform3iv( UniformData.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
+							glUniform3iv( UniformData.mLocation, CpyCnt, static_cast<const int *>( ArrDat ) );
 						}
 						break;
 
 					case GL_INT_VEC4:
-						if( ArrInt->variantType() == QMetaType::Int && ArrInt->variantElementCount() == 4 && ArrInt->variantStride() == 4 * sizeof( int ) )
+						if( ArrInt->type() == QMetaType::Int && ArrInt->elementCount() == 4 && ArrInt->stride() == 4 * sizeof( int ) )
 						{
-							glUniform4iv( UniformData.mLocation, CpyCnt, static_cast<int *>( ArrDat ) );
+							glUniform4iv( UniformData.mLocation, CpyCnt, static_cast<const int *>( ArrDat ) );
 						}
 						break;
 
 					case GL_FLOAT_MAT4:
-						if( ArrInt->variantType() == QMetaType::QMatrix4x4 && ArrInt->variantElementCount() == 1 && ArrInt->variantStride() == 16 * sizeof( float ) )
+						if( ArrInt->type() == QMetaType::QMatrix4x4 && ArrInt->elementCount() == 1 && ArrInt->stride() == 16 * sizeof( float ) )
 						{
-							glUniformMatrix4fv( UniformData.mLocation, CpyCnt, GL_FALSE, static_cast<float *>( ArrDat ) );
+							glUniformMatrix4fv( UniformData.mLocation, CpyCnt, GL_FALSE, static_cast<const float *>( ArrDat ) );
 						}
 						break;
 				}

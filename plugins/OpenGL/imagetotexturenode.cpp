@@ -43,10 +43,6 @@ ImageToTextureNode::ImageToTextureNode( QSharedPointer<fugio::NodeInterface> pNo
 	mPinOutput->setDescription( tr( "The allocated OpenGL texture" ) );
 }
 
-ImageToTextureNode::~ImageToTextureNode( void )
-{
-}
-
 QWidget *ImageToTextureNode::gui()
 {
 	QPushButton		*GUI = new QPushButton( "Edit..." );
@@ -132,6 +128,8 @@ void ImageToTextureNode::loadSettings( QSettings &pSettings )
 	mTexture->setWrap( QOpenGLTexture::WrapMode( CurWPS ), QOpenGLTexture::WrapMode( CurWPT ), QOpenGLTexture::WrapMode( CurWPR ) );
 
 	mTexture->setGenMipMaps( pSettings.value( "MipMaps", mTexture->genMipMaps() ).toBool() );
+
+	mTexture->setOrigin( OpenGLTextureOrigin::TopLeft );
 }
 
 void ImageToTextureNode::saveSettings( QSettings &pSettings ) const
@@ -288,9 +286,9 @@ void ImageToTextureNode::inputsUpdated( qint64 pTimeStamp )
 			case fugio::ImageFormat::GRAY8:
 				if( !QOpenGLContext::currentContext()->isOpenGLES() )
 				{
-					mTexture->setFormat( QOpenGLTexture::Red_Integer );
+					mTexture->setFormat( QOpenGLTexture::Red );
 
-					mTexture->setInternalFormat( QOpenGLTexture::R8U );
+					mTexture->setInternalFormat( QOpenGLTexture::R8_UNorm );
 				}
 				else
 				{

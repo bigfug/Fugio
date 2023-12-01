@@ -5,6 +5,8 @@
 #include <lua.hpp>
 #endif
 
+#include <fugio/lua/lua_interface.h>
+
 #include <QUuid>
 #include <QPointF>
 #include <QVariant>
@@ -12,24 +14,11 @@
 class LuaPointF
 {
 private:
-	typedef struct PointFUserData
+	typedef struct UserData
 	{
-		qreal	x, y;
+		QPointF		mPoint;
 
-		operator QPointF( void ) const
-		{
-			return( QPointF( x, y ) );
-		}
-
-		PointFUserData *operator = ( const QPointF &P )
-		{
-			x = P.x();
-			y = P.y();
-
-			return( this );
-		}
-
-	} QPointFUserData;
+	} UserData;
 
 public:
 	static const char *mTypeName;
@@ -39,26 +28,28 @@ public:
 	virtual ~LuaPointF( void ) {}
 
 #if defined( LUA_SUPPORTED )
+	static void registerExtension( fugio::LuaInterface *LUA );
+
 	static int luaOpen( lua_State *L );
 
 	static int luaNew( lua_State *L );
 
 	static int luaPinGet( const QUuid &pPinLocalId, lua_State *L );
+	static int luaPinSet( const QUuid &pPinLocalId, lua_State *L, int pIndex );
 
 	static int pushpointf( lua_State *L, const QPointF &pPoint )
 	{
-		PointFUserData	*UD = (PointFUserData *)lua_newuserdata( L, sizeof( PointFUserData ) );
+		UserData	*UD = static_cast<UserData *>( lua_newuserdata( L, sizeof( UserData ) ) );
 
 		if( !UD )
 		{
 			return( 0 );
 		}
 
-		luaL_getmetatable( L, LuaPointF::mTypeName );
+		luaL_getmetatable( L,mTypeName );
 		lua_setmetatable( L, -2 );
 
-		UD->x = pPoint.x();
-		UD->y = pPoint.y();
+		new( &UD->mPoint ) QPointF( pPoint );
 
 		return( 1 );
 	}
@@ -70,9 +61,9 @@ public:
 
 	static QPointF checkpointf( lua_State *L, int i = 1 )
 	{
-		PointFUserData *UD = checkpointfuserdata( L, i );
+		UserData *UD = checkuserdata( L, i );
 
-		return( *UD );
+		return( UD->mPoint );
 	}
 
 	static int pushVariant( lua_State *L, const QVariant &V )
@@ -82,20 +73,22 @@ public:
 
 	static QVariant popVariant( lua_State *L, int pIndex )
 	{
-		PointFUserData *UD = checkpointfuserdata( L, pIndex );
+		UserData *UD = checkuserdata( L, pIndex );
 
-		return( UD ? QPointF( UD->x, UD->y ) : QVariant() );
+		return( UD ? UD->mPoint : QVariant() );
 	}
 
 private:
-	static PointFUserData *checkpointfuserdata( lua_State *L, int i = 1 )
+	static UserData *checkuserdata( lua_State *L, int i = 1 )
 	{
-		PointFUserData *UD = (PointFUserData *)luaL_checkudata( L, i, LuaPointF::mTypeName );
+		UserData *UD = (UserData *)luaL_checkudata( L, i, LuaPointF::mTypeName );
 
 		luaL_argcheck( L, UD != NULL, i, "Point expected" );
 
 		return( UD );
 	}
+
+	static int luaDelete( lua_State *L );
 
 	static int luaDotProduct( lua_State *L );
 

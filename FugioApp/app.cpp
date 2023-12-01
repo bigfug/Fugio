@@ -14,6 +14,9 @@
 
 #include <fugio/utils.h>
 
+QList<App::LogMessage>		 App::mLogMessages;
+QString						 App::mLogFileName;
+
 App::App( int &argc, char **argv ) :
 	QApplication( argc, argv ), mMainWindow( 0 )
 {

@@ -20,9 +20,9 @@ MakeArrayNode::MakeArrayNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mPinInput->setAutoRename( true );
 
-	mValOutput = pinOutput<fugio::ArrayInterface *>( "Output", mPinOutput, PID_ARRAY, PIN_OUTPUT_ARRAY );
+	mValOutput = pinOutput<fugio::VariantInterface *>( "Output", mPinOutput, PID_ARRAY, PIN_OUTPUT_ARRAY );
 
-	mValOutput->setElementCount( 1 );
+	mValOutput->setVariantElementCount( 1 );
 }
 
 void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
@@ -36,17 +36,16 @@ void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	if( CurrType != mValOutput->type() )
+	if( CurrType != mValOutput->variantType() )
 	{
-		mValOutput->setType( CurrType );
-		mValOutput->setStride( QMetaType::sizeOf( CurrType ) );
+		mValOutput->setVariantType( CurrType );
 	}
 
 	QList<QSharedPointer<fugio::PinInterface>>	PinLst = mNode->enumInputPins();
 
-	if( mValOutput->count() != PinLst.size() )
+	if( mValOutput->variantCount() != PinLst.size() )
 	{
-		mValOutput->setCount( PinLst.size() );
+		mValOutput->setVariantCount( PinLst.size() );
 	}
 
 	if( PinLst.isEmpty() )
@@ -54,15 +53,9 @@ void MakeArrayNode::inputsUpdated( qint64 pTimeStamp )
 		return;
 	}
 
-	char	*P = static_cast<char *>( mValOutput->array() );
-
 	for( int i = 0 ; i < PinLst.size() ; i++ )
 	{
-		const QVariant	V = variant( PinLst.at( i ) );
-
-		memcpy( P, V.constData(), mValOutput->stride() );
-
-		P += mValOutput->stride();
+		mValOutput->setVariant( i, variant( PinLst.at( i ) ) );
 	}
 
 	pinUpdated( mPinOutput );

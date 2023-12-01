@@ -5,8 +5,8 @@ project( fugio-artoolkit )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/artoolkit/uuid.h
-	../../include/fugio/artoolkit/param_interface.h
+	../../plugins-include/fugio/artoolkit/uuid.h
+	../../plugins-include/fugio/artoolkit/param_interface.h
 	artoolkitplugin.h
 	paramloadnode.h
 	parampin.h
@@ -94,6 +94,4 @@ if( ( WIN32 ) AND ( LUA_FOUND ) )
 	install( FILES ${LUA_DLL} DESTINATION ${PATH_APP} )
 endif()
 
-if( APPLE )
-	include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundleWithLua.cmake )
-endif( APPLE )
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundleWithLua.cmake )

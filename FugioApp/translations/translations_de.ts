@@ -4,17 +4,17 @@
 <context>
     <name>ContextView</name>
     <message>
-        <location filename="../contextview.cpp" line="2597"/>
+        <location filename="../contextview.cpp" line="2595"/>
         <source>New Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextview.cpp" line="2599"/>
+        <location filename="../contextview.cpp" line="2597"/>
         <source>Group Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextview.cpp" line="2599"/>
+        <location filename="../contextview.cpp" line="2597"/>
         <source>Enter a name for this group</source>
         <translation type="unfinished"></translation>
     </message>
@@ -52,28 +52,44 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="50"/>
+        <location filename="../contextwidgetprivate.cpp" line="52"/>
         <source>Node Editor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="232"/>
+        <location filename="../contextwidgetprivate.cpp" line="234"/>
         <source>Save Patch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="232"/>
+        <location filename="../contextwidgetprivate.cpp" line="234"/>
         <source>Fugio Patches (*.fug)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="300"/>
+        <location filename="../contextwidgetprivate.cpp" line="302"/>
         <source>Save Patch Image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextwidgetprivate.cpp" line="300"/>
+        <location filename="../contextwidgetprivate.cpp" line="302"/>
         <source>Image (*.jpg *.png)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../contextwidgetprivate.cpp" line="339"/>
+        <source>Save Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../contextwidgetprivate.cpp" line="339"/>
+        <location filename="../contextwidgetprivate.cpp" line="363"/>
+        <source>Fugio Data (*.fugdata)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../contextwidgetprivate.cpp" line="363"/>
+        <source>Open Data</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -100,379 +116,404 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="118"/>
+        <location filename="../mainwindow.ui" line="123"/>
         <source>&amp;Window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="129"/>
+        <location filename="../mainwindow.ui" line="134"/>
         <source>&amp;Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="154"/>
+        <location filename="../mainwindow.ui" line="159"/>
         <source>&amp;Devices</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="159"/>
+        <location filename="../mainwindow.ui" line="164"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="184"/>
-        <location filename="../mainwindow.ui" line="361"/>
+        <location filename="../mainwindow.ui" line="189"/>
+        <location filename="../mainwindow.ui" line="366"/>
         <source>Browser</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="221"/>
-        <location filename="../mainwindow.ui" line="369"/>
+        <location filename="../mainwindow.ui" line="226"/>
+        <location filename="../mainwindow.ui" line="374"/>
         <source>Nodes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="248"/>
-        <location filename="../mainwindow.ui" line="350"/>
+        <location filename="../mainwindow.ui" line="253"/>
+        <location filename="../mainwindow.ui" line="355"/>
         <source>Logger</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="285"/>
-        <location filename="../mainwindow.ui" line="419"/>
+        <location filename="../mainwindow.ui" line="290"/>
+        <location filename="../mainwindow.ui" line="424"/>
         <source>Stylesheet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="294"/>
-        <location filename="../mainwindow.ui" line="611"/>
+        <location filename="../mainwindow.ui" line="299"/>
+        <location filename="../mainwindow.ui" line="616"/>
         <source>Performance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="303"/>
-        <location filename="../mainwindow.ui" line="643"/>
+        <location filename="../mainwindow.ui" line="308"/>
+        <location filename="../mainwindow.ui" line="648"/>
         <source>Snippets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="312"/>
+        <location filename="../mainwindow.ui" line="317"/>
         <source>&amp;Open...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="315"/>
+        <location filename="../mainwindow.ui" line="320"/>
         <source>Ctrl+O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="323"/>
+        <location filename="../mainwindow.ui" line="328"/>
         <source>&amp;Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="326"/>
+        <location filename="../mainwindow.ui" line="331"/>
         <source>Ctrl+S</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="334"/>
+        <location filename="../mainwindow.ui" line="339"/>
         <source>Save As...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="339"/>
+        <location filename="../mainwindow.ui" line="344"/>
         <source>&amp;New</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="342"/>
+        <location filename="../mainwindow.ui" line="347"/>
         <source>Ctrl+N</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="374"/>
+        <location filename="../mainwindow.ui" line="379"/>
         <source>E&amp;xit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="382"/>
+        <location filename="../mainwindow.ui" line="387"/>
         <source>Cursor to Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="385"/>
+        <location filename="../mainwindow.ui" line="390"/>
         <source>Home</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="390"/>
+        <location filename="../mainwindow.ui" line="395"/>
         <source>Cursor to End</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="393"/>
+        <location filename="../mainwindow.ui" line="398"/>
         <source>End</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="398"/>
+        <location filename="../mainwindow.ui" line="403"/>
         <source>Play Toggle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="401"/>
+        <location filename="../mainwindow.ui" line="406"/>
         <source>Space</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="406"/>
+        <location filename="../mainwindow.ui" line="411"/>
         <source>Output #1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="411"/>
+        <location filename="../mainwindow.ui" line="416"/>
         <source>Set duration...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="424"/>
+        <location filename="../mainwindow.ui" line="429"/>
         <source>Add Note</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="429"/>
+        <location filename="../mainwindow.ui" line="434"/>
         <source>About Fugio...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="437"/>
+        <location filename="../mainwindow.ui" line="442"/>
         <source>About Qt...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="445"/>
+        <location filename="../mainwindow.ui" line="450"/>
         <source>Online Documentation...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="453"/>
+        <location filename="../mainwindow.ui" line="458"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="461"/>
+        <location filename="../mainwindow.ui" line="466"/>
         <source>Paste</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="466"/>
+        <location filename="../mainwindow.ui" line="471"/>
         <source>Set Colour...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="471"/>
+        <location filename="../mainwindow.ui" line="476"/>
         <source>Recent1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="575"/>
+        <location filename="../mainwindow.ui" line="580"/>
         <source>Tile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="580"/>
+        <location filename="../mainwindow.ui" line="585"/>
         <source>Cascade</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="585"/>
+        <location filename="../mainwindow.ui" line="590"/>
         <source>Rescan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="593"/>
+        <location filename="../mainwindow.ui" line="598"/>
         <source>Cut</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="598"/>
+        <location filename="../mainwindow.ui" line="603"/>
         <source>Contact Developers...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="603"/>
+        <location filename="../mainwindow.ui" line="608"/>
         <source>Facebook Page...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="616"/>
+        <location filename="../mainwindow.ui" line="621"/>
         <source>Append...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="621"/>
+        <location filename="../mainwindow.ui" line="626"/>
         <source>Group...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="624"/>
+        <location filename="../mainwindow.ui" line="629"/>
         <source>Ctrl+G</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="629"/>
+        <location filename="../mainwindow.ui" line="634"/>
         <source>Group Parent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="632"/>
+        <location filename="../mainwindow.ui" line="637"/>
         <source>Ctrl+P</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="648"/>
-        <source>Selection to snippit...</source>
+        <location filename="../mainwindow.ui" line="653"/>
+        <source>Selection to snippet...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="653"/>
+        <location filename="../mainwindow.ui" line="658"/>
         <source>Ungroup</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="656"/>
+        <location filename="../mainwindow.ui" line="661"/>
         <source>Ctrl+U</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="661"/>
+        <location filename="../mainwindow.ui" line="666"/>
         <source>Data Directory...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="666"/>
+        <location filename="../mainwindow.ui" line="671"/>
         <source>GitHub Page...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="671"/>
+        <location filename="../mainwindow.ui" line="676"/>
         <source>Check for updates...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="676"/>
+        <location filename="../mainwindow.ui" line="681"/>
         <source>Facebook Users Group...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="681"/>
+        <location filename="../mainwindow.ui" line="686"/>
         <source>Save All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="686"/>
+        <location filename="../mainwindow.ui" line="691"/>
         <source>Options...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="694"/>
+        <location filename="../mainwindow.ui" line="699"/>
         <source>Import...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="699"/>
+        <location filename="../mainwindow.ui" line="704"/>
         <source>Save Patch Image...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="394"/>
+        <location filename="../mainwindow.ui" line="709"/>
+        <source>Save Data As...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="714"/>
+        <source>Save Data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="719"/>
+        <source>Load Data...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="724"/>
+        <source>Save Revision</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="727"/>
+        <source>Ctrl+Shift+S</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.cpp" line="398"/>
         <source>Open Patch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="394"/>
-        <location filename="../mainwindow.cpp" line="1096"/>
+        <location filename="../mainwindow.cpp" line="398"/>
+        <location filename="../mainwindow.cpp" line="1103"/>
         <source>Fugio Patches (*.fug)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="598"/>
+        <location filename="../mainwindow.cpp" line="602"/>
         <source>%1 v%2 by Alex May - DEBUG VERSION (not for distribution)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="600"/>
+        <location filename="../mainwindow.cpp" line="604"/>
         <source>%1 v%2 by Alex May</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="612"/>
+        <location filename="../mainwindow.cpp" line="616"/>
         <source>Set duration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="612"/>
+        <location filename="../mainwindow.cpp" line="616"/>
         <source>Duration (Hours:Minutes:Seconds:Milliseconds):</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="947"/>
+        <location filename="../mainwindow.cpp" line="951"/>
         <source>&amp;%1 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="952"/>
+        <location filename="../mainwindow.cpp" line="956"/>
         <source>%1 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1096"/>
+        <location filename="../mainwindow.cpp" line="1103"/>
         <source>Append Patch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1124"/>
+        <location filename="../mainwindow.cpp" line="1131"/>
         <source>Name Snippet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1124"/>
+        <location filename="../mainwindow.cpp" line="1131"/>
         <source>Enter the name for the new Snippet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1140"/>
+        <location filename="../mainwindow.cpp" line="1147"/>
         <source>Snippet Exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1140"/>
+        <location filename="../mainwindow.cpp" line="1147"/>
         <source>A snippit already exists with that name, do you want to overwrite it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1227"/>
+        <location filename="../mainwindow.cpp" line="1234"/>
         <source>Load Recovery Files?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1227"/>
+        <location filename="../mainwindow.cpp" line="1234"/>
         <source>Recovery files found - reload them?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1229"/>
+        <location filename="../mainwindow.cpp" line="1236"/>
         <source>Delete Recovery Files?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1229"/>
+        <location filename="../mainwindow.cpp" line="1236"/>
         <source>Recovery files found - delete them?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1431"/>
+        <location filename="../mainwindow.cpp" line="1438"/>
         <source>Import file(s)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -692,162 +733,162 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>PinItem</name>
     <message>
-        <location filename="../pinitem.cpp" line="246"/>
+        <location filename="../pinitem.cpp" line="243"/>
         <source>Rename</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="248"/>
+        <location filename="../pinitem.cpp" line="245"/>
         <source>Edit Default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="250"/>
+        <location filename="../pinitem.cpp" line="247"/>
         <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="255"/>
+        <location filename="../pinitem.cpp" line="252"/>
         <source>Hide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="260"/>
+        <location filename="../pinitem.cpp" line="257"/>
         <source>Updatable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="266"/>
+        <location filename="../pinitem.cpp" line="263"/>
         <source>Import</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="267"/>
+        <location filename="../pinitem.cpp" line="264"/>
         <source>Export</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="273"/>
+        <location filename="../pinitem.cpp" line="270"/>
         <source>Disconnect Global</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="279"/>
+        <location filename="../pinitem.cpp" line="276"/>
         <source>Connect Global...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="288"/>
+        <location filename="../pinitem.cpp" line="285"/>
         <source>Remove Group Input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="298"/>
+        <location filename="../pinitem.cpp" line="295"/>
         <source>Add Group Input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="315"/>
+        <location filename="../pinitem.cpp" line="312"/>
         <source>Joiners</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="334"/>
+        <location filename="../pinitem.cpp" line="332"/>
         <source>Always Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="340"/>
+        <location filename="../pinitem.cpp" line="338"/>
         <source>Set Colour...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="344"/>
+        <location filename="../pinitem.cpp" line="342"/>
         <source>Remove Global</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="350"/>
+        <location filename="../pinitem.cpp" line="348"/>
         <source>Make Global</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="359"/>
+        <location filename="../pinitem.cpp" line="357"/>
         <source>Remove Group Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="376"/>
+        <location filename="../pinitem.cpp" line="374"/>
         <source>Add Group Output</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="388"/>
+        <location filename="../pinitem.cpp" line="386"/>
         <source>Splitters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="410"/>
+        <location filename="../pinitem.cpp" line="409"/>
         <source>Help...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="450"/>
+        <location filename="../pinitem.cpp" line="449"/>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="457"/>
+        <location filename="../pinitem.cpp" line="456"/>
         <source>Description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="884"/>
+        <location filename="../pinitem.cpp" line="883"/>
         <source>Choose Default Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="903"/>
+        <location filename="../pinitem.cpp" line="902"/>
         <source>Select file...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="924"/>
+        <location filename="../pinitem.cpp" line="923"/>
         <source>Choose Colour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="943"/>
+        <location filename="../pinitem.cpp" line="942"/>
         <source>Choose Font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="961"/>
+        <location filename="../pinitem.cpp" line="960"/>
         <source>Edit Default Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1012"/>
+        <location filename="../pinitem.cpp" line="1011"/>
         <source>Import Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1027"/>
+        <location filename="../pinitem.cpp" line="1026"/>
         <source>Export Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1138"/>
+        <location filename="../pinitem.cpp" line="1137"/>
         <source>No Global Pins</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1138"/>
+        <location filename="../pinitem.cpp" line="1137"/>
         <source>There are no global pins defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1155"/>
+        <location filename="../pinitem.cpp" line="1154"/>
         <source>Choose Global</source>
         <translation type="unfinished"></translation>
     </message>

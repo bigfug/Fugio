@@ -6,7 +6,7 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 	
-	../../include/fugio/opencv/uuid.h
+	../../plugins-include/fugio/opencv/uuid.h
 
 	addnode.cpp
 	addnode.h
@@ -59,6 +59,12 @@ set( SOURCE_FILES
 	absdiffnode.h
 	countnonzeronode.cpp
 	countnonzeronode.h
+	solvepnpnode.cpp
+	solvepnpnode.h
+	rodriguesnode.cpp
+	rodriguesnode.h
+	projectpointsnode.cpp
+	projectpointsnode.h
 )
 
 set( QRC_FILES
@@ -108,3 +114,11 @@ else()
 	message( "OpenCV: NO" )
 endif()
 
+#------------------------------------------------------------------------------
+# Eigen
+
+find_package( Eigen3 QUIET )
+
+if( EIGEN3_FOUND )
+	target_include_directories( ${PROJECT_NAME} PRIVATE ${EIGEN3_INCLUDE_DIR} )
+endif()

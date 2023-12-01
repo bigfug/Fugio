@@ -5,8 +5,8 @@ project( fugio-file )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/file/uuid.h
-	../../include/fugio/file/filename_interface.h
+	../../plugins-include/fugio/file/uuid.h
+	../../plugins-include/fugio/file/filename_interface.h
 	fileplugin.cpp
 	filewatchernode.cpp
 	filenamepin.cpp
@@ -32,6 +32,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
 #------------------------------------------------------------------------------
 # Qt5

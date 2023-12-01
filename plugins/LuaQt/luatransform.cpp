@@ -1,5 +1,7 @@
 #include "luatransform.h"
 
+#include "luaqtplugin.h"
+
 const char *LuaTransform::TransformUserData::TypeName = "qt.transform";
 
 #if defined( LUA_SUPPORTED )
@@ -14,6 +16,13 @@ const luaL_Reg LuaTransform::mLuaMethods[] =
 	{ "__gc",				LuaTransform::luaDelete },
 	{ 0, 0 }
 };
+
+void LuaTransform::registerExtension(fugio::LuaInterface *LUA)
+{
+	LuaQtPlugin::addLuaFunction( "transform", LuaTransform::luaNew );
+
+	LUA->luaRegisterExtension( LuaTransform::luaOpen );
+}
 
 int LuaTransform::luaOpen( lua_State *L )
 {

@@ -7,6 +7,7 @@
 #include <fugio/context_interface.h>
 #include <fugio/lua/lua_interface.h>
 #include <fugio/core/variant_interface.h>
+#include <fugio/math/uuid.h>
 
 #include "luaqtplugin.h"
 
@@ -14,14 +15,13 @@
 #include "luarectf.h"
 #include "luavector3.h"
 
-const char *LuaMatrix4x4::UserData::TypeName = "qt.matrix4x4";
+const char *LuaMatrix4x4::mTypeName = "qt.matrix4x4";
 
 #if defined( LUA_SUPPORTED )
 
 const luaL_Reg LuaMatrix4x4::mLuaFunctions[] =
 {
-	{ "new",				LuaMatrix4x4::luaNew },
-	{ 0, 0 }
+	{ Q_NULLPTR, Q_NULLPTR }
 };
 
 const luaL_Reg LuaMatrix4x4::mLuaMetaMethods[] =
@@ -33,7 +33,7 @@ const luaL_Reg LuaMatrix4x4::mLuaMetaMethods[] =
 //	{ "__sub",				LuaMatrix4x4::luaSub },
 	{ "__index",			LuaMatrix4x4::luaIndex },
 	{ "__newindex",			LuaMatrix4x4::luaNewIndex },
-	{ 0, 0 }
+	{ Q_NULLPTR, Q_NULLPTR }
 };
 
 const luaL_Reg LuaMatrix4x4::mLuaMethods[] =
@@ -50,26 +50,39 @@ const luaL_Reg LuaMatrix4x4::mLuaMethods[] =
 	{ "scale",				LuaMatrix4x4::luaScale },
 	{ "toArray",			LuaMatrix4x4::luaToArray },
 	{ "translate",			LuaMatrix4x4::luaTranslate },
-	{ 0, 0 }
+	{ Q_NULLPTR, Q_NULLPTR }
 };
+
+void LuaMatrix4x4::registerExtension(LuaInterface *LUA)
+{
+	LuaQtPlugin::addLuaFunction( "matrix4x4", LuaMatrix4x4::luaNew );
+
+	LUA->luaRegisterExtension( LuaMatrix4x4::luaOpen );
+
+	LUA->luaAddPinGet( PID_MATRIX4, LuaMatrix4x4::luaPinGet );
+
+	LUA->luaAddPinSet( PID_MATRIX4, LuaMatrix4x4::luaPinSet );
+}
 
 int LuaMatrix4x4::luaOpen (lua_State *L )
 {
-	if( luaL_newmetatable( L, UserData::TypeName ) == 1 )
-	{
-		luaL_setfuncs( L, mLuaMetaMethods, 0 );
+	luaL_newmetatable( L, mTypeName );
 
-		luaL_newlib( L, mLuaFunctions );
-	}
+	lua_pushvalue( L, -1 );
+	lua_setfield( L, -2, "__index" );
+
+	luaL_setfuncs( L, mLuaMetaMethods, 0 );
+
+	luaL_newlib( L, mLuaFunctions );
 
 	return( 1 );
 }
 
 int LuaMatrix4x4::luaNew( lua_State *L )
 {
-//	if( lua_gettop( L ) == 2 )
-//	{
-//		float		x = luaL_checknumber( L, 1 );
+	//	if( lua_gettop( L ) == 2 )
+	//	{
+	//		float		x = luaL_checknumber( L, 1 );
 //		float		y = luaL_checknumber( L, 2 );
 
 //		pushMatrix4x4( L, QMatrix4x4( x, y ) );

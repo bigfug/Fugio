@@ -5,6 +5,7 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 project( Fugio )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/plugins-include )
 
 set( CMAKE_CXX_STANDARD 11 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
@@ -25,6 +26,8 @@ if (CMAKE_SIZEOF_VOID_P EQUAL 8)
 else ()
     message(STATUS "*** SIZEOF void * != 8, so not 64-bit")
 endif ()
+
+set( FUGIO_BUILD_DIST FALSE CACHE BOOL "Build Fugio for binary distribution" )
 
 # There must be a better way to do this...
 
@@ -53,24 +56,26 @@ message( "FUGIO VERSION ${FUGIO_VERSION}" )
 
 #------------------------------------------------------------------------------
 
-if( WIN32 )
-	set( CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1 )
-endif( WIN32 )
-
 set( PATH_APP . )
 set( PATH_INCLUDE include )
 set( PATH_SHARE share )
 set( PATH_PLUGIN plugins )
 
+if( WIN32 )
+	set( PATH_APP bin )
+	set( CMAKE_VS_INCLUDE_INSTALL_TO_DEFAULT_BUILD 1 )
+endif( WIN32 )
+
 if( UNIX AND NOT APPLE )
 	set( PATH_APP		bin )
-	set( PATH_INCLUDE	include )
 	set( PATH_SHARE		share/fugio )
 	set( PATH_PLUGIN	lib/fugio )
 	
 	install( FILES FugioApp/fugio.desktop	DESTINATION share/applications )
 	install( FILES FugioApp/fugio.png		DESTINATION share/icons/hicolor/256x256/apps )
 endif()
+
+set( FUGIO_API "${CMAKE_SOURCE_DIR}/include" CACHE PATH "" )
 
 #------------------------------------------------------------------------------
 # Lua (minimum 5.2)
@@ -93,6 +98,8 @@ if( NOT LUA_FOUND )
 endif()
 
 #------------------------------------------------------------------------------
+
+set( FUGIO_UNIX_DEPENDENCIES )
 
 add_subdirectory( FugioLib )
 add_subdirectory( FugioApp )
@@ -118,8 +125,13 @@ set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE" )
 
 if( WIN32 AND NOT UNIX )
 	set( CPACK_NSIS_EXECUTABLES_DIRECTORY "${PATH_APP}" )
+	set( CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON )
 	#set( CPACK_NSIS_EXTRA_INSTALL_COMMANDS "ExecWait '\\\"$INSTDIR\\\\vcredist_x86.exe\\\" /q:a'" )
 	#set( CPACK_NSIS_HELP_LINK "http:\\\\\\\\wiki.bigfug.com" )
+endif()
+
+if( APPLE )
+	set( CPACK_INCLUDE_TOPLEVEL_DIRECTORY ON )
 endif()
 
 # Set the output package filename
@@ -187,31 +199,14 @@ endif()
 
 # The dependencies for various UNIX packages
 
-if( Q_OS_RASPBERRY_PI )
-	set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
-		libgles2-mesa, libicu57, libavcodec57, libavdevice57, libavformat57, libavutil55, libswscale4,
-		libswresample2, libavfilter6, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2, pigpio,
-		libqt5serialport5, libqt5quickcontrols2-5, libqt5quickwidgets5, libqt5websockets5,
-		libopencv-photo2.4v5" )
-elseif( UNIX )
-	if( "${UNIX_ID}" STREQUAL "Ubuntu" AND "${UNIX_RELEASE}" STREQUAL "16.04" )
-		set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
-			libicu55, libavcodec-ffmpeg56, libavdevice-ffmpeg56, libavformat-ffmpeg56, libavutil-ffmpeg54, libswscale-ffmpeg3,
-			libswresample-ffmpeg1, libavfilter-ffmpeg5, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2,
-			libqt5serialport5" )
-	else()
-		set( CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5concurrent5, libqt5core5a, libqt5gui5, libqt5opengl5, libqt5network5, libqt5widgets5,
-			libicu57, libavcodec57, libavdevice57, libavformat57, libavutil55, libswscale4,
-			libswresample2, libavfilter6, libfftw3-single3, libportmidi0, liblua5.3-0, libportaudio2,
-			libqt5serialport5, libqt5quickcontrols2-5, libqt5quickwidgets5, libqt5websockets5,
-			libdlib18, libopencv-calib3d3.1, libopencv-core3.1, libopencv-features2d3.1,
-			libopencv-highgui3.1, libopencv-imgproc3.1, libopencv-objdetect3.1, libopencv-videoio3.1" )
-	endif()
+if( UNIX AND NOT APPLE )
+	set( CPACK_DEBIAN_PACKAGE_DEBUG ON )
+	set( CPACK_DEB_COMPONENT_INSTALL ON )
+	set( CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON )
+	set( CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON )
 endif()
 
-if( APPLE )
-	set( CPACK_INCLUDE_TOPLEVEL_DIRECTORY ON )
-endif()
+# Extract the version for CPACK
 
 string( REPLACE "." ";" FUGIO_VERSION_LIST ${FUGIO_VERSION} )
 

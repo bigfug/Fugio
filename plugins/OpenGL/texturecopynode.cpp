@@ -15,7 +15,7 @@
 #include "openglplugin.h"
 
 TextureCopyNode::TextureCopyNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mFBO( 0 )
+	: NodeControlBase( pNode )
 {
 	mPinTexSrc = pinInput( "Texture" );
 
@@ -28,12 +28,6 @@ TextureCopyNode::TextureCopyNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 TextureCopyNode::~TextureCopyNode()
 {
-	if( mFBO )
-	{
-		glDeleteFramebuffers( 1, &mFBO );
-
-		mFBO = 0;
-	}
 }
 
 void TextureCopyNode::inputsUpdated( qint64 pTimeStamp )
@@ -93,14 +87,11 @@ void TextureCopyNode::inputsUpdated( qint64 pTimeStamp )
 
 			if( GLEX )
 			{
-				if( !mFBO )
-				{
-					glGenFramebuffers( 1, &mFBO );
-				}
+				GLuint	FBO = mFBO.fbo();
 
-				if( mFBO )
+				if( FBO )
 				{
-					glBindFramebuffer( GL_FRAMEBUFFER, mFBO );
+					glBindFramebuffer( GL_FRAMEBUFFER, FBO );
 
 					glFramebufferTexture2D( GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, TexSrc->target(), TexSrc->srcTexId(), 0 );
 

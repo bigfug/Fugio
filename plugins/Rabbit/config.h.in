@@ -1,0 +1,18 @@
+#ifndef PLUGIN_CONFIG_H
+#define PLUGIN_CONFIG_H
+
+#include <QUuid>
+#include <QDate>
+
+namespace config
+{
+	static const QString	pluginName( "@PLUGIN_NAME@" );
+	static const QString	pluginDescription( "@PLUGIN_DESCRIPTION@" );
+	static const QUuid		pluginUuid( "{@PLUGIN_UUID@}" );
+	static const QString	pluginReleaseVersion( "@PLUGIN_RELEASE_VERSION@" );
+	static const QDate		pluginReleaseDate = QDate::fromString( QStringLiteral( "@PLUGIN_RELEASE_DATE@" ), Qt::ISODate );
+	static const QString	authorName( "@PLUGIN_AUTHOR_NAME@" );
+	static const QString	authorEmail( "@PLUGIN_AUTHOR_EMAIL@" );
+};
+
+#endif //PLUGIN_CONFIG_H

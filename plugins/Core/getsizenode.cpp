@@ -3,6 +3,7 @@
 #include <fugio/core/uuid.h>
 #include <fugio/core/size_interface.h>
 #include <fugio/pin_variant_iterator.h>
+#include <fugio/core/array_interface.h>
 
 GetSizeNode::GetSizeNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -72,28 +73,41 @@ void GetSizeNode::inputsUpdated( qint64 pTimeStamp )
 
 				pinUpdated( PinO );
 			}
+
+			continue;
 		}
-		else
+
+		fugio::ArrayInterface	*ArrInt = input<fugio::ArrayInterface *>( PinI );
+
+		if( ArrInt )
 		{
-			fugio::PinVariantIterator	PinItr( PinI );
+			VarO->setVariantCount( 1 );
 
-			VarO->setVariantCount( PinItr.count() );
+			VarO->setVariantType( QMetaType::Int );
 
-			for( int i = 0 ; i < PinItr.count() ; i++ )
+			VarO->setVariant( ArrInt->count() );
+
+			continue;
+		}
+
+		fugio::PinVariantIterator	PinItr( PinI );
+
+		VarO->setVariantCount( PinItr.count() );
+
+		for( int i = 0 ; i < PinItr.count() ; i++ )
+		{
+			QVariant		Size = PinItr.size( i );
+
+			if( VarO->variantType() != QMetaType::Type( Size.type() ) )
 			{
-				QVariant		Size = PinItr.size( i );
+				VarO->setVariantType( QMetaType::Type( Size.type() ) );
+			}
 
-				if( VarO->variantType() != QMetaType::Type( Size.type() ) )
-				{
-					VarO->setVariantType( QMetaType::Type( Size.type() ) );
-				}
+			if( VarO->variant() != Size )
+			{
+				VarO->setVariant( i, Size );
 
-				if( VarO->variant() != Size )
-				{
-					VarO->setVariant( i, Size );
-
-					pinUpdated( PinO );
-				}
+				pinUpdated( PinO );
 			}
 		}
 	}

@@ -2,6 +2,7 @@ set( TS_FILES
 	translations/translations_de.ts
 	translations/translations_es.ts
 	translations/translations_fr.ts
+	translations/translations_it.ts
 	)
 
 qt5_create_translation( QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${TS_FILES} OPTIONS "-silent" )

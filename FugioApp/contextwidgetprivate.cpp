@@ -3,7 +3,9 @@
 
 #include <QFileDialog>
 #include <QStylePainter>
+#include <QStyleOption>
 #include <QStandardPaths>
+#include <QStyleOption>
 
 #include "app.h"
 #include "contextview.h"
@@ -311,6 +313,96 @@ void ContextWidgetPrivate::userSaveImage()
 	if( !TmpImg.save( FileName, Q_NULLPTR ) )
 	{
 		qWarning() << "Error saving image";
+	}
+}
+
+void ContextWidgetPrivate::userSaveData()
+{
+	if( mDataFileName.isEmpty() )
+	{
+		userSaveDataAs();
+	}
+	else
+	{
+		context()->saveData( mDataFileName );
+	}
+}
+
+void ContextWidgetPrivate::userSaveDataAs()
+{
+	QSettings				 Settings;
+
+	const QString	DatDir = QStandardPaths::writableLocation( QStandardPaths::DocumentsLocation );
+
+	QString					 PatchDirectory = Settings.value( "data-directory", QDir( DatDir ).absoluteFilePath( "Fugio" ) ).toString();
+
+	QString		FileName = QFileDialog::getSaveFileName( this, tr( "Save Data" ), PatchDirectory, tr( "Fugio Data (*.fugdata)" ) );
+
+	if( FileName.isEmpty() )
+	{
+		return;
+	}
+
+	mDataFileName = FileName;
+
+	PatchDirectory = QFileInfo( FileName ).absoluteDir().path();
+
+	Settings.setValue( "data-directory", PatchDirectory );
+
+	context()->saveData( FileName );
+}
+
+void ContextWidgetPrivate::userLoadData()
+{
+	const QString		DatDir = QStandardPaths::writableLocation( QStandardPaths::DocumentsLocation );
+
+	QSettings			Settings;
+
+	QString				PatchDirectory = Settings.value( "data-directory", QDir( DatDir ).absoluteFilePath( "Fugio" ) ).toString();
+
+	QStringList			FileList = QFileDialog::getOpenFileNames( this, tr( "Open Data" ), PatchDirectory, tr( "Fugio Data (*.fugdata)" ) );
+
+	if( !FileList.isEmpty() )
+	{
+		QString		FirstFileName = FileList.first();
+
+		if( QFile( FirstFileName ).exists() )
+		{
+			PatchDirectory = QFileInfo( FirstFileName ).absoluteDir().path();
+
+			Settings.setValue( "data-directory", PatchDirectory );
+
+			context()->loadData( FirstFileName );
+
+			mDataFileName = FirstFileName;
+		}
+	}
+}
+
+void ContextWidgetPrivate::userSaveRevision()
+{
+	if( filename().isEmpty() )
+	{
+		userSaveAs();
+	}
+	else
+	{
+		QFileInfo			FI( filename() );
+		QString				RN;
+
+		for( int i = 1 ; RN.isEmpty() ; i++ )
+		{
+			QString			TN = FI.dir().filePath( QString( "%1.%2.%3" ).arg( FI.completeBaseName() ).arg( i ).arg( FI.suffix() ) );
+
+			if( QFile::exists( TN ) )
+			{
+				continue;
+			}
+
+			RN = TN;
+		}
+
+		context()->save( RN );
 	}
 }
 

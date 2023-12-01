@@ -30,15 +30,15 @@ public:
 	//-------------------------------------------------------------------------
 	// fugio::PinControlInterface
 
-	virtual QString toString( void ) const Q_DECL_OVERRIDE
-	{
-		return( "" );
-	}
+	virtual QString toString( void ) const Q_DECL_OVERRIDE;
 
 	virtual QString description( void ) const Q_DECL_OVERRIDE
 	{
 		return( "Colour" );
 	}
+
+	virtual void loadSettings( QSettings &pSettings ) Q_DECL_OVERRIDE;
+	virtual void saveSettings( QSettings &pSettings ) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// InterfaceColour

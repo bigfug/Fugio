@@ -5,7 +5,7 @@
 
 #include <fugio/nodecontrolbase.h>
 
-#include <fugio/core/array_interface.h>
+#include <fugio/core/variant_interface.h>
 
 class MakeArrayNode : public fugio::NodeControlBase
 {
@@ -33,7 +33,7 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinInput;
 
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
-	fugio::ArrayInterface						*mValOutput;
+	fugio::VariantInterface						*mValOutput;
 };
 
 #endif // MAKEARRAYNODE_H

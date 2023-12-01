@@ -16,6 +16,7 @@
 #include <fugio/core/variant_interface.h>
 #include <fugio/image/image.h>
 #include <fugio/gui/input_events_interface.h>
+#include <fugio/gui/keyboard_interface.h>
 
 #include <fugio/opengl/uuid.h>
 
@@ -74,8 +75,14 @@ public:
 
 	virtual void render( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
+	// QObject interface
+private:
+	virtual bool eventFilter( QObject *, QEvent * ) Q_DECL_OVERRIDE;
+
 private slots:
 	void contextFrameInitialise( void );
+
+	void contextFrameStart( void );
 
 	void contextFrameEnd( void );
 
@@ -94,6 +101,9 @@ private:
 	QSharedPointer<fugio::PinInterface>	 mPinOutputEvents;
 	fugio::InputEventsInterface			*mValOutputEvents;
 
+	QSharedPointer<fugio::PinInterface>	 mPinOutputKeyboard;
+	fugio::KeyboardInterface			*mValOutputKeyboard;
+
 	QSharedPointer<fugio::PinInterface>	 mPinInputRender;
 
 	QSharedPointer<DeviceOpenGLOutput>	 mOutput;
@@ -108,6 +118,8 @@ private:
 	QPointF								 mMouseLastPosition;
 
 	volatile bool						 mUpdate;
+
+	QList<fugio::KeyboardEvent>			 mEvtLst;
 };
 
 #endif // WINDOWNODE_H

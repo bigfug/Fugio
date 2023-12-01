@@ -99,12 +99,35 @@ void PainterWindow::renderLater()
 	}
 }
 
+void PainterWindow::toggleFullScreen()
+{
+    if (this->visibility()==QWindow::FullScreen)
+    {
+        this->showNormal();
+    }
+    else
+    {
+        //Goes to fullScreen
+        this->showFullScreen();
+    }
+}
+
 bool PainterWindow::event(QEvent *event)
 {
 	if (event->type() == QEvent::UpdateRequest) {
 		m_update_pending = false;
 		renderNow();
 		return true;
+	}
+    else if (event->type() == QEvent::KeyPress)
+	{
+		//Use F11 as a platform-indipendent shortcut for the PainterWindow
+		QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+		if (keyEvent->key() == Qt::Key_F11)
+		{
+            toggleFullScreen();
+			return true;
+		}
 	}
 	return QWindow::event(event);
 }

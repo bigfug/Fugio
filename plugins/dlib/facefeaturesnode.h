@@ -33,6 +33,8 @@ public:
 
 	virtual void inputsUpdated( qint64 pTimeStamp );
 
+	friend void deserialize( FaceFeaturesNode& item, std::istream& in );
+
 private slots:
 
 private:
@@ -51,12 +53,16 @@ protected:
 	QSharedPointer<fugio::PinInterface>			 mPinOutputChips;
 	fugio::VariantInterface						*mValOutputChips;
 
+	QSharedPointer<fugio::PinInterface>			 mPinOutputModel;
+	fugio::VariantInterface						*mValOutputModel;
+
 	volatile bool								 mLoading;
 	volatile bool								 mLoaded;
 
 #if defined( DLIB_SUPPORTED )
 	frontal_face_detector						 mDetector;
 	shape_predictor 							 mShapePredictor;
+	matrix<float,0,1>							 mInitialShape;
 #endif
 };
 

@@ -1,5 +1,7 @@
 #include "luapen.h"
 
+#include "luaqtplugin.h"
+
 #include "luacolor.h"
 
 #include "luabrush.h"
@@ -22,6 +24,13 @@ const luaL_Reg LuaPen::mLuaMethods[] =
 	{ "width",				LuaPen::luaWidth },
 	{ 0, 0 }
 };
+
+void LuaPen::registerExtension(fugio::LuaInterface *LUA)
+{
+	LuaQtPlugin::addLuaFunction( "pen", LuaPen::luaNew );
+
+	LUA->luaRegisterExtension( LuaPen::luaOpen );
+}
 
 int LuaPen::luaOpen( lua_State *L )
 {

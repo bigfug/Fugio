@@ -58,7 +58,7 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinOutput;
 	QSharedPointer<fugio::PinInterface>			 mPinOutputTextureSize;
 
-	fugio::OpenGLTextureInterface						*mTexture;
+	fugio::OpenGLTextureInterface				*mValOutputTexture;
 	fugio::VariantInterface						*mOutputTextureSize;
 };
 

@@ -11,7 +11,7 @@
 
 const luaL_Reg LuaArray::mLuaFunctions[] =
 {
-	{ 0, 0 }
+	{ Q_NULLPTR, Q_NULLPTR  }
 };
 
 const luaL_Reg LuaArray::mLuaInstance[] =
@@ -25,7 +25,7 @@ const luaL_Reg LuaArray::mLuaInstance[] =
 	{ "set",		LuaArray::luaSetTable },
 	{ "setCount",	LuaArray::luaSetCount },
 	{ "setType",	LuaArray::luaSetType },
-	{ 0, 0 }
+	{ Q_NULLPTR, Q_NULLPTR }
 };
 
 int LuaArray::lua_openarray( lua_State *L )
@@ -77,7 +77,7 @@ int LuaArray::luaGet( lua_State *L )
 	return( 0 );
 }
 
-void LuaArray::pushFloatArray( lua_State *L, float *A, int LstIdx, int LstCnt )
+void LuaArray::pushFloatArray( lua_State *L, fugio::VariantInterface *A, int LstIdx, int LstCnt )
 {
 	if( A )
 	{
@@ -94,7 +94,7 @@ void LuaArray::pushFloatArray( lua_State *L, float *A, int LstIdx, int LstCnt )
 					break;
 				}
 
-				A[ ( LstIdx * LstCnt ) + i - 1 ] = lua_tonumber( L, -1 );
+				A->setVariant( LstIdx, i - 1, lua_tonumber( L, -1 ) );
 
 				lua_pop( L, 1 );
 			}
@@ -102,7 +102,7 @@ void LuaArray::pushFloatArray( lua_State *L, float *A, int LstIdx, int LstCnt )
 	}
 }
 
-void LuaArray::pushIntArray( lua_State *L, float *A, int LstIdx, int LstCnt )
+void LuaArray::pushIntArray( lua_State *L, fugio::VariantInterface *A, int LstIdx, int LstCnt )
 {
 	if( A )
 	{
@@ -119,7 +119,7 @@ void LuaArray::pushIntArray( lua_State *L, float *A, int LstIdx, int LstCnt )
 					break;
 				}
 
-				A[ ( LstIdx * LstCnt ) + i - 1 ] = lua_tointeger( L, -1 );
+				A->setVariant( LstIdx, i - 1, lua_tointeger( L, -1 ) );
 
 				lua_pop( L, 1 );
 			}
@@ -175,31 +175,26 @@ void LuaArray::setArrayIndex( lua_State *L, fugio::VariantInterface *VarInf, int
 
 	if( VarInf->variantType() == QMetaType::Float )
 	{
-		float		*A = (float *)VarInf->variantArray();
-
-		if( A && VarInf->variantStride() == sizeof( float ) )
+		if( VarInf->variantElementCount() == 1 )
 		{
-			if( VarInf->variantElementCount() == 1 )
+			VarInf->setVariant( LstIdx, lua_tonumber( L, ValIdx ) );
+		}
+		else if( lua_type( L, ValIdx ) == LUA_TTABLE )
+		{
+			for( int i = 1 ; i < VarInf->variantElementCount() ; i++ )
 			{
-				A[ LstIdx ] = lua_tonumber( L, ValIdx );
-			}
-			else if( lua_type( L, ValIdx ) == LUA_TTABLE )
-			{
-				for( int i = 1 ; i < VarInf->variantElementCount() ; i++ )
+				lua_rawgeti( L, ValIdx, i );
+
+				if( lua_isnil( L, -1 ) )
 				{
-					lua_rawgeti( L, ValIdx, i );
-
-					if( lua_isnil( L, -1 ) )
-					{
-						lua_pop( L, 1 );
-
-						break;
-					}
-
-					A[ ( LstIdx * VarInf->variantElementCount() ) + i - 1 ] = lua_tonumber( L, -1 );
-
 					lua_pop( L, 1 );
+
+					break;
 				}
+
+				VarInf->setVariant( LstIdx, i - 1 , lua_tonumber( L, -1 ) );
+
+				lua_pop( L, 1 );
 			}
 		}
 
@@ -208,31 +203,26 @@ void LuaArray::setArrayIndex( lua_State *L, fugio::VariantInterface *VarInf, int
 
 	if( VarInf->variantType() == QMetaType::Int )
 	{
-		float		*A = (float *)VarInf->variantArray();
-
-		if( A && VarInf->variantStride() == sizeof( float ) )
+		if( VarInf->variantElementCount() == 1 )
 		{
-			if( VarInf->variantElementCount() == 1 )
+			VarInf->setVariant( LstIdx, lua_tointeger( L, ValIdx ) );
+		}
+		else if( lua_type( L, ValIdx ) == LUA_TTABLE )
+		{
+			for( int i = 1 ; i < VarInf->variantElementCount() ; i++ )
 			{
-				A[ LstIdx ] = lua_tonumber( L, ValIdx );
-			}
-			else if( lua_type( L, ValIdx ) == LUA_TTABLE )
-			{
-				for( int i = 1 ; i < VarInf->variantElementCount() ; i++ )
+				lua_rawgeti( L, ValIdx, i );
+
+				if( lua_isnil( L, -1 ) )
 				{
-					lua_rawgeti( L, ValIdx, i );
-
-					if( lua_isnil( L, -1 ) )
-					{
-						lua_pop( L, 1 );
-
-						break;
-					}
-
-					A[ ( LstIdx * VarInf->variantElementCount() ) + i - 1 ] = lua_tointeger( L, -1 );
-
 					lua_pop( L, 1 );
+
+					break;
 				}
+
+				VarInf->setVariant( LstIdx, i - 1 , lua_tointeger( L, -1 ) );
+
+				lua_pop( L, 1 );
 			}
 		}
 
@@ -241,19 +231,19 @@ void LuaArray::setArrayIndex( lua_State *L, fugio::VariantInterface *VarInf, int
 
 	if( VarInf->variantType() == QMetaType::QVector2D )
 	{
-		pushFloatArray( L, (float *)VarInf->variantArray(), LstIdx, 2 );
+		pushFloatArray( L, VarInf, LstIdx, 2 );
 	}
 	else if( VarInf->variantType() == QMetaType::QVector3D )
 	{
-		pushFloatArray( L, (float *)VarInf->variantArray(), LstIdx, 3 );
+		pushFloatArray( L, VarInf, LstIdx, 3 );
 	}
 	else if( VarInf->variantType() == QMetaType::QVector4D || VarInf->variantType() == QMetaType::QColor || VarInf->variantType() == QMetaType::QLineF )
 	{
-		pushFloatArray( L, (float *)VarInf->variantArray(), LstIdx, 4 );
+		pushFloatArray( L, VarInf, LstIdx, 4 );
 	}
 	else if( VarInf->variantType() == QMetaType::QMatrix4x4 )
 	{
-		pushFloatArray( L, (float *)VarInf->variantArray(), LstIdx, 16 );
+		pushFloatArray( L, VarInf, LstIdx, 16 );
 	}
 }
 
@@ -656,53 +646,73 @@ int LuaArray::luaSetType( lua_State *L )
 		if( strcmp( LstTyp, "float" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::Float );
+
+			ArrInt->variantSetStride( sizeof( float ) );
 		}
 		else if( strcmp( LstTyp, "int" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::Int );
+
+			ArrInt->variantSetStride( sizeof( int ) );
 		}
 		else if( strcmp( LstTyp, "point" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QPointF );
+
+			ArrInt->variantSetStride( sizeof( float ) * 2 );
 		}
 		else if( strcmp( LstTyp, "vec2" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QVector2D );
+
+			ArrInt->variantSetStride( sizeof( float ) * 2 );
 		}
 		else if( strcmp( LstTyp, "vec3" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QVector3D );
+
+			ArrInt->variantSetStride( sizeof( float ) * 3 );
 		}
 		else if( strcmp( LstTyp, "vec4" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QVector4D );
+
+			ArrInt->variantSetStride( sizeof( float ) * 4 );
 		}
 		else if( strcmp( LstTyp, "mat4" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QMatrix4x4 );
+
+			ArrInt->variantSetStride( sizeof( float ) * 16 );
 		}
 		else if( strcmp( LstTyp, "rect" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QRect );
+
+			ArrInt->variantSetStride( sizeof( int ) * 4 );
 		}
 		else if( strcmp( LstTyp, "rectf" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QRectF );
+
+			ArrInt->variantSetStride( sizeof( float ) * 4 );
 		}
 		else if( strcmp( LstTyp, "line" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QLine );
+
+			ArrInt->variantSetStride( sizeof( int ) * 4 );
 		}
 		else if( strcmp( LstTyp, "linef" ) == 0 )
 		{
 			ArrInt->setVariantType( QMetaType::QLineF );
+
+			ArrInt->variantSetStride( sizeof( float ) * 4 );
 		}
 		else
 		{
 			return( luaL_error( L, "Unknown list type: %s", LstTyp ) );
 		}
-
-		ArrInt->variantSetStride( QMetaType::sizeOf( ArrInt->variantType() ) );
 
 		return( 0 );
 	}

@@ -185,12 +185,6 @@ target_sources( ${PROJECT_NAME} PRIVATE ${QRC_FILES} )
 
 set_property( SOURCE ${CMAKE_CURRENT_BINARY_DIR}/qrc_fugio.cpp PROPERTY SKIP_AUTOGEN ON )
 
-if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
-	include( Windeployqt )
-
-	windeployqt( ${PROJECT_NAME} ${PATH_APP} )
-endif()
-
 #------------------------------------------------------------------------------
 # Raspberry Pi
 
@@ -215,8 +209,9 @@ if( APPLE AND LUA_FOUND )
 	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E make_directory "${BUNDLE_PATH}/Contents/Frameworks"
 		COMMAND ${CMAKE_COMMAND} -E copy "${LUA_LIBRARY}" "${BUNDLE_PATH}/Contents/Frameworks/"
+		COMMAND chmod +w "${BUNDLE_PATH}/Contents/Frameworks/${LUA_LIB}"
 		COMMAND install_name_tool -id ${LUA_LIB} "${BUNDLE_PATH}/Contents/Frameworks/${LUA_LIB}"
-		COMMENT "Copying ${LUA_LIBRARY}..."
+		COMMENT "Copying ${LUA_LIBRARY} to ${BUNDLE_PATH}/Contents/Frameworks..."
 		VERBATIM
 	)
 endif( APPLE AND LUA_FOUND )

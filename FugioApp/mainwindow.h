@@ -7,7 +7,6 @@
 #include <QFileSystemModel>
 #include <QUndoStack>
 #include <QMdiSubWindow>
-#include <QSignalMapper>
 
 #include <fugio/edit_interface.h>
 
@@ -83,7 +82,7 @@ private:
 
 	static void logger_static( QtMsgType type, const QMessageLogContext &context, const QString &msg );
 
-	void logger( QtMsgType type, const QMessageLogContext &context, const QString &msg );
+	void logger( QtMsgType type, const QMessageLogContext &context, const QString &msg, bool pLogToFile = true );
 
 	void updateRecentFileList( void );
 
@@ -185,6 +184,14 @@ private slots:
 
 	void on_actionSave_Patch_Image_triggered();
 
+	void on_actionSave_Data_As_triggered();
+
+	void on_actionSave_Data_triggered();
+
+	void on_actionLoad_Data_triggered();
+
+	void on_actionSave_Revision_triggered();
+
 private:
 	Ui::MainWindow								*ui;
 
@@ -196,8 +203,6 @@ private:
 	QAction										*mActionRedo;
 
 	QUndoStack									 mUndoStack;
-
-	QSignalMapper								 mActiveWindowMapper;
 
 	fugio::EditInterface						*mEditTarget;
 

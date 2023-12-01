@@ -34,43 +34,6 @@ bool MainWindowNode::deinitialise()
 	return( NodeControlBase::deinitialise() );
 }
 
-fugio::KeyboardEvent::Modifiers MainWindowNode::translateModifiers( Qt::KeyboardModifiers pModifiers )
-{
-	fugio::KeyboardEvent::Modifiers		EvtMod = fugio::KeyboardEvent::NONE;
-
-	if( pModifiers.testFlag( Qt::ShiftModifier ) )
-	{
-		EvtMod |= fugio::KeyboardEvent::SHIFT;
-	}
-
-	if( pModifiers.testFlag( Qt::ControlModifier ) )
-	{
-		EvtMod |= fugio::KeyboardEvent::CTRL;
-	}
-
-	if( pModifiers.testFlag( Qt::AltModifier ) )
-	{
-		EvtMod |= fugio::KeyboardEvent::ALT;
-	}
-
-	if( pModifiers.testFlag( Qt::MetaModifier ) )
-	{
-		EvtMod |= fugio::KeyboardEvent::META;
-	}
-
-	if( pModifiers.testFlag( Qt::KeypadModifier ) )
-	{
-		EvtMod |= fugio::KeyboardEvent::KEYPAD;
-	}
-
-	if( pModifiers.testFlag( Qt::GroupSwitchModifier ) )
-	{
-		EvtMod |= fugio::KeyboardEvent::GROUPSWITCH;
-	}
-
-	return( EvtMod );
-}
-
 bool MainWindowNode::eventFilter( QObject *pObject, QEvent *pEvent )
 {
 	if( pEvent->type() == QEvent::KeyPress )
@@ -84,7 +47,8 @@ bool MainWindowNode::eventFilter( QObject *pObject, QEvent *pEvent )
 			KeyEvt.mType = fugio::KeyboardEvent::PRESS;
 			KeyEvt.mText = keyEvent->text();
 			KeyEvt.mCode = keyEvent->key();
-			KeyEvt.mModifiers = translateModifiers( keyEvent->modifiers() );
+
+			KeyEvt.translateModifiers( keyEvent->modifiers() );
 
 			mEvtLst << KeyEvt;
 		}
@@ -100,7 +64,8 @@ bool MainWindowNode::eventFilter( QObject *pObject, QEvent *pEvent )
 			KeyEvt.mType = fugio::KeyboardEvent::RELEASE;
 			KeyEvt.mText = keyEvent->text();
 			KeyEvt.mCode = keyEvent->key();
-			KeyEvt.mModifiers = translateModifiers( keyEvent->modifiers() );
+
+			KeyEvt.translateModifiers( keyEvent->modifiers() );
 
 			mEvtLst << KeyEvt;
 		}

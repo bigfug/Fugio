@@ -23,7 +23,9 @@ public:
 	int lineNumberAreaWidth();
 
 protected:
-	void resizeEvent(QResizeEvent *event);
+	void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
+
+	virtual void keyPressEvent(QKeyEvent *event) Q_DECL_OVERRIDE;
 
 public slots:
 	void highlightCurrentLine();
@@ -35,6 +37,7 @@ private slots:
 private:
 	QWidget								*lineNumberArea;
 	QList<fugio::SyntaxError>			 mSyntaxErrors;
+
 };
 
 #endif // CODEEDITOR_H

@@ -18,5 +18,7 @@
 	<string>Fugio</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.bigfug.Fugio</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Needs camera for the video capture plugin</string>
 </dict>
 </plist>

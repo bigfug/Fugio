@@ -6,10 +6,10 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 	
-	../../include/fugio/text/syntax_highlighter_interface.h
-	../../include/fugio/text/syntax_error_interface.h
-	../../include/fugio/text/syntax_error_signals.h
-	../../include/fugio/text/uuid.h
+	../../plugins-include/fugio/text/syntax_highlighter_interface.h
+	../../plugins-include/fugio/text/syntax_error_interface.h
+	../../plugins-include/fugio/text/syntax_error_signals.h
+	../../plugins-include/fugio/text/uuid.h
 
 	cmdtexteditorupdate.h
 	codeeditor.cpp
@@ -49,6 +49,8 @@ set( SOURCE_FILES
 	stringtofloatnode.h
 	chopnode.cpp
 	chopnode.h
+	comparestringnode.cpp
+	comparestringnode.h
 
 	texteditorform.ui
 )
@@ -67,6 +69,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
 #------------------------------------------------------------------------------
 # Qt5

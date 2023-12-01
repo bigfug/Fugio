@@ -1,6 +1,7 @@
 #include "facefeaturesnode.h"
 
 #include <QtConcurrent/QtConcurrentRun>
+#include <QPolygonF>
 
 #include <fugio/core/uuid.h>
 
@@ -170,6 +171,7 @@ FaceFeaturesNode::FaceFeaturesNode( QSharedPointer<fugio::NodeInterface> pNode )
 	FUGID( PIN_OUTPUT_RECTS, "261cc653-d7fa-4c34-a08b-3603e8ae71d5" );
 	FUGID( PIN_OUTPUT_SHAPES, "249f2932-f483-422f-b811-ab679f006381" );
 	FUGID( PIN_OUTPUT_CHIPS, "ce8d578e-c5a4-422f-b3c4-a1bdf40facdb" );
+	FUGID( PIN_OUTPUT_MODEL, "627e1e33-66e2-4b4a-a386-8a2ed3f21aa4" );
 
 	mPinInputImage = pinInput( "Image", PIN_INPUT_IMAGE );
 
@@ -181,11 +183,15 @@ FaceFeaturesNode::FaceFeaturesNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	mValOutputChips = pinOutput<fugio::VariantInterface *>( "Chips", mPinOutputChips, PID_POLYGON, PIN_OUTPUT_CHIPS );
 
+	mValOutputModel = pinOutput<fugio::VariantInterface *>( "Model", mPinOutputModel, PID_POLYGON, PIN_OUTPUT_MODEL );
+
 	mValOutputRects->variantClear();
 
 	mValOutputShapes->variantClear();
 
 	mValOutputChips->variantClear();
+
+	mValOutputModel->variantClear();
 
 #if defined( DLIB_SUPPORTED )
 	mDetector = get_frontal_face_detector();
@@ -200,7 +206,22 @@ void FaceFeaturesNode::loadDataFile( const QString &pFilename )
 #if defined( DLIB_SUPPORTED )
 	try
 	{
+		dlib::deserialize( pFilename.toStdString() ) >> *this;
+
 		dlib::deserialize( pFilename.toStdString() ) >> mShapePredictor;
+
+		mValOutputModel->setVariantCount( 1 );
+
+		QPolygonF		PLY;
+
+		for( long i = 0 ; i < mInitialShape.size() / 2 ; i++ )
+		{
+			PLY << QPointF( mInitialShape( ( i * 2 ) + 0 ), mInitialShape( ( i * 2 ) + 1 ) );
+		}
+
+		mValOutputModel->setVariant( PLY );
+
+		pinUpdated( mPinOutputModel );
 
 		mNode->context()->updateNode( mNode );
 
@@ -325,4 +346,15 @@ void FaceFeaturesNode::inputsUpdated( qint64 pTimeStamp )
 #endif
 		}
 	}
+}
+
+void deserialize( FaceFeaturesNode &item, std::istream &in )
+{
+#if defined( DLIB_SUPPORTED )
+	int version = 0;
+	dlib::deserialize(version, in);
+	if (version != 1)
+		throw serialization_error("Unexpected version found while deserializing dlib::shape_predictor.");
+	dlib::deserialize(item.mInitialShape, in);
+#endif
 }

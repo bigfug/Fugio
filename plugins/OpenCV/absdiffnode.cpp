@@ -44,14 +44,14 @@ void AbsDiffNode::inputsUpdated( qint64 pTimeStamp )
 
 	fugio::Image				SrcImg1 = variant( mPinInputImage1 ).value<fugio::Image>();
 
-	if( !SrcImg1.isEmpty() )
+	if( !SrcImg1.isValid() )
 	{
 		return;
 	}
 
 	fugio::Image				SrcImg2 = variant( mPinInputImage2 ).value<fugio::Image>();
 
-	if( !SrcImg2.isEmpty() )
+	if( !SrcImg2.isValid() )
 	{
 		return;
 	}

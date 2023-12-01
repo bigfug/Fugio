@@ -67,6 +67,24 @@
     </message>
 </context>
 <context>
+    <name>WebSocketDataServerNode</name>
+    <message>
+        <location filename="../websocketdataservernode.cpp" line="19"/>
+        <source>Port</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../websocketdataservernode.cpp" line="20"/>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../websocketdataservernode.cpp" line="24"/>
+        <source>Output</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>WebSocketServerNode</name>
     <message>
         <location filename="../websocketservernode.cpp" line="21"/>

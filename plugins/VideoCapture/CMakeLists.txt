@@ -6,7 +6,7 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 	
-	../../include/fugio/videocapture/uuid.h
+	../../plugins-include/fugio/videocapture/uuid.h
 
 	devicedialog.cpp
 	devicedialog.h

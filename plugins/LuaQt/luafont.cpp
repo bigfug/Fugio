@@ -1,5 +1,7 @@
 #include "luafont.h"
 
+#include "luaqtplugin.h"
+
 const char *LuaFont::FontUserData::TypeName = "qt.font";
 
 #if defined( LUA_SUPPORTED )
@@ -19,6 +21,13 @@ const luaL_Reg LuaFont::mLuaMethods[] =
 	{ "setPointSize",		LuaFont::luaSetPointSize },
 	{ 0, 0 }
 };
+
+void LuaFont::registerExtension( fugio::LuaInterface *LUA )
+{
+	LuaQtPlugin::addLuaFunction( "font", LuaFont::luaNew );
+
+	LUA->luaRegisterExtension( LuaFont::luaOpen );
+}
 
 int LuaFont::luaOpen( lua_State *L )
 {

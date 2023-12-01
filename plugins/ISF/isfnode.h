@@ -12,7 +12,6 @@
 #include <QDir>
 #include <QSize>
 
-#include <QOpenGLVertexArrayObject>
 #include <QOpenGLBuffer>
 
 #include <fugio/node_interface.h>
@@ -31,6 +30,8 @@
 #include <fugio/audio/audio_instance_base.h>
 
 #include <fugio/file/filename_interface.h>
+
+#include <fugio/opengl/context_container_object.h>
 
 class ISFNode : public fugio::NodeControlBase, public fugio::NodeRenderInterface, private QOpenGLFunctions
 {
@@ -118,7 +119,7 @@ protected:
 
 	typedef struct ISFPass
 	{
-		ISFPass( void ) : mPersistent( false ), mFloat( false ), mFBO( 0 ), mTextureId( 0 ), mUniform( -1 ), mTextureIndex( -1 ) {}
+		ISFPass( void ) : mPersistent( false ), mFloat( false ), mTextureId( 0 ), mUniform( -1 ), mTextureIndex( -1 ) {}
 
 		QString				mTarget;
 		bool				mPersistent;
@@ -126,7 +127,8 @@ protected:
 		QString				mWidth;
 		QString				mHeight;
 
-		GLuint				mFBO;
+		fugio::ContextFramebufferObject	mFBO;
+
 		GLuint				mTextureId;
 		QSize				mSize;
 		GLint				mUniform;
@@ -168,7 +170,7 @@ private:
 	QMap<QString,ISFImport>						 mISFImports;
 	QList<ISFPass>								 mISFPasses;
 
-	QOpenGLVertexArrayObject					 mVAO;
+	fugio::ContextVertexArrayObject				 mVAO;
 	QOpenGLBuffer								 mBuffer;
 	GLuint										 mProgram;
 	GLuint										 mFrameCounter;

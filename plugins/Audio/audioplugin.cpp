@@ -25,7 +25,7 @@
 
 QList<QUuid>				NodeControlBase::PID_UUID;
 
-ClassEntry		mNodeClasses[] =
+ClassEntry AudioPlugin::mNodeClasses[] =
 {
 	ClassEntry( "Audio To Array", "Audio", NID_AUDIO_TO_ARRAY, &AudioToArrayNode::staticMetaObject ),
 	ClassEntry( "Centroid", "FFT", NID_CENTROID, &CentroidNode::staticMetaObject ),
@@ -40,7 +40,7 @@ ClassEntry		mNodeClasses[] =
 	ClassEntry()
 };
 
-ClassEntry		mPinClasses[] =
+ClassEntry AudioPlugin::mPinClasses[] =
 {
 	ClassEntry( "Audio", PID_AUDIO, &AudioPin::staticMetaObject ),
 	ClassEntry( "FFT", PID_FFT, &FFTPin::staticMetaObject ),
@@ -48,7 +48,7 @@ ClassEntry		mPinClasses[] =
 };
 
 AudioPlugin::AudioPlugin()
-	: mApp( 0 )
+	: mApp( Q_NULLPTR )
 {
 	//-------------------------------------------------------------------------
 	// Install translator

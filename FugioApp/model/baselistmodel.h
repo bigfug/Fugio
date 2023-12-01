@@ -13,7 +13,7 @@ class BaseListModel : public BaseModel
 public:
 	BaseListModel( NodeModel *pParent = nullptr );
 
-	virtual ~BaseListModel( void ) {}
+	virtual ~BaseListModel( void ) Q_DECL_OVERRIDE {}
 
 	inline NodeModel *parent( void ) Q_DECL_OVERRIDE
 	{

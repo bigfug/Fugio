@@ -52,6 +52,17 @@ const luaL_Reg LuaColor::mLuaMethods[] =
 	{ 0, 0 }
 };
 
+void LuaColor::registerExtension( LuaInterface *LUA )
+{
+	LuaQtPlugin::addLuaFunction( "color", LuaColor::luaNew );
+
+	LUA->luaRegisterExtension( LuaColor::luaOpen );
+
+	LUA->luaAddPinGet( PID_COLOUR, LuaColor::luaPinGet );
+
+//	LUA->luaAddPushVariantFunction( QMetaType::QColor, LuaColor::pushVariant );
+}
+
 int LuaColor::luaOpen( lua_State *L )
 {
 	luaL_newmetatable( L, ColorUserData::TypeName );

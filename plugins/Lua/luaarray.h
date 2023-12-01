@@ -63,8 +63,8 @@ public:
 	}
 
 private:
-	static void pushFloatArray( lua_State *L, float *A, int LstIdx, int LstCnt );
-	static void pushIntArray( lua_State *L, float *A, int LstIdx, int LstCnt );
+	static void pushFloatArray( lua_State *L, fugio::VariantInterface *A, int LstIdx, int LstCnt );
+	static void pushIntArray( lua_State *L, fugio::VariantInterface *A, int LstIdx, int LstCnt );
 
 	static void setArrayIndex( lua_State *L, fugio::VariantInterface *ArrInt, int LstIdx, int ValIdx );
 

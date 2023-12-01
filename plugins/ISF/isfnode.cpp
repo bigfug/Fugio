@@ -79,7 +79,7 @@ void checkErrors( const char *file, int line )
 #endif
 
 ISFNode::ISFNode( QSharedPointer<fugio::NodeInterface> pNode )
-	: NodeControlBase( pNode ), mVAO( 0 ),mProgram( 0 ), mFrameCounter( 0 ), mUniformTime( -1 ),
+	: NodeControlBase( pNode ), mProgram( 0 ), mFrameCounter( 0 ), mUniformTime( -1 ),
 	  mTextureIndexCount( 0 ), mStartTime( -1 ), mLastRenderTime( 0 )
 {
 	FUGID( PIN_INPUT_SOURCE, "9e154e12-bcd8-4ead-95b1-5a59833bcf4e" );
@@ -125,7 +125,12 @@ bool ISFNode::deinitialise()
 
 	if( ISFPlugin::hasContextStatic() )
 	{
-		mVAO.destroy();
+		QOpenGLVertexArrayObject	*VAO = mVAO.vao();
+
+		if( VAO )
+		{
+			VAO->destroy();
+		}
 
 		mBuffer.destroy();
 
@@ -1288,16 +1293,6 @@ void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 			continue;
 		}
 
-		if( !PassData.mFBO )
-		{
-			glGenFramebuffers( 1, &PassData.mFBO );
-		}
-
-		if( !PassData.mFBO )
-		{
-			continue;
-		}
-
 		QSize		NewSze( Viewport[ 2 ], Viewport[ 3 ] );
 
 		NewSze.setWidth( calculateValue( NewSze.width(), NewSze, PassData.mWidth ) );
@@ -1305,14 +1300,10 @@ void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 
 		if( NewSze != PassData.mSize )
 		{
+			PassData.mFBO.setSize( NewSze );
+
 			if( PassData.mTextureId )
 			{
-				glBindFramebuffer( GL_FRAMEBUFFER, PassData.mFBO );
-
-				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0 );
-
-				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
 				glDeleteTextures( 1, &PassData.mTextureId );
 
 				PassData.mTextureId = 0;
@@ -1322,6 +1313,13 @@ void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 		}
 
 		if( PassData.mTextureId )
+		{
+			continue;
+		}
+
+		GLuint	FBO = PassData.mFBO.fbo();
+
+		if( !FBO )
 		{
 			continue;
 		}
@@ -1355,7 +1353,7 @@ void ISFNode::renderPasses( GLint Viewport[ 4 ] )
 
 		// Set up our FBO
 
-		glBindFramebuffer( GL_FRAMEBUFFER, PassData.mFBO );
+		glBindFramebuffer( GL_FRAMEBUFFER, FBO );
 
 		glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, PassData.mTextureId, 0 );
 
@@ -1514,7 +1512,7 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 		mStartTime = pTimeStamp;
 	}
 
-	QOpenGLVertexArrayObject::Binder VAOBinder( &mVAO );
+	QOpenGLVertexArrayObject::Binder VAOBinder( mVAO.vao() );
 
 	GLfloat		Verticies[][ 2 ] =
 	{
@@ -1607,16 +1605,18 @@ void ISFNode::render( qint64 pTimeStamp, QUuid pSourcePinId )
 				glBindTexture( GL_TEXTURE_2D, 0 );
 			}
 
-			if( PassData.mFBO )
+			GLuint	FBO = PassData.mFBO.fbo();
+
+			if( FBO )
 			{
-				glBindFramebuffer( GL_FRAMEBUFFER, PassData.mFBO );
+				glBindFramebuffer( GL_FRAMEBUFFER, FBO );
 
 				glViewport( 0, 0, PassData.mSize.width(), PassData.mSize.height() );
 			}
 
 			glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 
-			if( PassData.mFBO )
+			if( FBO )
 			{
 				glBindFramebuffer( GL_FRAMEBUFFER, FBOCur );
 

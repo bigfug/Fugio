@@ -26,7 +26,7 @@ class PinPrivate : public fugio::PinSignals, public fugio::PinInterface
 public:
 	explicit PinPrivate( void );
 
-	virtual ~PinPrivate( void );
+	virtual ~PinPrivate( void ) Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// fugio::PinInterface
@@ -171,6 +171,27 @@ public:
 		return( mFlags.testFlag( AlwaysUpdate ) );
 	}
 
+	inline virtual bool isProperty( void ) const Q_DECL_OVERRIDE
+	{
+		return( mFlags.testFlag( Property ) );
+	}
+
+	inline virtual void markAsProperty( bool pIsProperty = true ) Q_DECL_OVERRIDE
+	{
+#if( QT_VERSION >= QT_VERSION_CHECK( 5, 7, 0 ) )
+		mFlags.setFlag( Property, pIsProperty );
+#else
+		if( pIsProperty )
+		{
+			mFlags |= Property;
+		}
+		else
+		{
+			mFlags &= ~Property;
+		}
+#endif
+	}
+
 	virtual void setDisplayLabel(QString pDisplayLabel) Q_DECL_OVERRIDE;
 	virtual QString displayLabel() const Q_DECL_OVERRIDE;
 
@@ -218,14 +239,15 @@ public:
 		Hidden			= 1 << 1,
 		Updatable		= 1 << 2,
 		AutoRename		= 1 << 3,
-		AlwaysUpdate	= 1 << 4
+		AlwaysUpdate	= 1 << 4,
+		Property		= 1 << 5
 	};
 
 	Q_DECLARE_FLAGS( Options, Option )
 
 signals:
-	void nameChanged( const QString &pName );
-	void valueChanged( const QVariant &pValue );
+	void nameChanged( void );
+	void valueChanged( void );
 
 private:
 	fugio::ContextInterface						*mContext;

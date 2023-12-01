@@ -6,8 +6,8 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 
-	../../include/fugio/math/matrix_interface.h
-	../../include/fugio/math/uuid.h
+	../../plugins-include/fugio/math/matrix_interface.h
+	../../plugins-include/fugio/math/uuid.h
 
 	absnode.cpp
 	absnode.h
@@ -37,6 +37,8 @@ set( SOURCE_FILES
 	joinvector4node.h
 	mathplugin.cpp
 	mathplugin.h
+	matrixpin.cpp
+	matrixpin.h
 	matrix4node.cpp
 	matrix4node.h
 	matrix4pin.cpp
@@ -159,9 +161,16 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 )
 
 #------------------------------------------------------------------------------
+# Eigen
+
+target_include_directories( ${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libs/eigen3 )
+
+#------------------------------------------------------------------------------
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
 #------------------------------------------------------------------------------
 # Qt5

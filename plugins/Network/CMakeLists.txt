@@ -7,7 +7,7 @@ set( SOURCE_FILES
 	../../include/fugio/pincontrolbase.h
 	
 	
-	../../include/fugio/network/uuid.h
+	../../plugins-include/fugio/network/uuid.h
 
 	cobsdecodenode.cpp
 	cobsdecodenode.h
@@ -66,6 +66,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
 #------------------------------------------------------------------------------
 # Qt5

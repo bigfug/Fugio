@@ -44,9 +44,12 @@ void ImageSplitNode::inputsUpdated( qint64 pTimeStamp )
 
 	QList<QSharedPointer<fugio::PinInterface>>	OutPin = mNode->enumOutputPins();
 
-	while( OutPin.size() > SrcCnt )
+	for( int i = OutPin.size() - 1 ; i > 0 ; i-- )
 	{
-		mNode->removePin( OutPin.takeLast() );
+		if( i > SrcCnt && !OutPin[ i ]->isConnected() )
+		{
+			mNode->removePin( OutPin[ i ] );
+		}
 	}
 
 	while( OutPin.size() < SrcCnt )

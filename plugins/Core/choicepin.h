@@ -24,7 +24,7 @@ class ChoicePin : public fugio::PinControlBase, public fugio::ChoiceInterface
 public:
 	Q_INVOKABLE explicit ChoicePin( QSharedPointer<fugio::PinInterface> pPin );
 
-	virtual ~ChoicePin( void ) {}
+	virtual ~ChoicePin( void ) Q_DECL_OVERRIDE {}
 
 	//-------------------------------------------------------------------------
 	// Q_PROPERTY
@@ -63,10 +63,12 @@ public slots:
 	virtual void setChoices(QStringList pChoices) Q_DECL_OVERRIDE;
 
 signals:
+	virtual void choicesChanged( void ) Q_DECL_OVERRIDE;
+
 //	void valueChanged( bool pValue );
 
 private:
-	QStringList			mChoices;
+	QStringList				 mChoices;
 };
 
 #endif // CHOICEPIN_H

@@ -1,6 +1,8 @@
 #include "loggernode.h"
 
-#include <fugio/core/list_interface.h>
+#include <QJsonDocument>
+
+#include <fugio/pin_variant_iterator.h>
 
 LoggerNode::LoggerNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode )
@@ -14,27 +16,32 @@ void LoggerNode::inputsUpdated( qint64 pTimeStamp )
 {
 	if( mPinInputString->isUpdated( pTimeStamp ) )
 	{
-		fugio::ListInterface	*L = input<fugio::ListInterface *>( mPinInputString );
+		fugio::PinVariantIterator	I( mPinInputString );
 
-		if( L )
+		for( int i = 0 ; i < I.count() ; i++ )
 		{
-			for( int i = 0 ; i < L->listSize() ; i++ )
-			{
-				QString		S = L->listIndex( i ).toString();
+			QVariant	V = I.index( i );
 
-				if( !S.isEmpty() )
-				{
-					qInfo() << S;
-				}
-			}
-		}
-		else
-		{
-			QString		S = variant( mPinInputString ).toString();
-
-			if( !S.isEmpty() )
+			switch( QMetaType::Type( V.type() ) )
 			{
-				qInfo() << S;
+				case QMetaType::QString:
+					qInfo().noquote() << V.toString();
+					break;
+
+				case QMetaType::QJsonDocument:
+					qInfo().noquote() << QString::fromLatin1( V.toJsonDocument().toJson() );
+					break;
+
+				default:
+					{
+						QString	S = V.toString();
+
+						if( !S.isEmpty() )
+						{
+							qInfo().noquote() << S;
+						}
+					}
+					break;
 			}
 		}
 	}

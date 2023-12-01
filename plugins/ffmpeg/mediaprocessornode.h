@@ -94,7 +94,13 @@ private:
 	QSharedPointer<fugio::PinInterface>			 mPinAudio;
 	fugio::AudioProducerInterface				*mValAudio;
 
-	fugio::SegmentInterface							*mSegment;
+	QSharedPointer<fugio::PinInterface>			 mPinOutputPosition;
+	fugio::VariantInterface						*mValOutputPosition;
+
+	QSharedPointer<fugio::PinInterface>			 mPinOutputTime;
+	fugio::VariantInterface						*mValOutputTime;
+
+	fugio::SegmentInterface						*mSegment;
 
 	volatile qint64								 mSampleOffset;
 

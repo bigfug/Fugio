@@ -417,7 +417,11 @@ void MediaSegment::processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 	}
 	else
 	{
+#if LIBAVFORMAT_VERSION_MAJOR >= 58
+		mVideo.mPTS = mVideo.mFrame->best_effort_timestamp;
+#else
 		mVideo.mPTS = av_frame_get_best_effort_timestamp( mVideo.mFrame );
+#endif
 
 		if( mVideo.mPTS != AV_NOPTS_VALUE )
 		{
@@ -434,10 +438,18 @@ void MediaSegment::processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 
 		VD.mPTS = mVideo.mPTS;
 
+#if LIBAVFORMAT_VERSION_MAJOR >= 58
+		if( mVideo.mFrame->pkt_duration )
+#else
 		if( av_frame_get_pkt_duration( mVideo.mFrame ) )
+#endif
 		{
 			/* update the video clock */
+#if LIBAVFORMAT_VERSION_MAJOR >= 58
+			VD.mDuration = mVideo.mFrame->pkt_duration * TimeBase;
+#else
 			VD.mDuration = av_frame_get_pkt_duration( mVideo.mFrame ) * TimeBase;
+#endif
 
 			/* if we are repeating a frame, adjust clock accordingly */
 			VD.mDuration += qreal( mVideo.mFrame->repeat_pict ) * ( VD.mDuration * 0.5 );
@@ -479,10 +491,12 @@ void MediaSegment::processVideoFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 
 	mVidDat.append( VD );
 
+#if LIBAVFORMAT_VERSION_MAJOR < 58
 	if( mVideo.mCodecContext->refcounted_frames )
 	{
 		av_frame_unref( mVideo.mFrame );
 	}
+#endif
 #endif
 }
 
@@ -490,7 +504,11 @@ void MediaSegment::processAudioFrame( qreal TargetPTS, qreal PacketTS, bool pFor
 {
 #if defined( FFMPEG_SUPPORTED )
 	double		TimeBase = av_q2d( mFormatContext->streams[ mAudio.mStreamId ]->time_base );
+#if LIBAVFORMAT_VERSION_MAJOR >= 58
+	qreal		FrameTS = mAudio.mFrame->best_effort_timestamp;
+#else
 	qreal		FrameTS = av_frame_get_best_effort_timestamp( mAudio.mFrame );
+#endif
 
 	if( FrameTS != AV_NOPTS_VALUE )
 	{
@@ -575,7 +593,7 @@ void MediaSegment::processSubtitleFrame( qreal TargetPTS, qreal PacketTS, bool p
 	Q_UNUSED( PacketTS )
 	Q_UNUSED( pForce )
 
-#if defined( FFMPEG_SUPPORTED )
+#if defined( FFMPEG_SUPPORTED ) && ( LIBAVFORMAT_VERSION_MAJOR < 58 )
 	if( mSubtitle.mCodecContext->refcounted_frames )
 	{
 		av_frame_unref( mVideo.mFrame );
@@ -1263,6 +1281,11 @@ void MediaSegment::setPlayhead( qreal pTimeStamp )
 			}
 #endif
 		}
+
+		if( mVidDat.size() >= 10 )
+		{
+			break;
+		}
 	}
 
 #if defined( QT_DEBUG ) && defined( DEBUG_HAVE_FRAMES )
@@ -1595,7 +1618,7 @@ void MediaSegment::readNext()
 				break;
 			}
 
-			if( OldPlayHead == mPlayHead )
+			if( qFuzzyCompare( OldPlayHead, mPlayHead ) )
 			{
 				mPlayHead += CurDuration;
 			}
@@ -1700,6 +1723,11 @@ void MediaSegment::readNext()
 		else if( mPacket.stream_index == mSubtitle.mStreamId )
 		{
 
+		}
+
+		if( mVidDat.size() >= 10 )
+		{
+			break;
 		}
 	}
 

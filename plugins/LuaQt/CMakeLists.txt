@@ -6,10 +6,12 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 
-	../../include/fugio/luaqt/uuid.h
+	../../plugins-include/fugio/luaqt/uuid.h
 
 	luabrush.cpp
 	luabrush.h
+	luabytearray.cpp
+	luabytearray.h
 	luacolor.cpp
 	luacolor.h
 	luafont.cpp
@@ -26,6 +28,8 @@ set( SOURCE_FILES
 	luajsondocument.h
 	luajsonobject.cpp
 	luajsonobject.h
+	luamatrix.cpp
+	luamatrix.h
 	luamatrix4x4.cpp
 	luamatrix4x4.h
 	lualine.cpp
@@ -36,6 +40,8 @@ set( SOURCE_FILES
 	luapen.h
 	luapointf.cpp
 	luapointf.h
+	luapolygon.cpp
+	luapolygon.h
 	luaqtplugin.cpp
 	luaqtplugin.h
 	luaquaternion.cpp
@@ -83,6 +89,11 @@ if( LUA_FOUND )
 else()
 	message( "LuaQt: NO" )
 endif()
+
+#------------------------------------------------------------------------------
+# Eigen
+
+target_include_directories( ${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/libs/eigen3 )
 
 #------------------------------------------------------------------------------
 # Install

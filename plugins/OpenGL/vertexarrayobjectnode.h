@@ -7,6 +7,8 @@
 
 #include "vertexarrayobjectpin.h"
 
+#include <fugio/opengl/context_container_object.h>
+
 FUGIO_NAMESPACE_BEGIN
 class OpenGLBufferInterface;
 struct ShaderUniformData;
@@ -64,10 +66,11 @@ protected:
 		QMetaType::Type	 mMetaType;
 	} BindInfo;
 
-	typedef QMap<QString,BindInfo> BindInfoMap;
+	typedef QMap<QString,BindInfo>					BindInfoMap;
+	typedef QMap<QOpenGLContext *,BindInfoMap>		ContextBindInfoMap;
 
-	BindInfoMap									 mBindInfo;
-	QOpenGLVertexArrayObject					 mVAO;
+	fugio::ContextVertexArrayObject				 mVAO;
+	ContextBindInfoMap							 mBindInfo;
 };
 
 #endif // VERTEXARRAYOBJECTNODE_H

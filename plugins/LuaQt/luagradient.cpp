@@ -1,5 +1,7 @@
 #include "luagradient.h"
 
+#include "luaqtplugin.h"
+
 #include "luacolor.h"
 #include "luapointf.h"
 
@@ -18,6 +20,13 @@ const luaL_Reg LuaGradient::mLuaMethods[] =
 	{ "setColorAt",			LuaGradient::luaSetColorAt },
 	{ 0, 0 }
 };
+
+void LuaGradient::registerExtension( fugio::LuaInterface *LUA )
+{
+	LuaQtPlugin::addLuaFunction( "gradient", LuaGradient::luaNew );
+
+	LUA->luaRegisterExtension( LuaGradient::luaOpen );
+}
 
 int LuaGradient::luaOpen( lua_State *L )
 {

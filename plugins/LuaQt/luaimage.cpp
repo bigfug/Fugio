@@ -6,6 +6,7 @@
 #include <fugio/pin_control_interface.h>
 #include <fugio/image/image.h>
 #include <fugio/context_interface.h>
+#include <fugio/image/uuid.h>
 
 #include "luaqtplugin.h"
 #include "luarectf.h"
@@ -13,7 +14,7 @@
 #include "luapointf.h"
 #include "luacolor.h"
 
-const char *LuaImage::ImageUserData::TypeName = "qt.image";
+const char *LuaImage::UserData::TypeName = "qt.image";
 
 #if defined( LUA_SUPPORTED )
 
@@ -34,9 +35,18 @@ const luaL_Reg LuaImage::mLuaMethods[] =
 	{ 0, 0 }
 };
 
+void LuaImage::registerExtension(LuaInterface *LUA)
+{
+	LuaQtPlugin::addLuaFunction( "image", LuaImage::luaNew );
+
+	LUA->luaRegisterExtension( LuaImage::luaOpen );
+
+	LUA->luaAddPinGet( PID_IMAGE, LuaImage::luaPinGet );
+}
+
 int LuaImage::luaOpen( lua_State *L )
 {
-	luaL_newmetatable( L, ImageUserData::TypeName );
+	luaL_newmetatable( L, UserData::TypeName );
 
 	lua_pushvalue( L, -1 );
 	lua_setfield( L, -2, "__index" );
@@ -94,7 +104,7 @@ int LuaImage::luaPinGet( const QUuid &pPinLocalId, lua_State *L )
 
 int LuaImage::luaDelete( lua_State *L )
 {
-	ImageUserData		*IUD = checkimagedata( L );
+	UserData		*IUD = checkimagedata( L );
 
 	if( IUD && IUD->mImage )
 	{
@@ -106,7 +116,7 @@ int LuaImage::luaDelete( lua_State *L )
 
 int LuaImage::luaIsValid(lua_State *L)
 {
-	ImageUserData		*IUD = checkimagedata( L );
+	UserData		*IUD = checkimagedata( L );
 
 	lua_pushboolean( L, IUD->mImage != nullptr );
 
@@ -115,7 +125,7 @@ int LuaImage::luaIsValid(lua_State *L)
 
 int LuaImage::luaPixelColor( lua_State *L )
 {
-	ImageUserData		*IUD = checkimagedata( L );
+	UserData		*IUD = checkimagedata( L );
 	QPoint				 P;
 
 	luaL_argcheck( L, IUD->mImage != nullptr, 1, "image is not valid" );
@@ -143,7 +153,7 @@ int LuaImage::luaPixelColor( lua_State *L )
 
 int LuaImage::luaRect( lua_State *L )
 {
-	ImageUserData		*IUD = checkimagedata( L );
+	UserData		*IUD = checkimagedata( L );
 
 	luaL_argcheck( L, IUD->mImage != nullptr, 1, "image is not valid" );
 
@@ -154,7 +164,7 @@ int LuaImage::luaRect( lua_State *L )
 
 int LuaImage::luaSetPixelColor( lua_State *L )
 {
-	ImageUserData			*IUD = checkimagedata( L );
+	UserData			*IUD = checkimagedata( L );
 
 	luaL_argcheck( L, IUD->mImage != nullptr, 1, "image is not valid" );
 
@@ -187,7 +197,7 @@ int LuaImage::luaSetPixelColor( lua_State *L )
 
 int LuaImage::luaSetSize( lua_State *L )
 {
-	ImageUserData			*IUD = checkimagedata( L );
+	UserData			*IUD = checkimagedata( L );
 	QSize					 S;
 
 	if( LuaSizeF::isSizeF( L, 2 ) )
@@ -227,7 +237,7 @@ int LuaImage::luaSetSize( lua_State *L )
 
 int LuaImage::luaSize( lua_State *L )
 {
-	ImageUserData		*IUD = checkimagedata( L );
+	UserData		*IUD = checkimagedata( L );
 
 	luaL_argcheck( L, IUD->mImage != nullptr, 1, "image is not valid" );
 

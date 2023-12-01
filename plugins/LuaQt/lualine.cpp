@@ -1,5 +1,6 @@
 #include "lualine.h"
 
+#include <fugio/core/uuid.h>
 #include <fugio/node_interface.h>
 #include <fugio/node_control_interface.h>
 #include <fugio/pin_interface.h>
@@ -15,12 +16,6 @@
 const char *LuaLine::mTypeName = "qt.line";
 
 #if defined( LUA_SUPPORTED )
-
-const luaL_Reg LuaLine::mLuaFunctions[] =
-{
-	{ "new",				LuaLine::luaNew },
-	{ 0, 0 }
-};
 
 const luaL_Reg LuaLine::mLuaMetaMethods[] =
 {
@@ -45,14 +40,29 @@ const luaL_Reg LuaLine::mLuaMethods[] =
 	{ 0, 0 }
 };
 
+void LuaLine::registerExtension( fugio::LuaInterface *LUA )
+{
+	LuaQtPlugin::addLuaFunction( "line", LuaLine::luaNew );
+
+	LUA->luaRegisterExtension( LuaLine::luaOpen );
+
+	LUA->luaAddPinGet( PID_LINE, LuaLine::luaPinGet );
+
+	LUA->luaAddPinSet( PID_LINE, LuaLine::luaPinSet );
+
+	LUA->luaAddPushVariantFunction( QMetaType::QLineF, LuaLine::pushVariant );
+
+	LUA->luaAddPopVariantFunction( LuaLine::mTypeName, LuaLine::popVariant );
+}
+
 int LuaLine::luaOpen (lua_State *L )
 {
-	if( luaL_newmetatable( L, mTypeName ) == 1 )
-	{
-		luaL_setfuncs( L, mLuaMetaMethods, 0 );
+	luaL_newmetatable( L, mTypeName );
 
-		luaL_newlib( L, mLuaFunctions );
-	}
+	lua_pushvalue( L, -1 );
+	lua_setfield( L, -2, "__index" );
+
+	luaL_setfuncs( L, mLuaMethods, 0 );
 
 	return( 1 );
 }

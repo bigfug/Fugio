@@ -64,7 +64,7 @@
 <context>
     <name>CorePlugin</name>
     <message>
-        <location filename="../coreplugin.cpp" line="82"/>
+        <location filename="../coreplugin.cpp" line="83"/>
         <source>Any Trigger</source>
         <translation type="unfinished"></translation>
     </message>
@@ -256,6 +256,29 @@
     <message>
         <location filename="../splitsizenode.cpp" line="18"/>
         <source>Height</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>UpdateNode</name>
+    <message>
+        <location filename="../updatenode.cpp" line="17"/>
+        <source>Trigger</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../updatenode.cpp" line="19"/>
+        <source>Always</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../updatenode.cpp" line="23"/>
+        <source>Input</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../updatenode.cpp" line="25"/>
+        <source>Output</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -15,7 +15,7 @@ class PinListModel : public BaseModel
 public:
 	PinListModel( PinDirection pDirection, NodeModel *pParent = nullptr );
 
-	virtual ~PinListModel( void ) {}
+	virtual ~PinListModel( void ) Q_DECL_OVERRIDE {}
 
 	inline PinDirection direction( void ) const
 	{

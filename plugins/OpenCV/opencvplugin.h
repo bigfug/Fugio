@@ -11,6 +11,19 @@
 
 #if defined( OPENCV_SUPPORTED )
 #include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+// OpenCV 4 finally puts the colour conversion codes into it's own namespace
+// but we need to support earlier versions using this define
+
+#if ( CV_MAJOR_VERSION <= 2 )
+#define OPENCV_COLOR_CODE(x)		(CV_ ## x)
+#elif ( CV_MAJOR_VERSION == 3 )
+#define OPENCV_COLOR_CODE(x)		(cv::COLOR_ ## x)
+#else
+#define OPENCV_COLOR_CODE(x)		(cv::ColorConversionCodes::COLOR_ ## x)
+#endif
+
 #endif
 
 using namespace fugio;

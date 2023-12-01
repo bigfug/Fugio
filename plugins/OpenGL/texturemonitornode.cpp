@@ -10,6 +10,8 @@
 
 #include <fugio/opengl/texture_interface.h>
 
+#include <fugio/performance.h>
+
 TextureMonitorNode::TextureMonitorNode( QSharedPointer<fugio::NodeInterface> pNode )
 	: NodeControlBase( pNode ), mDockWidget( nullptr ), mWidget( nullptr ), mDockArea( Qt::BottomDockWidgetArea ),
 	  mBuffer( QOpenGLBuffer::VertexBuffer ), mVertexAttribLocation( -1 )
@@ -114,6 +116,23 @@ void TextureMonitorNode::paintGL()
 
 	glClear( GL_COLOR_BUFFER_BIT );
 
+	QList<fugio::OpenGLTextureInterface *>	TexLst;
+
+	for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
+	{
+		fugio::OpenGLTextureInterface	*T = input<fugio::OpenGLTextureInterface *>( P );
+
+		if( T && T->target() == QOpenGLTexture::Target2D )
+		{
+			TexLst << T;
+		}
+	}
+
+	if( TexLst.isEmpty() )
+	{
+		return;
+	}
+
 	static const GLfloat Vertices[] =
 	{
 		-1, -1,
@@ -129,11 +148,13 @@ void TextureMonitorNode::paintGL()
 			const char *vertexSource =
 					"#version 330\n"
 					"in vec2 position;\n"
+					"in int origin;\n"
 					"out vec2 tpos;\n"
 					"void main()\n"
 					"{\n"
 					"	gl_Position = vec4( position, 0.0, 1.0 );\n"
 					"	tpos = ( position * 0.5 ) + 0.5;\n"
+					"	if( origin == 1 ) tpos.y = 1.0 - tpos.y;\n"
 					"}\n";
 
 			const char *fragmentSource =
@@ -158,12 +179,14 @@ void TextureMonitorNode::paintGL()
 			mShader.removeAllShaders();
 
 			mShader.addShaderFromSourceCode( QOpenGLShader::Vertex,
+				 "uniform int origin;\n"
 				 "attribute highp vec2 position;\n"
 				 "varying highp vec2 tpos;\n"
 				 "void main()\n"
 				 "{\n"
 				 "	gl_Position = vec4( position, 0.0, 1.0 );\n"
 				 "	tpos = ( position * 0.5 ) + 0.5;\n"
+				 "	if( origin == 1 ) tpos.y = 1.0 - tpos.y;\n"
 				 "}\n" );
 
 			mShader.addShaderFromSourceCode( QOpenGLShader::Fragment,
@@ -176,6 +199,15 @@ void TextureMonitorNode::paintGL()
 
 			mShader.link();
 		}
+
+		if( !mShader.isLinked() )
+		{
+			return;
+		}
+
+
+		mShader.bind();
+		mShader.setUniformValue( "tex", 0 );
 
 		mVertexAttribLocation = mShader.attributeLocation( "position" );
 	}
@@ -193,23 +225,6 @@ void TextureMonitorNode::paintGL()
 
 	mShader.bind();
 
-	QList<fugio::OpenGLTextureInterface *>	TexLst;
-
-	for( QSharedPointer<fugio::PinInterface> P : mNode->enumInputPins() )
-	{
-		fugio::OpenGLTextureInterface	*T = input<fugio::OpenGLTextureInterface *>( P );
-
-		if( T && T->target() == QOpenGLTexture::Target2D )
-		{
-			TexLst << T;
-		}
-	}
-
-	if( TexLst.isEmpty() )
-	{
-		return;
-	}
-
 	glActiveTexture( GL_TEXTURE0 );
 
 	double	tw = 1.0 / double( TexLst.size() );
@@ -226,6 +241,8 @@ void TextureMonitorNode::paintGL()
 		VP[ 3 ] = mWidget->height() * mWidget->devicePixelRatio();
 
 		glViewport( VP[ 0 ], VP[ 1 ], VP[ 2 ], VP[ 3 ] );
+
+		mShader.setUniformValue( "origin", GLint( T->origin() ) );
 
 		T->srcBind();
 

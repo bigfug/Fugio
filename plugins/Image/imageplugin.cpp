@@ -19,6 +19,7 @@
 
 #include "painterwindownode.h"
 #include "replacealphanode.h"
+#include "setalphanode.h"
 
 #include "imagepin.h"
 #include "painterpin.h"
@@ -42,6 +43,7 @@ ClassEntry		mNodeClasses[] =
 	ClassEntry( "Size", "Image", ClassEntry::Deprecated, NID_IMAGE_SIZE, &ImageSizeNode::staticMetaObject ),
 	ClassEntry( "Split", "Image", NID_IMAGE_SPLIT, &ImageSplitNode::staticMetaObject ),
 	ClassEntry( "Replace Alpha", "Image", NID_IMAGE_REPLACE_ALPHA, &ReplaceAlphaNode::staticMetaObject ),
+	ClassEntry( "Set Alpha", "Image", NID_IMAGE_SET_ALPHA, &SetAlphaNode::staticMetaObject ),
 	ClassEntry()
 };
 

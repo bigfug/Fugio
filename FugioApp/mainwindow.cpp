@@ -54,14 +54,12 @@
 #define qInfo qDebug
 #endif
 
-extern void log_file( const QString &pLogDat );
-
 void MainWindow::logger_static( QtMsgType type, const QMessageLogContext &context, const QString &msg )
 {
 	qobject_cast<MainWindow *>( qobject_cast<App *>( qApp )->mainWindow() )->logger( type, context, msg );
 }
 
-void MainWindow::logger( QtMsgType type, const QMessageLogContext &context, const QString &msg )
+void MainWindow::logger( QtMsgType type, const QMessageLogContext &context, const QString &msg, bool pLogToFile )
 {
 	const bool isGuiThread = QThread::currentThread() == QCoreApplication::instance()->thread();
 
@@ -98,7 +96,10 @@ void MainWindow::logger( QtMsgType type, const QMessageLogContext &context, cons
 
 	fflush( stderr );
 
-	log_file( LogDat );
+	if( pLogToFile )
+	{
+		App::log_file( LogDat );
+	}
 
 	if( isGuiThread )
 	{
@@ -147,7 +148,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->mTreeView->setRootIndex( mFileSystem.index( "G:\\clips" ) );
 
-	if( ( mActionRedo = gApp->undoGroup().createRedoAction( this ) ) != 0 )
+	if( ( mActionRedo = gApp->undoGroup().createRedoAction( this ) ) != Q_NULLPTR )
 	{
 		mActionRedo->setShortcut( QKeySequence::Redo );
 
@@ -156,7 +157,7 @@ MainWindow::MainWindow(QWidget *parent) :
 		//connect( &gApp->undoGroup(), SIGNAL(canRedoChanged(bool)), mActionRedo, SLOT(setEnabled(bool)) );
 	}
 
-	if( ( mActionUndo = gApp->undoGroup().createUndoAction( this ) ) != 0 )
+	if( ( mActionUndo = gApp->undoGroup().createUndoAction( this ) ) != Q_NULLPTR )
 	{
 		mActionUndo->setShortcut( QKeySequence::Undo );
 
@@ -199,8 +200,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	//-------------------------------------------------------------------------
 
-	connect( &mActiveWindowMapper, SIGNAL(mapped(QWidget*)), this, SLOT(setActiveWindow(QWidget*)) );
-
 	linkWindowVisibilitySignal( ui->actionLogger, ui->mDockWidthLogger );
 	linkWindowVisibilitySignal( ui->actionBrowser, ui->mDockWidgetBrowser );
 	linkWindowVisibilitySignal( ui->actionNodes, ui->mNodeDockWidget );
@@ -242,6 +241,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	timeout();
 
 	mMessageHandler = qInstallMessageHandler( MainWindow::logger_static );
+
+	for( App::LogMessage LM : App::logMessages() )
+	{
+		logger( LM.type, QMessageLogContext(), LM.msg, false );
+	}
 
 	connect( this, SIGNAL(log(QString)), ui->mLogger, SLOT(appendHtml(QString)) );
 
@@ -444,7 +448,7 @@ void MainWindow::contextAdded( QSharedPointer<fugio::ContextInterface> pContext 
 {
 	ContextWidgetPrivate	*CV = new ContextWidgetPrivate();
 
-	if( CV == 0 )
+	if( !CV )
 	{
 		return;
 	}
@@ -956,8 +960,11 @@ void MainWindow::buildWindowMenu()
 		QAction *action  = ui->menu_Window->addAction( text );
 		action->setCheckable( true );
 		action ->setChecked( SubWin == ui->mWorkArea->activeSubWindow() );
-		connect(action, SIGNAL(triggered()), &mActiveWindowMapper, SLOT(map()));
-		mActiveWindowMapper.setMapping( action, SubWin );
+
+		connect( action, &QAction::triggered, [ this, SubWin ]
+		{
+			this->setActiveWindow( SubWin );
+		} );
 	}
 }
 
@@ -1486,4 +1493,72 @@ void MainWindow::on_actionSave_Patch_Image_triggered()
 	}
 
 	CV->userSaveImage();
+}
+
+void MainWindow::on_actionSave_Data_As_triggered()
+{
+	if( !ui->mWorkArea->currentSubWindow() )
+	{
+		return;
+	}
+
+	ContextWidgetPrivate		*CV = qobject_cast<ContextWidgetPrivate *>( ui->mWorkArea->currentSubWindow()->widget() );
+
+	if( !CV )
+	{
+		return;
+	}
+
+	CV->userSaveDataAs();
+}
+
+void MainWindow::on_actionSave_Data_triggered()
+{
+	if( !ui->mWorkArea->currentSubWindow() )
+	{
+		return;
+	}
+
+	ContextWidgetPrivate		*CV = qobject_cast<ContextWidgetPrivate *>( ui->mWorkArea->currentSubWindow()->widget() );
+
+	if( !CV )
+	{
+		return;
+	}
+
+	CV->userSaveData();
+}
+
+void MainWindow::on_actionLoad_Data_triggered()
+{
+	if( !ui->mWorkArea->currentSubWindow() )
+	{
+		return;
+	}
+
+	ContextWidgetPrivate		*CV = qobject_cast<ContextWidgetPrivate *>( ui->mWorkArea->currentSubWindow()->widget() );
+
+	if( !CV )
+	{
+		return;
+	}
+
+	CV->userLoadData();
+}
+
+void MainWindow::on_actionSave_Revision_triggered()
+{
+	if( !ui->mWorkArea->currentSubWindow() )
+	{
+		return;
+	}
+
+	ContextWidgetPrivate		*CV = qobject_cast<ContextWidgetPrivate *>( ui->mWorkArea->currentSubWindow()->widget() );
+
+	if( !CV )
+	{
+		return;
+	}
+
+	CV->userSaveRevision();
 }

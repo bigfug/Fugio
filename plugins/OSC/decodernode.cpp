@@ -131,7 +131,7 @@ void DecoderNode::processDatagram( const QByteArray &pDatagram )
 	OscAdr = pDatagram.mid( OscStr, OscEnd - OscStr );
 	OscStr = OscEnd + ( 4 - ( OscEnd % 4 ) );
 
-	if( OscAdr.at( 0 ) != '/' )
+	if( OscAdr.isEmpty() || OscAdr.at( 0 ) != '/' )
 	{
 		return;
 	}
@@ -142,7 +142,7 @@ void DecoderNode::processDatagram( const QByteArray &pDatagram )
 	OscArg = pDatagram.mid( OscStr, OscEnd - OscStr );
 	OscStr = OscEnd + ( 4 - ( OscEnd % 4 ) );
 
-	if( OscArg.at( 0 ) != ',' )
+	if( OscAdr.isEmpty() || OscArg.at( 0 ) != ',' )
 	{
 		return;
 	}

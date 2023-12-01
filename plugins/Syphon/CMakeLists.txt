@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.1 )
+﻿cmake_minimum_required( VERSION 3.1 )
 
 project( fugio-syphon )
 
@@ -6,7 +6,7 @@ set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
 	
-	../../include/fugio/syphon/uuid.h
+	../../plugins-include/fugio/syphon/uuid.h
 
 	opengl_includes.h
 	syphonpin.cpp
@@ -35,6 +35,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
 #------------------------------------------------------------------------------
 # Syphon
@@ -68,12 +70,14 @@ if( APPLE )
 
 		target_compile_definitions( ${PROJECT_NAME} PRIVATE SYPHON_SUPPORTED )
 
-		add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND ${CMAKE_COMMAND} -E copy_directory "${Syphon_LIBRARY}" "${BUNDLE_PATH}/Contents/Frameworks/Syphon.framework"
-#			COMMAND install_name_tool -change "@loader_path/../Frameworks/Syphon.framework/Versions/A/Syphon" "@rpath/Syphon.framework/Versions/A/Syphon" "${BUNDLE_PATH}/Contents/MacOS/${PROJECT_NAME}"
-			COMMENT "Bundling ${Syphon_LIBRARY}..."
-			VERBATIM
-		)
+		if( FUGIO_BUILD_DIST )
+			add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
+				COMMAND ${CMAKE_COMMAND} -E copy_directory "${Syphon_LIBRARY}" "${BUNDLE_PATH}/Contents/Frameworks/Syphon.framework"
+	#			COMMAND install_name_tool -change "@loader_path/../Frameworks/Syphon.framework/Versions/A/Syphon" "@rpath/Syphon.framework/Versions/A/Syphon" "${BUNDLE_PATH}/Contents/MacOS/${PROJECT_NAME}"
+				COMMENT "Bundling ${Syphon_LIBRARY}..."
+				VERBATIM
+			)
+		endif()
 	else( Syphon_LIBRARY )
 		message( "Syphon: NO" )
 	endif( Syphon_LIBRARY )

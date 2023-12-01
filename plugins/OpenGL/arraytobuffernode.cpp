@@ -74,26 +74,30 @@ void ArrayToBufferNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		fugio::VariantInterface			*A;
+		fugio::ArrayInterface			*A;
 
-		if( ( A = input<fugio::VariantInterface *>( PinI ) ) == nullptr )
+		if( ( A = input<fugio::ArrayInterface *>( PinI ) ) == nullptr )
 		{
 			continue;
 		}
 
-		if( BufO->buffer() && BufO->buffer()->isCreated() && ( A->variantType() != BufO->type() || A->variantElementCount() != BufO->size() || A->variantStride() != BufO->stride() || A->variantCount() != BufO->count() ) )
+		if( BufO->buffer() && BufO->buffer()->isCreated() && ( A->type() != BufO->type() || A->elementCount() != BufO->size() || A->stride() != BufO->stride() || A->count() != BufO->count() ) )
 		{
 			BufO->clear();
+
+			pinUpdated( PinO );
 		}
 
-		if( A->variantCount() <= 0 )
+		if( A->count() <= 0 )
 		{
 			continue;
 		}
 
-		if( ( !BufO->buffer() || !BufO->buffer()->isCreated() ) && !BufO->alloc( A->variantType(), A->variantElementCount(), A->variantStride(), A->variantCount() ) )
+		if( ( !BufO->buffer() || !BufO->buffer()->isCreated() ) && !BufO->alloc( A->type(), A->elementCount(), A->stride(), A->count() ) )
 		{
 			BufO->clear();
+
+			pinUpdated( PinO );
 
 			continue;
 		}
@@ -102,7 +106,7 @@ void ArrayToBufferNode::inputsUpdated( qint64 pTimeStamp )
 			continue;
 		}
 
-		BufO->buffer()->write( 0, A->variantArray(), A->variantArraySize() );
+		BufO->buffer()->write( 0, A->array(), A->byteCount() );
 
 		BufO->release();
 

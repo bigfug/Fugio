@@ -42,7 +42,7 @@ XInputNode::XInputNode( QSharedPointer<fugio::NodeInterface> pNode ) :
 
 	mPinInputIndex = pinInput( "Index", PIN_INPUT_UNIT );
 
-	mStickLeftX = pinOutput<fugio::VariantInterface *>( "Left Stick X", mPinStickLeftX, PID_INTEGER, PIN_OUTPUT_STICK_LEFT_X );
+	mStickLeftX = pinOutput<fugio::VariantInterface *>( tr( "Left Stick X" ), mPinStickLeftX, PID_INTEGER, PIN_OUTPUT_STICK_LEFT_X );
 	mStickLeftY = pinOutput<fugio::VariantInterface *>( "Left Stick Y", mPinStickLeftY, PID_INTEGER, PIN_OUTPUT_STICK_LEFT_Y );
 	mStickLeftM = pinOutput<fugio::VariantInterface *>( "Left Stick Magnitutde", mPinStickLeftM, PID_FLOAT, PIN_OUTPUT_STICK_LEFT_M );
 

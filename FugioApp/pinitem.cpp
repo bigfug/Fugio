@@ -14,7 +14,6 @@
 #include <QTextStream>
 #include <QStyleOptionGraphicsItem>
 #include <QColorDialog>
-#include <QSignalMapper>
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QMetaClassInfo>
@@ -101,7 +100,7 @@ PinItem::~PinItem( void )
 			}
 			else
 			{
-				L->setSrcPin( 0 );
+				L->setSrcPin( Q_NULLPTR );
 			}
 		}
 		else if( L->dstPin() == this )
@@ -112,7 +111,7 @@ PinItem::~PinItem( void )
 			}
 			else
 			{
-				L->setDstPin( 0 );
+				L->setDstPin( Q_NULLPTR );
 			}
 		}
 	}
@@ -228,8 +227,6 @@ void PinItem::paint( QPainter *pPainter, const QStyleOptionGraphicsItem *pOption
 
 void PinItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 {
-	QSignalMapper		SigMap;
-
 	NodeItem			*Node  = qobject_cast<NodeItem *>( parentObject() );
 	NodeItem			*Group = mContextView->findNodeItem( Node->groupId() ).data();
 
@@ -316,15 +313,16 @@ void PinItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 
 					for( const QUuid &ID : TypeList )
 					{
-						if( QAction *A = Menu.addAction( gApp->global().nodeName( ID ), &SigMap, SLOT(map()) ) )
+						if( QAction *A = Menu.addAction( gApp->global().nodeName( ID ) ) )
 						{
-							SigMap.setMapping( A, ID.toString() );
+							connect( A, &QAction::triggered, [ this, ID ]
+							{
+								this->menuJoin( ID.toString() );
+							} );
 
 							A->setData( ID );
 						}
 					}
-
-					connect( &SigMap, SIGNAL(mapped(QString)), this, SLOT(menuJoin(QString)) );
 				}
 			}
 		}
@@ -389,15 +387,16 @@ void PinItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 
 					for( const QUuid &ID : TypeList )
 					{
-						if( QAction *A = Menu.addAction( gApp->global().nodeName( ID ), &SigMap, SLOT(map())) )
+						if( QAction *A = Menu.addAction( gApp->global().nodeName( ID ) ) )
 						{
-							SigMap.setMapping( A, ID.toString() );
+							connect( A, &QAction::triggered, [ this, ID ]
+							{
+								this->menuSplit( ID.toString() );
+							} );
 
 							A->setData( ID );
 						}
 					}
-
-					connect( &SigMap, SIGNAL(mapped(QString)), this, SLOT(menuSplit(QString)) );
 				}
 			}
 		}
@@ -471,7 +470,7 @@ void PinItem::hoverEnterEvent( QGraphicsSceneHoverEvent *pEvent )
 
 	setToolTip( PinDat.join( "\n" ) );
 
-	QToolTip::showText( pEvent->screenPos(), toolTip(), 0 );
+	QToolTip::showText( pEvent->screenPos(), toolTip(), Q_NULLPTR );
 
 //	QGraphicsObject::hoverEnterEvent( pEvent );
 }
@@ -499,7 +498,7 @@ void PinItem::dropEvent( QGraphicsSceneDragDropEvent *pEvent )
 	{
 		CmdSetDefaultValue		*Cmd = new CmdSetDefaultValue( mPin, pEvent->mimeData()->text() );
 
-		if( Cmd != 0 )
+		if( Cmd )
 		{
 			mContextView->widget()->undoStack()->push( Cmd );
 		}
@@ -512,7 +511,7 @@ void PinItem::dropEvent( QGraphicsSceneDragDropEvent *pEvent )
 		{
 			CmdSetDefaultValue		*Cmd = new CmdSetDefaultValue( mPin, URL_LST.first().toLocalFile() );
 
-			if( Cmd != 0 )
+			if( Cmd )
 			{
 				mContextView->widget()->undoStack()->push( Cmd );
 			}
@@ -553,7 +552,7 @@ LinkItem *PinItem::findLink( PinItem *pDst )
 		}
 	}
 
-	return( 0 );
+	return( Q_NULLPTR );
 }
 
 bool PinItem::hasLink( PinItem *pDst ) const
@@ -732,11 +731,11 @@ void PinItem::mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent )
 				QSharedPointer<fugio::PinInterface>	SrcPin = mLink->srcPin()->pin();
 				QSharedPointer<fugio::PinInterface>	DstPin = PI->pin();
 
-				if( SrcPin != 0 && DstPin != 0 && SrcPin->direction() != DstPin->direction() )
+				if( SrcPin && DstPin && SrcPin->direction() != DstPin->direction() )
 				{
 					CmdLinkAdd				*Cmd = new CmdLinkAdd( mContextView->widget(), SrcPin, DstPin );
 
-					if( Cmd != 0 )
+					if( Cmd )
 					{
 						mContextView->widget()->undoStack()->push( Cmd );
 					}
@@ -753,7 +752,7 @@ void PinItem::mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent )
 			{
 				NodeItem	*Node = qgraphicsitem_cast<NodeItem *>( Items.at( i ) );
 
-				if( Node == 0 )
+				if( !Node )
 				{
 					continue;
 				}
@@ -770,7 +769,7 @@ void PinItem::mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent )
 				{
 					CmdAddPinLink			*Cmd = new CmdAddPinLink( IntNod, SrcPin );
 
-					if( Cmd != 0 )
+					if( Cmd )
 					{
 						mContextView->widget()->undoStack()->push( Cmd );
 					}
@@ -798,13 +797,13 @@ PinItem *PinItem::findDest( const QPointF &pPoint )
 {
 	QList<QGraphicsItem *>	Items = scene()->items( pPoint );
 
-	PinItem			*PinDst = 0;
+	PinItem			*PinDst = Q_NULLPTR;
 
-	for( int i = 0 ; i < Items.size() && PinDst == 0 ; i++ )
+	for( int i = 0 ; i < Items.size() && !PinDst ; i++ )
 	{
 		PinDst = qgraphicsitem_cast<PinItem *>( Items.at( i ) );
 
-		if( PinDst == 0 )
+		if( !PinDst )
 		{
 			continue;
 		}
@@ -820,7 +819,7 @@ PinItem *PinItem::findDest( const QPointF &pPoint )
 		}
 	}
 
-	if( PinDst == 0 )
+	if( !PinDst )
 	{
 		mLink->setDstPnt( pPoint );
 	}
@@ -864,7 +863,7 @@ void PinItem::menuRename()
 	{
 		CmdSetPinName		*Cmd = new CmdSetPinName( mPin, New );
 
-		if( Cmd != 0 )
+		if( Cmd )
 		{
 			mContextView->widget()->undoStack()->push( Cmd );
 		}
@@ -976,7 +975,7 @@ void PinItem::menuRemove()
 {
 	CmdPinRemove			*Cmd = new CmdPinRemove( mPin );
 
-	if( Cmd != 0 )
+	if( Cmd )
 	{
 		mContextView->widget()->undoStack()->push( Cmd );
 	}
@@ -991,7 +990,7 @@ void PinItem::menuUpdatable()
 {
 	CmdSetUpdatable				*Cmd = new CmdSetUpdatable( mPin, !mPin->updatable() );
 
-	if( Cmd != 0 )
+	if( Cmd )
 	{
 		mContextView->widget()->undoStack()->push( Cmd );
 	}
@@ -1015,7 +1014,7 @@ void PinItem::menuImport()
 	{
 		CmdPinImport				*Cmd = new CmdPinImport( mPin, FileName );
 
-		if( Cmd != 0 )
+		if( Cmd )
 		{
 			mContextView->widget()->undoStack()->push( Cmd );
 		}
@@ -1142,7 +1141,7 @@ void PinItem::menuConnectGlobal()
 
 	QMap<QString,QUuid>		PinLst;
 
-	for( const QUuid Pid : PidLst )
+	for( const QUuid &Pid : PidLst )
 	{
 		QSharedPointer<fugio::PinInterface> PI = mContextView->context()->findPin( Pid );
 

@@ -3,6 +3,8 @@
 #include "luafont.h"
 #include "luarectf.h"
 
+#include "luaqtplugin.h"
+
 const char *LuaFontMetrics::FontMetricsUserData::TypeName = "qt.fontmetrics";
 
 #if defined( LUA_SUPPORTED )
@@ -18,6 +20,13 @@ const luaL_Reg LuaFontMetrics::mLuaMethods[] =
 	{ "boundingRect",		LuaFontMetrics::luaBoundingRect },
 	{ 0, 0 }
 };
+
+void LuaFontMetrics::registerExtension( fugio::LuaInterface *LUA )
+{
+	LuaQtPlugin::addLuaFunction( "fontmetrics", luaNew );
+
+	LUA->luaRegisterExtension( luaOpen );
+}
 
 int LuaFontMetrics::luaOpen( lua_State *L )
 {

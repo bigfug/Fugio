@@ -22,7 +22,7 @@ class NodePrivate : public fugio::NodeSignals, public fugio::NodeInterface
 public:
 	explicit NodePrivate( QSharedPointer<fugio::NodeControlInterface> pControl = QSharedPointer<fugio::NodeControlInterface>() );
 
-	virtual ~NodePrivate( void );
+	virtual ~NodePrivate( void ) Q_DECL_OVERRIDE;
 
 	void setSettings( const QVariantHash &pSettings )
 	{
@@ -201,6 +201,10 @@ public:
 	virtual QSharedPointer<fugio::PinInterface> createPin( const QString &pName, PinDirection pDirection, const QUuid &pGlobalId, const QUuid &pLocalId ) Q_DECL_OVERRIDE;
 
 	virtual QObject *createPin( const QString &pName, PinDirection pDirection, const QUuid &pGlobalId, const QUuid &pLocalId, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID ) Q_DECL_OVERRIDE;
+
+	virtual QSharedPointer<fugio::PinInterface> createProperty( const QString &pName, PinDirection pDirection, const QUuid &pGlobalId, const QUuid &pLocalId ) Q_DECL_OVERRIDE;
+
+	virtual QObject *createProperty( const QString &pName, PinDirection pDirection, const QUuid &pGlobalId, const QUuid &pLocalId, QSharedPointer<fugio::PinInterface> &mPinInterface, const QUuid &pControlUUID ) Q_DECL_OVERRIDE;
 
 	virtual void addPin( QSharedPointer<fugio::PinInterface> pPin ) Q_DECL_OVERRIDE;
 

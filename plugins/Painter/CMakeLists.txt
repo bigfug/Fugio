@@ -5,8 +5,8 @@ project( fugio-painter )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/painter/uuid.h
-	../../include/fugio/painter/painter_helper.h
+	../../plugins-include/fugio/painter/uuid.h
+	../../plugins-include/fugio/painter/painter_helper.h
 	painternode.cpp
 	painternode.h
 	painterplugin.cpp
@@ -45,6 +45,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
 #------------------------------------------------------------------------------
 # Qt5

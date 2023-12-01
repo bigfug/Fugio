@@ -18,6 +18,7 @@ set( SOURCE_FILES
     triggerpin.cpp
     boolpin.cpp
     bytearraypin.cpp
+	bytearraypin.h
     numberrangenode.cpp
     randomnumbernode.cpp
     anytriggernode.cpp
@@ -89,6 +90,8 @@ set( SOURCE_FILES
 	processclicknode.h
 	decimatenode.cpp
 	decimatenode.h
+	updatenode.cpp
+	updatenode.h
 )
 
 set( QRC_FILES
@@ -105,6 +108,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
 #------------------------------------------------------------------------------
 # Qt5

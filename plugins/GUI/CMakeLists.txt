@@ -5,10 +5,10 @@ project( fugio-gui )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/gui/uuid.h
+	../../plugins-include/fugio/gui/uuid.h
 	../../include/fugio/playhead_interface.h
-	../../include/fugio/gui/keyboard_interface.h
-	../../include/fugio/gui/input_events_interface.h
+	../../plugins-include/fugio/gui/keyboard_interface.h
+	../../plugins-include/fugio/gui/input_events_interface.h
 
 	floatnode.cpp
 	buttonnode.cpp
@@ -73,6 +73,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
 #------------------------------------------------------------------------------
 # Qt5

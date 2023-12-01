@@ -38,8 +38,6 @@ protected:
 	fugio::KeyboardInterface					*mKeyboard;
 
 	QList<fugio::KeyboardEvent>					 mEvtLst;
-
-	fugio::KeyboardEvent::Modifiers translateModifiers( Qt::KeyboardModifiers pModifiers );
 };
 
 #endif // MAINWINDOW_H

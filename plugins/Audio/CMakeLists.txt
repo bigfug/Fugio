@@ -5,11 +5,11 @@ project( fugio-audio )
 set( SOURCE_FILES
 	../../include/fugio/nodecontrolbase.h
 	../../include/fugio/pincontrolbase.h
-	../../include/fugio/audio/uuid.h
-	../../include/fugio/audio/audio_producer_interface.h
-	../../include/fugio/audio/audio_sample_format.h
-	../../include/fugio/audio/fft_interface.h
-	../../include/fugio/audio/audio_instance_base.h
+	../../plugins-include/fugio/audio/uuid.h
+	../../plugins-include/fugio/audio/audio_producer_interface.h
+	../../plugins-include/fugio/audio/audio_sample_format.h
+	../../plugins-include/fugio/audio/fft_interface.h
+	../../plugins-include/fugio/audio/audio_instance_base.h
 	audioplugin.cpp
 	audiomixernode.cpp
 	audiopin.cpp
@@ -54,6 +54,8 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
 # Install
 
 install( TARGETS ${PROJECT_NAME} DESTINATION ${PATH_PLUGIN} )
+
+include( ${CMAKE_SOURCE_DIR}/cmake/MacFixBundle.cmake )
 
 #------------------------------------------------------------------------------
 # Qt5
