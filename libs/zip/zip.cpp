@@ -17,6 +17,7 @@
     defined(__MINGW32__)
 /* Win32, DOS, MSVC, MSVS */
 #include <direct.h>
+#include <io.h>
 
 #define MKDIR(DIRNAME) _mkdir(DIRNAME)
 #define STRCLONE(STR) ((STR) ? _strdup(STR) : NULL)

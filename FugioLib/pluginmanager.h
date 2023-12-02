@@ -56,7 +56,25 @@ public:
         return( mPluginInstances );
     }
 
+    void setPluginDirectory( const QDir &pPluginDirectory )
+    {
+        mPluginDirectory = pPluginDirectory;
+    }
+
+    QDir pluginDirectory() const;
+
+    QDir pluginCacheDirectory() const;
+    void setPluginCacheDirectory(const QDir &newPluginCacheDirectory);
+
+    QString pluginConfigFilename( void ) const;
+
+    void downloadPluginToTemp( const QUrl &pUrl );
+
 private:
+    QDir                             mPluginDirectory;
+    QDir                             mPluginConfigDir;
+    QDir                             mPluginCacheDir;
+
     QStringList						 mEnabledPlugins;
     QStringList						 mDisabledPlugins;
     QStringList						 mLoadedPlugins;

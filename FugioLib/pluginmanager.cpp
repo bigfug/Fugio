@@ -3,21 +3,15 @@
 #include <QDateTime>
 #include <QTimer>
 #include <QPluginLoader>
-#include <QNetworkAccessManager>
-#include <QApplication>
 #include <QStandardPaths>
-#include <QMainWindow>
 #include <QTranslator>
 #include <QFileInfo>
+#include <QCoreApplication>
 
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 
 #include <QDebug>
-
-#include "nodeprivate.h"
-#include "pinprivate.h"
-#include "contextprivate.h"
 
 #include <fugio/plugin_interface.h>
 #include <fugio/device_factory_interface.h>
@@ -28,10 +22,34 @@
 #endif
 
 #include <QLibraryInfo>
+#include <QStandardPaths>
 
 PluginManager::PluginManager()
 {
+    mPluginConfigDir = QDir( QStandardPaths::writableLocation( QStandardPaths::GenericDataLocation ) );
 
+    if( !mPluginConfigDir.exists( "fugio-plugins" ) )
+    {
+        if( !mPluginConfigDir.mkdir( "fugio-plugins" ) )
+        {
+            exit( 1 );
+        }
+    }
+
+    if( !mPluginConfigDir.cd( "fugio-plugins" ) )
+    {
+        exit( 1 );
+    }
+
+    if( !mPluginConfigDir.exists( "plugin-cache" ) )
+    {
+        if( !mPluginConfigDir.mkdir( "plugin-cache" ) )
+        {
+            exit( 1 );
+        }
+    }
+
+    mPluginCacheDir = QDir( mPluginConfigDir.absoluteFilePath( "plugin-cache" ) );
 }
 
 void PluginManager::loadPlugins(QDir pDir)
@@ -281,4 +299,24 @@ bool PluginManager::loadPlugin(const QString &pFileName)
 void PluginManager::registerPlugin(QObject *pPluginInstance)
 {
     mPluginInitList.append( pPluginInstance );
+}
+
+QDir PluginManager::pluginDirectory() const
+{
+    return mPluginDirectory;
+}
+
+QDir PluginManager::pluginCacheDirectory() const
+{
+    return mPluginCacheDir;
+}
+
+void PluginManager::setPluginCacheDirectory(const QDir &newPluginCacheDirectory)
+{
+    mPluginCacheDir = newPluginCacheDirectory;
+}
+
+QString PluginManager::pluginConfigFilename() const
+{
+    return( mPluginConfigDir.absoluteFilePath( "fugio-plugin-config.ini" ) );
 }

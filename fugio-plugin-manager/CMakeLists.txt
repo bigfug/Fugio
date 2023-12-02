@@ -9,8 +9,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core LinguistTools)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core LinguistTools)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Network LinguistTools)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Network LinguistTools)
 
 set(TS_FILES fugio-plugin-manager_de_DE.ts)
 
@@ -19,6 +19,9 @@ add_definitions( -DFUGIOLIB_STATIC )
 add_executable(fugio-plugin-manager
   main.cpp
 
+  ../FugioLib/pluginmanager.cpp
+  ../FugioLib/pluginmanager.h
+
   ../libs/zip/zip.h
   ../libs/zip/zip.cpp
   ../libs/zip/miniz.h
@@ -26,7 +29,10 @@ add_executable(fugio-plugin-manager
   ${TS_FILES}
 )
 
-target_link_libraries(fugio-plugin-manager Qt${QT_VERSION_MAJOR}::Core)
+target_link_libraries(fugio-plugin-manager
+	Qt${QT_VERSION_MAJOR}::Core
+	Qt${QT_VERSION_MAJOR}::Network
+)
 
 if(COMMAND qt_create_translation)
     qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
@@ -39,7 +45,5 @@ install(TARGETS fugio-plugin-manager
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-
-target_link_libraries( ${PROJECT_NAME} libfugio )
 
 target_include_directories( ${PROJECT_NAME} PRIVATE ../FugioLib )

@@ -6,9 +6,13 @@
 #include <QUrl>
 #include <QFileInfo>
 #include <QJsonDocument>
+#include <QSettings>
+#include <QStandardPaths>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QTemporaryFile>
 
 #include "QtCore/qglobal.h"
-#include "globalprivate.h"
 #include "pluginmanager.h"
 
 #include "../libs/zip/zip.h"
@@ -17,13 +21,29 @@ int main(int argc, char *argv[])
 {
 	QCoreApplication a(argc, argv);
 
-	QCoreApplication::setApplicationName( "fugio-plugin-manager" );
+    QNetworkAccessManager   Manager;
+
+    //-------------------------------------------------------------------------
+
+    QCoreApplication::setApplicationName( "fugio-plugin-manager" );
 	QCoreApplication::setApplicationVersion( "1.0.0" );
 
 	//-------------------------------------------------------------------------
 	// Variables
 
-	QDir FugioDirectory;
+    QFileInfo PluginConfigFileInfo( "plugin-config.ini" );
+
+    QSettings FugioGlobalSettings( QSettings::SystemScope, "Fugio", "Fugio" );
+
+    PluginManager       PM;
+
+    qDebug() << PM.pluginConfigFilename();
+
+    QSettings FugioPluginSettings( PM.pluginConfigFilename(), QSettings::IniFormat );
+
+    qDebug() << FugioPluginSettings.fileName();
+
+    FugioPluginSettings.setValue( "test", "test" );
 
 	//-------------------------------------------------------------------------
 	// Set up the arguments for the command line parser.
@@ -49,11 +69,11 @@ int main(int argc, char *argv[])
 
 	// The directory where Fugio is installed
 
-	QCommandLineOption FugioDirectoryOption(QStringList() << "f" << "fugio-directory",
-											 QCoreApplication::translate( "main", "Location of Fugio install <directory>." ),
-											 QCoreApplication::translate( "main", "directory"));
+    QCommandLineOption PluginConfigOption(QStringList() << "c" << "plugin-config",
+                                             QCoreApplication::translate( "main", "Filename of plugin config." ),
+                                             QCoreApplication::translate( "main", "config"));
 
-	CommandLine.addOption( FugioDirectoryOption );
+    CommandLine.addOption( PluginConfigOption );
 
 	//-------------------------------------------------------------------------
 	// Process the command line
@@ -107,28 +127,32 @@ int main(int argc, char *argv[])
 	//-------------------------------------------------------------------------
 	// Process the Fugio directory command line option
 
-	if( CommandLine.isSet( FugioDirectoryOption ) )
+    if( CommandLine.isSet( PluginConfigOption ) )
 	{
-		FugioDirectory = QDir( CommandLine.value( FugioDirectoryOption ) );
-
-		if( !FugioDirectory.exists() )
-		{
-			fputs( "Fugio Directory isn't valid\n", stderr );
-
-			return( 1 );
-		}
+        PluginConfigFileInfo = QFileInfo( CommandLine.value( PluginConfigOption ) );
 	}
 
-	if( verbose )
+    QSettings   PluginSettings( PluginConfigFileInfo.absoluteFilePath(), QSettings::IniFormat );
+
+    if( !PluginSettings.isWritable() )
+    {
+        fprintf( stderr, "Plugin config is not writable - %s\n", qPrintable( PluginConfigFileInfo.absoluteFilePath() ) );
+
+        return( 1 );
+    }
+
+    if( verbose )
 	{
-		printf( "Fugio directory: %s\n", qPrintable( FugioDirectory.absolutePath() ) );
+        printf( "Plugin config file: %s\n", qPrintable( PluginConfigFileInfo.absoluteFilePath() ) );
 	}
+
+    PluginSettings.setValue( "test", "test" );
 
 	//-------------------------------------------------------------------------
 
-    GlobalPrivate   *G = qobject_cast<GlobalPrivate *>( fugio::fugio()->qobject() );
+//    GlobalPrivate   *G = qobject_cast<GlobalPrivate *>( fugio::fugio()->qobject() );
 
-    PluginManager   &PM = G->pluginManager();
+//    PluginManager   &PM = G->pluginManager();
 
 	if( command == "info" )
 	{
@@ -152,8 +176,62 @@ int main(int argc, char *argv[])
 			Url = QUrl( UrlTxt );
 		}
 
-		// TODO: if it's a remote file, copy to a plugin cache location
+        qDebug() << Url;
+        qDebug() << QSslSocket::supportsSsl();
+        qDebug() << QSslSocket::sslLibraryVersionString();
 
+        QNetworkReply       *NetRep = Manager.get( QNetworkRequest( Url ) );
+
+        if( !NetRep )
+        {
+            exit( 1 );
+        }
+
+        qDebug() << NetRep->isRunning() << NetRep->errorString();
+
+        if( !NetRep->isRunning() )
+        {
+            exit( 1 );
+        }
+
+        QObject::connect( NetRep, &QIODevice::readyRead, [&]( void )
+        {
+            qDebug() << "readyRead";
+        } );
+
+        QObject::connect( &Manager, &QNetworkAccessManager::finished, [&]( QNetworkReply *pNetRep )
+        {
+            QTemporaryFile      TempFile( "fugio-plugin-download-" );
+
+            if( TempFile.open() )
+            {
+                qDebug() << TempFile.fileName();
+            }
+
+            qApp->exit();
+        });
+
+        QObject::connect( NetRep, &QNetworkReply::downloadProgress, [&]( qint64 bytesReceived, qint64 bytesTotal )
+        {
+            qDebug() << bytesReceived << bytesTotal;
+        } );
+
+        QObject::connect( NetRep, &QNetworkReply::errorOccurred, [&]( QNetworkReply::NetworkError pNetworkError )
+                         {
+                             qDebug() << pNetworkError;
+
+            exit( 1 );
+                         } );
+
+        QObject::connect( NetRep, &QNetworkReply::sslErrors, [&]( const QList<QSslError> &pErrors )
+        {
+
+            exit( 1 );
+        } );
+
+        // TODO: if it's a remote file, copy to a plugin cache location
+
+#if 0
 		struct zip_t *zfh = zip_open( qPrintable( UrlTxt ), 0, 'r' );
 
 		if( !zfh )
@@ -213,15 +291,41 @@ int main(int argc, char *argv[])
 
 			QFileInfo	FI( zip_entry_name( zfh ) );
 
-			qDebug() << FI.filePath() << FI.isDir() << FI.isFile();
+            QStringList FP = FI.filePath().split( '/', Qt::SkipEmptyParts );
+            QString FD = FP.takeFirst();
+
+//            qDebug() << FI.filePath() << FI.isDir() << FI.isFile() << FP << FD;
 
 			if( zip_entry_isdir( zfh ) )
 			{
-				printf( "%s (dir)\n", zip_entry_name( zfh ) );
+                //printf( "%s (dir)\n", zip_entry_name( zfh ) );
 			}
 			else
 			{
-				printf( "%s (file)\n", zip_entry_name( zfh ) );
+                printf( "%s (file)\n", zip_entry_name( zfh ) );
+
+                if( FD == "plugin" )
+                {
+                    qDebug() << "plugin" << FP.join( '/' );
+                }
+                else if( FD == "examples" )
+                {
+                    qDebug() << "examples" << FP.join( '/' );
+                }
+                else if( FD == "include" )
+                {
+                    qDebug() << "include" << FP.join( '/' );
+                }
+                else if( FD == "libs" )
+                {
+                    qDebug() << "libs" << FP.join( '/' );
+                }
+                else
+                {
+                    qDebug() << "unknown" << FD << FP.join( '/' );
+                }
+
+                FI.baseName();
 			}
 
 			zip_entry_close( zfh );
@@ -245,7 +349,8 @@ int main(int argc, char *argv[])
 		const QString authorName = JSON[ "authorName" ].toString();
 
 		qDebug() << authorName;
+#endif
 	}
 
-    return( 0 );
+    return( a.exec() );
 }

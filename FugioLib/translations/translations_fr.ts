@@ -25,7 +25,7 @@
 <context>
     <name>PluginManager</name>
     <message>
-        <location filename="../pluginmanager.cpp" line="204"/>
+        <location filename="../pluginmanager.cpp" line="222"/>
         <source>Plugins loaded: %1</source>
         <translation type="unfinished"></translation>
     </message>
