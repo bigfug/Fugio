@@ -23,9 +23,17 @@
     </message>
 </context>
 <context>
+    <name>PluginActionInstall</name>
+    <message>
+        <location filename="../pluginmanager.cpp" line="410"/>
+        <source>Couldn&apos;t open zip file</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PluginManager</name>
     <message>
-        <location filename="../pluginmanager.cpp" line="222"/>
+        <location filename="../pluginmanager.cpp" line="228"/>
         <source>Plugins loaded: %1</source>
         <translation type="unfinished"></translation>
     </message>

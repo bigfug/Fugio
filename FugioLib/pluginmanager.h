@@ -4,10 +4,89 @@
 #include "fugio/global.h"
 #include <QObject>
 #include <QDir>
+#include <QJsonDocument>
+#include <QRunnable>
+#include <QEventLoop>
+#include <QTemporaryFile>
+#include <QUrl>
 
 FUGIO_NAMESPACE_BEGIN
 class GlobalInterface;
 FUGIO_NAMESPACE_END
+
+class PluginAction : public QObject, public QRunnable
+{
+    Q_OBJECT
+
+public:
+    PluginAction() {}
+
+    virtual ~PluginAction() {}
+
+    virtual void run( void ) Q_DECL_OVERRIDE
+    {
+        action();
+
+        emit finished();
+    }
+
+    virtual bool action( void ) = 0;
+
+signals:
+    void status( const QString &pStatus );
+    void verbose( const QString &pStatus );
+    void error( const QString &pStatus );
+    void finished( void );
+};
+
+class PluginActionInstall : public PluginAction
+{
+    Q_OBJECT
+
+public:
+    PluginActionInstall( const QString &pFileName, const QString &pDestName )
+        : m_FileName( pFileName ), m_DestName( pDestName )
+    {
+
+    }
+
+    virtual ~PluginActionInstall() {}
+
+    virtual bool action( void ) Q_DECL_OVERRIDE;
+
+private:
+    static size_t on_extract(void *arg, unsigned long long offset, const void *buf, size_t bufsize);
+
+private:
+    const QString m_FileName;
+    const QString m_DestName;
+};
+
+class PluginActionDownload : public PluginAction
+{
+    Q_OBJECT
+
+public:
+    PluginActionDownload( const QUrl &pUrl, const QString &pDestName )
+        : m_Url( pUrl ), m_DestName( pDestName )
+    {
+
+    }
+
+    virtual ~PluginActionDownload() {}
+
+    virtual bool action( void ) Q_DECL_OVERRIDE;
+
+private:
+    static size_t on_extract(void *arg, unsigned long long offset, const void *buf, size_t bufsize);
+
+private:
+    const QUrl m_Url;
+    const QString m_DestName;
+    QEventLoop m_Loop;
+    QTemporaryFile m_TempFile;
+
+};
 
 class PluginManager : public QObject
 {
@@ -69,6 +148,10 @@ public:
     QString pluginConfigFilename( void ) const;
 
     void downloadPluginToTemp( const QUrl &pUrl );
+
+    PluginActionInstall deployPlugin( const QString &pFileName, const QString &pDestDir ) const;
+
+    QJsonDocument pluginManifest( const QString &pFileName ) const;
 
 private:
     QDir                             mPluginDirectory;

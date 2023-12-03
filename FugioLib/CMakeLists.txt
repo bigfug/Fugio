@@ -50,6 +50,10 @@ set( SOURCE_FILES
 	../include/fugio/utils.h
 	../include/fugio/context_signals.h
 	../include/fugio/paired_pins_helper_interface.h
+
+	../libs/zip/zip.h
+	../libs/zip/zip.cpp
+	../libs/zip/miniz.h
 )
 
 add_library( ${PROJECT_NAME} STATIC ${SOURCE_FILES} )

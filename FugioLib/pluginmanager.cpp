@@ -7,6 +7,10 @@
 #include <QTranslator>
 #include <QFileInfo>
 #include <QCoreApplication>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QNetworkAccessManager>
+#include <QTemporaryFile>
 
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
@@ -23,6 +27,8 @@
 
 #include <QLibraryInfo>
 #include <QStandardPaths>
+
+#include "../libs/zip/zip.h"
 
 PluginManager::PluginManager()
 {
@@ -319,4 +325,288 @@ void PluginManager::setPluginCacheDirectory(const QDir &newPluginCacheDirectory)
 QString PluginManager::pluginConfigFilename() const
 {
     return( mPluginConfigDir.absoluteFilePath( "fugio-plugin-config.ini" ) );
+}
+
+QJsonDocument PluginManager::pluginManifest(const QString &pFileName) const
+{
+    const bool verbose = true;
+
+    struct zip_t *zfh = zip_open( qPrintable( pFileName ), 0, 'r' );
+
+    if( !zfh )
+    {
+        fputs( "Couldn't open zip file", stderr );
+
+        return( QJsonDocument() );
+    }
+
+    const int PluginEntries = zip_total_entries( zfh );
+
+    if( verbose )
+    {
+        printf( "Files in plugin zip archive: %d\n", PluginEntries );
+    }
+
+    if( zip_entry_open( zfh, "manifest.json" ) )
+    {
+        fputs( "error finding manifest.json in archive", stderr );
+
+        return( QJsonDocument() );
+    }
+
+    const int ManifestSize = zip_entry_size( zfh );
+
+    if( verbose )
+    {
+        printf( "manifest.json size is %d bytes\n", ManifestSize );
+    }
+
+    QByteArray		ManifestData;
+
+    ManifestData.resize( ManifestSize );
+
+    const int ManifestRead = zip_entry_noallocread( zfh, ManifestData.data(), ManifestData.size() );
+
+    if( ManifestRead != ManifestSize )
+    {
+        fprintf( stderr, "Manifest read error: got %d - wanted %d bytes\n", ManifestRead, ManifestSize );
+
+        return( QJsonDocument() );
+    }
+
+    if( verbose )
+    {
+        fwrite( ManifestData.constData(), ManifestRead, 1, stdout );
+    }
+
+    zip_entry_close( zfh );
+
+    zip_close( zfh );
+
+    // we have the raw manifest file in memory - parse it
+
+    QJsonParseError	JsonError;
+
+    QJsonDocument	JSON = QJsonDocument::fromJson( ManifestData, &JsonError );
+
+    if( JSON.isNull() )
+    {
+        fprintf( stderr, "%s\n", qPrintable( JsonError.errorString() ) );
+
+        return( QJsonDocument() );
+    }
+
+    return( JSON );
+}
+
+bool PluginActionInstall::action()
+{
+    QDir    DestBase( m_DestName );
+
+    struct zip_t *zfh = zip_open( qPrintable( m_FileName ), 0, 'r' );
+
+    if( !zfh )
+    {
+        emit error( tr( "Couldn't open zip file" ) );
+
+        return( false );
+    }
+
+    const int PluginEntries = zip_total_entries( zfh );
+
+    //    if( verbose )
+    //    {
+    //        printf( "Files in plugin zip archive: %d\n", PluginEntries );
+    //    }
+
+    //    if( zip_entry_open( zfh, "manifest.json" ) )
+    //    {
+    //        fputs( "error finding manifest.json in archive", stderr );
+
+    //        exit( 1 );
+    //    }
+
+    //    const int ManifestSize = zip_entry_size( zfh );
+
+    //    if( verbose )
+    //    {
+    //        printf( "manifest.json size is %d bytes\n", ManifestSize );
+    //    }
+
+    //    QByteArray		ManifestData;
+
+    //    ManifestData.resize( ManifestSize );
+
+    //    const int ManifestRead = zip_entry_noallocread( zfh, ManifestData.data(), ManifestData.size() );
+
+    //    if( ManifestRead != ManifestSize )
+    //    {
+    //        fprintf( stderr, "Manifest read error: got %d - wanted %d bytes\n", ManifestRead, ManifestSize );
+
+    //        exit( 1 );
+    //    }
+
+    //    if( verbose )
+    //    {
+    //        fwrite( ManifestData.constData(), ManifestRead, 1, stdout );
+    //    }
+
+    //    zip_entry_close( zfh );
+
+    for( int i = 0 ; i < PluginEntries ; i++ )
+    {
+        if( zip_entry_openbyindex( zfh, i ) != 0 )
+        {
+            return( false );
+        }
+
+        QFileInfo	FI( zip_entry_name( zfh ) );
+
+        QStringList FP = FI.filePath().split( '/', Qt::SkipEmptyParts );
+        QString FD = FP.takeFirst();
+
+        //            qDebug() << FI.filePath() << FI.isDir() << FI.isFile() << FP << FD;
+
+        if( zip_entry_isdir( zfh ) )
+        {
+            //printf( "%s (dir)\n", zip_entry_name( zfh ) );
+        }
+        else
+        {
+            printf( "%s (file)\n", zip_entry_name( zfh ) );
+
+            if( FD == "plugin" )
+            {
+                QDir    FileBase( DestBase );
+
+                for( i = 0 ; i < FP.size() ; i++ )
+                {
+                    const QString &FilePart = FP.at( i );
+
+                    if( i == FP.size() - 1 )
+                    {
+                        QFile   DestFile( FilePart );
+
+                        if( DestFile.open( QFile::WriteOnly | QFile::NewOnly ) )
+                        {
+                            if( !zip_entry_extract( zfh, &PluginActionInstall::on_extract, &DestFile ) )
+                            {
+                                return( false );
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if( !FileBase.exists( FilePart ) )
+                        {
+                            FileBase.mkdir( FilePart );
+                        }
+
+                        FileBase.cd( FilePart );
+                    }
+                }
+
+                qDebug() << "plugin" << FP.join( '/' );
+            }
+            else if( FD == "examples" )
+            {
+                qDebug() << "examples" << FP.join( '/' );
+            }
+            else if( FD == "include" )
+            {
+                qDebug() << "include" << FP.join( '/' );
+            }
+            else if( FD == "libs" )
+            {
+                qDebug() << "libs" << FP.join( '/' );
+            }
+            else
+            {
+                qDebug() << "unknown" << FD << FP.join( '/' );
+            }
+
+            FI.baseName();
+        }
+
+        zip_entry_close( zfh );
+    }
+
+    zip_close( zfh );
+
+    return( true );
+}
+
+size_t PluginActionInstall::on_extract(void *arg, unsigned long long offset, const void *buf, size_t bufsize)
+{
+    return( static_cast<QFile *>( arg )->write( static_cast<const char *>( buf ), bufsize ) );
+}
+
+bool PluginActionDownload::action()
+{
+    QNetworkAccessManager   *Manager = new QNetworkAccessManager( this );
+
+    QNetworkReply         *NetRep = Manager->get( QNetworkRequest( m_Url ) );
+
+    if( !NetRep )
+    {
+        return( false );
+    }
+
+    qDebug() << NetRep->isRunning() << NetRep->errorString();
+
+    if( !NetRep->isRunning() )
+    {
+        return( false );
+    }
+
+    QObject::connect( NetRep, &QIODevice::readyRead, NetRep, [&]( void )
+    {
+        emit status( "readyRead" );
+
+        if( !m_TempFile.isOpen() )
+        {
+            if( !m_TempFile.open() )
+            {
+                NetRep->abort();
+
+                return;
+            }
+
+            qDebug() << m_TempFile.fileName();
+        }
+
+        m_TempFile.write( NetRep->readAll() );
+    } );
+
+    QObject::connect( NetRep, &QNetworkReply::finished, NetRep, [&]( void )
+    {
+        if( m_TempFile.isOpen() )
+        {
+            m_TempFile.close();
+
+            QFile::copy( m_TempFile.fileName(), m_DestName );
+        }
+
+        m_Loop.quit();
+    } );
+
+    QObject::connect( NetRep, &QNetworkReply::downloadProgress, [&]( qint64 bytesReceived, qint64 bytesTotal )
+    {
+        qDebug() << bytesReceived << bytesTotal;
+    } );
+
+    QObject::connect( NetRep, &QNetworkReply::errorOccurred, [&]( QNetworkReply::NetworkError pNetworkError )
+    {
+        qDebug() << pNetworkError;
+    } );
+
+    QObject::connect( NetRep, &QNetworkReply::sslErrors, [&]( const QList<QSslError> &pErrors )
+    {
+    } );
+
+    m_Loop.exec();
+
+    Manager->deleteLater();
+
+    return( true );
 }

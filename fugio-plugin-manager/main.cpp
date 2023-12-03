@@ -15,8 +15,6 @@
 #include "QtCore/qglobal.h"
 #include "pluginmanager.h"
 
-#include "../libs/zip/zip.h"
-
 int main(int argc, char *argv[])
 {
 	QCoreApplication a(argc, argv);
@@ -163,188 +161,29 @@ int main(int argc, char *argv[])
 			printf( "Performing 'info' on '%s'...\n", qPrintable( UrlTxt ) );
 		}
 
-		QUrl	Url;
+        QUrl	Url( UrlTxt );
 
-		QFileInfo FileInfo( UrlTxt );
-
-		if( FileInfo.exists() && FileInfo.isFile() )
-		{
-			Url = QUrl::fromLocalFile( UrlTxt );
-		}
-		else
-		{
-			Url = QUrl( UrlTxt );
+        if( Url.scheme().isEmpty() )
+        {
+            Url = QUrl::fromLocalFile( UrlTxt );
 		}
 
         qDebug() << Url;
         qDebug() << QSslSocket::supportsSsl();
         qDebug() << QSslSocket::sslLibraryVersionString();
 
-        QNetworkReply       *NetRep = Manager.get( QNetworkRequest( Url ) );
+        PluginActionDownload    Action( Url, "test-download.png" );
 
-        if( !NetRep )
+        QObject::connect( &Action, &PluginAction::status, [&]( const QString &pStatus )
         {
-            exit( 1 );
-        }
 
-        qDebug() << NetRep->isRunning() << NetRep->errorString();
-
-        if( !NetRep->isRunning() )
-        {
-            exit( 1 );
-        }
-
-        QObject::connect( NetRep, &QIODevice::readyRead, [&]( void )
-        {
-            qDebug() << "readyRead";
-        } );
-
-        QObject::connect( &Manager, &QNetworkAccessManager::finished, [&]( QNetworkReply *pNetRep )
-        {
-            QTemporaryFile      TempFile( "fugio-plugin-download-" );
-
-            if( TempFile.open() )
-            {
-                qDebug() << TempFile.fileName();
-            }
-
-            qApp->exit();
         });
 
-        QObject::connect( NetRep, &QNetworkReply::downloadProgress, [&]( qint64 bytesReceived, qint64 bytesTotal )
-        {
-            qDebug() << bytesReceived << bytesTotal;
-        } );
-
-        QObject::connect( NetRep, &QNetworkReply::errorOccurred, [&]( QNetworkReply::NetworkError pNetworkError )
-                         {
-                             qDebug() << pNetworkError;
-
-            exit( 1 );
-                         } );
-
-        QObject::connect( NetRep, &QNetworkReply::sslErrors, [&]( const QList<QSslError> &pErrors )
-        {
-
-            exit( 1 );
-        } );
+        Action.action();
 
         // TODO: if it's a remote file, copy to a plugin cache location
 
 #if 0
-		struct zip_t *zfh = zip_open( qPrintable( UrlTxt ), 0, 'r' );
-
-		if( !zfh )
-		{
-			fputs( "Couldn't open zip file", stderr );
-
-			exit( 1 );
-		}
-
-		const int PluginEntries = zip_total_entries( zfh );
-
-		if( verbose )
-		{
-			printf( "Files in plugin zip archive: %d\n", PluginEntries );
-		}
-
-		if( zip_entry_open( zfh, "manifest.json" ) )
-		{
-			fputs( "error finding manifest.json in archive", stderr );
-
-			exit( 1 );
-		}
-
-		const int ManifestSize = zip_entry_size( zfh );
-
-		if( verbose )
-		{
-			printf( "manifest.json size is %d bytes\n", ManifestSize );
-		}
-
-		QByteArray		ManifestData;
-
-		ManifestData.resize( ManifestSize );
-
-		const int ManifestRead = zip_entry_noallocread( zfh, ManifestData.data(), ManifestData.size() );
-
-		if( ManifestRead != ManifestSize )
-		{
-			fprintf( stderr, "Manifest read error: got %d - wanted %d bytes\n", ManifestRead, ManifestSize );
-
-			exit( 1 );
-		}
-
-		if( verbose )
-		{
-			fwrite( ManifestData.constData(), ManifestRead, 1, stdout );
-		}
-
-		zip_entry_close( zfh );
-
-		for( int i = 0 ; i < PluginEntries ; i++ )
-		{
-			if( zip_entry_openbyindex( zfh, i ) != 0 )
-			{
-				exit( 1 );
-			}
-
-			QFileInfo	FI( zip_entry_name( zfh ) );
-
-            QStringList FP = FI.filePath().split( '/', Qt::SkipEmptyParts );
-            QString FD = FP.takeFirst();
-
-//            qDebug() << FI.filePath() << FI.isDir() << FI.isFile() << FP << FD;
-
-			if( zip_entry_isdir( zfh ) )
-			{
-                //printf( "%s (dir)\n", zip_entry_name( zfh ) );
-			}
-			else
-			{
-                printf( "%s (file)\n", zip_entry_name( zfh ) );
-
-                if( FD == "plugin" )
-                {
-                    qDebug() << "plugin" << FP.join( '/' );
-                }
-                else if( FD == "examples" )
-                {
-                    qDebug() << "examples" << FP.join( '/' );
-                }
-                else if( FD == "include" )
-                {
-                    qDebug() << "include" << FP.join( '/' );
-                }
-                else if( FD == "libs" )
-                {
-                    qDebug() << "libs" << FP.join( '/' );
-                }
-                else
-                {
-                    qDebug() << "unknown" << FD << FP.join( '/' );
-                }
-
-                FI.baseName();
-			}
-
-			zip_entry_close( zfh );
-		}
-
-		zip_close( zfh );
-
-		// we have the raw manifest file in memory - parse it
-
-		QJsonParseError	JsonError;
-
-		QJsonDocument	JSON = QJsonDocument::fromJson( ManifestData, &JsonError );
-
-		if( JSON.isNull() )
-		{
-			fprintf( stderr, "%s\n", qPrintable( JsonError.errorString() ) );
-
-			exit( 1 );
-		}
 
 		const QString authorName = JSON[ "authorName" ].toString();
 
@@ -352,5 +191,5 @@ int main(int argc, char *argv[])
 #endif
 	}
 
-    return( a.exec() );
+    return( 0 ) ;//a.exec() );
 }
