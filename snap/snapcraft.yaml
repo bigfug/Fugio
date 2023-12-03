@@ -64,6 +64,7 @@
         - libopencv-objdetect2.4v5
         - libopencv-photo2.4v5
         - libopencv-video2.4v5
+        - qtwayland5
         - libasound2-data
       after: [desktop-qt5]
 
