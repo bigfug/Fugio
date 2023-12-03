@@ -592,7 +592,7 @@ bool PluginActionDownload::action()
 
     QObject::connect( NetRep, &QNetworkReply::downloadProgress, [&]( qint64 bytesReceived, qint64 bytesTotal )
     {
-        qDebug() << bytesReceived << bytesTotal;
+        emit downloadProgress( bytesReceived, bytesTotal );
     } );
 
     QObject::connect( NetRep, &QNetworkReply::errorOccurred, [&]( QNetworkReply::NetworkError pNetworkError )

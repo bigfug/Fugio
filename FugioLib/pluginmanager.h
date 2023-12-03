@@ -80,6 +80,9 @@ public:
 private:
     static size_t on_extract(void *arg, unsigned long long offset, const void *buf, size_t bufsize);
 
+signals:
+    void downloadProgress( qint64 bytesReceived, qint64 bytesTotal );
+
 private:
     const QUrl m_Url;
     const QString m_DestName;

@@ -11,9 +11,26 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QTemporaryFile>
+#include <iostream>
 
 #include "QtCore/qglobal.h"
 #include "pluginmanager.h"
+
+void progressBar( float pProgress )
+{
+    int barWidth = 70;
+
+    std::cout << "[";
+    int pos = barWidth * pProgress;
+    for (int i = 0; i < barWidth; ++i) {
+        if (i < pos) std::cout << "=";
+        else if (i == pos) std::cout << ">";
+        else std::cout << " ";
+    }
+    std::cout << "] " << int(pProgress * 100.0) << " %\r";
+    std::cout.flush();
+
+}
 
 int main(int argc, char *argv[])
 {
@@ -174,12 +191,20 @@ int main(int argc, char *argv[])
 
         PluginActionDownload    Action( Url, "test-download.png" );
 
-        QObject::connect( &Action, &PluginAction::status, [&]( const QString &pStatus )
+        QObject::connect( &Action, &PluginActionDownload::status, [&]( const QString &pStatus )
         {
 
         });
 
+        QObject::connect( &Action, &PluginActionDownload::downloadProgress, [&]( qint64 bytesReceived, qint64 bytesTotal )
+        {
+            progressBar( float( bytesReceived ) / float( bytesTotal ) );
+         });
+
         Action.action();
+
+        std::cout << std::endl;
+
 
         // TODO: if it's a remote file, copy to a plugin cache location
 
