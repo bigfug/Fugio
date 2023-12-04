@@ -697,7 +697,7 @@ void MainWindow::on_actionAbout_Qt_triggered()
 
 void MainWindow::on_actionOnline_Documentation_triggered()
 {
-	QDesktopServices::openUrl( QUrl( "http://wiki.bigfug.com/Fugio?utm_source=fugio&utm_medium=help" ) );
+	QDesktopServices::openUrl( QUrl( "https://github.com/bigfug/Fugio/wiki?utm_source=fugio&utm_medium=help" ) );
 }
 
 void MainWindow::on_actionSet_Colour_triggered()
@@ -1062,12 +1062,7 @@ void MainWindow::onEditTarget( fugio::EditInterface *pEditTarget )
 
 void MainWindow::on_actionContact_Developers_triggered()
 {
-	QDesktopServices::openUrl( QUrl( "http://www.bigfug.com/contact/?utm_source=fugio&utm_medium=contact" ) );
-}
-
-void MainWindow::on_actionFacebook_Page_triggered()
-{
-	QDesktopServices::openUrl( QUrl( "https://www.facebook.com/fugioapp" ) );
+	QDesktopServices::openUrl( QUrl( "https://github.com/bigfug?utm_source=fugio&utm_medium=contact" ) );
 }
 
 void MainWindow::on_actionFacebook_Users_Group_triggered()
@@ -1562,3 +1557,9 @@ void MainWindow::on_actionSave_Revision_triggered()
 
 	CV->userSaveRevision();
 }
+
+void MainWindow::on_actionDiscordServer_triggered()
+{
+	QDesktopServices::openUrl( QUrl( "https://discord.com/invite/N749GjKfZa" ) );
+}
+

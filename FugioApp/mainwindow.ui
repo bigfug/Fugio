@@ -66,7 +66,7 @@
      <x>0</x>
      <y>0</y>
      <width>920</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -169,7 +169,7 @@
     <addaction name="separator"/>
     <addaction name="actionData_Directory"/>
     <addaction name="separator"/>
-    <addaction name="actionFacebook_Page"/>
+    <addaction name="actionDiscordServer"/>
     <addaction name="actionFacebook_Users_Group"/>
     <addaction name="separator"/>
     <addaction name="actionAbout_Fugio"/>
@@ -603,9 +603,12 @@
     <string>Contact Developers...</string>
    </property>
   </action>
-  <action name="actionFacebook_Page">
+  <action name="actionDiscordServer">
    <property name="text">
-    <string>Facebook Page...</string>
+    <string>Discord server...</string>
+   </property>
+   <property name="toolTip">
+    <string>Discord server</string>
    </property>
   </action>
   <action name="actionPerformance">

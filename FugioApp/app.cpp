@@ -84,13 +84,6 @@ void App::recordData( const QString &pName, const QString &pValue )
 
 		Settings.setValue( "instance", Instance );
 	}
-
-	QString			Url = QString( "http://stats.bigfug.com/fugio-stats.php?i=%1&%2=%3&v=%4" ).arg( fugio::utils::uuid2string( Instance ) ).arg( pName ).arg( pValue ).arg( QCoreApplication::applicationVersion() );
-
-	if( mNetworkAccessManager.networkAccessible() == QNetworkAccessManager::Accessible )
-	{
-		mNetworkAccessManager.get( QNetworkRequest( Url ) );
-	}
 }
 
 QString App::userSnippetsDirectory() const

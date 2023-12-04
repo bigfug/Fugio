@@ -89,6 +89,7 @@ add_subdirectory( fugio-plugin-manager )
 
 install( DIRECTORY include/ DESTINATION ${PATH_INCLUDE} )
 install( DIRECTORY share/ DESTINATION ${PATH_SHARE} )
+install( DIRECTORY DESTINATION plugins)
 
 #------------------------------------------------------------------------------
 # CPack
