@@ -6,25 +6,36 @@
     <message>
         <location filename="../contextprivate.cpp" line="46"/>
         <source>Untitled</source>
-        <translation>Senza titolo</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../contextprivate.cpp" line="1701"/>
         <source>Node has no control class: missing plugin or error loading plugin?</source>
-        <translation>Il nodo non ha alcuna classe di controllo; potrebbe mancare un componente aggiuntivo o esserci stato un errore nel caricarlo?</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>GlobalPrivate</name>
     <message>
-        <location filename="../globalprivate.cpp" line="159"/>
-        <source>Plugins loaded: %1</source>
-        <translation>Componenti aggiuntivi caricati: %1</translation>
-    </message>
-    <message>
-        <location filename="../globalprivate.cpp" line="161"/>
+        <location filename="../globalprivate.cpp" line="92"/>
         <source>Nodes registered: %1</source>
-        <translation>Nodi registrati: %1</translation>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PluginActionInstall</name>
+    <message>
+        <location filename="../pluginmanager.cpp" line="410"/>
+        <source>Couldn&apos;t open zip file</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PluginManager</name>
+    <message>
+        <location filename="../pluginmanager.cpp" line="228"/>
+        <source>Plugins loaded: %1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -32,52 +43,52 @@
     <message>
         <location filename="../interpolation.cpp" line="20"/>
         <source>Default</source>
-        <translation>Predefinito</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="21"/>
         <source>Linear</source>
-        <translation>Lineare</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="22"/>
         <source>Cosine</source>
-        <translation>Coseno</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="23"/>
         <source>Linear Fall</source>
-        <translation>Caduta lineare</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="24"/>
         <source>Linear Rise</source>
-        <translation>Aumento lineare</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="25"/>
         <source>Time Forward</source>
-        <translation>Avanti nel tempo</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="26"/>
         <source>Time Backward</source>
-        <translation>Indietro nel tempo</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="27"/>
         <source>Hold</source>
-        <translation>Mantieni</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="29"/>
         <source>Gamma (2.2)</source>
-        <translation>Gamma (2.2)</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../interpolation.cpp" line="30"/>
         <source>Gamma Correction (2.2)</source>
-        <translation>Correzione gamma (2.2)</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

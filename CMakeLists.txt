@@ -1,13 +1,21 @@
-cmake_minimum_required( VERSION 3.1 )
+cmake_minimum_required( VERSION 3.14 )
 
 list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 project( Fugio )
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/plugins-include )
+set( FUGIO_APP_VERSION "4.0.0" )
+set( FUGIO_API_VERSION "4.0.0" )
 
-set( CMAKE_CXX_STANDARD 11 )
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set( CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/package" CACHE PATH "..." FORCE)
+
+  file( MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX} )
+endif()
+
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
+
+set( CMAKE_CXX_STANDARD 17 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
 
@@ -48,11 +56,7 @@ set( CTEST_OUTPUT_ON_FAILURE ON )
 
 #------------------------------------------------------------------------------
 
-file( READ FugioApp/version.txt FUGIO_VERSION )
-
-string( STRIP ${FUGIO_VERSION} FUGIO_VERSION )
-
-message( "FUGIO VERSION ${FUGIO_VERSION}" )
+message( "FUGIO VERSION ${FUGIO_APP_VERSION}" )
 
 #------------------------------------------------------------------------------
 
@@ -78,38 +82,25 @@ endif()
 set( FUGIO_API "${CMAKE_SOURCE_DIR}/include" CACHE PATH "" )
 
 #------------------------------------------------------------------------------
-# Lua (minimum 5.2)
-
-find_package( Lua 5.2 )
-
-if( NOT LUA_FOUND )
-	find_path( LUA_INCLUDE_DIR lua.hpp )
-
-	find_library( LUA_LIBRARY
-	  NAMES lua
-	)
-
-	set( LUA_INCLUDE_DIRS ${LUA_INCLUDE_DIR} )
-	set( LUA_LIBRARIES ${LUA_LIBRARY} )
-
-	if( LUA_INCLUDE_DIR AND LUA_LIBRARY )
-		set( LUA_FOUND ON )
-	endif()
-endif()
-
-#------------------------------------------------------------------------------
 
 set( FUGIO_UNIX_DEPENDENCIES )
 
 add_subdirectory( FugioLib )
 add_subdirectory( FugioApp )
 add_subdirectory( FugioShow )
-add_subdirectory( plugins )
+add_subdirectory( fugio-plugin-manager )
 
 #------------------------------------------------------------------------------
 
-install( DIRECTORY include/ DESTINATION ${PATH_INCLUDE} )
-install( DIRECTORY share/ DESTINATION ${PATH_SHARE} )
+install( DIRECTORY include/ DESTINATION ${PATH_INCLUDE}
+	PATTERN ".*" EXCLUDE
+)
+
+install( DIRECTORY share/ DESTINATION ${PATH_SHARE}
+	PATTERN ".*" EXCLUDE
+)
+
+install( DIRECTORY DESTINATION plugins)
 
 #------------------------------------------------------------------------------
 # CPack
@@ -136,7 +127,7 @@ endif()
 
 # Set the output package filename
 
-set( CPACK_PACKAGE_FILE_NAME "Fugio-${FUGIO_VERSION}" )
+set( CPACK_PACKAGE_FILE_NAME "Fugio-${FUGIO_APP_VERSION}" )
 
 # If we're running on a UNIX system, try to ascertain the type and version
 
@@ -208,7 +199,7 @@ endif()
 
 # Extract the version for CPACK
 
-string( REPLACE "." ";" FUGIO_VERSION_LIST ${FUGIO_VERSION} )
+string( REPLACE "." ";" FUGIO_VERSION_LIST ${FUGIO_APP_VERSION} )
 
 list( GET FUGIO_VERSION_LIST 0 CPACK_PACKAGE_VERSION_MAJOR )
 list( GET FUGIO_VERSION_LIST 1 CPACK_PACKAGE_VERSION_MINOR )

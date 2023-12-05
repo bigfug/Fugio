@@ -2,8 +2,6 @@
 #define UNIVERSE_H
 
 #include <QObject>
-#include <QUdpSocket>
-#include <QHostAddress>
 #include <QMap>
 #include <QByteArray>
 #include <QList>
@@ -11,6 +9,9 @@
 #include <QUuid>
 
 #include <fugio/global_interface.h>
+
+#include <QUdpSocket>
+#include <QHostAddress>
 
 class Universe : public QObject
 {
@@ -52,14 +53,10 @@ private:
 	typedef struct InterfaceCaster
 	{
 		QUdpSocket			*mSocket;
-		QHostAddress		 mAddress;
+        QHostAddress		 mAddress;
 		int					 mPort;
 
-		InterfaceCaster( QObject *pParent )
-			: mPort( 45455 )
-		{
-			mSocket = new QUdpSocket( pParent );
-		}
+        InterfaceCaster( QObject *pParent );
 
 		InterfaceCaster( const InterfaceCaster &pIC )
 			: mSocket( pIC.mSocket ), mAddress( pIC.mAddress ), mPort( pIC.mPort )

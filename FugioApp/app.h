@@ -9,6 +9,7 @@
 #include <QPair>
 #include <QMutex>
 #include <QUndoGroup>
+#include <QNetworkAccessManager>
 
 #include "globalprivate.h"
 

@@ -51,9 +51,9 @@ int main( int argc, char *argv[] )
 	QApplication::setOrganizationDomain( "Fugio" );
 
 #if QT_VERSION < QT_VERSION_CHECK( 5, 4, 0 )
-	QApplication::setApplicationVersion( QUOTE( FUGIO_VERSION ) );
+    QApplication::setApplicationVersion( QUOTE( FUGIO_APP_VERSION ) );
 #else
-	QApplication::setApplicationVersion( QString( "%1 (%2/%3)" ).arg( QUOTE( FUGIO_VERSION ) ).arg( QSysInfo::buildCpuArchitecture() ).arg( QSysInfo::currentCpuArchitecture() ) );
+    QApplication::setApplicationVersion( QString( "%1 (%2/%3)" ).arg( QUOTE( FUGIO_APP_VERSION ) ).arg( QSysInfo::buildCpuArchitecture() ).arg( QSysInfo::currentCpuArchitecture() ) );
 #endif
 
 	const QString	CfgDir = QStandardPaths::writableLocation( QStandardPaths::DataLocation );
@@ -100,7 +100,7 @@ int main( int argc, char *argv[] )
 		Painter.setFont( Font );
 
 		QFontMetrics	FontMetrics( Font );
-		QString			SplashText = QUOTE( FUGIO_VERSION );
+        QString			SplashText = QUOTE( FUGIO_APP_VERSION );
 		QSize			TextSize = FontMetrics.size( Qt::TextSingleLine, SplashText );
 
 		Painter.setPen( Qt::white );

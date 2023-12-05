@@ -152,8 +152,6 @@ private slots:
 
 	void on_actionContact_Developers_triggered();
 
-	void on_actionFacebook_Page_triggered();
-
 	void fugioUrl( const QUrl &pUrl );
 
 	void on_actionAppend_triggered();
@@ -191,6 +189,8 @@ private slots:
 	void on_actionLoad_Data_triggered();
 
 	void on_actionSave_Revision_triggered();
+
+	void on_actionDiscordServer_triggered();
 
 private:
 	Ui::MainWindow								*ui;

@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.1 )
+cmake_minimum_required( VERSION 3.14 )
 
 project( libfugio )
 
@@ -15,6 +15,8 @@ set( SOURCE_FILES
 	pinprivate.cpp
 	pinprivate.h
 	pin.cpp
+	pluginmanager.h
+	pluginmanager.cpp
 	nodeprivate.cpp
 	nodeprivate.h
 	node.cpp
@@ -48,6 +50,10 @@ set( SOURCE_FILES
 	../include/fugio/utils.h
 	../include/fugio/context_signals.h
 	../include/fugio/paired_pins_helper_interface.h
+
+	../libs/zip/zip.h
+	../libs/zip/zip.cpp
+	../libs/zip/miniz.h
 )
 
 add_library( ${PROJECT_NAME} STATIC ${SOURCE_FILES} )

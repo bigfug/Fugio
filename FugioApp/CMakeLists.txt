@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.1 )
+cmake_minimum_required( VERSION 3.14 )
 
 if( UNIX AND NOT APPLE )
 	project( fugio LANGUAGES CXX )
@@ -62,6 +62,8 @@ set( SOURCE_FILES
 	performanceform.h
 	pinitem.cpp
 	pinitem.h
+	plugins/pluginsform.cpp
+	plugins/pluginsform.h
 	settings/settingsdialog.cpp
 	settings/settingsdialog.h
 	snippets/snippetsform.cpp
@@ -123,6 +125,7 @@ set( UIS_HDRS
 	nodenamedialog.ui
 	patchpromptdialog.ui
 	performanceform.ui
+	plugins/pluginsform.ui
 	settings/settingsdialog.ui
 	snippets/snippetsform.ui
 	stylesheetform.ui
@@ -142,13 +145,12 @@ install( TARGETS ${PROJECT_NAME}
 )
 
 #------------------------------------------------------------------------------
-# Read version.txt
+# Versions
 
-file( READ version.txt FUGIO_VERSION )
-
-string( STRIP ${FUGIO_VERSION} FUGIO_VERSION )
-
-target_compile_definitions( ${PROJECT_NAME} PRIVATE FUGIO_VERSION=${FUGIO_VERSION} )
+target_compile_definitions( ${PROJECT_NAME} PRIVATE
+	FUGIO_APP_VERSION=${FUGIO_APP_VERSION}
+	FUGIO_API_VERSION=${FUGIO_API_VERSION}
+)
 
 #------------------------------------------------------------------------------
 # Icon
@@ -197,21 +199,3 @@ if( Q_OS_RASPBERRY_PI )
 
 	target_compile_definitions( ${PROJECT_NAME} PRIVATE OMX_SKIP64BIT )
 endif()
-
-#-------------------------------------
-# Lua
-
-if( APPLE AND LUA_FOUND )
-	get_filename_component( LUA_LIB ${LUA_LIBRARY} NAME )
-
-	set( BUNDLE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.app" )
-
-	add_custom_command( TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND ${CMAKE_COMMAND} -E make_directory "${BUNDLE_PATH}/Contents/Frameworks"
-		COMMAND ${CMAKE_COMMAND} -E copy "${LUA_LIBRARY}" "${BUNDLE_PATH}/Contents/Frameworks/"
-		COMMAND chmod +w "${BUNDLE_PATH}/Contents/Frameworks/${LUA_LIB}"
-		COMMAND install_name_tool -id ${LUA_LIB} "${BUNDLE_PATH}/Contents/Frameworks/${LUA_LIB}"
-		COMMENT "Copying ${LUA_LIBRARY} to ${BUNDLE_PATH}/Contents/Frameworks..."
-		VERBATIM
-	)
-endif( APPLE AND LUA_FOUND )

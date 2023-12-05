@@ -29,8 +29,7 @@
 #include <fugio/global_interface.h>
 #include <fugio/node_control_interface.h>
 #include <fugio/choice_interface.h>
-#include <fugio/colour/colour_interface.h>
-#include <fugio/file/filename_interface.h>
+//#include <fugio/file/filename_interface.h>
 
 #include "linkitem.h"
 #include "contextview.h"
@@ -893,30 +892,30 @@ void PinItem::menuEditDefault()
 		}
 
 		return;
-	}
+    }
 
-	fugio::FilenameInterface	*FNI = mPin->hasControl() ? qobject_cast<fugio::FilenameInterface *>( mPin->control()->qobject() ) : nullptr;
+    //	fugio::FilenameInterface	*FNI = mPin->hasControl() ? qobject_cast<fugio::FilenameInterface *>( mPin->control()->qobject() ) : nullptr;
 
-	if( FNI )
-	{
-		QString	FN = QFileDialog::getOpenFileName( Q_NULLPTR, tr( "Select file..." ), FNI->filename() );
+    //	if( FNI )
+    //	{
+    //		QString	FN = QFileDialog::getOpenFileName( Q_NULLPTR, tr( "Select file..." ), FNI->filename() );
 
-		if( !FN.isEmpty() )
-		{
-			CmdSetDefaultValue		*Cmd = new CmdSetDefaultValue( mPin, FN );
+    //		if( !FN.isEmpty() )
+    //		{
+    //			CmdSetDefaultValue		*Cmd = new CmdSetDefaultValue( mPin, FN );
 
-			if( Cmd )
-			{
-				mContextView->widget()->undoStack()->push( Cmd );
-			}
-		}
+    //			if( Cmd )
+    //			{
+    //				mContextView->widget()->undoStack()->push( Cmd );
+    //			}
+    //		}
 
-		return;
-	}
+    //		return;
+    //	}
 
-	const QVariant		PinVal = mPin->value();
+    const QVariant PinVal = mPin->value();
 
-	if( QMetaType::Type( PinVal.type() ) == QMetaType::QColor )
+    if( QMetaType::Type( PinVal.type() ) == QMetaType::QColor )
 	{
 		QColor			CurrentColour = mPin->value().value<QColor>();
 

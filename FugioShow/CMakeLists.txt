@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.1 )
+cmake_minimum_required( VERSION 3.14 )
 
 if( UNIX AND NOT APPLE )
 	project( fugioshow LANGUAGES CXX )
@@ -43,13 +43,12 @@ install( TARGETS ${PROJECT_NAME}
 )
 
 #------------------------------------------------------------------------------
-# Read version.txt
+# Version
 
-file( READ ../FugioApp/version.txt FUGIO_VERSION )
-
-string( STRIP ${FUGIO_VERSION} FUGIO_VERSION )
-
-target_compile_definitions( ${PROJECT_NAME} PRIVATE FUGIO_VERSION=${FUGIO_VERSION} )
+target_compile_definitions( ${PROJECT_NAME} PRIVATE
+	FUGIO_APP_VERSION=${FUGIO_APP_VERSION}
+	FUGIO_API_VERSION=${FUGIO_API_VERSION}
+)
 
 #------------------------------------------------------------------------------
 # Qt5

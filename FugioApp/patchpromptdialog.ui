@@ -61,13 +61,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="mButtonTheFugioZone">
-       <property name="text">
-        <string>The Fugio Zone...</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="mButtonTutorialVideos">
        <property name="text">
         <string>Tutorial Videos...</string>

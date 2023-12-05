@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>translations/fugio_portaudio_de.qm</file>
-        <file>translations/fugio_portaudio_es.qm</file>
-        <file>translations/fugio_portaudio_fr.qm</file>
-    </qresource>
-</RCC>
