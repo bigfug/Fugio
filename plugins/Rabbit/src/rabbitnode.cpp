@@ -59,17 +59,17 @@ void RabbitNode::inputsUpdated( qint64 pTimeStamp )
 
 				switch( Packet.getCommand() )
 				{
-					case COMMAND_INVALID:
-					case COMMAND_MAX_:
-					case COMMAND_DISCOVER:
-					case COMMAND_INITIALIZE:
-					case COMMAND_UPDATEVALUE:
+					case rcp::COMMAND_INVALID:
+					case rcp::COMMAND_MAX_:
+					case rcp::COMMAND_DISCOVER:
+					case rcp::COMMAND_INITIALIZE:
+					case rcp::COMMAND_UPDATEVALUE:
 						break;
 
-					case COMMAND_INFO:
+					case rcp::COMMAND_INFO:
 						break;
 
-					case COMMAND_UPDATE:
+					case rcp::COMMAND_UPDATE:
 						if( Packet.hasData() )
 						{
 							rcp::ParameterPtr	p = std::dynamic_pointer_cast<rcp::IParameter>( Packet.getData() );
@@ -86,7 +86,7 @@ void RabbitNode::inputsUpdated( qint64 pTimeStamp )
 
 									switch( p->getDatatype() )
 									{
-										case DATATYPE_STRING:
+										case rcp::DATATYPE_STRING:
 											{
 												auto PP = std::dynamic_pointer_cast<rcp::StringParameter>( p );
 
@@ -94,7 +94,7 @@ void RabbitNode::inputsUpdated( qint64 pTimeStamp )
 											}
 											break;
 
-										case DATATYPE_FLOAT32:
+										case rcp::DATATYPE_FLOAT32:
 											{
 												auto PP = std::dynamic_pointer_cast<rcp::Float32Parameter>( p );
 
@@ -121,7 +121,7 @@ void RabbitNode::inputsUpdated( qint64 pTimeStamp )
 						}
 						break;
 
-					case COMMAND_REMOVE:
+					case rcp::COMMAND_REMOVE:
 						break;
 				}
 			}
@@ -152,7 +152,7 @@ void RabbitNode::inputsUpdated( qint64 pTimeStamp )
 			{
 				switch( P->getDatatype() )
 				{
-					case DATATYPE_STRING:
+					case rcp::DATATYPE_STRING:
 						{
 							auto	p = std::dynamic_pointer_cast<rcp::StringParameter>( P );
 
@@ -160,7 +160,7 @@ void RabbitNode::inputsUpdated( qint64 pTimeStamp )
 						}
 						break;
 
-					case DATATYPE_FLOAT32:
+					case rcp::DATATYPE_FLOAT32:
 						{
 							auto	p = std::dynamic_pointer_cast<rcp::Float32Parameter>( P );
 
@@ -210,11 +210,9 @@ void RabbitNode::pinAdded( QSharedPointer<fugio::NodeInterface> pNode, QSharedPo
 
 	if( pPin->direction() == PIN_OUTPUT )
 	{
-		rcp::StringParameter	&sp = mParamServer.createStringParameter( pPin->name().toStdString() );
+		rcp::StringParameterPtr sp = mParamServer.createStringParameter( pPin->name().toStdString() );
 
-		mParamServer.addParameter( sp );
-
-		mOutputParamMap.insert( pPin->localId(), sp.getId() );
+		mOutputParamMap.insert( pPin->localId(), sp->getId() );
 	}
 }
 
