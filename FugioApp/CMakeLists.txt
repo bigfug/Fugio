@@ -145,13 +145,12 @@ install( TARGETS ${PROJECT_NAME}
 )
 
 #------------------------------------------------------------------------------
-# Read version.txt
+# Versions
 
-file( READ version.txt FUGIO_VERSION )
-
-string( STRIP ${FUGIO_VERSION} FUGIO_VERSION )
-
-target_compile_definitions( ${PROJECT_NAME} PRIVATE FUGIO_VERSION=${FUGIO_VERSION} )
+target_compile_definitions( ${PROJECT_NAME} PRIVATE
+	FUGIO_APP_VERSION=${FUGIO_APP_VERSION}
+	FUGIO_API_VERSION=${FUGIO_API_VERSION}
+)
 
 #------------------------------------------------------------------------------
 # Icon

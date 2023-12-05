@@ -4,6 +4,9 @@ list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 project( Fugio )
 
+set( FUGIO_APP_VERSION "4.0.0" )
+set( FUGIO_API_VERSION "4.0.0" )
+
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
 set( CMAKE_CXX_STANDARD 17 )
@@ -47,11 +50,7 @@ set( CTEST_OUTPUT_ON_FAILURE ON )
 
 #------------------------------------------------------------------------------
 
-file( READ FugioApp/version.txt FUGIO_VERSION )
-
-string( STRIP ${FUGIO_VERSION} FUGIO_VERSION )
-
-message( "FUGIO VERSION ${FUGIO_VERSION}" )
+message( "FUGIO VERSION ${FUGIO_APP_VERSION}" )
 
 #------------------------------------------------------------------------------
 
@@ -116,7 +115,7 @@ endif()
 
 # Set the output package filename
 
-set( CPACK_PACKAGE_FILE_NAME "Fugio-${FUGIO_VERSION}" )
+set( CPACK_PACKAGE_FILE_NAME "Fugio-${FUGIO_APP_VERSION}" )
 
 # If we're running on a UNIX system, try to ascertain the type and version
 
@@ -188,7 +187,7 @@ endif()
 
 # Extract the version for CPACK
 
-string( REPLACE "." ";" FUGIO_VERSION_LIST ${FUGIO_VERSION} )
+string( REPLACE "." ";" FUGIO_VERSION_LIST ${FUGIO_APP_VERSION} )
 
 list( GET FUGIO_VERSION_LIST 0 CPACK_PACKAGE_VERSION_MAJOR )
 list( GET FUGIO_VERSION_LIST 1 CPACK_PACKAGE_VERSION_MINOR )
