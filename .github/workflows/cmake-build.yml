@@ -96,6 +96,4 @@ jobs:
     - name: Archive outputs
       uses: actions/upload-artifact@v3
       with:
-        name: Fugio
-        path: ${{ github.workspace }}/package
-        retention-days: 5
+        path: ${{ github.workspace }}/package !${{ github.workspace }}/package/_CPack_Packages
