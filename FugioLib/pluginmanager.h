@@ -9,6 +9,8 @@
 #include <QEventLoop>
 #include <QTemporaryFile>
 #include <QUrl>
+#include <QVersionNumber>
+#include <QSettings>
 
 FUGIO_NAMESPACE_BEGIN
 class GlobalInterface;
@@ -62,6 +64,29 @@ private:
     const QString m_DestName;
 };
 
+class PluginActionRemove : public PluginAction
+{
+    Q_OBJECT
+
+public:
+    PluginActionRemove( const QString &pFileName, const QString &pDestName )
+        : m_FileName( pFileName ), m_DestName( pDestName )
+    {
+
+    }
+
+    virtual ~PluginActionRemove() {}
+
+    virtual bool action( void ) Q_DECL_OVERRIDE;
+
+private:
+    static size_t on_extract(void *arg, unsigned long long offset, const void *buf, size_t bufsize);
+
+private:
+    const QString m_FileName;
+    const QString m_DestName;
+};
+
 class PluginActionDownload : public PluginAction
 {
     Q_OBJECT
@@ -89,6 +114,82 @@ private:
     QEventLoop m_Loop;
     QTemporaryFile m_TempFile;
 
+};
+
+class PluginRepoManifest
+{
+public:
+    PluginRepoManifest( const QString &pFileName, const QString &pPlatform );
+
+    QStringList pluginList( void ) const
+    {
+        return( m_PluginVersionMap.keys() );
+    }
+
+    QVersionNumber pluginLatestVersion( const QString &pPluginName ) const
+    {
+        return( m_PluginLatestMap.value( pPluginName ) );
+    }
+
+    QVector<QVersionNumber> pluginVersions( const QString &pPluginName ) const
+    {
+        QVector<QVersionNumber>   VersionList;
+
+        for( const PluginEntry &Entry : m_PluginVersionMap.values( pPluginName ) )
+        {
+            VersionList << Entry.first;
+        }
+
+        return( VersionList );
+    }
+
+    QUrl pluginVersionUrl( const QString &pPluginName, const QVersionNumber &pPluginVersion )
+    {
+        for( const PluginEntry &Entry : m_PluginVersionMap.values( pPluginName ) )
+        {
+            if( Entry.first == pPluginVersion )
+            {
+                return( Entry.second );
+            }
+        }
+
+        return( QUrl() );
+    }
+
+private:
+    typedef QPair<QVersionNumber,QUrl> PluginEntry;
+
+    QMap<QString, QVersionNumber>   m_PluginLatestMap;
+    QMultiMap<QString, PluginEntry>  m_PluginVersionMap;
+};
+
+class PluginConfig
+{
+public:
+    PluginConfig( const QString &pFileName );
+
+    QVersionNumber installedPluginVersion( const QString &pPluginName );
+
+    QString cachedPluginFilename( const QString &pPluginName, const QVersionNumber &pPluginVersion );
+
+    void setInstalledPluginVersion( const QString &pPluginName, const QVersionNumber &pPluginVersion );
+
+    void setCachedPluginFilename( const QString &pPluginName, const QVersionNumber &pPluginVersion, const QString &pFileName );
+
+    void addRepo( const QString &pRepoName, const QUrl &pRepoUrl );
+    void removeRepo( const QString &pRepoName );
+
+    void setRepoUrl( const QString &pRepoName, const QUrl &pRepoUrl );
+    void setRepoAuthor( const QString &pRepoName, const QString &pAuthor );
+    void setRepoDescription( const QString &pRepoName, const QString &pDescription );
+    void setRepoContact( const QString &pRepoName, const QString &pContact );
+
+    QUrl repoUrl( const QString &pRepoName ) const;
+
+    QStringList repoNames( void );
+
+private:
+    QSettings       m_Config;
 };
 
 class PluginManager : public QObject

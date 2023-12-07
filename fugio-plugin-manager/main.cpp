@@ -131,6 +131,8 @@ int main(int argc, char *argv[])
 		CommandLine.showHelp();
 	}
 
+    PluginRepoManifest PRM( "D:/fugio-manifest.json", "win64" );
+
 	//-------------------------------------------------------------------------
 
 	if( verbose )

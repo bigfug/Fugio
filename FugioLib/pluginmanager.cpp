@@ -14,6 +14,7 @@
 
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
+#include <QJsonArray>
 
 #include <QDebug>
 
@@ -585,6 +586,275 @@ bool PluginActionDownload::action()
     m_Loop.exec();
 
     Manager->deleteLater();
+
+    return( true );
+}
+
+PluginRepoManifest::PluginRepoManifest( const QString &pFileName, const QString &pPlatform )
+{
+    QFile   RepoFile( pFileName );
+
+    if( !RepoFile.open( QFile::ReadOnly ) )
+    {
+        return;
+    }
+
+    QJsonParseError	JsonError;
+
+    QJsonDocument	JSON = QJsonDocument::fromJson( RepoFile.readAll(), &JsonError );
+
+    if( JSON.isNull() )
+    {
+        return;
+    }
+
+    QJsonObject      PluginArray = JSON[ "plugins" ].toObject();
+
+    for( const QString &PluginKey : PluginArray.keys() )
+    {
+        QJsonObject VersionObject = PluginArray.value( PluginKey ).toObject();
+
+        for( const QString &PluginVersionKey : VersionObject.keys() )
+        {
+            QVersionNumber  PluginVersion = QVersionNumber::fromString( PluginVersionKey );
+
+            if( !PluginVersion.isNull() )
+            {
+                QJsonObject PlatformObject = VersionObject.value( PluginVersionKey ).toObject();
+
+                for( const QString &PluginPlatformKey : PlatformObject.keys() )
+                {
+                    QUrl     Url( PlatformObject.value( PluginPlatformKey ).toString() );
+
+                    if( pPlatform == PluginPlatformKey )
+                    {
+                        qDebug() << PluginPlatformKey << Url;
+
+                        PluginRepoManifest::PluginEntry  PlugPair = m_PluginMap.value( PluginKey );
+
+                        if( PlugPair.first.isNull() || PluginVersion > PlugPair.first )
+                        {
+                            PlugPair.first = PluginVersion;
+                            PlugPair.second = Url;
+
+                            m_PluginMap.insert( PluginKey, PlugPair );
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+PluginConfig::PluginConfig(const QString &pFileName)
+    : m_Config( pFileName, QSettings::IniFormat )
+{
+
+}
+
+QVersionNumber PluginConfig::installedPluginVersion( const QString &pPluginName )
+{
+    QVersionNumber      PluginVersion;
+
+    m_Config.beginGroup( pPluginName );
+
+    PluginVersion = QVersionNumber::fromString( m_Config.value( "installed" ).toString() );
+
+    m_Config.endGroup();
+
+    return( PluginVersion );
+}
+
+void PluginConfig::setInstalledPluginVersion( const QString &pPluginName, const QVersionNumber &pPluginVersion)
+{
+    m_Config.beginGroup( pPluginName );
+
+    if( pPluginVersion.isNull() )
+    {
+        m_Config.remove( "installed" );
+    }
+    else
+    {
+        m_Config.setValue( "installed", pPluginVersion.toString() );
+    }
+
+    m_Config.endGroup();
+}
+
+void PluginConfig::setCachedPluginFilename(const QString &pPluginName, const QVersionNumber &pPluginVersion, const QString &pFileName)
+{
+    m_Config.beginGroup( pPluginName );
+
+    if( pFileName.isEmpty() )
+    {
+        m_Config.remove( pPluginVersion.toString() );
+    }
+    else
+    {
+        m_Config.setValue( pPluginVersion.toString(), pFileName );
+    }
+
+    m_Config.endGroup();
+}
+
+void PluginConfig::addRepo( const QString &pRepoName, const QUrl &pRepoUrl )
+{
+    m_Config.beginGroup( "repositories" );
+
+    if( !m_Config.contains( pRepoName ) )
+    {
+        m_Config.beginGroup( pRepoName );
+
+        m_Config.setValue( "url", pRepoUrl.toString() );
+
+        m_Config.endGroup();
+    }
+
+    m_Config.endGroup();
+}
+
+void PluginConfig::removeRepo(const QString &pRepoName)
+{
+    m_Config.beginGroup( "repositories" );
+
+    m_Config.remove( pRepoName );
+
+    m_Config.endGroup();
+}
+
+void PluginConfig::setRepoUrl(const QString &pRepoName, const QUrl &pRepoUrl)
+{
+    QString     RepoKey = QString( "repositories/%1/url" ).arg( pRepoName );
+
+    m_Config.setValue( RepoKey, pRepoUrl );
+}
+
+void PluginConfig::setRepoAuthor(const QString &pRepoName, const QString &pAuthor)
+{
+    QString     RepoKey = QString( "repositories/%1/author" ).arg( pRepoName );
+
+    m_Config.setValue( RepoKey, pAuthor );
+}
+
+void PluginConfig::setRepoDescription(const QString &pRepoName, const QString &pDescription)
+{
+    QString     RepoKey = QString( "repositories/%1/description" ).arg( pRepoName );
+
+    m_Config.setValue( RepoKey, pDescription );
+}
+
+void PluginConfig::setRepoContact(const QString &pRepoName, const QString &pContact)
+{
+    QString     RepoKey = QString( "repositories/%1/contact" ).arg( pRepoName );
+
+    m_Config.setValue( RepoKey, pContact );
+}
+
+QUrl PluginConfig::repoUrl(const QString &pRepoName) const
+{
+    QString     RepoKey = QString( "repositories/%1/author" ).arg( pRepoName );
+
+    return( m_Config.value( RepoKey ).toUrl() );
+}
+
+QStringList PluginConfig::repoNames()
+{
+    QStringList     RepoNames;
+
+    m_Config.beginGroup( "repositories" );
+
+    RepoNames = m_Config.childGroups();
+
+    m_Config.endGroup();
+
+    return( RepoNames );
+}
+
+QString PluginConfig::cachedPluginFilename(const QString &pPluginName, const QVersionNumber &pPluginVersion)
+{
+    QString     FileName;
+
+    m_Config.beginGroup( pPluginName );
+
+    FileName = m_Config.value( pPluginVersion.toString() ).toString();
+
+    m_Config.endGroup();
+
+    return( FileName );
+}
+
+bool PluginActionRemove::action()
+{
+    QDir    DestBase( m_DestName );
+
+    struct zip_t *zfh = zip_open( qPrintable( m_FileName ), 0, 'r' );
+
+    if( !zfh )
+    {
+        emit error( tr( "Couldn't open zip file" ) );
+
+        return( false );
+    }
+
+    const int PluginEntries = zip_total_entries( zfh );
+
+    for( int i = 0 ; i < PluginEntries ; i++ )
+    {
+        if( zip_entry_openbyindex( zfh, i ) != 0 )
+        {
+            return( false );
+        }
+
+        QFileInfo	FI( zip_entry_name( zfh ) );
+
+        QStringList FP = FI.filePath().split( '/', Qt::SkipEmptyParts );
+        QString FD = FP.first();
+
+        //            qDebug() << FI.filePath() << FI.isDir() << FI.isFile() << FP << FD;
+
+        if( zip_entry_isdir( zfh ) )
+        {
+            //printf( "%s (dir)\n", zip_entry_name( zfh ) );
+        }
+        else
+        {
+            printf( "%s (file)\n", zip_entry_name( zfh ) );
+
+            static const QStringList  Dirs = { "plugins", "examples", "include" };
+
+            if( Dirs.contains( FD ) )
+            {
+                QDir    FileBase( DestBase );
+
+                QString FileName = FP.takeLast();
+
+                QString FilePath = FP.join( '/' );
+
+                if( FileBase.mkpath( FilePath ) )
+                {
+                    QFile   DestFile( FileBase.absoluteFilePath( FI.filePath() ) );
+
+                    if( DestFile.exists() )
+                    {
+                        if( !DestFile.remove() )
+                        {
+                            return( false );
+                        }
+                    }
+                }
+
+                qDebug() << "plugin" << FP.join( '/' );
+            }
+            else
+            {
+                qDebug() << "unknown" << FD << FP.join( '/' );
+            }
+        }
+
+        zip_entry_close( zfh );
+    }
+
+    zip_close( zfh );
 
     return( true );
 }
