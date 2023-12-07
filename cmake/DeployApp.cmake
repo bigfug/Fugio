@@ -53,12 +53,11 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release AND FUGIO_BUILD_DIST )
 		--no-compiler-runtime
 		--no-angle
 		--no-opengl-sw
-				--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets
-				--qmldir "${CMAKE_SOURCE_DIR}/qml"
-				--dir "${ABS_BINARY_DIR}/${PATH_APP}"
-				--libdir "${ABS_BINARY_DIR}/${PATH_APP}"
-				--plugindir "${ABS_BINARY_DIR}/${PATH_APP}"
-				\"$<TARGET_FILE:${PROJECT_NAME}>\"
+		--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets
+		--dir "${ABS_BINARY_DIR}/${PATH_APP}"
+		--libdir "${ABS_BINARY_DIR}/${PATH_APP}"
+		--plugindir "${ABS_BINARY_DIR}/${PATH_APP}"
+		\"$<TARGET_FILE:${PROJECT_NAME}>\"
 	)
 
 	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_$<CONFIG>_path"
@@ -72,17 +71,16 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release AND FUGIO_BUILD_DIST )
 		file(READ \"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_Release_path\" _file)
 		execute_process(
 			COMMAND \"${WINDEPLOYQT_EXECUTABLE}\"
-					--dry-run
-					--no-compiler-runtime
-					--no-angle
-					--no-opengl-sw
-					--list mapping
-					--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets
-					--qmldir \"${CMAKE_SOURCE_DIR}/qml\"
-					--dir \"${ABS_BINARY_DIR}/${PATH_APP}\"
-					--libdir \"${ABS_BINARY_DIR}/${PATH_APP}\"
-					--plugindir \"${ABS_BINARY_DIR}/${PATH_APP}\"
-					\${_file}
+			--dry-run
+			--no-compiler-runtime
+			--no-angle
+			--no-opengl-sw
+			--list mapping
+			--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets
+			--dir \"${ABS_BINARY_DIR}/${PATH_APP}\"
+			--libdir \"${ABS_BINARY_DIR}/${PATH_APP}\"
+			--plugindir \"${ABS_BINARY_DIR}/${PATH_APP}\"
+			\${_file}
 			OUTPUT_VARIABLE _output
 			OUTPUT_STRIP_TRAILING_WHITESPACE
 		)
