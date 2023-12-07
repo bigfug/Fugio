@@ -21,7 +21,7 @@ jobs:
       # Set up a matrix to run the following 3 configurations:
       # 1. <Windows, Release, latest MSVC compiler toolchain on the default runner image, default generator>
       # 2. <Linux, Release, latest GCC compiler toolchain on the default runner image, default generator>
-      # 3. <macOS, Release, latest GCC compiler toolchain on the default runner image, default generator>
+      # 3. <macOS, Release, latest clang compiler toolchain on the default runner image, default generator - NOT SIGNED (YET)>
 
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
@@ -39,7 +39,7 @@ jobs:
             cpp_compiler: g++
             qt_host: linux
             qt_arch: gcc_64
-            cpack_generators: -DCPACK_BINARY_RPM=TRUE -DCPACK_BINARY_TGZ=FALSE -DCPACK_BINARY_STGZ=FALSE
+            cpack_generators: -DCPACK_BINARY_TGZ=TRUE -DCPACK_BINARY_TZ=FALSE -DCPACK_BINARY_STGZ=FALSE
           - os: macos-latest
             c_compiler: clang
             cpp_compiler: clang++
@@ -112,7 +112,7 @@ jobs:
     - name: Archive outputs
       uses: actions/upload-artifact@v3
       with:
-        name: fugio-ci
+        name: fugio-nightly
         path: |
           ${{ github.workspace }}/package
           !${{ github.workspace }}/package/_CPack_Packages

@@ -133,7 +133,6 @@ if( APPLE AND CMAKE_BUILD_TYPE STREQUAL Release AND FUGIO_BUILD_DIST )
 		COMMAND "${MACDEPLOYQT_EXECUTABLE}"
 			"$<TARGET_FILE_DIR:${PROJECT_NAME}>/../.."
 			-always-overwrite
-			-qmldir=${CMAKE_SOURCE_DIR}/qml
 		COMMENT "Running macdeployqt..."
 	)
 
