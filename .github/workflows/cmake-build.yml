@@ -1,5 +1,5 @@
 
-name: Build Fugio with CMake on multiple platforms
+name: Fugio/CI
 
 on:
   push:
@@ -96,4 +96,6 @@ jobs:
     - name: Archive outputs
       uses: actions/upload-artifact@v3
       with:
-        path: ${{ github.workspace }}/package !${{ github.workspace }}/package/_CPack_Packages
+        path: |
+          ${{ github.workspace }}/package
+          !${{ github.workspace }}/package/_CPack_Packages
