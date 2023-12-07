@@ -1,3 +1,5 @@
+[![Fugio/Nightly](https://github.com/bigfug/Fugio/actions/workflows/cmake-build.yml/badge.svg?branch=develop)](https://github.com/bigfug/Fugio/actions/workflows/cmake-build.yml)
+
 # Fugio
 Fugio is an open visual programming system for creating digital art, learning programming, and making cool stuff with hardware such as the Oculus Rift, Kinect, Arduino, Leap Motion, and any MIDI, OSC, TUIO, or DMX enabled thing.
 
