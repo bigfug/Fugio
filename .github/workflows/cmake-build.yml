@@ -1,12 +1,15 @@
 
-name: Fugio/CI
+name: Fugio/Nightly
 
 on:
   push:
     branches: [ "feature/GitHub_Build" ]
   pull_request:
     branches: [ "feature/GitHub_Build" ]
-
+  schedule:
+    # build nightly at 2:30AM
+    - cron:  '30 2 * * *'
+    
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -21,7 +24,7 @@ jobs:
       # 3. <macOS, Release, latest GCC compiler toolchain on the default runner image, default generator>
 
       matrix:
-        os: [ubuntu-latest] #windows-latest, ubuntu-latest, macos-latest
+        os: [windows-latest, ubuntu-latest, macos-latest]
         build_type: [Release]
         c_compiler: [gcc, cl, clang]
         include:
@@ -30,16 +33,19 @@ jobs:
             cpp_compiler: cl
             qt_host: windows
             qt_arch: win64_msvc2019_64
+            cpack_generators: -DCPACK_BINARY_NSIS=TRUE -DCPACK_BINARY_ZIP=TRUE
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
             qt_host: linux
             qt_arch: gcc_64
+            cpack_generators: -DCPACK_BINARY_RPM=TRUE -DCPACK_BINARY_TGZ=FALSE -DCPACK_BINARY_STGZ=FALSE
           - os: macos-latest
             c_compiler: clang
             cpp_compiler: clang++
             qt_host: mac
             qt_arch: clang_64
+            cpack_generators: -DDCPACK_BINARY_DRAGNDROP=TRUE -DCPACK_BINARY_ZIP=TRUE
         exclude:
           - os: windows-latest
             c_compiler: gcc
@@ -86,6 +92,7 @@ jobs:
         -DCPACK_PACKAGE_DIRECTORY=${{ github.workspace }}/package
         -DFUGIO_API=${{ github.workspace }}/Fugio/include
         -DFUGIO_BUILD_DIST=TRUE
+        ${{ matrix.cpack_generators }}
         -S ${{ github.workspace }}
 
     - name: Build
