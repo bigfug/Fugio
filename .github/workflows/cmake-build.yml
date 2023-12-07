@@ -74,6 +74,7 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DCPACK_PACKAGE_DIRECTORY=${{ github.workspace }}/package
         -DFUGIO_API=${{ github.workspace }}/Fugio/include
         -DFUGIO_BUILD_DIST=TRUE
         -S ${{ github.workspace }}
@@ -90,7 +91,7 @@ jobs:
 
     - name: Package
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      run: cmake --build . --config ${{ matrix.build_type }} --target package -DCPACK_PACKAGE_DIRECTORY=${{ github.workspace }}/package
+      run: cmake --build . --config ${{ matrix.build_type }} --target package
 
     - name: Archive outputs
       uses: actions/upload-artifact@v3
