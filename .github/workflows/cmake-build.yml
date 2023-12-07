@@ -29,6 +29,8 @@ jobs:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
+            qt_host: windows
+            qt_arch: win64_msvc2019_64
          #  - os: ubuntu-latest
             # c_compiler: gcc
             # cpp_compiler: g++
@@ -55,15 +57,14 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    # temp for Windows only
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==3.1.*'
         version: '5.15.2'
-        host: 'windows'
+        host: ${{ matrix.qt_host }}
         target: 'desktop'
-        arch: 'win64_msvc2019_64'
+        arch: ${{ matrix.qt_arch }}
         
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -89,4 +90,11 @@ jobs:
 
     - name: Package
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      run: cmake --build . --config ${{ matrix.build_type }} --target package
+      run: cmake --build . --config ${{ matrix.build_type }} --target package -DCPACK_PACKAGE_DIRECTORY=${{ github.workspace }}/package
+
+    - name: Archive outputs
+      uses: actions/upload-artifact@v3
+      with:
+        name: Fugio
+        path: ${{ github.workspace }}/package
+        retention-days: 5
