@@ -6,9 +6,6 @@ on:
     branches: [ "develop" ]
   pull_request:
     branches: [ "develop" ]
-  schedule:
-    # build nightly at 2:30AM
-    - cron:  '30 2 * * *'
     
 jobs:
   build:
