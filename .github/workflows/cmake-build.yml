@@ -1,6 +1,8 @@
 
 name: Build Fugio with CMake on multiple platforms
 
+on:
+  workflow_dispatch
 # on:
 #   push:
 #   branches: [ $default-branch ]
