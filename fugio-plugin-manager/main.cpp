@@ -178,33 +178,54 @@ int main(int argc, char *argv[])
 			printf( "Performing 'info' on '%s'...\n", qPrintable( UrlTxt ) );
 		}
 
-        QUrl	Url( UrlTxt );
-
-        if( Url.scheme().isEmpty() )
+        if( !QFile::exists( UrlTxt ) )
         {
-            Url = QUrl::fromLocalFile( UrlTxt );
-		}
+            QUrl	Url( UrlTxt );
 
-        qDebug() << Url;
-        qDebug() << QSslSocket::supportsSsl();
-        qDebug() << QSslSocket::sslLibraryVersionString();
+            if( Url.scheme().isEmpty() )
+            {
+                Url = QUrl::fromLocalFile( UrlTxt );
+            }
 
-        PluginActionDownload    Action( Url, "test-download.png" );
+            if( !Url.isLocalFile() )
+            {
+                qDebug() << Url;
+                qDebug() << QSslSocket::supportsSsl();
+                qDebug() << QSslSocket::sslLibraryVersionString();
 
-        QObject::connect( &Action, &PluginActionDownload::status, [&]( const QString &pStatus )
+                PluginActionDownload    Action( Url, "test-download.png" );
+
+                QObject::connect( &Action, &PluginActionDownload::status, [&]( const QString &pStatus )
+                                 {
+
+                                 });
+
+                QObject::connect( &Action, &PluginActionDownload::downloadProgress, [&]( qint64 bytesReceived, qint64 bytesTotal )
+                                 {
+                                     progressBar( float( bytesReceived ) / float( bytesTotal ) );
+                                 });
+
+                Action.action();
+
+                std::cout << std::endl;
+            }
+        }
+
+        QFileInfo   LocalFile( UrlTxt );
+
+        if( !LocalFile.exists() )
         {
+            exit( 1 );
+        }
 
+        PluginActionInstall     ActionInstall( UrlTxt, "D:\\dev\\projects\\Fugio\\Fugio-4.0.0-win64" );
+
+        QObject::connect( &ActionInstall, &PluginActionInstall::status, [&]( const QString &pStatus )
+                         {
+            qInfo() << pStatus;
         });
 
-        QObject::connect( &Action, &PluginActionDownload::downloadProgress, [&]( qint64 bytesReceived, qint64 bytesTotal )
-        {
-            progressBar( float( bytesReceived ) / float( bytesTotal ) );
-         });
-
-        Action.action();
-
-        std::cout << std::endl;
-
+        ActionInstall.action();
 
         // TODO: if it's a remote file, copy to a plugin cache location
 

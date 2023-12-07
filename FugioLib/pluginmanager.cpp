@@ -463,7 +463,7 @@ bool PluginActionInstall::action()
         QFileInfo	FI( zip_entry_name( zfh ) );
 
         QStringList FP = FI.filePath().split( '/', Qt::SkipEmptyParts );
-        QString FD = FP.takeFirst();
+        QString FD = FP.first();
 
         //            qDebug() << FI.filePath() << FI.isDir() << FI.isFile() << FP << FD;
 
@@ -475,57 +475,35 @@ bool PluginActionInstall::action()
         {
             printf( "%s (file)\n", zip_entry_name( zfh ) );
 
-            if( FD == "plugin" )
+            static const QStringList  Dirs = { "plugins", "examples", "include" };
+
+            if( Dirs.contains( FD ) )
             {
                 QDir    FileBase( DestBase );
 
-                for( i = 0 ; i < FP.size() ; i++ )
+                QString FileName = FP.takeLast();
+
+                QString FilePath = FP.join( '/' );
+
+                if( FileBase.mkpath( FilePath ) )
                 {
-                    const QString &FilePart = FP.at( i );
+                    QFile   DestFile( FileBase.absoluteFilePath( FI.filePath() ) );
 
-                    if( i == FP.size() - 1 )
+                    if( DestFile.open( QFile::WriteOnly | QFile::NewOnly ) )
                     {
-                        QFile   DestFile( FilePart );
-
-                        if( DestFile.open( QFile::WriteOnly | QFile::NewOnly ) )
+                        if( zip_entry_extract( zfh, &PluginActionInstall::on_extract, &DestFile ) )
                         {
-                            if( !zip_entry_extract( zfh, &PluginActionInstall::on_extract, &DestFile ) )
-                            {
-                                return( false );
-                            }
+                            return( false );
                         }
-                    }
-                    else
-                    {
-                        if( !FileBase.exists( FilePart ) )
-                        {
-                            FileBase.mkdir( FilePart );
-                        }
-
-                        FileBase.cd( FilePart );
                     }
                 }
 
                 qDebug() << "plugin" << FP.join( '/' );
             }
-            else if( FD == "examples" )
-            {
-                qDebug() << "examples" << FP.join( '/' );
-            }
-            else if( FD == "include" )
-            {
-                qDebug() << "include" << FP.join( '/' );
-            }
-            else if( FD == "libs" )
-            {
-                qDebug() << "libs" << FP.join( '/' );
-            }
             else
             {
                 qDebug() << "unknown" << FD << FP.join( '/' );
             }
-
-            FI.baseName();
         }
 
         zip_entry_close( zfh );
