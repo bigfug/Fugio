@@ -116,6 +116,10 @@ private:
 
 };
 
+/*!
+ * \brief The PluginRepoManifest class contains a single repository manifest
+ */
+
 class PluginRepoManifest
 {
 public:
@@ -163,34 +167,91 @@ private:
     QMultiMap<QString, PluginEntry>  m_PluginVersionMap;
 };
 
+/*!
+ * \brief The PluginConfig class contains what plugins are installed for an instance of Fugio
+ */
+
 class PluginConfig
 {
 public:
     PluginConfig( const QString &pFileName );
 
-    QVersionNumber installedPluginVersion( const QString &pPluginName );
-
-    QString cachedPluginFilename( const QString &pPluginName, const QVersionNumber &pPluginVersion );
+    QVersionNumber installedPluginVersion( const QString &pPluginName ) const;
 
     void setInstalledPluginVersion( const QString &pPluginName, const QVersionNumber &pPluginVersion );
 
-    void setCachedPluginFilename( const QString &pPluginName, const QVersionNumber &pPluginVersion, const QString &pFileName );
-
-    void addRepo( const QString &pRepoName, const QUrl &pRepoUrl );
-    void removeRepo( const QString &pRepoName );
-
-    void setRepoUrl( const QString &pRepoName, const QUrl &pRepoUrl );
-    void setRepoAuthor( const QString &pRepoName, const QString &pAuthor );
-    void setRepoDescription( const QString &pRepoName, const QString &pDescription );
-    void setRepoContact( const QString &pRepoName, const QString &pContact );
-
-    QUrl repoUrl( const QString &pRepoName ) const;
-
-    QStringList repoNames( void );
+	QStringList installedPlugins( void );
 
 private:
     QSettings       m_Config;
 };
+
+/*!
+ * \brief The PluginArchive class
+ */
+
+class PluginArchive
+{
+public:
+	PluginArchive( const QString &pFileName );
+
+	bool moveArchive( const QString &pDestName );
+
+	bool isManifestValid( void ) const;
+
+private:
+	QString			m_FileName;
+	QJsonDocument	m_Manifest;
+};
+
+/*!
+ * \brief The PluginCache class controls all the caching of repositories and plugin versions
+ */
+
+class PluginCache
+{
+public:
+	PluginCache( void );
+
+	virtual ~PluginCache( void );
+
+	QString cachedPluginFilename( const QString &pPluginName, const QVersionNumber &pPluginVersion ) const;
+
+
+	void setCachedPluginFilename( const QString &pPluginName, const QVersionNumber &pPluginVersion, const QString &pFileName );
+
+	void addRepo( const QString &pRepoName, const QUrl &pRepoUrl );
+	void removeRepo( const QString &pRepoName );
+
+	QUrl repoUrl( const QString &pRepoName ) const;
+
+	QStringList repoNames( void );
+
+	// Directory of plugin repositories manifest files
+
+	QDir repoCacheDirectory( void ) const
+	{
+		return( mRepoCacheDir );
+	}
+
+	// Directory where Fugio stores all the plugin cache data
+
+	QDir pluginCacheDirectory() const;
+
+	// Filename for the plugin config
+
+	QString pluginConfigFilename( void ) const;
+
+private:
+	QSettings		 *m_Config;
+	QDir		      mPluginConfigDir;
+	QDir			  mPluginCacheDir;
+	QDir			  mRepoCacheDir;
+};
+
+/*!
+ * \brief The PluginManager class
+ */
 
 class PluginManager : public QObject
 {
@@ -239,28 +300,17 @@ public:
         return( mPluginInstances );
     }
 
+	// Directory where installed plugins are located
+
+	QDir pluginDirectory() const;
+
     void setPluginDirectory( const QDir &pPluginDirectory )
     {
         mPluginDirectory = pPluginDirectory;
     }
 
-    QDir pluginDirectory() const;
-
-    QDir pluginCacheDirectory() const;
-    void setPluginCacheDirectory(const QDir &newPluginCacheDirectory);
-
-    QString pluginConfigFilename( void ) const;
-
-    void downloadPluginToTemp( const QUrl &pUrl );
-
-    PluginActionInstall deployPlugin( const QString &pFileName, const QString &pDestDir ) const;
-
-    QJsonDocument pluginManifest( const QString &pFileName ) const;
-
 private:
     QDir                             mPluginDirectory;
-    QDir                             mPluginConfigDir;
-    QDir                             mPluginCacheDir;
 
     QStringList						 mEnabledPlugins;
     QStringList						 mDisabledPlugins;

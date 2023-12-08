@@ -52,35 +52,29 @@ int main(int argc, char *argv[])
 
     PluginManager       PM;
 
-    qDebug() << PM.pluginConfigFilename();
+	PluginCache			PC;
 
-    QSettings FugioPluginSettings( PM.pluginConfigFilename(), QSettings::IniFormat );
-
-    qDebug() << FugioPluginSettings.fileName();
-
-    FugioPluginSettings.setValue( "test", "test" );
+    qDebug() << PC.pluginConfigFilename();
 
 	//-------------------------------------------------------------------------
 	// Set up the arguments for the command line parser.
 
 	QCommandLineParser  CommandLine;
 
+	CommandLine.setOptionsAfterPositionalArgumentsMode( QCommandLineParser::ParseAsOptions );
 	CommandLine.setApplicationDescription("Command line control of Fugio plugins");
 	CommandLine.addVersionOption();
+	CommandLine.addHelpOption();
 
 	// Add our own help option (instead of addHelpOption()) so we can offer help for each command
-	QCommandLineOption helpOption(QStringList() << "h" << "help",
-								   QCoreApplication::translate("main", "Help"));
-	CommandLine.addOption(helpOption);
+	// QCommandLineOption helpOption(QStringList() << "h" << "help",
+	// 							   QCoreApplication::translate("main", "Help"));
+	// CommandLine.addOption(helpOption);
 
 	// Verbose
 	QCommandLineOption verboseOption( "V", QCoreApplication::translate("main", "Verbose reporting"));
 
 	CommandLine.addOption(verboseOption);
-
-	// The command we have to execute
-
-	CommandLine.addPositionalArgument( "command", QCoreApplication::translate( "main", "The command to execute." ), "<install|info>" );
 
 	// The directory where Fugio is installed
 
@@ -91,10 +85,58 @@ int main(int argc, char *argv[])
     CommandLine.addOption( PluginConfigOption );
 
 	//-------------------------------------------------------------------------
+	// The command we have to execute
+
+	CommandLine.addPositionalArgument( "command", "repo add\nrepo rem\nrepo list", "<command> [args]" );
+
+
+	//-------------------------------------------------------------------------
 	// Process the command line
 
-	CommandLine.process( QCoreApplication::arguments() );
+	QTextStream cout(stdout);
+	QTextStream cerr(stderr);
 
+	CommandLine.process( a.arguments() );
+
+	QStringList args = CommandLine.positionalArguments();
+	if (args.isEmpty()) {
+		qDebug() << args;
+		cerr << "Missing subcommand!\n";
+		CommandLine.showHelp( 1 );
+		return 1;
+	}
+
+	const QString subCommand = args.first();
+	if (subCommand == "repo") {
+		CommandLine.addPositionalArgument("command", "The repo command");
+	} else if (subCommand == "pull") {
+		CommandLine.addPositionalArgument("branch", "The remote branch to pull from.");
+	} else if (subCommand == "push") {
+		CommandLine.addPositionalArgument("branch", "The remote branch to push to.");
+	} else {
+		cerr << "Invalid subcommand!" << endl;
+		cerr << CommandLine.helpText();
+	}
+
+	CommandLine.parse(a.arguments());
+	CommandLine.clearPositionalArguments();
+	args = CommandLine.positionalArguments();
+
+	if (args.size() < 2) {
+		cerr << "Missing command line parameter" << endl;
+		CommandLine.showHelp( 1 );
+	}
+
+	qDebug() << args;
+
+	// qDebug() << CommandLine.positionalArguments();
+
+	fputs( qPrintable( CommandLine.helpText().toLatin1() ), stdout );
+
+	//CommandLine.process( QCoreApplication::arguments() );
+
+#if 0
+	//CommandLine.addPositionalArgument( "command", QCoreApplication::translate( "main", "The command to execute." ), "<install|info>" );
 	// Did the user request help?
 
 	bool help = CommandLine.isSet(helpOption);
@@ -115,6 +157,18 @@ int main(int argc, char *argv[])
 	{
 		CommandLine.clearPositionalArguments();
 		CommandLine.addPositionalArgument( "info", "show info from a package", "info [url]");
+		CommandLine.process(a);
+	}
+	else if( command == "repo" )
+	{
+		CommandLine.clearPositionalArguments();
+		CommandLine.addPositionalArgument( "repo", "Repository command", "repo [command]");
+		CommandLine.process(a);
+	}
+	else if( command == "repo-add" )
+	{
+		CommandLine.clearPositionalArguments();
+		CommandLine.addPositionalArgument( "repo-add", "Add a plugin repository from a URL", "repo-add [url]");
 		CommandLine.process(a);
 	}
 	else
@@ -238,6 +292,7 @@ int main(int argc, char *argv[])
 		qDebug() << authorName;
 #endif
 	}
+#endif
 
     return( 0 ) ;//a.exec() );
 }

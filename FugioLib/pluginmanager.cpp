@@ -33,30 +33,6 @@
 
 PluginManager::PluginManager()
 {
-    mPluginConfigDir = QDir( QStandardPaths::writableLocation( QStandardPaths::GenericDataLocation ) );
-
-    if( !mPluginConfigDir.exists( "fugio-plugins" ) )
-    {
-        if( !mPluginConfigDir.mkdir( "fugio-plugins" ) )
-        {
-            exit( 1 );
-        }
-    }
-
-    if( !mPluginConfigDir.cd( "fugio-plugins" ) )
-    {
-        exit( 1 );
-    }
-
-    if( !mPluginConfigDir.exists( "plugin-cache" ) )
-    {
-        if( !mPluginConfigDir.mkdir( "plugin-cache" ) )
-        {
-            exit( 1 );
-        }
-    }
-
-    mPluginCacheDir = QDir( mPluginConfigDir.absoluteFilePath( "plugin-cache" ) );
 }
 
 void PluginManager::loadPlugins(QDir pDir)
@@ -313,93 +289,6 @@ QDir PluginManager::pluginDirectory() const
     return mPluginDirectory;
 }
 
-QDir PluginManager::pluginCacheDirectory() const
-{
-    return mPluginCacheDir;
-}
-
-void PluginManager::setPluginCacheDirectory(const QDir &newPluginCacheDirectory)
-{
-    mPluginCacheDir = newPluginCacheDirectory;
-}
-
-QString PluginManager::pluginConfigFilename() const
-{
-    return( mPluginConfigDir.absoluteFilePath( "fugio-plugin-config.ini" ) );
-}
-
-QJsonDocument PluginManager::pluginManifest(const QString &pFileName) const
-{
-    const bool verbose = true;
-
-    struct zip_t *zfh = zip_open( qPrintable( pFileName ), 0, 'r' );
-
-    if( !zfh )
-    {
-        fputs( "Couldn't open zip file", stderr );
-
-        return( QJsonDocument() );
-    }
-
-    const int PluginEntries = zip_total_entries( zfh );
-
-    if( verbose )
-    {
-        printf( "Files in plugin zip archive: %d\n", PluginEntries );
-    }
-
-    if( zip_entry_open( zfh, "manifest.json" ) )
-    {
-        fputs( "error finding manifest.json in archive", stderr );
-
-        return( QJsonDocument() );
-    }
-
-    const int ManifestSize = zip_entry_size( zfh );
-
-    if( verbose )
-    {
-        printf( "manifest.json size is %d bytes\n", ManifestSize );
-    }
-
-    QByteArray		ManifestData;
-
-    ManifestData.resize( ManifestSize );
-
-    const int ManifestRead = zip_entry_noallocread( zfh, ManifestData.data(), ManifestData.size() );
-
-    if( ManifestRead != ManifestSize )
-    {
-        fprintf( stderr, "Manifest read error: got %d - wanted %d bytes\n", ManifestRead, ManifestSize );
-
-        return( QJsonDocument() );
-    }
-
-    if( verbose )
-    {
-        fwrite( ManifestData.constData(), ManifestRead, 1, stdout );
-    }
-
-    zip_entry_close( zfh );
-
-    zip_close( zfh );
-
-    // we have the raw manifest file in memory - parse it
-
-    QJsonParseError	JsonError;
-
-    QJsonDocument	JSON = QJsonDocument::fromJson( ManifestData, &JsonError );
-
-    if( JSON.isNull() )
-    {
-        fprintf( stderr, "%s\n", qPrintable( JsonError.errorString() ) );
-
-        return( QJsonDocument() );
-    }
-
-    return( JSON );
-}
-
 bool PluginActionInstall::action()
 {
     QDir    DestBase( m_DestName );
@@ -414,45 +303,6 @@ bool PluginActionInstall::action()
     }
 
     const int PluginEntries = zip_total_entries( zfh );
-
-    //    if( verbose )
-    //    {
-    //        printf( "Files in plugin zip archive: %d\n", PluginEntries );
-    //    }
-
-    //    if( zip_entry_open( zfh, "manifest.json" ) )
-    //    {
-    //        fputs( "error finding manifest.json in archive", stderr );
-
-    //        exit( 1 );
-    //    }
-
-    //    const int ManifestSize = zip_entry_size( zfh );
-
-    //    if( verbose )
-    //    {
-    //        printf( "manifest.json size is %d bytes\n", ManifestSize );
-    //    }
-
-    //    QByteArray		ManifestData;
-
-    //    ManifestData.resize( ManifestSize );
-
-    //    const int ManifestRead = zip_entry_noallocread( zfh, ManifestData.data(), ManifestData.size() );
-
-    //    if( ManifestRead != ManifestSize )
-    //    {
-    //        fprintf( stderr, "Manifest read error: got %d - wanted %d bytes\n", ManifestRead, ManifestSize );
-
-    //        exit( 1 );
-    //    }
-
-    //    if( verbose )
-    //    {
-    //        fwrite( ManifestData.constData(), ManifestRead, 1, stdout );
-    //    }
-
-    //    zip_entry_close( zfh );
 
     for( int i = 0 ; i < PluginEntries ; i++ )
     {
@@ -616,29 +466,30 @@ PluginRepoManifest::PluginRepoManifest( const QString &pFileName, const QString 
 
         for( const QString &PluginVersionKey : VersionObject.keys() )
         {
-            QVersionNumber  PluginVersion = QVersionNumber::fromString( PluginVersionKey );
+			PluginRepoManifest::PluginEntry		CurrPlug;
 
-            if( !PluginVersion.isNull() )
+			CurrPlug.first = QVersionNumber::fromString( PluginVersionKey );
+
+            if( !CurrPlug.first.isNull() )
             {
                 QJsonObject PlatformObject = VersionObject.value( PluginVersionKey ).toObject();
 
                 for( const QString &PluginPlatformKey : PlatformObject.keys() )
                 {
-                    QUrl     Url( PlatformObject.value( PluginPlatformKey ).toString() );
+					CurrPlug.second = QUrl( PlatformObject.value( PluginPlatformKey ).toString() );
 
                     if( pPlatform == PluginPlatformKey )
                     {
-                        qDebug() << PluginPlatformKey << Url;
+                        qDebug() << PluginPlatformKey << CurrPlug.second;
 
-                        PluginRepoManifest::PluginEntry  PlugPair = m_PluginMap.value( PluginKey );
+                        QVersionNumber  PlugLatestVersion = m_PluginLatestMap.value( PluginKey );
 
-                        if( PlugPair.first.isNull() || PluginVersion > PlugPair.first )
+                        if( PlugLatestVersion.isNull() || PlugLatestVersion > CurrPlug.first )
                         {
-                            PlugPair.first = PluginVersion;
-                            PlugPair.second = Url;
+                            m_PluginLatestMap.insert( PluginKey, CurrPlug.first );
+						}
 
-                            m_PluginMap.insert( PluginKey, PlugPair );
-                        }
+						m_PluginVersionMap.insert( PluginKey, CurrPlug );
                     }
                 }
             }
@@ -652,135 +503,81 @@ PluginConfig::PluginConfig(const QString &pFileName)
 
 }
 
-QVersionNumber PluginConfig::installedPluginVersion( const QString &pPluginName )
+QVersionNumber PluginConfig::installedPluginVersion( const QString &pPluginName ) const
 {
-    QVersionNumber      PluginVersion;
+	QString		ConfigKey = QString( "installed/%1/version" ).arg( pPluginName );
 
-    m_Config.beginGroup( pPluginName );
-
-    PluginVersion = QVersionNumber::fromString( m_Config.value( "installed" ).toString() );
-
-    m_Config.endGroup();
-
-    return( PluginVersion );
+	return( QVersionNumber::fromString( m_Config.value( ConfigKey ).toString() ) );
 }
 
 void PluginConfig::setInstalledPluginVersion( const QString &pPluginName, const QVersionNumber &pPluginVersion)
 {
-    m_Config.beginGroup( pPluginName );
+    m_Config.beginGroup( "installed" );
 
     if( pPluginVersion.isNull() )
     {
-        m_Config.remove( "installed" );
+        m_Config.remove( pPluginName );
     }
     else
     {
-        m_Config.setValue( "installed", pPluginVersion.toString() );
+		m_Config.beginGroup( pPluginName );
+
+        m_Config.setValue( "version", pPluginVersion.toString() );
+
+		m_Config.endGroup();
     }
 
     m_Config.endGroup();
 }
 
-void PluginConfig::setCachedPluginFilename(const QString &pPluginName, const QVersionNumber &pPluginVersion, const QString &pFileName)
+void PluginCache::setCachedPluginFilename( const QString &pPluginName, const QVersionNumber &pPluginVersion, const QString &pFileName )
 {
-    m_Config.beginGroup( pPluginName );
+	QString		ConfigKey = QString( "cached/%1/%2" ).arg( pPluginName, pPluginVersion.toString() );
 
-    if( pFileName.isEmpty() )
-    {
-        m_Config.remove( pPluginVersion.toString() );
-    }
-    else
-    {
-        m_Config.setValue( pPluginVersion.toString(), pFileName );
-    }
+	if( pFileName.isEmpty() )
+	{
+		m_Config->remove( ConfigKey );
+	}
+	else
+	{
+		m_Config->setValue( ConfigKey, pFileName );
+	}
 
-    m_Config.endGroup();
+	m_Config->endGroup();
 }
 
-void PluginConfig::addRepo( const QString &pRepoName, const QUrl &pRepoUrl )
+void PluginCache::addRepo( const QString &pRepoName, const QUrl &pRepoUrl )
 {
-    m_Config.beginGroup( "repositories" );
+	QString     RepoKey = QString( "repositories/%1" ).arg( pRepoName );
 
-    if( !m_Config.contains( pRepoName ) )
-    {
-        m_Config.beginGroup( pRepoName );
-
-        m_Config.setValue( "url", pRepoUrl.toString() );
-
-        m_Config.endGroup();
-    }
-
-    m_Config.endGroup();
+	m_Config->setValue( RepoKey, pRepoUrl.toString() );
 }
 
-void PluginConfig::removeRepo(const QString &pRepoName)
+void PluginCache::removeRepo( const QString &pRepoName )
 {
-    m_Config.beginGroup( "repositories" );
+	QString     RepoKey = QString( "repositories/%1" ).arg( pRepoName );
 
-    m_Config.remove( pRepoName );
-
-    m_Config.endGroup();
+	m_Config->remove( RepoKey );
 }
 
-void PluginConfig::setRepoUrl(const QString &pRepoName, const QUrl &pRepoUrl)
+QUrl PluginCache::repoUrl( const QString &pRepoName ) const
 {
-    QString     RepoKey = QString( "repositories/%1/url" ).arg( pRepoName );
+	QString     RepoKey = QString( "repositories/%1" ).arg( pRepoName );
 
-    m_Config.setValue( RepoKey, pRepoUrl );
+	return( m_Config->value( RepoKey ).toUrl() );
 }
 
-void PluginConfig::setRepoAuthor(const QString &pRepoName, const QString &pAuthor)
+QStringList PluginConfig::installedPlugins()
 {
-    QString     RepoKey = QString( "repositories/%1/author" ).arg( pRepoName );
+	QStringList		PluginNames;
 
-    m_Config.setValue( RepoKey, pAuthor );
-}
+	m_Config.beginGroup( "installed" );
 
-void PluginConfig::setRepoDescription(const QString &pRepoName, const QString &pDescription)
-{
-    QString     RepoKey = QString( "repositories/%1/description" ).arg( pRepoName );
+	PluginNames = m_Config.childKeys();
 
-    m_Config.setValue( RepoKey, pDescription );
-}
+	m_Config.endGroup();
 
-void PluginConfig::setRepoContact(const QString &pRepoName, const QString &pContact)
-{
-    QString     RepoKey = QString( "repositories/%1/contact" ).arg( pRepoName );
-
-    m_Config.setValue( RepoKey, pContact );
-}
-
-QUrl PluginConfig::repoUrl(const QString &pRepoName) const
-{
-    QString     RepoKey = QString( "repositories/%1/author" ).arg( pRepoName );
-
-    return( m_Config.value( RepoKey ).toUrl() );
-}
-
-QStringList PluginConfig::repoNames()
-{
-    QStringList     RepoNames;
-
-    m_Config.beginGroup( "repositories" );
-
-    RepoNames = m_Config.childGroups();
-
-    m_Config.endGroup();
-
-    return( RepoNames );
-}
-
-QString PluginConfig::cachedPluginFilename(const QString &pPluginName, const QVersionNumber &pPluginVersion)
-{
-    QString     FileName;
-
-    m_Config.beginGroup( pPluginName );
-
-    FileName = m_Config.value( pPluginVersion.toString() ).toString();
-
-    m_Config.endGroup();
-
-    return( FileName );
+	return( PluginNames );
 }
 
 bool PluginActionRemove::action()
@@ -857,4 +654,167 @@ bool PluginActionRemove::action()
     zip_close( zfh );
 
     return( true );
+}
+
+PluginArchive::PluginArchive(const QString &pFileName)
+	: m_FileName( pFileName )
+{
+	const bool verbose = true;
+
+	struct zip_t *zfh = zip_open( qPrintable( pFileName ), 0, 'r' );
+
+	if( !zfh )
+	{
+		fputs( "Couldn't open zip file", stderr );
+
+		return;
+	}
+
+	const int PluginEntries = zip_total_entries( zfh );
+
+	if( verbose )
+	{
+		printf( "Files in plugin zip archive: %d\n", PluginEntries );
+	}
+
+	if( zip_entry_open( zfh, "manifest.json" ) )
+	{
+		fputs( "error finding manifest.json in archive", stderr );
+
+		zip_close( zfh );
+
+		return;
+	}
+
+	const int ManifestSize = zip_entry_size( zfh );
+
+	if( verbose )
+	{
+		printf( "manifest.json size is %d bytes\n", ManifestSize );
+	}
+
+	QByteArray		ManifestData;
+
+	ManifestData.resize( ManifestSize );
+
+	const int ManifestRead = zip_entry_noallocread( zfh, ManifestData.data(), ManifestData.size() );
+
+	if( ManifestRead != ManifestSize )
+	{
+		fprintf( stderr, "Manifest read error: got %d - wanted %d bytes\n", ManifestRead, ManifestSize );
+
+		zip_close( zfh );
+
+		return;
+	}
+
+	if( verbose )
+	{
+		fwrite( ManifestData.constData(), ManifestRead, 1, stdout );
+	}
+
+	zip_entry_close( zfh );
+
+	zip_close( zfh );
+
+	// we have the raw manifest file in memory - parse it
+
+	QJsonParseError	JsonError;
+
+	m_Manifest = QJsonDocument::fromJson( ManifestData, &JsonError );
+}
+
+bool PluginArchive::moveArchive( const QString &pDestName )
+{
+	if( QFile::rename( m_FileName, pDestName ) )
+	{
+		m_FileName = pDestName;
+	}
+
+	return( false );
+}
+
+bool PluginArchive::isManifestValid() const
+{
+	return( !m_Manifest.isNull() );
+}
+
+PluginCache::PluginCache( void )
+{
+	mPluginConfigDir = QDir( QStandardPaths::writableLocation( QStandardPaths::GenericDataLocation ) );
+
+	if( !mPluginConfigDir.exists( "fugio-plugins" ) )
+	{
+		if( !mPluginConfigDir.mkdir( "fugio-plugins" ) )
+		{
+			exit( 1 );
+		}
+	}
+
+	if( !mPluginConfigDir.cd( "fugio-plugins" ) )
+	{
+		exit( 1 );
+	}
+
+	if( !mPluginConfigDir.exists( "plugin-cache" ) )
+	{
+		if( !mPluginConfigDir.mkdir( "plugin-cache" ) )
+		{
+			exit( 1 );
+		}
+	}
+
+	mPluginCacheDir = QDir( mPluginConfigDir.absoluteFilePath( "plugin-cache" ) );
+
+	if( !mPluginConfigDir.exists( "repo-cache" ) )
+	{
+		if( !mPluginConfigDir.mkdir( "repo-cache" ) )
+		{
+			exit( 1 );
+		}
+	}
+
+	mRepoCacheDir = QDir( mPluginConfigDir.absoluteFilePath( "repo-cache" ) );
+
+	m_Config = new QSettings( mPluginConfigDir.absoluteFilePath( "plugin-config.ini" ), QSettings::IniFormat );
+}
+
+PluginCache::~PluginCache()
+{
+	if( m_Config )
+	{
+		delete m_Config;
+
+		m_Config = Q_NULLPTR;
+	}
+}
+
+QStringList PluginCache::repoNames()
+{
+	QStringList     RepoNames;
+
+	m_Config->beginGroup( "repositories" );
+
+	RepoNames = m_Config->childKeys();
+
+	m_Config->endGroup();
+
+	return( RepoNames );
+}
+
+QString PluginCache::cachedPluginFilename(const QString &pPluginName, const QVersionNumber &pPluginVersion) const
+{
+	QString		ConfigKey = QString( "cached/%1/%2" ).arg( pPluginName, pPluginVersion.toString() );
+
+	return( m_Config->value( ConfigKey ).toString() );
+}
+
+QDir PluginCache::pluginCacheDirectory() const
+{
+	return mPluginCacheDir;
+}
+
+QString PluginCache::pluginConfigFilename() const
+{
+	return( m_Config ? m_Config->fileName() : Q_NULLPTR );
 }
