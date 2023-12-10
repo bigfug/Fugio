@@ -11,6 +11,7 @@
 #include <QUrl>
 #include <QVersionNumber>
 #include <QSettings>
+#include <QNetworkReply>
 
 FUGIO_NAMESPACE_BEGIN
 class GlobalInterface;
@@ -92,8 +93,8 @@ class PluginActionDownload : public PluginAction
     Q_OBJECT
 
 public:
-    PluginActionDownload( const QUrl &pUrl, const QString &pDestName )
-        : m_Url( pUrl ), m_DestName( pDestName )
+    PluginActionDownload( const QUrl &pUrl )
+        : m_Url( pUrl )
     {
 
     }
@@ -101,6 +102,21 @@ public:
     virtual ~PluginActionDownload() {}
 
     virtual bool action( void ) Q_DECL_OVERRIDE;
+
+    QString tempFileName( void ) const
+    {
+        return( m_TempFile.fileName() );
+    }
+
+    void setAutoRemove( bool pAutoRemove )
+    {
+        m_TempFile.setAutoRemove( pAutoRemove );
+    }
+
+    QDateTime modified( void ) const
+    {
+        return( m_Modified );
+    }
 
 private:
     static size_t on_extract(void *arg, unsigned long long offset, const void *buf, size_t bufsize);
@@ -110,10 +126,10 @@ signals:
 
 private:
     const QUrl m_Url;
-    const QString m_DestName;
     QEventLoop m_Loop;
     QTemporaryFile m_TempFile;
-
+    QList<QNetworkReply::RawHeaderPair> m_RawHeaders;
+    QDateTime m_Modified;
 };
 
 /*!
@@ -147,7 +163,7 @@ public:
         return( VersionList );
     }
 
-    QUrl pluginVersionUrl( const QString &pPluginName, const QVersionNumber &pPluginVersion )
+    QUrl pluginVersionUrl( const QString &pPluginName, const QVersionNumber &pPluginVersion ) const
     {
         for( const PluginEntry &Entry : m_PluginVersionMap.values( pPluginName ) )
         {
@@ -160,7 +176,28 @@ public:
         return( QUrl() );
     }
 
+    QString identifier( void ) const;
+
+    QString filename( void ) const
+    {
+        return( m_FileName );
+    }
+
+    QDateTime modified() const
+    {
+        return m_Modified;
+    }
+
+    void setModified(const QDateTime &newModified)
+    {
+        m_Modified = newModified;
+    }
+
 private:
+    const QString   m_FileName;
+    QJsonDocument	m_Manifest;
+    QDateTime       m_Modified;
+
     typedef QPair<QVersionNumber,QUrl> PluginEntry;
 
     QMap<QString, QVersionNumber>   m_PluginLatestMap;
@@ -213,15 +250,19 @@ class PluginCache
 public:
 	PluginCache( void );
 
-	virtual ~PluginCache( void );
+    QString repoFromPlugin( const QString &pPluginName ) const;
+
+    QVersionNumber latestPluginVersion( const QString &pPluginName ) const;
 
 	QString cachedPluginFilename( const QString &pPluginName, const QVersionNumber &pPluginVersion ) const;
 
-
 	void setCachedPluginFilename( const QString &pPluginName, const QVersionNumber &pPluginVersion, const QString &pFileName );
 
-	void addRepo( const QString &pRepoName, const QUrl &pRepoUrl );
+    void addRepoManifest( const PluginRepoManifest &p_Manifest, const QUrl &p_Url );
+
 	void removeRepo( const QString &pRepoName );
+
+    void updateRepos( void );
 
 	QUrl repoUrl( const QString &pRepoName ) const;
 
@@ -242,11 +283,15 @@ public:
 
 	QString pluginConfigFilename( void ) const;
 
+    QUrl pluginUrl( const QString &pPluginName, const QVersionNumber &pPluginVersion ) const;
+
+    bool addPluginToCache( const QString &pPluginName, const QVersionNumber &pPluginVersion, const QString &pFilename );
+
 private:
-	QSettings		 *m_Config;
 	QDir		      mPluginConfigDir;
 	QDir			  mPluginCacheDir;
 	QDir			  mRepoCacheDir;
+    QString           m_ConfigSettingsFilename;
 };
 
 /*!

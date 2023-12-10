@@ -4,27 +4,17 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="main.cpp" line="73"/>
-        <source>Help</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="main.cpp" line="77"/>
+        <location filename="main.cpp" line="80"/>
         <source>Verbose reporting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="main.cpp" line="83"/>
-        <source>The command to execute.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="main.cpp" line="88"/>
+        <location filename="main.cpp" line="87"/>
         <source>Filename of plugin config.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="main.cpp" line="89"/>
+        <location filename="main.cpp" line="88"/>
         <source>config</source>
         <translation type="unfinished"></translation>
     </message>

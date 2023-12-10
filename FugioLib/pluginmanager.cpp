@@ -407,19 +407,30 @@ bool PluginActionDownload::action()
         m_TempFile.write( NetRep->readAll() );
     } );
 
+    QObject::connect( NetRep, &QNetworkReply::metaDataChanged, NetRep, [&]( void )
+    {
+        m_RawHeaders = NetRep->rawHeaderPairs();
+
+        for( QNetworkReply::RawHeaderPair HP : m_RawHeaders )
+        {
+            if( HP.first == "Last-Modified" )
+            {
+                m_Modified = QDateTime::fromString( HP.second, Qt::RFC2822Date ).toUTC();
+            }
+        }
+    } );
+
     QObject::connect( NetRep, &QNetworkReply::finished, NetRep, [&]( void )
     {
         if( m_TempFile.isOpen() )
         {
             m_TempFile.close();
-
-            QFile::copy( m_TempFile.fileName(), m_DestName );
         }
 
         m_Loop.quit();
     } );
 
-    QObject::connect( NetRep, &QNetworkReply::downloadProgress, [&]( qint64 bytesReceived, qint64 bytesTotal )
+    QObject::connect( NetRep, &QNetworkReply::downloadProgress, NetRep, [&]( qint64 bytesReceived, qint64 bytesTotal )
     {
         emit downloadProgress( bytesReceived, bytesTotal );
     } );
@@ -441,8 +452,9 @@ bool PluginActionDownload::action()
 }
 
 PluginRepoManifest::PluginRepoManifest( const QString &pFileName, const QString &pPlatform )
+    : m_FileName( pFileName )
 {
-    QFile   RepoFile( pFileName );
+    QFile   RepoFile( m_FileName );
 
     if( !RepoFile.open( QFile::ReadOnly ) )
     {
@@ -451,14 +463,14 @@ PluginRepoManifest::PluginRepoManifest( const QString &pFileName, const QString 
 
     QJsonParseError	JsonError;
 
-    QJsonDocument	JSON = QJsonDocument::fromJson( RepoFile.readAll(), &JsonError );
+    m_Manifest = QJsonDocument::fromJson( RepoFile.readAll(), &JsonError );
 
-    if( JSON.isNull() )
+    if( m_Manifest.isNull() )
     {
         return;
     }
 
-    QJsonObject      PluginArray = JSON[ "plugins" ].toObject();
+    QJsonObject      PluginArray = m_Manifest[ "plugins" ].toObject();
 
     for( const QString &PluginKey : PluginArray.keys() )
     {
@@ -480,7 +492,7 @@ PluginRepoManifest::PluginRepoManifest( const QString &pFileName, const QString 
 
                     if( pPlatform == PluginPlatformKey )
                     {
-                        qDebug() << PluginPlatformKey << CurrPlug.second;
+                        //qDebug() << PluginPlatformKey << CurrPlug.second;
 
                         QVersionNumber  PlugLatestVersion = m_PluginLatestMap.value( PluginKey );
 
@@ -495,6 +507,11 @@ PluginRepoManifest::PluginRepoManifest( const QString &pFileName, const QString 
             }
         }
     }
+}
+
+QString PluginRepoManifest::identifier() const
+{
+    return( m_Manifest.object().value( "identifier" ).toString() );
 }
 
 PluginConfig::PluginConfig(const QString &pFileName)
@@ -532,39 +549,91 @@ void PluginConfig::setInstalledPluginVersion( const QString &pPluginName, const 
 
 void PluginCache::setCachedPluginFilename( const QString &pPluginName, const QVersionNumber &pPluginVersion, const QString &pFileName )
 {
+    QSettings   Config( m_ConfigSettingsFilename, QSettings::IniFormat );
+
 	QString		ConfigKey = QString( "cached/%1/%2" ).arg( pPluginName, pPluginVersion.toString() );
 
 	if( pFileName.isEmpty() )
 	{
-		m_Config->remove( ConfigKey );
+        Config.remove( ConfigKey );
 	}
 	else
 	{
-		m_Config->setValue( ConfigKey, pFileName );
+        Config.setValue( ConfigKey, pFileName );
 	}
-
-	m_Config->endGroup();
 }
 
-void PluginCache::addRepo( const QString &pRepoName, const QUrl &pRepoUrl )
+void PluginCache::addRepoManifest( const PluginRepoManifest &p_Manifest, const QUrl &p_Url )
 {
-	QString     RepoKey = QString( "repositories/%1" ).arg( pRepoName );
+    QSettings       Config( m_ConfigSettingsFilename, QSettings::IniFormat );
+    QString         FileName = QString( "%1.manifest.json" ).arg( p_Manifest.identifier() );
+    QFileInfo       CacheFileInfo( repoCacheDirectory().absoluteFilePath( FileName ) );
 
-	m_Config->setValue( RepoKey, pRepoUrl.toString() );
+    if( QFile::exists( CacheFileInfo.absoluteFilePath() ) )
+    {
+        QFile::remove( CacheFileInfo.absoluteFilePath() );
+    }
+
+    if( QFile::copy( p_Manifest.filename(), CacheFileInfo.absoluteFilePath() ) )
+    {
+        QString     RepoKey = QString( "repositories/%1/url" ).arg( p_Manifest.identifier() );
+
+        Config.setValue( RepoKey, p_Url.toString() );
+    }
+
+    if( p_Manifest.modified().isValid() )
+    {
+        QString     RepoKey = QString( "repositories/%1/modified" ).arg( p_Manifest.identifier() );
+
+        Config.setValue( RepoKey, p_Manifest.modified().toString() );
+    }
+
+    for( const QString &PluginName : p_Manifest.pluginList() )
+    {
+        QVector<QVersionNumber>     PluginVersions = p_Manifest.pluginVersions( PluginName );
+
+        for( const QVersionNumber &PluginVersion : PluginVersions )
+        {
+            QString     RepoKey = QString( "plugins/%1/%2/%3" ).arg( p_Manifest.identifier(), PluginName, PluginVersion.toString() );
+
+            Config.setValue( RepoKey, p_Manifest.pluginVersionUrl( PluginName, PluginVersion ).toString() );
+        }
+    }
 }
 
 void PluginCache::removeRepo( const QString &pRepoName )
 {
-	QString     RepoKey = QString( "repositories/%1" ).arg( pRepoName );
+    QSettings       Config( m_ConfigSettingsFilename, QSettings::IniFormat );
+    QString         RepoKey = QString( "repositories/%1" ).arg( pRepoName );
+    QString         FileName = QString( "%1.manifest.json" ).arg( pRepoName );
 
-	m_Config->remove( RepoKey );
+    if( Config.contains( QString( "%1/url" ).arg( RepoKey ) ) )
+    {
+        QFile::remove( repoCacheDirectory().absoluteFilePath( FileName ) );
+
+        Config.remove( RepoKey );
+    }
+
+    Config.remove( QString( "plugins/%1" ).arg( pRepoName ) );
+}
+
+void PluginCache::updateRepos()
+{
+    for( const QString &RepoName : repoNames() )
+    {
+        QString         CacheFileName = repoCacheDirectory().absoluteFilePath( QString( "%1.manifest.json" ).arg( RepoName ) );
+        QFileInfo       CacheFileInfo( CacheFileName );
+
+        qDebug() << CacheFileInfo.lastModified().toUTC();
+    }
 }
 
 QUrl PluginCache::repoUrl( const QString &pRepoName ) const
 {
-	QString     RepoKey = QString( "repositories/%1" ).arg( pRepoName );
+    QSettings       Config( m_ConfigSettingsFilename, QSettings::IniFormat );
+    QString         RepoKey = QString( "repositories/%1/url" ).arg( pRepoName );
 
-	return( m_Config->value( RepoKey ).toUrl() );
+    return( Config.value( RepoKey ).toUrl() );
 }
 
 QStringList PluginConfig::installedPlugins()
@@ -726,12 +795,14 @@ PluginArchive::PluginArchive(const QString &pFileName)
 
 bool PluginArchive::moveArchive( const QString &pDestName )
 {
-	if( QFile::rename( m_FileName, pDestName ) )
+    if( !QFile::rename( m_FileName, pDestName ) )
 	{
-		m_FileName = pDestName;
-	}
+        return( false );
+    }
 
-	return( false );
+    m_FileName = pDestName;
+
+    return( true );
 }
 
 bool PluginArchive::isManifestValid() const
@@ -776,37 +847,92 @@ PluginCache::PluginCache( void )
 
 	mRepoCacheDir = QDir( mPluginConfigDir.absoluteFilePath( "repo-cache" ) );
 
-	m_Config = new QSettings( mPluginConfigDir.absoluteFilePath( "plugin-config.ini" ), QSettings::IniFormat );
+    m_ConfigSettingsFilename = mPluginConfigDir.absoluteFilePath( "plugin-config.ini" );
 }
 
-PluginCache::~PluginCache()
+QString PluginCache::repoFromPlugin(const QString &pPluginName) const
 {
-	if( m_Config )
-	{
-		delete m_Config;
+    QSettings       Config( m_ConfigSettingsFilename, QSettings::IniFormat );
+    QString         RepoName;
 
-		m_Config = Q_NULLPTR;
-	}
+    Config.beginGroup( "plugins" );
+
+    for( const QString &TempRepoName : Config.childGroups() )
+    {
+        Config.beginGroup( TempRepoName );
+
+        for( const QString &TempPlugName : Config.childGroups() )
+        {
+            if( TempPlugName == pPluginName )
+            {
+                RepoName = TempRepoName;
+
+                break;
+            }
+        }
+
+        Config.endGroup();
+
+        if( !RepoName.isEmpty() )
+        {
+            break;
+        }
+    }
+
+    Config.endGroup();
+
+    return( RepoName );
+}
+
+QVersionNumber PluginCache::latestPluginVersion( const QString &pPluginName ) const
+{
+    QSettings       Config( m_ConfigSettingsFilename, QSettings::IniFormat );
+    QVersionNumber  PluginVersion;
+
+    QString     RepoName = repoFromPlugin( pPluginName );
+
+    if( !RepoName.isEmpty() )
+    {
+        QString     RepoKey = QString( "plugins/%1/%2" ).arg( RepoName, pPluginName );
+
+        Config.beginGroup( RepoKey );
+
+        for( const QString &TempData : Config.childKeys() )
+        {
+            QVersionNumber      TempVersion = QVersionNumber::fromString( TempData );
+
+            if( PluginVersion.isNull() || TempVersion > PluginVersion )
+            {
+                PluginVersion = TempVersion;
+            }
+        }
+
+        Config.endGroup();
+    }
+
+    return( PluginVersion );
 }
 
 QStringList PluginCache::repoNames()
 {
-	QStringList     RepoNames;
+    QSettings       Config( m_ConfigSettingsFilename, QSettings::IniFormat );
+    QStringList     RepoNames;
 
-	m_Config->beginGroup( "repositories" );
+    Config.beginGroup( "repositories" );
 
-	RepoNames = m_Config->childKeys();
+    RepoNames = Config.childKeys();
 
-	m_Config->endGroup();
+    Config.endGroup();
 
 	return( RepoNames );
 }
 
 QString PluginCache::cachedPluginFilename(const QString &pPluginName, const QVersionNumber &pPluginVersion) const
 {
-	QString		ConfigKey = QString( "cached/%1/%2" ).arg( pPluginName, pPluginVersion.toString() );
+    QSettings       Config( m_ConfigSettingsFilename, QSettings::IniFormat );
+    QString		    ConfigKey = QString( "cached/%1/%2" ).arg( pPluginName, pPluginVersion.toString() );
 
-	return( m_Config->value( ConfigKey ).toString() );
+    return( Config.value( ConfigKey ).toString() );
 }
 
 QDir PluginCache::pluginCacheDirectory() const
@@ -816,5 +942,63 @@ QDir PluginCache::pluginCacheDirectory() const
 
 QString PluginCache::pluginConfigFilename() const
 {
-	return( m_Config ? m_Config->fileName() : Q_NULLPTR );
+    return( m_ConfigSettingsFilename );
+}
+
+QUrl PluginCache::pluginUrl(const QString &pPluginName, const QVersionNumber &pPluginVersion) const
+{
+    QSettings       Config( m_ConfigSettingsFilename, QSettings::IniFormat );
+    QString         RepoName = repoFromPlugin( pPluginName );
+
+    if( !RepoName.isEmpty() )
+    {
+        QString     RepoKey = QString( "plugins/%1/%2/%3" ).arg( RepoName, pPluginName, pPluginVersion.toString() );
+
+        return( Config.value( RepoKey ).toUrl() );
+    }
+
+    return( QUrl() );
+}
+
+bool PluginCache::addPluginToCache(const QString &pPluginName, const QVersionNumber &pPluginVersion, const QString &pFilename)
+{
+    QString     RepoName = repoFromPlugin( pPluginName );
+
+    if( RepoName.isEmpty() )
+    {
+        return( false );
+    }
+
+    QDir        PluginCache = pluginCacheDirectory();
+
+    if( !PluginCache.exists( RepoName ) )
+    {
+        if( !PluginCache.mkdir( RepoName ) )
+        {
+            return( false );
+        }
+    }
+
+    if( !PluginCache.cd( RepoName ) )
+    {
+        return( false );
+    }
+
+    QFileInfo   PluginSource( pFilename );
+
+    QString     PluginDest = PluginCache.absoluteFilePath( PluginSource.fileName() );
+
+    qDebug() << pFilename << "-> " << PluginDest;
+
+    if( !QFile::copy( pFilename, PluginDest ) )
+    {
+        return( false );
+    }
+
+    QSettings       Config( m_ConfigSettingsFilename, QSettings::IniFormat );
+    QString		    ConfigKey = QString( "cached/%1/%2" ).arg( pPluginName, pPluginVersion.toString() );
+
+    Config.setValue( ConfigKey, PluginDest );
+
+    return( true );
 }
