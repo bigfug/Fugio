@@ -287,6 +287,8 @@ public:
 
     bool addPluginToCache( const QString &pPluginName, const QVersionNumber &pPluginVersion, const QString &pFilename );
 
+	QString repoManifestFilename( const QString &pPluginName );
+
 private:
 	QDir		      mPluginConfigDir;
 	QDir			  mPluginCacheDir;

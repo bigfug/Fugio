@@ -920,7 +920,7 @@ QStringList PluginCache::repoNames()
 
     Config.beginGroup( "repositories" );
 
-    RepoNames = Config.childKeys();
+	RepoNames = Config.childGroups();
 
     Config.endGroup();
 
@@ -1000,5 +1000,10 @@ bool PluginCache::addPluginToCache(const QString &pPluginName, const QVersionNum
 
     Config.setValue( ConfigKey, PluginDest );
 
-    return( true );
+	return( true );
+}
+
+QString PluginCache::repoManifestFilename(const QString &pPluginName)
+{
+	return( pPluginName + ".manifest.json" );
 }

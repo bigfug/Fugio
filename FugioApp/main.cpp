@@ -12,6 +12,7 @@
 #include <QSurfaceFormat>
 #include <QSplashScreen>
 #include <QCommandLineParser>
+#include <QProcess>
 
 #include "contextprivate.h"
 #include "contextsubwindow.h"
@@ -78,6 +79,11 @@ int main( int argc, char *argv[] )
 	{
 		return( -1 );
 	}
+
+	// Save these in case we need to restart later
+
+	QStringList		AppArgs = qApp->arguments();
+	QString			AppExec = AppArgs.takeFirst();
 
 	HLP.checkForHelpOption();
 
@@ -238,6 +244,11 @@ int main( int argc, char *argv[] )
 	qDebug().noquote() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName() ).arg( QApplication::applicationVersion() ).arg( "finished" );
 
 	App::log_file( "" );
+
+	if( 0 )
+	{
+		QProcess::startDetached( AppExec, AppArgs ); //application restart
+	}
 
 	return( RET );
 }
