@@ -242,7 +242,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	mMessageHandler = qInstallMessageHandler( MainWindow::logger_static );
 
-	for( App::LogMessage LM : App::logMessages() )
+	for( App::LogMessage &LM : App::logMessages() )
 	{
 		logger( LM.type, QMessageLogContext(), LM.msg, false );
 	}

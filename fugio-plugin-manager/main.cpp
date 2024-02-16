@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
 
     //-------------------------------------------------------------------------
 
-    for( const QString &ArgDat : CommandLine.values( RepoAdd ) )
+	for( QString &ArgDat : CommandLine.values( RepoAdd ) )
     {
         QUrl            repoUrl;
         QString         repoManifestFilename;
@@ -181,12 +181,12 @@ int main(int argc, char *argv[])
         }
     }
 
-    for( const QString &ArgDat : CommandLine.values( RepoRemove ) )
+	for( QString &ArgDat : CommandLine.values( RepoRemove ) )
     {
         PC.removeRepo( ArgDat );
     }
 
-    for( const QString &ArgDat : CommandLine.values( PluginInstall ) )
+	for( QString &ArgDat : CommandLine.values( PluginInstall ) )
     {
         QVersionNumber      PluginVersion = Config.installedPluginVersion( ArgDat );
 
@@ -251,7 +251,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    for( const QString &ArgDat : CommandLine.values( PluginUnInstall ) )
+	for( QString &ArgDat : CommandLine.values( PluginUnInstall ) )
     {
     }
 
