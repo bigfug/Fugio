@@ -940,6 +940,11 @@ QDir PluginCache::pluginCacheDirectory() const
 	return mPluginCacheDir;
 }
 
+QDir PluginCache::pluginConfigDirectory() const
+{
+	return( mPluginConfigDir );
+}
+
 QString PluginCache::pluginConfigFilename() const
 {
     return( m_ConfigSettingsFilename );

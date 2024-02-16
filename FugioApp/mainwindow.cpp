@@ -1563,3 +1563,11 @@ void MainWindow::on_actionDiscordServer_triggered()
 	QDesktopServices::openUrl( QUrl( "https://discord.com/invite/N749GjKfZa" ) );
 }
 
+
+void MainWindow::on_actionPlugin_directory_triggered()
+{
+	QString		DataFolderPath = QDir::toNativeSeparators( PluginCache().pluginConfigDirectory().absolutePath() );
+
+	QDesktopServices::openUrl( QUrl( "file:///" + DataFolderPath ) );
+}
+

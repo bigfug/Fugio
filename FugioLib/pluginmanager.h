@@ -279,6 +279,8 @@ public:
 
 	QDir pluginCacheDirectory() const;
 
+	QDir pluginConfigDirectory() const;
+
 	// Filename for the plugin config
 
 	QString pluginConfigFilename( void ) const;
