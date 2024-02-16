@@ -27,6 +27,8 @@ class App : public QApplication
 	Q_OBJECT
 
 public:
+	static const int EXIT_RESTART = 100011;
+
 	explicit App( int &argc, char **argv );
 	
 	virtual ~App( void );
@@ -133,6 +135,16 @@ public:
 		return( mLogMessages );
 	}
 
+	void setAppRestart( bool pRestart )
+	{
+		mAppRestart = pRestart;
+	}
+
+	bool restartApp( void ) const
+	{
+		return( mAppRestart );
+	}
+
 signals:
 	void userSnippetsDirectoryChanged( const QString &pDirectory );
 
@@ -143,7 +155,8 @@ private:
 	MainWindow				*mMainWindow;
 	QUndoGroup				 mUndoGroup;
 	QNetworkAccessManager	 mNetworkAccessManager;
-	QString					 mUserSnippetsDirectory;	
+	QString					 mUserSnippetsDirectory;
+	bool					 mAppRestart;
 };
 
 #define gApp (static_cast<App *>(QCoreApplication::instance()))

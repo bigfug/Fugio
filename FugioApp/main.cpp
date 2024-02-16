@@ -239,15 +239,22 @@ int main( int argc, char *argv[] )
 
 	HLP.cleanup();
 
+	if( APP->restartApp() )
+	{
+		RET = App::EXIT_RESTART;
+	}
+
 	delete APP;
 
 	qDebug().noquote() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName() ).arg( QApplication::applicationVersion() ).arg( "finished" );
 
 	App::log_file( "" );
 
-	if( 0 )
+	if( RET == App::EXIT_RESTART )
 	{
 		QProcess::startDetached( AppExec, AppArgs ); //application restart
+
+		RET = 0;
 	}
 
 	return( RET );

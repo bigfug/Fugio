@@ -18,7 +18,7 @@ QList<App::LogMessage>		 App::mLogMessages;
 QString						 App::mLogFileName;
 
 App::App( int &argc, char **argv ) :
-	QApplication( argc, argv ), mMainWindow( 0 )
+	QApplication( argc, argv ), mMainWindow( 0 ), mAppRestart( false )
 {
 	QSettings		Settings;
 
