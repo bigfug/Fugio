@@ -269,6 +269,8 @@ MainWindow::~MainWindow( void )
 
 	gApp->global().unregisterInterface( IID_EDITOR );
 
+	qInstallMessageHandler( 0 );
+
 	delete ui;
 }
 
