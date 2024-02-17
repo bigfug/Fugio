@@ -7,13 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>687</width>
-    <height>450</height>
+    <height>646</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -38,16 +38,23 @@
       <attribute name="title">
        <string>Sources</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
+      <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0">
        <item>
         <widget class="QListWidget" name="mSourceList"/>
        </item>
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="QPushButton" name="mButtonSourceAdd">
+          <widget class="QPushButton" name="mButtonSourceAddFile">
            <property name="text">
-            <string>Add</string>
+            <string>Add file...</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="mButtonSourceAddUrl">
+           <property name="text">
+            <string>Add URL...</string>
            </property>
           </widget>
          </item>
@@ -63,12 +70,119 @@
          </item>
          <item>
           <widget class="QPushButton" name="mButtonSourceUpdate">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
             <string>Update</string>
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="mButtonSourceUpdateAll">
+           <property name="text">
+            <string>Update all</string>
+           </property>
+          </widget>
+         </item>
         </layout>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="mRepoInfo">
+         <property name="title">
+          <string>Repository Information</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Identifier:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="mRepoIdent">
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Author:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="mRepoAuthor">
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Contact:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="mRepoContact">
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="textFormat">
+             <enum>Qt::AutoText</enum>
+            </property>
+            <property name="openExternalLinks">
+             <bool>true</bool>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextBrowserInteraction</set>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Description:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QPlainTextEdit" name="mRepoDescription">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Homepage:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="mRepoHomepage">
+            <property name="text">
+             <string>TextLabel</string>
+            </property>
+            <property name="textFormat">
+             <enum>Qt::RichText</enum>
+            </property>
+            <property name="openExternalLinks">
+             <bool>true</bool>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextBrowserInteraction</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -83,7 +197,7 @@
           <enum>QAbstractItemView::SelectRows</enum>
          </property>
          <property name="columnCount">
-          <number>3</number>
+          <number>4</number>
          </property>
          <attribute name="horizontalHeaderStretchLastSection">
           <bool>true</bool>
@@ -93,20 +207,36 @@
          </attribute>
          <column>
           <property name="text">
+           <string>Enabled</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
            <string>Name</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>Version</string>
+           <string>Available</string>
           </property>
          </column>
          <column>
           <property name="text">
-           <string>Installed</string>
+           <string>Status</string>
           </property>
          </column>
         </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="mButtonApply">
+           <property name="text">
+            <string>Apply</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>

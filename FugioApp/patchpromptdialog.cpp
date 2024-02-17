@@ -15,7 +15,7 @@ PatchPromptDialog::PatchPromptDialog(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	QSettings			Settings;
+	SettingsHelper		Settings;
 
 	Settings.beginReadArray( "recent" );
 

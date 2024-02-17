@@ -14,10 +14,6 @@
 #include <QCommandLineParser>
 #include <QProcess>
 
-#include "contextprivate.h"
-#include "contextsubwindow.h"
-#include "contextwidgetprivate.h"
-
 #include <fugio/plugin_interface.h>
 #include <fugio/node_control_interface.h>
 
@@ -57,7 +53,19 @@ int main( int argc, char *argv[] )
     QApplication::setApplicationVersion( QString( "%1 (%2/%3)" ).arg( QUOTE( FUGIO_APP_VERSION ) ).arg( QSysInfo::buildCpuArchitecture() ).arg( QSysInfo::currentCpuArchitecture() ) );
 #endif
 
-	const QString	CfgDir = QStandardPaths::writableLocation( QStandardPaths::DataLocation );
+	//-------------------------------------------------------------------------
+
+	const QString	CfgDir = App::dataDirectory().absolutePath();
+
+	SettingsHelper::setSettingsFormat( QDir( CfgDir ).absoluteFilePath( "fugio.ini" ), QSettings::IniFormat );
+
+	fugio::AppHelper	HLP;
+
+	HLP.processCommandLine( argc, argv );
+
+	HLP.checkForHelpOption();
+
+	//-------------------------------------------------------------------------
 
 	App::setLogFileName( QDir( CfgDir ).absoluteFilePath( "fugio.log" ) );
 
@@ -67,10 +75,6 @@ int main( int argc, char *argv[] )
 	}
 
 	//-------------------------------------------------------------------------
-
-	fugio::AppHelper	HLP;
-
-	HLP.processCommandLine( argc, argv );
 
 	int		 RET = 0;
 	App		*APP = new App( argc, argv );
@@ -85,9 +89,7 @@ int main( int argc, char *argv[] )
 	QStringList		AppArgs = qApp->arguments();
 	QString			AppExec = AppArgs.takeFirst();
 
-	HLP.checkForHelpOption();
-
-	qDebug().noquote() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName() ).arg( QApplication::applicationVersion() ).arg( "started" );
+	qDebug().noquote() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName(), QApplication::applicationVersion(), "started" );
 
 	HLP.initialiseTranslator();
 
@@ -124,15 +126,6 @@ int main( int argc, char *argv[] )
 	}
 
 	//-------------------------------------------------------------------------
-	// Create QSettings
-
-	QSettings		Settings;
-
-#if defined( QT_DEBUG )
-	qInfo() << Settings.fileName();
-#endif
-
-	//-------------------------------------------------------------------------
 
 	APP->incrementStatistic( "started" );
 
@@ -153,7 +146,7 @@ int main( int argc, char *argv[] )
 
 		WND->initBegin();
 
-		HLP.registerAndLoadPlugins();
+		HLP.registerAndLoadPlugins( App::pluginsDirectory() );
 
 		//-------------------------------------------------------------------------
 
@@ -161,20 +154,18 @@ int main( int argc, char *argv[] )
 
 		WND->createDeviceMenu();
 
-		const QString	CfgNam = QDir( CfgDir ).absoluteFilePath( "fugio.ini" );
-
 		if( true )
 		{
-			QSettings					 CFG( CfgNam, QSettings::IniFormat );
+			SettingsHelper					 CFG;
 
 			if( CFG.status() != QSettings::NoError )
 			{
-				qWarning() << CfgNam << "can't load";
+				qWarning() << CFG.fileName() << "can't load";
 			}
 
 			if( CFG.format() != QSettings::IniFormat )
 			{
-				qWarning() << CfgNam << "bad format";
+				qWarning() << CFG.fileName() << "bad format";
 			}
 
 			PBG->loadConfig( CFG );
@@ -190,7 +181,7 @@ int main( int argc, char *argv[] )
 
 		// Load patches that were specified on the command line
 
-		for( QString PatchName : HLP.CLP.positionalArguments() )
+		for( QString &PatchName : HLP.CLP.positionalArguments() )
 		{
 			qDebug() << "Loading" << PatchName << "...";
 
@@ -219,9 +210,9 @@ int main( int argc, char *argv[] )
 
 		if( true )
 		{
-			QSettings				 CFG( CfgNam, QSettings::IniFormat );
+			SettingsHelper					 CFG;
 
-			CFG.clear();
+			// CFG.clear();
 
 			PBG->saveConfig( CFG );
 		}
@@ -246,7 +237,7 @@ int main( int argc, char *argv[] )
 
 	delete APP;
 
-	qDebug().noquote() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName() ).arg( QApplication::applicationVersion() ).arg( "finished" );
+	qDebug().noquote() << QString( "%1 %2 - %3" ).arg( QApplication::applicationName(), QApplication::applicationVersion(), "finished" );
 
 	App::log_file( "" );
 

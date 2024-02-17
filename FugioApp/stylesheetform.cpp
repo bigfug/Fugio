@@ -26,7 +26,7 @@ StyleSheetForm::StyleSheetForm(QWidget *parent) :
 
 	ui->mStyleSheet->setTabStopWidth( tabStop * metrics.width( ' ' ) );
 
-	QSettings		Settings;
+	SettingsHelper	Settings;
 
 	mFileName = Settings.value( "stylesheet-path", gApp->global().sharedDataPath() + "/stylesheets/default.css" ).toString();
 
@@ -61,7 +61,7 @@ void StyleSheetForm::on_mButtonStyleLoad_clicked()
 		return;
 	}
 
-	QSettings		Settings;
+	SettingsHelper	Settings;
 
 	mFileName = FileName;
 
@@ -80,7 +80,7 @@ void StyleSheetForm::on_mButtonStyleSave_clicked()
 
 	if( !FileName.isEmpty() )
 	{
-		QSettings		Settings;
+		SettingsHelper	Settings;
 
 		mFileName = FileName;
 

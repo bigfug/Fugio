@@ -101,7 +101,7 @@ void ContextWidgetPrivate::generateRecoveryFilename()
 
 	mRecoveryFilename = QString( "fugio_tmp_%1.fug" ).arg( mRecoveryFilename );
 
-	mRecoveryFilename = QDir( QStandardPaths::writableLocation( QStandardPaths::DataLocation ) ).absoluteFilePath( mRecoveryFilename );
+	mRecoveryFilename = App::dataDirectory().absoluteFilePath( mRecoveryFilename );
 }
 
 void ContextWidgetPrivate::setContext( QSharedPointer<fugio::ContextInterface> pContext )
@@ -225,7 +225,7 @@ void ContextWidgetPrivate::userSave( void )
 
 void ContextWidgetPrivate::userSaveAs( void )
 {
-	QSettings				 Settings;
+	SettingsHelper				 Settings;
 
 	const QString	DatDir = QStandardPaths::writableLocation( QStandardPaths::DocumentsLocation );
 
@@ -255,7 +255,7 @@ void ContextWidgetPrivate::userSaveAs( void )
 
 void ContextWidgetPrivate::userSaveImage()
 {
-	QSettings				 Settings;
+	SettingsHelper			 Settings;
 
 	QRectF					 TmpRct;
 
@@ -330,7 +330,7 @@ void ContextWidgetPrivate::userSaveData()
 
 void ContextWidgetPrivate::userSaveDataAs()
 {
-	QSettings				 Settings;
+	SettingsHelper			 Settings;
 
 	const QString	DatDir = QStandardPaths::writableLocation( QStandardPaths::DocumentsLocation );
 
@@ -356,7 +356,7 @@ void ContextWidgetPrivate::userLoadData()
 {
 	const QString		DatDir = QStandardPaths::writableLocation( QStandardPaths::DocumentsLocation );
 
-	QSettings			Settings;
+	SettingsHelper		Settings;
 
 	QString				PatchDirectory = Settings.value( "data-directory", QDir( DatDir ).absoluteFilePath( "Fugio" ) ).toString();
 

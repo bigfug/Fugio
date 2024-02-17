@@ -1893,7 +1893,7 @@ void ContextView::showWizard()
 {
 	if( !mShownWizard && isVisible() )
 	{
-		QSettings		Settings;
+		SettingsHelper		Settings;
 
 		mShownWizard = true;
 

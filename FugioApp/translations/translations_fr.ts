@@ -437,93 +437,93 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="398"/>
+        <location filename="../mainwindow.cpp" line="400"/>
         <source>Open Patch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="398"/>
-        <location filename="../mainwindow.cpp" line="1098"/>
+        <location filename="../mainwindow.cpp" line="400"/>
+        <location filename="../mainwindow.cpp" line="1100"/>
         <source>Fugio Patches (*.fug)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="602"/>
+        <location filename="../mainwindow.cpp" line="604"/>
         <source>%1 v%2 by Alex May - DEBUG VERSION (not for distribution)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="604"/>
+        <location filename="../mainwindow.cpp" line="606"/>
         <source>%1 v%2 by Alex May</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="616"/>
+        <location filename="../mainwindow.cpp" line="618"/>
         <source>Set duration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="616"/>
+        <location filename="../mainwindow.cpp" line="618"/>
         <source>Duration (Hours:Minutes:Seconds:Milliseconds):</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="951"/>
+        <location filename="../mainwindow.cpp" line="953"/>
         <source>&amp;%1 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="956"/>
+        <location filename="../mainwindow.cpp" line="958"/>
         <source>%1 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1098"/>
+        <location filename="../mainwindow.cpp" line="1100"/>
         <source>Append Patch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1126"/>
+        <location filename="../mainwindow.cpp" line="1128"/>
         <source>Name Snippet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1126"/>
+        <location filename="../mainwindow.cpp" line="1128"/>
         <source>Enter the name for the new Snippet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1142"/>
+        <location filename="../mainwindow.cpp" line="1144"/>
         <source>Snippet Exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1142"/>
+        <location filename="../mainwindow.cpp" line="1144"/>
         <source>A snippit already exists with that name, do you want to overwrite it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1229"/>
+        <location filename="../mainwindow.cpp" line="1231"/>
         <source>Load Recovery Files?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1229"/>
+        <location filename="../mainwindow.cpp" line="1231"/>
         <source>Recovery files found - reload them?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1231"/>
+        <location filename="../mainwindow.cpp" line="1233"/>
         <source>Delete Recovery Files?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1231"/>
+        <location filename="../mainwindow.cpp" line="1233"/>
         <source>Recovery files found - delete them?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="1433"/>
+        <location filename="../mainwindow.cpp" line="1435"/>
         <source>Import file(s)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -907,47 +907,121 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../plugins/pluginsform.ui" line="50"/>
-        <source>Add</source>
+        <source>Add file...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/pluginsform.ui" line="60"/>
-        <source>Remove</source>
+        <location filename="../plugins/pluginsform.ui" line="57"/>
+        <source>Add URL...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugins/pluginsform.ui" line="67"/>
-        <source>Update</source>
+        <source>Remove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugins/pluginsform.ui" line="77"/>
-        <source>Plugins</source>
+        <source>Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/pluginsform.ui" line="96"/>
-        <source>Name</source>
+        <location filename="../plugins/pluginsform.ui" line="84"/>
+        <source>Update all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/pluginsform.ui" line="101"/>
-        <source>Version</source>
+        <location filename="../plugins/pluginsform.ui" line="93"/>
+        <source>Repository Information</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugins/pluginsform.ui" line="99"/>
+        <source>Identifier:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../plugins/pluginsform.ui" line="106"/>
-        <source>Installed</source>
+        <location filename="../plugins/pluginsform.ui" line="120"/>
+        <location filename="../plugins/pluginsform.ui" line="134"/>
+        <location filename="../plugins/pluginsform.ui" line="171"/>
+        <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/pluginsform.cpp" line="56"/>
+        <location filename="../plugins/pluginsform.ui" line="113"/>
+        <source>Author:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugins/pluginsform.ui" line="127"/>
+        <source>Contact:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugins/pluginsform.ui" line="150"/>
+        <source>Description:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugins/pluginsform.ui" line="164"/>
+        <source>Homepage:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugins/pluginsform.ui" line="191"/>
+        <source>Plugins</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugins/pluginsform.ui" line="210"/>
+        <source>Enabled</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugins/pluginsform.ui" line="215"/>
+        <source>Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugins/pluginsform.ui" line="220"/>
+        <source>Available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugins/pluginsform.ui" line="225"/>
+        <source>Status</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugins/pluginsform.ui" line="235"/>
+        <source>Apply</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugins/pluginsform.cpp" line="76"/>
+        <source>Remove Repository?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugins/pluginsform.cpp" line="76"/>
+        <source>Are you sure you want to remove this repository?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugins/pluginsform.cpp" line="133"/>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../plugins/pluginsform.cpp" line="153"/>
+        <location filename="../plugins/pluginsform.cpp" line="199"/>
         <source>Add Plugin Source</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/pluginsform.cpp" line="56"/>
-        <source>Path or URL:</source>
+        <location filename="../plugins/pluginsform.cpp" line="199"/>
+        <source>URL:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1187,12 +1261,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings/settingsdialog.ui" line="61"/>
+        <location filename="../settings/settingsdialog.ui" line="82"/>
         <source>Snippets Directory:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings/settingsdialog.ui" line="71"/>
+        <location filename="../settings/settingsdialog.ui" line="92"/>
         <source>Select...</source>
         <translation type="unfinished"></translation>
     </message>

@@ -116,7 +116,9 @@ int main(int argc, char *argv[])
         PluginConfigFileInfo = QFileInfo( CommandLine.value( PluginConfigOption ) );
     }
 
-    PluginConfig Config( PluginConfigFileInfo.absoluteFilePath() );
+	QSettings	Settings( PluginConfigFileInfo.absoluteFilePath(), QSettings::IniFormat );
+
+	PluginConfig Config( Settings );
 
     if( verbose )
     {

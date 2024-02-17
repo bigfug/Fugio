@@ -7,22 +7,20 @@
 
 #include "app.h"
 #include "mainwindow.h"
-#include "pinprivate.h"
-
-#include "nodeitem.h"
-#include "pinitem.h"
 
 #include <fugio/utils.h>
 
 QList<App::LogMessage>		 App::mLogMessages;
 QString						 App::mLogFileName;
+QString						 SettingsHelper::mSettingsFileName;
+QSettings::Format			 SettingsHelper::mSettingsFormat;
 
 App::App( int &argc, char **argv ) :
 	QApplication( argc, argv ), mMainWindow( 0 ), mAppRestart( false )
 {
-	QSettings		Settings;
+	SettingsHelper		Settings;
 
-	QDir			UsrDir = QDir( QStandardPaths::writableLocation( QStandardPaths::DataLocation ) );
+	QDir			UsrDir = App::dataDirectory();
 
 	mUserSnippetsDirectory = Settings.value( "snippets-directory", UsrDir.absoluteFilePath( "snippets" ) ).toString();
 
@@ -53,7 +51,7 @@ MainWindow *App::mainWindow( void )
 
 void App::incrementStatistic( const QString &pName )
 {
-	QSettings		Settings;
+	SettingsHelper	Settings;
 
 	Settings.beginGroup( "statistics" );
 
@@ -68,7 +66,7 @@ void App::incrementStatistic( const QString &pName )
 
 void App::recordData( const QString &pName, const QString &pValue )
 {
-	QSettings		Settings;
+	SettingsHelper		Settings;
 
 	// Disabled this because it currently crashes on Qt 5.8 with known bug
 	if( true ) //!Settings.value( "data-collection-permission", false ).toBool() )
@@ -95,7 +93,7 @@ void App::setUserSnippetsDirectory( const QString &pDirectory )
 {
 	if( mUserSnippetsDirectory != pDirectory )
 	{
-		QSettings().setValue( "snippets-directory", pDirectory );
+		SettingsHelper().setValue( "snippets-directory", pDirectory );
 
 		mUserSnippetsDirectory = pDirectory;
 

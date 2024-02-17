@@ -231,7 +231,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	//-------------------------------------------------------------------------
 
-	QSettings		Settings;
+	SettingsHelper		Settings;
 
 	restoreGeometry( Settings.value( "geometry", saveGeometry() ).toByteArray() );
 	restoreState( Settings.value( "state", saveState() ).toByteArray() );
@@ -258,7 +258,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow( void )
 {
-	QSettings		Settings;
+	SettingsHelper		Settings;
 
 	Settings.setValue( "geometry", saveGeometry() );
 	Settings.setValue( "state", saveState() );
@@ -269,7 +269,7 @@ MainWindow::~MainWindow( void )
 
 	gApp->global().unregisterInterface( IID_EDITOR );
 
-	qInstallMessageHandler( 0 );
+	qInstallMessageHandler( App::logger_static );
 
 	delete ui;
 }
@@ -393,7 +393,7 @@ QStringList MainWindow::patchOpenDialog()
 {
 	const QString		DatDir = QStandardPaths::writableLocation( QStandardPaths::DocumentsLocation );
 
-	QSettings			Settings;
+	SettingsHelper		Settings;
 
 	QString				PatchDirectory = Settings.value( "patch-directory", QDir( DatDir ).absoluteFilePath( "Fugio" ) ).toString();
 
@@ -803,7 +803,7 @@ void MainWindow::recentFileActivated( void )
 
 void MainWindow::addFileToRecent( const QString &pFileName )
 {
-	QSettings			Settings;
+	SettingsHelper		Settings;
 
 	Settings.beginReadArray( "recent" );
 
@@ -850,7 +850,7 @@ void MainWindow::addFileToRecent( const QString &pFileName )
 
 void MainWindow::updateRecentFileList( void )
 {
-	QSettings			Settings;
+	SettingsHelper		Settings;
 
 	Settings.beginReadArray( "recent" );
 
@@ -1091,7 +1091,7 @@ void MainWindow::on_actionAppend_triggered()
 		return;
 	}
 
-	QSettings				 Settings;
+	SettingsHelper			 Settings;
 
 	QString					 DatDir = QStandardPaths::writableLocation( QStandardPaths::DocumentsLocation );
 
@@ -1203,7 +1203,7 @@ void MainWindow::on_actionUngroup_triggered()
 
 void MainWindow::on_actionData_Directory_triggered()
 {
-	QString		DataFolderPath = QDir::toNativeSeparators( QDir( QStandardPaths::writableLocation( QStandardPaths::DataLocation ) ).absolutePath() );
+	QString		DataFolderPath = QDir::toNativeSeparators( App::dataDirectory().absolutePath() );
 
 	QDesktopServices::openUrl( QUrl( "file:///" + DataFolderPath ) );
 }
@@ -1215,7 +1215,7 @@ void MainWindow::on_actionGitHub_Page_triggered()
 
 void MainWindow::checkRecoveryFiles( void )
 {
-	QDir		TmpDir( QStandardPaths::writableLocation( QStandardPaths::DataLocation ) );
+	QDir		TmpDir = App::dataDirectory();
 
 	QStringList	FileNameFilters;
 
@@ -1224,7 +1224,7 @@ void MainWindow::checkRecoveryFiles( void )
 	bool		RecoveryFound = false;
 	bool		RecoveryDelete = false;
 
-	for( const QString &FN : TmpDir.entryList( FileNameFilters, QDir::Files ) )
+	for( QString &FN : TmpDir.entryList( FileNameFilters, QDir::Files ) )
 	{
 		if( !RecoveryFound )
 		{

@@ -177,6 +177,10 @@ public:
     }
 
     QString identifier( void ) const;
+	QString author( void ) const;
+	QUrl contact( void ) const;
+	QString description( void ) const;
+	QUrl homepage( void ) const;
 
     QString filename( void ) const
     {
@@ -211,16 +215,20 @@ private:
 class PluginConfig
 {
 public:
-    PluginConfig( const QString &pFileName );
+	PluginConfig( QSettings &pSettings )
+		: m_Config( pSettings )
+	{
 
-    QVersionNumber installedPluginVersion( const QString &pPluginName ) const;
+	}
 
-    void setInstalledPluginVersion( const QString &pPluginName, const QVersionNumber &pPluginVersion );
+	QVersionNumber installedPluginVersion( const QString &pPluginName ) const;
+
+	void setInstalledPluginVersion( const QString &pPluginName, const QVersionNumber &pPluginVersion );
 
 	QStringList installedPlugins( void );
 
 private:
-    QSettings       m_Config;
+	QSettings       &m_Config;
 };
 
 /*!
@@ -262,6 +270,8 @@ public:
 
 	void removeRepo( const QString &pRepoName );
 
+	void updateRepo( const QString &pRepoName );
+
     void updateRepos( void );
 
 	QUrl repoUrl( const QString &pRepoName ) const;
@@ -290,6 +300,8 @@ public:
     bool addPluginToCache( const QString &pPluginName, const QVersionNumber &pPluginVersion, const QString &pFilename );
 
 	QString repoManifestFilename( const QString &pPluginName );
+
+	QVector<QVersionNumber> pluginVersions( const QString &pPluginName );
 
 private:
 	QDir		      mPluginConfigDir;

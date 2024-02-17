@@ -18,7 +18,21 @@ public:
     ~PluginsForm();
 
 private slots:
-	void on_mButtonSourceAdd_clicked();
+	void on_mSourceList_itemSelectionChanged();
+
+	void on_mButtonSourceUpdateAll_clicked();
+
+	void on_mButtonSourceRemove_clicked();
+
+	void on_mButtonSourceUpdate_clicked();
+
+	void rebuildPluginInformation( void );
+
+	void on_mButtonSourceAddFile_clicked();
+
+	void on_mButtonSourceAddUrl_clicked();
+
+	void on_mButtonApply_clicked();
 
 private:
     Ui::PluginsForm *ui;

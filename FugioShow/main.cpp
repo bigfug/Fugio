@@ -38,7 +38,25 @@ int main( int argc, char *argv[] )
 
 	H.setCommandLineVariables();
 
-	H.registerAndLoadPlugins();
+	QDir	AppDir = QDir( qApp->applicationDirPath() );
+
+#if defined( Q_OS_LINUX ) && !defined( QT_DEBUG )
+	AppDir.cdUp();
+	AppDir.cd( "lib" );
+	AppDir.cd( "fugio" );
+#endif
+
+#if defined( Q_OS_MAC )
+		qDebug() << "App Binary Directory:" << AppDir.absolutePath();
+
+		AppDir.cdUp();
+		AppDir.cdUp();
+		AppDir.cdUp();
+
+		qDebug() << "App Directory:" << AppDir.absolutePath();
+#endif
+
+	H.registerAndLoadPlugins( AppDir );
 
 	fugio::GlobalInterface	*G = fugio::fugio();
 
