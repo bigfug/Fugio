@@ -245,70 +245,135 @@ void PluginsForm::on_mButtonSourceAddUrl_clicked()
 	on_mSourceList_itemSelectionChanged();
 }
 
+/*!
+ * \brief PluginsForm::on_mButtonApply_clicked
+ */
 
 void PluginsForm::on_mButtonApply_clicked()
 {
 	SettingsHelper	Helper;
 	PluginConfig	Config( Helper );
 
+	QMap<QString,QVersionNumber>	CacheDownloadList;
+	QMap<QString,QVersionNumber>	InstallList;
+	QStringList		RemoveList;
+
+	for( int row = 0 ; row < ui->mPluginTable->rowCount() ; row++ )
+	{
+		QTableWidgetItem	*NameItem = ui->mPluginTable->item( row, 1 );
+		QComboBox			*VersionComboBox = qobject_cast<QComboBox *>( ui->mPluginTable->cellWidget( row, 3 ) );
+
+		QString				 PluginName = NameItem->text();
+		QString				 VersionText = VersionComboBox->currentText();
+
+		qDebug() << PluginName << VersionText;
+
+		QVersionNumber      RequiredVersion = QVersionNumber::fromString( VersionText );
+		QVersionNumber      InstalledVersion = Config.installedPluginVersion( PluginName );
+
+		if( RequiredVersion == InstalledVersion )
+		{
+			continue;
+		}
+
+		if( !InstalledVersion.isNull() )
+		{
+			RemoveList << PluginName;
+		}
+
+		if( RequiredVersion.isNull() )
+		{
+			continue;
+		}
+
+		QString     PluginArchive = mPluginCache.cachedPluginFilename( PluginName, RequiredVersion );
+
+		if( PluginArchive.isEmpty() )
+		{
+			CacheDownloadList.insert( PluginName, RequiredVersion );
+		}
+
+		InstallList.insert( PluginName, RequiredVersion );
+	}
+
+	for( auto it = CacheDownloadList.begin() ; it != CacheDownloadList.end() ; it++ )
+	{
+		QString	  PluginName = it.key();
+		QVersionNumber	PluginVersion = CacheDownloadList.value( PluginName );
+
+		QString   pluginFilename;
+		bool      pluginRemove = false;
+		QUrl      PluginUrl = mPluginCache.pluginUrl( PluginName, PluginVersion );
+
+		if( !PluginUrl.isLocalFile() )
+		{
+			PluginActionDownload    pluginDown( PluginUrl );
+
+			pluginDown.setAutoRemove( false );
+
+			if( pluginDown.action() )
+			{
+				pluginFilename = pluginDown.tempFileName();
+
+				pluginRemove = true;
+			}
+		}
+		else
+		{
+			pluginFilename = QDir::toNativeSeparators( PluginUrl.toLocalFile() );
+		}
+
+		mPluginCache.addPluginToCache( PluginName, PluginVersion, pluginFilename );
+
+		if( pluginRemove )
+		{
+			QFile::remove( pluginFilename );
+		}
+	}
+
+	Helper.remove( "plugin-update" );
+
+	Helper.beginGroup( "plugin-update" );
+
+	Helper.beginWriteArray( "remove" );
+
+	int ArrayIndex = 0;
+
+	for( QString &RemovePlugin : RemoveList )
+	{
+		Helper.setArrayIndex( ArrayIndex++ );
+
+		Helper.setValue( "plugin", RemovePlugin );
+	}
+
+	Helper.endArray();
+
+	Helper.beginWriteArray( "install" );
+
+	ArrayIndex = 0;
+
+	for( auto it = InstallList.begin() ; it != InstallList.end() ; it++ )
+	{
+		QString	  PluginName = it.key();
+		QVersionNumber	PluginVersion = InstallList.value( PluginName );
+
+		Helper.setArrayIndex( ArrayIndex++ );
+
+		Helper.setValue( "plugin", PluginName );
+		Helper.setValue( "version", PluginVersion.toString() );
+	}
+
+	Helper.endArray();
+
+	Helper.endGroup();
+
+/*
 	int					row = ui->mPluginTable->currentRow();
 
 	QTableWidgetItem	*item = ui->mPluginTable->item( row, 1 );
 
 	if( item )
 	{
-		QString		ArgDat = item->text();
-
-		QVersionNumber      PluginVersion = Config.installedPluginVersion( ArgDat );
-
-		if( !PluginVersion.isNull() )
-		{
-			return;
-		}
-
-		PluginVersion = mPluginCache.latestPluginVersion( ArgDat );
-
-		if( PluginVersion.isNull() )
-		{
-			return;
-		}
-
-		QString     PluginArchive = mPluginCache.cachedPluginFilename( ArgDat, PluginVersion );
-
-		if( PluginArchive.isEmpty() )
-		{
-			QString   pluginFilename;
-			bool      pluginRemove = false;
-			QUrl      PluginUrl = mPluginCache.pluginUrl( ArgDat, PluginVersion );
-
-			qDebug() << PluginUrl;
-
-			if( !PluginUrl.isLocalFile() )
-			{
-				PluginActionDownload    pluginDown( PluginUrl );
-
-				pluginDown.setAutoRemove( false );
-
-				if( pluginDown.action() )
-				{
-					pluginFilename = pluginDown.tempFileName();
-
-					pluginRemove = true;
-				}
-			}
-			else
-			{
-				pluginFilename = QDir::toNativeSeparators( PluginUrl.toLocalFile() );
-			}
-
-			mPluginCache.addPluginToCache( ArgDat, PluginVersion, pluginFilename );
-
-			if( pluginRemove )
-			{
-				QFile::remove( pluginFilename );
-			}
-		}
-
 		PluginArchive = mPluginCache.cachedPluginFilename( ArgDat, PluginVersion );
 
 		if( !PluginArchive.isEmpty() )
@@ -321,10 +386,14 @@ void PluginsForm::on_mButtonApply_clicked()
 			}
 		}
 	}
+*/
 
-	// if( gApp->mainWindow()->close() )
-	// {
-	// 	gApp->setAppRestart( true );
-	// }
+	if( !RemoveList.isEmpty() || !InstallList.isEmpty() )
+	{
+		if( gApp->mainWindow()->close() )
+		{
+			gApp->setAppRestart( true );
+		}
+	}
 }
 

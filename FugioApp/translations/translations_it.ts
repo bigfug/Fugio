@@ -1009,18 +1009,18 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/pluginsform.cpp" line="133"/>
+        <location filename="../plugins/pluginsform.cpp" line="134"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/pluginsform.cpp" line="153"/>
-        <location filename="../plugins/pluginsform.cpp" line="199"/>
+        <location filename="../plugins/pluginsform.cpp" line="154"/>
+        <location filename="../plugins/pluginsform.cpp" line="200"/>
         <source>Add Plugin Source</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/pluginsform.cpp" line="199"/>
+        <location filename="../plugins/pluginsform.cpp" line="200"/>
         <source>URL:</source>
         <translation type="unfinished"></translation>
     </message>

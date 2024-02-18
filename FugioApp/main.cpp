@@ -84,6 +84,65 @@ int main( int argc, char *argv[] )
 		return( -1 );
 	}
 
+	//-------------------------------------------------------------------------
+
+	if( true )
+	{
+		SettingsHelper	Helper;
+		PluginConfig	Config( Helper );
+		PluginCache		Cache;
+
+		Helper.beginGroup( "plugin-update" );
+
+		int ArrayCount = Helper.beginReadArray( "remove" );
+
+		for( int ArrayIndex = 0 ; ArrayIndex < ArrayCount ; ArrayIndex++ )
+		{
+			Helper.setArrayIndex( ArrayIndex );
+
+			QString	  PluginName = Helper.value( "plugin" ).toString();
+
+			// PluginActionRemove		Action( PluginName );
+
+			// if( Action.action() )
+			// {
+			// 	Config.setInstalledPluginVersion( PluginName, QVersionNumber() );
+			// }
+		}
+
+		Helper.endArray();
+
+		ArrayCount = Helper.beginReadArray( "install" );
+
+		for( int ArrayIndex = 0 ; ArrayIndex < ArrayCount ; ArrayIndex++ )
+		{
+			Helper.setArrayIndex( ArrayIndex );
+
+			QString	  PluginName = Helper.value( "plugin" ).toString();
+			QVersionNumber PluginVersion = QVersionNumber::fromString( Helper.value( "version" ).toString() );
+
+			QString PluginArchive = Cache.cachedPluginFilename( PluginName, PluginVersion );
+
+			if( !PluginArchive.isEmpty() )
+			{
+				PluginActionInstall     PluginInstall( PluginArchive, gApp->dataDirectory().absolutePath() );
+
+				if( PluginInstall.action() )
+				{
+					Config.setInstalledPluginVersion( PluginName, PluginVersion );
+				}
+			}
+		}
+
+		Helper.endArray();
+
+		Helper.endGroup();
+
+		Helper.remove( "plugin-update" );
+	}
+
+	//-------------------------------------------------------------------------
+
 	// Save these in case we need to restart later
 
 	QStringList		AppArgs = qApp->arguments();
