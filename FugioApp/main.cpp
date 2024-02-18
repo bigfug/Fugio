@@ -92,6 +92,11 @@ int main( int argc, char *argv[] )
 		PluginConfig	Config( Helper );
 		PluginCache		Cache;
 
+		// Read the plugin config changes before acting upon them
+
+		QStringList		RemoveList;
+		QMap<QString,QVersionNumber>	InstallList;
+
 		Helper.beginGroup( "plugin-update" );
 
 		int ArrayCount = Helper.beginReadArray( "remove" );
@@ -102,12 +107,7 @@ int main( int argc, char *argv[] )
 
 			QString	  PluginName = Helper.value( "plugin" ).toString();
 
-			// PluginActionRemove		Action( PluginName );
-
-			// if( Action.action() )
-			// {
-			// 	Config.setInstalledPluginVersion( PluginName, QVersionNumber() );
-			// }
+			RemoveList << PluginName;
 		}
 
 		Helper.endArray();
@@ -121,22 +121,56 @@ int main( int argc, char *argv[] )
 			QString	  PluginName = Helper.value( "plugin" ).toString();
 			QVersionNumber PluginVersion = QVersionNumber::fromString( Helper.value( "version" ).toString() );
 
-			QString PluginArchive = Cache.cachedPluginFilename( PluginName, PluginVersion );
-
-			if( !PluginArchive.isEmpty() )
-			{
-				PluginActionInstall     PluginInstall( PluginArchive, gApp->dataDirectory().absolutePath() );
-
-				if( PluginInstall.action() )
-				{
-					Config.setInstalledPluginVersion( PluginName, PluginVersion );
-				}
-			}
+			InstallList.insert( PluginName, PluginVersion );
 		}
 
 		Helper.endArray();
 
 		Helper.endGroup();
+
+		// Remove plugins
+
+		if( !RemoveList.isEmpty() )
+		{
+			qInfo() << "Removing plugins";
+
+			for( QString &PluginName : RemoveList )
+			{
+				QVersionNumber PluginVersion = Config.installedPluginVersion( PluginName );
+
+				QString PluginArchive = Cache.cachedPluginFilename( PluginName, PluginVersion );
+
+				PluginActionRemove		Action( PluginArchive, gApp->dataDirectory().absolutePath() );
+
+				if( Action.action() )
+				{
+					Config.setInstalledPluginVersion( PluginName, QVersionNumber() );
+				}
+			}
+		}
+
+		// Install plugins
+
+		if( !InstallList.isEmpty() )
+		{
+			for( auto it = InstallList.begin() ; it != InstallList.end() ; it++ )
+			{
+				QString	  PluginName = it.key();
+				QVersionNumber	PluginVersion = InstallList.value( PluginName );
+
+				QString PluginArchive = Cache.cachedPluginFilename( PluginName, PluginVersion );
+
+				if( !PluginArchive.isEmpty() )
+				{
+					PluginActionInstall     PluginInstall( PluginArchive, gApp->dataDirectory().absolutePath() );
+
+					if( PluginInstall.action() )
+					{
+						Config.setInstalledPluginVersion( PluginName, PluginVersion );
+					}
+				}
+			}
+		}
 
 		Helper.remove( "plugin-update" );
 	}

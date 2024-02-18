@@ -71,7 +71,7 @@ class PluginActionRemove : public PluginAction
 
 public:
     PluginActionRemove( const QString &pFileName, const QString &pDestName )
-        : m_FileName( pFileName ), m_DestName( pDestName )
+		: m_FileName( pFileName ), m_DestName( pDestName )
     {
 
     }
@@ -79,9 +79,6 @@ public:
     virtual ~PluginActionRemove() {}
 
     virtual bool action( void ) Q_DECL_OVERRIDE;
-
-private:
-    static size_t on_extract(void *arg, unsigned long long offset, const void *buf, size_t bufsize);
 
 private:
     const QString m_FileName;

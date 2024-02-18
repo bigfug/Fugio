@@ -683,6 +683,8 @@ bool PluginActionRemove::action()
 
     const int PluginEntries = zip_total_entries( zfh );
 
+	QStringList		EmptyDirs;
+
     for( int i = 0 ; i < PluginEntries ; i++ )
     {
         if( zip_entry_openbyindex( zfh, i ) != 0 )
@@ -699,11 +701,18 @@ bool PluginActionRemove::action()
 
         if( zip_entry_isdir( zfh ) )
         {
-            //printf( "%s (dir)\n", zip_entry_name( zfh ) );
+			QDir		ZipDir( zip_entry_name( zfh ) );
+
+			qDebug() << QString( "%1 (dir)" ).arg( ZipDir.path() );
+
+			if( !EmptyDirs.contains( ZipDir.path() ) )
+			{
+				EmptyDirs << ZipDir.path();
+			}
         }
         else
         {
-            printf( "%s (file)\n", zip_entry_name( zfh ) );
+			qDebug() << QString( "%1 (file)" ).arg( zip_entry_name( zfh ) );
 
             static const QStringList  Dirs = { "plugins", "examples", "include" };
 
@@ -719,13 +728,10 @@ bool PluginActionRemove::action()
                 {
                     QFile   DestFile( FileBase.absoluteFilePath( FI.filePath() ) );
 
-                    if( DestFile.exists() )
-                    {
-                        if( !DestFile.remove() )
-                        {
-                            return( false );
-                        }
-                    }
+					if( DestFile.exists() && !DestFile.remove() )
+					{
+						return( false );
+					}
                 }
 
                 qDebug() << "plugin" << FP.join( '/' );
@@ -740,6 +746,25 @@ bool PluginActionRemove::action()
     }
 
     zip_close( zfh );
+
+	QDir    FileBase( DestBase );
+
+	std::sort( EmptyDirs.begin(), EmptyDirs.end(), []
+		(const QString& first, const QString& second){
+			return first.size() < second.size();
+		});
+
+	for( QString &DirTst : EmptyDirs )
+	{
+		QDir		FI( FileBase.filePath( DirTst ) );
+
+		qDebug() << FI.path() << FI.isEmpty();
+
+		if( FI.isEmpty() )
+		{
+			FileBase.rmdir( DirTst );
+		}
+	}
 
     return( true );
 }
