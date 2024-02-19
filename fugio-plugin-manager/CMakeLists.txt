@@ -26,7 +26,7 @@ add_executable(fugio-plugin-manager
   ../libs/zip/zip.cpp
   ../libs/zip/miniz.h
 
-  ${TS_FILES}
+  # ${TS_FILES}
 )
 
 target_link_libraries(fugio-plugin-manager PRIVATE

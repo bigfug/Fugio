@@ -136,7 +136,7 @@ set( UI_RESOURCES fugio.rc )
 add_definitions( -DFUGIOLIB_STATIC )
 
 add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURCES} ${UIS_HDRS}
-    plugins/pluginwizard.h plugins/pluginwizard.cpp )
+)
 
 target_link_libraries( ${PROJECT_NAME} libfugio )
 

@@ -22,7 +22,7 @@ NodeEditorWizard::NodeEditorWizard( QWidget *pParent)
 	TxtLst << tr( "<li>Drag and drop a name from the Node Window to the Node Editor</li>" );
 	TxtLst << tr( "<li>Double-click in the Node Editor</li></ol>" );
 	TxtLst << "";
-	TxtLst << tr( "<p>See <a href=\"http://wiki.bigfug.com/Node_Editor?utm_source=fugio&utm_medium=node-editor-wizard\">http://wiki.bigfug.com/Node_Editor</a> for more information.</p>" );
+	TxtLst << tr( "<p>See <a href=\"https://github.com/bigfug/Fugio/wiki/Node-Editor?utm_source=fugio&utm_medium=node-editor-wizard\">https://github.com/bigfug/Fugio/wiki/Node-Editor</a> for more information.</p>" );
 
 	QLabel		*Label = new QLabel( TxtLst.join( '\n' ) );
 

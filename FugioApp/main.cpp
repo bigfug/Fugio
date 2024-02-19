@@ -14,12 +14,13 @@
 #include <QCommandLineParser>
 #include <QProcess>
 #include <QProgressDialog>
+#include <QPushButton>
+#include <QFileDialog>
 
 #include <fugio/plugin_interface.h>
 #include <fugio/node_control_interface.h>
 
 #include <fugio/app_helper.h>
-#include <plugins/pluginwizard.h>
 
 #if defined( Q_OS_RASPBERRY_PI )
 #include <bcm_host.h>
@@ -88,11 +89,139 @@ int main( int argc, char *argv[] )
 
 	//-------------------------------------------------------------------------
 
-	if( PluginWizard::checkPluginWizard() )
+	if( true )
 	{
-		PluginWizard		Wizard;
+		SettingsHelper    Helper;
+		PluginConfig    PC( Helper );
+		PluginCache		Cache;
 
+		if( PC.installedPlugins().isEmpty() )
+		{
+			QMessageBox		MsgBox;
 
+			MsgBox.setIcon( QMessageBox::Question );
+
+			MsgBox.setText( "Fugio Plugin Initialisation" );
+			MsgBox.setInformativeText( "Fugio doesn't have any plugins installed yet.\n\nDo you want to install the default plugins? (recommended)" );
+
+			QPushButton *buttonSelect = MsgBox.addButton( "Select...", QMessageBox::ActionRole );
+			QPushButton *buttonYes = MsgBox.addButton( "Yes", QMessageBox::YesRole );
+
+			MsgBox.addButton( "Skip", QMessageBox::NoRole );
+
+			MsgBox.exec();
+
+			QUrl            repoUrl;
+
+			if( MsgBox.clickedButton() == buttonSelect )
+			{
+				repoUrl = QFileDialog::getOpenFileUrl( Q_NULLPTR, "Choose repository manifest", QDir::currentPath(), "Manifest (*.json)" );
+			}
+			else if( MsgBox.clickedButton() == buttonYes )
+			{
+				repoUrl = QUrl( "https://" );
+			}
+
+			if( !repoUrl.isEmpty() )
+			{
+				QString         repoManifestFilename;
+				bool            repoManifestRemove = false;
+				QDateTime       repoModified;
+
+				// qDebug() << repoCommand << repoData << QFileInfo( repoData ).isFile();
+
+				if( !repoUrl.isLocalFile() )
+				{
+					PluginActionDownload    RepoDown( repoUrl );
+
+					RepoDown.setAutoRemove( false );
+
+					if( RepoDown.action() )
+					{
+						repoManifestFilename = RepoDown.tempFileName();
+
+						repoModified = RepoDown.modified();
+
+						repoManifestRemove = true;
+					}
+				}
+				else
+				{
+					QFileInfo repoFileInfo( repoUrl.toLocalFile() );
+
+					repoManifestFilename = repoFileInfo.absoluteFilePath();
+
+					repoModified = repoFileInfo.lastModified().toUTC();
+				}
+
+				if( !repoManifestFilename.isEmpty() )
+				{
+					PluginRepoManifest      RepoManifest( repoManifestFilename, "win64" );
+
+					RepoManifest.setModified( repoModified );
+
+					Cache.addRepoManifest( RepoManifest, repoUrl );
+
+					Helper.beginGroup( "plugin-update" );
+
+					Helper.beginWriteArray( "install" );
+
+					int ArrayIndex = 0;
+
+					for( QString &PluginName : RepoManifest.pluginList() )
+					{
+						QVersionNumber PluginVersion = RepoManifest.pluginLatestVersion( PluginName );
+
+						QString   pluginFilename;
+						bool      pluginRemove = false;
+						QUrl      PluginUrl = Cache.pluginUrl( PluginName, PluginVersion );
+
+						if( !PluginUrl.isLocalFile() )
+						{
+							PluginActionDownload    pluginDown( PluginUrl );
+
+							pluginDown.setAutoRemove( false );
+
+							if( pluginDown.action() )
+							{
+								pluginFilename = pluginDown.tempFileName();
+
+								pluginRemove = true;
+							}
+						}
+						else
+						{
+							pluginFilename = QDir::toNativeSeparators( PluginUrl.toLocalFile() );
+						}
+
+						if( !pluginFilename.isEmpty() )
+						{
+							if( Cache.addPluginToCache( PluginName, PluginVersion, pluginFilename ) )
+							{
+								Helper.setArrayIndex( ArrayIndex++ );
+
+								Helper.setValue( "plugin", PluginName );
+								Helper.setValue( "version", PluginVersion.toString() );
+							}
+							}
+
+						if( pluginRemove )
+						{
+							QFile::remove( pluginFilename );
+						}
+					}
+
+					Helper.endArray();
+
+					Helper.endGroup();
+
+					if( repoManifestRemove )
+					{
+						QFile::remove( repoManifestFilename );
+					}
+				}
+			}
+		}
 	}
 
 	//-------------------------------------------------------------------------

@@ -372,11 +372,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../mainwindow.ui" line="736"/>
-        <source>Plugin directory...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../mainwindow.ui" line="675"/>
         <source>GitHub Page...</source>
         <translation type="unfinished"></translation>
@@ -434,6 +429,11 @@
     <message>
         <location filename="../mainwindow.ui" line="731"/>
         <source>Ctrl+Shift+S</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../mainwindow.ui" line="736"/>
+        <source>Plugin directory...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -562,7 +562,7 @@
     </message>
     <message>
         <location filename="../wizards/nodeeditorwizard.cpp" line="25"/>
-        <source>&lt;p&gt;See &lt;a href=&quot;http://wiki.bigfug.com/Node_Editor?utm_source=fugio&amp;utm_medium=node-editor-wizard&quot;&gt;http://wiki.bigfug.com/Node_Editor&lt;/a&gt; for more information.&lt;/p&gt;</source>
+        <source>&lt;p&gt;See &lt;a href=&quot;https://github.com/bigfug/Fugio/wiki/Node-Editor?utm_source=fugio&amp;utm_medium=node-editor-wizard&quot;&gt;https://github.com/bigfug/Fugio/wiki/Node-Editor&lt;/a&gt; for more information.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1241,8 +1241,8 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>SettingsDialog</name>
     <message>
-        <location filename="../settings/settingsdialog.ui" line="31"/>
-        <source>Snippets</source>
+        <location filename="../settings/settingsdialog.ui" line="14"/>
+        <source>Fugio Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1251,8 +1251,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../settings/settingsdialog.ui" line="14"/>
-        <source>Fugio Settings</source>
+        <location filename="../settings/settingsdialog.ui" line="31"/>
+        <source>Snippets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1381,12 +1381,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>main</name>
     <message>
-        <location filename="../main.cpp" line="160"/>
+        <location filename="../main.cpp" line="289"/>
         <source>Removing plugin: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="194"/>
+        <location filename="../main.cpp" line="323"/>
         <source>Installing plugin: %1 (%2)</source>
         <translation type="unfinished"></translation>
     </message>

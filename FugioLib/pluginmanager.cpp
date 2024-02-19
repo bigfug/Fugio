@@ -567,7 +567,7 @@ QStringList PluginConfig::installedPlugins()
 
 	m_Config.beginGroup( "installed" );
 
-	PluginNames = m_Config.childKeys();
+	PluginNames = m_Config.childGroups();
 
 	m_Config.endGroup();
 
@@ -1036,6 +1036,14 @@ bool PluginCache::addPluginToCache(const QString &pPluginName, const QVersionNum
     QFileInfo   PluginSource( pFilename );
 
     QString     PluginDest = PluginCache.absoluteFilePath( PluginSource.fileName() );
+
+	if( QFile::exists( PluginDest ) )
+	{
+		if( !QFile::remove( PluginDest ) )
+		{
+			return( false );
+		}
+	}
 
     qDebug() << pFilename << "-> " << PluginDest;
 
