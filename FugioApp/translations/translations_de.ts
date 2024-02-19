@@ -975,26 +975,21 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../plugins/pluginsform.ui" line="210"/>
-        <source>Enabled</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../plugins/pluginsform.ui" line="215"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/pluginsform.ui" line="220"/>
+        <location filename="../plugins/pluginsform.ui" line="215"/>
         <source>Available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/pluginsform.ui" line="225"/>
+        <location filename="../plugins/pluginsform.ui" line="220"/>
         <source>Status</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/pluginsform.ui" line="235"/>
+        <location filename="../plugins/pluginsform.ui" line="230"/>
         <source>Apply</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1009,18 +1004,18 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/pluginsform.cpp" line="134"/>
+        <location filename="../plugins/pluginsform.cpp" line="128"/>
         <source>None</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/pluginsform.cpp" line="154"/>
-        <location filename="../plugins/pluginsform.cpp" line="200"/>
+        <location filename="../plugins/pluginsform.cpp" line="148"/>
+        <location filename="../plugins/pluginsform.cpp" line="194"/>
         <source>Add Plugin Source</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../plugins/pluginsform.cpp" line="200"/>
+        <location filename="../plugins/pluginsform.cpp" line="194"/>
         <source>URL:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1380,6 +1375,19 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../stylesheetform.cpp" line="79"/>
         <source>Save Stylesheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>main</name>
+    <message>
+        <location filename="../main.cpp" line="160"/>
+        <source>Removing plugin: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../main.cpp" line="194"/>
+        <source>Installing plugin: %1 (%2)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

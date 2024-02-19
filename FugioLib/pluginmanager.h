@@ -115,9 +115,6 @@ public:
         return( m_Modified );
     }
 
-private:
-    static size_t on_extract(void *arg, unsigned long long offset, const void *buf, size_t bufsize);
-
 signals:
     void downloadProgress( qint64 bytesReceived, qint64 bytesTotal );
 

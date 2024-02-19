@@ -115,12 +115,6 @@ void PluginsForm::rebuildPluginInformation()
 
 			ui->mPluginTable->insertRow( row );
 
-			QCheckBox			*PluginEnabled = new QCheckBox();
-
-			PluginEnabled->setStyleSheet( "text-align: center; margin-left:50%; margin-right:50%;" );
-
-			ui->mPluginTable->setCellWidget( row, col++, PluginEnabled );
-
 			QTableWidgetItem	*NameItem = new QTableWidgetItem( PluginName );
 
 			ui->mPluginTable->setItem( row, col++, NameItem );
@@ -247,6 +241,8 @@ void PluginsForm::on_mButtonSourceAddUrl_clicked()
 
 /*!
  * \brief PluginsForm::on_mButtonApply_clicked
+ *
+ * The user has clicked Apply so we will process the plugin changes they have specified
  */
 
 void PluginsForm::on_mButtonApply_clicked()
@@ -254,27 +250,32 @@ void PluginsForm::on_mButtonApply_clicked()
 	SettingsHelper	Helper;
 	PluginConfig	Config( Helper );
 
+	// Lets go through all the rows of the table and detect what changes the user made
+	// to the current plugin configuration
+
 	QMap<QString,QVersionNumber>	CacheDownloadList;
 	QMap<QString,QVersionNumber>	InstallList;
 	QStringList		RemoveList;
 
 	for( int row = 0 ; row < ui->mPluginTable->rowCount() ; row++ )
 	{
-		QTableWidgetItem	*NameItem = ui->mPluginTable->item( row, 1 );
-		QComboBox			*VersionComboBox = qobject_cast<QComboBox *>( ui->mPluginTable->cellWidget( row, 3 ) );
+		QTableWidgetItem	*NameItem = ui->mPluginTable->item( row, 0 );
+		QComboBox			*VersionComboBox = qobject_cast<QComboBox *>( ui->mPluginTable->cellWidget( row, 2 ) );
 
 		QString				 PluginName = NameItem->text();
 		QString				 VersionText = VersionComboBox->currentText();
 
-		qDebug() << PluginName << VersionText;
-
 		QVersionNumber      RequiredVersion = QVersionNumber::fromString( VersionText );
 		QVersionNumber      InstalledVersion = Config.installedPluginVersion( PluginName );
+
+		// if the required version is the installed version (including if both are NULL) then continue
 
 		if( RequiredVersion == InstalledVersion )
 		{
 			continue;
 		}
+
+		// if we have an already installed verion then remove it
 
 		if( !InstalledVersion.isNull() )
 		{
@@ -286,6 +287,9 @@ void PluginsForm::on_mButtonApply_clicked()
 			continue;
 		}
 
+		// at this point, we want to install - check if the cache contains it and add
+		// it to the download list if not
+
 		QString     PluginArchive = mPluginCache.cachedPluginFilename( PluginName, RequiredVersion );
 
 		if( PluginArchive.isEmpty() )
@@ -295,6 +299,9 @@ void PluginsForm::on_mButtonApply_clicked()
 
 		InstallList.insert( PluginName, RequiredVersion );
 	}
+
+	// before we can install new plugins, we have to make sure they are in the global cache
+	// we can do this here
 
 	for( auto it = CacheDownloadList.begin() ; it != CacheDownloadList.end() ; it++ )
 	{
@@ -331,9 +338,17 @@ void PluginsForm::on_mButtonApply_clicked()
 		}
 	}
 
+	// TODO: at this point we should check if the configuration is valid
+
+	// we can't remove or install plugins now, as at this point they're loaded into memory
+	// write out the remove/install data to the local config file to be acted on when
+	// the app next starts (from main.cpp)
+
 	Helper.remove( "plugin-update" );
 
 	Helper.beginGroup( "plugin-update" );
+
+	// write out the remove list
 
 	Helper.beginWriteArray( "remove" );
 
@@ -347,6 +362,8 @@ void PluginsForm::on_mButtonApply_clicked()
 	}
 
 	Helper.endArray();
+
+	// write out the install list, with desied version numbers
 
 	Helper.beginWriteArray( "install" );
 
@@ -367,26 +384,7 @@ void PluginsForm::on_mButtonApply_clicked()
 
 	Helper.endGroup();
 
-/*
-	int					row = ui->mPluginTable->currentRow();
-
-	QTableWidgetItem	*item = ui->mPluginTable->item( row, 1 );
-
-	if( item )
-	{
-		PluginArchive = mPluginCache.cachedPluginFilename( ArgDat, PluginVersion );
-
-		if( !PluginArchive.isEmpty() )
-		{
-			PluginActionInstall     PluginInstall( PluginArchive, App::dataDirectory().absolutePath() );
-
-			if( PluginInstall.action() )
-			{
-				Config.setInstalledPluginVersion( ArgDat, PluginVersion );
-			}
-		}
-	}
-*/
+	// Set the app restart flag if we need to remove or install any plugins
 
 	if( !RemoveList.isEmpty() || !InstallList.isEmpty() )
 	{

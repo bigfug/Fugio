@@ -13,11 +13,13 @@
 #include <QSplashScreen>
 #include <QCommandLineParser>
 #include <QProcess>
+#include <QProgressDialog>
 
 #include <fugio/plugin_interface.h>
 #include <fugio/node_control_interface.h>
 
 #include <fugio/app_helper.h>
+#include <plugins/pluginwizard.h>
 
 #if defined( Q_OS_RASPBERRY_PI )
 #include <bcm_host.h>
@@ -86,6 +88,15 @@ int main( int argc, char *argv[] )
 
 	//-------------------------------------------------------------------------
 
+	if( PluginWizard::checkPluginWizard() )
+	{
+		PluginWizard		Wizard;
+
+
+	}
+
+	//-------------------------------------------------------------------------
+
 	if( true )
 	{
 		SettingsHelper	Helper;
@@ -132,10 +143,22 @@ int main( int argc, char *argv[] )
 
 		if( !RemoveList.isEmpty() )
 		{
+			QProgressDialog	Dialog;
+
+			Dialog.setMinimumDuration( 0 );
+
+			Dialog.setRange( 0, sizeof( RemoveList ) );
+
 			qInfo() << "Removing plugins";
 
-			for( QString &PluginName : RemoveList )
+			for( int i = 0 ; i < RemoveList.size() ; i++ )
 			{
+				const QString &PluginName = RemoveList.at( i );
+
+				Dialog.setValue( i );
+
+				Dialog.setLabelText( QCoreApplication::translate( "main", "Removing plugin: %1" ).arg( PluginName ) );
+
 				QVersionNumber PluginVersion = Config.installedPluginVersion( PluginName );
 
 				QString PluginArchive = Cache.cachedPluginFilename( PluginName, PluginVersion );
@@ -146,6 +169,8 @@ int main( int argc, char *argv[] )
 				{
 					Config.setInstalledPluginVersion( PluginName, QVersionNumber() );
 				}
+
+				Dialog.setValue( i + 1 );
 			}
 		}
 
@@ -153,10 +178,22 @@ int main( int argc, char *argv[] )
 
 		if( !InstallList.isEmpty() )
 		{
+			QProgressDialog	Dialog;
+
+			Dialog.setMinimumDuration( 0 );
+
+			Dialog.setRange( 0, InstallList.size() );
+
+			int i = 0;
+
 			for( auto it = InstallList.begin() ; it != InstallList.end() ; it++ )
 			{
 				QString	  PluginName = it.key();
 				QVersionNumber	PluginVersion = InstallList.value( PluginName );
+
+				Dialog.setLabelText( QCoreApplication::translate( "main", "Installing plugin: %1 (%2)" ).arg( PluginName, PluginVersion.toString() ) );
+
+				Dialog.setValue( i );
 
 				QString PluginArchive = Cache.cachedPluginFilename( PluginName, PluginVersion );
 
@@ -169,6 +206,8 @@ int main( int argc, char *argv[] )
 						Config.setInstalledPluginVersion( PluginName, PluginVersion );
 					}
 				}
+
+				Dialog.setValue( ++i );
 			}
 		}
 
