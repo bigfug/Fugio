@@ -216,6 +216,11 @@ int main( int argc, char *argv[] )
 				}
 			}
 
+			QProgressDialog	Dialog;
+
+			Dialog.setMinimumDuration( 0 );
+
+			Dialog.setRange( 0, pluginList.count() );
 
 			Helper.beginGroup( "plugin-update" );
 
@@ -239,6 +244,10 @@ int main( int argc, char *argv[] )
 				PluginRepoManifest      RepoManifest( repoManifestFilename, "win64" );
 
 				QVersionNumber PluginVersion = RepoManifest.pluginLatestVersion( PluginName );
+
+				Dialog.setLabelText( QCoreApplication::translate( "main", "Installing plugin: %1 (%2)" ).arg( PluginName, PluginVersion.toString() ) );
+
+				Dialog.setValue( ArrayIndex );
 
 				QString   pluginFilename;
 				bool      pluginRemove = false;
