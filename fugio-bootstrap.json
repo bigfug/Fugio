@@ -1,0 +1,18 @@
+{
+  "repositories": [
+	"https://github.com/bigfug/fugio-core-plugins/releases/download/latest/fugio-manifest.json"
+  ],
+  "plugins": [
+	"com.bigfug.fugio.audio",
+	"com.bigfug.fugio.core",
+	"com.bigfug.fugio.colour",
+	"com.bigfug.fugio.file",
+	"com.bigfug.fugio.gui",
+	"com.bigfug.fugio.image",
+	"com.bigfug.fugio.math",
+	"com.bigfug.fugio.network",
+	"com.bigfug.fugio.serial",
+	"com.bigfug.fugio.text",
+	"com.bigfug.fugio.time"
+  ]
+}
