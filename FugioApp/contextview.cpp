@@ -1467,7 +1467,7 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 
 void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 {
-	for( LinkItem *Link : mLinkList )
+	for( LinkItem *Link : mLinkList.toSet() )
 	{
 		//qDebug() << ( Link->srcPin() ? Link->srcPin()->uuid() : QUuid() ) << ( Link->dstPin() ? Link->dstPin()->uuid() : QUuid() );
 
@@ -2299,7 +2299,7 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGro
 	// Search for any links that link from the ungrouping nodes to outside nodes
 	// and delete them
 
-	for( LinkItem *LI : mLinkList )
+	for( LinkItem *LI : mLinkList.toSet() )
 	{
 		PinItem			*SrcPin = LI->srcPin();
 		PinItem			*DstPin = LI->dstPin();
