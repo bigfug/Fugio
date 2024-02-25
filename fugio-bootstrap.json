@@ -1,6 +1,7 @@
 {
   "repositories": [
-	"https://github.com/bigfug/fugio-core-plugins/releases/download/latest/fugio-manifest.json"
+	"https://github.com/bigfug/fugio-core-plugins/releases/download/latest/fugio-manifest.json",
+	"https://github.com/bigfug/fugio-portaudio/releases/download/v1.0.0/fugio-manifest.json"
   ],
   "plugins": [
 	"com.bigfug.fugio.audio",
@@ -13,6 +14,7 @@
 	"com.bigfug.fugio.network",
 	"com.bigfug.fugio.serial",
 	"com.bigfug.fugio.text",
-	"com.bigfug.fugio.time"
+	"com.bigfug.fugio.time",
+	"com.bigfug.fugio.portaudio"
   ]
 }
