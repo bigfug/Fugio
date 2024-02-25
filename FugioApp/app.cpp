@@ -12,6 +12,7 @@
 
 QList<App::LogMessage>		 App::mLogMessages;
 QString						 App::mLogFileName;
+QDir						 App::mDataDirectory;
 QString						 SettingsHelper::mSettingsFileName;
 QSettings::Format			 SettingsHelper::mSettingsFormat;
 

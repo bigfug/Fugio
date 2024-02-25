@@ -59,15 +59,20 @@ int main( int argc, char *argv[] )
 
 	//-------------------------------------------------------------------------
 
-	const QString	CfgDir = App::dataDirectory().absolutePath();
-
-	SettingsHelper::setSettingsFormat( QDir( CfgDir ).absoluteFilePath( "fugio.ini" ), QSettings::IniFormat );
-
 	fugio::AppHelper	HLP;
 
 	HLP.processCommandLine( argc, argv );
 
 	HLP.checkForHelpOption();
+
+	qInfo() << "Configuration Directory" << HLP.configDirectory().absolutePath();
+	qInfo() << "Configuration File" << HLP.configFile();
+
+	App::setDataDirectory( HLP.configDirectory() );
+
+	const QString	CfgDir = App::dataDirectory().absolutePath();
+
+	SettingsHelper::setSettingsFormat( HLP.configFile(), QSettings::IniFormat );
 
 	//-------------------------------------------------------------------------
 
@@ -95,6 +100,7 @@ int main( int argc, char *argv[] )
 		SettingsHelper  Helper;
 		PluginConfig    PC( Helper );
 		PluginCache		Cache;
+		QStringList		pluginList;
 
 		if( PC.installedPlugins().isEmpty() )
 		{
@@ -105,7 +111,7 @@ int main( int argc, char *argv[] )
 			MsgBox.setText( "Fugio Plugin Initialisation" );
 			MsgBox.setInformativeText( "Fugio doesn't have any plugins installed yet.\n\nDo you want to install the default plugins? (recommended)" );
 
-			QPushButton *buttonSelect = MsgBox.addButton( "Select...", QMessageBox::ActionRole );
+			QPushButton *buttonSelect = MsgBox.addButton( "Local...", QMessageBox::ActionRole );
 			QPushButton *buttonYes = MsgBox.addButton( "Yes", QMessageBox::YesRole );
 
 			MsgBox.addButton( "Skip", QMessageBox::NoRole );
@@ -113,14 +119,13 @@ int main( int argc, char *argv[] )
 			MsgBox.exec();
 
 			QList<QUrl>		repoUrls;
-			QStringList		pluginList;
 			bool			repoAddAll = false;
 
 			if( MsgBox.clickedButton() == buttonSelect )
 			{
 				QUrl repoUrl = QFileDialog::getOpenFileUrl( Q_NULLPTR, "Choose repository manifest", QDir::currentPath(), "Manifest (*.json)" );
 
-				if( repoUrl.isEmpty() )
+				if( !repoUrl.isEmpty() )
 				{
 					repoUrls << repoUrl;
 
@@ -129,7 +134,7 @@ int main( int argc, char *argv[] )
 			}
 			else if( MsgBox.clickedButton() == buttonYes )
 			{
-				PluginActionDownload    BootstrapDown( QUrl( "https://raw.githubusercontent.com/bigfug/Fugio/feature/Plugin_Manager/fugio-bootstrap.json" ) );
+				PluginActionDownload    BootstrapDown( QUrl( "https://raw.githubusercontent.com/bigfug/Fugio/develop/fugio-bootstrap.json" ) );
 
 				BootstrapDown.setAutoRemove( true );
 
@@ -169,8 +174,6 @@ int main( int argc, char *argv[] )
 				QDateTime       repoModified;
 
 				qInfo() << "Downloading plugin repository" << repoUrl.toDisplayString();
-
-				// qDebug() << repoCommand << repoData << QFileInfo( repoData ).isFile();
 
 				if( !repoUrl.isLocalFile() )
 				{
@@ -215,7 +218,21 @@ int main( int argc, char *argv[] )
 					}
 				}
 			}
+		}
 
+		QString repoReload = HLP.reloadRepo();
+
+		if( !repoReload.isEmpty() )
+		{
+			QString repoManifestFilename = Cache.repoCacheDirectory().filePath( Cache.repoManifestFilename( repoReload ) );
+
+			PluginRepoManifest      RepoManifest( repoManifestFilename, "win64" );
+
+			pluginList.append( RepoManifest.pluginList() );
+		}
+
+		if( !pluginList.isEmpty() )
+		{
 			QProgressDialog	Dialog;
 
 			Dialog.setMinimumDuration( 0 );

@@ -169,9 +169,14 @@ public:
 		return( AppDir );
 	}
 
+	static void setDataDirectory( QDir pDataDirectory )
+	{
+		mDataDirectory = pDataDirectory;
+	}
+
 	static QDir dataDirectory( void )
 	{
-		return( QStandardPaths::writableLocation( QStandardPaths::DataLocation ) );
+		return( mDataDirectory );
 	}
 
 	static QDir pluginsDirectory( void )
@@ -196,6 +201,7 @@ signals:
 private:
 	static QList<LogMessage>		 mLogMessages;
 	static QString					 mLogFileName;
+	static QDir						 mDataDirectory;
 
 	MainWindow				*mMainWindow;
 	QUndoGroup				 mUndoGroup;

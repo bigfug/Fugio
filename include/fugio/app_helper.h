@@ -11,6 +11,7 @@
 #include <QLibraryInfo>
 #include <QDir>
 #include <QSurfaceFormat>
+#include <QStandardPaths>
 
 #include "global_interface.h"
 
@@ -22,7 +23,7 @@ public:
 	AppHelper( void )
 		: OptionHelp( "help" ),
 		  OptionVersion( "version" ),
-		  OptionConfigFile( QStringList() << "c" << "config", QCoreApplication::translate( "main", "Config file" ) ),
+		  OptionConfigFile( QStringList() << "c" << "config", QCoreApplication::translate( "main", "Config file" ), QCoreApplication::translate( "main", "fugio.ini" ) ),
 		  OptionClearSettings( "clear-settings", QCoreApplication::translate( "main", "Clear all settings (mainly for testing purposes)" ) ),
 		  OptionOpenGL( "opengl", QCoreApplication::translate( "main", "Select OpenGL backend" ) ),
 		  OptionGLES( "gles", QCoreApplication::translate( "main", "Select OpenGL ES backend" ) ),
@@ -31,7 +32,8 @@ public:
 		  OptionEnablePlugin( QStringList() << "pe" << "enable-plugin", QCoreApplication::translate( "main", "Enable plugin <plugin>." ), "plugin" ),
 		  OptionDisablePlugin( QStringList() << "pd" << "disable-plugin", QCoreApplication::translate( "main", "Disable plugin <plugin>." ), "plugin" ),
 		  OptionLocale( QStringList() << "l" << "locale", QCoreApplication::translate( "main", "Set language locale to <locale>." ), QLocale().bcp47Name() ),
-		  OptionDefine( QStringList() << "d" << "define", QCoreApplication::translate( "main", "Define a <variable>." ), "variable" )
+		  OptionDefine( QStringList() << "d" << "define", QCoreApplication::translate( "main", "Define a <variable>." ), "variable" ),
+		  OptionReloadRepo( "repo-reload", QCoreApplication::translate( "main", "Reinstall the plugins for these repositories" ), QCoreApplication::translate( "main", "repo" ) )
 	{
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 4, 0 )
 		QCoreApplication::setAttribute( Qt::AA_ShareOpenGLContexts );
@@ -50,6 +52,7 @@ public:
 		CLP.addPositionalArgument( "patches", QCoreApplication::translate( "main", "Patches to open (optional)."), "[patches...]" );
 
 		CLP.addOption( OptionConfigFile );
+
 		CLP.addOption( OptionClearSettings );
 
 		CLP.addOption( OptionOpenGL );
@@ -63,6 +66,8 @@ public:
 		CLP.addOption( OptionLocale );
 
 		CLP.addOption( OptionDefine );
+
+		CLP.addOption( OptionReloadRepo );
 	}
 
 	void processCommandLine( int argc, char **argv )
@@ -131,6 +136,7 @@ public:
 
 		if( CLP.isSet( OptionConfigFile ) )
 		{
+			// qInfo() << CLP.value( OptionConfigFile );
 		}
 	}
 
@@ -276,6 +282,36 @@ public:
 		}
 	}
 
+	QString configFile( void )
+	{
+		if( !CLP.isSet( OptionConfigFile ) )
+		{
+			return( QDir( QStandardPaths::writableLocation( QStandardPaths::DataLocation ) ).absoluteFilePath( "fugio.ini" ) );
+		}
+
+		return( QFileInfo( CLP.value( OptionConfigFile ) ).absoluteFilePath() );
+	}
+
+	QDir configDirectory( void )
+	{
+		if( !CLP.isSet( OptionConfigFile ) )
+		{
+			return( QDir( QStandardPaths::writableLocation( QStandardPaths::DataLocation ) ) );
+		}
+
+		return( QFileInfo( CLP.value( OptionConfigFile ) ).absoluteDir() );
+	}
+
+	QString reloadRepo( void )
+	{
+		if( !CLP.isSet( OptionReloadRepo ) )
+		{
+			return( QString() );
+		}
+
+		return( CLP.value( OptionReloadRepo ) );
+	}
+
 public:
 	QCommandLineParser		CLP;
 
@@ -293,6 +329,7 @@ protected:
 	QCommandLineOption		OptionDisablePlugin;
 	QCommandLineOption		OptionLocale;
 	QCommandLineOption		OptionDefine;
+	QCommandLineOption		OptionReloadRepo;
 
 	QTranslator				qtTranslator;
 	QTranslator				Translator;

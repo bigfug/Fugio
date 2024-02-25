@@ -340,7 +340,7 @@ bool PluginActionInstall::action()
                 {
                     QFile   DestFile( FileBase.absoluteFilePath( FI.filePath() ) );
 
-                    if( DestFile.open( QFile::WriteOnly | QFile::NewOnly ) )
+					if( DestFile.open( QFile::WriteOnly ) )
                     {
                         if( zip_entry_extract( zfh, &PluginActionInstall::on_extract, &DestFile ) )
                         {
