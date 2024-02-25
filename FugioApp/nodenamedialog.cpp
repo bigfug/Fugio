@@ -22,7 +22,7 @@ NodeNameDialog::NodeNameDialog(QWidget *parent) :
 
 	mNodeList.clear();
 
-	QSettings				 Settings;
+	SettingsHelper			 Settings;
 
 	int		HistoryCount = Settings.beginReadArray( "node-history" );
 
@@ -47,7 +47,7 @@ NodeNameDialog::NodeNameDialog(QWidget *parent) :
 
 NodeNameDialog::~NodeNameDialog()
 {
-	QSettings				 Settings;
+	SettingsHelper			 Settings;
 
 	Settings.beginWriteArray( "node-history" );
 

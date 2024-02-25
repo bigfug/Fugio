@@ -26,10 +26,10 @@ add_executable(fugio-plugin-manager
   ../libs/zip/zip.cpp
   ../libs/zip/miniz.h
 
-  ${TS_FILES}
+  # ${TS_FILES}
 )
 
-target_link_libraries(fugio-plugin-manager
+target_link_libraries(fugio-plugin-manager PRIVATE
 	Qt${QT_VERSION_MAJOR}::Core
 	Qt${QT_VERSION_MAJOR}::Network
 )

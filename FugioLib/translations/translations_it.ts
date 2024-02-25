@@ -25,7 +25,15 @@
 <context>
     <name>PluginActionInstall</name>
     <message>
-        <location filename="../pluginmanager.cpp" line="410"/>
+        <location filename="../pluginmanager.cpp" line="300"/>
+        <source>Couldn&apos;t open zip file</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>PluginActionRemove</name>
+    <message>
+        <location filename="../pluginmanager.cpp" line="692"/>
         <source>Couldn&apos;t open zip file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -33,7 +41,7 @@
 <context>
     <name>PluginManager</name>
     <message>
-        <location filename="../pluginmanager.cpp" line="228"/>
+        <location filename="../pluginmanager.cpp" line="205"/>
         <source>Plugins loaded: %1</source>
         <translation type="unfinished"></translation>
     </message>

@@ -43,22 +43,19 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName( "fugio-plugin-manager" );
 	QCoreApplication::setApplicationVersion( "1.0.0" );
 
+    if( !QSslSocket::supportsSsl() )
+    {
+        qWarning( "SSL support not detected - downloading from https sources won't work" );
+    }
+
 	//-------------------------------------------------------------------------
 	// Variables
 
-    QFileInfo PluginConfigFileInfo( "plugin-config.ini" );
-
-    QSettings FugioGlobalSettings( QSettings::SystemScope, "Fugio", "Fugio" );
+    // QSettings FugioGlobalSettings( QSettings::SystemScope, "Fugio", "Fugio" );
 
     PluginManager       PM;
 
-    qDebug() << PM.pluginConfigFilename();
-
-    QSettings FugioPluginSettings( PM.pluginConfigFilename(), QSettings::IniFormat );
-
-    qDebug() << FugioPluginSettings.fileName();
-
-    FugioPluginSettings.setValue( "test", "test" );
+	PluginCache			PC;
 
 	//-------------------------------------------------------------------------
 	// Set up the arguments for the command line parser.
@@ -67,154 +64,198 @@ int main(int argc, char *argv[])
 
 	CommandLine.setApplicationDescription("Command line control of Fugio plugins");
 	CommandLine.addVersionOption();
+    CommandLine.addHelpOption();
 
-	// Add our own help option (instead of addHelpOption()) so we can offer help for each command
-	QCommandLineOption helpOption(QStringList() << "h" << "help",
-								   QCoreApplication::translate("main", "Help"));
-	CommandLine.addOption(helpOption);
+    QCommandLineOption  RepoAdd( "add", "Add plugin repository", "url|file" );
+    QCommandLineOption  RepoRemove( "remove", "Remove a plugin repository", "name" );
+    QCommandLineOption  PluginInstall( "install", "Install a plugin", "name" );
+    QCommandLineOption  PluginUnInstall( "uninstall", "Uninstall a plugin", "name" );
 
-	// Verbose
-	QCommandLineOption verboseOption( "V", QCoreApplication::translate("main", "Verbose reporting"));
+    CommandLine.addOption( RepoAdd );
+    CommandLine.addOption( RepoRemove );
+    CommandLine.addOption( PluginInstall );
+    CommandLine.addOption( PluginUnInstall );
 
-	CommandLine.addOption(verboseOption);
+    // Verbose
+    QCommandLineOption verboseOption( "V", QCoreApplication::translate("main", "Verbose reporting"));
 
-	// The command we have to execute
+    CommandLine.addOption(verboseOption);
 
-	CommandLine.addPositionalArgument( "command", QCoreApplication::translate( "main", "The command to execute." ), "<install|info>" );
-
-	// The directory where Fugio is installed
+    // The directory where Fugio is installed
 
     QCommandLineOption PluginConfigOption(QStringList() << "c" << "plugin-config",
-                                             QCoreApplication::translate( "main", "Filename of plugin config." ),
-                                             QCoreApplication::translate( "main", "config"));
+                                          QCoreApplication::translate( "main", "Filename of plugin config." ),
+                                          QCoreApplication::translate( "main", "config"));
 
     CommandLine.addOption( PluginConfigOption );
 
-	//-------------------------------------------------------------------------
-	// Process the command line
+    CommandLine.process( a );
 
-	CommandLine.process( QCoreApplication::arguments() );
+    //-------------------------------------------------------------------------
 
-	// Did the user request help?
+    const bool verbose = CommandLine.isSet( verboseOption );
 
-	bool help = CommandLine.isSet(helpOption);
-	const bool verbose = CommandLine.isSet( verboseOption );
-
-	// look for the command option. if we find one, parse the arguments again with the options for that command
-
-	const QStringList args = CommandLine.positionalArguments();
-	const QString command = args.isEmpty() ? QString() : args.first();
-
-	if( command == "install" )
-	{
-		CommandLine.clearPositionalArguments();
-		CommandLine.addPositionalArgument("install", "install a new package", "install [url]");
-		CommandLine.process(a);
-	}
-	else if( command == "info" )
-	{
-		CommandLine.clearPositionalArguments();
-		CommandLine.addPositionalArgument( "info", "show info from a package", "info [url]");
-		CommandLine.process(a);
-	}
-	else
-	{
-		// we haven't found a known command, set the help flag
-
-		help = true;
-	}
-
-	// Show the user the help text. This will exit the app.
-
-	if( help )
-	{
-		CommandLine.showHelp();
-	}
-
-	//-------------------------------------------------------------------------
-
-	if( verbose )
-	{
-		printf("%s %s\n", qPrintable(QCoreApplication::applicationName()),
-			   qPrintable(QCoreApplication::applicationVersion()));
-	}
-
-	//-------------------------------------------------------------------------
-	// Process the Fugio directory command line option
-
-    if( CommandLine.isSet( PluginConfigOption ) )
-	{
-        PluginConfigFileInfo = QFileInfo( CommandLine.value( PluginConfigOption ) );
-	}
-
-    QSettings   PluginSettings( PluginConfigFileInfo.absoluteFilePath(), QSettings::IniFormat );
-
-    if( !PluginSettings.isWritable() )
+    if( verbose )
     {
-        fprintf( stderr, "Plugin config is not writable - %s\n", qPrintable( PluginConfigFileInfo.absoluteFilePath() ) );
-
-        return( 1 );
+        printf("%s %s\n", qPrintable(QCoreApplication::applicationName()),
+               qPrintable(QCoreApplication::applicationVersion()));
     }
 
     if( verbose )
-	{
+    {
+        printf( "Global config filename: %s\n", qPrintable( PC.pluginConfigFilename() ) );
+    }
+
+    //-------------------------------------------------------------------------
+    // Process the Fugio directory command line option
+
+    QFileInfo PluginConfigFileInfo( "plugin-config.ini" );
+
+    if( CommandLine.isSet( PluginConfigOption ) )
+    {
+        PluginConfigFileInfo = QFileInfo( CommandLine.value( PluginConfigOption ) );
+    }
+
+	QSettings	Settings( PluginConfigFileInfo.absoluteFilePath(), QSettings::IniFormat );
+
+	PluginConfig Config( Settings );
+
+    if( verbose )
+    {
         printf( "Plugin config file: %s\n", qPrintable( PluginConfigFileInfo.absoluteFilePath() ) );
-	}
+    }
 
-    PluginSettings.setValue( "test", "test" );
+    //-------------------------------------------------------------------------
 
-	//-------------------------------------------------------------------------
+	for( QString &ArgDat : CommandLine.values( RepoAdd ) )
+    {
+        QUrl            repoUrl;
+        QString         repoManifestFilename;
+        bool            repoManifestRemove = false;
+        QDateTime       repoModified;
 
-//    GlobalPrivate   *G = qobject_cast<GlobalPrivate *>( fugio::fugio()->qobject() );
+        // qDebug() << repoCommand << repoData << QFileInfo( repoData ).isFile();
 
-//    PluginManager   &PM = G->pluginManager();
-
-	if( command == "info" )
-	{
-		QString UrlTxt = CommandLine.positionalArguments().at( 1 );
-
-		if( verbose )
-		{
-			printf( "Performing 'info' on '%s'...\n", qPrintable( UrlTxt ) );
-		}
-
-        QUrl	Url( UrlTxt );
-
-        if( Url.scheme().isEmpty() )
+        if( !QFileInfo( ArgDat ).isFile() )
         {
-            Url = QUrl::fromLocalFile( UrlTxt );
-		}
+            repoUrl = QUrl( ArgDat );
 
-        qDebug() << Url;
-        qDebug() << QSslSocket::supportsSsl();
-        qDebug() << QSslSocket::sslLibraryVersionString();
+            qDebug() << repoUrl;
 
-        PluginActionDownload    Action( Url, "test-download.png" );
+            PluginActionDownload    RepoDown( repoUrl );
 
-        QObject::connect( &Action, &PluginActionDownload::status, [&]( const QString &pStatus )
+            RepoDown.setAutoRemove( false );
+
+            if( RepoDown.action() )
+            {
+                repoManifestFilename = RepoDown.tempFileName();
+
+                repoModified = RepoDown.modified();
+
+                repoManifestRemove = true;
+            }
+        }
+        else
         {
+            QFileInfo repoFileInfo( ArgDat );
 
-        });
+            repoUrl = QUrl::fromLocalFile( repoFileInfo.absoluteFilePath() );
 
-        QObject::connect( &Action, &PluginActionDownload::downloadProgress, [&]( qint64 bytesReceived, qint64 bytesTotal )
+            qDebug() << repoUrl;
+
+            repoManifestFilename = repoFileInfo.absoluteFilePath();
+
+            repoModified = repoFileInfo.lastModified().toUTC();
+        }
+
+        if( !repoManifestFilename.isEmpty() )
         {
-            progressBar( float( bytesReceived ) / float( bytesTotal ) );
-         });
+            PluginRepoManifest      RepoManifest( repoManifestFilename, "win64" );
 
-        Action.action();
+            RepoManifest.setModified( repoModified );
 
-        std::cout << std::endl;
+            PC.addRepoManifest( RepoManifest, repoUrl );
 
+            if( repoManifestRemove )
+            {
+                QFile::remove( repoManifestFilename );
+            }
+        }
+    }
 
-        // TODO: if it's a remote file, copy to a plugin cache location
+	for( QString &ArgDat : CommandLine.values( RepoRemove ) )
+    {
+        PC.removeRepo( ArgDat );
+    }
 
-#if 0
+	for( QString &ArgDat : CommandLine.values( PluginInstall ) )
+    {
+        QVersionNumber      PluginVersion = Config.installedPluginVersion( ArgDat );
 
-		const QString authorName = JSON[ "authorName" ].toString();
+        if( !PluginVersion.isNull() )
+        {
+            continue;
+        }
 
-		qDebug() << authorName;
-#endif
-	}
+        PluginVersion = PC.latestPluginVersion( ArgDat );
 
-    return( 0 ) ;//a.exec() );
+        if( PluginVersion.isNull() )
+        {
+            continue;
+        }
+
+        QString     PluginArchive = PC.cachedPluginFilename( ArgDat, PluginVersion );
+
+        if( PluginArchive.isEmpty() )
+        {
+            QString   pluginFilename;
+            bool      pluginRemove = false;
+            QUrl      PluginUrl = PC.pluginUrl( ArgDat, PluginVersion );
+
+            qDebug() << PluginUrl;
+
+            if( !PluginUrl.isLocalFile() )
+            {
+                PluginActionDownload    pluginDown( PluginUrl );
+
+                pluginDown.setAutoRemove( false );
+
+                if( pluginDown.action() )
+                {
+                    pluginFilename = pluginDown.tempFileName();
+
+                    pluginRemove = true;
+                }
+            }
+            else
+            {
+                pluginFilename = QDir::toNativeSeparators( PluginUrl.toLocalFile() );
+            }
+
+            PC.addPluginToCache( ArgDat, PluginVersion, pluginFilename );
+
+            if( pluginRemove )
+            {
+                QFile::remove( pluginFilename );
+            }
+        }
+
+        PluginArchive = PC.cachedPluginFilename( ArgDat, PluginVersion );
+
+        if( !PluginArchive.isEmpty() )
+        {
+            PluginActionInstall     PluginInstall( PluginArchive, PM.pluginDirectory().absolutePath() );
+
+            if( PluginInstall.action() )
+            {
+                Config.setInstalledPluginVersion( ArgDat, PluginVersion );
+            }
+        }
+    }
+
+	for( QString &ArgDat : CommandLine.values( PluginUnInstall ) )
+    {
+    }
+
+    return( 0 );
 }

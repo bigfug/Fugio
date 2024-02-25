@@ -81,6 +81,11 @@ endif()
 
 set( FUGIO_API "${CMAKE_SOURCE_DIR}/include" CACHE PATH "" )
 
+add_custom_target( fugio-api
+	COMMAND ${CMAKE_COMMAND} -E tar "cfv" "${CMAKE_BINARY_DIR}/fugio-api.zip" --format=zip -- "fugio"
+	WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/include"
+   )
+
 #------------------------------------------------------------------------------
 
 set( FUGIO_UNIX_DEPENDENCIES )

@@ -192,6 +192,8 @@ private slots:
 
 	void on_actionDiscordServer_triggered();
 
+	void on_actionPlugin_directory_triggered();
+
 private:
 	Ui::MainWindow								*ui;
 
