@@ -27,10 +27,8 @@
 #include "undo/cmdnodeadd.h"
 #include "undo/cmdsetcolour.h"
 #include "undo/cmdcontextviewpaste.h"
-#include "undo/cmdcontextviewcut.h"
 #include "undo/cmdmove.h"
 #include "undo/cmdgroup.h"
-#include "undo/cmdungroup.h"
 #include "undo/cmdgrouppush.h"
 #include "undo/cmdgrouppop.h"
 
@@ -1469,7 +1467,7 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 
 void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 {
-	for( LinkItem *Link : mLinkList.toSet() )
+	for( LinkItem *Link : mLinkList )
 	{
 		//qDebug() << ( Link->srcPin() ? Link->srcPin()->uuid() : QUuid() ) << ( Link->dstPin() ? Link->dstPin()->uuid() : QUuid() );
 
@@ -2301,7 +2299,7 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGro
 	// Search for any links that link from the ungrouping nodes to outside nodes
 	// and delete them
 
-	for( LinkItem *LI : mLinkList.toSet() )
+	for( LinkItem *LI : mLinkList )
 	{
 		PinItem			*SrcPin = LI->srcPin();
 		PinItem			*DstPin = LI->dstPin();
@@ -2828,7 +2826,7 @@ void ContextView::wheelEvent( QWheelEvent *pEvent )
 				GSE.mScaleFactor -= qMax( 0.1, qreal( -numSteps.y() ) * 0.1 );
 			}
 
-			GSE.mScaleCenter = mapToScene( pEvent->pos() );
+			GSE.mScaleCenter = mapToScene( pEvent->position().toPoint() );
 
 			zoom( GSE.mScaleFactor, GSE.mScaleCenter );
 		}

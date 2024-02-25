@@ -37,7 +37,7 @@ public:
 			return( QVariant( pString ).toPointF() );
 		}
 
-		QStringList		L = pString.split( ',', QString::SkipEmptyParts );
+		QStringList		L = pString.split( ',', Qt::SkipEmptyParts );
 		qreal			X = L.size() > 0 ? L.at( 0 ).toDouble() : 0.0;
 		qreal			Y = L.size() > 1 ? L.at( 1 ).toDouble() : 0.0;
 
@@ -60,7 +60,7 @@ public:
 
 	static qreal stringToTime( const QString &pString )
 	{
-		QStringList		l = pString.split( ':', QString::SkipEmptyParts );
+		QStringList		l = pString.split( ':', Qt::SkipEmptyParts );
 		qreal			t = 0;
 
 		if( !l.empty() )

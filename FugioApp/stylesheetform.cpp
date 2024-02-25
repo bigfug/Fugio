@@ -24,7 +24,7 @@ StyleSheetForm::StyleSheetForm(QWidget *parent) :
 
 	QFontMetrics metrics(font);
 
-	ui->mStyleSheet->setTabStopWidth( tabStop * metrics.width( ' ' ) );
+	ui->mStyleSheet->setTabStopDistance( tabStop * metrics.horizontalAdvance( ' ' ) );
 
 	SettingsHelper	Settings;
 
