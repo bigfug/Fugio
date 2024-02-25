@@ -1,6 +1,3 @@
 [submodule "libs/FugioTime"]
 	path = libs/FugioTime
 	url = https://github.com/bigfug/FugioTime.git
-[submodule "include"]
-	path = include
-	url = https://github.com/bigfug/fugio-api
