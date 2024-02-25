@@ -22,6 +22,7 @@ public:
 	AppHelper( void )
 		: OptionHelp( "help" ),
 		  OptionVersion( "version" ),
+		  OptionConfigFile( QStringList() << "c" << "config", QCoreApplication::translate( "main", "Config file" ) ),
 		  OptionClearSettings( "clear-settings", QCoreApplication::translate( "main", "Clear all settings (mainly for testing purposes)" ) ),
 		  OptionOpenGL( "opengl", QCoreApplication::translate( "main", "Select OpenGL backend" ) ),
 		  OptionGLES( "gles", QCoreApplication::translate( "main", "Select OpenGL ES backend" ) ),
@@ -48,6 +49,7 @@ public:
 
 		CLP.addPositionalArgument( "patches", QCoreApplication::translate( "main", "Patches to open (optional)."), "[patches...]" );
 
+		CLP.addOption( OptionConfigFile );
 		CLP.addOption( OptionClearSettings );
 
 		CLP.addOption( OptionOpenGL );
@@ -126,6 +128,10 @@ public:
 		{
 			QLocale::setDefault( QLocale( CLP.value( OptionLocale ) ) );
 		}
+
+		if( CLP.isSet( OptionConfigFile ) )
+		{
+		}
 	}
 
 	void checkForHelpOption( void )
@@ -176,7 +182,7 @@ public:
 		{
 			QMap<QString,QString>		CommandLineVariables;
 
-			for( QString S : CLP.values( OptionDefine ) )
+			for( QString &S : CLP.values( OptionDefine ) )
 			{
 				const int	SepPos = S.indexOf( ':' );
 
@@ -197,43 +203,14 @@ public:
 		}
 	}
 
-	void registerAndLoadPlugins( QDir PluginsDir )
+	void registerAndLoadPlugins( QDir pPluginsDir )
 	{
+		GlobalInterface	*PBG = fugio();
+
 		//-------------------------------------------------------------------------
 		// Register and load plugins
 
-#if defined( Q_OS_LINUX ) && !defined( QT_DEBUG )
-		PluginsDir.cdUp();
-		PluginsDir.cd( "lib" );
-		PluginsDir.cd( "fugio" );
-#else
-
-#if defined( Q_OS_MAC )
-		qDebug() << "App Binary Directory:" << PluginsDir.absolutePath();
-
-		PluginsDir.cdUp();
-		PluginsDir.cdUp();
-		PluginsDir.cdUp();
-
-		qDebug() << "App Directory:" << PluginsDir.absolutePath();
-#endif
-
-		// while( !PluginsDir.isRoot() && PluginsDir.isReadable() && !PluginsDir.cd( "plugins" ) )
-		// {
-		// 	PluginsDir.cdUp();
-		// }
-#endif
-
-		if( !PluginsDir.isRoot() && PluginsDir.isReadable() )
-		{
-			qInfo() << "Plugin Directory:" << PluginsDir.absolutePath();
-		}
-		else
-		{
-			qWarning() << "Plugin Directory (Not Readable):" << PluginsDir.absolutePath();
-		}
-
-		GlobalInterface	*PBG = fugio();
+		qInfo() << "Plugin Directory:" << pPluginsDir.absolutePath();
 
 		//-------------------------------------------------------------------------
 		// Process command line enabled/disabled plugins
@@ -249,15 +226,15 @@ public:
 		}
 
 #if defined( Q_OS_MACX ) || defined( Q_OS_LINUX )
-		if( !PluginsDir.isRoot() && PluginsDir.isReadable())
+		if( !pPluginsDir.isRoot() && pPluginsDir.isReadable())
 		{
-			PBG->loadPlugins( PluginsDir );
+			PBG->loadPlugins( pPluginsDir );
 		}
 #else
-		if( !PluginsDir.isRoot() && PluginsDir.isReadable() )
+		if( !pPluginsDir.isRoot() && pPluginsDir.isReadable() )
 		{
 			QString		CurDir = QDir::currentPath();
-			QString		NxtDir = PluginsDir.absolutePath();
+			QString		NxtDir = pPluginsDir.absolutePath();
 
 			QDir::setCurrent( NxtDir );
 
@@ -270,17 +247,17 @@ public:
 		//-------------------------------------------------------------------------
 		// Load plugins from additional paths
 
-		if( CLP.isSet( OptionPluginPath ) )
-		{
-			for( QString PluginPath : CLP.values( OptionPluginPath ) )
-			{
-				QDir		AdditionalPluginPath( PluginPath );
+		// if( CLP.isSet( OptionPluginPath ) )
+		// {
+		// 	for( QString &PluginPath : CLP.values( OptionPluginPath ) )
+		// 	{
+		// 		QDir		AdditionalPluginPath( PluginPath );
 
-				qInfo() << "Additional Plugin Directory:" << AdditionalPluginPath.absolutePath();
+		// 		qInfo() << "Additional Plugin Directory:" << AdditionalPluginPath.absolutePath();
 
-				PBG->loadPlugins( AdditionalPluginPath );
-			}
-		}
+		// 		PBG->loadPlugins( AdditionalPluginPath );
+		// 	}
+		// }
 
 		PBG->initialisePlugins();
 	}
@@ -306,6 +283,7 @@ protected:
 	QCommandLineOption		OptionHelp;
 	QCommandLineOption		OptionVersion;
 
+	QCommandLineOption		OptionConfigFile;
 	QCommandLineOption		OptionClearSettings;
 	QCommandLineOption		OptionOpenGL;
 	QCommandLineOption		OptionGLES;
