@@ -1381,12 +1381,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>main</name>
     <message>
-        <location filename="../main.cpp" line="289"/>
+        <location filename="../main.cpp" line="350"/>
         <source>Removing plugin: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../main.cpp" line="323"/>
+        <location filename="../main.cpp" line="384"/>
         <source>Installing plugin: %1 (%2)</source>
         <translation type="unfinished"></translation>
     </message>

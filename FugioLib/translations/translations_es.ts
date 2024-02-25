@@ -33,7 +33,7 @@
 <context>
     <name>PluginActionRemove</name>
     <message>
-        <location filename="../pluginmanager.cpp" line="679"/>
+        <location filename="../pluginmanager.cpp" line="692"/>
         <source>Couldn&apos;t open zip file</source>
         <translation type="unfinished"></translation>
     </message>

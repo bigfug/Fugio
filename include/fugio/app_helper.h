@@ -197,12 +197,10 @@ public:
 		}
 	}
 
-	void registerAndLoadPlugins( void )
+	void registerAndLoadPlugins( QDir PluginsDir )
 	{
 		//-------------------------------------------------------------------------
 		// Register and load plugins
-
-		QDir	PluginsDir = QDir( qApp->applicationDirPath() );
 
 #if defined( Q_OS_LINUX ) && !defined( QT_DEBUG )
 		PluginsDir.cdUp();
@@ -220,10 +218,10 @@ public:
 		qDebug() << "App Directory:" << PluginsDir.absolutePath();
 #endif
 
-		while( !PluginsDir.isRoot() && PluginsDir.isReadable() && !PluginsDir.cd( "plugins" ) )
-		{
-			PluginsDir.cdUp();
-		}
+		// while( !PluginsDir.isRoot() && PluginsDir.isReadable() && !PluginsDir.cd( "plugins" ) )
+		// {
+		// 	PluginsDir.cdUp();
+		// }
 #endif
 
 		if( !PluginsDir.isRoot() && PluginsDir.isReadable() )

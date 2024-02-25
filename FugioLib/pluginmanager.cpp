@@ -374,14 +374,18 @@ bool PluginActionDownload::action()
 {
     QNetworkAccessManager   *Manager = new QNetworkAccessManager( this );
 
-    QNetworkReply         *NetRep = Manager->get( QNetworkRequest( m_Url ) );
+	QNetworkRequest			NetReq( m_Url );
+
+	NetReq.setAttribute( QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy );
+
+	QNetworkReply         *NetRep = Manager->get( NetReq );
 
     if( !NetRep )
     {
         return( false );
     }
 
-    qDebug() << NetRep->isRunning() << NetRep->errorString();
+	// qDebug() << NetRep->isRunning() << NetRep->errorString();
 
     if( !NetRep->isRunning() )
     {
@@ -401,7 +405,7 @@ bool PluginActionDownload::action()
                 return;
             }
 
-            qDebug() << m_TempFile.fileName();
+			qDebug() << m_TempFile.fileName();
         }
 
         m_TempFile.write( NetRep->readAll() );
@@ -417,7 +421,12 @@ bool PluginActionDownload::action()
             {
                 m_Modified = QDateTime::fromString( HP.second, Qt::RFC2822Date ).toUTC();
             }
-        }
+
+			if( HP.first == "Location" )
+			{
+				qInfo() << "Redirecting to" << HP.second;
+			}
+		}
     } );
 
     QObject::connect( NetRep, &QNetworkReply::finished, NetRep, [&]( void )
@@ -437,18 +446,22 @@ bool PluginActionDownload::action()
 
     QObject::connect( NetRep, &QNetworkReply::errorOccurred, [&]( QNetworkReply::NetworkError pNetworkError )
     {
-        qDebug() << pNetworkError;
+		qWarning() << pNetworkError;
     } );
 
     QObject::connect( NetRep, &QNetworkReply::sslErrors, [&]( const QList<QSslError> &pErrors )
     {
+		for( const QSslError &e : pErrors )
+		{
+			qWarning() << e;
+		}
     } );
 
     m_Loop.exec();
 
     Manager->deleteLater();
 
-    return( true );
+	return( m_TempFile.fileName().isEmpty() == false );
 }
 
 PluginRepoManifest::PluginRepoManifest( const QString &pFileName, const QString &pPlatform )
@@ -941,7 +954,7 @@ QVersionNumber PluginCache::latestPluginVersion( const QString &pPluginName ) co
 
         Config.beginGroup( RepoKey );
 
-        for( const QString &TempData : Config.childKeys() )
+		for( QString &TempData : Config.childKeys() )
         {
             QVersionNumber      TempVersion = QVersionNumber::fromString( TempData );
 
@@ -1035,7 +1048,7 @@ bool PluginCache::addPluginToCache(const QString &pPluginName, const QVersionNum
 
     QFileInfo   PluginSource( pFilename );
 
-    QString     PluginDest = PluginCache.absoluteFilePath( PluginSource.fileName() );
+	QString     PluginDest = PluginCache.absoluteFilePath( QString( "%1-%2.zip" ).arg( pPluginName, pPluginVersion.toString() ) );
 
 	if( QFile::exists( PluginDest ) )
 	{

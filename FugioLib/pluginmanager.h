@@ -159,7 +159,7 @@ public:
 
     QUrl pluginVersionUrl( const QString &pPluginName, const QVersionNumber &pPluginVersion ) const
     {
-        for( const PluginEntry &Entry : m_PluginVersionMap.values( pPluginName ) )
+		for( PluginEntry &Entry : m_PluginVersionMap.values( pPluginName ) )
         {
             if( Entry.first == pPluginVersion )
             {
