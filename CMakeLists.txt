@@ -108,6 +108,19 @@ install( DIRECTORY share/ DESTINATION ${PATH_SHARE}
 install( DIRECTORY DESTINATION plugins)
 
 #------------------------------------------------------------------------------
+
+find_package( OpenSSL )
+
+if( OPENSSL_FOUND )
+    message( "OpenSSL: ${OPENSSL_VERSION}" )
+
+    install( FILES
+        ${OPENSSL_ROOT_DIR}/bin/libcrypto-1_1-x64.dll
+        ${OPENSSL_ROOT_DIR}/bin/libssl-1_1-x64.dll
+        DESTINATION ${PATH_APP} )
+endif()
+
+#------------------------------------------------------------------------------
 # CPack
 
 set( CPACK_PACKAGE_NAME "Fugio" )
