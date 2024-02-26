@@ -469,6 +469,8 @@ void MainWindow::contextAdded( QSharedPointer<fugio::ContextInterface> pContext 
 
 	connect( CV, SIGNAL(contextFilenameChanged(QString)), this, SLOT(addFileToRecent(QString)) );
 
+	connect( CV->view(), &ContextView::nodeInspection, ui->mInspector, &InspectorForm::inspectNode );
+
 	QTimer::singleShot( 500, ui->mStyleSheet, SLOT(stylesApply()) );
 }
 

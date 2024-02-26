@@ -225,6 +225,26 @@ void GlobalPrivate::unregisterPinClasses( const fugio::ClassEntry pNodes[] )
 	}
 }
 
+void GlobalPrivate::registerEditorClasses(const fugio::ClassEntry pNodes[])
+{
+	for( int i = 0 ; pNodes[ i ].mMetaObject ; i++ )
+	{
+		const fugio::ClassEntry &E = pNodes[ i ];
+
+		registerEditorClass( E.mName, E.mUuid, E.mMetaObject );
+	}
+}
+
+void GlobalPrivate::unregisterEditorClasses(const fugio::ClassEntry pNodes[])
+{
+	for( int i = 0 ; pNodes[ i ].mMetaObject ; i++ )
+	{
+		const fugio::ClassEntry &E = pNodes[ i ];
+
+		unregisterEditorClass( E.mUuid );
+	}
+}
+
 bool GlobalPrivate::registerNodeClass( const fugio::ClassEntry &E )
 {
 	if( mNodeMap.contains( E.mUuid ) )
@@ -276,6 +296,18 @@ void GlobalPrivate::unregisterPinClass( const QUuid &pUUID )
 	mPinNameMap.remove( pUUID );
 }
 
+bool GlobalPrivate::registerEditorClass(const QString &pName, const QUuid &pUUID, const QMetaObject *pMetaObject)
+{
+	mEditorClassMap.insert( pUUID, pMetaObject );
+
+	return( true );
+}
+
+void GlobalPrivate::unregisterEditorClass(const QUuid &pUUID)
+{
+	mEditorClassMap.remove( pUUID );
+}
+
 
 const QMetaObject *GlobalPrivate::findNodeMetaObject( const QString &pClassName ) const
 {
@@ -302,6 +334,11 @@ const QMetaObject *GlobalPrivate::findNodeMetaObject( const QUuid &pNodeUuid ) c
 const QMetaObject *GlobalPrivate::findPinMetaObject( const QUuid &pPinUuid ) const
 {
 	return( mPinClassMap.value( pPinUuid ) );
+}
+
+const QMetaObject *GlobalPrivate::findEditorMetaObject(const QUuid &pPinUuid) const
+{
+	return( mEditorClassMap.value( pPinUuid ) );
 }
 
 QString GlobalPrivate::nodeName(const QUuid &pUuid) const

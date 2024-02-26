@@ -208,12 +208,17 @@ public:
 	virtual void registerPinClasses( const fugio::ClassEntry pNodes[] ) Q_DECL_OVERRIDE;
 	virtual void unregisterPinClasses( const fugio::ClassEntry pNodes[] ) Q_DECL_OVERRIDE;
 
+	virtual void registerEditorClasses( const fugio::ClassEntry pNodes[] ) Q_DECL_OVERRIDE;
+	virtual void unregisterEditorClasses( const fugio::ClassEntry pNodes[] ) Q_DECL_OVERRIDE;
+
 	virtual const QMetaObject *findNodeMetaObject( const QString &pClassName ) const Q_DECL_OVERRIDE;
 
 	virtual fugio::ClassEntry findNodeClassEntry( const QUuid &pNodeUuid ) const Q_DECL_OVERRIDE;
 
 	virtual const QMetaObject *findNodeMetaObject( const QUuid &pNodeUuid ) const Q_DECL_OVERRIDE;
 	virtual const QMetaObject *findPinMetaObject( const QUuid &pPinUuid ) const Q_DECL_OVERRIDE;
+	virtual const QMetaObject *findEditorMetaObject( const QUuid &pPinUuid ) const Q_DECL_OVERRIDE;
+
 
 	virtual QString nodeName( const QUuid &pUuid ) const Q_DECL_OVERRIDE;
 	virtual QString pinName( const QUuid &pUuid ) const Q_DECL_OVERRIDE;
@@ -300,6 +305,10 @@ protected:
 
 	void unregisterPinClass( const QUuid &pUUID );
 
+	bool registerEditorClass( const QString &pName, const QUuid &pUUID, const QMetaObject *pMetaObject );
+
+	void unregisterEditorClass( const QUuid &pUUID );
+
 signals:
 	void nodeClassAdded( const fugio::ClassEntry &pClassEntry );
 
@@ -320,6 +329,7 @@ private:
 //	UuidNameMap						 mNodeNameMap;
 	UuidClassEntryMap				 mNodeMap;
 	UuidClassMap					 mPinClassMap;
+	UuidClassMap					 mEditorClassMap;
 	UuidNameMap						 mPinNameMap;
 	UuidObjectMap					 mInterfaceMap;
 	int								 mFrameCount;

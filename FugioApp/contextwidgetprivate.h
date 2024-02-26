@@ -78,6 +78,8 @@ signals:
 
 	void groupLinkActivated( const QString pLink );
 
+	void nodeInspection( NodeItem *pNodeItem );
+
 public slots:
     void userSave( void );
 
@@ -124,8 +126,6 @@ private slots:
     void on_mTimeSlider_sliderMoved(int position);
 
     void onContextDurationChanged( qreal pDuration );
-
-    //	void onNodeInspection( NodeItem *pNodeItem );
 
     void on_mTimeText_textEdited(const QString &arg1);
 

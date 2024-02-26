@@ -67,20 +67,6 @@ ContextWidgetPrivate::ContextWidgetPrivate(QWidget *parent) :
 			connect( B, SIGNAL(toggled(bool)), mContextView, SLOT(setVisible(bool)) );
 		}
 	}
-
-//	if( ( mInspector = new NodeInspectorForm( mSplitter ) ) != 0 )
-//	{
-//		mSplitter->addWidget( mInspector );
-//	}
-
-//	QList<int>		SzeLst;
-
-//	SzeLst.append( width() );
-//	SzeLst.append( 0 );
-
-//	mSplitter->setSizes( SzeLst );
-
-//	connect( mContextView, SIGNAL(nodeInspection(NodeItem*)), this, SLOT(onNodeInspection(NodeItem*)) );
 }
 
 ContextWidgetPrivate::~ContextWidgetPrivate()
@@ -115,6 +101,7 @@ void ContextWidgetPrivate::setContext( QSharedPointer<fugio::ContextInterface> p
 	onContextDurationChanged( mContext->duration() );
 
 	connect( mContext->qobject(), SIGNAL(durationChanged(qreal)), this, SLOT(onContextDurationChanged(qreal)) );
+
 }
 
 QSharedPointer<fugio::ContextInterface> ContextWidgetPrivate::context()
@@ -508,28 +495,6 @@ void ContextWidgetPrivate::onContextDurationChanged( qreal pDuration )
 
 	timeout();
 }
-
-//void ContextWidgetPrivate::onNodeInspection( NodeItem *pNodeItem )
-//{
-//	QList<int>		SzeLst;
-
-//	if( pNodeItem == 0 )
-//	{
-//		SzeLst.append( width() );
-//		SzeLst.append( 0 );
-
-//		//mInspector->inspectNode( QSharedPointer<fugio::NodeInterface>() );
-//	}
-//	else
-//	{
-//		SzeLst.append( ( width() * 3 ) / 4 );
-//		SzeLst.append( ( width() * 1 ) / 4 );
-
-//		//mInspector->inspectNode( mContext->findNode( pNodeItem->id() ) );
-//	}
-
-//	//mSplitter->setSizes( SzeLst );
-//}
 
 void ContextWidgetPrivate::on_mTimeText_textEdited( const QString &arg1 )
 {

@@ -337,7 +337,7 @@ void ContextView::mouseDoubleClickEvent( QMouseEvent *pEvent )
 		}
 	}
 
-	//	emit nodeInspection( 0 );
+	emit nodeInspection( mContext, Q_NULLPTR );
 
 	if( !itemAt( pEvent->pos() ) )
 	{
@@ -2000,6 +2000,28 @@ void ContextView::nodeMoveFinished()
 
 	mNodeMoveData.clear();
 	mNoteMoveData.clear();
+}
+
+void ContextView::nodeSelected( const QUuid &pUuid, bool pSelected )
+{
+	if( pSelected )
+	{
+		if( !mSelectedNodes.contains( pUuid ) )
+		{
+			mSelectedNodes << pUuid;
+		}
+
+		if( mSelectedNodes.size() == 1 )
+		{
+			emit nodeInspection( mContext, pUuid );
+		}
+	}
+	else
+	{
+		mSelectedNodes.removeAll( pUuid );
+
+		emit nodeInspection( mContext, QUuid() );
+	}
 }
 
 void ContextView::noteAdd( QSharedPointer<NoteItem> pNoteItem )

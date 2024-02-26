@@ -193,6 +193,10 @@ public:
 	virtual void registerPinClasses( const fugio::ClassEntry pNodes[] ) = 0;
 	virtual void unregisterPinClasses( const fugio::ClassEntry pNodes[] ) = 0;
 
+
+	virtual void registerEditorClasses( const fugio::ClassEntry pNodes[] ) = 0;
+	virtual void unregisterEditorClasses( const fugio::ClassEntry pNodes[] ) = 0;
+
 	//-------------------------------------------------------------------------
 	// Nodes and Pins
 
@@ -200,6 +204,7 @@ public:
 
 	virtual const QMetaObject *findNodeMetaObject( const QUuid &pNodeUuid ) const = 0;
 	virtual const QMetaObject *findPinMetaObject( const QUuid &pPinUuid ) const = 0;
+	virtual const QMetaObject *findEditorMetaObject( const QUuid &pPinUuid ) const = 0;
 
 	virtual fugio::ClassEntry findNodeClassEntry( const QUuid &pNodeUuid ) const = 0;
 
