@@ -99,9 +99,9 @@ add_subdirectory( fugio-plugin-manager )
 
 #------------------------------------------------------------------------------
 
-install( DIRECTORY include/ DESTINATION ${PATH_INCLUDE}
-	PATTERN ".*" EXCLUDE
-)
+# install( DIRECTORY include/ DESTINATION ${PATH_INCLUDE}
+# 	PATTERN ".*" EXCLUDE
+# )
 
 install( DIRECTORY share/ DESTINATION ${PATH_SHARE}
 	PATTERN ".*" EXCLUDE
@@ -117,8 +117,8 @@ if( OPENSSL_FOUND )
     message( "OpenSSL: ${OPENSSL_VERSION}" )
 
     install( FILES
-        ${OPENSSL_ROOT_DIR}/bin/libcrypto-1_1-x64.dll
-        ${OPENSSL_ROOT_DIR}/bin/libssl-1_1-x64.dll
+		${OPENSSL_ROOT_DIR}/bin/libcrypto-3-x64.dll
+		${OPENSSL_ROOT_DIR}/bin/libssl-3-x64.dll
         DESTINATION ${PATH_APP} )
 endif()
 

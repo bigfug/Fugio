@@ -134,7 +134,7 @@ int main( int argc, char *argv[] )
 			}
 			else if( MsgBox.clickedButton() == buttonYes )
 			{
-				PluginActionDownload    BootstrapDown( QUrl( "https://raw.githubusercontent.com/bigfug/Fugio/develop/fugio-bootstrap.json" ) );
+				PluginActionDownload    BootstrapDown( QUrl( "https://raw.githubusercontent.com/bigfug/Fugio/bootstrap/fugio-bootstrap.json" ) );
 
 				BootstrapDown.setAutoRemove( true );
 

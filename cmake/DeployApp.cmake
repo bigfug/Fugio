@@ -58,7 +58,6 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 	  COMMAND "${WINDEPLOYQT_EXECUTABLE}"
 		--verbose 2
 		--no-compiler-runtime
-		--no-angle
 		--no-opengl-sw
 		--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets
 		--dir "${ABS_BINARY_DIR}/${PATH_APP}"
@@ -80,7 +79,6 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 			COMMAND \"${WINDEPLOYQT_EXECUTABLE}\"
 			--dry-run
 			--no-compiler-runtime
-			--no-angle
 			--no-opengl-sw
 			--list mapping
 			--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets
@@ -92,27 +90,23 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 			OUTPUT_STRIP_TRAILING_WHITESPACE
 		)
 
-		separate_arguments(_files WINDOWS_COMMAND \${_output})
+	separate_arguments(_files WINDOWS_COMMAND \${_output})
 
-		while(_files)
-			list(GET _files 0 _src)
+	while(_files)
+		list(GET _files 0 _src)
+		if( EXISTS \${_src} )
 			list(GET _files 1 _dest)
-			message( \${_src} )
+			message( \"Copying \${_src}\" )
 			execute_process(
 				COMMAND \"${CMAKE_COMMAND}\" -E
 				copy \${_src} \"\${CMAKE_INSTALL_PREFIX}/${PATH_APP}/\${_dest}\"
 			)
-			separate_arguments(_files WINDOWS_COMMAND \${_output})
-			while(_files)
-					list(GET _files 0 _src)
-					list(GET _files 1 _dest)
-					execute_process(
-							COMMAND \"${CMAKE_COMMAND}\" -E
-							copy \${_src} \"\${CMAKE_INSTALL_PREFIX}/${PATH_APP}/\${_dest}\"
-					)
-					list(REMOVE_AT _files 0 1)
-			endwhile()
-		endwhile()
+
+		list(REMOVE_AT _files 0 1)
+	else()
+		list(REMOVE_AT _files 0)
+	endif()
+	endwhile()
 		"
 	)
 
