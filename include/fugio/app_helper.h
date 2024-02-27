@@ -159,9 +159,9 @@ public:
 
 		const QString		TranslatorSource = QDir::current().absoluteFilePath( "translations" );
 
-		if( QFileInfo::exists( QLibraryInfo::location( QLibraryInfo::TranslationsPath ) ) )
+		if( QFileInfo::exists( QLibraryInfo::path( QLibraryInfo::TranslationsPath ) ) )
 		{
-			qtTranslator.load( SystemLocal, QLatin1String( "qt" ), QLatin1String( "_" ), QLibraryInfo::location( QLibraryInfo::TranslationsPath ) );
+			qtTranslator.load( SystemLocal, QLatin1String( "qt" ), QLatin1String( "_" ), QLibraryInfo::path( QLibraryInfo::TranslationsPath ) );
 		}
 		else if( QFileInfo::exists( TranslatorSource ) )
 		{
@@ -286,7 +286,7 @@ public:
 	{
 		if( !CLP.isSet( OptionConfigFile ) )
 		{
-			return( QDir( QStandardPaths::writableLocation( QStandardPaths::DataLocation ) ).absoluteFilePath( "fugio.ini" ) );
+			return( QDir( QStandardPaths::writableLocation( QStandardPaths::AppLocalDataLocation ) ).absoluteFilePath( "fugio.ini" ) );
 		}
 
 		return( QFileInfo( CLP.value( OptionConfigFile ) ).absoluteFilePath() );
@@ -296,7 +296,7 @@ public:
 	{
 		if( !CLP.isSet( OptionConfigFile ) )
 		{
-			return( QDir( QStandardPaths::writableLocation( QStandardPaths::DataLocation ) ) );
+			return( QDir( QStandardPaths::writableLocation( QStandardPaths::AppLocalDataLocation ) ) );
 		}
 
 		return( QFileInfo( CLP.value( OptionConfigFile ) ).absoluteDir() );

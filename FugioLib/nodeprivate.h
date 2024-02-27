@@ -226,7 +226,7 @@ public:
 
 	virtual bool hasControl( void ) const Q_DECL_OVERRIDE
 	{
-		return( mControl );
+		return( !mControl.isNull() );
 	}
 
 	virtual bool isInitialised( void ) const Q_DECL_OVERRIDE

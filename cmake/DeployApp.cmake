@@ -1,44 +1,51 @@
 
-find_package( Qt5
-	COMPONENTS Core Concurrent Gui OpenGL Network Widgets
-	OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml LinguistTools
-	QUIET )
+find_package(Qt6 COMPONENTS Core Concurrent Gui OpenGL Network Widgets
+    OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml LinguistTools
+    QUIET
+)
 
-target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Concurrent Qt5::Gui Qt5::Network Qt5::OpenGL Qt5::Widgets )
+if (NOT Qt6_FOUND)
+    find_package(Qt5 5.15 REQUIRED COMPONENTS Core Concurrent Gui OpenGL Network Widgets
+        OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml LinguistTools
+        QUIET
+    )
+endif()
+
+target_link_libraries( ${PROJECT_NAME} Qt::Core Qt::Concurrent Qt::Gui Qt::Network Qt::OpenGL Qt::Widgets )
 
 if( Qt5SerialPort_DIR )
-	message( "Qt5::SerialPort: YES" )
-	target_link_libraries( ${PROJECT_NAME} Qt5::SerialPort )
+        message( "Qt::SerialPort: YES" )
+        target_link_libraries( ${PROJECT_NAME} Qt::SerialPort )
 endif()
 
 if( Qt5Qml_DIR )
-	message( "Qt5::Qml: YES" )
-	target_link_libraries( ${PROJECT_NAME} Qt5::Qml )
+        message( "Qt::Qml: YES" )
+        target_link_libraries( ${PROJECT_NAME} Qt::Qml )
 endif()
 
 if( Qt5Quick_DIR )
-	message( "Qt5::Quick: YES" )
-	target_link_libraries( ${PROJECT_NAME} Qt5::Quick )
+        message( "Qt::Quick: YES" )
+        target_link_libraries( ${PROJECT_NAME} Qt::Quick )
 endif()
 
 if( Qt5QuickControls2_DIR )
-	message( "Qt5::QuickControls2: YES" )
-	target_link_libraries( ${PROJECT_NAME} Qt5::QuickControls2 )
+        message( "Qt::QuickControls2: YES" )
+        target_link_libraries( ${PROJECT_NAME} Qt::QuickControls2 )
 endif()
 
 if( Qt5QuickWidgets_DIR )
-	message( "Qt5::QuickWidgets: YES" )
-	target_link_libraries( ${PROJECT_NAME} Qt5::QuickWidgets )
+        message( "Qt::QuickWidgets: YES" )
+        target_link_libraries( ${PROJECT_NAME} Qt::QuickWidgets )
 endif()
 
 if( Qt5WebSockets_DIR )
-	message( "Qt5::WebSockets: YES" )
-	target_link_libraries( ${PROJECT_NAME} Qt5::WebSockets )
+        message( "Qt::WebSockets: YES" )
+        target_link_libraries( ${PROJECT_NAME} Qt::WebSockets )
 endif()
 
 # Retrieve the absolute path to qmake and then use that path to find
 # the binaries
-get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+get_target_property(_qmake_executable Qt::qmake IMPORTED_LOCATION)
 get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 
 if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )

@@ -22,7 +22,7 @@ set( CMAKE_CXX_EXTENSIONS OFF )
 # Instruct CMake to run moc automatically when needed.
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_AUTOUIC ON )
-set( CMAKE_AUTORCC OFF )
+set( CMAKE_AUTORCC ON )
 
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 
@@ -89,6 +89,8 @@ add_custom_target( fugio-api
 #------------------------------------------------------------------------------
 
 set( FUGIO_UNIX_DEPENDENCIES )
+
+add_compile_definitions(QT_DISABLE_DEPRECATED_UP_TO=0x050F00)
 
 add_subdirectory( FugioLib )
 add_subdirectory( FugioApp )

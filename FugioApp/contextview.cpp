@@ -405,11 +405,11 @@ void ContextView::loadStarted( QSettings &pSettings, bool pPartial )
 			QVariant	PntSrc = pSettings.value( NodeName );
 			QPointF		PntDat;
 
-			if( PntSrc.type() == QVariant::PointF )
+			if( PntSrc.typeId() == QMetaType::QPointF )
 			{
 				PntDat = PntSrc.toPointF();
 			}
-			else if( PntSrc.type() == QVariant::String )
+			else if( PntSrc.typeId() == QMetaType::QString )
 			{
 				PntDat = fugio::utils::string2point( PntSrc.toString() );
 			}
@@ -462,11 +462,11 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 			QVariant	PntSrc = pSettings.value( NodeName );
 			QPointF		PntDat;
 
-			if( PntSrc.type() == QVariant::PointF )
+			if( PntSrc.typeId() == QMetaType::QPointF )
 			{
 				PntDat = PntSrc.toPointF();
 			}
-			else if( PntSrc.type() == QVariant::String )
+			else if( PntSrc.typeId() == QMetaType::QString )
 			{
 				PntDat = fugio::utils::string2point( PntSrc.toString() );
 			}
@@ -656,11 +656,11 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 			QPointF		Pos  = pSettings.value( "position" ).toPointF();
 
-			if( pSettings.value( "position" ).type() == QVariant::PointF )
+			if( pSettings.value( "position" ).typeId() == QMetaType::QPointF )
 			{
 				Pos  = pSettings.value( "position" ).toPointF();
 			}
-			else if( pSettings.value( "position" ).type() == QVariant::String )
+			else if( pSettings.value( "position" ).typeId() == QMetaType::QString )
 			{
 				Pos = fugio::utils::string2point( pSettings.value( "position" ).toString() );
 			}
@@ -1467,7 +1467,7 @@ void ContextView::linkAdded( QUuid pPinId1, QUuid pPinId2 )
 
 void ContextView::linkRemoved( QUuid pPinId1, QUuid pPinId2 )
 {
-	for( LinkItem *Link : mLinkList.toSet() )
+	for( LinkItem *Link : mLinkList )
 	{
 		//qDebug() << ( Link->srcPin() ? Link->srcPin()->uuid() : QUuid() ) << ( Link->dstPin() ? Link->dstPin()->uuid() : QUuid() );
 
@@ -1733,7 +1733,7 @@ void ContextView::dropEvent( QDropEvent *pEvent )
 {
 	if( pEvent->mimeData()->hasFormat( "application/x-qabstractitemmodeldatalist" ) )
 	{
-		LinkItem		*Link = qgraphicsitem_cast<LinkItem *>( itemAt( pEvent->pos() ) );
+		LinkItem		*Link = qgraphicsitem_cast<LinkItem *>( itemAt( pEvent->position().toPoint() ) );
 
 		if( mLinkDragTarget && ( !Link || Link != mLinkDragTarget ) )
 		{
@@ -1779,7 +1779,7 @@ void ContextView::dropEvent( QDropEvent *pEvent )
 
 					setNodePositionFlag();
 
-					mNodePosition = mapToScene( pEvent->pos() );
+					mNodePosition = mapToScene( pEvent->position().toPoint() );
 
 					resetPasteOffset();
 
@@ -1813,7 +1813,7 @@ void ContextView::dropEvent( QDropEvent *pEvent )
 
 			if( !FileData.isEmpty() )
 			{
-				CmdContextViewPaste		*Cmd = new CmdContextViewPaste( this, FileData, pEvent->pos() );
+				CmdContextViewPaste		*Cmd = new CmdContextViewPaste( this, FileData, pEvent->position().toPoint() );
 
 				widget()->undoStack()->push( Cmd );
 			}
@@ -1833,7 +1833,7 @@ void ContextView::dragMoveEvent( QDragMoveEvent *pEvent )
 {
 	if( pEvent->mimeData()->hasFormat( "application/x-qabstractitemmodeldatalist" ) )
 	{
-		LinkItem		*Link = qgraphicsitem_cast<LinkItem *>( itemAt( pEvent->pos() ) );
+		LinkItem		*Link = qgraphicsitem_cast<LinkItem *>( itemAt( pEvent->position().toPoint() ) );
 
 		if( mLinkDragTarget && ( !Link || Link != mLinkDragTarget ) )
 		{
@@ -2299,7 +2299,7 @@ void ContextView::ungroup( QList<NodeItem *> &pNodeList, QList<NodeItem *> &pGro
 	// Search for any links that link from the ungrouping nodes to outside nodes
 	// and delete them
 
-	for( LinkItem *LI : mLinkList.toSet() )
+	for( LinkItem *LI : mLinkList )
 	{
 		PinItem			*SrcPin = LI->srcPin();
 		PinItem			*DstPin = LI->dstPin();
