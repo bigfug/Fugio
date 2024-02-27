@@ -6,25 +6,22 @@ set( TS_FILES
 	)
 
 if(COMMAND qt_create_translation)
-        qt_create_translation(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${TS_FILES})
+	qt_create_translation(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${TS_FILES} OPTIONS "-silent" )
 else()
-        qt5_create_translation(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${TS_FILES})
+	qt5_create_translation(QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${TS_FILES} OPTIONS "-silent" )
 endif()
-
-#qt5_create_translation( QM_FILES ${CMAKE_CURRENT_SOURCE_DIR} ${TS_FILES} OPTIONS "-silent" )
 
 configure_file( ${CMAKE_SOURCE_DIR}/translations.qrc ${CMAKE_CURRENT_BINARY_DIR} COPYONLY )
 
-if(COMMAND qt_add_resources)
-    qt_add_resources( QRC_FILES ${CMAKE_CURRENT_BINARY_DIR}/translations.qrc )
-else()
-    qt5_add_resources( QRC_FILES ${CMAKE_CURRENT_BINARY_DIR}/translations.qrc )
-endif()
+# if(COMMAND qt_add_resources)
+#     qt_add_resources( QRC_FILES ${CMAKE_CURRENT_BINARY_DIR}/translations.qrc )
+# else()
+#     qt5_add_resources( QRC_FILES ${CMAKE_CURRENT_BINARY_DIR}/translations.qrc )
+# endif()
 
 target_sources( ${PROJECT_NAME} PRIVATE
-	${TS_FILES}
+	${CMAKE_CURRENT_BINARY_DIR}/translations.qrc
 	${QM_FILES}
-	${QRC_FILES}
 	)
 
-set_property( SOURCE ${CMAKE_CURRENT_BINARY_DIR}/qrc_translations.cpp PROPERTY SKIP_AUTOGEN ON )
+# set_property( SOURCE ${CMAKE_CURRENT_BINARY_DIR}/qrc_translations.cpp PROPERTY SKIP_AUTOGEN ON )
