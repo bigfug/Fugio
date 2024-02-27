@@ -21,7 +21,6 @@ else()
     qt5_add_resources( QRC_FILES ${CMAKE_CURRENT_BINARY_DIR}/translations.qrc )
 endif()
 
-
 target_sources( ${PROJECT_NAME} PRIVATE
 	${TS_FILES}
 	${QM_FILES}

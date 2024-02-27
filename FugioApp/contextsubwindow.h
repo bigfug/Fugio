@@ -10,7 +10,7 @@ class ContextSubWindow : public QMdiSubWindow
 	Q_OBJECT
 
 public:
-	ContextSubWindow( QWidget *pParent = 0, Qt::WindowFlags pFlags = 0 );
+	ContextSubWindow( QWidget *pParent = 0, Qt::WindowFlags pFlags = Qt::WindowFlags() );
 
 	virtual ~ContextSubWindow();
 

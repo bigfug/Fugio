@@ -301,8 +301,6 @@ protected:
 	void unregisterPinClass( const QUuid &pUUID );
 
 signals:
-	void nodeClassAdded( const fugio::ClassEntry &pClassEntry );
-
 	void globalStart( qint64 pTimeStamp );
 	void globalEnd( qint64 pTimeStamp );
 
