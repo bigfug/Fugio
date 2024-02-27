@@ -182,7 +182,11 @@ include( ${CMAKE_SOURCE_DIR}/cmake/DeployApp.cmake )
 
 include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 
-qt5_add_resources( QRC_FILES fugio.qrc )
+if(COMMAND qt_add_resources)
+    qt_add_resources( QRC_FILES fugio.qrc )
+else()
+    qt5_add_resources( QRC_FILES fugio.qrc )
+endif()
 
 target_sources( ${PROJECT_NAME} PRIVATE ${QRC_FILES} )
 
