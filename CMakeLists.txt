@@ -90,6 +90,8 @@ add_custom_target( fugio-api
 
 set( FUGIO_UNIX_DEPENDENCIES )
 
+add_compile_definitions(QT_DISABLE_DEPRECATED_UP_TO=0x050F00)
+
 add_subdirectory( FugioLib )
 add_subdirectory( FugioApp )
 add_subdirectory( FugioShow )

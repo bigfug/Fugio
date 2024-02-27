@@ -55,7 +55,14 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE
 
 include( ${CMAKE_SOURCE_DIR}/cmake/DeployApp.cmake )
 
-include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
+set( TS_FILES
+	translations/translations_de.ts
+	translations/translations_es.ts
+	translations/translations_fr.ts
+	translations/translations_it.ts
+	)
+
+qt_add_translations( ${PROJECT_NAME} TS_FILES ${TS_FILES} RESOURCE_PREFIX "/translations" )
 
 #------------------------------------------------------------------------------
 # Raspberry Pi
