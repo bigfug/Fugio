@@ -64,11 +64,14 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	)
 
 #------------------------------------------------------------------------------
-# Qt5
+# Qt
 
-find_package( Qt5 REQUIRED COMPONENTS Core Concurrent Network Widgets LinguistTools )
+find_package(Qt6 COMPONENTS Core Concurrent Network Widgets LinguistTools QUIET)
+if (NOT Qt6_FOUND)
+    find_package(Qt5 5.15 REQUIRED COMPONENTS Core Concurrent Network Widgets LinguistTools QUIET)
+endif()
 
-target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::Widgets )
+target_link_libraries( ${PROJECT_NAME} Qt::Core Qt::Network Qt::Widgets )
 
 include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
 
