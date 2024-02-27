@@ -24,7 +24,8 @@ public:
 		: OptionHelp( "help" ),
 		  OptionVersion( "version" ),
 		  OptionConfigFile( QStringList() << "c" << "config", QCoreApplication::translate( "main", "Config file" ), QCoreApplication::translate( "main", "fugio.ini" ) ),
-		  OptionClearSettings( "clear-settings", QCoreApplication::translate( "main", "Clear all settings (mainly for testing purposes)" ) ),
+	OptionPluginCache( QStringList() << "pc" << "plugin-cache", QCoreApplication::translate( "main", "Plugin cache" ), QCoreApplication::translate( "main", "<directory>" ) ),
+	OptionClearSettings( "clear-settings", QCoreApplication::translate( "main", "Clear all settings (mainly for testing purposes)" ) ),
 		  OptionOpenGL( "opengl", QCoreApplication::translate( "main", "Select OpenGL backend" ) ),
 		  OptionGLES( "gles", QCoreApplication::translate( "main", "Select OpenGL ES backend" ) ),
 		  OptionGLSW( "glsw", QCoreApplication::translate( "main", "Select OpenGL software backend" ) ),
@@ -52,6 +53,7 @@ public:
 		CLP.addPositionalArgument( "patches", QCoreApplication::translate( "main", "Patches to open (optional)."), "[patches...]" );
 
 		CLP.addOption( OptionConfigFile );
+		CLP.addOption( OptionPluginCache );
 
 		CLP.addOption( OptionClearSettings );
 
@@ -312,6 +314,16 @@ public:
 		return( CLP.value( OptionReloadRepo ) );
 	}
 
+	QString pluginCacheDirectory( void )
+	{
+		if( !CLP.isSet( OptionPluginCache ) )
+		{
+			return( QStandardPaths::writableLocation( QStandardPaths::GenericDataLocation ) );
+		}
+
+		return( CLP.value( OptionPluginCache ) );
+	}
+
 public:
 	QCommandLineParser		CLP;
 
@@ -320,6 +332,7 @@ protected:
 	QCommandLineOption		OptionVersion;
 
 	QCommandLineOption		OptionConfigFile;
+	QCommandLineOption		OptionPluginCache;
 	QCommandLineOption		OptionClearSettings;
 	QCommandLineOption		OptionOpenGL;
 	QCommandLineOption		OptionGLES;

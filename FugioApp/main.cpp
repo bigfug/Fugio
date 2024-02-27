@@ -70,6 +70,8 @@ int main( int argc, char *argv[] )
 
 	App::setDataDirectory( HLP.configDirectory() );
 
+	PluginCache::setPluginConfigBase( HLP.pluginCacheDirectory() );
+
 	const QString	CfgDir = App::dataDirectory().absolutePath();
 
 	SettingsHelper::setSettingsFormat( HLP.configFile(), QSettings::IniFormat );

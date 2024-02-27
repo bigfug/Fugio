@@ -867,9 +867,18 @@ bool PluginArchive::isManifestValid() const
 	return( !m_Manifest.isNull() );
 }
 
+QString PluginCache::mPluginConfigBase;
+
 PluginCache::PluginCache( void )
 {
-	mPluginConfigDir = QDir( QStandardPaths::writableLocation( QStandardPaths::GenericDataLocation ) );
+	if( mPluginConfigBase.isEmpty() )
+	{
+		mPluginConfigDir = QDir( QStandardPaths::writableLocation( QStandardPaths::GenericDataLocation ) );
+	}
+	else
+	{
+		mPluginConfigDir = QDir( mPluginConfigBase );
+	}
 
 	if( !mPluginConfigDir.exists( "fugio-plugins" ) )
 	{
