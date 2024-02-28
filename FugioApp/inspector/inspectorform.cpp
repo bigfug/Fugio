@@ -60,26 +60,21 @@ void InspectorForm::inspectNode( QSharedPointer<fugio::ContextInterface> pContex
 
 	for( auto &p : mNode->enumInputPins() )
 	{
+		if( p->isConnected() )
+		{
+			continue;
+		}
+
 		QLabel		*Label = new QLabel( p->name() );
 		QWidget		*Editor = Q_NULLPTR;
 
-		if( !p->inputTypes().isEmpty() )
+		if( p->hasControl() )
 		{
-			const QMetaObject *EditorMetaObject = gApp->global().findEditorMetaObject( p->inputTypes().first() );
+			fugio::InspectorWidgetInterface *IW = qobject_cast<fugio::InspectorWidgetInterface *>( p->control()->qobject() );
 
-			if( EditorMetaObject )
+			if( IW )
 			{
-				QObject		*ClassInstance = EditorMetaObject->newInstance();
-
-				if( ClassInstance )
-				{
-					fugio::InspectorWidgetInterface *Interface = qobject_cast<fugio::InspectorWidgetInterface *>( ClassInstance );
-
-					if( Interface )
-					{
-						Editor = Interface->inspectorWidget( p->value().toString() );
-					}
-				}
+				Editor = IW->inspectorWidget();
 			}
 		}
 

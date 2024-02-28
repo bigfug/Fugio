@@ -1,11 +1,9 @@
 #ifndef INSPECTOR_WIDGET_INTERFACE_H
 #define INSPECTOR_WIDGET_INTERFACE_H
 
-#include <QList>
+#include "global.h"
 
 class QWidget;
-
-#include "global.h"
 
 FUGIO_NAMESPACE_BEGIN
 
@@ -14,7 +12,7 @@ class InspectorWidgetInterface
 public:
 	virtual ~InspectorWidgetInterface( void ) {}
 
-	virtual QWidget *inspectorWidget( const QString &pValue ) = 0;
+	virtual QWidget *inspectorWidget( void ) = 0;
 };
 
 FUGIO_NAMESPACE_END

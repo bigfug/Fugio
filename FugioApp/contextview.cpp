@@ -337,7 +337,7 @@ void ContextView::mouseDoubleClickEvent( QMouseEvent *pEvent )
 		}
 	}
 
-	emit nodeInspection( mContext, Q_NULLPTR );
+	emit nodeInspection( mContext, QUuid() );
 
 	if( !itemAt( pEvent->pos() ) )
 	{

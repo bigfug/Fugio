@@ -123,6 +123,7 @@
      <string>&amp;Window</string>
     </property>
     <addaction name="actionBrowser"/>
+    <addaction name="actionInspector"/>
     <addaction name="actionLogger"/>
     <addaction name="actionNodes"/>
     <addaction name="actionPerformance"/>
@@ -743,6 +744,17 @@
   <action name="actionPlugin_directory">
    <property name="text">
     <string>Plugin directory...</string>
+   </property>
+  </action>
+  <action name="actionInspector">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Inspector</string>
    </property>
   </action>
  </widget>
