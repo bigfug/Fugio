@@ -38,18 +38,18 @@ void ContextModel::setContext( QSharedPointer<fugio::ContextInterface> pContext 
 
 	fugio::ContextSignals		*CS = mContext->qobject();
 
-	connect( CS, SIGNAL(clearContext()), this, SLOT(clearContext()) );
+	connect( CS, &fugio::ContextSignals::clearContext, this, &ContextModel::clearContext );
 
-	connect( CS, SIGNAL(nodeAdded(QUuid)), this, SLOT(nodeAdded(QUuid)) );
-	connect( CS, SIGNAL(nodeRemoved(QUuid)), this, SLOT(nodeRemoved(QUuid)) );
-	connect( CS, SIGNAL(nodeRenamed(QUuid,QUuid)), this, SLOT(nodeRenamed(QUuid,QUuid)) );
+	connect( CS, &fugio::ContextSignals::nodeAdded, this, &ContextModel::nodeAdded );
+	connect( CS, &fugio::ContextSignals::nodeRemoved, this, &ContextModel::nodeRemoved );
+	connect( CS, &fugio::ContextSignals::nodeRenamed, this, &ContextModel::nodeRenamed );
 
-	connect( CS, SIGNAL(pinAdded(QUuid,QUuid)), this, SLOT(pinAdded(QUuid,QUuid)) );
-	connect( CS, SIGNAL(pinRemoved(QUuid,QUuid)), this, SLOT(pinRemoved(QUuid,QUuid)) );
-	connect( CS, SIGNAL(pinRenamed(QUuid,QUuid,QUuid)), this, SLOT(pinRenamed(QUuid,QUuid,QUuid)) );
+	connect( CS, &fugio::ContextSignals::pinAdded, this, &ContextModel::pinAdded );
+	connect( CS, &fugio::ContextSignals::pinRemoved, this, &ContextModel::pinRemoved );
+	connect( CS, &fugio::ContextSignals::pinRenamed, this, &ContextModel::pinRenamed );
 
-	connect( CS, SIGNAL(loadStart(QSettings&,bool)), this, SLOT(loadStarted(QSettings&,bool)) );
-	connect( CS, SIGNAL(loadEnd(QSettings&,bool)), this, SLOT(loadEnded(QSettings&,bool)) );
+	connect( CS, &fugio::ContextSignals::loadStart, this, &ContextModel::loadStarted );
+	connect( CS, &fugio::ContextSignals::loadEnd, this, &ContextModel::loadEnded );
 
 	//	if( QSharedPointer<ContextPrivate> C = qSharedPointerCast<ContextPrivate>( mContext ) )
 	//	{
@@ -384,7 +384,7 @@ void ContextModel::nodeAdded( QUuid pNodeId )
 		{
 			fugio::NodeSignals		*NS = NI->qobject();
 
-			connect( NS, SIGNAL(nameChanged(QSharedPointer<fugio::NodeInterface>)), this, SLOT(nodeNameChanged(QSharedPointer<fugio::NodeInterface>)) );
+			connect( NS, qOverload<QSharedPointer<fugio::NodeInterface>>( &fugio::NodeSignals::nameChanged ), this, &ContextModel::nodeNameChanged );
 
 			Node->setName( NI->name() );
 		}
@@ -431,7 +431,7 @@ void ContextModel::nodeRemoved( QUuid pNodeId )
 	{
 		fugio::NodeSignals		*NS = NI->qobject();
 
-		disconnect( NS, SIGNAL(nameChanged(QSharedPointer<fugio::NodeInterface>)), this, SLOT(nodeNameChanged(QSharedPointer<fugio::NodeInterface>)) );
+		disconnect( NS, qOverload<QSharedPointer<fugio::NodeInterface>>( &fugio::NodeSignals::nameChanged ), this, &ContextModel::nodeNameChanged );
 	}
 }
 
@@ -461,7 +461,7 @@ void ContextModel::pinAdded( QUuid pNodeId, QUuid pPinId )
 		{
 			fugio::PinSignals		*PS = PI->qobject();
 
-			connect( PS, SIGNAL(nameChanged(QSharedPointer<fugio::PinInterface>)), this, SLOT(pinNameChanged(QSharedPointer<fugio::PinInterface>)) );
+			connect( PS, qOverload<QSharedPointer<fugio::PinInterface>>( &fugio::PinSignals::nameChanged ), this, &ContextModel::pinNameChanged );
 
 			PinListModel	*PinList = ( PI->direction() == PIN_INPUT ? Node->inputs() : Node->outputs() );
 

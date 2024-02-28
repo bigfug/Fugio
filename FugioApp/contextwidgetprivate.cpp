@@ -64,7 +64,7 @@ ContextWidgetPrivate::ContextWidgetPrivate(QWidget *parent) :
 
 			ui->mLayoutButtons->insertWidget( ui->mLayoutButtons->count() - 1, B );
 
-			connect( B, SIGNAL(toggled(bool)), mContextView, SLOT(setVisible(bool)) );
+			connect( B, &QAbstractButton::toggled, mContextView, &QWidget::setVisible );
 		}
 	}
 }
@@ -100,7 +100,7 @@ void ContextWidgetPrivate::setContext( QSharedPointer<fugio::ContextInterface> p
 
 	onContextDurationChanged( mContext->duration() );
 
-	connect( mContext->qobject(), SIGNAL(durationChanged(qreal)), this, SLOT(onContextDurationChanged(qreal)) );
+	connect( mContext->qobject(), &fugio::ContextSignals::durationChanged, this, &ContextWidgetPrivate::onContextDurationChanged );
 
 }
 
@@ -164,7 +164,7 @@ void ContextWidgetPrivate::addWidget(QWidget *pWidget)
 
 		ui->mLayoutButtons->insertWidget( ui->mLayoutButtons->count() - 1, B );
 
-		connect( B, SIGNAL(toggled(bool)), pWidget, SLOT(setVisible(bool)) );
+		connect( B, &QAbstractButton::toggled, pWidget, &QWidget::setVisible );
 	}
 
 	mSplitter->addWidget( pWidget );

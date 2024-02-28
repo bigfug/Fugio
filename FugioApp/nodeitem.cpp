@@ -374,12 +374,12 @@ void NodeItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 
 	if( NODE && ( NODE->control()->mustChooseNamedInputPin() || !NODE->control()->pinAddTypesInput().isEmpty() ) && ( Action = Menu.addAction( tr( "Add Input Pin..." ) ) ) )
 	{
-		connect( Action, SIGNAL(triggered()), this, SLOT(menuAddInputPin()) );
+		connect( Action, &QAction::triggered, this, &NodeItem::menuAddInputPin );
 	}
 
 	if( NODE && ( NODE->control()->mustChooseNamedOutputPin() || !NODE->control()->pinAddTypesOutput().isEmpty() ) && ( Action = Menu.addAction( tr( "Add Output Pin..." ) ) ) )
 	{
-		connect( Action, SIGNAL(triggered()), this, SLOT(menuAddOutputPin()) );
+		connect( Action, &QAction::triggered, this, &NodeItem::menuAddOutputPin );
 	}
 
 	if( NODE && ( Action = Menu.addAction( tr( "Active" ) ) ) )
@@ -387,12 +387,12 @@ void NodeItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 		Action->setCheckable( true );
 		Action->setChecked( NODE->isActive() );
 
-		connect( Action, SIGNAL(toggled(bool)), this, SLOT(menuActive(bool)) );
+		connect( Action, &QAction::toggled, this, &NodeItem::menuActive );
 	}
 
 	if( ( Action = Menu.addAction( tr( "Delete" ) ) ) )
 	{
-		connect( Action, SIGNAL(triggered()), this, SLOT(menuDelete()) );
+		connect( Action, &QAction::triggered, this, &NodeItem::menuDelete );
 	}
 
 	if( NODE && !HelpUrl.isEmpty() )
@@ -401,7 +401,7 @@ void NodeItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 
 		if( ( Action = Menu.addAction( tr( "Help..." ) ) ) )
 		{
-			connect( Action, SIGNAL(triggered()), this, SLOT(menuHelp()) );
+			connect( Action, &QAction::triggered, this, &NodeItem::menuHelp );
 		}
 	}
 
@@ -563,20 +563,23 @@ void NodeItem::create( const QPointF &pPosition )
 {
 	QSharedPointer<fugio::NodeInterface>			NODE = mContextView->context()->findNode( mNodeId );
 
-	connect( mContextView, SIGNAL(labelBrushUpdated(QBrush)), this, SLOT(updateActiveState(QBrush)) );
+	connect( mContextView, &ContextView::labelBrushUpdated, [=]( QBrush )
+	{
+		updateActiveState();
+	} );
 
-	connect( mContextView, SIGNAL(labelFontUpdated(QFont)), this, SLOT(updateLabelFont(QFont)) );
+	connect( mContextView, &ContextView::labelFontUpdated, this, &NodeItem::updateLabelFont );
 
-	connect( mContextView, SIGNAL(pinFontUpdated(QFont)), this, SLOT(updatePinFont(QFont)) );
+	connect( mContextView, &ContextView::pinFontUpdated, this, &NodeItem::updatePinFont );
 
 	if( NODE )
 	{
-		connect( NODE->qobject(), SIGNAL(pinRemoved(QSharedPointer<fugio::NodeInterface>,QSharedPointer<fugio::PinInterface>)), this, SLOT(pinRemoved(QSharedPointer<fugio::NodeInterface>,QSharedPointer<fugio::PinInterface>)) );
+		connect( NODE->qobject(), qOverload<QSharedPointer<fugio::NodeInterface>, QSharedPointer<fugio::PinInterface>>( &fugio::NodeSignals::pinRemoved ), this, &NodeItem::pinRemoved );
 
-		connect( NODE->qobject(), SIGNAL(statusUpdated()), this, SLOT(nodeStatusUpdated()) );
+		connect( NODE->qobject(), qOverload<>( &fugio::NodeSignals::statusUpdated ), this, &NodeItem::nodeStatusUpdated );
 
-		connect( NODE->qobject(), SIGNAL(pinsPaired(QSharedPointer<fugio::PinInterface>,QSharedPointer<fugio::PinInterface>)), this, SLOT(pinsPaired(QSharedPointer<fugio::PinInterface>,QSharedPointer<fugio::PinInterface>)) );
-		connect( NODE->qobject(), SIGNAL(pinsUnpaired(QSharedPointer<fugio::PinInterface>,QSharedPointer<fugio::PinInterface>)), this, SLOT(pinsUnpaired(QSharedPointer<fugio::PinInterface>,QSharedPointer<fugio::PinInterface>)) );
+		connect( NODE->qobject(), &fugio::NodeSignals::pinsPaired, this, &NodeItem::pinsPaired );
+		connect( NODE->qobject(), &fugio::NodeSignals::pinsUnpaired, this, &NodeItem::pinsUnpaired );
 
 		mBackgroundColour = QColor( NODE->setting( "editor/colour", mBackgroundColour.name() ).toString() );
 	}
@@ -1290,7 +1293,7 @@ PinItem *NodeItem::pinInputAdd( QSharedPointer<fugio::PinInterface> pPin )
 
 	if( pPin->localId() != PID_FUGIO_NODE_TRIGGER )
 	{
-		connect( pPin->qobject(), SIGNAL(nameChanged(QSharedPointer<fugio::PinInterface>)), this, SLOT(pinNameChanged(QSharedPointer<fugio::PinInterface>)) );
+		connect( pPin->qobject(), qOverload<QSharedPointer<fugio::PinInterface>>( &fugio::PinSignals::nameChanged ), this, &NodeItem::pinNameChanged );
 	}
 
 	return( Pin );
@@ -1307,7 +1310,7 @@ PinItem *NodeItem::pinOutputAdd( QSharedPointer<fugio::PinInterface> pPin )
 
 	std::sort( mOutputs.begin(), mOutputs.end(), &NodeItem::comparePinPair );
 
-	connect( pPin->qobject(), SIGNAL(nameChanged(QSharedPointer<fugio::PinInterface>)), this, SLOT(pinNameChanged(QSharedPointer<fugio::PinInterface>)) );
+	connect( pPin->qobject(), qOverload<QSharedPointer<fugio::PinInterface>>( &fugio::PinSignals::nameChanged ), this, &NodeItem::pinNameChanged );
 
 	return( Pin );
 }

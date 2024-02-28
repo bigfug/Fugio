@@ -91,35 +91,35 @@ void ContextView::setContext( QSharedPointer<fugio::ContextInterface> pContext )
 
 	if( QSharedPointer<ContextPrivate> C = qSharedPointerCast<ContextPrivate>( mContext ) )
 	{
-		connect( C.data(), SIGNAL(loadStart(QSettings&,bool)), this, SLOT(loadStarted(QSettings&,bool)) );
-		connect( C.data(), SIGNAL(loading(QSettings&,bool)), this, SLOT(loadContext(QSettings&,bool)) );
-		connect( C.data(), SIGNAL(loadEnd(QSettings&,bool)), this, SLOT(loadEnded(QSettings&,bool)) );
+		connect( C.data(), &fugio::ContextSignals::loadStart, this, &ContextView::loadStarted );
+		connect( C.data(), &fugio::ContextSignals::loading, this, &ContextView::loadContext );
+		connect( C.data(), &fugio::ContextSignals::loadEnd, this, &ContextView::loadEnded );
 
-		connect( C.data(), SIGNAL(saving(QSettings&)), this, SLOT(saveContext(QSettings&)) );
+		connect( C.data(), &fugio::ContextSignals::saving, this, &ContextView::saveContext );
 
-		connect( C.data(), SIGNAL(clearContext()), this, SLOT(clearContext()) );
+		connect( C.data(), &fugio::ContextSignals::clearContext, this, &ContextView::clearContext );
 
-		connect( C.data(), SIGNAL(nodeAdded(QUuid)), this, SLOT(nodeAdded(QUuid)) );
-		connect( C.data(), SIGNAL(nodeRemoved(QUuid)), this, SLOT(nodeRemoved(QUuid)) );
-		connect( C.data(), SIGNAL(nodeRenamed(QUuid,QUuid)), this, SLOT(nodeRenamed(QUuid,QUuid)) );
-		connect( C.data(), SIGNAL(nodeRelabled(QUuid,QUuid)), this, SLOT(nodeRelabled(QUuid,QUuid)) );
-		connect( C.data(), SIGNAL(nodeUpdated(QUuid)), this, SLOT(nodeChanged(QUuid)) );
-		connect( C.data(), SIGNAL(nodeActivated(QUuid)), this, SLOT(nodeActivated(QUuid)) );
+		connect( C.data(), &fugio::ContextSignals::nodeAdded, this, &ContextView::nodeAdded );
+		connect( C.data(), &fugio::ContextSignals::nodeRemoved, this, &ContextView::nodeRemoved );
+		connect( C.data(), &fugio::ContextSignals::nodeRenamed, this, &ContextView::nodeRenamed );
+		connect( C.data(), &fugio::ContextSignals::nodeRelabled, this, &ContextView::nodeRelabled );
+		connect( C.data(), &fugio::ContextSignals::nodeUpdated, this, &ContextView::nodeChanged );
+		connect( C.data(), &fugio::ContextSignals::nodeActivated, this, &ContextView::nodeActivated );
 
-		connect( C.data(), SIGNAL(pinAdded(QUuid,QUuid)), this, SLOT(pinAdded(QUuid,QUuid)) );
-		connect( C.data(), SIGNAL(pinRenamed(QUuid,QUuid,QUuid)), this, SLOT(pinRenamed(QUuid,QUuid,QUuid)) );
-		connect( C.data(), SIGNAL(pinRelabled(QUuid,QUuid,QUuid)), this, SLOT(pinRelabled(QUuid,QUuid,QUuid)) );
-		connect( C.data(), SIGNAL(pinRemoved(QUuid,QUuid)), this, SLOT(pinRemoved(QUuid,QUuid)) );
+		connect( C.data(), &fugio::ContextSignals::pinAdded, this, &ContextView::pinAdded );
+		connect( C.data(), &fugio::ContextSignals::pinRenamed, this, &ContextView::pinRenamed );
+		connect( C.data(), &fugio::ContextSignals::pinRelabled, this, &ContextView::pinRelabled );
+		connect( C.data(), &fugio::ContextSignals::pinRemoved, this, &ContextView::pinRemoved );
 
-		connect( C.data(), SIGNAL(linkAdded(QUuid,QUuid)), this, SLOT(linkAdded(QUuid,QUuid)) );
-		connect( C.data(), SIGNAL(linkRemoved(QUuid,QUuid)), this, SLOT(linkRemoved(QUuid,QUuid)) );
+		connect( C.data(), &fugio::ContextSignals::linkAdded, this, &ContextView::linkAdded );
+		connect( C.data(), &fugio::ContextSignals::linkRemoved, this, &ContextView::linkRemoved );
 	}
 
 	ContextWidgetPrivate	*CWP = widget();
 
 	if( CWP )
 	{
-		connect( CWP, SIGNAL(groupLinkActivated(QString)), this, SLOT(groupLinkActivated(QString)) );
+		connect( CWP, &ContextWidgetPrivate::groupLinkActivated, this, &ContextView::groupLinkActivated );
 
 		updateGroupWidgetText();
 	}
@@ -2006,15 +2006,7 @@ void ContextView::nodeSelected( const QUuid &pUuid, bool pSelected )
 {
 	if( pSelected )
 	{
-		if( !mSelectedNodes.contains( pUuid ) )
-		{
-			mSelectedNodes << pUuid;
-		}
-
-		if( mSelectedNodes.size() == 1 )
-		{
-			emit nodeInspection( mContext, pUuid );
-		}
+		emit nodeInspection( mContext, pUuid );
 	}
 	else
 	{
@@ -2174,8 +2166,8 @@ void ContextView::processGroupLinks( QSharedPointer<NodeItem> NI )
 
 						NewPin->setColour( SrcPin->colour() );
 
-						connect( NewPin, SIGNAL(colourUpdated(QColor)), SrcPin, SLOT(setColour(QColor)) );
-						connect( SrcPin, SIGNAL(colourUpdated(QColor)), NewPin, SLOT(setColour(QColor)) );
+						connect( NewPin, &PinItem::colourUpdated, SrcPin, &PinItem::setColour );
+						connect( SrcPin, &PinItem::colourUpdated, NewPin, &PinItem::setColour );
 					}
 				}
 

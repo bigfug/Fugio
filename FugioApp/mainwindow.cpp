@@ -17,14 +17,11 @@
 #include <QProcess>
 #include <QScrollBar>
 
-#include "nodeprivate.h"
-
 #include "app.h"
 
 #include <QPainterPath>
 
 #include "nodeitem.h"
-#include "contextprivate.h"
 #include "contextwidgetprivate.h"
 #include "contextsubwindow.h"
 
@@ -177,9 +174,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect( gApp->global().qobject(), &fugio::GlobalSignals::contextAdded, this, &MainWindow::contextAdded );
 	connect( gApp->global().qobject(), &fugio::GlobalSignals::contextRemoved, this, &MainWindow::contextRemoved );
 
-	connect( &gApp->undoGroup(), SIGNAL(cleanChanged(bool)), this, SLOT(onCleanChanged(bool)) );
+	connect( &gApp->undoGroup(), &QUndoGroup::cleanChanged, this, &MainWindow::onCleanChanged );
 
-	connect( gApp->global().qobject(), SIGNAL(fps(qreal)), this, SLOT(setFPS(qreal)) );
+	connect( gApp->global().qobject(), &fugio::GlobalSignals::fps, this, &MainWindow::setFPS );
 
 	updateWindowTitle();
 
@@ -196,7 +193,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect( ui->actionRecent9, &QAction::triggered, this, &MainWindow::recentFileActivated );
 	connect( ui->actionRecent0, &QAction::triggered, this, &MainWindow::recentFileActivated );
 
-	connect( ui->menu_Window, SIGNAL(aboutToShow()), this, SLOT(buildWindowMenu()) );
+	connect( ui->menu_Window, &QMenu::aboutToShow, this, &MainWindow::buildWindowMenu );
 
 	//-------------------------------------------------------------------------
 
@@ -208,8 +205,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	linkWindowVisibilitySignal( ui->actionSnippets, ui->mSnippetsDockWidget );
 	linkWindowVisibilitySignal( ui->actionStylesheet, ui->mStyleSheetDockWidget );
 
-	connect( ui->actionTile, SIGNAL(triggered()), ui->mWorkArea, SLOT(tileSubWindows()) );
-	connect( ui->actionCascade, SIGNAL(triggered()), ui->mWorkArea, SLOT(cascadeSubWindows()) );
+	connect( ui->actionTile, &QAction::triggered, ui->mWorkArea, &QMdiArea::tileSubWindows );
+	connect( ui->actionCascade, &QAction::triggered, ui->mWorkArea, &QMdiArea::cascadeSubWindows );
 
 	//-------------------------------------------------------------------------
 
@@ -248,13 +245,13 @@ MainWindow::MainWindow(QWidget *parent) :
 		logger( LM.type, QMessageLogContext(), LM.msg, false );
 	}
 
-	connect( this, SIGNAL(log(QString)), ui->mLogger, SLOT(appendHtml(QString)) );
+	connect( this, &MainWindow::log, ui->mLogger, &QPlainTextEdit::appendHtml );
 
 	// Add a custom context menu to the Logger Window
 
 	ui->mLogger->setContextMenuPolicy( Qt::CustomContextMenu );
 
-	connect( ui->mLogger, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(loggerContextMenu(QPoint)) );
+	connect( ui->mLogger, &QWidget::customContextMenuRequested, this, &MainWindow::loggerContextMenu );
 }
 
 MainWindow::~MainWindow( void )
@@ -468,7 +465,7 @@ void MainWindow::contextAdded( QSharedPointer<fugio::ContextInterface> pContext 
 
 	CV->showMaximized();
 
-	connect( CV, SIGNAL(contextFilenameChanged(QString)), this, SLOT(addFileToRecent(QString)) );
+	connect( CV, &ContextWidgetPrivate::contextFilenameChanged, this, &MainWindow::addFileToRecent );
 
 	connect( CV->view(), &ContextView::nodeInspection, ui->mInspector, &InspectorForm::inspectNode );
 
@@ -909,9 +906,9 @@ void MainWindow::linkWindowVisibilitySignal( QAction *pAction, QDockWidget *pWid
 	pAction->blockSignals( true );
 	pWidget->blockSignals( true );
 
-	connect( pWidget, SIGNAL(visibilityChanged(bool)), pAction, SLOT(setChecked(bool)) );
+	connect( pWidget, &QDockWidget::visibilityChanged, pAction, &QAction::setChecked );
 
-	connect( pAction, SIGNAL(triggered(bool)), pWidget, SLOT(setVisible(bool)) );
+	connect( pAction, &QAction::triggered, pWidget, &QWidget::setVisible );
 
 	pAction->blockSignals( false );
 	pWidget->blockSignals( false );
@@ -1050,9 +1047,20 @@ void MainWindow::onEditTarget( fugio::EditInterface *pEditTarget )
 
 	if( pEditTarget )
 	{
-		connect( ui->actionCut, SIGNAL(triggered()), dynamic_cast<QObject *>( pEditTarget ), SLOT(cut()) );
-		connect( ui->actionCopy, SIGNAL(triggered()), dynamic_cast<QObject *>( pEditTarget ), SLOT(copy()) );
-		connect( ui->actionPaste, SIGNAL(triggered()), dynamic_cast<QObject *>( pEditTarget ), SLOT(paste()) );
+		connect( ui->actionCut, &QAction::triggered, [=]( void )
+		{
+			pEditTarget->cut();
+		} );
+
+		connect( ui->actionCopy, &QAction::triggered, [=]( void )
+		{
+			pEditTarget->copy();
+		} );
+
+		connect( ui->actionPaste, &QAction::triggered, [=]( void )
+		{
+			pEditTarget->paste();
+		} );
 
 		ui->actionCut->setEnabled( true );
 		ui->actionCopy->setEnabled( true );

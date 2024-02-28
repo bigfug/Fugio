@@ -83,7 +83,7 @@ public:
 			}
 		}
 
-		for( QUuid U : mPasteNotes )
+		for (QUuid U : qAsConst(mPasteNotes))
 		{
 			mContext->noteRemove( U );
 		}

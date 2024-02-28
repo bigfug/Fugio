@@ -23,7 +23,7 @@ SnippetsForm::SnippetsForm(QWidget *parent) :
 
 	qInfo() << "Snippets Directory:" << UsrDir;
 
-	connect( gApp, SIGNAL(userSnippetsDirectoryChanged(QString)), this, SLOT(userSnippetsDirectoryChanged(QString)) );
+	connect( gApp, &App::userSnippetsDirectoryChanged, this, &SnippetsForm::userSnippetsDirectoryChanged );
 
 	mUserSystem.setRootPath( UsrDir );
 	mUserSystem.setReadOnly( false );

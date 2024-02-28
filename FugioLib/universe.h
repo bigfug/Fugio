@@ -42,10 +42,10 @@ public slots:
 
 	void clearData( qint64 pTime );
 
+	void cast( qint64 pTime );
+
 private slots:
 	void updateCasters( void );
-
-	void cast( void );
 
 	void readyRead( void );
 

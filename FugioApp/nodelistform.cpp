@@ -11,7 +11,7 @@ NodeListForm::NodeListForm(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	connect( gApp->global().qobject(), SIGNAL(nodeClassAdded(fugio::ClassEntry)), this, SLOT(addNodeClass(fugio::ClassEntry)) );
+	connect( gApp->global().qobject(), &fugio::GlobalSignals::nodeClassAdded, this, &NodeListForm::addNodeClass );
 }
 
 NodeListForm::~NodeListForm()

@@ -17,7 +17,6 @@
 
 #include <QNetworkReply>
 
-#include "nodeprivate.h"
 #include "pinprivate.h"
 #include "contextprivate.h"
 
@@ -61,7 +60,7 @@ GlobalPrivate::GlobalPrivate( QObject * ) :
 	mLastTime   = 0;
 	mFrameCount = 0;
 
-	connect( this, SIGNAL(frameEnd()), &mUniverse, SLOT(cast()) );
+	connect( this, &GlobalSignals::frameEnd, &mUniverse, &Universe::cast );
 
 #if !defined( GLOBAL_THREADED )
 	connect( &mGlobalTimer, &QTimer::timeout, this, &GlobalPrivate::executeFrame );
@@ -325,10 +324,8 @@ void GlobalPrivate::executeFrame( void )
 
 	if( !mPause )
 	{
-		emit frameInitialise();
 		emit frameInitialise( TimeStamp );
 
-		emit frameStart();
 		emit frameStart( TimeStamp );
 
 		for( QSharedPointer<fugio::ContextInterface> CP : mContexts )
@@ -371,7 +368,6 @@ void GlobalPrivate::executeFrame( void )
 			}
 		}
 
-		emit frameEnd();
 		emit frameEnd( TimeStamp );
 
 		mUniverse.clearData( universalTimestamp() );
@@ -515,7 +511,7 @@ void GlobalPrivate::loadConfig( QSettings &pSettings )
 	emit configLoad( pSettings );
 }
 
-void GlobalPrivate::saveConfig( QSettings &pSettings ) const
+void GlobalPrivate::saveConfig( QSettings &pSettings )
 {
 	emit configSave( pSettings );
 }

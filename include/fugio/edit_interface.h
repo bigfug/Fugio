@@ -10,7 +10,8 @@ class EditInterface
 public:
 	virtual ~EditInterface( void ) {}
 
-public slots:
+	// virtual QObject *qobject( void ) = 0;
+
 	virtual void cut( void ) = 0;
 	virtual void copy( void ) = 0;
 	virtual void paste( void ) = 0;

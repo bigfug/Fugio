@@ -40,11 +40,11 @@ public:
 
 	virtual bool unload( const QString &pFileName ) = 0;
 
-	virtual bool save( const QString &pFileName, const QList<QUuid> *pNodeList = Q_NULLPTR ) const = 0;
+	virtual bool save( const QString &pFileName, const QList<QUuid> *pNodeList = Q_NULLPTR ) = 0;
 
 	virtual bool loadData( const QString &pFileName ) = 0;
 
-	virtual bool saveData( const QString &pFileName ) const = 0;
+	virtual bool saveData( const QString &pFileName ) = 0;
 
 	virtual void setActive( bool pActive ) = 0;
 

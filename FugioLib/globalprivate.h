@@ -243,7 +243,7 @@ public:
 	virtual void deviceFactoryGui( QWidget *pParent, const QString &pMenuText ) Q_DECL_OVERRIDE;
 
 	virtual void loadConfig( QSettings &pSettings ) Q_DECL_OVERRIDE;
-	virtual void saveConfig( QSettings &pSettings ) const Q_DECL_OVERRIDE;
+	virtual void saveConfig( QSettings &pSettings ) Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 	// Joining and Splitting

@@ -15,7 +15,7 @@
 PinPopupFloat::PinPopupFloat( QPointF pMousePosition, QSharedPointer<fugio::PinInterface> P )
 	: mPin( P ), mCenter( pMousePosition )
 {
-	connect( P->qobject(), SIGNAL(displayLabelChanged(QString)), this, SLOT(displayLabelChanged(QString)) );
+	connect( P->qobject(), &fugio::PinSignals::displayLabelChanged, this, &PinPopupFloat::displayLabelChanged );
 }
 
 void PinPopupFloat::mouseMoveEvent( QGraphicsSceneMouseEvent *event )

@@ -91,7 +91,7 @@ public:
 	virtual fugio::GlobalSignals *qobject( void ) = 0;
 
 	virtual void loadConfig( QSettings &pSettings ) = 0;
-	virtual void saveConfig( QSettings &pSettings ) const = 0;
+	virtual void saveConfig( QSettings &pSettings ) = 0;
 
 	virtual void clear( void ) = 0;
 

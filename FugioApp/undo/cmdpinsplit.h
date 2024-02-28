@@ -53,8 +53,7 @@ public:
 
 			if( mNodePinId.isNull() )
 			{
-				for( QSharedPointer<fugio::PinInterface> Pin : mNode->enumInputPins() )
-				{
+				for (const QSharedPointer<fugio::PinInterface> &Pin : mNode->enumInputPins()) {
 					if( Pin->inputTypes().contains( mPin->controlUuid() ) )
 					{
 						mNodePinId = Pin->globalId();

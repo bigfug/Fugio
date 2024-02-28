@@ -363,7 +363,7 @@ bool ContextPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 	return( true );
 }
 
-bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeList ) const
+bool ContextPrivate::save( const QString &pFileName, const QList<QUuid> *pNodeList )
 {
 	QFileInfo				 FileInfo( pFileName );
 	QString					 TmpFileName = FileInfo.absoluteFilePath().append( ".out" );
@@ -596,7 +596,6 @@ bool ContextPrivate::loadData( const QString &pFileName )
 
 	QSettings										 CFG( pFileName, QSettings::IniFormat );
 	int												 VER = 1;
-	bool											 RET = false;
 
 	if( CFG.status() != QSettings::NoError )
 	{
@@ -671,7 +670,7 @@ bool ContextPrivate::loadData( const QString &pFileName )
 	return( true );
 }
 
-bool ContextPrivate::saveData( const QString &pFileName ) const
+bool ContextPrivate::saveData( const QString &pFileName )
 {
 	QFileInfo				 FileInfo( pFileName );
 	QString					 TmpFileName = FileInfo.absoluteFilePath().append( ".out" );
@@ -868,12 +867,12 @@ void ContextPrivate::registerNode( QSharedPointer<fugio::NodeInterface> pNode )
 
 	fugio::NodeSignals		*N = pNode->qobject();
 
-	connect( N, SIGNAL(controlChanged(QSharedPointer<fugio::NodeInterface>)), this, SLOT(nodeControlChanged(QSharedPointer<fugio::NodeInterface>)) );
-	connect( N, SIGNAL(nameChanged(QSharedPointer<fugio::NodeInterface>)), this, SLOT(nodeNameChanged(QSharedPointer<fugio::NodeInterface>)) );
-	connect( N, SIGNAL(activationChanged(QSharedPointer<fugio::NodeInterface>)), this, SLOT(onNodeActivationChanged(QSharedPointer<fugio::NodeInterface>)) );
+	connect( N, &fugio::NodeSignals::controlChanged, this, &ContextPrivate::nodeControlChanged );
+	connect( N, qOverload<QSharedPointer<fugio::NodeInterface>>( &fugio::NodeSignals::nameChanged ), this, &ContextPrivate::nodeNameChanged );
+	connect( N, &fugio::NodeSignals::activationChanged, this, &ContextPrivate::onNodeActivationChanged );
 
-	connect( N, SIGNAL(pinAdded(QSharedPointer<fugio::NodeInterface>,QSharedPointer<fugio::PinInterface>)), this, SLOT(onPinAdded(QSharedPointer<fugio::NodeInterface>,QSharedPointer<fugio::PinInterface>)) );
-	connect( N, SIGNAL(pinRemoved(QSharedPointer<fugio::NodeInterface>,QSharedPointer<fugio::PinInterface>)), this, SLOT(onPinRemoved(QSharedPointer<fugio::NodeInterface>,QSharedPointer<fugio::PinInterface>)) );
+	connect( N, qOverload<QSharedPointer<fugio::NodeInterface>, QSharedPointer<fugio::PinInterface>>( &fugio::NodeSignals::pinAdded ), this, &ContextPrivate::onPinAdded );
+	connect( N, qOverload<QSharedPointer<fugio::NodeInterface>, QSharedPointer<fugio::PinInterface>>( &fugio::NodeSignals::pinRemoved ), this, &ContextPrivate::onPinRemoved );
 
 	addDeferredNode( pNode );
 
@@ -1918,7 +1917,6 @@ void ContextPrivate::processUpdatedPins( qint64 pTimeStamp )
 
 void ContextPrivate::doFrameInitialise( qint64 pTimeStamp )
 {
-	emit frameInitialise();
 	emit frameInitialise( pTimeStamp );
 }
 
@@ -1934,7 +1932,6 @@ void ContextPrivate::doFrameStart( qint64 pTimeStamp )
 
 	//-------------------------------------------------------------------------
 
-	emit frameStart();
 	emit frameStart( pTimeStamp );
 
 	if( !mInitDeferNodeList.isEmpty() )
@@ -1971,7 +1968,6 @@ void ContextPrivate::doFrameProcess( qint64 pTimeStamp )
 
 	processUpdatedPins( pTimeStamp );
 
-	emit frameProcess();
 	emit frameProcess( pTimeStamp );
 
 	bool	DoneFinalise = false;
@@ -1988,7 +1984,6 @@ void ContextPrivate::doFrameProcess( qint64 pTimeStamp )
 
 			if( mUpdatedNodeList.isEmpty() && !DoneFinalise )
 			{
-				emit frameFinalise();
 				emit frameFinalise( pTimeStamp );
 
 				DoneFinalise = true;
@@ -2007,7 +2002,6 @@ void ContextPrivate::doFrameEnd( qint64 pTimeStamp )
 
 	mUpdatedNodeMutex.unlock();
 
-	emit frameEnd();
 	emit frameEnd( pTimeStamp );
 
 	mFutureSync.waitForFinished();

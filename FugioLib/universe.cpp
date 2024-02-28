@@ -13,7 +13,7 @@ Universe::Universe( QObject *pParent )
 
 	if( mSocket->bind( mPort, QAbstractSocket::ShareAddress ) )
 	{
-		connect( mSocket, SIGNAL(readyRead()), this, SLOT(readyRead()) );
+		connect( mSocket, &QIODevice::readyRead, this, &Universe::readyRead );
 	}
 	else
 	{
@@ -167,7 +167,7 @@ void Universe::updateCasters()
 	QTimer::singleShot( 60000, this, SLOT(updateCasters()) );
 }
 
-void Universe::cast( void )
+void Universe::cast( qint64 pTime )
 {
 	mMutex.lock();
 

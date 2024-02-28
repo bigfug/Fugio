@@ -407,7 +407,7 @@ void PinItem::contextMenuEvent( QGraphicsSceneContextMenuEvent *pEvent )
 
 		if( QAction *A = Menu.addAction( tr( "Help..." ) ) )
 		{
-			connect( A, SIGNAL(triggered()), this, SLOT(menuHelp()) );
+			connect( A, &QAction::triggered, this, &PinItem::menuHelp );
 		}
 	}
 
@@ -479,7 +479,7 @@ void PinItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *pEvent)
 //	QGraphicsObject::hoverLeaveEvent( pEvent );
 	Q_UNUSED( pEvent )
 
-	disconnect( &longPressTimer(), SIGNAL(timeout()), this, SLOT(longPressTimeout()) );
+	disconnect( &longPressTimer(), &QTimer::timeout, this, &PinItem::longPressTimeout );
 
 	longPressTimer().stop();
 
@@ -613,7 +613,7 @@ void PinItem::mousePressEvent( QGraphicsSceneMouseEvent *pEvent )
 
 		if( mPin->direction() == PIN_INPUT && !mPin->isConnected() )
 		{
-			connect( &longPressTimer(), SIGNAL(timeout()), this, SLOT(longPressTimeout()) );
+			connect( &longPressTimer(), &QTimer::timeout, this, &PinItem::longPressTimeout );
 
 			mDragStartPoint = pEvent->scenePos();
 
@@ -630,7 +630,7 @@ void PinItem::mouseMoveEvent( QGraphicsSceneMouseEvent *pEvent )
 		{
 			if( ( pEvent->pos() - mDragStartPoint ).manhattanLength() >= QApplication::startDragDistance() )
 			{
-				disconnect( &longPressTimer(), SIGNAL(timeout()), this, SLOT(longPressTimeout()) );
+				disconnect( &longPressTimer(), &QTimer::timeout, this, &PinItem::longPressTimeout );
 
 				longPressTimer().stop();
 
@@ -705,7 +705,7 @@ void PinItem::mouseMoveEvent( QGraphicsSceneMouseEvent *pEvent )
 
 void PinItem::mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent )
 {
-	disconnect( &longPressTimer(), SIGNAL(timeout()), this, SLOT(longPressTimeout()) );
+	disconnect( &longPressTimer(), &QTimer::timeout, this, &PinItem::longPressTimeout );
 
 	longPressTimer().stop();
 

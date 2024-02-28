@@ -58,8 +58,7 @@ public:
 
 			if( N )
 			{
-				for( auto DstPin : N->enumInputPins() )
-				{
+				for (const auto &DstPin : N->enumInputPins()) {
 					if( DstPin->isConnected() )
 					{
 						QSharedPointer<fugio::PinInterface> SrcPin = DstPin->connectedPin();
@@ -77,10 +76,8 @@ public:
 				}
 			}
 
-			for( auto SrcPin : N->enumOutputPins() )
-			{
-				for( auto DstPin : SrcPin->connectedPins() )
-				{
+			for (const auto &SrcPin : N->enumOutputPins()) {
+				for (const auto &DstPin : SrcPin->connectedPins()) {
 					if( !pLinkLst.contains( SrcPin->globalId(), DstPin->globalId() ) )
 					{
 						mExternalLinkList.insert( SrcPin->globalId(), DstPin->globalId() );

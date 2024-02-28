@@ -12,7 +12,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 {
 	ui->setupUi( this );
 
-	connect( this, SIGNAL(accepted()), this, SLOT(dialogAccepted()) );
+	connect( this, &QDialog::accepted, this, &SettingsDialog::dialogAccepted );
 
 	ui->mSnippetsDirectory->setText( gApp->userSnippetsDirectory() );
 	ui->mSnippetsDirectory->setReadOnly( true );

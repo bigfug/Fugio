@@ -16,19 +16,14 @@ class ContextSignals : public QObject
 
 signals:
 	// This is the only point where Context time can be changed
-	void frameInitialise( void );
 	void frameInitialise( qint64 pTimeStamp );
 
-	void frameStart( void );
 	void frameStart( qint64 pTimeStamp );
 
-	void frameProcess( void );
 	void frameProcess( qint64 pTimeStamp );
 
-	void frameFinalise( void );
 	void frameFinalise( qint64 pTimeStamp );
 
-	void frameEnd( void );
 	void frameEnd( qint64 pTimeStamp );
 
 	void aboutToPlay( void );
@@ -51,9 +46,9 @@ signals:
 	void loading( QSettings &pSettings, bool pPartial );
 	void loadEnd( QSettings &pSettings, bool pPartial );
 
-	void saveStart( QSettings &pSettings ) const;
-	void saving( QSettings &pSettings ) const;
-	void saveEnd( QSettings &pSettings ) const;
+	void saveStart( QSettings &pSettings );
+	void saving( QSettings &pSettings );
+	void saveEnd( QSettings &pSettings );
 
 	void clearContext( void );
 

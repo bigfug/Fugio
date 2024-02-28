@@ -20,13 +20,10 @@ public:
 
 signals:
 	// This is the only point where Global time can be changed
-	void frameInitialise( void );
 	void frameInitialise( qint64 pTimeStamp );
 
-	void frameStart( void );
 	void frameStart( qint64 pTimeStamp );
 
-	void frameEnd( void );
 	void frameEnd( qint64 pTimeStamp );
 
 	void fps( qreal pFPS );
@@ -35,7 +32,7 @@ signals:
 	void contextRemoved( QSharedPointer<fugio::ContextInterface> );
 
 	void configLoad( QSettings &pSettings );
-	void configSave( QSettings &pSettings ) const;
+	void configSave( QSettings &pSettings );
 
 	void nodeClassAdded( const ClassEntry &pClassEntry );
 
