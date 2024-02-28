@@ -189,7 +189,7 @@ public:
 	}
 
 signals:
-//	void nodeInspection( NodeItem *pNodeItem );
+	void nodeInspection( QSharedPointer<fugio::ContextInterface> pContext, QUuid pNodeId );
 
 	void labelBrushUpdated( QBrush );
 
@@ -235,6 +235,8 @@ public slots:
 
 	void nodeMoveStarted( void );
 	void nodeMoveFinished( void );
+
+	void nodeSelected( const QUuid &pUuid, bool pSelected );
 
 	void noteAdd( QSharedPointer<NoteItem> pNoteItem );
 	void noteRemove( QSharedPointer<NoteItem> pNoteItem );
@@ -537,6 +539,8 @@ private:
 	QColor									 m_NodeColour;
 
 	LinkItem								*mLinkDragTarget;
+
+	QList<QUuid>							 mSelectedNodes;
 };
 
 #endif // CONTEXTVIEW_H

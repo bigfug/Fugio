@@ -311,6 +311,13 @@ QVariant NodeItem::itemChange( QGraphicsItem::GraphicsItemChange pChange, const 
 		return( QVariant() );
 	}
 
+	if( pChange == QGraphicsItem::ItemSelectedHasChanged )
+	{
+		qDebug() << "ItemSelectedHasChanged" << mNodeName << pValue.toBool();
+
+		mContextView->nodeSelected( mNodeId, pValue.toBool() );
+	}
+
 	return QGraphicsItem::itemChange( pChange, pValue );
 }
 

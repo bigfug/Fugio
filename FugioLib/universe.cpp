@@ -130,7 +130,7 @@ void Universe::clearData( qint64 pTime )
 
 void Universe::updateCasters()
 {
-	for( QNetworkInterface I : QNetworkInterface::allInterfaces() )
+	for( QNetworkInterface &I : QNetworkInterface::allInterfaces() )
 	{
 		if( mCasters.contains( I.index() ) )
 		{

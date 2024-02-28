@@ -300,6 +300,10 @@ protected:
 
 	void unregisterPinClass( const QUuid &pUUID );
 
+	bool registerEditorClass( const QString &pName, const QUuid &pUUID, const QMetaObject *pMetaObject );
+
+	void unregisterEditorClass( const QUuid &pUUID );
+
 signals:
 	void globalStart( qint64 pTimeStamp );
 	void globalEnd( qint64 pTimeStamp );

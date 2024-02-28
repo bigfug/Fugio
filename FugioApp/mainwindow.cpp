@@ -174,8 +174,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->actionCopy->setShortcut( QKeySequence::Copy );
 	ui->actionPaste->setShortcut( QKeySequence::Paste );
 
-	connect( gApp->global().qobject(), SIGNAL(contextAdded(QSharedPointer<fugio::ContextInterface>)), this, SLOT(contextAdded(QSharedPointer<fugio::ContextInterface>)) );
-	connect( gApp->global().qobject(), SIGNAL(contextRemoved(QSharedPointer<fugio::ContextInterface>)), this, SLOT(contextRemoved(QSharedPointer<fugio::ContextInterface>)) );
+	connect( gApp->global().qobject(), &fugio::GlobalSignals::contextAdded, this, &MainWindow::contextAdded );
+	connect( gApp->global().qobject(), &fugio::GlobalSignals::contextRemoved, this, &MainWindow::contextRemoved );
 
 	connect( &gApp->undoGroup(), SIGNAL(cleanChanged(bool)), this, SLOT(onCleanChanged(bool)) );
 
@@ -200,8 +200,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	//-------------------------------------------------------------------------
 
-	linkWindowVisibilitySignal( ui->actionLogger, ui->mDockWidthLogger );
 	linkWindowVisibilitySignal( ui->actionBrowser, ui->mDockWidgetBrowser );
+	linkWindowVisibilitySignal( ui->actionInspector, ui->mDockWidgetInspector );
+	linkWindowVisibilitySignal( ui->actionLogger, ui->mDockWidthLogger );
 	linkWindowVisibilitySignal( ui->actionNodes, ui->mNodeDockWidget );
 	linkWindowVisibilitySignal( ui->actionPerformance, ui->mPerformanceDockWidget );
 	linkWindowVisibilitySignal( ui->actionSnippets, ui->mSnippetsDockWidget );
@@ -468,6 +469,8 @@ void MainWindow::contextAdded( QSharedPointer<fugio::ContextInterface> pContext 
 	CV->showMaximized();
 
 	connect( CV, SIGNAL(contextFilenameChanged(QString)), this, SLOT(addFileToRecent(QString)) );
+
+	connect( CV->view(), &ContextView::nodeInspection, ui->mInspector, &InspectorForm::inspectNode );
 
 	QTimer::singleShot( 500, ui->mStyleSheet, SLOT(stylesApply()) );
 }
@@ -919,6 +922,7 @@ void MainWindow::buildWindowMenu()
 	ui->menu_Window->clear();
 
 	ui->menu_Window->addAction( ui->actionBrowser );
+	ui->menu_Window->addAction( ui->actionInspector );
 	ui->menu_Window->addAction( ui->actionLogger );
 	ui->menu_Window->addAction( ui->actionNodes );
 	ui->menu_Window->addAction( ui->actionPerformance );

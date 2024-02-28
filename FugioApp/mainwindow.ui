@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>920</width>
-    <height>582</height>
+    <width>1167</width>
+    <height>777</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -65,7 +65,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>920</width>
+     <width>1167</width>
      <height>26</height>
     </rect>
    </property>
@@ -123,6 +123,7 @@
      <string>&amp;Window</string>
     </property>
     <addaction name="actionBrowser"/>
+    <addaction name="actionInspector"/>
     <addaction name="actionLogger"/>
     <addaction name="actionNodes"/>
     <addaction name="actionPerformance"/>
@@ -300,7 +301,7 @@
     <string>Performance</string>
    </property>
    <attribute name="dockWidgetArea">
-    <number>2</number>
+    <number>1</number>
    </attribute>
    <widget class="PerformanceForm" name="mPerformance"/>
   </widget>
@@ -312,6 +313,15 @@
     <number>2</number>
    </attribute>
    <widget class="SnippetsForm" name="mSnippets"/>
+  </widget>
+  <widget class="QDockWidget" name="mDockWidgetInspector">
+   <property name="windowTitle">
+    <string>Inspector</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="InspectorForm" name="mInspector"/>
   </widget>
   <action name="actionOpen">
    <property name="text">
@@ -736,6 +746,17 @@
     <string>Plugin directory...</string>
    </property>
   </action>
+  <action name="actionInspector">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Inspector</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -761,6 +782,12 @@
    <class>SnippetsForm</class>
    <extends>QWidget</extends>
    <header>snippets/snippetsform.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>InspectorForm</class>
+   <extends>QWidget</extends>
+   <header>inspector/inspectorform.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
