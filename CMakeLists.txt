@@ -22,7 +22,7 @@ set( CMAKE_CXX_EXTENSIONS OFF )
 # Instruct CMake to run moc automatically when needed.
 set( CMAKE_AUTOMOC ON )
 set( CMAKE_AUTOUIC ON )
-set( CMAKE_AUTORCC OFF )
+set( CMAKE_AUTORCC ON )
 
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 
@@ -90,6 +90,8 @@ add_custom_target( fugio-api
 
 set( FUGIO_UNIX_DEPENDENCIES )
 
+add_compile_definitions(QT_DISABLE_DEPRECATED_UP_TO=0x050F00)
+
 add_subdirectory( FugioLib )
 add_subdirectory( FugioApp )
 add_subdirectory( FugioShow )
@@ -97,9 +99,9 @@ add_subdirectory( fugio-plugin-manager )
 
 #------------------------------------------------------------------------------
 
-install( DIRECTORY include/ DESTINATION ${PATH_INCLUDE}
-	PATTERN ".*" EXCLUDE
-)
+# install( DIRECTORY include/ DESTINATION ${PATH_INCLUDE}
+# 	PATTERN ".*" EXCLUDE
+# )
 
 install( DIRECTORY share/ DESTINATION ${PATH_SHARE}
 	PATTERN ".*" EXCLUDE
@@ -115,8 +117,8 @@ if( OPENSSL_FOUND )
     message( "OpenSSL: ${OPENSSL_VERSION}" )
 
     install( FILES
-        ${OPENSSL_ROOT_DIR}/bin/libcrypto-1_1-x64.dll
-        ${OPENSSL_ROOT_DIR}/bin/libssl-1_1-x64.dll
+		${OPENSSL_ROOT_DIR}/bin/libcrypto-3-x64.dll
+		${OPENSSL_ROOT_DIR}/bin/libssl-3-x64.dll
         DESTINATION ${PATH_APP} )
 endif()
 

@@ -126,8 +126,10 @@ void NodeListForm::on_mNodeList_itemSelectionChanged()
 }
 
 
-void NodeListForm::on_mNodeGroup_currentIndexChanged( const QString &pGroup )
+void NodeListForm::on_mNodeGroup_currentIndexChanged(int index)
 {
+	const QString pGroup = ui->mNodeGroup->currentText();
+
 	for( int i = 0 ; i < ui->mNodeList->count() ; i++ )
 	{
 		QListWidgetItem		*I = ui->mNodeList->item( i );
@@ -171,5 +173,5 @@ void NodeListForm::on_mNodeGroup_currentIndexChanged( const QString &pGroup )
 
 void NodeListForm::on_mNodeSearch_textChanged( const QString & )
 {
-	on_mNodeGroup_currentIndexChanged( ui->mNodeGroup->currentText() );
+	on_mNodeGroup_currentIndexChanged( ui->mNodeGroup->currentIndex() );
 }

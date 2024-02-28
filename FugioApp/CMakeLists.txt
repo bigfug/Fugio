@@ -185,9 +185,16 @@ endif( APPLE )
 
 include( ${CMAKE_SOURCE_DIR}/cmake/DeployApp.cmake )
 
-include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
+set( TS_FILES
+	translations/translations_de.ts
+	translations/translations_es.ts
+	translations/translations_fr.ts
+	translations/translations_it.ts
+	)
 
-qt5_add_resources( QRC_FILES fugio.qrc )
+qt_add_translations( ${PROJECT_NAME} TS_FILES ${TS_FILES} RESOURCE_PREFIX "/translations" )
+
+qt_add_resources( QRC_FILES fugio.qrc )
 
 target_sources( ${PROJECT_NAME} PRIVATE ${QRC_FILES} )
 

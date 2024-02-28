@@ -303,7 +303,7 @@ void PinPrivate::loadSettings( QSettings &pSettings, bool pPartial )
 
 	setLocalId( fugio::utils::string2uuid( pSettings.value( "uuid", fugio::utils::uuid2string( localId() ) ).toString() ) );
 
-	setPairedUuid( pSettings.value( "paired", fugio::utils::uuid2string( pairedUuid() ) ).toString() );
+	setPairedUuid( fugio::utils::string2uuid( pSettings.value( "paired", fugio::utils::uuid2string( pairedUuid() ) ).toString() ) );
 
 	if( direction() == PIN_INPUT )
 	{

@@ -297,11 +297,18 @@ public:
 
 	QVector<QVersionNumber> pluginVersions( const QString &pPluginName );
 
+	static void setPluginConfigBase( QString pPluginConfigBase )
+	{
+		mPluginConfigBase = pPluginConfigBase;
+	}
+
 private:
 	QDir		      mPluginConfigDir;
 	QDir			  mPluginCacheDir;
 	QDir			  mRepoCacheDir;
-    QString           m_ConfigSettingsFilename;
+	QString           m_ConfigSettingsFilename;
+
+	static QString mPluginConfigBase;
 };
 
 /*!

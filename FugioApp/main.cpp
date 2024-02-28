@@ -70,6 +70,8 @@ int main( int argc, char *argv[] )
 
 	App::setDataDirectory( HLP.configDirectory() );
 
+	PluginCache::setPluginConfigBase( HLP.pluginCacheDirectory() );
+
 	const QString	CfgDir = App::dataDirectory().absolutePath();
 
 	SettingsHelper::setSettingsFormat( HLP.configFile(), QSettings::IniFormat );
@@ -134,7 +136,7 @@ int main( int argc, char *argv[] )
 			}
 			else if( MsgBox.clickedButton() == buttonYes )
 			{
-				PluginActionDownload    BootstrapDown( QUrl( "https://raw.githubusercontent.com/bigfug/Fugio/develop/fugio-bootstrap.json" ) );
+				PluginActionDownload    BootstrapDown( QUrl( "https://github.com/bigfug/Fugio/releases/download/bootstrap/fugio-bootstrap.json" ) );
 
 				BootstrapDown.setAutoRemove( true );
 

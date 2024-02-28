@@ -29,9 +29,9 @@ private slots:
 
 	void on_mNodeList_itemSelectionChanged();
 
-	void on_mNodeGroup_currentIndexChanged(const QString &arg1);
-
 	void on_mNodeSearch_textChanged(const QString &arg1);
+
+	void on_mNodeGroup_currentIndexChanged(int index);
 
 private:
 	QStringList			  mNodeGroups;

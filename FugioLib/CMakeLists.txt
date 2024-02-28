@@ -64,13 +64,20 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE
 	)
 
 #------------------------------------------------------------------------------
-# Qt5
+# Qt
 
-find_package( Qt5 REQUIRED COMPONENTS Core Concurrent Network Widgets LinguistTools )
+find_package(Qt6 COMPONENTS Core Concurrent Network Widgets LinguistTools QUIET)
 
-target_link_libraries( ${PROJECT_NAME} Qt5::Core Qt5::Network Qt5::Widgets )
+target_link_libraries( ${PROJECT_NAME} PRIVATE Qt::Core Qt::Network Qt::Widgets )
 
-include( ${CMAKE_SOURCE_DIR}/cmake/AddTranslations.cmake )
+set( TS_FILES
+	translations/translations_de.ts
+	translations/translations_es.ts
+	translations/translations_fr.ts
+	translations/translations_it.ts
+	)
+
+qt_add_translations( ${PROJECT_NAME} TS_FILES ${TS_FILES} RESOURCE_PREFIX "/translations" )
 
 #------------------------------------------------------------------------------
 # Unit Testing

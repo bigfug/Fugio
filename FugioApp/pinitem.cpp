@@ -915,7 +915,7 @@ void PinItem::menuEditDefault()
 
     const QVariant PinVal = mPin->value();
 
-    if( QMetaType::Type( PinVal.type() ) == QMetaType::QColor )
+	if( QMetaType::Type( PinVal.typeId() ) == QMetaType::QColor )
 	{
 		QColor			CurrentColour = mPin->value().value<QColor>();
 
@@ -934,7 +934,7 @@ void PinItem::menuEditDefault()
 		return;
 	}
 
-	if( QMetaType::Type( PinVal.type() ) == QMetaType::QFont )
+	if( QMetaType::Type( PinVal.typeId() ) == QMetaType::QFont )
 	{
 		bool			OK;
 		QFont			CurVal = mPin->value().value<QFont>();
