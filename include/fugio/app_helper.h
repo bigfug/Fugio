@@ -161,9 +161,15 @@ public:
 
 		const QString		TranslatorSource = QDir::current().absoluteFilePath( "translations" );
 
-		if( QFileInfo::exists( QLibraryInfo::path( QLibraryInfo::TranslationsPath ) ) )
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+		const QString TranslationsPath = QLibraryInfo::location( QLibraryInfo::TranslationsPath );
+#else
+		const QString TranslationsPath = QLibraryInfo::path( QLibraryInfo::TranslationsPath ) );
+#endif
+
+		if( QFileInfo::exists( TranslationsPath ) )
 		{
-			qtTranslator.load( SystemLocal, QLatin1String( "qt" ), QLatin1String( "_" ), QLibraryInfo::path( QLibraryInfo::TranslationsPath ) );
+			qtTranslator.load( SystemLocal, QLatin1String( "qt" ), QLatin1String( "_" ), TranslationsPath );
 		}
 		else if( QFileInfo::exists( TranslatorSource ) )
 		{

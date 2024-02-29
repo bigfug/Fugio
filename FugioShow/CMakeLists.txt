@@ -62,7 +62,15 @@ set( TS_FILES
 	translations/translations_it.ts
 	)
 
-qt_add_translations( ${PROJECT_NAME} TS_FILES ${TS_FILES} RESOURCE_PREFIX "/translations" )
+if( COMMAND qt_add_translations )
+	qt_add_translations( ${PROJECT_NAME} TS_FILES ${TS_FILES} RESOURCE_PREFIX "/translations" )
+else()
+	qt5_create_translation( QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES} )
+
+	configure_file( ${CMAKE_SOURCE_DIR}/translations.qrc ${CMAKE_CURRENT_BINARY_DIR} COPYONLY )
+
+	target_sources( ${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/translations.qrc ${QM_FILES} )
+endif()
 
 #------------------------------------------------------------------------------
 # Raspberry Pi

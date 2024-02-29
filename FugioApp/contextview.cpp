@@ -405,11 +405,19 @@ void ContextView::loadStarted( QSettings &pSettings, bool pPartial )
 			QVariant	PntSrc = pSettings.value( NodeName );
 			QPointF		PntDat;
 
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+			if( PntSrc.type() == QMetaType::QPointF )
+#else
 			if( PntSrc.typeId() == QMetaType::QPointF )
+#endif
 			{
 				PntDat = PntSrc.toPointF();
 			}
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+			else if( PntSrc.type() == QMetaType::QString )
+#else
 			else if( PntSrc.typeId() == QMetaType::QString )
+#endif
 			{
 				PntDat = fugio::utils::string2point( PntSrc.toString() );
 			}
@@ -462,11 +470,17 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 			QVariant	PntSrc = pSettings.value( NodeName );
 			QPointF		PntDat;
 
-			if( PntSrc.typeId() == QMetaType::QPointF )
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+			QVariant::Type	SrcType = PntSrc.type();
+#else
+			QMetaType::Type	SrcType = PntSrc.typeId();
+#endif
+
+			if( SrcType == QMetaType::QPointF )
 			{
 				PntDat = PntSrc.toPointF();
 			}
-			else if( PntSrc.typeId() == QMetaType::QString )
+			else if( SrcType == QMetaType::QString )
 			{
 				PntDat = fugio::utils::string2point( PntSrc.toString() );
 			}
@@ -656,11 +670,17 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 
 			QPointF		Pos  = pSettings.value( "position" ).toPointF();
 
-			if( pSettings.value( "position" ).typeId() == QMetaType::QPointF )
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+			QVariant::Type	PosType = pSettings.value( "position" ).type();
+#else
+			QMetaType::Type	PosType = pSettings.value( "position" ).typeId();
+#endif
+
+			if( PosType == QMetaType::QPointF )
 			{
 				Pos  = pSettings.value( "position" ).toPointF();
 			}
-			else if( pSettings.value( "position" ).typeId() == QMetaType::QString )
+			else if( PosType == QMetaType::QString )
 			{
 				Pos = fugio::utils::string2point( pSettings.value( "position" ).toString() );
 			}
@@ -1731,9 +1751,15 @@ void ContextView::dragEnterEvent( QDragEnterEvent *pEvent )
 
 void ContextView::dropEvent( QDropEvent *pEvent )
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+	QPoint	EventPoint = pEvent->pos();
+#else
+	QPoint	EventPoint = pEvent->position().toPoint();
+#endif
+
 	if( pEvent->mimeData()->hasFormat( "application/x-qabstractitemmodeldatalist" ) )
 	{
-		LinkItem		*Link = qgraphicsitem_cast<LinkItem *>( itemAt( pEvent->position().toPoint() ) );
+		LinkItem		*Link = qgraphicsitem_cast<LinkItem *>( itemAt( EventPoint ) );
 
 		if( mLinkDragTarget && ( !Link || Link != mLinkDragTarget ) )
 		{
@@ -1779,7 +1805,7 @@ void ContextView::dropEvent( QDropEvent *pEvent )
 
 					setNodePositionFlag();
 
-					mNodePosition = mapToScene( pEvent->position().toPoint() );
+					mNodePosition = mapToScene( EventPoint );
 
 					resetPasteOffset();
 
@@ -1813,7 +1839,7 @@ void ContextView::dropEvent( QDropEvent *pEvent )
 
 			if( !FileData.isEmpty() )
 			{
-				CmdContextViewPaste		*Cmd = new CmdContextViewPaste( this, FileData, pEvent->position().toPoint() );
+				CmdContextViewPaste		*Cmd = new CmdContextViewPaste( this, FileData, EventPoint );
 
 				widget()->undoStack()->push( Cmd );
 			}
@@ -1831,9 +1857,15 @@ void ContextView::dropEvent( QDropEvent *pEvent )
 
 void ContextView::dragMoveEvent( QDragMoveEvent *pEvent )
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+	QPoint	EventPoint = pEvent->pos();
+#else
+	QPoint	EventPoint = pEvent->position().toPoint();
+#endif
+
 	if( pEvent->mimeData()->hasFormat( "application/x-qabstractitemmodeldatalist" ) )
 	{
-		LinkItem		*Link = qgraphicsitem_cast<LinkItem *>( itemAt( pEvent->position().toPoint() ) );
+		LinkItem		*Link = qgraphicsitem_cast<LinkItem *>( itemAt( EventPoint ) );
 
 		if( mLinkDragTarget && ( !Link || Link != mLinkDragTarget ) )
 		{
