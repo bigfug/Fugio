@@ -43,7 +43,12 @@ SnippetsForm::SnippetsForm(QWidget *parent) :
 
 	ui->mUser->header()->hide();
 
-	QDir	SysDir( gApp->global().sharedDataPath() + "/snippets" );
+	QDir	SysDir( gApp->dataDirectory().absoluteFilePath( "snippets" ) );
+
+	if( !SysDir.exists() )
+	{
+		gApp->dataDirectory().mkdir( "snippets" );
+	}
 
 	qInfo() << "Loading snippets:" << SysDir.absolutePath();
 

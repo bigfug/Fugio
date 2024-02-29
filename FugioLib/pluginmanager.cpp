@@ -326,7 +326,7 @@ bool PluginActionInstall::action()
         {
             printf( "%s (file)\n", zip_entry_name( zfh ) );
 
-            static const QStringList  Dirs = { "plugins", "examples", "include" };
+			static const QStringList  Dirs = { "plugins", "examples", "include", "snippets" };
 
             if( Dirs.contains( FD ) )
             {
