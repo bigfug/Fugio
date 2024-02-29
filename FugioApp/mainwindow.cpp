@@ -210,7 +210,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	//-------------------------------------------------------------------------
 
-	addExamplesPath( gApp->global().sharedDataPath() + "/examples" );
+	addExamplesPath( gApp->dataDirectory().absoluteFilePath( "examples" ) );
 
 	//-------------------------------------------------------------------------
 
