@@ -164,7 +164,7 @@ public:
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 		const QString TranslationsPath = QLibraryInfo::location( QLibraryInfo::TranslationsPath );
 #else
-		const QString TranslationsPath = QLibraryInfo::path( QLibraryInfo::TranslationsPath ) );
+		const QString TranslationsPath = QLibraryInfo::path( QLibraryInfo::TranslationsPath );
 #endif
 
 		if( QFileInfo::exists( TranslationsPath ) )

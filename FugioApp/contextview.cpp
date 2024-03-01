@@ -473,7 +473,7 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 			QVariant::Type	SrcType = PntSrc.type();
 #else
-			QMetaType::Type	SrcType = PntSrc.typeId();
+			QMetaType::Type	SrcType = static_cast<QMetaType::Type>( PntSrc.typeId() );
 #endif
 
 			if( SrcType == QMetaType::QPointF )
@@ -673,7 +673,7 @@ void ContextView::loadContext( QSettings &pSettings, bool pPartial )
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 			QVariant::Type	PosType = pSettings.value( "position" ).type();
 #else
-			QMetaType::Type	PosType = pSettings.value( "position" ).typeId();
+			QMetaType::Type	PosType = static_cast<QMetaType::Type>( pSettings.value( "position" ).typeId() );
 #endif
 
 			if( PosType == QMetaType::QPointF )
