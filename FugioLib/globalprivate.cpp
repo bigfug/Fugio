@@ -506,6 +506,21 @@ void GlobalPrivate::deviceFactoryGui( QWidget *pParent, const QString &pMenuText
 	}
 }
 
+void GlobalPrivate::registerDeviceProvider( const QUuid &pDID, fugio::DeviceProviderInterface *pProvider )
+{
+	mDeviceProviders.insert( pDID, pProvider );
+}
+
+void GlobalPrivate::unregisterDeviceProvider( const QUuid &pDID, fugio::DeviceProviderInterface *pProvider )
+{
+	mDeviceProviders.remove( pDID, pProvider );
+}
+
+QList<fugio::DeviceProviderInterface *> GlobalPrivate::deviceProviders( const QUuid &pDID )
+{
+	return( mDeviceProviders.values( pDID ) );
+}
+
 void GlobalPrivate::loadConfig( QSettings &pSettings )
 {
 	emit configLoad( pSettings );

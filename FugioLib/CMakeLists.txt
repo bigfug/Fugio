@@ -50,6 +50,7 @@ set( SOURCE_FILES
 	../include/fugio/utils.h
 	../include/fugio/context_signals.h
 	../include/fugio/paired_pins_helper_interface.h
+	../include/fugio/device_provider_interface.h
 
 	../libs/zip/zip.h
 	../libs/zip/zip.cpp

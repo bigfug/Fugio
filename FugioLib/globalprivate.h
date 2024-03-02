@@ -242,6 +242,11 @@ public:
 	virtual QStringList deviceFactoryMenuTextList( void ) const Q_DECL_OVERRIDE;
 	virtual void deviceFactoryGui( QWidget *pParent, const QString &pMenuText ) Q_DECL_OVERRIDE;
 
+	virtual void registerDeviceProvider( const QUuid &pDID, fugio::DeviceProviderInterface *pProvider ) Q_DECL_OVERRIDE;
+	virtual void unregisterDeviceProvider( const QUuid &pDID, fugio::DeviceProviderInterface *pProvider ) Q_DECL_OVERRIDE;
+
+	virtual QList<fugio::DeviceProviderInterface *> deviceProviders( const QUuid &pDID ) Q_DECL_OVERRIDE;
+
 	virtual void loadConfig( QSettings &pSettings ) Q_DECL_OVERRIDE;
 	virtual void saveConfig( QSettings &pSettings ) Q_DECL_OVERRIDE;
 
@@ -331,6 +336,7 @@ private:
 
 	QList<QSharedPointer<fugio::ContextInterface> >		 mContexts;
 	QList<fugio::DeviceFactoryInterface *>				 mDeviceFactories;
+	QMultiMap<QUuid,fugio::DeviceProviderInterface *>	 mDeviceProviders;
 
 	QMultiMap<QUuid,QUuid>			 mPinSplitters;
 	QMultiMap<QUuid,QUuid>			 mPinJoiners;

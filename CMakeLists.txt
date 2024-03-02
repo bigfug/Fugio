@@ -119,7 +119,9 @@ if( OPENSSL_FOUND )
     install( FILES
 		${OPENSSL_ROOT_DIR}/bin/libcrypto-3-x64.dll
 		${OPENSSL_ROOT_DIR}/bin/libssl-3-x64.dll
-        DESTINATION ${PATH_APP} )
+		${OPENSSL_ROOT_DIR}/bin/libcrypto-1_1-x64.dll
+		${OPENSSL_ROOT_DIR}/bin/libssl-1_1-x64.dll
+		DESTINATION ${PATH_APP} )
 endif()
 
 #------------------------------------------------------------------------------

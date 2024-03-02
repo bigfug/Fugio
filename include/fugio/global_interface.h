@@ -15,12 +15,13 @@ class QWidget;
 class QDir;
 
 FUGIO_NAMESPACE_BEGIN
-class GlobalSignals;
 class ContextInterface;
-class NodeInterface;
-class NodeControlInterface;
 class DeviceFactoryInterface;
+class DeviceProviderInterface;
 class EditInterface;
+class GlobalSignals;
+class NodeControlInterface;
+class NodeInterface;
 FUGIO_NAMESPACE_END
 
 FUGIO_NAMESPACE_BEGIN
@@ -231,6 +232,11 @@ public:
 	virtual QStringList deviceFactoryMenuTextList( void ) const = 0;
 	virtual void deviceFactoryGui( QWidget *pParent, const QString &pMenuText ) = 0;
 
+	virtual void registerDeviceProvider( const QUuid &pDID, fugio::DeviceProviderInterface *pProvider ) = 0;
+	virtual void unregisterDeviceProvider( const QUuid &pDID, fugio::DeviceProviderInterface *pProvider ) = 0;
+
+	virtual QList<fugio::DeviceProviderInterface *> deviceProviders( const QUuid &pDID ) = 0;
+
 	//-------------------------------------------------------------------------
 	// Joining and Splitting
 
@@ -249,7 +255,7 @@ public:
 
 FUGIO_NAMESPACE_END
 
-Q_DECLARE_INTERFACE( fugio::GlobalInterface, "com.bigfug.fugio.global/1.1" )
+Q_DECLARE_INTERFACE( fugio::GlobalInterface, "com.bigfug.fugio.global/1.2" )
 
 #if !defined(FUGIOLIB_LIBRARY)
 FUGIO_NAMESPACE_BEGIN
