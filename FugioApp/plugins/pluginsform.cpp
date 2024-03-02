@@ -260,6 +260,12 @@ void PluginsForm::on_mButtonApply_clicked()
 	for( int row = 0 ; row < ui->mPluginTable->rowCount() ; row++ )
 	{
 		QTableWidgetItem	*NameItem = ui->mPluginTable->item( row, 0 );
+
+		if( !NameItem )
+		{
+			continue;
+		}
+
 		QComboBox			*VersionComboBox = qobject_cast<QComboBox *>( ui->mPluginTable->cellWidget( row, 2 ) );
 
 		QString				 PluginName = NameItem->text();
