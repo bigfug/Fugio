@@ -135,6 +135,11 @@ QString GlobalPrivate::sharedDataPath() const
 #endif
 }
 
+QDir GlobalPrivate::dataPath() const
+{
+	return( mDataPath );
+}
+
 void GlobalPrivate::registerInterface(const QUuid &pUuid, QObject *pInterface)
 {
 	mInterfaceMap.remove( pUuid );

@@ -103,6 +103,7 @@ public:
 	// Paths
 
 	virtual QString sharedDataPath( void ) const Q_DECL_OVERRIDE;
+	virtual QDir dataPath( void ) const Q_DECL_OVERRIDE;
 
 	//-------------------------------------------------------------------------
 
@@ -296,6 +297,11 @@ public:
 		mCommandLineVariables = pValueMap;
 	}
 
+	void setDataPath( const QDir &pDir )
+	{
+		mDataPath = pDir;
+	}
+
 protected:
 	bool registerNodeClass( const fugio::ClassEntry &E );
 
@@ -358,6 +364,8 @@ private:
 	QMap<QString,QString>			 mCommandLineVariables;
 
     PluginManager                    mPluginManager;
+
+	QDir							 mDataPath;
 };
 
 #if defined( GLOBAL_THREADED )

@@ -126,6 +126,7 @@ public:
 	// Paths
 
 	virtual QString sharedDataPath( void ) const = 0;
+	virtual QDir dataPath( void ) const = 0;
 
 	//-------------------------------------------------------------------------
 
