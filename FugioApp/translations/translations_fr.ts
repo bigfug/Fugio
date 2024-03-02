@@ -17,17 +17,17 @@
 <context>
     <name>ContextView</name>
     <message>
-        <location filename="../contextview.cpp" line="2607"/>
+        <location filename="../contextview.cpp" line="2639"/>
         <source>New Group</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextview.cpp" line="2609"/>
+        <location filename="../contextview.cpp" line="2641"/>
         <source>Group Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../contextview.cpp" line="2609"/>
+        <location filename="../contextview.cpp" line="2641"/>
         <source>Enter a name for this group</source>
         <translation type="unfinished"></translation>
     </message>
@@ -898,42 +898,42 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="922"/>
+        <location filename="../pinitem.cpp" line="926"/>
         <source>Choose Colour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="941"/>
+        <location filename="../pinitem.cpp" line="949"/>
         <source>Choose Font</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="959"/>
+        <location filename="../pinitem.cpp" line="967"/>
         <source>Edit Default Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1010"/>
+        <location filename="../pinitem.cpp" line="1018"/>
         <source>Import Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1025"/>
+        <location filename="../pinitem.cpp" line="1033"/>
         <source>Export Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1136"/>
+        <location filename="../pinitem.cpp" line="1144"/>
         <source>No Global Pins</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1136"/>
+        <location filename="../pinitem.cpp" line="1144"/>
         <source>There are no global pins defined</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pinitem.cpp" line="1153"/>
+        <location filename="../pinitem.cpp" line="1161"/>
         <source>Choose Global</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1416,52 +1416,52 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../snippets/snippetsform.cpp" line="85"/>
+        <location filename="../snippets/snippetsform.cpp" line="90"/>
         <source>New folder...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../snippets/snippetsform.cpp" line="93"/>
+        <location filename="../snippets/snippetsform.cpp" line="98"/>
         <source>Delete...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../snippets/snippetsform.cpp" line="115"/>
+        <location filename="../snippets/snippetsform.cpp" line="120"/>
         <source>Couldn&apos;t delete directory %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../snippets/snippetsform.cpp" line="127"/>
+        <location filename="../snippets/snippetsform.cpp" line="132"/>
         <source>Couldn&apos;t delete file %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../snippets/snippetsform.cpp" line="137"/>
+        <location filename="../snippets/snippetsform.cpp" line="142"/>
         <source>New Folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../snippets/snippetsform.cpp" line="137"/>
+        <location filename="../snippets/snippetsform.cpp" line="142"/>
         <source>Enter a name for the new folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../snippets/snippetsform.cpp" line="162"/>
+        <location filename="../snippets/snippetsform.cpp" line="167"/>
         <source>Folder Exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../snippets/snippetsform.cpp" line="162"/>
+        <location filename="../snippets/snippetsform.cpp" line="167"/>
         <source>Can&apos;t make the folder - it already exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../snippets/snippetsform.cpp" line="169"/>
+        <location filename="../snippets/snippetsform.cpp" line="174"/>
         <source>Folder Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../snippets/snippetsform.cpp" line="169"/>
+        <location filename="../snippets/snippetsform.cpp" line="174"/>
         <source>Can&apos;t create the folder</source>
         <translation type="unfinished"></translation>
     </message>
