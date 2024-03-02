@@ -486,6 +486,8 @@ int main( int argc, char *argv[] )
 
 	HLP.setCommandLineVariables();
 
+	PBG->setDataPath( App::dataDirectory() );
+
 	MainWindow	*WND = new MainWindow();
 
 	if( WND )

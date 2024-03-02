@@ -23,7 +23,7 @@ InspectorForm::~InspectorForm()
 
 void InspectorForm::inspectNode( QSharedPointer<fugio::ContextInterface> pContext, QUuid pNodeId )
 {
-	qDebug() << "inspectNode" << pNodeId;
+	// qDebug() << "inspectNode" << pNodeId;
 
 	if( ui->mFormLayout )
 	{

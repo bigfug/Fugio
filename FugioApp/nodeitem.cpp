@@ -313,7 +313,7 @@ QVariant NodeItem::itemChange( QGraphicsItem::GraphicsItemChange pChange, const 
 
 	if( pChange == QGraphicsItem::ItemSelectedHasChanged )
 	{
-		qDebug() << "ItemSelectedHasChanged" << mNodeName << pValue.toBool();
+		// qDebug() << "ItemSelectedHasChanged" << mNodeName << pValue.toBool();
 
 		mContextView->nodeSelected( mNodeId, pValue.toBool() );
 	}
