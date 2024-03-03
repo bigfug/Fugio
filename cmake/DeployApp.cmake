@@ -1,12 +1,10 @@
 
 find_package(Qt6 COMPONENTS Core Core5Compat Concurrent Gui OpenGL Network Widgets
 	OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml LinguistTools
-
+	QUIET
 )
 
-if (Qt6_FOUND)
-	target_link_libraries( ${PROJECT_NAME} PUBLIC Qt6::Core5Compat)
-else()
+if (NOT Qt6_FOUND)
     find_package(Qt5 5.15 REQUIRED COMPONENTS Core Concurrent Gui OpenGL Network Widgets
         OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml LinguistTools
         QUIET

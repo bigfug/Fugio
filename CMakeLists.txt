@@ -111,7 +111,7 @@ install( DIRECTORY share/ DESTINATION ${PATH_SHARE}
 
 #------------------------------------------------------------------------------
 
-set( OPENSSL_ROOT_DIR "" CACHE PATH "Path to OpenSSL" )
+set( OPENSSL_ROOT_DIR "C:/Program Files/OpenSSL" CACHE PATH "Path to OpenSSL" )
 
 find_package( OpenSSL )
 
