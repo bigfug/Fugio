@@ -118,7 +118,7 @@ find_package( OpenSSL )
 if( OPENSSL_FOUND )
     message( "OpenSSL: ${OPENSSL_VERSION}" )
 
-	find_package(Qt6 COMPONENTS Core)
+	find_package(Qt6 COMPONENTS Core QUIET)
 
 	if (Qt6_FOUND)
 		install( FILES

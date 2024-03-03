@@ -15,32 +15,32 @@ target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::Core Qt::Concurrent Qt::Gui Qt
 
 if( Qt5SerialPort_DIR )
         message( "Qt::SerialPort: YES" )
-        target_link_libraries( ${PROJECT_NAME} Qt::SerialPort )
+		target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::SerialPort )
 endif()
 
 if( Qt5Qml_DIR )
         message( "Qt::Qml: YES" )
-        target_link_libraries( ${PROJECT_NAME} Qt::Qml )
+		target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::Qml )
 endif()
 
 if( Qt5Quick_DIR )
         message( "Qt::Quick: YES" )
-        target_link_libraries( ${PROJECT_NAME} Qt::Quick )
+		target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::Quick )
 endif()
 
 if( Qt5QuickControls2_DIR )
         message( "Qt::QuickControls2: YES" )
-        target_link_libraries( ${PROJECT_NAME} Qt::QuickControls2 )
+		target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::QuickControls2 )
 endif()
 
 if( Qt5QuickWidgets_DIR )
         message( "Qt::QuickWidgets: YES" )
-        target_link_libraries( ${PROJECT_NAME} Qt::QuickWidgets )
+		target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::QuickWidgets )
 endif()
 
 if( Qt5WebSockets_DIR )
         message( "Qt::WebSockets: YES" )
-        target_link_libraries( ${PROJECT_NAME} Qt::WebSockets )
+		target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::WebSockets )
 endif()
 
 # Retrieve the absolute path to qmake and then use that path to find
