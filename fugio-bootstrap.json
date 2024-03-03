@@ -1,20 +1,29 @@
 {
   "repositories": [
 	"https://github.com/bigfug/fugio-core-plugins/releases/download/v1.0.0/fugio-manifest.json",
-	"https://github.com/bigfug/fugio-portaudio/releases/download/v1.0.0/fugio-manifest.json"
+	"https://github.com/bigfug/fugio-lua/releases/download/v1.0.0/fugio-manifest.json",
+	"https://github.com/bigfug/fugio-portaudio/releases/download/v1.0.0/fugio-manifest.json",
+	"https://github.com/bigfug/fugio-portmidi/releases/download/v1.0.0/fugio-manifest.json"
   ],
   "plugins": [
 	"com.bigfug.fugio.audio",
-	"com.bigfug.fugio.core",
 	"com.bigfug.fugio.colour",
+	"com.bigfug.fugio.core",
 	"com.bigfug.fugio.file",
+	"com.bigfug.fugio.geometry",
 	"com.bigfug.fugio.gui",
 	"com.bigfug.fugio.image",
+	"com.bigfug.fugio.json",
 	"com.bigfug.fugio.math",
+	"com.bigfug.fugio.midi",
 	"com.bigfug.fugio.network",
+	"com.bigfug.fugio.painter",
 	"com.bigfug.fugio.serial",
 	"com.bigfug.fugio.text",
 	"com.bigfug.fugio.time",
-	"com.bigfug.fugio.portaudio"
+	"com.bigfug.fugio.portaudio",
+	"com.bigfug.fugio.portmidi",
+	"com.bigfug.fugio.lua",
+	"com.bigfug.fugio.luaqt"
   ]
 }
