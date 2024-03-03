@@ -31,6 +31,8 @@
 
 #include "../libs/zip/zip.h"
 
+QStringList PluginCache::mPluginAllowedDirs = { "plugins", "examples", "include", "snippets", "share" };
+
 PluginManager::PluginManager()
 {
 }
@@ -326,9 +328,7 @@ bool PluginActionInstall::action()
         {
             printf( "%s (file)\n", zip_entry_name( zfh ) );
 
-			static const QStringList  Dirs = { "plugins", "examples", "include", "snippets" };
-
-            if( Dirs.contains( FD ) )
+			if( PluginCache::pluginAllowedDirs().contains( FD ) )
             {
                 QDir    FileBase( DestBase );
 
@@ -716,7 +716,7 @@ bool PluginActionRemove::action()
         {
 			QDir		ZipDir( zip_entry_name( zfh ) );
 
-			qDebug() << QString( "%1 (dir)" ).arg( ZipDir.path() );
+			// qDebug() << QString( "%1 (dir)" ).arg( ZipDir.path() );
 
 			if( !EmptyDirs.contains( ZipDir.path() ) )
 			{
@@ -727,9 +727,7 @@ bool PluginActionRemove::action()
         {
 			qDebug() << QString( "%1 (file)" ).arg( zip_entry_name( zfh ) );
 
-            static const QStringList  Dirs = { "plugins", "examples", "include" };
-
-            if( Dirs.contains( FD ) )
+			if( PluginCache::pluginAllowedDirs().contains( FD ) )
             {
                 QDir    FileBase( DestBase );
 

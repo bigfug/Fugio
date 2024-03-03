@@ -302,6 +302,11 @@ public:
 		mPluginConfigBase = pPluginConfigBase;
 	}
 
+	static QStringList pluginAllowedDirs( void )
+	{
+		return( mPluginAllowedDirs );
+	}
+
 private:
 	QDir		      mPluginConfigDir;
 	QDir			  mPluginCacheDir;
@@ -309,6 +314,7 @@ private:
 	QString           m_ConfigSettingsFilename;
 
 	static QString mPluginConfigBase;
+	static QStringList mPluginAllowedDirs;
 };
 
 /*!
