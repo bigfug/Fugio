@@ -80,7 +80,7 @@ public:
 
 	virtual bool isConnectedToActiveNode( void ) const Q_DECL_OVERRIDE;
 
-	virtual bool isUpdated( qint64 pTimeStamp ) const Q_DECL_OVERRIDE;
+	virtual bool isUpdated( qint64 pTimeStamp ) Q_DECL_OVERRIDE;
 
 	virtual QSharedPointer<fugio::PinControlInterface> control( void ) Q_DECL_OVERRIDE;
 

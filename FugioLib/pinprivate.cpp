@@ -189,8 +189,13 @@ bool PinPrivate::isConnectedToActiveNode() const
 	return( false );
 }
 
-bool PinPrivate::isUpdated( qint64 pTimeStamp ) const
+bool PinPrivate::isUpdated( qint64 pTimeStamp )
 {
+	if( mUpdated == std::numeric_limits<qint64>::max() )
+	{
+		mUpdated = pTimeStamp;
+	}
+
 	return( mUpdated >= pTimeStamp );
 }
 

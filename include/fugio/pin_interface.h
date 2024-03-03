@@ -67,7 +67,7 @@ public:
 
 	virtual bool isConnectedToActiveNode( void ) const = 0;
 
-	virtual bool isUpdated( qint64 pTimeStamp ) const = 0;
+	virtual bool isUpdated( qint64 pTimeStamp ) = 0;
 
 	virtual QSharedPointer<PinControlInterface> control( void ) = 0;
 
