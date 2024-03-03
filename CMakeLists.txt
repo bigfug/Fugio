@@ -35,7 +35,7 @@ else ()
     message(STATUS "*** SIZEOF void * != 8, so not 64-bit")
 endif ()
 
-set( FUGIO_BUILD_DIST FALSE CACHE BOOL "Build Fugio for binary distribution" )
+# set( FUGIO_BUILD_DIST FALSE CACHE BOOL "Build Fugio for binary distribution" )
 
 # There must be a better way to do this...
 
@@ -107,21 +107,31 @@ install( DIRECTORY share/ DESTINATION ${PATH_SHARE}
 	PATTERN ".*" EXCLUDE
 )
 
-install( DIRECTORY DESTINATION plugins)
+# install( DIRECTORY DESTINATION plugins )
 
 #------------------------------------------------------------------------------
+
+set( OPENSSL_ROOT_DIR "" CACHE PATH "Path to OpenSSL" )
 
 find_package( OpenSSL )
 
 if( OPENSSL_FOUND )
     message( "OpenSSL: ${OPENSSL_VERSION}" )
 
-    install( FILES
-		${OPENSSL_ROOT_DIR}/bin/libcrypto-3-x64.dll
-		${OPENSSL_ROOT_DIR}/bin/libssl-3-x64.dll
-		# ${OPENSSL_ROOT_DIR}/bin/libcrypto-1_1-x64.dll
-		# ${OPENSSL_ROOT_DIR}/bin/libssl-1_1-x64.dll
-		DESTINATION ${PATH_APP} )
+	find_package(Qt6 COMPONENTS Core)
+
+	if (Qt6_FOUND)
+		install( FILES
+			${OPENSSL_ROOT_DIR}/bin/libcrypto-3-x64.dll
+			${OPENSSL_ROOT_DIR}/bin/libssl-3-x64.dll
+			DESTINATION ${PATH_APP} )
+	else()
+		install( FILES
+			${OPENSSL_ROOT_DIR}/bin/libcrypto-1_1-x64.dll
+			${OPENSSL_ROOT_DIR}/bin/libssl-1_1-x64.dll
+			DESTINATION ${PATH_APP} )
+	endif()
+
 endif()
 
 #------------------------------------------------------------------------------
