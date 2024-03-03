@@ -64,7 +64,7 @@ void PluginManager::loadPlugins(QDir pDir)
         }
     }
 #else
-	for( QString fileName : pDir.entryList( QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot ) )
+	for( QString &fileName : pDir.entryList( QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot ) )
     {
         QFileInfo	File( pDir.absoluteFilePath( fileName ) );
 
@@ -73,11 +73,11 @@ void PluginManager::loadPlugins(QDir pDir)
             QString		NxtDir = pDir.absoluteFilePath( fileName );
 
 #if defined( Q_OS_WIN )
-            SetDllDirectory( (LPCTSTR)NxtDir.utf16() );
+			// SetDllDirectory( (LPCTSTR)NxtDir.utf16() );
 
             loadPlugins( QDir( NxtDir ) );
 
-            SetDllDirectory( Q_NULLPTR );
+			// SetDllDirectory( Q_NULLPTR );
 #else
             QString		CurDir = QDir::currentPath();
 
@@ -332,7 +332,7 @@ bool PluginActionInstall::action()
             {
                 QDir    FileBase( DestBase );
 
-                QString FileName = FP.takeLast();
+				FP.removeLast();
 
                 QString FilePath = FP.join( '/' );
 
@@ -731,7 +731,7 @@ bool PluginActionRemove::action()
             {
                 QDir    FileBase( DestBase );
 
-                QString FileName = FP.takeLast();
+				FP.removeLast();
 
                 QString FilePath = FP.join( '/' );
 
@@ -1053,8 +1053,6 @@ bool PluginCache::addPluginToCache(const QString &pPluginName, const QVersionNum
         return( false );
     }
 
-    QFileInfo   PluginSource( pFilename );
-
 	QString     PluginDest = PluginCache.absoluteFilePath( QString( "%1-%2.zip" ).arg( pPluginName, pPluginVersion.toString() ) );
 
 	if( QFile::exists( PluginDest ) )
@@ -1069,6 +1067,8 @@ bool PluginCache::addPluginToCache(const QString &pPluginName, const QVersionNum
 
     if( !QFile::copy( pFilename, PluginDest ) )
     {
+		qWarning() << "Could not copy" << pFilename << "to" << PluginDest;
+
         return( false );
     }
 

@@ -72,7 +72,7 @@ typedef struct ClassEntry
 
 		if( !mGroup.isEmpty() )
 		{
-			LocalName = QString( "%1 (%2)" ).arg( LocalName ).arg( mGroup );
+			LocalName = QString( "%1 (%2)" ).arg( LocalName, mGroup );
 		}
 
 		return( LocalName );

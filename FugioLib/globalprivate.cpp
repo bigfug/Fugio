@@ -84,11 +84,28 @@ GlobalPrivate::~GlobalPrivate( void )
     }
 }
 
+void GlobalPrivate::loadPlugins( QDir pDir )
+{
+#if defined( Q_OS_WIN )
+	QString LibsPath = dataPath().absoluteFilePath( "share/libs" );
+
+	qInfo() << "Adding DLL search path:" << LibsPath;
+
+	SetDllDirectory( (LPCWSTR)LibsPath.utf16() );
+#endif
+
+	mPluginManager.loadPlugins( pDir );
+
+#if defined( Q_OS_WIN )
+	SetDllDirectory( NULL );
+#endif
+}
+
 void GlobalPrivate::initialisePlugins()
 {
-    mPluginManager.initialisePlugins( this );
+	mPluginManager.initialisePlugins( this );
 
-    qDebug() << tr( "Nodes registered: %1" ).arg( mNodeMap.size() );
+	qDebug() << tr( "Nodes registered: %1" ).arg( mNodeMap.size() );
 }
 
 QString GlobalPrivate::sharedDataPath() const

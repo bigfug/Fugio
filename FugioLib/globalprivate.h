@@ -44,10 +44,7 @@ public:
         return( mPluginManager );
     }
 
-    virtual void loadPlugins( QDir pDir ) Q_DECL_OVERRIDE
-    {
-        mPluginManager.loadPlugins( pDir );
-    }
+	virtual void loadPlugins( QDir pDir ) Q_DECL_OVERRIDE;
 
     virtual void unloadPlugins( void ) Q_DECL_OVERRIDE
     {
