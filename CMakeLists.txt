@@ -118,20 +118,21 @@ find_package( OpenSSL )
 if( OPENSSL_FOUND )
     message( "OpenSSL: ${OPENSSL_VERSION}" )
 
-	find_package(Qt6 COMPONENTS Core QUIET)
+	if( WIN32 )
+		find_package(Qt6 COMPONENTS Core QUIET)
 
-	if (Qt6_FOUND)
-		install( FILES
-			${OPENSSL_ROOT_DIR}/bin/libcrypto-3-x64.dll
-			${OPENSSL_ROOT_DIR}/bin/libssl-3-x64.dll
-			DESTINATION ${PATH_APP} )
-	else()
-		install( FILES
-			${OPENSSL_ROOT_DIR}/bin/libcrypto-1_1-x64.dll
-			${OPENSSL_ROOT_DIR}/bin/libssl-1_1-x64.dll
-			DESTINATION ${PATH_APP} )
+		if (Qt6_FOUND)
+			install( FILES
+				${OPENSSL_ROOT_DIR}/bin/libcrypto-3-x64.dll
+				${OPENSSL_ROOT_DIR}/bin/libssl-3-x64.dll
+				DESTINATION ${PATH_APP} )
+		else()
+			install( FILES
+				${OPENSSL_ROOT_DIR}/bin/libcrypto-1_1-x64.dll
+				${OPENSSL_ROOT_DIR}/bin/libssl-1_1-x64.dll
+				DESTINATION ${PATH_APP} )
+		endif()
 	endif()
-
 endif()
 
 #------------------------------------------------------------------------------

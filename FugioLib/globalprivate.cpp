@@ -91,7 +91,11 @@ void GlobalPrivate::loadPlugins( QDir pDir )
 
 	qInfo() << "Adding DLL search path:" << LibsPath;
 
+#ifdef UNICODE
 	SetDllDirectory( (LPCWSTR)LibsPath.utf16() );
+#else
+	SetDllDirectory( (LPCSTR)LibsPath..toStdString().c_str() );
+#endif
 #endif
 
 	mPluginManager.loadPlugins( pDir );
