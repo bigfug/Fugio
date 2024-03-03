@@ -94,7 +94,7 @@ void GlobalPrivate::loadPlugins( QDir pDir )
 #ifdef UNICODE
 	SetDllDirectory( (LPCWSTR)LibsPath.utf16() );
 #else
-	SetDllDirectory( (LPCSTR)LibsPath..toStdString().c_str() );
+	SetDllDirectory( (LPCSTR)LibsPath.toStdString().c_str() );
 #endif
 #endif
 
