@@ -143,7 +143,7 @@ add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURC
 
 )
 
-target_link_libraries( ${PROJECT_NAME} libfugio )
+target_link_libraries( ${PROJECT_NAME} PRIVATE libfugio )
 
 install( TARGETS ${PROJECT_NAME}
 	RUNTIME DESTINATION ${PATH_APP}

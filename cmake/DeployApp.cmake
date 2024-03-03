@@ -1,17 +1,19 @@
 
-find_package(Qt6 COMPONENTS Core Concurrent Gui OpenGL Network Widgets
-    OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml LinguistTools
-    QUIET
+find_package(Qt6 COMPONENTS Core Core5Compat Concurrent Gui OpenGL Network Widgets
+	OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml LinguistTools
+
 )
 
-if (NOT Qt6_FOUND)
+if (Qt6_FOUND)
+	target_link_libraries( ${PROJECT_NAME} PUBLIC Qt6::Core5Compat)
+else()
     find_package(Qt5 5.15 REQUIRED COMPONENTS Core Concurrent Gui OpenGL Network Widgets
         OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml LinguistTools
         QUIET
     )
 endif()
 
-target_link_libraries( ${PROJECT_NAME} Qt::Core Qt::Concurrent Qt::Gui Qt::Network Qt::OpenGL Qt::Widgets )
+target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::Core Qt::Concurrent Qt::Gui Qt::Network Qt::OpenGL Qt::Widgets )
 
 if( Qt5SerialPort_DIR )
         message( "Qt::SerialPort: YES" )
@@ -59,7 +61,7 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 		--verbose 2
 		--no-compiler-runtime
 		--no-opengl-sw
-		--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets
+		--concurrent --core5compat --opengl --serialport --websockets --network --qml --quick --quickwidgets
 		--dir "${ABS_BINARY_DIR}/${PATH_APP}"
 		--libdir "${ABS_BINARY_DIR}/${PATH_APP}"
 		--plugindir "${ABS_BINARY_DIR}/${PATH_APP}"
@@ -81,7 +83,7 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 			--no-compiler-runtime
 			--no-opengl-sw
 			--list mapping
-			--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets
+			--concurrent --core5compat --opengl --serialport --websockets --network --qml --quick --quickwidgets
 			--dir \"${ABS_BINARY_DIR}/${PATH_APP}\"
 			--libdir \"${ABS_BINARY_DIR}/${PATH_APP}\"
 			--plugindir \"${ABS_BINARY_DIR}/${PATH_APP}\"
