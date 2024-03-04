@@ -53,23 +53,77 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 
 	get_filename_component( ABS_BINARY_DIR "${CMAKE_INSTALL_PREFIX}" REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
 
-	# Run windeployqt immediately after build
-	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-	  COMMAND "${WINDEPLOYQT_EXECUTABLE}"
-		--verbose 2
-		--no-compiler-runtime
-		--no-opengl-sw
-		--concurrent --core5compat --opengl --serialport --websockets --network --qml --quick --quickwidgets
-		--dir "${ABS_BINARY_DIR}/${PATH_APP}"
-		--libdir "${ABS_BINARY_DIR}/${PATH_APP}"
-		--plugindir "${ABS_BINARY_DIR}/${PATH_APP}"
-		\"$<TARGET_FILE:${PROJECT_NAME}>\"
-	)
+	if( NOT Qt6_FOUND )
+		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND "${WINDEPLOYQT_EXECUTABLE}"
+			--verbose 2
+			--no-compiler-runtime
+			--no-opengl-sw
+			--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets ${WINDEPLOY_LIBRARIES}
+			--dir "${ABS_BINARY_DIR}/${PATH_APP}"
+			--libdir "${ABS_BINARY_DIR}/${PATH_APP}"
+			--plugindir "${ABS_BINARY_DIR}/${PATH_APP}"
+			\"$<TARGET_FILE:${PROJECT_NAME}>\"
+		)
+	else()
+		add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+			COMMAND "${WINDEPLOYQT_EXECUTABLE}"
+			--verbose 2
+			--no-compiler-runtime
+			--no-opengl-sw
+			--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets --core5compat
+			--dir "${ABS_BINARY_DIR}/${PATH_APP}"
+			--libdir "${ABS_BINARY_DIR}/${PATH_APP}"
+			--plugindir "${ABS_BINARY_DIR}/${PATH_APP}"
+			\"$<TARGET_FILE:${PROJECT_NAME}>\"
+		)
+	endif()
 
 	file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_$<CONFIG>_path"
 		CONTENT "$<TARGET_FILE:${PROJECT_NAME}>"
 	)
 
+	if( NOT Qt6_FOUND )
+		# Before installation, run a series of commands that copy each of the Qt
+		# runtime files to the appropriate directory for installation
+		install( CODE
+			"
+			file(READ \"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}_Release_path\" _file)
+			execute_process(
+				COMMAND \"${WINDEPLOYQT_EXECUTABLE}\"
+				--dry-run
+				--no-compiler-runtime
+				--no-opengl-sw
+				--list mapping
+				--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets
+				--dir \"${ABS_BINARY_DIR}/${PATH_APP}\"
+				--libdir \"${ABS_BINARY_DIR}/${PATH_APP}\"
+				--plugindir \"${ABS_BINARY_DIR}/${PATH_APP}\"
+				\${_file}
+				OUTPUT_VARIABLE _output
+				OUTPUT_STRIP_TRAILING_WHITESPACE
+			)
+
+		separate_arguments(_files WINDOWS_COMMAND \${_output})
+
+		while(_files)
+			list(GET _files 0 _src)
+			if( EXISTS \${_src} )
+				list(GET _files 1 _dest)
+				message( \"Copying \${_src}\" )
+				execute_process(
+					COMMAND \"${CMAKE_COMMAND}\" -E
+					copy \${_src} \"\${CMAKE_INSTALL_PREFIX}/${PATH_APP}/\${_dest}\"
+				)
+
+			list(REMOVE_AT _files 0 1)
+		else()
+			list(REMOVE_AT _files 0)
+		endif()
+	endwhile()
+	"
+)
+else()
 	# Before installation, run a series of commands that copy each of the Qt
 	# runtime files to the appropriate directory for installation
 	install( CODE
@@ -81,7 +135,7 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 			--no-compiler-runtime
 			--no-opengl-sw
 			--list mapping
-			--concurrent --core5compat --opengl --serialport --websockets --network --qml --quick --quickwidgets
+			--concurrent --opengl --serialport --websockets --network --qml --quick --quickwidgets --core5compat
 			--dir \"${ABS_BINARY_DIR}/${PATH_APP}\"
 			--libdir \"${ABS_BINARY_DIR}/${PATH_APP}\"
 			--plugindir \"${ABS_BINARY_DIR}/${PATH_APP}\"
@@ -106,9 +160,10 @@ if( WIN32 AND CMAKE_BUILD_TYPE STREQUAL Release )
 	else()
 		list(REMOVE_AT _files 0)
 	endif()
-	endwhile()
-		"
-	)
+endwhile()
+" )
+endif()
+
 
 	# windeployqt doesn't work correctly with the system runtime libraries,
 	# so we fall back to one of CMake's own modules for copying them over
