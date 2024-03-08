@@ -142,13 +142,16 @@ if( OPENSSL_FOUND )
                 PATHS ${OPENSSL_ROOT_DIR}/bin
             )
 
-            if( OPEN_SSL_CRYPTO_DLL )
-                install( FILES ${OPENSSL_CRYPTO_LIBRARY} DESTINATION ${PATH_APP} )
-            endif()
+            message( ${OPEN_SSL_DLL} )
+            message( ${OPEN_SSL_CRYPTO_DLL} )
 
-            if( OPEN_SSL_DLL )
-                install( FILES ${OPEN_SSL_DLL} DESTINATION ${PATH_APP} )
-            endif()
+            # if( OPEN_SSL_CRYPTO_DLL )
+            #     install( FILES ${OPENSSL_CRYPTO_LIBRARY} DESTINATION ${PATH_APP} )
+            # endif()
+
+            # if( OPEN_SSL_DLL )
+            #     install( FILES ${OPEN_SSL_DLL} DESTINATION ${PATH_APP} )
+            # endif()
 
         # 		install( FILES
         # 			${OPENSSL_ROOT_DIR}/bin/libcrypto-3-x64.dll
