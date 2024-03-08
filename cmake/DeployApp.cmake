@@ -5,7 +5,7 @@ find_package(Qt6 COMPONENTS Core Core5Compat Concurrent Gui OpenGL Network Widge
 )
 
 if (NOT Qt6_FOUND)
-    find_package(Qt5 5.15 REQUIRED COMPONENTS Core Concurrent Gui OpenGL Network Widgets
+    find_package(Qt5 5.15 COMPONENTS Core Concurrent Gui OpenGL Network Widgets
         OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml LinguistTools
         QUIET
     )
