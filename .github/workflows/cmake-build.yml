@@ -75,7 +75,6 @@ jobs:
         aqtversion: '==3.1.*'
         version: '6.6.2'
         modules: 'qt5compat qtimageformats qtmultimedia qtserialport qtwebsockets'
-        tools: 'tools_openssl_x64'
         host: ${{ matrix.qt_host }}
         target: 'desktop'
         arch: ${{ matrix.qt_arch }}
