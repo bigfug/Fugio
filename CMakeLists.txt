@@ -111,7 +111,17 @@ install( DIRECTORY share/ DESTINATION ${PATH_SHARE}
 
 #------------------------------------------------------------------------------
 
-set( OPENSSL_ROOT_DIR "C:/Program Files/OpenSSL" CACHE PATH "Path to OpenSSL" )
+get_filename_component( QT_BASE "${QT_DIR}/../../../../../" ABSOLUTE )
+
+message( "QT_BASE=${QT_BASE}" )
+
+set( OPENSSL_ROOT_DIR "" CACHE PATH "Path to OpenSSL" )
+
+if( WIN32 )
+    if (Qt6_FOUND)
+        set( OPENSSL_ROOT_DIR "${QT_BASE}/tools/OpenSSLv3/Win_x64" CACHE PATH "Path to OpenSSL" )
+    endif()
+endif()
 
 find_package( OpenSSL )
 
