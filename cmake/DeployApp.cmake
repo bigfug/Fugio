@@ -1,5 +1,5 @@
 
-find_package(Qt6 COMPONENTS Core Core5Compat Concurrent Gui OpenGL Network Widgets
+find_package(Qt6 COMPONENTS Core Concurrent Gui OpenGL Network Widgets Core5Compat
 	OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml LinguistTools
 	QUIET
 )
@@ -13,34 +13,39 @@ endif()
 
 target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::Core Qt::Concurrent Qt::Gui Qt::Network Qt::OpenGL Qt::Widgets )
 
-if( Qt5SerialPort_DIR )
-        message( "Qt::SerialPort: YES" )
-		target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::SerialPort )
+if( Qt6Core5Compat_DIR )
+    message( "Qt::Core5Compat: YES" )
+    target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::Core5Compat )
 endif()
 
-if( Qt5Qml_DIR )
+if( Qt5SerialPort_DIR OR Qt6SerialPort_DIR )
+    message( "Qt::SerialPort: YES" )
+    target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::SerialPort )
+endif()
+
+if( Qt5Qml_DIR OR Qt6Qml_DIR )
         message( "Qt::Qml: YES" )
 		target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::Qml )
 endif()
 
-if( Qt5Quick_DIR )
-        message( "Qt::Quick: YES" )
-		target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::Quick )
+if( Qt5Quick_DIR OR Qt6Quick_DIR )
+    message( "Qt::Quick: YES" )
+    target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::Quick )
 endif()
 
-if( Qt5QuickControls2_DIR )
-        message( "Qt::QuickControls2: YES" )
-		target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::QuickControls2 )
+if( Qt5QuickControls2_DIR OR Qt6QuickControls2_DIR )
+    message( "Qt::QuickControls2: YES" )
+    target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::QuickControls2 )
 endif()
 
-if( Qt5QuickWidgets_DIR )
-        message( "Qt::QuickWidgets: YES" )
-		target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::QuickWidgets )
+if( Qt5QuickWidgets_DIR OR Qt6QuickWidgets_DIR )
+    message( "Qt::QuickWidgets: YES" )
+    target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::QuickWidgets )
 endif()
 
-if( Qt5WebSockets_DIR )
-        message( "Qt::WebSockets: YES" )
-		target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::WebSockets )
+if( Qt5WebSockets_DIR OR Qt6WebSockets_DIR )
+    message( "Qt::WebSockets: YES" )
+    target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::WebSockets )
 endif()
 
 # Retrieve the absolute path to qmake and then use that path to find
