@@ -73,7 +73,7 @@ jobs:
       uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==3.1.*'
-        version: '6.*'
+        version: '6.6.2'
         host: ${{ matrix.qt_host }}
         target: 'desktop'
         arch: ${{ matrix.qt_arch }}
