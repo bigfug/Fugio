@@ -115,12 +115,12 @@ get_filename_component( QT_BASE "${QT_DIR}/../../../../../" ABSOLUTE )
 
 message( "QT_BASE=${QT_BASE}" )
 
-set( OPENSSL_ROOT_DIR "" CACHE PATH "Path to OpenSSL" )
+find_package(Qt6 COMPONENTS Core QUIET)
 
-if( WIN32 )
-    if (Qt6_FOUND)
-        set( OPENSSL_ROOT_DIR "${QT_BASE}/tools/OpenSSLv3/Win_x64" CACHE PATH "Path to OpenSSL" )
-    endif()
+if( WIN32 AND Qt6_FOUND)
+    set( OPENSSL_ROOT_DIR "${QT_BASE}/tools/OpenSSLv3/Win_x64" CACHE PATH "Path to OpenSSL" )
+else()
+    set( OPENSSL_ROOT_DIR "" CACHE PATH "Path to OpenSSL" )
 endif()
 
 find_package( OpenSSL )
@@ -129,8 +129,6 @@ if( OPENSSL_FOUND )
     message( "OpenSSL: ${OPENSSL_VERSION} ${OPENSSL_ROOT_DIR}" )
 
    if( WIN32 )
-        find_package(Qt6 COMPONENTS Core QUIET)
-
         if (Qt6_FOUND)
             find_file( OPEN_SSL_CRYPTO_DLL
                 libcrypto-3-x64.dll

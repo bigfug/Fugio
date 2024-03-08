@@ -31,18 +31,21 @@ jobs:
             qt_host: windows
             qt_arch: win64_msvc2019_64
             cpack_generators: -DCPACK_BINARY_NSIS=TRUE -DCPACK_BINARY_ZIP=TRUE
+            qt_tools: 'tools_opensslv3_x64'
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
             qt_host: linux
             qt_arch: gcc_64
             cpack_generators: -DCPACK_BINARY_TGZ=TRUE -DCPACK_BINARY_TZ=FALSE -DCPACK_BINARY_STGZ=FALSE
+            qt_tools: ''
           - os: macos-latest
             c_compiler: clang
             cpp_compiler: clang++
             qt_host: mac
             qt_arch: clang_64
             cpack_generators: -DCPACK_BINARY_DRAGNDROP=TRUE -DCPACK_BINARY_ZIP=TRUE -DCPACK_BINARY_TGZ=FALSE -DCPACK_BINARY_STGZ=FALSE
+            qt_tools: ''
         exclude:
           - os: windows-latest
             c_compiler: gcc
@@ -78,7 +81,7 @@ jobs:
         host: ${{ matrix.qt_host }}
         target: 'desktop'
         arch: ${{ matrix.qt_arch }}
-        tools: 'tools_opensslv3_x64'
+        tools: ${{ matrix.qt_tools }}
         
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
