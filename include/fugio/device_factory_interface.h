@@ -1,7 +1,7 @@
 #ifndef INTERFACE_DEVICE_FACTORY_H
 #define INTERFACE_DEVICE_FACTORY_H
 
-#include <QList>
+#include <QtPlugin>
 
 class QWidget;
 

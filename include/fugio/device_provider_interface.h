@@ -1,7 +1,7 @@
 #ifndef DEVICE_PROVIDER_INTERFACE_H
 #define DEVICE_PROVIDER_INTERFACE_H
 
-#include <QList>
+#include <QtPlugin>
 
 class QWidget;
 
@@ -13,6 +13,8 @@ class DeviceProviderInterface
 {
 public:
 	virtual ~DeviceProviderInterface( void ) {}
+
+	virtual QObject *qobject( void ) = 0;
 };
 
 FUGIO_NAMESPACE_END
