@@ -130,36 +130,40 @@ if( OPENSSL_FOUND )
 
    if( WIN32 )
         if (Qt6_FOUND)
-            find_file( OPEN_SSL_CRYPTO_DLL
+			find_file( OPENSSL_CRYPTO_DLL
                 libcrypto-3-x64.dll
                 PATHS ${OPENSSL_ROOT_DIR}/bin
+				NO_DEFAULT_PATH
             )
 
-            find_file( OPEN_SSL_DLL
+			find_file( OPENSSL_DLL
                 libssl-3-x64.dll
                 PATHS ${OPENSSL_ROOT_DIR}/bin
+				NO_DEFAULT_PATH
             )
+		else()
+			find_file( OPENSSL_CRYPTO_DLL
+				libcrypto-1_1-x64.dll
+				PATHS ${OPENSSL_ROOT_DIR}/bin
+				NO_DEFAULT_PATH
+			)
 
-            message( ${OPEN_SSL_DLL} )
-            message( ${OPEN_SSL_CRYPTO_DLL} )
+			find_file( OPENSSL_DLL
+				libssl-1_1-x64.dll
+				PATHS ${OPENSSL_ROOT_DIR}/bin
+				NO_DEFAULT_PATH
+			)
+		endif()
 
-            # if( OPEN_SSL_CRYPTO_DLL )
-            #     install( FILES ${OPENSSL_CRYPTO_LIBRARY} DESTINATION ${PATH_APP} )
-            # endif()
+		message( ${OPENSSL_DLL} )
+		message( ${OPENSSL_CRYPTO_DLL} )
 
-            # if( OPEN_SSL_DLL )
-            #     install( FILES ${OPEN_SSL_DLL} DESTINATION ${PATH_APP} )
-            # endif()
+		if( OPENSSL_DLL )
+			install( FILES ${OPENSSL_DLL} DESTINATION ${PATH_APP} )
+		endif()
 
-        # 		install( FILES
-        # 			${OPENSSL_ROOT_DIR}/bin/libcrypto-3-x64.dll
-        # 			${OPENSSL_ROOT_DIR}/bin/libssl-3-x64.dll
-        # 			DESTINATION ${PATH_APP} )
-        # 	else()
-        # 		install( FILES
-        # 			${OPENSSL_ROOT_DIR}/bin/libcrypto-1_1-x64.dll
-        # 			${OPENSSL_ROOT_DIR}/bin/libssl-1_1-x64.dll
-        # 			DESTINATION ${PATH_APP} )
+		if( OPENSSL_CRYPTO_DLL )
+			install( FILES ${OPENSSL_CRYPTO_LIBRARY} DESTINATION ${PATH_APP} )
         endif()
     endif()
 endif()
