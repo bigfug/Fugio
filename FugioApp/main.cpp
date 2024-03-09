@@ -222,15 +222,18 @@ int main( int argc, char *argv[] )
 			}
 		}
 
-		QString repoReload = HLP.reloadRepo();
+		QStringList repoReload = HLP.reloadRepo();
 
 		if( !repoReload.isEmpty() )
 		{
-			QString repoManifestFilename = Cache.repoCacheDirectory().filePath( Cache.repoManifestFilename( repoReload ) );
+			for( QString &repoName : repoReload )
+			{
+				QString repoManifestFilename = Cache.repoCacheDirectory().filePath( Cache.repoManifestFilename( repoName ) );
 
-			PluginRepoManifest      RepoManifest( repoManifestFilename, "win64" );
+				PluginRepoManifest      RepoManifest( repoManifestFilename, "win64" );
 
-			pluginList.append( RepoManifest.pluginList() );
+				pluginList.append( RepoManifest.pluginList() );
+			}
 		}
 
 		if( !pluginList.isEmpty() )

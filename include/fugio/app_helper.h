@@ -310,14 +310,14 @@ public:
 		return( QFileInfo( CLP.value( OptionConfigFile ) ).absoluteDir() );
 	}
 
-	QString reloadRepo( void )
+	QStringList reloadRepo( void )
 	{
 		if( !CLP.isSet( OptionReloadRepo ) )
 		{
-			return( QString() );
+			return( QStringList() );
 		}
 
-		return( CLP.value( OptionReloadRepo ) );
+		return( CLP.values( OptionReloadRepo ) );
 	}
 
 	QString pluginCacheDirectory( void )
