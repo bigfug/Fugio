@@ -83,9 +83,11 @@ void InspectorForm::inspectNode( QSharedPointer<fugio::ContextInterface> pContex
 			QLineEdit	*LineEdit = new QLineEdit( p->value().toString() );
 
 			connect( LineEdit, &QLineEdit::textChanged, [=]( const QString &s )
-					{
-						p->setValue( s );
-					});
+			{
+				p->setValue( s );
+
+				mNode->context()->pinUpdated( p, mNode->context()->global()->timestamp() );
+			});
 
 			Editor = LineEdit;
 		}
