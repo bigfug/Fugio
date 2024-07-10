@@ -662,7 +662,60 @@ void PluginCache::updateRepo( const QString &pRepoName )
 	QString         CacheFileName = repoCacheDirectory().absoluteFilePath( QString( "%1.manifest.json" ).arg( pRepoName ) );
 	QFileInfo       CacheFileInfo( CacheFileName );
 
-	qDebug() << CacheFileInfo.lastModified().toUTC();
+	QDateTime		CacheModified = CacheFileInfo.lastModified().toUTC();
+
+	qDebug() << CacheModified;
+
+	QUrl            url = repoUrl( pRepoName );
+	QString         manifestFilename;
+	bool            manifestRemove = false;
+	QDateTime       modified;
+
+	if( !url.isLocalFile() )
+	{
+		PluginActionDownload    RepoDown( url );
+
+		RepoDown.setAutoRemove( false );
+
+		if( RepoDown.action() )
+		{
+			manifestFilename = RepoDown.tempFileName();
+
+			modified = RepoDown.modified();
+
+			manifestRemove = true;
+		}
+	}
+	else
+	{
+		QFileInfo repoFileInfo( url.toLocalFile() );
+
+		manifestFilename = repoFileInfo.absoluteFilePath();
+
+		modified = repoFileInfo.lastModified().toUTC();
+	}
+
+	if( manifestFilename.isEmpty() )
+	{
+		return;
+	}
+
+
+	if( modified <= CacheModified )
+	{
+		return;
+	}
+
+	PluginRepoManifest      RepoManifest( manifestFilename, "win64" );
+
+	RepoManifest.setModified( modified );
+
+	addRepoManifest( RepoManifest, url );
+
+	if( manifestRemove )
+	{
+		QFile::remove( manifestFilename );
+	}
 }
 
 void PluginCache::updateRepos()

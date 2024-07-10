@@ -66,6 +66,8 @@ void PluginsForm::on_mButtonSourceUpdateAll_clicked()
 
 		mPluginCache.updateRepo( RepoName );
 	}
+
+	rebuildPluginInformation();
 }
 
 
@@ -91,6 +93,8 @@ void PluginsForm::on_mButtonSourceUpdate_clicked()
 	QListWidgetItem		*item = ui->mSourceList->currentItem();
 
 	mPluginCache.updateRepo( item->text() );
+
+	rebuildPluginInformation();
 }
 
 void PluginsForm::rebuildPluginInformation()
