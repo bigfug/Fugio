@@ -8,8 +8,6 @@
 #include <fugio/context_interface.h>
 #include <fugio/context_signals.h>
 
-#include "fugio.h"
-
 #include <fugio/utils.h>
 
 #include "pinprivate.h"
@@ -30,8 +28,10 @@ void NodePrivate::setContext( fugio::ContextInterface *pContext )
 {
 	mContext = pContext;
 
-	for( QSharedPointer<fugio::PinInterface> P : mPinMap.values() )
+	for( auto it = mPinMap.keyValueBegin() ; it != mPinMap.keyValueEnd() ; it++ )
 	{
+		QSharedPointer<fugio::PinInterface> P = it->second;
+
 		if( P )
 		{
 			if( PinPrivate *PP = qobject_cast<PinPrivate *>( P->qobject() ) )
@@ -44,7 +44,9 @@ void NodePrivate::setContext( fugio::ContextInterface *pContext )
 
 void NodePrivate::clear()
 {
-	for( QSharedPointer<fugio::PinInterface> P : mPinMap.values() )
+	QList<QSharedPointer<fugio::PinInterface>> PinLst = mPinMap.values();
+
+	for( QSharedPointer<fugio::PinInterface> &P : PinLst )
 	{
 		removePin( P );
 	}

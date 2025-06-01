@@ -35,3 +35,8 @@ Makefile*
 
 CMakeLists.txt.user
 CMakeLists.txt.user.*
+
+plugins/*
+!plugins/CMakeLists.txt
+
+/build

@@ -1,12 +1,8 @@
-cmake_minimum_required( VERSION 3.14 )
+cmake_minimum_required( VERSION 3.16 )
 
-if( UNIX AND NOT APPLE )
-	project( fugioshow LANGUAGES CXX )
-else()
-	project( FugioShow LANGUAGES CXX )
-endif()
+project( fugioshow LANGUAGES CXX )
 
-include_directories( ../FugioLib )
+include_directories( ../fugiolib )
 
 #------------------------------------------------------------------------------
 

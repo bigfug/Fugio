@@ -1,12 +1,9 @@
-cmake_minimum_required( VERSION 3.14 )
+cmake_minimum_required( VERSION 3.16 )
 
-if( UNIX AND NOT APPLE )
-	project( fugio LANGUAGES CXX )
-else()
-	project( Fugio LANGUAGES CXX )
-endif()
+project( fugio LANGUAGES CXX )
 
-include_directories( ../FugioLib )
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #------------------------------------------------------------------------------
 
@@ -139,11 +136,25 @@ set( UI_RESOURCES fugio.rc )
 
 add_definitions( -DFUGIOLIB_STATIC )
 
-add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURCES} ${UIS_HDRS}
+if( BUILD_PLUGINS )
+	set( USE_LOCAL_PLUGINS TRUE )
 
-)
+	add_definitions( -DUSE_LOCAL_PLUGINS )
+endif()
+
+add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURCES} ${UIS_HDRS} )
+
+target_include_directories( ${PROJECT_NAME} PRIVATE ../fugiolib )
 
 target_link_libraries( ${PROJECT_NAME} PRIVATE libfugio )
+
+find_package( Qt6 REQUIRED COMPONENTS Core Concurrent Gui OpenGL Network Widgets Core5Compat
+	OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml LinguistTools
+)
+
+qt_standard_project_setup( I18N_TRANSLATED_LANGUAGES de es fr it )
+
+target_link_libraries( ${PROJECT_NAME} PUBLIC Qt::Core Qt::Concurrent Qt::Gui Qt::Network Qt::OpenGL Qt::Widgets )
 
 install( TARGETS ${PROJECT_NAME}
 	RUNTIME DESTINATION ${PATH_APP}
@@ -181,42 +192,24 @@ endif( APPLE )
 
 
 #------------------------------------------------------------------------------
-# Qt5
 
-include( ${CMAKE_SOURCE_DIR}/cmake/DeployApp.cmake )
+qt_generate_deploy_app_script(
+    TARGET ${PROJECT_NAME}
+	OUTPUT_SCRIPT fugioapp-deploy_script
+    NO_UNSUPPORTED_PLATFORM_ERROR
+)
 
-set( TS_FILES
-	translations/translations_de.ts
-	translations/translations_es.ts
-	translations/translations_fr.ts
-	translations/translations_it.ts
-	)
-
-if( COMMAND qt_add_translations )
-	qt_add_translations( ${PROJECT_NAME} TS_FILES ${TS_FILES} RESOURCE_PREFIX "/translations" )
-else()
-	qt5_create_translation( QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES} )
-
-	configure_file( ${CMAKE_SOURCE_DIR}/translations.qrc ${CMAKE_CURRENT_BINARY_DIR} COPYONLY )
-
-	target_sources( ${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/translations.qrc ${QM_FILES} )
-endif()
-
-qt_add_resources( QRC_FILES fugio.qrc )
-
-target_sources( ${PROJECT_NAME} PRIVATE ${QRC_FILES} )
-
-set_property( SOURCE ${CMAKE_CURRENT_BINARY_DIR}/qrc_fugio.cpp PROPERTY SKIP_AUTOGEN ON )
+install(SCRIPT ${fugioapp-deploy_script})
 
 #------------------------------------------------------------------------------
 # Raspberry Pi
 
-if( Q_OS_RASPBERRY_PI )
-	target_include_directories( ${PROJECT_NAME} PRIVATE /opt/vc/include )
+# if( Q_OS_RASPBERRY_PI )
+# 	target_include_directories( ${PROJECT_NAME} PRIVATE /opt/vc/include )
 
-	find_library( BCM_HOST_LIBRARY NAMES bcm_host PATHS /opt/vc/lib )
+# 	find_library( BCM_HOST_LIBRARY NAMES bcm_host PATHS /opt/vc/lib )
 
-	target_link_libraries( ${PROJECT_NAME} ${BCM_HOST_LIBRARY} )
+# 	target_link_libraries( ${PROJECT_NAME} ${BCM_HOST_LIBRARY} )
 
-	target_compile_definitions( ${PROJECT_NAME} PRIVATE OMX_SKIP64BIT )
-endif()
+# 	target_compile_definitions( ${PROJECT_NAME} PRIVATE OMX_SKIP64BIT )
+# endif()

@@ -97,6 +97,7 @@ int main( int argc, char *argv[] )
 
 	//-------------------------------------------------------------------------
 
+#ifndef USE_LOCAL_PLUGINS
 	if( true )
 	{
 		SettingsHelper  Helper;
@@ -240,6 +241,8 @@ int main( int argc, char *argv[] )
 		{
 			QProgressDialog	Dialog;
 
+			qDebug() << pluginList;
+
 			Dialog.setMinimumDuration( 0 );
 
 			Dialog.setRange( 0, pluginList.count() );
@@ -252,6 +255,8 @@ int main( int argc, char *argv[] )
 
 			for( QString &PluginName : pluginList )
 			{
+				qDebug() << "Installing" << PluginName;
+
 				QString repoManifestFilename = Cache.repoFromPlugin( PluginName );
 
 				if( repoManifestFilename.isEmpty() )
@@ -295,6 +300,8 @@ int main( int argc, char *argv[] )
 
 				if( !pluginFilename.isEmpty() )
 				{
+					qDebug() << "Adding" << pluginFilename << "to cache";
+
 					if( Cache.addPluginToCache( PluginName, PluginVersion, pluginFilename ) )
 					{
 						Helper.setArrayIndex( ArrayIndex++ );
@@ -434,6 +441,7 @@ int main( int argc, char *argv[] )
 
 		Helper.remove( "plugin-update" );
 	}
+#endif
 
 	//-------------------------------------------------------------------------
 
@@ -501,7 +509,11 @@ int main( int argc, char *argv[] )
 
 		WND->initBegin();
 
+#ifdef USE_LOCAL_PLUGINS
+		HLP.registerAndLoadPlugins( QDir::current() );
+#else
 		HLP.registerAndLoadPlugins( App::pluginsDirectory() );
+#endif
 
 		//-------------------------------------------------------------------------
 

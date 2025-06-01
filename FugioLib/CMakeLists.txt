@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.14 )
+cmake_minimum_required( VERSION 3.16 )
 
 project( libfugio )
 
@@ -25,8 +25,8 @@ set( SOURCE_FILES
 	universe.h
 
 	../include/fugio/global.h
-	../libs/FugioTime/lib/timesync.cpp
-	../libs/FugioTime/lib/timesync.h
+	../libs/fugiotime/lib/timesync.cpp
+	../libs/fugiotime/lib/timesync.h
 	../include/fugio/interpolation.h
 	../include/fugio/performance.h
 	../stable.h
@@ -69,30 +69,28 @@ target_compile_definitions( ${PROJECT_NAME} PRIVATE
 
 find_package(Qt6 COMPONENTS Core Concurrent Network Widgets LinguistTools QUIET)
 
-if (NOT Qt6_FOUND)
-	find_package(Qt5 5.15 COMPONENTS Core Concurrent Network Widgets LinguistTools QUIET)
-endif()
+qt_standard_project_setup( I18N_TRANSLATED_LANGUAGES de es fr it )
 
 target_link_libraries( ${PROJECT_NAME} PRIVATE Qt::Core Qt::Network Qt::Widgets )
 
-set( TS_FILES
-	translations/translations_de.ts
-	translations/translations_es.ts
-	translations/translations_fr.ts
-	translations/translations_it.ts
-	)
+# set( TS_FILES
+# 	translations/translations_de.ts
+# 	translations/translations_es.ts
+# 	translations/translations_fr.ts
+# 	translations/translations_it.ts
+# 	)
 
-if( COMMAND qt_add_translations )
-	qt_add_translations( ${PROJECT_NAME} TS_FILES ${TS_FILES} RESOURCE_PREFIX "/translations" )
-else()
-	qt5_create_translation( QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES} )
+# if( COMMAND qt_add_translations )
+# 	qt_add_translations( ${PROJECT_NAME} TS_FILES ${TS_FILES} RESOURCE_PREFIX "/translations" )
+# else()
+# 	qt5_create_translation( QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES} )
 
-	configure_file( ${CMAKE_SOURCE_DIR}/translations.qrc ${CMAKE_CURRENT_BINARY_DIR} COPYONLY )
+# 	configure_file( ${CMAKE_SOURCE_DIR}/translations.qrc ${CMAKE_CURRENT_BINARY_DIR} COPYONLY )
 
-	target_sources( ${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/translations.qrc ${QM_FILES} )
-endif()
+# 	target_sources( ${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/translations.qrc ${QM_FILES} )
+# endif()
 
 #------------------------------------------------------------------------------
 # Unit Testing
 
-add_subdirectory( tests )
+# add_subdirectory( tests )

@@ -1,6 +1,6 @@
-cmake_minimum_required( VERSION 3.14 )
+cmake_minimum_required( VERSION 3.16 )
 
-list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
+# list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 project( Fugio )
 
@@ -79,6 +79,9 @@ if( UNIX AND NOT APPLE )
 	install( FILES FugioApp/fugio.png		DESTINATION share/icons/hicolor/256x256/apps )
 endif()
 
+#------------------------------------------------------------------------------
+# Fugio API
+
 set( FUGIO_API "${CMAKE_SOURCE_DIR}/include" CACHE PATH "" )
 
 add_custom_target( fugio-api
@@ -88,14 +91,20 @@ add_custom_target( fugio-api
 
 #------------------------------------------------------------------------------
 
+option( BUILD_PLUGINS "Build optional plugins" OFF )
+
 set( FUGIO_UNIX_DEPENDENCIES )
 
 add_compile_definitions(QT_DISABLE_DEPRECATED_UP_TO=0x050F00)
 
-add_subdirectory( FugioLib )
-add_subdirectory( FugioApp )
-add_subdirectory( FugioShow )
-add_subdirectory( fugio-plugin-manager )
+add_subdirectory( fugiolib )
+add_subdirectory( fugioapp )
+# add_subdirectory( fugioshow )
+# add_subdirectory( fugio-plugin-manager )
+
+if( BUILD_PLUGINS )
+	add_subdirectory( plugins )
+endif()
 
 #------------------------------------------------------------------------------
 
@@ -114,6 +123,9 @@ install( DIRECTORY share/ DESTINATION ${PATH_SHARE}
 get_filename_component( QT_BASE "${QT_DIR}/../../../../../" ABSOLUTE )
 
 message( "QT_BASE=${QT_BASE}" )
+
+#------------------------------------------------------------------------------
+# OpenSSL
 
 find_package(Qt6 COMPONENTS Core QUIET)
 
@@ -163,13 +175,15 @@ if( OPENSSL_FOUND )
 		endif()
 
 		if( OPENSSL_CRYPTO_DLL )
-			install( FILES ${OPENSSL_CRYPTO_LIBRARY} DESTINATION ${PATH_APP} )
+			install( FILES ${OPENSSL_CRYPTO_DLL} DESTINATION ${PATH_APP} )
         endif()
     endif()
 endif()
 
 #------------------------------------------------------------------------------
 # CPack
+
+include(InstallRequiredSystemLibraries)
 
 set( CPACK_PACKAGE_NAME "Fugio" )
 set( CPACK_PACKAGE_VENDOR "bigfug.com" )

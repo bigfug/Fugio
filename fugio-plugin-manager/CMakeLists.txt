@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.16)
 
 project(fugio-plugin-manager LANGUAGES CXX)
 
@@ -19,8 +19,8 @@ add_definitions( -DFUGIOLIB_STATIC )
 add_executable(fugio-plugin-manager
   main.cpp
 
-  ../FugioLib/pluginmanager.cpp
-  ../FugioLib/pluginmanager.h
+  ../fugiolib/pluginmanager.cpp
+  ../fugiolib/pluginmanager.h
 
   ../libs/zip/zip.h
   ../libs/zip/zip.cpp
