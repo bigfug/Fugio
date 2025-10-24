@@ -1277,6 +1277,11 @@ void NodeItem::menuUngroup()
 
 PinItem *NodeItem::pinInputAdd( QSharedPointer<fugio::PinInterface> pPin )
 {
+	if( pPin->isProperty() )
+	{
+		return( nullptr );
+	}
+
 	QGraphicsSimpleTextItem		*TextItem = nullptr;
 	PinItem						*Pin = new PinItem( mContextView, pPin, this );
 

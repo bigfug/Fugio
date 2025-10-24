@@ -65,6 +65,18 @@ void InspectorForm::inspectNode( QSharedPointer<fugio::ContextInterface> pContex
 			continue;
 		}
 
+		// we don't want to show the trigger node
+
+		if( p->localId() == PID_FUGIO_NODE_TRIGGER )
+		{
+			continue;
+		}
+
+		if( p->hidden() )
+		{
+			continue;
+		}
+
 		QLabel		*Label = new QLabel( p->name() );
 		QWidget		*Editor = Q_NULLPTR;
 
