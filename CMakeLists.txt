@@ -1,11 +1,10 @@
-cmake_minimum_required( VERSION 3.16 )
+cmake_minimum_required( VERSION 3.20 )
 
 # list( APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 project( Fugio )
 
 set( FUGIO_APP_VERSION "4.0.0" )
-set( FUGIO_API_VERSION "4.0.0" )
 
 if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set( CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/package" CACHE PATH "..." FORCE)
@@ -15,14 +14,18 @@ endif()
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include )
 
+find_package(Qt6 REQUIRED COMPONENTS Core)
+
+qt_standard_project_setup()
+
 set( CMAKE_CXX_STANDARD 17 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
 
 # Instruct CMake to run moc automatically when needed.
-set( CMAKE_AUTOMOC ON )
-set( CMAKE_AUTOUIC ON )
-set( CMAKE_AUTORCC ON )
+# set( CMAKE_AUTOMOC ON )
+# set( CMAKE_AUTOUIC ON )
+# set( CMAKE_AUTORCC ON )
 
 set( CMAKE_INCLUDE_CURRENT_DIR ON )
 
@@ -119,18 +122,12 @@ install( DIRECTORY share/ DESTINATION ${PATH_SHARE}
 # install( DIRECTORY DESTINATION plugins )
 
 #------------------------------------------------------------------------------
-
-get_filename_component( QT_BASE "${QT_DIR}/../../../../../" ABSOLUTE )
-
-message( "QT_BASE=${QT_BASE}" )
-
-#------------------------------------------------------------------------------
 # OpenSSL
 
 find_package(Qt6 COMPONENTS Core QUIET)
 
 if( WIN32 AND Qt6_FOUND)
-    set( OPENSSL_ROOT_DIR "${QT_BASE}/tools/OpenSSLv3/Win_x64" CACHE PATH "Path to OpenSSL" )
+	set( OPENSSL_ROOT_DIR "${QT6_INSTALL_PREFIX}/Tools/OpenSSLv3/Win_x64" CACHE PATH "Path to OpenSSL" )
 else()
     set( OPENSSL_ROOT_DIR "" CACHE PATH "Path to OpenSSL" )
 endif()
@@ -141,18 +138,18 @@ if( OPENSSL_FOUND )
     message( "OpenSSL: ${OPENSSL_VERSION} ${OPENSSL_ROOT_DIR}" )
 
    if( WIN32 )
-        if (Qt6_FOUND)
+		if (Qt6_FOUND)
 			find_file( OPENSSL_CRYPTO_DLL
-                libcrypto-3-x64.dll
-                PATHS ${OPENSSL_ROOT_DIR}/bin
+				libcrypto-3-x64.dll
+				PATHS ${OPENSSL_ROOT_DIR}/bin
 				NO_DEFAULT_PATH
-            )
+			)
 
 			find_file( OPENSSL_DLL
-                libssl-3-x64.dll
-                PATHS ${OPENSSL_ROOT_DIR}/bin
+				libssl-3-x64.dll
+				PATHS ${OPENSSL_ROOT_DIR}/bin
 				NO_DEFAULT_PATH
-            )
+			)
 		else()
 			find_file( OPENSSL_CRYPTO_DLL
 				libcrypto-1_1-x64.dll
@@ -177,7 +174,7 @@ if( OPENSSL_FOUND )
 		if( OPENSSL_CRYPTO_DLL )
 			install( FILES ${OPENSSL_CRYPTO_DLL} DESTINATION ${PATH_APP} )
         endif()
-    endif()
+	endif()
 endif()
 
 #------------------------------------------------------------------------------

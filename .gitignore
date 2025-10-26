@@ -40,3 +40,6 @@ plugins/*
 !plugins/CMakeLists.txt
 
 /build
+builds/
+.cache
+install/
