@@ -11,7 +11,7 @@ FUGIO_NAMESPACE_BEGIN
 
 class PinInterface;
 
-class PinSignals : public QObject
+class FUGIOLIBSHARED_EXPORT PinSignals : public QObject
 {
 	Q_OBJECT
 

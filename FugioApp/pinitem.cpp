@@ -35,7 +35,6 @@
 #include "contextview.h"
 
 #include "contextwidgetprivate.h"
-#include "pinprivate.h"
 
 #include "undo/cmdsetdefaultvalue.h"
 #include "undo/cmdsetupdatable.h"
@@ -784,12 +783,12 @@ void PinItem::mouseReleaseEvent( QGraphicsSceneMouseEvent *pEvent )
 
 void PinItem::mouseDoubleClickEvent( QGraphicsSceneMouseEvent *pEvent )
 {
-	PinPrivate	*PP = qobject_cast<PinPrivate *>( mPin->qobject() );
+	// PinPrivate	*PP = qobject_cast<PinPrivate *>( mPin->qobject() );
 
-	if( PP && PP->direction() == PIN_INPUT )
-	{
-		PP->update( std::numeric_limits<qint64>::max() );
-	}
+	// if( PP && PP->direction() == PIN_INPUT )
+	// {
+	// 	PP->update( std::numeric_limits<qint64>::max() );
+	// }
 }
 
 PinItem *PinItem::findDest( const QPointF &pPoint )

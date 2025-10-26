@@ -132,9 +132,7 @@ set( UIS_HDRS
 	inspector/inspectorform.ui
 )
 
-set( UI_RESOURCES fugio.rc )
-
-add_definitions( -DFUGIOLIB_STATIC )
+set( UI_RESOURCES fugio.rc fugio.qrc )
 
 if( BUILD_PLUGINS )
 	set( USE_LOCAL_PLUGINS TRUE )
@@ -146,7 +144,7 @@ add_executable( ${PROJECT_NAME} WIN32 MACOSX_BUNDLE ${SOURCE_FILES} ${UI_RESOURC
 
 target_include_directories( ${PROJECT_NAME} PRIVATE ../fugiolib )
 
-target_link_libraries( ${PROJECT_NAME} PRIVATE libfugio )
+target_link_libraries( ${PROJECT_NAME} PUBLIC libfugio )
 
 find_package( Qt6 REQUIRED COMPONENTS Core Concurrent Gui OpenGL Network Widgets Core5Compat
 	OPTIONAL_COMPONENTS SerialPort WebSockets QuickWidgets QuickControls2 Quick Qml LinguistTools

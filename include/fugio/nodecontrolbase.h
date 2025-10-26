@@ -6,15 +6,15 @@
 #include <QSharedPointer>
 #include <QList>
 
+#include <fugio/global.h>
+#include <fugio/fugio.h>
 #include <fugio/context_interface.h>
 #include <fugio/node_control_interface.h>
 #include <fugio/node_interface.h>
 #include <fugio/node_signals.h>
 #include <fugio/pin_interface.h>
 #include <fugio/paired_pins_helper_interface.h>
-
-#include <fugio/fugio.h>
-#include <fugio/core/variant_interface.h>
+#include <fugio/variant_interface.h>
 
 #define FUGID(x,y) 	static const QUuid x = QUuid( "{" y "}" );
 
@@ -51,18 +51,15 @@ template <typename T> struct PinEnt
 	T											*mEnt;
 };
 
-class NodeControlBase : public QObject, public fugio::NodeControlInterface
+class FUGIOLIBSHARED_EXPORT NodeControlBase : public QObject, public fugio::NodeControlInterface
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::NodeControlInterface )
 
 public:
-	explicit NodeControlBase( QSharedPointer<fugio::NodeInterface> pNode )
-		: mNode( pNode ), mInitialisedCalled( false ), mDeinitialisedCalled( false ), mIsPairing( false )
-	{
-	}
+	NodeControlBase( QSharedPointer<fugio::NodeInterface> pNode );
 
-	virtual ~NodeControlBase( void ) Q_DECL_OVERRIDE {}
+	virtual ~NodeControlBase( void ) override = default;
 
 	//-------------------------------------------------------------------------
 	// fugio::NodeInterface
@@ -96,33 +93,9 @@ public:
 	{
 	}
 
-	virtual bool initialise( void ) Q_DECL_OVERRIDE
-	{
-		PairedPinsHelperInterface		*PPHI = qobject_cast<PairedPinsHelperInterface *>( this );
+	virtual bool initialise( void ) Q_DECL_OVERRIDE;
 
-		if( PPHI )
-		{
-			pairedPinConnect();
-		}
-
-		mInitialisedCalled = true;
-
-		return( true );
-	}
-
-	virtual bool deinitialise( void ) Q_DECL_OVERRIDE
-	{
-		PairedPinsHelperInterface		*PPHI = qobject_cast<PairedPinsHelperInterface *>( this );
-
-		if( PPHI )
-		{
-			pairedPinDisconnect();
-		}
-
-		mDeinitialisedCalled = true;
-
-		return( true );
-	}
+	virtual bool deinitialise( void ) Q_DECL_OVERRIDE;
 
 	inline virtual bool wasInitialiseCalled( void ) const Q_DECL_OVERRIDE
 	{

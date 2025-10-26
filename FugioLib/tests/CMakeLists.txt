@@ -4,8 +4,6 @@ project( libfugiotests )
 
 include_directories( .. )
 
-add_definitions( -DFUGIOLIB_STATIC )
-
 set( SOURCE_FILES
 	testglobal.cpp
 	testglobal.h

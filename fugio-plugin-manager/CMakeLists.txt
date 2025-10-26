@@ -14,8 +14,6 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Network LinguistTool
 
 set(TS_FILES fugio-plugin-manager_de_DE.ts)
 
-add_definitions( -DFUGIOLIB_STATIC )
-
 add_executable(fugio-plugin-manager
   main.cpp
 

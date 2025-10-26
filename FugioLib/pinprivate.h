@@ -19,7 +19,7 @@ class PinPrivate : public fugio::PinSignals, public fugio::PinInterface
 	Q_OBJECT
 	Q_INTERFACES( fugio::PinInterface )
 
-	Q_PROPERTY( QUuid globalId READ globalId )
+	Q_PROPERTY( QUuid globalId READ globalId CONSTANT )
 	Q_PROPERTY( QString name READ name WRITE setName NOTIFY nameChanged )
 	Q_PROPERTY( QVariant value READ value WRITE setValue NOTIFY valueChanged )
 

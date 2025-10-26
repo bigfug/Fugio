@@ -9,20 +9,15 @@
 
 FUGIO_NAMESPACE_BEGIN
 
-class PinControlBase : public QObject, public fugio::PinControlInterface
+class FUGIOLIBSHARED_EXPORT PinControlBase : public QObject, public fugio::PinControlInterface
 {
 	Q_OBJECT
 	Q_INTERFACES( fugio::PinControlInterface )
 
 public:
-	explicit PinControlBase( QSharedPointer<fugio::PinInterface> pPin )
-		: mPin( pPin )
-	{
-	}
+	explicit PinControlBase( QSharedPointer<fugio::PinInterface> pPin );
 
-	virtual ~PinControlBase( void )
-	{
-	}
+	virtual ~PinControlBase( void ) override = default;
 
 	inline virtual QObject *qobject( void ) Q_DECL_OVERRIDE Q_DECL_FINAL
 	{

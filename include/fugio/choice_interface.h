@@ -13,14 +13,11 @@ FUGIO_NAMESPACE_BEGIN
 class ChoiceInterface
 {
 public:
-    virtual ~ChoiceInterface( void ) {}
+	virtual ~ChoiceInterface( void ) = default;
 
 	virtual void setChoices( QStringList pChoices ) = 0;
 
 	virtual QStringList choices( void ) const = 0;
-
-signals:
-	virtual void choicesChanged( void ) = 0;
 };
 
 FUGIO_NAMESPACE_END

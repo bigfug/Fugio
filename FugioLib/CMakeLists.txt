@@ -12,6 +12,8 @@ set( SOURCE_FILES
 	globalprivate.cpp
 	globalprivate.h
 	global.cpp
+	nodecontrolbase.cpp
+	pincontrolbase.cpp
 	pinprivate.cpp
 	pinprivate.h
 	pin.cpp
@@ -51,16 +53,18 @@ set( SOURCE_FILES
 	../include/fugio/context_signals.h
 	../include/fugio/paired_pins_helper_interface.h
 	../include/fugio/device_provider_interface.h
+	../include/fugio/nodecontrolbase.h
+	../include/fugio/pincontrolbase.h
 
 	../libs/zip/zip.h
 	../libs/zip/zip.cpp
 	../libs/zip/miniz.h
 )
 
-add_library( ${PROJECT_NAME} STATIC ${SOURCE_FILES} )
+add_library( ${PROJECT_NAME} SHARED ${SOURCE_FILES} )
 
 target_compile_definitions( ${PROJECT_NAME} PRIVATE
-	FUGIOLIB_STATIC
+	FUGIOLIB_LIBRARY
 #	GLOBAL_THREADED
 	)
 

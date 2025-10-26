@@ -10,7 +10,7 @@
 
 FUGIO_NAMESPACE_BEGIN
 
-class ContextSignals : public QObject
+class FUGIOLIBSHARED_EXPORT ContextSignals : public QObject
 {
 	Q_OBJECT
 

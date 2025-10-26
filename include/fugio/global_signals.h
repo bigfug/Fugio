@@ -10,7 +10,7 @@ class GlobalPrivate;
 
 FUGIO_NAMESPACE_BEGIN
 
-class GlobalSignals : public QObject
+class FUGIOLIBSHARED_EXPORT GlobalSignals : public QObject
 {
 	Q_OBJECT
 

@@ -12,7 +12,7 @@
 
 FUGIO_NAMESPACE_BEGIN
 
-class NodeSignals : public QObject
+class FUGIOLIBSHARED_EXPORT NodeSignals : public QObject
 {
 	Q_OBJECT
 

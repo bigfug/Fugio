@@ -17,7 +17,7 @@ FUGIO_NAMESPACE_BEGIN
 class GlobalInterface;
 FUGIO_NAMESPACE_END
 
-class PluginAction : public QObject, public QRunnable
+class FUGIOLIBSHARED_EXPORT PluginAction : public QObject, public QRunnable
 {
     Q_OBJECT
 
@@ -42,7 +42,7 @@ signals:
     void finished( void );
 };
 
-class PluginActionInstall : public PluginAction
+class FUGIOLIBSHARED_EXPORT PluginActionInstall : public PluginAction
 {
     Q_OBJECT
 
@@ -65,7 +65,7 @@ private:
     const QString m_DestName;
 };
 
-class PluginActionRemove : public PluginAction
+class FUGIOLIBSHARED_EXPORT PluginActionRemove : public PluginAction
 {
     Q_OBJECT
 
@@ -85,7 +85,7 @@ private:
     const QString m_DestName;
 };
 
-class PluginActionDownload : public PluginAction
+class FUGIOLIBSHARED_EXPORT PluginActionDownload : public PluginAction
 {
     Q_OBJECT
 
@@ -130,7 +130,7 @@ private:
  * \brief The PluginRepoManifest class contains a single repository manifest
  */
 
-class PluginRepoManifest
+class FUGIOLIBSHARED_EXPORT PluginRepoManifest
 {
 public:
     PluginRepoManifest( const QString &pFileName, const QString &pPlatform );
@@ -206,7 +206,7 @@ private:
  * \brief The PluginConfig class contains what plugins are installed for an instance of Fugio
  */
 
-class PluginConfig
+class FUGIOLIBSHARED_EXPORT PluginConfig
 {
 public:
 	PluginConfig( QSettings &pSettings )
@@ -229,7 +229,7 @@ private:
  * \brief The PluginArchive class
  */
 
-class PluginArchive
+class FUGIOLIBSHARED_EXPORT PluginArchive
 {
 public:
 	PluginArchive( const QString &pFileName );
@@ -247,7 +247,7 @@ private:
  * \brief The PluginCache class controls all the caching of repositories and plugin versions
  */
 
-class PluginCache
+class FUGIOLIBSHARED_EXPORT PluginCache
 {
 public:
 	PluginCache( void );
