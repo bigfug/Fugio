@@ -73,10 +73,9 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Setup vcpkg
-      uses: microsoft/setup-vcpkg@v1
+      uses: johnwason/vcpkg-action@v7
       with:
-        additionalCachedPackages: 'eigen3,exprtk'
-        runVcpkgInstall: true
+        pkgs: eigen3 exprtk
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v4
@@ -100,6 +99,7 @@ jobs:
         -DCPACK_PACKAGE_DIRECTORY=${{ github.workspace }}/package
         -DFUGIO_API=${{ github.workspace }}/include
         -DFUGIO_BUILD_DIST=TRUE
+        -DVCPKG_ROOT=${{ github.workspace }}/vcpkg
         ${{ matrix.cpack_generators }}
         -S ${{ github.workspace }}
 
