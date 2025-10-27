@@ -72,6 +72,12 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
+    - name: Setup vcpkg
+      uses: microsoft/setup-vcpkg@v1
+      with:
+        additionalCachedPackages: 'eigen3,exprtk'
+        runVcpkgInstall: true
+
     - name: Install Qt
       uses: jurplel/install-qt-action@v4
       with:
