@@ -29,7 +29,7 @@ jobs:
             c_compiler: cl
             cpp_compiler: cl
             qt_host: windows
-            qt_arch: win64_msvc2019_64
+            qt_arch: win64_msvc2022_64
             cpack_generators: -DCPACK_BINARY_NSIS=TRUE -DCPACK_BINARY_ZIP=TRUE
             qt_tools: 'tools_opensslv3_x64'
           - os: ubuntu-latest
@@ -73,10 +73,10 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v3
+      uses: jurplel/install-qt-action@v4
       with:
         aqtversion: '==3.1.*'
-        version: '6.6.2'
+        version: '6.9.0'
         modules: 'qt5compat qtimageformats qtmultimedia qtserialport qtwebsockets'
         host: ${{ matrix.qt_host }}
         target: 'desktop'
@@ -92,7 +92,7 @@ jobs:
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DCPACK_PACKAGE_DIRECTORY=${{ github.workspace }}/package
-        -DFUGIO_API=${{ github.workspace }}/Fugio/include
+        -DFUGIO_API=${{ github.workspace }}/include
         -DFUGIO_BUILD_DIST=TRUE
         ${{ matrix.cpack_generators }}
         -S ${{ github.workspace }}
@@ -112,7 +112,7 @@ jobs:
       run: cmake --build . --config ${{ matrix.build_type }} --target package
 
     - name: Archive outputs
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: fugio-nightly
         path: |
